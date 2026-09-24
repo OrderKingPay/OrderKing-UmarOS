@@ -1,11 +1,11 @@
 @echo off
 echo Starting all OrderKing apps for local browser testing...
 
-start cmd /k "title HDmaster (AI Dashboard) && cd HDmaster && npx vite dev --port 8081"
-start cmd /k "title Customer App && cd orderking-customers && npx vite dev --port 8082"
-start cmd /k "title Rider App && cd orderking-riders && npx vite dev --port 8083"
-start cmd /k "title Partners App && cd orderking-partners && npx vite dev --port 8084"
-start cmd /k "title Integration App && cd Apps-integration- && npx vite dev --port 8085"
+start cmd /k "title HDmaster (AI Dashboard) && cd HDmaster && npm run dev"
+start cmd /k "title Customer App && cd orderking-customers && npm run dev"
+start cmd /k "title Rider App && cd orderking-riders && npm run dev"
+start cmd /k "title Partners App && cd orderking-partners && npm run dev"
+start cmd /k "title Integration App && cd Apps-integration- && npm run dev"
 
 echo.
 echo ========================================================

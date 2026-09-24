@@ -17,7 +17,7 @@ export type RazorpayOrderResponse = {
   amountPaise: number;
   currency: string;
   keyId: string;
-  isMock: boolean;
+  isSandbox: boolean;
 };
 
 /**
@@ -62,6 +62,6 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
       amountPaise: resData.amount,
       currency: resData.currency,
       keyId: config.keyId,
-      isMock: false,
+      isSandbox: false,
     };
   });

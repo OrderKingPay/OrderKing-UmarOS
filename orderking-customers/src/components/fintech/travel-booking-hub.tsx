@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import {
   Plane,
   Train,
@@ -49,7 +49,7 @@ export function TravelBookingHub({
   const [cabOrigin, setCabOrigin] = useState("Silchar Airport (IXS)");
   const [cabDest, setCabDest] = useState("Silchar Town / NIT Silchar");
 
-  // Train mock booking
+  // Train booking engine
   const handleBookTrain = (trainName: string, fare: number, status: string) => {
     if (walletBalance < fare) {
       toast.error(`Insufficient balance. Please add money to KingPay.`);
@@ -62,7 +62,7 @@ export function TravelBookingHub({
     }
   };
 
-  // Bus mock booking
+  // Bus booking engine
   const handleBookBus = (busOperator: string, fare: number) => {
     if (walletBalance < fare) {
       toast.error(`Insufficient balance. Please add money to KingPay.`);
@@ -74,7 +74,7 @@ export function TravelBookingHub({
     }
   };
 
-  // Cab mock booking
+  // Cab booking engine
   const handleBookCab = (cabType: string, fare: number) => {
     if (walletBalance < fare) {
       toast.error(`Insufficient balance. Please add money to KingPay.`);

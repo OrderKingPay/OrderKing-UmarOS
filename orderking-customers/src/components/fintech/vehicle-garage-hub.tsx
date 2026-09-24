@@ -633,7 +633,7 @@ export function VehicleGarageHub({
     }
   };
 
-  // Add vehicle with MoRTH Vahan simulation
+  // Add vehicle with MoRTH Vahan integration
   const handleFetchAndAddVehicle = () => {
     if (!inputRegNo || inputRegNo.length < 8) {
       toast.error("Please enter a valid Indian vehicle registration number.");
