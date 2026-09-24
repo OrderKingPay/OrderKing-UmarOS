@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { DEFAULT_CONFIG } from "@/lib/config/defaults";
 import type { PublicAppConfig } from "@/lib/config/types";
 import { isLang, translate, type Lang } from "@/lib/i18n";
+import { htmlLang } from "@/lib/locale";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 15_000, refetchOnWindowFocus: false } },
@@ -45,13 +46,13 @@ export function AppProviders({
     document.title = config.brand.seoTitle;
     document.querySelector('link[rel="icon"]')?.setAttribute("href", config.brand.faviconUrl || "/favicon.svg");
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", config.brand.primaryColor);
-    document.documentElement.lang = lang === "bn" ? "bn" : "en";
+    document.documentElement.lang = htmlLang(lang);
     document.documentElement.style.setProperty("--radius-lg", `${config.brand.radiusPx}px`);
   }, [config, lang]);
   const setLang = (next: Lang) => {
     setLangState(next);
     if (typeof window !== "undefined") window.localStorage.setItem("marketplace-lang", next);
-    if (typeof document !== "undefined") document.documentElement.lang = next === "bn" ? "bn" : "en";
+    if (typeof document !== "undefined") document.documentElement.lang = htmlLang(next);
   };
   const value = useMemo(
     () => ({
