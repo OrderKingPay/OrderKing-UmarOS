@@ -4,7 +4,7 @@ import { Card, CardMeta, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
+import { errorMessage, newIdempotencyKey, withRetry } from "@/lib/client/errors";
 import { formatPaise } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
 import { getHomeFn, respondOfferFn, setStatusFn } from "@/lib/server/rider-fns";
@@ -32,7 +32,7 @@ export function HomeView() {
 
   const load = useCallback(async () => {
     try {
-      const data = await getHomeFn();
+      const data = await withRetry(getHomeFn);
       setHome(data);
       setError(null);
     } catch (e) {
@@ -87,7 +87,7 @@ export function HomeView() {
   async function go(statusNext: "ONLINE" | "OFFLINE") {
     setPending(true);
     try {
-      await setStatusFn({ data: { status: statusNext, confirmed: true } });
+      await withRetry(() => setStatusFn({ data: { status: statusNext, confirmed: true } }));
       await load();
     } catch (e) {
       setError(errorMessage(e, t("actionNotConfirmed")));
@@ -100,14 +100,14 @@ export function HomeView() {
   async function respond(decision: "ACCEPT" | "DECLINE", offer: DispatchOffer) {
     setPending(true);
     try {
-      await respondOfferFn({
+      await withRetry(() => respondOfferFn({
         data: {
           offerId: offer.id,
           decision,
           reason: declineReason || undefined,
           idempotencyKey: newIdempotencyKey(),
         },
-      });
+      }));
       await load();
     } catch (e) {
       setError(errorMessage(e, t("offerGone")));

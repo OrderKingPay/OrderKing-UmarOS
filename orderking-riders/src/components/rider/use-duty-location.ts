@@ -1,4 +1,5 @@
 import { postLocationFn } from "@/lib/server/rider-fns";
+import { withRetry } from "@/lib/client/errors";
 import { useEffect } from "react";
 
 export function useDutyLocation(enabled: boolean, deliveryId: string | null, intervalSec: number) {
@@ -14,14 +15,14 @@ export function useDutyLocation(enabled: boolean, deliveryId: string | null, int
         const now = Date.now();
         if (now - lastSent < intervalSec * 1000) return;
         lastSent = now;
-        void postLocationFn({
+        void withRetry(() => postLocationFn({
           data: {
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
             accuracyM: pos.coords.accuracy ?? null,
             deliveryId,
           },
-        }).catch(() => undefined);
+        })).catch(() => undefined);
       },
       () => {
         window.dispatchEvent(new CustomEvent("orderking-geo", { detail: { ok: false } }));

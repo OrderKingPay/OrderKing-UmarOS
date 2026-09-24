@@ -8,7 +8,31 @@ import { platformConfig } from "@/lib/platform-config";
 import appCss from "../styles.css?url";
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        const isNetworkError =
+          error instanceof TypeError ||
+          error.message.includes("fetch") ||
+          error.message.includes("network");
+        if (isNetworkError) return failureCount < 10;
+        return failureCount < 2;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: (failureCount, error) => {
+        const isNetworkError =
+          error instanceof TypeError ||
+          error.message.includes("fetch") ||
+          error.message.includes("network");
+        if (isNetworkError) return failureCount < 10;
+        return failureCount < 1;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+  },
 });
 
 export const Route = createRootRoute({
@@ -51,6 +75,19 @@ function Root() {
           </QueryClientProvider>
         </AuthProvider>
         <Scripts />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.log('SW registration failed: ', err);
+                  });
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );
