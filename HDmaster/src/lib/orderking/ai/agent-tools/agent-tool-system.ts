@@ -1,3 +1,4 @@
+import { z } from "zod";
 // Genuine Agent & Tool Execution Architecture with Permissions & Approval Gates
 // Supports Research, Files, Code, Git, Database, CRM, Payments, App Factory, and Remote Work
 
@@ -39,6 +40,7 @@ export interface ToolResult {
 
 export interface AgentTool {
   readonly name: string;
+  readonly zodSchema?: z.ZodType<any, any>;
   readonly description: string;
   readonly category: ToolCategory;
   readonly inputSchema: Record<string, unknown>;
@@ -69,6 +71,13 @@ export class AgentToolRegistry {
 
   async executeTool(name: string, input: Record<string, unknown>, context: ToolContext): Promise<ToolResult> {
     const tool = this.tools.get(name);
+    if (tool && tool.zodSchema) {
+      const parsed = tool.zodSchema.safeParse(input);
+      if (!parsed.success) {
+        return { success: false, error: `Zod Validation Error: ${parsed.error.message}` };
+      }
+      input = parsed.data;
+    }
     if (!tool) {
       return {
         success: false,
@@ -114,6 +123,10 @@ agentTools.register({
     },
     required: ["location"],
   },
+  zodSchema: z.object({
+    location: z.string().min(1, "Location is required"),
+    businessCategory: z.string().optional()
+  }),
   async execute(input) {
     const location = String(input.location || "Silchar / Karimganj");
     const category = String(input.businessCategory || "restaurant");
@@ -172,30 +185,18 @@ agentTools.register({
     type: "object",
     properties: {
       leadId: { type: "string" },
-      targetStage: {
-        type: "string",
-        enum: [
-          "LEAD",
-          "QUALIFICATION",
-          "RESEARCH",
-          "PERSONALIZED_OUTREACH",
-          "CONVERSATION",
-          "PROPOSAL",
-          "NEGOTIATION",
-          "APPROVAL",
-          "CONTRACT",
-          "INVOICE",
-          "PAYMENT",
-          "PROJECT",
-          "DELIVERY",
-          "ACCEPTANCE",
-          "SUPPORT",
-          "REPEAT",
-        ],
-      },
+      targetStage: { type: "string" },
     },
     required: ["leadId", "targetStage"],
   },
+  zodSchema: z.object({
+    leadId: z.string().min(1),
+    targetStage: z.enum([
+      "LEAD", "QUALIFICATION", "RESEARCH", "PERSONALIZED_OUTREACH", "CONVERSATION",
+      "PROPOSAL", "NEGOTIATION", "APPROVAL", "CONTRACT", "INVOICE", "PAYMENT",
+      "PROJECT", "DELIVERY", "ACCEPTANCE", "SUPPORT", "REPEAT"
+    ])
+  }),
   async execute(input) {
     return {
       success: true,
@@ -234,6 +235,13 @@ agentTools.register({
     },
     required: ["clientName", "amountInr", "description"],
   },
+  zodSchema: z.object({
+    clientName: z.string().min(1),
+    amountInr: z.number().positive(),
+    advancePercent: z.number().min(0).max(100).optional(),
+    description: z.string().min(1),
+    founderUpiVpa: z.string().optional()
+  }),
   async execute(input) {
     const amount = Number(input.amountInr);
     const advancePercent = Number(input.advancePercent || 50);
@@ -281,11 +289,16 @@ agentTools.register({
     type: "object",
     properties: {
       appName: { type: "string" },
-      category: { type: "string", enum: ["erp", "marketplace", "fintech", "ecommerce"] },
+      category: { type: "string" },
       features: { type: "array", items: { type: "string" } },
     },
     required: ["appName", "category"],
   },
+  zodSchema: z.object({
+    appName: z.string().min(1),
+    category: z.enum(["erp", "marketplace", "fintech", "ecommerce"]),
+    features: z.array(z.string()).optional()
+  }),
   async execute(input) {
     const appName = String(input.appName);
     const category = String(input.category);
@@ -330,6 +343,10 @@ agentTools.register({
       skills: { type: "array", items: { type: "string" } },
     },
   },
+  zodSchema: z.object({
+    minRateUsd: z.number().min(0).optional(),
+    skills: z.array(z.string()).optional()
+  }),
   async execute(input) {
     const minRate = Number(input.minRateUsd || 80);
 

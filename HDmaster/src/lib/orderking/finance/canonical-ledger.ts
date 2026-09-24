@@ -113,12 +113,22 @@ export class CanonicalLedger {
    * Guarantees idempotency via idempotencyKey.
    */
   public postTransaction(params: {
+    userId?: string;
     idempotencyKey: string;
     eventType: LedgerTransaction["eventType"];
     orderId?: string;
     entries: Omit<LedgerEntry, "entryId" | "transactionId" | "timestamp">[];
   }): { success: boolean; transactionId: string; message: string } {
-    // 1. Idempotency check
+    // 1. RBAC validation for high-risk financial tasks (refunds, ledger adjustments, vault)
+    const highRiskEvents = ["ORDER_CANCELLED_REFUND", "FOUNDER_VAULT_DEPOSIT", "GST_TAX_REMITTANCE"];
+    if (highRiskEvents.includes(params.eventType)) {
+      const authorizedUsers = ["FOUNDER_ADMIN", "SYSTEM_MASTER", "FINANCE_CONTROLLER"];
+      if (!params.userId || !authorizedUsers.includes(params.userId)) {
+        throw new Error(`RBAC Error: User '${params.userId}' is not authorized to execute high-risk financial task: ${params.eventType}`);
+      }
+    }
+
+    // 2. Idempotency check
     const existingTxId = this.idempotencyRegistry.get(params.idempotencyKey);
     if (existingTxId) {
       return {
@@ -128,7 +138,7 @@ export class CanonicalLedger {
       };
     }
 
-    // 2. Double-entry balance check: sum(DEBIT) === sum(CREDIT)
+    // 3. Double-entry balance check: sum(DEBIT) === sum(CREDIT)
     let totalDebitPaise = 0;
     let totalCreditPaise = 0;
 
