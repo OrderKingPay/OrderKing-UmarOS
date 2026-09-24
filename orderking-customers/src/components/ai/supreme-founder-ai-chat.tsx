@@ -1767,7 +1767,7 @@ You can ask me anything across software engineering, architecture, business anal
       const decoder = new TextDecoder();
       let streamedText = "";
       let executionSteps: AgentExecutionStep[] = [];
-      let detectedLanguage = selectedLanguage || "en-IN";
+      const detectedLanguage = selectedLanguage || "en-IN";
       let actionCard: any = undefined;
       let mediaCard: any = undefined;
       let finalModelUsed = selectedModel;

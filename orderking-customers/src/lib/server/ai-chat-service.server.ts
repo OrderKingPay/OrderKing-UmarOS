@@ -459,7 +459,7 @@ export async function executeFounderAiChat(
           providerInstance = new XAIProvider(apiKey);
         }
 
-        let mappedMessages: any[] = request.messages.map((m) => {
+        const mappedMessages: any[] = request.messages.map((m) => {
           if (m.attachments && m.attachments.length > 0) {
             const parts: any[] = [{ type: "text", text: m.content }];
             for (const a of m.attachments) {
