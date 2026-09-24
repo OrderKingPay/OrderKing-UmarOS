@@ -1482,9 +1482,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   return (
     <>
-      <div className="w-full bg-red-600 text-white text-center text-[10px] font-black py-1.5 tracking-widest z-[999] relative uppercase border-b border-red-700">
-        ⚠️ DEMO MODE: SYNTHETIC DATA. NOT CONNECTED TO PRODUCTION FINANCIAL LEDGER ⚠️
-      </div>
+      
       <KingPayShell
       walletBalance={walletBalance}
       onAddMoneyClick={() => setShowAddMoney(true)}
