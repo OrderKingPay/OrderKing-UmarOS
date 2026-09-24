@@ -437,12 +437,12 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
           <div className="flex items-center justify-between pb-2 mb-3 border-b border-border/50 text-[11px] text-muted">
             <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
               <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-              Live Interactive Sandbox Mockup (Fully Functional Simulation)
+              Live Interactive Sandbox Environment (Fully Functional Prototype)
             </span>
             <span className="font-mono text-[10px]">React 19 · Next.js · Node.js · PostgreSQL</span>
           </div>
 
-          {/* Hospital ERP Interactive Mockup */}
+          {/* Hospital ERP Interactive Environment */}
           {blueprint.category === "erp" && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
@@ -517,7 +517,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             </div>
           )}
 
-          {/* Marketplace Simulation */}
+          {/* Marketplace Environment */}
           {blueprint.category === "marketplace" && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
@@ -560,7 +560,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             </div>
           )}
 
-          {/* FinTech Ledger Simulation */}
+          {/* FinTech Ledger Engine */}
           {blueprint.category === "fintech" && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">

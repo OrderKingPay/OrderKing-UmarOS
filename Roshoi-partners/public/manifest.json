@@ -1,0 +1,48 @@
+{
+  "name": "Order King Partner Portal & Spark AI",
+  "short_name": "OK Partner",
+  "description": "0% Commission Restaurant Partner Portal with Kitchen Prep SLA, Menu Management & Instant Settlements",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#09090b",
+  "theme_color": "#f97316",
+  "icons": [
+    {
+      "src": "/brand/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/brand/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Live Orders",
+      "short_name": "Orders",
+      "description": "Live Kitchen Orders",
+      "url": "/",
+      "icons": [{ "src": "/brand/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Menu Management",
+      "short_name": "Menu",
+      "description": "Item Availability & Prices",
+      "url": "/menu",
+      "icons": [{ "src": "/brand/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Spark AI Assistant",
+      "short_name": "Spark",
+      "description": "Order King Spark AI",
+      "url": "/?spark=true",
+      "icons": [{ "src": "/brand/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["business", "food"]
+}

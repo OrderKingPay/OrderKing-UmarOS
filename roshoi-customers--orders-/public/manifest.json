@@ -1,0 +1,53 @@
+{
+  "name": "Order King FOODS & King Pay",
+  "short_name": "OrderKing",
+  "description": "0% Markup Food Delivery & Sovereign FinTech Hub",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07241C",
+  "theme_color": "#0D3B2E",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Order King FOODS",
+      "short_name": "Foods",
+      "description": "0% Markup Food Delivery",
+      "url": "/",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "King Pay",
+      "short_name": "KingPay",
+      "description": "Sovereign FinTech & Mobility Hub",
+      "url": "/king-pay",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Track Active Order",
+      "short_name": "Orders",
+      "description": "Live Order Tracking",
+      "url": "/orders",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["food", "finance", "shopping", "travel"]
+}

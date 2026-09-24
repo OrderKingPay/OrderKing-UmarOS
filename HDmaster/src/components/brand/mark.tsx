@@ -121,4 +121,5 @@ export function KingPayMark({ className }: { className?: string }) {
 }
 
 /** @deprecated Use OrderKingMark instead */
-export const OrderKingMark = OrderKingMark;
+
+
