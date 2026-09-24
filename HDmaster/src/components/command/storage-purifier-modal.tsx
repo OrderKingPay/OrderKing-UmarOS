@@ -329,7 +329,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
                   {item.type === "video" ? (
                     <video src={item.url} muted className="w-full h-full object-cover" />
                   ) : item.type === "image" ? (
-                    <img src={item.url} alt={item.title} className="w-full h-full object-cover" />
+                    <img loading="lazy" src={item.url} alt={item.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="flex flex-col items-center justify-center text-muted">
                       <FileCode className="size-6 text-purple-400" />

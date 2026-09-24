@@ -2301,7 +2301,7 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
         
         <div className="rounded-lg bg-surface-2 p-2 border border-border flex items-center justify-center min-h-[160px] overflow-hidden bg-black">
           {data.type === "image" && mediaUrl ? (
-             <img src={mediaUrl} alt={promptText} className="max-w-full max-h-[260px] object-contain rounded" />
+             <img loading="lazy" src={mediaUrl} alt={promptText} className="max-w-full max-h-[260px] object-contain rounded" />
           ) : data.type === "video" && mediaUrl ? (
              <video src={mediaUrl} controls loop muted autoPlay className="w-full max-h-[260px] rounded" />
           ) : (
@@ -4387,7 +4387,7 @@ export function SupremeFounderAiChat({
                         {attachedFiles.map((file, i) => (
                           <div key={i} className="relative group rounded-xl overflow-hidden bg-[#171717] w-14 h-14 flex-shrink-0">
                             {file.type === "image" ? (
-                              <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
+                              <img loading="lazy" src={file.url} alt={file.name} className="w-full h-full object-cover" />
                             ) : file.type === "video" ? (
                               <div className="flex items-center justify-center w-full h-full text-slate-400">
                                 <Film className="size-5" />
@@ -4532,8 +4532,7 @@ export function SupremeFounderAiChat({
                                       onClick={() => setLightboxMedia({ url: att.url, title: att.name, type: "image" })}
                                       className="cursor-pointer relative"
                                     >
-                                      <img
-                                        src={att.url}
+                                      <img loading="lazy"                                         src={att.url}
                                         alt={att.name}
                                         className="w-32 h-24 object-cover group-hover:scale-105 transition-transform"
                                       />
@@ -4596,8 +4595,7 @@ export function SupremeFounderAiChat({
                                         onClick={() => setLightboxMedia({ url: att.url, title: att.name, type: "image" })}
                                         className="cursor-pointer relative"
                                       >
-                                        <img
-                                          src={att.url}
+                                        <img loading="lazy"                                           src={att.url}
                                           alt={att.name}
                                           className="w-36 h-28 object-cover group-hover:scale-105 transition-transform"
                                         />
@@ -4639,8 +4637,7 @@ export function SupremeFounderAiChat({
                               <div className="mt-4 w-full max-w-lg rounded-2xl border border-purple-500/30 bg-gradient-to-b from-purple-950/20 to-[#171717] overflow-hidden shadow-2xl">
                                 <div className="relative group aspect-video bg-black/80 flex items-center justify-center overflow-hidden">
                                   {m.mediaCard.type === "image" ? (
-                                    <img
-                                      src={m.mediaCard.url}
+                                    <img loading="lazy"                                       src={m.mediaCard.url}
                                       alt={m.mediaCard.prompt}
                                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer"
                                       onClick={() => setLightboxMedia({ url: m.mediaCard!.url, title: m.mediaCard!.prompt, type: "image" })}
@@ -4826,7 +4823,7 @@ export function SupremeFounderAiChat({
                         {attachedFiles.map((file, i) => (
                           <div key={i} className="relative group rounded-xl overflow-hidden bg-[#171717] w-14 h-14 flex-shrink-0">
                             {file.type === "image" ? (
-                              <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
+                              <img loading="lazy" src={file.url} alt={file.name} className="w-full h-full object-cover" />
                             ) : file.type === "video" ? (
                               <div className="flex items-center justify-center w-full h-full text-slate-400">
                                 <Film className="size-5" />
@@ -5124,8 +5121,7 @@ export function SupremeFounderAiChat({
             </div>
             <div className="w-full flex-1 flex items-center justify-center bg-black/90 p-2 overflow-auto max-h-[80vh]">
               {lightboxMedia.type === "image" ? (
-                <img
-                  src={lightboxMedia.url}
+                <img loading="lazy"                   src={lightboxMedia.url}
                   alt={lightboxMedia.title}
                   className="max-w-full max-h-[75vh] object-contain rounded-lg"
                 />

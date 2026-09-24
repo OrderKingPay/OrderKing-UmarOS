@@ -477,8 +477,7 @@ export function AiMediaStudioModal({
                   </div>
 
                   <div className="relative rounded-xl overflow-hidden border border-border/80 max-h-[380px] flex items-center justify-center bg-black">
-                    <img
-                      src={generatedItem.url}
+                    <img loading="lazy"                       src={generatedItem.url}
                       alt={generatedItem.title}
                       style={{
                         filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
@@ -893,8 +892,7 @@ export function AiMediaStudioModal({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <img
-                          src={item.url}
+                        <img loading="lazy"                           src={item.url}
                           alt={item.title}
                           className="w-full h-full object-cover"
                         />
