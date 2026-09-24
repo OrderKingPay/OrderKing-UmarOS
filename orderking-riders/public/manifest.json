@@ -1,0 +1,41 @@
+{
+  "name": "Order King Rider Fleet",
+  "short_name": "OK Rider",
+  "description": "100% Tips & Transparent Distance Fares Delivery Partner App",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#09090b",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Active Deliveries",
+      "short_name": "Deliveries",
+      "description": "Current active order navigation",
+      "url": "/",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Earnings & Payouts",
+      "short_name": "Earnings",
+      "description": "Daily earnings and instant UPI cashout",
+      "url": "/earnings",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["business", "travel", "navigation"]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "HDmaster AI • Founder Sovereign Operating System",
+  "short_name": "HDmaster",
+  "description": "Executive Autonomous Business Operating System & Sovereign Founder Command Center",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#09090b",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Founder Chat",
+      "short_name": "Chat",
+      "description": "Supreme AI Voice & Multilingual Command",
+      "url": "/",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "System Diagnostics",
+      "short_name": "Diagnostics",
+      "description": "Real-time Telemetry & Health Checks",
+      "url": "/?tab=diagnostics",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    }
+  ],
+  "categories": ["business", "productivity"]
+}

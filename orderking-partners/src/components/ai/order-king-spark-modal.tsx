@@ -1,0 +1,243 @@
+import { useState } from "react";
+import {
+  Bot,
+  Sparkles,
+  X,
+  Send,
+  AlertTriangle,
+  CheckCircle2,
+  TrendingUp,
+  DollarSign,
+  Utensils,
+  Clock,
+  ArrowRight,
+  ShieldCheck,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  orderKingSpark,
+  SparkChatMessage,
+  SparkMenuItem,
+  SparkKitchenAnomaly,
+  SparkSettlementSummary,
+} from "@/lib/ai/order-king-spark";
+
+interface OrderKingSparkModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProps) {
+  const [messages, setMessages] = useState<SparkChatMessage[]>([
+    {
+      id: "init",
+      sender: "spark",
+      text: `### 🍳 Order King Spark Active
+Namaste Partner! I am **Order King Spark**, your autonomous kitchen operations and growth partner.
+
+I monitor your **0% commission direct earnings**, kitchen preparation velocity, and menu availability in real time. How can I help your kitchen right now?`,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    },
+  ]);
+  const [inputQuery, setInputQuery] = useState("");
+  const [menuItems, setMenuItems] = useState<SparkMenuItem[]>(orderKingSpark.getMenuItems());
+
+  if (!isOpen) return null;
+
+  const handleSend = (text: string) => {
+    if (!text.trim()) return;
+
+    const userMsg: SparkChatMessage = {
+      id: `usr-${Date.now()}`,
+      sender: "user",
+      text: text.trim(),
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+
+    const sparkReply = orderKingSpark.handleRestaurantQuery(text);
+    setMessages((prev) => [...prev, userMsg, sparkReply]);
+    setInputQuery("");
+  };
+
+  const handleToggleItem = (itemId: string) => {
+    const res = orderKingSpark.toggleItemAvailability(itemId);
+    if (res.success && res.item) {
+      setMenuItems([...orderKingSpark.getMenuItems()]);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn font-sans">
+      <div className="relative flex flex-col h-[700px] max-h-[92vh] w-full max-w-3xl rounded-2xl border border-amber-500/30 bg-[#121214] text-slate-100 shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-zinc-800 bg-[#18181B] px-4 py-3">
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-black font-bold shadow-md shadow-amber-500/20">
+              <Sparkles className="size-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-sm text-white tracking-wide">Order King Spark</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                  RESTAURANT AI
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                  0% COMMISSION
+                </span>
+              </div>
+              <span className="text-[11px] text-zinc-400 block mt-0.5">
+                Kitchen SLAs · Menu Management · Daily Net Settlements
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+
+        {/* Quick Suggestion Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto px-4 py-2 border-b border-zinc-800/80 bg-zinc-900/60 scrollbar-none">
+          {[
+            { label: "💰 0% Commission Savings", query: "Show my settlement and commission savings" },
+            { label: "📋 Menu Availability", query: "Show my menu and availability" },
+            { label: "🍳 Kitchen Prep SLA", query: "Check kitchen prep SLA and delays" },
+            { label: "🚀 Growth Advice", query: "Give me growth ideas to increase repeat orders" },
+          ].map((pill, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => handleSend(pill.query)}
+              className="px-3 py-1 rounded-full text-[11px] font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white border border-zinc-700 whitespace-nowrap transition active:scale-95 flex items-center gap-1.5"
+            >
+              <span>{pill.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Chat Feed */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-none">
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}
+            >
+              <div
+                className={`max-w-[85%] rounded-2xl p-3.5 text-xs sm:text-sm leading-relaxed ${
+                  msg.sender === "user"
+                    ? "bg-amber-500 text-black font-medium"
+                    : "bg-zinc-900 border border-zinc-800 text-zinc-200"
+                }`}
+              >
+                <div className="whitespace-pre-wrap">{msg.text}</div>
+
+                {/* Render Action Cards */}
+                {msg.actionCard?.type === "settlement_breakdown" && (
+                  <div className="mt-3 p-3 rounded-xl bg-black/60 border border-emerald-500/30 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-zinc-400">Aggregator Loss Avoided:</span>
+                      <span className="font-bold text-emerald-400 font-mono">
+                        +₹{(((msg.actionCard.data.summary as SparkSettlementSummary).swiggyZomatoLossAvoidedPaise || 0) / 100).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs border-t border-zinc-800 pt-1.5">
+                      <span className="text-zinc-400">OrderKing Commission:</span>
+                      <span className="font-bold text-emerald-400 font-mono">₹0 (0%)</span>
+                    </div>
+                  </div>
+                )}
+
+                {msg.actionCard?.type === "menu_toggle" && (
+                  <div className="mt-3 space-y-2">
+                    <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">
+                      Live Menu Items:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {menuItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="p-2.5 rounded-lg bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-between gap-2"
+                        >
+                          <div>
+                            <span className="text-xs font-bold text-white block">{item.name}</span>
+                            <span className="text-[11px] font-mono text-zinc-400">
+                              ₹{(item.pricePaise / 100).toFixed(0)} · {item.preparationMinutes}m prep
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleItem(item.id)}
+                            className={`px-2 py-1 rounded text-[10px] font-bold transition ${
+                              item.isAvailable
+                                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30"
+                                : "bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30"
+                            }`}
+                          >
+                            {item.isAvailable ? "In Stock" : "Sold Out"}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {msg.actionCard?.type === "anomaly_alert" && (
+                  <div className="mt-3 space-y-2">
+                    {((msg.actionCard.data.anomalies as SparkKitchenAnomaly[]) || []).map((anom) => (
+                      <div
+                        key={anom.anomalyId}
+                        className="p-3 rounded-xl bg-black/60 border border-amber-500/30 space-y-1.5"
+                      >
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300">
+                          <AlertTriangle className="size-4 text-amber-400 shrink-0" />
+                          <span>{anom.headline}</span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300 leading-relaxed">
+                          <strong>Root Cause:</strong> {anom.rootCauseHypothesis}
+                        </p>
+                        <p className="text-[11px] text-emerald-400">
+                          <strong>Recommended:</strong> {anom.recommendedAction}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <span className="text-[10px] text-zinc-500 mt-1 px-1">{msg.timestamp}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Input Bar */}
+        <div className="p-3 border-t border-zinc-800 bg-[#18181B] flex items-center gap-2">
+          <Input
+            value={inputQuery}
+            onChange={(e) => setInputQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend(inputQuery);
+              }
+            }}
+            placeholder="Ask Spark (e.g., 'Make biryani sold out' or 'Show today's savings')..."
+            className="flex-1 bg-zinc-900 border-zinc-700 text-xs sm:text-sm text-white placeholder:text-zinc-500 h-10"
+          />
+          <Button
+            type="button"
+            onClick={() => handleSend(inputQuery)}
+            disabled={!inputQuery.trim()}
+            className="h-10 px-4 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shrink-0 shadow-md"
+          >
+            <Send className="size-3.5 mr-1.5" />
+            <span>Send</span>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
