@@ -1,0 +1,9 @@
+﻿@
+node_modules/
+dist/
+.vercel/
+build/
+.env
+.env.*.local
+*.log
+
