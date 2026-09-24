@@ -300,11 +300,11 @@ export class OpportunityEngine {
     const effort = opp.estimatedEffort || 40;
     const isDirectUpi = opp.currency === "INR";
 
-    let timeToFirstActionHours = 0.5; // AI can draft proposal in 30 mins
-    let timeToFirstDeliverableHours = effort <= 80 ? 24 : 48; // Initial demo/scaffold
-    let timeToClientValueDays = effort <= 80 ? 7 : 14;
-    let timeToInvoiceDays = 1; // Immediate 50% advance invoice on contract signing
-    let knownPaymentProcess = isDirectUpi
+    const timeToFirstActionHours = 0.5; // AI can draft proposal in 30 mins
+    const timeToFirstDeliverableHours = effort <= 80 ? 24 : 48; // Initial demo/scaffold
+    const timeToClientValueDays = effort <= 80 ? 7 : 14;
+    const timeToInvoiceDays = 1; // Immediate 50% advance invoice on contract signing
+    const knownPaymentProcess = isDirectUpi
       ? "King Pay Direct UPI (0% fee, instant bank deposit, Section 79 compliant)"
       : "Stripe Milestone / International Wire Escrow (Net 7)";
 

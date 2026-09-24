@@ -219,7 +219,7 @@ export class SystemMasterController {
     status: string;
   } {
     const fixedItems: string[] = [];
-    let memoryReclaimedBytes = 1450000; // ~1.45 MB reclaimed
+    const memoryReclaimedBytes = 1450000; // ~1.45 MB reclaimed
 
     // 1. Audio context lock clearing
     if (typeof window !== "undefined" && "speechSynthesis" in window) {

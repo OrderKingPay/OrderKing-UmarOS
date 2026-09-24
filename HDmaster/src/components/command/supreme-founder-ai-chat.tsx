@@ -3628,7 +3628,7 @@ export function SupremeFounderAiChat({
       const decoder = new TextDecoder();
       let streamedText = "";
       let executionSteps: AgentExecutionStep[] = [];
-      let detectedLanguage = "en-IN";
+      const detectedLanguage = "en-IN";
       let actionCard: any = undefined;
       let mediaCard: any = undefined;
       let finalModelUsed = selectedModel;
