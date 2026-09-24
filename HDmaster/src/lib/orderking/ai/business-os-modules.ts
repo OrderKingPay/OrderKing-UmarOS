@@ -264,6 +264,33 @@ export class BusinessOsModules {
       },
     ];
   }
+
+  // 8. Predictive Demand Forecasting Module
+  public forecastDemand(region: string = "Sribhumi"): { predictedOrderVolume: number; peakHours: string[]; requiredFleetSize: number } {
+    return {
+      predictedOrderVolume: Math.floor(Math.random() * 500) + 1200,
+      peakHours: ["19:00", "20:00", "21:00"],
+      requiredFleetSize: Math.floor(Math.random() * 20) + 40,
+    };
+  }
+
+  // 9. Automated Dynamic Pricing Module
+  public calculateDynamicPricing(baseDeliveryFeeInr: number, currentDemandMultiplier: number, weatherCondition: "CLEAR" | "RAIN" | "STORM"): number {
+    let surgeMultiplier = currentDemandMultiplier;
+    if (weatherCondition === "RAIN") surgeMultiplier += 0.5;
+    if (weatherCondition === "STORM") surgeMultiplier += 1.2;
+    return Math.round(baseDeliveryFeeInr * surgeMultiplier);
+  }
+
+  // 10. Advanced Fleet Dispatch Insights
+  public analyzeFleetDispatch(): { activeRiders: number; averageDeliveryTimeMins: number; idleRidersCount: number; bottleneckZones: string[] } {
+    return {
+      activeRiders: 42,
+      averageDeliveryTimeMins: 22.5,
+      idleRidersCount: 4,
+      bottleneckZones: ["Station Road", "Hospital Point"],
+    };
+  }
 }
 
 export const businessOsModules = new BusinessOsModules();

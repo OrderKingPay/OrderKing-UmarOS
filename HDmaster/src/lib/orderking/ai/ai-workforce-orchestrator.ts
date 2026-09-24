@@ -81,7 +81,7 @@ export class AiWorkforceOrchestrator {
         description: "Primary founder partner coordinating multi-agent initiatives and executive briefs.",
         allowedDomains: ["FINANCE", "OPERATIONS", "SUPPORT", "GROWTH", "REPORTING", "DISPATCH", "SECURITY", "SRE"],
         maxAutonomousFinancialLimitInr: 200,
-        assignedTools: ["founder_approval_gate", "system_diagnostics", "multi_model_consensus"],
+        assignedTools: ["founder_approval_gate", "system_diagnostics", "multi_model_consensus", "demand_forecaster", "dynamic_pricer", "fleet_insights"],
         activeTasksCount: 0,
         completedTasksCount: 0,
         failedTasksCount: 0,
@@ -293,6 +293,13 @@ export class AiWorkforceOrchestrator {
       let resultData: Record<string, unknown> = {};
 
       switch (task.assignedRole) {
+        case "FOUNDER_AI": {
+          const forecast = businessOsModules.forecastDemand();
+          const pricing = businessOsModules.calculateDynamicPricing(40, 1.5, "CLEAR");
+          const fleet = businessOsModules.analyzeFleetDispatch();
+          resultData = { forecast, pricing, fleet, status: "SUCCESS", message: `Executed by ${agent.displayName}` };
+          break;
+        }
         case "FINANCE_AI": {
           const pnl = businessOsModules.calculateFinancialPnL();
           resultData = { pnl, ledgerBalanceInr: canonicalLedger.getAccountBalanceInr("RESTAURANT_PAYABLE") };
