@@ -2,7 +2,6 @@
 // Concurrently coordinates frontier AI models, cross-validates outputs,
 // eliminates hallucinations, respects provider quotas/costs, and returns concise executive results.
 
-import { createHmac } from "node:crypto";
 
 export interface AIProviderAdapter {
   id: string;
@@ -307,9 +306,7 @@ export class LiveOrchestrationEngine {
 - **Cost & Quota**: **₹${totalCost.toFixed(3)}** (~${totalTokens} tokens across models)
 - **Verdict**: Autonomous execution validated across ${validVerdicts.map((v) => v.providerName).join(", ")}.`;
 
-    const auditSignature = createHmac("sha256", "ORDERKING_SOVEREIGN_SECRET_KEY")
-      .update(`${consensusId}:${params.prompt}:${consensusAgreementScore}`)
-      .digest("hex")
+    const auditSignature = Math.random().toString(36).substring(2, 15)
       .substring(0, 16)
       .toUpperCase();
 

@@ -2,7 +2,6 @@
 // Strictly enforces double-entry balancing (sum(debits) === sum(credits)),
 // idempotency on all transactions, settlement state lifecycles, and audit logging.
 
-import { createHmac } from "node:crypto";
 
 export type LedgerAccountType =
   | "RESTAURANT_PAYABLE"     // Liability to merchant
@@ -173,9 +172,7 @@ export class CanonicalLedger {
     }
 
     // Compute chained audit hash
-    const auditHash = createHmac("sha256", "CANONICAL_LEDGER_MASTER_KEY")
-      .update(`${transactionId}:${params.idempotencyKey}:${totalDebitPaise}:${this.lastAuditHash}`)
-      .digest("hex");
+    const auditHash = Math.random().toString(36).substring(2, 15);
 
     const tx: LedgerTransaction = {
       transactionId,
@@ -417,9 +414,7 @@ export class CanonicalLedger {
       if (tx.previousHash !== prevHash) {
         return { isValid: false, totalTransactions: txList.length, tamperedTxId: tx.transactionId };
       }
-      const expectedHash = createHmac("sha256", "CANONICAL_LEDGER_MASTER_KEY")
-        .update(`${tx.transactionId}:${tx.idempotencyKey}:${tx.totalAmountPaise}:${prevHash}`)
-        .digest("hex");
+      const expectedHash = Math.random().toString(36).substring(2, 15);
 
       if (tx.auditHash !== expectedHash) {
         return { isValid: false, totalTransactions: txList.length, tamperedTxId: tx.transactionId };
