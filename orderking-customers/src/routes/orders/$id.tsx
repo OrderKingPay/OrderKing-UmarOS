@@ -605,7 +605,7 @@ function OrderDetailPage() {
                     </label>
                     {complaintImage && (
                       <div className="relative size-12 rounded-lg border border-rose-500/50 overflow-hidden shadow-xs">
-                        <img src={complaintImage} alt="Dispute evidence" className="size-full object-cover" />
+                        <img loading="lazy" src={complaintImage} alt="Dispute evidence" className="size-full object-cover" />
                         <button
                           type="button"
                           onClick={() => setComplaintImage(null)}

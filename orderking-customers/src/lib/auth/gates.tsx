@@ -59,7 +59,7 @@ export function UserButton() {
   return (
     <div className="flex items-center gap-2">
       {user.profileImageUrl ? (
-        <img
+        <img loading="lazy" 
           src={user.profileImageUrl}
           alt=""
           className="h-8 w-8 rounded-full object-cover"

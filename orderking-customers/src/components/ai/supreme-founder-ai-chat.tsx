@@ -2466,7 +2466,7 @@ You can ask me anything across software engineering, architecture, business anal
               {attachments.map((att, i) => (
                 <div key={i} className="relative group shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800 flex items-center justify-center">
                   {att.type === 'image' ? (
-                    <img src={att.url} alt="upload" className="w-full h-full object-cover" />
+                    <img loading="lazy" src={att.url} alt="upload" className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-[10px] text-zinc-400 text-center px-1 truncate">
                       {att.file.name}

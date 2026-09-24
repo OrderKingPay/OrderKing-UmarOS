@@ -159,6 +159,16 @@ export default defineConfig(({ command, isPreview }) => ({
     port: 8081,
     strictPort: true,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-router': ['@tanstack/react-router'],
+        },
+      },
+    },
+  },
   resolve: { tsconfigPaths: true },
   plugins: [
     pgliteBootstrapPlugin(),

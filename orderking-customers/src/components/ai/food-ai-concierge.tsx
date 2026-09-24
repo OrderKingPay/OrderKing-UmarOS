@@ -1316,8 +1316,7 @@ export function FoodAiConcierge({
                   >
                     {msg.imageUrl && (
                       <div className="mb-2 overflow-hidden rounded-xl border border-border">
-                        <img
-                          src={msg.imageUrl}
+                        <img loading="lazy"                           src={msg.imageUrl}
                           alt="Attached file proof"
                           className="max-h-48 w-full object-cover rounded-lg"
                         />
@@ -1445,7 +1444,7 @@ export function FoodAiConcierge({
                     className="flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-surface px-2 py-1 shadow-xs"
                   >
                     {file.type === "image" ? (
-                      <img src={file.dataUrl} alt={file.name} className="size-6 rounded object-cover" />
+                      <img loading="lazy" src={file.dataUrl} alt={file.name} className="size-6 rounded object-cover" />
                     ) : file.type === "video" ? (
                       <Video className="size-4 text-emerald-500" />
                     ) : (

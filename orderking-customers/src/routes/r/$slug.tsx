@@ -109,7 +109,7 @@ function RestaurantPage() {
           ) : null}
           <div className="relative aspect-[16/9] bg-surface-2">
             {restaurant.card.coverImage ? (
-              <img src={restaurant.card.coverImage} alt="" className="h-full w-full object-cover" />
+              <img loading="lazy" src={restaurant.card.coverImage} alt="" className="h-full w-full object-cover" />
             ) : null}
             <div className="absolute left-3 top-3 flex gap-1">
               {restaurant.card.dataLabel !== "REAL" ? <Badge tone="warn">{t("common.sample")}</Badge> : null}
@@ -270,7 +270,7 @@ function RestaurantPage() {
                   {filteredItems.map((it) => (
                     <li key={it.id} className="flex gap-3 rounded-[var(--radius-lg)] bg-surface p-3">
                       {it.imageUrl ? (
-                        <img src={it.imageUrl} alt="" className="size-20 rounded-[var(--radius-sm)] object-cover" />
+                        <img loading="lazy" src={it.imageUrl} alt="" className="size-20 rounded-[var(--radius-sm)] object-cover" />
                       ) : (
                         <div className="size-20 rounded-[var(--radius-sm)] bg-surface-2" />
                       )}

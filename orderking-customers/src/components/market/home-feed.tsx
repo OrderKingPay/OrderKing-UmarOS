@@ -318,7 +318,7 @@ export function HomeFeed({
                 >
                   <div className="aspect-square overflow-hidden rounded-[var(--radius-lg)] bg-surface-2">
                     {c.imageUrl ? (
-                      <img src={c.imageUrl} alt="" className="h-full w-full object-cover" />
+                      <img loading="lazy" src={c.imageUrl} alt="" className="h-full w-full object-cover" />
                     ) : null}
                   </div>
                   <span className="mt-1 block text-xs font-medium">{c.name}</span>

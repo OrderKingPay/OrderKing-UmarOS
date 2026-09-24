@@ -303,8 +303,7 @@ export function ReceiveMoneyQrStudio({
             {/* THE QR CODE CANVAS CONTAINER */}
             <div className="relative z-10 mx-auto size-64 sm:size-72 rounded-3xl bg-white p-4 shadow-2xl ring-4 ring-white/20 flex flex-col items-center justify-center">
               {qrDataUrl ? (
-                <img
-                  src={qrDataUrl}
+                <img loading="lazy"                   src={qrDataUrl}
                   alt="KingPay Universal UPI QR"
                   className="size-full object-contain rounded-xl"
                 />
