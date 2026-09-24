@@ -1,3 +1,4 @@
+import { resilientFetch } from "../sre/resilient-fetch.ts";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 const API_BASE = "https://api.razorpay.com/v1";
@@ -35,8 +36,9 @@ function authHeader(): string {
 }
 
 async function razorpay<T>(path: string, init: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
+  const response = await resilientFetch(`${API_BASE}${path}`, {
     ...init,
+    timeoutMs: 10000,
     headers: {
       Authorization: authHeader(),
       "Content-Type": "application/json",

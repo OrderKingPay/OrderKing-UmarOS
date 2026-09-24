@@ -1,3 +1,5 @@
+import { resilientFetch } from "../sre/resilient-fetch.ts";
+
 export async function searchFlights(origin: string, destination: string, date: string) {
   const amadeusKey = process.env.AMADEUS_API_KEY;
   if (!amadeusKey) {
@@ -8,7 +10,9 @@ export async function searchFlights(origin: string, destination: string, date: s
   }
 
   try {
-    const res = await fetch(`https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${date}&adults=1`, {
+    const res = await resilientFetch(`https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${date}&adults=1`, {
+      timeoutMs: 5000,
+      fallbackResponse: { data: [] }, // Advanced fallback
       headers: {
         Authorization: `Bearer ${amadeusKey}`
       }
@@ -38,8 +42,10 @@ export async function bookFlight(flightOffer: any) {
   }
 
   try {
-    const res = await fetch(`https://test.api.amadeus.com/v1/booking/flight-orders`, {
+    const res = await resilientFetch(`https://test.api.amadeus.com/v1/booking/flight-orders`, {
       method: "POST",
+      timeoutMs: 8000,
+      fallbackResponse: { error: "Booking service unavailable, please try again." }, // Advanced fallback
       headers: {
         Authorization: `Bearer ${amadeusKey}`,
         "Content-Type": "application/json"
