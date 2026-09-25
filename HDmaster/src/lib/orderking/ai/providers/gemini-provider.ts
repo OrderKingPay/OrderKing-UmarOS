@@ -77,7 +77,7 @@ export class GoogleGeminiProvider implements AIProvider {
     const text = response.text || "";
     const functionCalls = response.functionCalls || [];
     
-    const toolCalls: ToolCall[] = functionCalls.map((fc, idx) => ({
+    const toolCalls: ToolCall[] = functionCalls.map((fc: any, idx: number) => ({
       callId: `gemini_call_${idx}_${Date.now()}`,
       name: fc.name,
       arguments: fc.args as Record<string, unknown>,

@@ -109,6 +109,13 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
+    id: "kingpay",
+    i18n: "groups.kingpay",
+    items: [
+      { id: "travel", path: "/app/travel", i18n: "nav.travel", permission: "view_finance", icon: "map" },
+    ],
+  },
+  {
     id: "system",
     i18n: "groups.system",
     items: [

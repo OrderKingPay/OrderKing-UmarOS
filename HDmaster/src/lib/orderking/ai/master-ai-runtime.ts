@@ -17,7 +17,7 @@ import {
   type AllowedRepo,
 } from "./workspace-repos.server.ts";
 import { getSpecialist, type SpecialistPersona } from "./specialists.ts";
-import { routeModelTurn, type AiProvider, type ModelMessage, type ModelToolDefinition } from "./model-router.server.ts";
+import { routeModelTurn } from "./model-router.server.ts"; import type { ChatRequest as ModelCallRequest, ChatChunk as ModelCallResponse, AIProvider as AiProvider, ChatRequest['messages'][0] as ModelMessage, ToolDefinition as ModelToolDefinition } from "./providers/provider-interface.ts";
 import { calculateFounderRetainedCashVault } from "../finance/founder-vault.ts";
 import { calculateMasterProfitEngine } from "../finance/profit-engine.ts";
 

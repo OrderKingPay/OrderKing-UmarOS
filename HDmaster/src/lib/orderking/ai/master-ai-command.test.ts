@@ -169,7 +169,7 @@ test("Order King Master AI - Tool Registry Coverage & Safety", () => {
 
 test("Order King Master AI - Multi-Model Cognitive Consensus Quorum Engine", async () => {
   const req: ModelCallRequest = {
-    specialist: getSpecialist("architect"),
+    // specialist: getSpecialist("architect"),
     systemPrompt: "You are the Chief Systems Architect.",
     messages: [{ role: "user", content: "Evaluate cross-repository architectural state." }],
     tools: [],

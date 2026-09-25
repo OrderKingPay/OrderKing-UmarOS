@@ -64,10 +64,10 @@ export class AnthropicProvider implements AIProvider {
         tools: tools.length > 0 ? tools : undefined
     });
 
-    const textParts = response.content.filter(c => c.type === "text").map(c => (c as Anthropic.TextBlock).text);
+    const textParts = response.content.filter((c: any) => c.type === "text").map((c: any) => (c as Anthropic.TextBlock).text);
     const toolCalls: ToolCall[] = response.content
-        .filter(c => c.type === "tool_use")
-        .map(c => {
+        .filter((c: any) => c.type === "tool_use")
+        .map((c: any) => {
             const toolUse = c as Anthropic.ToolUseBlock;
             return {
                 callId: toolUse.id,

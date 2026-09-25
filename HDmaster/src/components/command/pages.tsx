@@ -143,6 +143,7 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "notifications") return <NotificationsPage />;
   if (module === "audit") return <AuditPage />;
   if (module === "health") return <HealthPage />;
+  if (module === "travel") return <TravelPage />;
   return <DashboardPage />;
 }
 
@@ -4616,6 +4617,110 @@ function Denied({ error }: { error: string }) {
     <div className="rounded-[24px] border border-border bg-surface p-6">
       <h2 className="font-display text-2xl">Not permitted</h2>
       <p className="mt-2 text-sm text-muted">{error}</p>
+    </div>
+  );
+}
+
+function TravelPage() {
+  const [mode, setMode] = useState<"FLIGHT" | "TRAIN">("FLIGHT");
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
+  const [date, setDate] = useState("");
+  const [passengers, setPassengers] = useState("1");
+  const [error, setError] = useState<string | null>(null);
+
+  const search = useMutation({
+    mutationFn: async () => {
+      setError(null);
+      const res = await fetch(`/api/v1/travel/search?mode=${mode}&origin=${origin}&destination=${destination}&date=${date}&passengers=${passengers}`);
+      const data = await res.json();
+      if (data.errors && data.errors.length > 0) {
+        const blocked = data.errors.find((e: any) => e.error === "EXTERNAL_PROVIDER_BLOCKED" || e.blocked);
+        if (blocked) {
+          throw new Error(blocked.details || "BLOCKED BY EXTERNAL PROVIDER: Missing production API credentials.");
+        }
+        throw new Error(data.errors[0]?.details || data.errors[0]?.error || "Search failed");
+      }
+      return data.results || [];
+    },
+    onError: (err: Error) => {
+      setError(err.message);
+      toast.error(err.message);
+    }
+  });
+
+  return (
+    <div className="space-y-6">
+      <header>
+        <h1 className="font-display text-3xl">King Pay Travel Center</h1>
+        <p className="mt-1 text-sm text-muted">Universal Extensible Booking Platform (Flights & Rail)</p>
+      </header>
+
+      <div className="flex gap-2 border-b border-border pb-4">
+        <Button variant={mode === "FLIGHT" ? "primary" : "secondary"} onClick={() => setMode("FLIGHT")}>
+          Flights
+        </Button>
+        <Button variant={mode === "TRAIN" ? "primary" : "secondary"} onClick={() => setMode("TRAIN")}>
+          Indian Rail
+        </Button>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 items-end">
+        <Field label="Origin">
+          <Input placeholder="Code (e.g. DEL)" value={origin} onChange={(e: any) => setOrigin(e.target.value)} />
+        </Field>
+        <Field label="Destination">
+          <Input placeholder="Code (e.g. BOM)" value={destination} onChange={(e: any) => setDestination(e.target.value)} />
+        </Field>
+        <Field label="Date">
+          <Input type="date" value={date} onChange={(e: any) => setDate(e.target.value)} />
+        </Field>
+        <Field label="Passengers">
+          <Input type="number" min="1" max="9" value={passengers} onChange={(e: any) => setPassengers(e.target.value)} />
+        </Field>
+        <Button 
+          disabled={search.isPending || !origin || !destination || !date} 
+          onClick={() => search.mutate()}
+        >
+          {search.isPending ? "Searching..." : "Search"}
+        </Button>
+      </div>
+
+      {error ? (
+        <div className="rounded-[16px] border border-red-500/30 bg-red-500/10 p-4">
+          <div className="flex items-center gap-2 text-red-500 font-semibold mb-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>INTEGRATION STATUS</span>
+          </div>
+          <p className="text-sm text-red-400">{error}</p>
+        </div>
+      ) : null}
+
+      {!error && search.data ? (
+        <Panel title="Search Results">
+          {search.data.length === 0 ? (
+            <p className="text-muted text-sm">No inventory found for this route/date.</p>
+          ) : (
+            <ul className="space-y-3">
+              {search.data.map((r: any, idx: number) => (
+                <li key={idx} className="flex justify-between items-center rounded-[12px] border border-border p-4 bg-elevated/50">
+                  <div>
+                    <p className="font-semibold">{r.carrier.name} ({r.carrier.code})</p>
+                    <p className="text-sm text-muted">{r.origin.code} → {r.destination.code}</p>
+                    <p className="text-xs text-muted mt-1">{new Date(r.departureTime).toLocaleString()} - {new Date(r.arrivalTime).toLocaleString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-mono font-bold text-lg">{r.price.currency} {r.price.amount}</p>
+                    <Button size="sm" variant="secondary" className="mt-2" onClick={() => toast.info("Booking flow requires passenger identity details.")}>
+                      Select
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+      ) : null}
     </div>
   );
 }
