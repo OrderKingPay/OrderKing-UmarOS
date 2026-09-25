@@ -284,7 +284,7 @@ export const getCeoDashboard = createServerFn({ method: "GET" })
         ok: true as const,
         data: {
           period: bounds.label,
-          dataMode: await integrationDataMode(sql),
+          dataMode,
           money,
           prior,
           counts: counts[0],
