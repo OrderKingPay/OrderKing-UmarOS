@@ -1,5 +1,5 @@
 import { createAPIFileRoute } from "@tanstack/react-start/api";
-import { AmadeusFlightProvider } from "@/lib/orderking/travel/providers/amadeus-flight-provider";
+import { amadeusFlightProvider } from "@/lib/orderking/travel";
 import { travelCorsHeaders } from "@/lib/orderking/server/travel-http.server";
 
 export const APIRoute = createAPIFileRoute("/api/v1/travel/locations")({
@@ -30,7 +30,7 @@ export const APIRoute = createAPIFileRoute("/api/v1/travel/locations")({
     }
 
     try {
-      const provider = new AmadeusFlightProvider();
+      const provider = amadeusFlightProvider;
       if (!provider.isAvailable()) {
         return new Response(
           JSON.stringify({
