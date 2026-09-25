@@ -39,17 +39,10 @@ export type FlightResult = {
   layoverCity?: string;
   baseFare: number;
   taxes: number;
-  kingPayPrice: number; // Wholesale GDS Net + ₹0 Convenience Fee
-  competitorPrice: number; // MakeMyTrip / EaseMyTrip (includes ₹499 fee + markups)
-  savingsAmount: number;
+  kingPayPrice: number;
+  priceCurrency: string;
   providerId: string;
   rawProviderData: any;
-  isSplitTicket?: boolean;
-  isHiddenCity?: boolean;
-  concessionAvailable?: boolean;
-  cabinBaggage: string;
-  checkInBaggage: string;
-  mealIncluded: boolean;
 };
 
 type Props = {
@@ -182,11 +175,7 @@ export function FlightBookingEngine(_props: Props) {
           baseFare: base,
           taxes,
           kingPayPrice: total,
-          competitorPrice: 0,
-          savingsAmount: 0,
-          cabinBaggage: "Supplier fare rules",
-          checkInBaggage: "Supplier fare rules",
-          mealIncluded: false,
+          priceCurrency: String(r.price?.currency || "INR"),
         } as FlightResult;
       });
 
@@ -360,13 +349,13 @@ export function FlightBookingEngine(_props: Props) {
           <div className="flex items-start gap-2">
             <Info className="size-4 text-primary mt-0.5 shrink-0" />
             <p className="text-[10px] text-muted">
-              Results are supplied by the configured live travel provider. Split-ticket, hidden-city, competitor-price and savings figures are not fabricated here.
+              Results and prices are supplied by the configured live travel provider. No fallback fares or comparison prices are generated here.
             </p>
           </div>
         </div>
       </div>
 
-      {/* 3. FLIGHT RESULTS MATRIX (WITH DIRECT COMPARISON) */}
+      {/* 3. LIVE FLIGHT RESULTS */}
       {searchError && (
         <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-3 text-xs text-rose-700 dark:text-rose-300">
           {searchError}
@@ -384,19 +373,9 @@ export function FlightBookingEngine(_props: Props) {
           {flightResults.map((flight) => (
             <div
               key={flight.id}
-              className={`relative overflow-hidden rounded-2xl border transition-all p-4 sm:p-5 ${
-                flight.isSplitTicket
-                  ? "border-emerald-500/60 bg-gradient-to-r from-emerald-500/5 via-surface to-surface shadow-md"
-                  : "border-border bg-surface hover:border-primary/50 shadow-sm"
-              }`}
+              className="relative overflow-hidden rounded-2xl border border-border bg-surface hover:border-primary/50 shadow-sm transition-all p-4 sm:p-5"
             >
-              {flight.isSplitTicket && (
-                <div className="absolute top-0 right-0 rounded-bl-xl bg-emerald-600 px-3 py-0.5 text-[10px] font-black text-white uppercase tracking-wider shadow-sm">
-                  ⚡ Smart Split-Ticket Deal (Lowest Price)
-                </div>
-              )}
-
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 {/* Airline & Flight Details */}
                 <div className="flex items-center gap-3">
                   <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-surface-2 border border-border text-lg font-black text-primary shadow-xs">
