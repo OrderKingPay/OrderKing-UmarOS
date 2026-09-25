@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Plane, TrainFront, BusFront, CarFront, Search, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FlightBookingEngine } from "@/components/fintech/flight-booking-engine";
+import { TravelLocationPicker, type TravelLocation } from "./travel-location-picker";
 import { toast } from "sonner";
 
 export type TravelTab = "flights" | "trains" | "buses" | "cabs";
@@ -21,8 +22,8 @@ const TAB_META: Record<TravelTab, { label: string; icon: typeof Plane }> = {
 
 export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "flights" }: Props) {
   const [activeTab, setActiveTab] = useState<TravelTab>(defaultTab);
-  const [fromStation, setFromStation] = useState("");
-  const [toStation, setToStation] = useState("");
+  const [fromStation, setFromStation] = useState<TravelLocation | null>(null);
+  const [toStation, setToStation] = useState<TravelLocation | null>(null);
   const [trainDate, setTrainDate] = useState(
     new Date(Date.now() + 86400000).toISOString().split("T")[0]!
   );
@@ -31,8 +32,13 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
   const [trainResults, setTrainResults] = useState<any[]>([]);
 
   const searchTrains = async () => {
-    if (!fromStation.trim() || !toStation.trim()) {
-      toast.error("Enter both origin and destination stations.");
+    if (!fromStation || !toStation) {
+      toast.error("Select both origin and destination stations from the station search.");
+      return;
+    }
+
+    if (fromStation.code === toStation.code) {
+      toast.error("Origin and destination stations cannot be the same.");
       return;
     }
 
@@ -44,8 +50,8 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
       const baseUrl = (import.meta.env.VITE_HDMASTER_API_BASE_URL || "https://hdmaster.vercel.app").replace(/\/$/, "");
       const params = new URLSearchParams({
         mode: "TRAIN",
-        origin: fromStation.trim(),
-        destination: toStation.trim(),
+        origin: fromStation.code,
+        destination: toStation.code,
         date: trainDate,
         passengers: "1",
       });
@@ -111,27 +117,30 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <input
+            <TravelLocationPicker
+              mode="TRAIN"
               value={fromStation}
-              onChange={(e) => setFromStation(e.target.value)}
-              placeholder="From station / code"
-              className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-semibold text-fg"
-              aria-label="Train origin station"
+              onChange={setFromStation}
+              label="From Station"
+              placeholder="Search station, city or code"
             />
-            <input
+            <TravelLocationPicker
+              mode="TRAIN"
               value={toStation}
-              onChange={(e) => setToStation(e.target.value)}
-              placeholder="To station / code"
-              className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-semibold text-fg"
-              aria-label="Train destination station"
+              onChange={setToStation}
+              label="To Station"
+              placeholder="Search station, city or code"
             />
-            <input
-              type="date"
-              value={trainDate}
-              onChange={(e) => setTrainDate(e.target.value)}
-              className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-semibold text-fg"
-              aria-label="Train departure date"
-            />
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-muted uppercase">Departure Date</label>
+              <input
+                type="date"
+                value={trainDate}
+                onChange={(e) => setTrainDate(e.target.value)}
+                className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-semibold text-fg"
+                aria-label="Train departure date"
+              />
+            </div>
           </div>
 
           <Button
