@@ -65,6 +65,7 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
         quote,
         pricedLines: [],
         promoName: null,
+        isDeliverable: quote.blockers.length === 0,
       },
     };
   }
@@ -183,7 +184,23 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
     }
   }
 
-  const dist = distanceKm({ lat: input.lat, lng: input.lng }, { lat: out.lat, lng: out.lng });
+  let dist = distanceKm({ lat: input.lat, lng: input.lng }, { lat: out.lat, lng: out.lng });
+  const googleApiKey = process.env.GOOGLE_MAPS_API_KEY;
+  if (googleApiKey) {
+    try {
+      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${input.lat},${input.lng}&destinations=${out.lat},${out.lng}&key=${googleApiKey}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === "OK" && data.rows?.[0]?.elements?.[0]?.status === "OK") {
+          dist = data.rows[0].elements[0].distance.value / 1000;
+        }
+      }
+    } catch (err) {
+      console.error("Google Maps API error:", err);
+    }
+  }
+
   const fees: FeeSchedule = {
     deliveryBasePaise: z.delivery_base_paise,
     deliveryPerKmPaise: z.delivery_per_km_paise,
@@ -222,6 +239,7 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
       instructions: l.instructions,
     })),
     promoName: promo?.name ?? null,
+    isDeliverable: quote.blockers.length === 0,
   };
 
   return {

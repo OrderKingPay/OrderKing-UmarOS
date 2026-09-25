@@ -129,6 +129,7 @@ export type QuoteResult = {
     instructions: string;
   }[];
   promoName: string | null;
+  isDeliverable?: boolean;
 };
 
 export type AddressView = {

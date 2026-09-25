@@ -74,6 +74,7 @@ function CheckoutPage() {
 
   const submit = async () => {
     if (!restaurantId || !quote.data) return;
+    if (!quote.data.isDeliverable) { toast.error(t("checkout.blocked") || "Minimum order not met"); return; }
     if (!location.line1.trim()) { toast.error(t("checkout.needAddress")); return; }
     setBusy(true);
     try {
@@ -439,7 +440,7 @@ function CheckoutPage() {
           </div>
 
           {quote.data?.quote.blockers.length ? <p className="mt-3 text-sm text-warn">{quote.data.quote.blockers.includes("MIN_ORDER") ? t("cart.minOrder", { amount: formatPaise(quote.data.quote.minOrderPaise, { locale }) }) : t("checkout.blocked")}</p> : null}
-          <Button className="mt-6 w-full" disabled={busy || !quote.data || Boolean(quote.data.quote.blockers.length)} onClick={() => void submit()}>{busy ? t("checkout.placing") : t("checkout.place", { amount: formatPaise(totalPayable, { locale }) })}</Button>
+          <Button className="mt-6 w-full" disabled={busy || !quote.data || !quote.data.isDeliverable} onClick={() => void submit()}>{busy ? t("checkout.placing") : t("checkout.place", { amount: formatPaise(totalPayable, { locale }) })}</Button>
         </>}
         <p className="mt-6 text-sm"><Link to="/cart" className="text-muted">← {t("cart.title")}</Link></p>
       </div>
