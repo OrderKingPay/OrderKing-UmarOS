@@ -80,10 +80,10 @@ export class ModelRouterService {
       },
       {
         id: "local_deterministic",
-        name: "Local Sovereign Engine (Zero-Dep)",
-        isConfigured: true,
+        name: "Local Deterministic Engine (disabled in production)",
+        isConfigured: false,
         supportedModels: ["sovereign-ultra-deterministic"],
-        requiredEnvVar: "NONE (Always Active)",
+        requiredEnvVar: "NONE (disabled)",
       },
     ];
   }
