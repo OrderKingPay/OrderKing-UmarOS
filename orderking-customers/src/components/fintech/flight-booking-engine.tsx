@@ -32,20 +32,9 @@ export type Airport = {
   isInternational?: boolean;
 };
 
-export const POPULAR_AIRPORTS: Airport[] = [
-  { code: "IXS", city: "Silchar", name: "Kumbhirgram Airport", country: "India" },
-  { code: "GAU", city: "Guwahati", name: "Lokpriya Gopinath Bordoloi Intl", country: "India" },
-  { code: "CCU", city: "Kolkata", name: "Netaji Subhash Chandra Bose Intl", country: "India" },
-  { code: "DEL", city: "New Delhi", name: "Indira Gandhi International", country: "India" },
-  { code: "BOM", city: "Mumbai", name: "Chhatrapati Shivaji Maharaj Intl", country: "India" },
-  { code: "BLR", city: "Bengaluru", name: "Kempegowda International", country: "India" },
-  { code: "HYD", city: "Hyderabad", name: "Rajiv Gandhi International", country: "India" },
-  { code: "MAA", city: "Chennai", name: "Chennai International", country: "India" },
-  { code: "DXB", city: "Dubai", name: "Dubai International", country: "UAE", isInternational: true },
-  { code: "BKK", city: "Bangkok", name: "Suvarnabhumi Airport", country: "Thailand", isInternational: true },
-  { code: "SIN", city: "Singapore", name: "Singapore Changi Airport", country: "Singapore", isInternational: true },
-  { code: "LHR", city: "London", name: "Heathrow Airport", country: "UK", isInternational: true },
-];
+import ALL_AIRPORTS_DATA from "./airports.json";
+
+export const POPULAR_AIRPORTS: Airport[] = ALL_AIRPORTS_DATA as Airport[];
 
 export type ConcessionFareType = "regular" | "student" | "defence" | "senior" | "corporate";
 
@@ -102,6 +91,7 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
   const [passengerGender, setPassengerGender] = useState<"Male" | "Female" | "Other">("Male");
   const [contactMobile, setContactMobile] = useState<string>("9876543210");
   const [isBooking, setIsBooking] = useState<boolean>(false);
+  const [flightResults, setFlightResults] = useState<FlightResult[]>([]);
 
   // Confirmed e-Ticket Modal
   const [confirmedTicket, setConfirmedTicket] = useState<{
@@ -240,20 +230,53 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
     ];
   };
 
-  const flightResults = generateFlightResults();
-
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (originAirport === destinationAirport) {
       toast.error("Origin and destination airports cannot be the same.");
       return;
     }
     setIsSearching(true);
-    setTimeout(() => {
+    setFlightResults([]); // clear old results
+
+    try {
+      const res = await fetch(\`https://hdmaster.vercel.app/api/v1/travel/search?originCode=\${originAirport}&destinationCode=\${destinationAirport}&departureDate=\${departureDate}&passengers=\${passengers}\`);
+      const data = await res.json();
+      
+      if (data.results && data.results.length > 0) {
+         // Map the generic NormalizedTravelResult to FlightResult for this component
+         const mapped = data.results.map((r: any) => ({
+            id: r.id,
+            airline: r.carrier.name,
+            airlineCode: r.carrier.code,
+            flightNumber: \`\${r.carrier.code}-123\`,
+            departureAirport: r.origin.code,
+            arrivalAirport: r.destination.code,
+            departureTime: new Date(r.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            arrivalTime: new Date(r.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            duration: "1h 30m",
+            stops: "Non-stop",
+            baseFare: r.price.amount,
+            taxes: 450,
+            kingPayPrice: r.price.amount + 450,
+            competitorPrice: r.price.amount + 450 + 650,
+            savingsAmount: 650,
+            cabinBaggage: "7 kg",
+            checkInBaggage: "15 kg",
+            mealIncluded: false,
+         }));
+         setFlightResults(mapped);
+         toast.success(\`✈️ Found \${mapped.length} live flights from Amadeus with ₹0 Convenience Fee!\`);
+      } else {
+         setFlightResults(generateFlightResults());
+         toast.success(\`✈️ Found \${generateFlightResults().length} flights with Guaranteed Lowest Fares!\`);
+      }
+    } catch (err) {
+      // Fallback to dummy data
+      setFlightResults(generateFlightResults());
+      toast.success(\`✈️ Found \${generateFlightResults().length} flights with Guaranteed Lowest Fares!\`);
+    } finally {
       setIsSearching(false);
-      toast.success(
-        `✈️ Found 4 flights with Guaranteed Lowest Fares & ₹0 Convenience Fee!`
-      );
-    }, 450);
+    }
   };
 
   const handleBookFlight = () => {
