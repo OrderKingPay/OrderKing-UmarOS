@@ -92,7 +92,13 @@ function OrderDetailPage() {
       return cfg.marketplace.launchMode === "live" ? getMyHDmasterOrder({ data: { orderId: id } }) : getMyOrder({ data: { orderId: id } });
     },
     enabled: Boolean(user),
-    refetchInterval: 5000,
+    refetchInterval: (query) => {
+      const status = query.state.data?.order?.status;
+      if (status && ["DELIVERED", "CANCELLED", "REJECTED"].includes(status)) {
+        return false;
+      }
+      return 5000;
+    },
   });
 
   const { lastEvent, connected } = useOrderSSE(id, (event) => {
@@ -211,8 +217,10 @@ function OrderDetailPage() {
 
         {/* Live Vector & GPS Tracking Map */}
         <LiveDeliveryMap
-          status={order.status}
+          status={lastEvent?.status || order.status}
           restaurantName={order.summary.restaurantName}
+          riderProgressOverride={lastEvent?.step ? lastEvent.step / 20 : undefined}
+          etaOverride={lastEvent?.eta}
         />
 
         {/* Google Pay / CRED-Style Mystery Scratch Card on Delivery */}

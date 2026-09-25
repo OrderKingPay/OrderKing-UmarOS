@@ -6,6 +6,7 @@ export type OrderSSEEvent = {
   riderLat?: number;
   riderLng?: number;
   eta?: number;
+  step?: number;
   timestamp: string;
 };
 

@@ -12,6 +12,8 @@ export type LiveDeliveryMapProps = {
   riderPhone?: string;
   riderVehicle?: string;
   deliveryAddress?: string;
+  riderProgressOverride?: number;
+  etaOverride?: number;
 };
 
 export function LiveDeliveryMap({
@@ -20,6 +22,8 @@ export function LiveDeliveryMap({
   riderName = "Delivery Partner",
   riderVehicle = "Motorcycle",
   deliveryAddress = "Customer Location",
+  riderProgressOverride,
+  etaOverride,
 }: LiveDeliveryMapProps) {
   const [riderProgress, setRiderProgress] = useState(0.35);
 
@@ -28,19 +32,21 @@ export function LiveDeliveryMap({
 
   // Simulate smooth GPS heartbeat movement along route
   useEffect(() => {
-    if (!isActiveDelivery) return;
+    if (!isActiveDelivery || riderProgressOverride !== undefined) return;
     const interval = setInterval(() => {
       setRiderProgress((prev) => (prev >= 0.95 ? 0.95 : prev + 0.05));
     }, 4000);
     return () => clearInterval(interval);
-  }, [isActiveDelivery]);
+  }, [isActiveDelivery, riderProgressOverride]);
+
+  const currentProgress = riderProgressOverride !== undefined ? Math.min(0.95, riderProgressOverride) : riderProgress;
 
   if (!isActiveDelivery && !isDelivered) {
     return null;
   }
 
   // Estimated arrival based on status & progress
-  const etaMinutes = isDelivered ? 0 : Math.max(2, Math.round((1 - riderProgress) * 22));
+  const etaMinutes = isDelivered ? 0 : (etaOverride ?? Math.max(2, Math.round((1 - currentProgress) * 22)));
 
   return (
     <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border border-primary/20 bg-surface shadow-sm">
@@ -64,7 +70,7 @@ export function LiveDeliveryMap({
         <div className="absolute left-8 right-8 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-zinc-700">
           <div
             className="h-full rounded-full bg-gradient-to-r from-primary to-success transition-all duration-1000 ease-out"
-            style={{ width: `${isDelivered ? 100 : riderProgress * 100}%` }}
+            style={{ width: `${isDelivered ? 100 : currentProgress * 100}%` }}
           />
         </div>
 
@@ -82,7 +88,7 @@ export function LiveDeliveryMap({
         {!isDelivered && (
           <div
             className="absolute top-1/2 -translate-y-1/2 transition-all duration-1000 ease-out"
-            style={{ left: `calc(2rem + ${riderProgress * 75}%)` }}
+            style={{ left: `calc(2rem + ${currentProgress * 75}%)` }}
           >
             <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-success text-white shadow-lg">
               🛵
