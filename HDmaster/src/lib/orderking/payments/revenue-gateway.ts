@@ -1,5 +1,7 @@
-// Legitimate Payment & Revenue Gateway Integration
-// Supports King Pay UPI, Razorpay, and Stripe with Webhook Verification and Zero-Fabrication Integrity
+import { createHmac, timingSafeEqual, randomUUID } from "node:crypto";
+
+// Legitimate Payment & Revenue Gateway Integration.
+// The module is fail-closed: it never invents confirmed revenue.
 
 export type PaymentChannel = "KING_PAY_UPI" | "RAZORPAY" | "STRIPE";
 export type PaymentStatus = "PENDING" | "CONFIRMED" | "FAILED" | "REFUNDED";
@@ -29,7 +31,7 @@ export interface RevenueMetrics {
 }
 
 export class RevenueGatewayService {
-  private transactions: PaymentTransaction[] = [
+const LEGACY_REFERENCE_TRANSACTIONS: PaymentTransaction[] = [
     {
       id: "TXN-8801",
       amountInr: 74999,
@@ -42,6 +44,7 @@ export class RevenueGatewayService {
       netFounderDepositInr: 74999,
       createdAt: "2026-09-21 15:40",
       settledAt: "2026-09-21 15:41",
+      metadata: { dataMode: "LEGACY_UNVERIFIED", active: false },
     },
     {
       id: "TXN-8802",
@@ -55,8 +58,16 @@ export class RevenueGatewayService {
       netFounderDepositInr: 49000,
       createdAt: "2026-09-20 12:20",
       settledAt: "2026-09-20 12:21",
+      metadata: { dataMode: "LEGACY_UNVERIFIED", active: false },
     },
   ];
+
+export class RevenueGatewayService {
+  private transactions: PaymentTransaction[] = [];
+
+  getLegacyReferenceTransactions(): readonly PaymentTransaction[] {
+    return LEGACY_REFERENCE_TRANSACTIONS;
+  }
 
   getTransactions(): PaymentTransaction[] {
     return [...this.transactions];
@@ -86,7 +97,7 @@ export class RevenueGatewayService {
     founderVpa?: string;
   }): { upiLink: string; qrPayload: string; transactionId: string } {
     const vpa = params.founderVpa || "orderking@okhdfcbank";
-    const txnId = `TXN-${Date.now().toString().slice(-4)}`;
+    const txnId = `TXN-${randomUUID()}`;
     const upiLink = `upi://pay?pa=${vpa}&pn=OrderKing&am=${params.amountInr}&cu=INR&tn=${encodeURIComponent(
       params.description
     )}`;
@@ -105,41 +116,54 @@ export class RevenueGatewayService {
       createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
     });
 
-    return {
-      upiLink,
-      qrPayload: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`,
-      transactionId: txnId,
-    };
+    return { upiLink, qrPayload: upiLink, transactionId: txnId };
   }
 
-  confirmUpiDeposit(params: {
+  confirmUpiDeposit(_params: {
     transactionId: string;
     utrNumber: string;
     verifiedAmountInr: number;
-  }): { success: boolean; transaction: PaymentTransaction } {
-    const txn = this.transactions.find((t) => t.id === params.transactionId);
-    if (!txn) throw new Error(`Transaction ${params.transactionId} not found.`);
-
-    txn.status = "CONFIRMED";
-    txn.referenceNumber = params.utrNumber;
-    txn.amountInr = params.verifiedAmountInr;
-    txn.netFounderDepositInr = params.verifiedAmountInr;
-    txn.settledAt = new Date().toISOString().replace("T", " ").slice(0, 16);
-
-    return { success: true, transaction: txn };
+  }): { success: false; transaction?: PaymentTransaction } {
+    // A user-supplied UTR/amount is not independent bank/provider verification.
+    return { success: false };
   }
 
-  verifyRazorpayWebhook(payload: Record<string, unknown>, signature: string, webhookSecret?: string): boolean {
-    if (!signature || !webhookSecret) return false;
-    // In production, HMAC SHA256 verification of raw body
-    return true;
+  verifyRazorpayWebhook(rawBody: string, signature: string, webhookSecret?: string): boolean {
+    if (!rawBody || !signature || !webhookSecret) return false;
+    const expected = createHmac("sha256", webhookSecret).update(rawBody, "utf8").digest("hex");
+    return safeEqualHex(expected, signature);
   }
 
-  verifyStripeWebhook(payload: Record<string, unknown>, signature: string, webhookSecret?: string): boolean {
-    if (!signature || !webhookSecret) return false;
-    // In production, Stripe event construction and signature check
-    return true;
+  verifyStripeWebhook(
+    rawBody: string,
+    signatureHeader: string,
+    webhookSecret?: string,
+    toleranceSeconds = 300,
+  ): boolean {
+    if (!rawBody || !signatureHeader || !webhookSecret) return false;
+
+    const parts = signatureHeader.split(",").map((part) => part.trim());
+    const timestampPart = parts.find((part) => part.startsWith("t="));
+    const signatureParts = parts
+      .filter((part) => part.startsWith("v1="))
+      .map((part) => part.slice(3));
+    const timestamp = timestampPart ? Number(timestampPart.slice(2)) : NaN;
+
+    if (!Number.isFinite(timestamp) || signatureParts.length === 0) return false;
+    if (Math.abs(Math.floor(Date.now() / 1000) - timestamp) > toleranceSeconds) return false;
+
+    const signedPayload = `${timestamp}.${rawBody}`;
+    const expected = createHmac("sha256", webhookSecret).update(signedPayload, "utf8").digest("hex");
+    return signatureParts.some((candidate) => safeEqualHex(expected, candidate));
+  }
   }
 }
 
+
+function safeEqualHex(expected: string, received: string): boolean {
+  if (!/^[a-f0-9]{64}$/i.test(received)) return false;
+  const a = Buffer.from(expected, "hex");
+  const b = Buffer.from(received, "hex");
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 export const revenueGateway = new RevenueGatewayService();
