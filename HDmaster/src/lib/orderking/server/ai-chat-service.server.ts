@@ -316,18 +316,18 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
 }
 
 export function executeLocalSovereignCognitivePass(
-  query: string,
-  messages: ChatMessage[],
-  founderUpiVpa: string = "orderking@okhdfcbank"
+  _query: string,
+  _messages: ChatMessage[],
+  _founderUpiVpa?: string
 ): {
   text: string;
   executionSteps: AgentExecutionStep[];
   actionCard?: any;
   mediaCard?: any;
 } {
-  // No real AI model is connected — return honest guidance
+  // Retained for backwards compatibility only. Never represents a real AI provider.
   return {
-    text: `I don't have an AI provider connected right now, so I can't generate a real answer to your question.\n\nTo enable full AI chat, please add at least one API key in **Settings**:\n- **GEMINI_API_KEY** — Google Gemini (recommended, free tier available)\n- **OPENAI_API_KEY** — OpenAI GPT-4o\n- **ANTHROPIC_API_KEY** — Anthropic Claude\n- **XAI_API_KEY** — xAI Grok\n\nOnce configured, I'll answer any question using real AI — just like ChatGPT, Grok, or Gemini.`,
+    text: "OPENAI_CHAT_REQUIRED: this legacy local cognitive pass is disabled.",
     executionSteps: [],
   };
 }
@@ -507,8 +507,8 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
  * Master execution handler for chat queries:
  * 1. Checks engineering commands -> runs real workspace tools.
  * 2. Checks workforce/approval commands -> runs real DB queries.
- * 3. Checks active provider -> if connected, calls real model API with real streaming.
- * 4. If external provider missing key -> gracefully and truthfully executes via Sovereign Local Core.
+ * 3. Calls the real OpenAI API with real streaming.
+ * 4. Missing/failed OpenAI configuration fails closed; no synthetic fallback is permitted.
  */
 export async function executeFounderAiChat(
   request: AiChatRequest,
@@ -525,8 +525,8 @@ export async function executeFounderAiChat(
 
     return {
       text: engineeringResult,
-      modelUsed: "sovereign-local-core",
-      provider: "Local Sovereign",
+      modelUsed: "deterministic-operational-tool",
+      provider: "HDmaster Operational Tools",
       executionSteps: [],
       latencyMs: Date.now() - startTime,
     };
@@ -547,60 +547,9 @@ export async function executeFounderAiChat(
     };
   }
 
-  // 2.5. Universal Engine Route — for complex multi-step directives
-  // Detects: analyze, plan, research, automate, audit, report, investigate, create, build
-  const universalTriggers = [
-    "analyze", "investigate", "research", "audit", "automate",
-    "plan", "strategy", "report", "forecast", "benchmark",
-    "diagnose", "optimize", "reconcile", "generate report",
-    "build a", "create a", "design a", "architect",
-    "operations summary", "financial summary", "business analysis",
-    "cross-check", "validate", "compare models",
-  ];
-  const qForUniversal = currentQuery.toLowerCase();
-  const isUniversalDirective =
-    (request.modelId === "universal-engine") ||
-    universalTriggers.some((t) => qForUniversal.includes(t));
-
-  if (isUniversalDirective) {
-    try {
-      onStreamEvent?.({ type: "step", data: { stepNumber: 1, totalSteps: 4, label: "Universal Engine: Understanding", status: "RUNNING", detail: "Parsing directive..." } });
-
-      const result = await UniversalSuperintelligenceEngine.execute({
-        orgId: "system",
-        owner: request.userId || request.userContext?.userId || "founder",
-        instruction: currentQuery,
-        onProgress: (msg) => {
-          onStreamEvent?.({ type: "step", data: { stepNumber: 2, totalSteps: 4, label: "Universal Engine", status: "RUNNING", detail: msg } });
-        },
-      });
-
-      if (result.status === "BLOCKED") {
-        // Don't block the UI — fall through to regular chat which handles graceful degradation
-        console.warn(`[UMAR-OS] Universal Engine blocked: ${result.blockedReason}`);
-      } else {
-        const attribution = result.modelAttributions.length > 0
-          ? `\n\n---\n*Models: ${result.modelAttributions.join(", ")}${result.toolsExecuted.length > 0 ? ` | Tools: ${result.toolsExecuted.join(", ")}` : ""}*`
-          : "";
-
-        const fullResponse = result.response + attribution;
-        onStreamEvent?.({ type: "delta", data: fullResponse });
-        onStreamEvent?.({ type: "done", data: { text: fullResponse } });
-
-        return {
-          text: fullResponse,
-          modelUsed: result.modelAttributions.join("+") || "universal-engine",
-          provider: "UMAR OS Universal Engine",
-          responders: result.modelAttributions,
-          executionSteps: [],
-          latencyMs: Date.now() - startTime,
-        };
-      }
-    } catch (err) {
-      console.warn(`[UMAR-OS] Universal Engine error, falling through to standard pipeline:`, err);
-      // Fall through to standard model selection
-    }
-  }
+  // 2.5. Complex directives still execute through OpenAI chat tools.
+  // The former local/multi-model Universal Engine route is intentionally bypassed
+  // here so this chat surface has one truthful provider: OpenAI.
 
   // 3. OpenAI-only production chat routing.
   // The chat surface intentionally uses OpenAI as its sole model provider.
