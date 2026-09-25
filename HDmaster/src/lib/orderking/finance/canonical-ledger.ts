@@ -1,5 +1,5 @@
 import { fraudShield, OrderRiskContext } from '../security/fraud-shield';
-import { getSql } from '@/lib/db';
+import { getSql, withDbTransaction } from '@/lib/db';
 import * as crypto from 'crypto';
 
 export type LedgerAccountType =
@@ -89,11 +89,9 @@ export class CanonicalLedger {
     fraudReasons?: string[];
     fraudScore?: number;
   }): Promise<LedgerTransaction> {
-    const sql = await getSql();
-    
     let totalDebit = 0;
     let totalCredit = 0;
-    
+
     for (const entry of params.entries) {
       if (!Number.isInteger(entry.amountPaise) || entry.amountPaise < 0) {
         throw new Error(`Invalid entry amount: ${entry.amountPaise}`);
@@ -111,86 +109,161 @@ export class CanonicalLedger {
       throw new Error("Transaction must have a non-zero value.");
     }
 
-    const existing = await sql.query<any>("SELECT transaction_id FROM ledger_transactions WHERE idempotency_key = $1 LIMIT 1", [params.idempotencyKey]);
-    if (existing && existing.length > 0) {
-      const txId = existing[0].transaction_id;
-      const txRows = await sql.query<any>("SELECT * FROM ledger_transactions WHERE transaction_id = $1", [txId]);
-      const entryRows = await sql.query<any>("SELECT * FROM ledger_entries WHERE transaction_id = $1", [txId]);
-      
-      return {
-        transactionId: txRows[0].transaction_id,
-        idempotencyKey: txRows[0].idempotency_key,
-        orderId: txRows[0].order_id,
-        eventType: txRows[0].event_type,
-        totalAmountPaise: parseInt(txRows[0].total_amount_paise),
-        timestamp: txRows[0].timestamp,
-        auditHash: txRows[0].audit_hash,
-        previousHash: txRows[0].previous_hash,
-        isFraudSuspicious: txRows[0].is_fraud_suspicious,
-        fraudReasons: typeof txRows[0].fraud_reasons === 'string' ? JSON.parse(txRows[0].fraud_reasons) : txRows[0].fraud_reasons,
-        fraudScore: txRows[0].fraud_score,
-        entries: entryRows.map(e => ({
-          entryId: e.entry_id,
-          account: e.account,
-          direction: e.direction,
-          amountPaise: parseInt(e.amount_paise),
-          entityId: e.entity_id,
-          memo: e.memo
-        }))
-      };
-    }
+    type TransactionRow = {
+      transaction_id: string;
+      idempotency_key: string;
+      order_id: string | null;
+      event_type: string;
+      total_amount_paise: number | string;
+      timestamp: string;
+      audit_hash: string;
+      previous_hash: string;
+      is_fraud_suspicious: boolean;
+      fraud_reasons: string | string[] | null;
+      fraud_score: number | string | null;
+    };
 
-    const transactionId = "tx-" + crypto.randomUUID();
-    const now = new Date().toISOString();
+    type EntryRow = {
+      entry_id: string;
+      account: LedgerAccountType;
+      direction: LedgerEntry["direction"];
+      amount_paise: number | string;
+      entity_id: string;
+      memo: string;
+      timestamp: string;
+    };
 
-    const lastTx = await sql.query<any>("SELECT audit_hash FROM ledger_transactions ORDER BY created_at DESC LIMIT 1", []);
-    const previousHash = lastTx.length > 0 ? lastTx[0].audit_hash : "0000000000000000000000000000000000000000000000000000000000000000";
+    const hydrate = async (
+      tx: Awaited<ReturnType<typeof withDbTransaction>> extends never ? never : Parameters<NonNullable<unknown>>[0],
+    ): Promise<LedgerTransaction> => {
+      throw new Error("unreachable");
+    };
+    void hydrate;
 
-    const canonicalPayload = JSON.stringify({
-      transactionId,
-      idempotencyKey: params.idempotencyKey,
-      previousHash,
-      totalAmountPaise: totalDebit,
-      entries: params.entries.map(e => ({ account: e.account, direction: e.direction, amountPaise: e.amountPaise, entityId: e.entityId }))
-    });
+    return withDbTransaction(async (tx) => {
+      // Serialize the hash chain and idempotency decision on one database transaction.
+      await tx.query("select pg_advisory_xact_lock(hashtext($1))", ["orderking.canonical-ledger"]);
 
-    const auditHash = this.generateHash(canonicalPayload);
-    const fraudReasonsJson = params.fraudReasons ? JSON.stringify(params.fraudReasons) : null;
-
-    await sql.query("BEGIN", []);
-    try {
-      await sql.query(
-        "INSERT INTO ledger_transactions (transaction_id, idempotency_key, order_id, event_type, total_amount_paise, timestamp, audit_hash, previous_hash, is_fraud_suspicious, fraud_reasons, fraud_score) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
-        [transactionId, params.idempotencyKey, params.orderId || null, params.eventType, totalDebit, now, auditHash, previousHash, params.isFraudSuspicious || false, fraudReasonsJson, params.fraudScore || 0]
+      const existing = await tx.query<TransactionRow>(
+        "select transaction_id, idempotency_key, order_id, event_type, total_amount_paise, timestamp, audit_hash, previous_hash, is_fraud_suspicious, fraud_reasons, fraud_score from ledger_transactions where idempotency_key = $1 limit 1 for update",
+        [params.idempotencyKey],
       );
 
+      const materialize = async (txId: string): Promise<LedgerTransaction> => {
+        const txRows = await tx.query<TransactionRow>(
+          "select transaction_id, idempotency_key, order_id, event_type, total_amount_paise, timestamp, audit_hash, previous_hash, is_fraud_suspicious, fraud_reasons, fraud_score from ledger_transactions where transaction_id = $1 for update",
+          [txId],
+        );
+        if (!txRows[0]) throw new Error("Ledger transaction disappeared during transaction.");
+        const entryRows = await tx.query<EntryRow>(
+          "select entry_id, account, direction, amount_paise, entity_id, memo, timestamp from ledger_entries where transaction_id = $1 order by entry_id",
+          [txId],
+        );
+        const row = txRows[0];
+        return {
+          transactionId: row.transaction_id,
+          idempotencyKey: row.idempotency_key,
+          orderId: row.order_id ?? undefined,
+          eventType: row.event_type,
+          totalAmountPaise: Number(row.total_amount_paise),
+          timestamp: row.timestamp,
+          auditHash: row.audit_hash,
+          previousHash: row.previous_hash,
+          isFraudSuspicious: row.is_fraud_suspicious,
+          fraudReasons:
+            Array.isArray(row.fraud_reasons)
+              ? row.fraud_reasons.map(String)
+              : typeof row.fraud_reasons === "string" && row.fraud_reasons
+                ? JSON.parse(row.fraud_reasons) as string[]
+                : undefined,
+          fraudScore: row.fraud_score == null ? undefined : Number(row.fraud_score),
+          entries: entryRows.map((entry) => ({
+            entryId: entry.entry_id,
+            transactionId: row.transaction_id,
+            account: entry.account,
+            direction: entry.direction,
+            amountPaise: Number(entry.amount_paise),
+            entityId: entry.entity_id,
+            memo: entry.memo,
+            timestamp: entry.timestamp,
+          })),
+        };
+      };
+
+      if (existing[0]) {
+        return materialize(existing[0].transaction_id);
+      }
+
+      const transactionId = `tx-${crypto.randomUUID()}`;
+      const now = new Date().toISOString();
+
+      const lastTx = await tx.query<{ audit_hash: string }>(
+        "select audit_hash from ledger_transactions order by created_at desc, transaction_id desc limit 1 for update",
+      );
+      const previousHash =
+        lastTx[0]?.audit_hash ??
+        "0000000000000000000000000000000000000000000000000000000000000000";
+
+      const canonicalPayload = JSON.stringify({
+        transactionId,
+        idempotencyKey: params.idempotencyKey,
+        previousHash,
+        totalAmountPaise: totalDebit,
+        entries: params.entries.map((e) => ({
+          account: e.account,
+          direction: e.direction,
+          amountPaise: e.amountPaise,
+          entityId: e.entityId,
+        })),
+      });
+
+      const auditHash = this.generateHash(canonicalPayload);
+      const fraudReasonsJson = params.fraudReasons ? JSON.stringify(params.fraudReasons) : null;
+
+      const inserted = await tx.query<{ transaction_id: string }>(
+        "insert into ledger_transactions (transaction_id, idempotency_key, order_id, event_type, total_amount_paise, timestamp, audit_hash, previous_hash, is_fraud_suspicious, fraud_reasons, fraud_score) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) on conflict (idempotency_key) do nothing returning transaction_id",
+        [
+          transactionId,
+          params.idempotencyKey,
+          params.orderId ?? null,
+          params.eventType,
+          totalDebit,
+          now,
+          auditHash,
+          previousHash,
+          params.isFraudSuspicious ?? false,
+          fraudReasonsJson,
+          params.fraudScore ?? 0,
+        ],
+      );
+
+      if (!inserted[0]) {
+        const winner = await tx.query<{ transaction_id: string }>(
+          "select transaction_id from ledger_transactions where idempotency_key = $1 for update",
+          [params.idempotencyKey],
+        );
+        if (!winner[0]) throw new Error("Ledger idempotency conflict could not be resolved.");
+        return materialize(winner[0].transaction_id);
+      }
+
       for (const entry of params.entries) {
-        const entryId = "ent-" + crypto.randomUUID();
-        await sql.query(
-          "INSERT INTO ledger_entries (entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-          [entryId, transactionId, entry.account, entry.direction, entry.amountPaise, entry.entityId, entry.memo, now]
+        await tx.query(
+          "insert into ledger_entries (entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp) values ($1,$2,$3,$4,$5,$6,$7,$8)",
+          [
+            `ent-${crypto.randomUUID()}`,
+            transactionId,
+            entry.account,
+            entry.direction,
+            entry.amountPaise,
+            entry.entityId,
+            entry.memo,
+            now,
+          ],
         );
       }
-      await sql.query("COMMIT", []);
-    } catch (err) {
-      await sql.query("ROLLBACK", []);
-      throw err;
-    }
 
-    return {
-      transactionId,
-      idempotencyKey: params.idempotencyKey,
-      orderId: params.orderId,
-      eventType: params.eventType,
-      totalAmountPaise: totalDebit,
-      timestamp: now,
-      auditHash,
-      previousHash,
-      isFraudSuspicious: params.isFraudSuspicious,
-      fraudReasons: params.fraudReasons,
-      fraudScore: params.fraudScore,
-      entries: params.entries
-    };
+      return materialize(transactionId);
+    });
   }
 
   public async captureOrderPayment(params: {
