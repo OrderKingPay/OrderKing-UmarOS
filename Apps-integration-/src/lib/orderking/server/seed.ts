@@ -62,18 +62,32 @@ export async function ensureSeeded(sql: Sql): Promise<void> {
   }
 
   const cfg = await sql<{ key: string }>`select key from config_kv where org_id = ${ORG_ID} and key = ${"branding"}`;
+  const sharedCoreConnected =
+    process.env.ORDERKING_SHARED_CORE_CONNECTED?.trim().toLowerCase() === "true";
+  const demoSeedEnabled =
+    process.env.ORDERKING_ALLOW_DEMO_SEED?.trim().toLowerCase() === "true";
+  const declaredMode = sharedCoreConnected ? "LIVE" : demoSeedEnabled ? "SIMULATED" : "NOT_CONNECTED";
+
   if (cfg.length === 0) {
     await sql`
       insert into config_kv (org_id, key, value) values
       (${ORG_ID}, ${"branding"}, ${JSON.stringify(DEFAULT_BRANDING)}),
       (${ORG_ID}, ${"feature_flags"}, ${JSON.stringify(DEFAULT_FLAGS)}),
       (${ORG_ID}, ${"settings"}, ${JSON.stringify(DEFAULT_SETTINGS)}),
-      (${ORG_ID}, ${"data_mode"}, ${JSON.stringify({ mode: "SIMULATED" })})
+      (${ORG_ID}, ${"data_mode"}, ${JSON.stringify({ mode: declaredMode })})
+    `;
+  } else {
+    await sql`
+      insert into config_kv (org_id, key, value)
+      values (${ORG_ID}, ${"data_mode"}, ${JSON.stringify({ mode: declaredMode })})
+      on conflict (org_id, key)
+      do update set value = excluded.value, updated_at = now()
+      where ${declaredMode} <> "SIMULATED" or config_kv.value = '' or config_kv.value is null
     `;
   }
 
   const restCount = await sql<{ n: number }>`select count(*)::int as n from restaurants where org_id = ${ORG_ID}`;
-  if ((restCount[0]?.n ?? 0) > 0) return;
+  if ((restCount[0]?.n ?? 0) > 0 || !demoSeedEnabled || sharedCoreConnected) return;
 
   await seedMarketplace(sql);
 }
