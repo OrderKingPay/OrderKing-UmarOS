@@ -5,20 +5,12 @@ import {
   Users,
   ShieldCheck,
   CheckCircle2,
-  ArrowRight,
-  TrendingDown,
   Sparkles,
   Award,
-  Download,
-  Share2,
-  AlertCircle,
-  ExternalLink,
-  ChevronDown,
   Info,
   Clock,
   Luggage,
   Utensils,
-  Ticket,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -80,7 +72,6 @@ export function FlightBookingEngine(_props: Props) {
   );
   const [passengers, setPassengers] = useState<number>(1);
   const [concession, setConcession] = useState<ConcessionFareType>("regular");
-  const [enableSplitTicket, setEnableSplitTicket] = useState<boolean>(true);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [originSearch, setOriginSearch] = useState<string>("Silchar (IXS)");
   const [destinationSearch, setDestinationSearch] = useState<string>("Kolkata (CCU)");
