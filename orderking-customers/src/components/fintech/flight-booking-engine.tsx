@@ -382,34 +382,44 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
           {/* Origin */}
           <div className="space-y-1">
             <label className="text-[11px] font-bold text-muted uppercase">From Airport:</label>
-            <select
-              value={originAirport}
-              onChange={(e) => setOriginAirport(e.target.value)}
+            <input
+              list="orderking-airports"
+              value={originSearch}
+              onChange={(e) => {
+                setOriginSearch(e.target.value);
+                const airport = resolveAirport(e.target.value);
+                if (airport) setOriginAirport(airport.code);
+              }}
+              placeholder="Search airport, city or IATA code"
               className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-bold text-fg focus:border-primary focus:outline-none"
-            >
-              {POPULAR_AIRPORTS.map((a) => (
-                <option key={a.code} value={a.code}>
-                  {a.city} ({a.code}) - {a.name}
-                </option>
-              ))}
-            </select>
+              aria-label="Search origin airport"
+            />
           </div>
 
           {/* Destination */}
           <div className="space-y-1">
             <label className="text-[11px] font-bold text-muted uppercase">To Airport:</label>
-            <select
-              value={destinationAirport}
-              onChange={(e) => setDestinationAirport(e.target.value)}
+            <input
+              list="orderking-airports"
+              value={destinationSearch}
+              onChange={(e) => {
+                setDestinationSearch(e.target.value);
+                const airport = resolveAirport(e.target.value);
+                if (airport) setDestinationAirport(airport.code);
+              }}
+              placeholder="Search airport, city or IATA code"
               className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-bold text-fg focus:border-primary focus:outline-none"
-            >
-              {POPULAR_AIRPORTS.map((a) => (
-                <option key={a.code} value={a.code}>
-                  {a.city} ({a.code}) - {a.name}
-                </option>
-              ))}
-            </select>
+              aria-label="Search destination airport"
+            />
           </div>
+
+          <datalist id="orderking-airports">
+            {POPULAR_AIRPORTS.map((a) => (
+              <option key={a.code} value={`${a.city} (${a.code})`}>
+                {a.name}, {a.country}
+              </option>
+            ))}
+          </datalist>
 
           {/* Departure Date */}
           <div className="space-y-1">
@@ -444,44 +454,33 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
               disabled={isSearching}
               className="flex-1 bg-primary text-white hover:bg-primary/90 font-bold py-2 text-sm rounded-xl shadow-md h-10"
             >
-              {isSearching ? "Finding Lowest Rates..." : "Search Lowest Fares ➔"}
+              {isSearching ? "Searching live supplier..." : "Search Live Flights ➔"}
             </Button>
           </div>
         </div>
 
-        {/* Split-Ticketing Optimizer Toggle */}
-        <div className="flex items-center justify-between rounded-xl bg-surface-2 p-3 text-xs border border-border/60">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">⚡</span>
-            <div>
-              <span className="font-bold text-fg">Split-Ticketing &amp; Hidden-City Radar</span>
-              <p className="text-[10px] text-muted">
-                Analyzes multi-airline combinations and layover splits to beat single round-trip fares.
-              </p>
-            </div>
+        <div className="rounded-xl bg-surface-2 p-3 text-xs border border-border/60">
+          <div className="flex items-start gap-2">
+            <Info className="size-4 text-primary mt-0.5 shrink-0" />
+            <p className="text-[10px] text-muted">
+              Results are supplied by the configured live travel provider. Split-ticket, hidden-city, competitor-price and savings figures are not fabricated here.
+            </p>
           </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={enableSplitTicket}
-              onChange={(e) => setEnableSplitTicket(e.target.checked)}
-              className="sr-only peer"
-            />
-            <div className="w-9 h-5 bg-muted/40 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
-          </label>
         </div>
       </div>
 
       {/* 3. FLIGHT RESULTS MATRIX (WITH DIRECT COMPARISON) */}
+      {searchError && (
+        <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-3 text-xs text-rose-700 dark:text-rose-300">
+          {searchError}
+        </div>
+      )}
       <div className="space-y-3">
         <div className="flex items-center justify-between text-xs">
           <span className="font-bold text-fg">
             Available Flights for {originAirport} ➔ {destinationAirport} ({flightResults.length} options)
           </span>
-          <span className="text-emerald-600 font-bold flex items-center gap-1">
-            <CheckCircle2 className="size-3.5" />
-            <span>Convenience Fee: ₹0 (Waived for You)</span>
-          </span>
+          <span className="text-muted text-[10px]">Live provider results only</span>
         </div>
 
         <div className="space-y-3">
