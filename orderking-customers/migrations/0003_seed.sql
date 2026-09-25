@@ -208,9 +208,9 @@ on conflict (id) do nothing;
 
 insert into app_config (key, value, updated_at) values
 ('brand', $cfg${
-  "appName": "Haat",
-  "shortName": "Haat",
-  "companyName": "Haat Marketplace",
+  "appName": "OrderKing",
+  "shortName": "OrderKing",
+  "companyName": "OrderKing Marketplace",
   "tagline": "Order from kitchens near you",
   "description": "A fair local food marketplace for Sribhumi. Sample catalogue until real kitchens are verified.",
   "logoUrl": "",
@@ -231,7 +231,7 @@ insert into app_config (key, value, updated_at) values
   "radiusPx": 16,
   "density": "comfortable",
   "themeMode": "light",
-  "seoTitle": "Haat — food delivery in Sribhumi",
+  "seoTitle": "OrderKing — food delivery in Sribhumi",
   "seoDescription": "Order from local kitchens in Karimganj / Sribhumi. Clear prices, no mystery fees.",
   "ogImageUrl": "/og.jpg",
   "promotionalHeadline": "Kitchens around Sribhumi, one table."
@@ -248,28 +248,28 @@ insert into app_config (key, value, updated_at) values
   "adminUrl": "/admin"
 }$cfg$, now()),
 ('store', $cfg${
-  "appStoreName": "Haat",
-  "playStoreName": "Haat",
+  "appStoreName": "OrderKing",
+  "playStoreName": "OrderKing",
   "shortDescription": "Order food in Sribhumi",
-  "longDescription": "Haat is a local food marketplace for Karimganj / Sribhumi, Assam.",
-  "publisherName": "Haat Marketplace",
+  "longDescription": "OrderKing is a local food marketplace for Karimganj / Sribhumi, Assam.",
+  "publisherName": "OrderKing Marketplace",
   "supportUrl": "/support",
   "privacyUrl": "/legal/privacy"
 }$cfg$, now()),
 ('communication', $cfg${
-  "notificationSenderName": "Haat",
+  "notificationSenderName": "OrderKing",
   "smsSenderId": "",
-  "whatsappDisplayName": "Haat",
-  "emailSenderName": "Haat",
+  "whatsappDisplayName": "OrderKing",
+  "emailSenderName": "OrderKing",
   "emailFromAddress": "",
-  "supportName": "Haat Support",
+  "supportName": "OrderKing Support",
   "supportEmail": "support@localhost",
   "supportPhone": "",
   "grievanceOfficerName": "Grievance Officer",
   "grievanceEmail": "grievance@localhost"
 }$cfg$, now()),
 ('invoice', $cfg${
-  "companyName": "Haat Marketplace",
+  "companyName": "OrderKing Marketplace",
   "logoUrl": "",
   "address": "Sribhumi, Assam, India",
   "gstin": "PENDING",
@@ -279,13 +279,13 @@ insert into app_config (key, value, updated_at) values
   "legalFooter": "This is not a tax invoice until GSTIN is registered."
 }$cfg$, now()),
 ('restaurantFacing', $cfg${
-  "portalName": "Haat for Kitchens",
+  "portalName": "OrderKing for Kitchens",
   "dashboardLogoUrl": "",
-  "notificationSender": "Haat Kitchens",
-  "settlementStatementBrand": "Haat Marketplace"
+  "notificationSender": "OrderKing Kitchens",
+  "settlementStatementBrand": "OrderKing Marketplace"
 }$cfg$, now()),
 ('business', $cfg${
-  "legalEntityName": "Haat Marketplace",
+  "legalEntityName": "OrderKing Marketplace",
   "country": "IN",
   "defaultCityId": "city_sribhumi",
   "defaultLanguage": "en",
