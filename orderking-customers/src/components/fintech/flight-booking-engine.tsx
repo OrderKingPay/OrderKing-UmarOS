@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { TravelLocationPicker, type TravelLocation } from "./travel-location-picker";
 
 
+export type Airport = TravelLocation;
+
 export type FlightResult = {
   id: string;
   airline: string;
@@ -24,7 +26,7 @@ export type FlightResult = {
   departureTime: string;
   arrivalTime: string;
   duration: string;
-  stops: "Non-stop" | "1 Stop" | "2 Stops";
+  stops: "Non-stop" | "1 Stop" | "2 Stops" | `${number} Stops`;
   layoverCity?: string;
   baseFare: number;
   taxes: number;
@@ -78,6 +80,16 @@ export function FlightBookingEngine(_props: Props) {
     flight: FlightResult;
     passenger: string;
   } | null>(null);
+
+  const formatProviderTime = (isoTime?: string): string => {
+    if (!isoTime) return "Supplier time";
+    const match = isoTime.match(/T(\d{2}:\d{2})/);
+    if (match?.[1]) return match[1];
+    const parsed = new Date(isoTime);
+    return Number.isNaN(parsed.getTime())
+      ? isoTime
+      : parsed.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
 
   const formatDuration = (isoDuration?: string): string => {
     if (!isoDuration) return "Supplier duration";
@@ -153,10 +165,10 @@ export function FlightBookingEngine(_props: Props) {
           flightNumber: String(firstSegment?.number || "—"),
           departureAirport: String(firstSegment?.departure?.iataCode || r.origin?.code),
           arrivalAirport: String(lastSegment?.arrival?.iataCode || r.destination?.code),
-          departureTime: new Date(r.departureTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          arrivalTime: new Date(r.arrivalTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          departureTime: formatProviderTime(r.departureTime),
+          arrivalTime: formatProviderTime(r.arrivalTime),
           duration: formatDuration(r.rawProviderData?.itineraries?.[0]?.duration),
-          stops: stopsCount === 0 ? "Non-stop" : stopsCount === 1 ? "1 Stop" : "2 Stops",
+          stops: stopsCount === 0 ? "Non-stop" : stopsCount === 1 ? "1 Stop" : stopsCount === 2 ? "2 Stops" : `${stopsCount} Stops`,
           baseFare: base,
           taxes,
           kingPayPrice: total,
@@ -376,7 +388,7 @@ export function FlightBookingEngine(_props: Props) {
                   <div className="text-right">
                     <p className="text-[10px] uppercase tracking-wide text-muted">Live supplier total</p>
                     <p className="font-mono text-2xl font-black text-fg">
-                      {flight.kingPayPrice.toLocaleString("en-IN", { style: "currency", currency: "INR" })}
+                      {flight.kingPayPrice.toLocaleString("en-IN", { style: "currency", currency: flight.priceCurrency })}
                     </p>
                   </div>
 
@@ -475,7 +487,7 @@ export function FlightBookingEngine(_props: Props) {
             <div className="rounded-xl border border-primary/30 bg-primary/5 p-3.5 text-xs space-y-2">
               <div className="flex justify-between text-muted">
                 <span>Live supplier fare ({passengers} passenger{passengers > 1 ? "s" : ""}):</span>
-                <span className="font-mono">{selectedFlight.kingPayPrice.toLocaleString("en-IN", { style: "currency", currency: "INR" })}</span>
+                <span className="font-mono">{selectedFlight.kingPayPrice.toLocaleString("en-IN", { style: "currency", currency: selectedFlight.priceCurrency })}</span>
               </div>
               <div className="border-t border-border/60 pt-2 text-[10px] text-muted">
                 No platform fee, discount or ancillary amount is asserted here unless it is returned by a verified integration.
