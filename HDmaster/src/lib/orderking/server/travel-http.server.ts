@@ -19,6 +19,11 @@ export async function handleTravelHttp(request: Request, params: Record<string, 
             "";
         const mode = (url.searchParams.get("mode") || "FLIGHT").toUpperCase() as any;
         const passengers = Math.max(1, Number(url.searchParams.get("passengers") || 1));
+        const keyword =
+            url.searchParams.get("keyword") ||
+            url.searchParams.get("query") ||
+            url.searchParams.get("train") ||
+            undefined;
 
         if (!origin || !destination || !date) {
             return new Response(
@@ -35,7 +40,8 @@ export async function handleTravelHttp(request: Request, params: Record<string, 
             originCode: origin,
             destinationCode: destination,
             departureDate: date,
-            passengers
+            passengers,
+            keyword
         });
         return new Response(JSON.stringify(result), { headers: { "Content-Type": "application/json" } });
     }
