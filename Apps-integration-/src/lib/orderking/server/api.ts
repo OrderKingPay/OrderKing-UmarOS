@@ -9,7 +9,7 @@ import { can, assertNoPrivilegeEscalation, PERMISSIONS, ROLE_CATALOG, type Permi
 import { canTransition } from "../engine/orders";
 import { assertRefundAllowed, restaurantSettlement } from "../engine/finance";
 import { parseNlQuery } from "../engine/nl";
-import { computeEconomics, DEFAULT_PILOT_ASSUMPTIONS } from "../unit-economics";
+import { computeEconomics } from "../unit-economics";
 import { mulBps } from "../money";
 import { newId, requestId } from "../ids";
 import { visibleNav } from "../nav";
@@ -275,12 +275,21 @@ export const getCeoDashboard = createServerFn({ method: "GET" })
         limit 5
       `;
       const weak = [...top].sort((a, b) => a.gmv - b.gmv).slice(0, 3);
-      const input = {
-        ...DEFAULT_PILOT_ASSUMPTIONS,
-        orders: money.orders || DEFAULT_PILOT_ASSUMPTIONS.orders,
-        aovPaise: money.aovPaise || DEFAULT_PILOT_ASSUMPTIONS.aovPaise,
+      const observedEconomics = {
+        orders: money.orders,
+        aovPaise: money.aovPaise,
+        commissionBps: money.gmvPaise ? Math.round((money.restaurantCommissionPaise * 10_000) / money.gmvPaise) : 0,
+        deliveryFeePaise: money.orders ? Math.trunc(money.deliveryRevenuePaise / money.orders) : 0,
+        customerFeePaise: money.orders ? Math.trunc(money.customerFeesPaise / money.orders) : 0,
+        riderPayoutPaise: money.orders ? Math.trunc(money.riderCostPaise / money.orders) : 0,
+        paymentCostBps: money.gmvPaise ? Math.round((money.paymentCostPaise * 10_000) / money.gmvPaise) : 0,
+        platformDiscountPaise: money.orders ? Math.trunc(money.promotionalCostPaise / money.orders) : 0,
+        refundRateBps: money.gmvPaise ? Math.round((money.refundsPaise * 10_000) / money.gmvPaise) : 0,
+        supportCostPaise: money.orders ? Math.trunc(money.supportCostPaise / money.orders) : 0,
+        infraCostPaise: money.orders ? Math.trunc(money.infraCostPaise / money.orders) : 0,
+        marketingSpendPaise: 0,
       };
-      const slice = computeEconomics(input);
+      const slice = computeEconomics(observedEconomics);
       return {
         ok: true as const,
         data: {
