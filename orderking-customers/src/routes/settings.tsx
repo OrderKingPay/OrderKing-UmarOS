@@ -98,7 +98,7 @@ function SettingsPage() {
                 {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
               </p>
               <p className="text-[11px] text-emerald-600 font-medium mt-0.5">
-                ● 100% Real-Time GPS Active
+                ● Live GPS active
               </p>
             </div>
             <Link
