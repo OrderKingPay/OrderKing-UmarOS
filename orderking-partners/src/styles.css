@@ -5,25 +5,25 @@
   --font-display: "Fraunces", "Noto Serif Bengali", serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  --color-bg: #f4efe6;
-  --color-surface: #fffdf8;
-  --color-surface-2: #f7f1e8;
-  --color-ink: #1c1714;
-  --color-muted: #6f645b;
-  --color-faint: #9a8d82;
-  --color-line: #e4d8c8;
-  --color-line-strong: #d3c4b0;
-  --color-chili: #b33a1b;
-  --color-chili-dark: #8d2c14;
-  --color-chili-soft: #f3e0d6;
-  --color-leaf: #2f5d50;
-  --color-leaf-soft: #dce8e3;
-  --color-warn: #8a5a12;
-  --color-warn-soft: #f3e6c8;
-  --color-danger: #9b1d1d;
-  --color-danger-soft: #f4d6d2;
-  --color-info: #3d4f66;
-  --color-info-soft: #e4eaf1;
+  --color-bg: light-dark(#f4efe6, #120f0d);
+  --color-surface: light-dark(#fffdf8, #1c1714);
+  --color-surface-2: light-dark(#f7f1e8, #251e1b);
+  --color-ink: light-dark(#1c1714, #f4efe6);
+  --color-muted: light-dark(#6f645b, #a39589);
+  --color-faint: light-dark(#9a8d82, #6f645b);
+  --color-line: light-dark(#e4d8c8, #3b322c);
+  --color-line-strong: light-dark(#d3c4b0, #4f443b);
+  --color-chili: light-dark(#b33a1b, #e55c3c);
+  --color-chili-dark: light-dark(#8d2c14, #ff8c73);
+  --color-chili-soft: light-dark(#f3e0d6, #3d1b11);
+  --color-leaf: light-dark(#2f5d50, #40b392);
+  --color-leaf-soft: light-dark(#dce8e3, #162f27);
+  --color-warn: light-dark(#8a5a12, #e5a440);
+  --color-warn-soft: light-dark(#f3e6c8, #332005);
+  --color-danger: light-dark(#9b1d1d, #e85d5d);
+  --color-danger-soft: light-dark(#f4d6d2, #381212);
+  --color-info: light-dark(#3d4f66, #7496c2);
+  --color-info-soft: light-dark(#e4eaf1, #182330);
 
   --radius-xs: 4px;
   --radius-sm: 8px;
@@ -32,7 +32,10 @@
   --radius-xl: 24px;
   --radius-2xl: 32px;
 
-  --shadow-soft: 0 1px 0 rgba(28, 23, 20, 0.04), 0 12px 32px -16px rgba(28, 23, 20, 0.18);
+  --shadow-soft: light-dark(
+    0 1px 0 rgba(28, 23, 20, 0.04), 0 12px 32px -16px rgba(28, 23, 20, 0.18),
+    0 1px 0 rgba(0, 0, 0, 0.2), 0 12px 32px -16px rgba(0, 0, 0, 0.5)
+  );
 }
 
 @layer base {
@@ -41,6 +44,7 @@
     -moz-osx-font-smoothing: grayscale;
     background: var(--color-bg);
     color: var(--color-ink);
+    color-scheme: light dark;
   }
   body {
     margin: 0;
