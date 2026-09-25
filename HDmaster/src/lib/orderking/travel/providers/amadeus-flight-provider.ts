@@ -29,6 +29,58 @@ export class AmadeusFlightProvider implements TravelProvider {
     return Boolean(process.env.AMADEUS_API_KEY && process.env.AMADEUS_API_SECRET);
   }
 
+  async searchLocations(keyword: string, limit = 12): Promise<Array<{
+    code: string;
+    name: string;
+    city?: string;
+    country?: string;
+    subtype?: string;
+  }>> {
+    if (!this.isAvailable()) {
+      throw new Error("Amadeus airport/city search requires configured API credentials.");
+    }
+
+    const normalizedKeyword = keyword.trim();
+    if (normalizedKeyword.length < 2) return [];
+
+    const token = await this.getAccessToken();
+    const params = new URLSearchParams({
+      subType: "AIRPORT,CITY",
+      keyword: normalizedKeyword,
+      page: "1",
+      offset: "0",
+      "page[limit]": String(Math.min(Math.max(limit, 1), 30)),
+    });
+
+    const response = await resilientFetch(
+      `${this.baseUrl}/v1/reference-data/locations?${params.toString()}`,
+      {
+        timeoutMs: 7000,
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/vnd.amadeus+json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Amadeus location search failed with status ${response.status}.`);
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data.data)) return [];
+
+    return data.data
+      .map((item: any) => ({
+        code: String(item.iataCode || ""),
+        name: String(item.name || item.address?.cityName || ""),
+        city: String(item.address?.cityName || item.name || ""),
+        country: String(item.address?.countryName || ""),
+        subtype: String(item.subtype || ""),
+      }))
+      .filter((item: { code: string; name: string }) => item.code && item.name);
+  }
+
   private async getAccessToken(): Promise<string> {
     const now = Date.now();
     if (this.accessToken && now < this.accessTokenExpiresAt - 30_000) {
