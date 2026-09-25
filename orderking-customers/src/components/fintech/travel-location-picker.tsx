@@ -3,6 +3,36 @@ import { Loader2, MapPin, Search, TrainFront } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { searchRailStations, type RailStation } from "./indian-railway-stations";
 
+const POPULAR_FLIGHT_LOCATIONS: TravelLocation[] = [
+  { code:"IXS", name:"Silchar Airport", city:"Silchar", country:"India", subtype:"AIRPORT" },
+  { code:"GAU", name:"Lokpriya Gopinath Bordoloi International Airport", city:"Guwahati", country:"India", subtype:"AIRPORT" },
+  { code:"CCU", name:"Netaji Subhas Chandra Bose International Airport", city:"Kolkata", country:"India", subtype:"AIRPORT" },
+  { code:"DEL", name:"Indira Gandhi International Airport", city:"New Delhi", country:"India", subtype:"AIRPORT" },
+  { code:"BOM", name:"Chhatrapati Shivaji Maharaj International Airport", city:"Mumbai", country:"India", subtype:"AIRPORT" },
+  { code:"BLR", name:"Kempegowda International Airport", city:"Bengaluru", country:"India", subtype:"AIRPORT" },
+  { code:"HYD", name:"Rajiv Gandhi International Airport", city:"Hyderabad", country:"India", subtype:"AIRPORT" },
+  { code:"MAA", name:"Chennai International Airport", city:"Chennai", country:"India", subtype:"AIRPORT" },
+  { code:"AMD", name:"Sardar Vallabhbhai Patel International Airport", city:"Ahmedabad", country:"India", subtype:"AIRPORT" },
+  { code:"PNQ", name:"Pune Airport", city:"Pune", country:"India", subtype:"AIRPORT" },
+  { code:"GOI", name:"Manohar International Airport", city:"Goa", country:"India", subtype:"AIRPORT" },
+  { code:"COK", name:"Cochin International Airport", city:"Kochi", country:"India", subtype:"AIRPORT" },
+  { code:"JAI", name:"Jaipur International Airport", city:"Jaipur", country:"India", subtype:"AIRPORT" },
+  { code:"LKO", name:"Chaudhary Charan Singh International Airport", city:"Lucknow", country:"India", subtype:"AIRPORT" },
+  { code:"PAT", name:"Jay Prakash Narayan International Airport", city:"Patna", country:"India", subtype:"AIRPORT" },
+  { code:"DXB", name:"Dubai International Airport", city:"Dubai", country:"United Arab Emirates", subtype:"AIRPORT" },
+  { code:"SIN", name:"Singapore Changi Airport", city:"Singapore", country:"Singapore", subtype:"AIRPORT" },
+  { code:"BKK", name:"Suvarnabhumi Airport", city:"Bangkok", country:"Thailand", subtype:"AIRPORT" },
+  { code:"LHR", name:"Heathrow Airport", city:"London", country:"United Kingdom", subtype:"AIRPORT" },
+  { code:"JFK", name:"John F. Kennedy International Airport", city:"New York", country:"United States", subtype:"AIRPORT" },
+  { code:"CDG", name:"Charles de Gaulle Airport", city:"Paris", country:"France", subtype:"AIRPORT" },
+  { code:"DOH", name:"Hamad International Airport", city:"Doha", country:"Qatar", subtype:"AIRPORT" },
+  { code:"RUH", name:"King Khalid International Airport", city:"Riyadh", country:"Saudi Arabia", subtype:"AIRPORT" },
+  { code:"JED", name:"King Abdulaziz International Airport", city:"Jeddah", country:"Saudi Arabia", subtype:"AIRPORT" },
+  { code:"HND", name:"Haneda Airport", city:"Tokyo", country:"Japan", subtype:"AIRPORT" },
+];
+
+
+
 export type TravelLocation = {
   code: string;
   name: string;
@@ -92,7 +122,24 @@ export function TravelLocationPicker({ mode, value, onChange, label, placeholder
     }));
   }, [input, mode]);
 
-  const suggestions = mode === "FLIGHT" ? remoteLocations : railLocations;
+  const popularFlightLocations = useMemo<TravelLocation[]>(() => {
+    if (mode !== "FLIGHT") return [];
+    const q = input.trim().toLowerCase();
+    if (q.length < 1) return POPULAR_FLIGHT_LOCATIONS.slice(0, 12);
+    return POPULAR_FLIGHT_LOCATIONS
+      .filter((location) =>
+        location.code.toLowerCase().includes(q) ||
+        location.name.toLowerCase().includes(q) ||
+        location.city?.toLowerCase().includes(q) ||
+        location.country?.toLowerCase().includes(q)
+      )
+      .slice(0, 12);
+  }, [input, mode]);
+
+  const suggestions =
+    mode === "FLIGHT"
+      ? (remoteLocations.length > 0 ? remoteLocations : popularFlightLocations)
+      : railLocations;
 
   const choose = (location: TravelLocation) => {
     onChange(location);
@@ -155,7 +202,9 @@ export function TravelLocationPicker({ mode, value, onChange, label, placeholder
           )) : (
             <div className="px-3 py-4 text-center text-xs text-muted">
               {mode === "FLIGHT"
-                ? loading ? "Searching airports and cities…" : "No live airport matches returned. Search by city, airport name or IATA code."
+                ? loading
+                  ? "Searching live airports and cities…"
+                  : "No airport match found. Try an airport name, city or IATA code."
                 : "No station matches in the local station directory."}
             </div>
           )}
