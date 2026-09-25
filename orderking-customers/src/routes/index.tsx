@@ -7,7 +7,7 @@ import { useLocationStore } from "@/lib/stores/location";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 import { KingPayPage } from "./king-pay";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute('/')({ component: Home, head: () => ({ meta: [{ property: 'og:title', content: '🍔 OrderKing - Local Food Delivery with 0% Platform Markup.' }, { property: 'og:description', content: 'Order from elite local kitchens. Delivered fast, tracked live, with flawless perfection.' }, { name: 'twitter:title', content: '🍔 OrderKing - Local Food Delivery.' }, { name: 'twitter:description', content: 'Order from elite local kitchens.' }] }) });
 
 function Home() {
   const navigate = useNavigate();

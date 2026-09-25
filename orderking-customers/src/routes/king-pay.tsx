@@ -19,7 +19,7 @@ import { PaidRestaurantAdZone } from "@/components/market/paid-restaurant-ad-zon
 import { KingPayFinanceSearch } from "@/components/fintech/kingpay-finance-search";
 import { isDeliveryActiveInLocation, getCityWaitlistInfo } from "@/lib/geo/geofence-guard";
 
-export const Route = createFileRoute("/king-pay")({ component: KingPayPage });
+export const Route = createFileRoute('/king-pay')({ component: KingPayPage, head: () => ({ meta: [{ property: 'og:title', content: '👑 King Pay - Zero Credit Score, 100% Approval. Earn 7.5% Interest.' }, { property: 'og:description', content: 'The #1 FinTech App in India. Send money, pay bills, and get instant loans.' }, { name: 'twitter:title', content: '👑 King Pay - Zero Credit Score, 100% Approval.' }, { name: 'twitter:description', content: 'The #1 FinTech App in India.' }] }) });
 
 type UtilityService = {
   id: string;
