@@ -84,25 +84,37 @@ export class LiveDispatchAdapter implements DispatchPort {
 
   async exclusiveAccept(offerId: string, riderId: string): Promise<boolean> {
     const sql = await getSql();
-    const res = await sql`
-      UPDATE dispatch_offers 
-      SET status = 'ACCEPTED' 
-      WHERE id = ${offerId} 
-      AND rider_id = ${riderId} 
-      AND status = 'OPEN' 
-      AND expires_at > NOW()
-      RETURNING id
+    const claimed = await sql<{ id: string }>`
+      with candidate as (
+        select da.id as offer_id, da.job_id
+        from dispatch_offers da
+        join dispatch_jobs dj on dj.id = da.job_id
+        where da.id = ${offerId}
+          and da.rider_id = ${riderId}
+          and da.status = 'OPEN'
+          and da.expires_at > now()
+          and dj.status = 'QUEUED'
+          and dj.assigned_rider_id is null
+        for update of da, dj
+      ),
+      job_claim as (
+        update dispatch_jobs dj
+        set status = 'ASSIGNED',
+            assigned_rider_id = ${riderId}
+        from candidate c
+        where dj.id = c.job_id
+          and dj.status = 'QUEUED'
+          and dj.assigned_rider_id is null
+        returning c.offer_id
+      )
+      update dispatch_offers da
+      set status = 'ACCEPTED'
+      from job_claim jc
+      where da.id = jc.offer_id
+        and da.rider_id = ${riderId}
+        and da.status = 'OPEN'
+        and da.expires_at > now()
+      returning da.id
     `;
-    
-    if (res.length > 0) {
-      // Also update the job
-      await sql`
-        UPDATE dispatch_jobs 
-        SET status = 'ASSIGNED', assigned_rider_id = ${riderId}
-        WHERE id = (SELECT job_id FROM dispatch_offers WHERE id = ${offerId})
-      `;
-      return true;
-    }
-    return false;
-  }
-}
+    return claimed.length > 0;
+  }}
