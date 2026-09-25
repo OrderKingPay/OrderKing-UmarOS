@@ -387,18 +387,6 @@ export function FlightBookingEngine(_props: Props) {
                       <span className="font-mono text-xs text-muted">#{flight.flightNumber}</span>
 
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-muted mt-1">
-                      <span className="flex items-center gap-1">
-                        <Luggage className="size-3.5" />
-                        <span>Cabin: {flight.cabinBaggage} · Check-in: {flight.checkInBaggage}</span>
-                      </span>
-                      {flight.mealIncluded && (
-                        <span className="flex items-center gap-1 text-emerald-600 font-semibold">
-                          <Utensils className="size-3.5" />
-                          <span>Meal Included</span>
-                        </span>
-                      )}
-                    </div>
                   </div>
                 </div>
 
