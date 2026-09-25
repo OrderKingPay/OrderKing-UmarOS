@@ -98,6 +98,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
             }
           }
         } catch (err) {
+          if (home.rider.dataMode === "LIVE") throw err;
           console.error("Failed to fetch live offers", err);
         }
       }
@@ -161,6 +162,7 @@ export const respondOfferFn = createServerFn({ method: "POST" })
         try {
           await respondLiveOffer({ offerId: data.offerId, decision: data.decision, reason: data.reason, idempotencyKey: data.idempotencyKey, riderUserId: context.userId });
         } catch (err) {
+          if (offer.dataMode === "LIVE") throw err;
           console.error("Failed to respond to live offer", err);
         }
       }
