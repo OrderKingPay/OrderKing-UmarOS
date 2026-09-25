@@ -6,7 +6,6 @@ import {
   ShieldCheck,
   CheckCircle2,
   Sparkles,
-  Award,
   Info,
   Clock,
   Luggage,
@@ -27,8 +26,6 @@ export type Airport = {
 import ALL_AIRPORTS_DATA from "./airports.json";
 
 export const POPULAR_AIRPORTS: Airport[] = ALL_AIRPORTS_DATA as Airport[];
-
-export type ConcessionFareType = "regular" | "student" | "defence" | "senior" | "corporate";
 
 export type FlightResult = {
   id: string;
@@ -64,14 +61,12 @@ type Props = {
 
 export function FlightBookingEngine(_props: Props) {
   // Search state
-  const [tripType, setTripType] = useState<"one_way" | "round_trip">("one_way");
   const [originAirport, setOriginAirport] = useState<string>("IXS");
   const [destinationAirport, setDestinationAirport] = useState<string>("CCU");
   const [departureDate, setDepartureDate] = useState<string>(
     new Date(Date.now() + 86400000).toISOString().split("T")[0]!
   );
   const [passengers, setPassengers] = useState<number>(1);
-  const [concession, setConcession] = useState<ConcessionFareType>("regular");
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [originSearch, setOriginSearch] = useState<string>("Silchar (IXS)");
   const [destinationSearch, setDestinationSearch] = useState<string>("Kolkata (CCU)");
@@ -79,9 +74,6 @@ export function FlightBookingEngine(_props: Props) {
 
   // Booking Modal State
   const [selectedFlight, setSelectedFlight] = useState<FlightResult | null>(null);
-  const [addTravelInsurance, setAddTravelInsurance] = useState<boolean>(true);
-  const [addMeal, setAddMeal] = useState<boolean>(false);
-  const [addExtraBaggage, setAddExtraBaggage] = useState<boolean>(false);
   const [passengerName, setPassengerName] = useState<string>("");
   const [passengerAge, setPassengerAge] = useState<string>("");
   const [passengerGender, setPassengerGender] = useState<"Male" | "Female" | "Other">("Male");
@@ -257,116 +249,30 @@ export function FlightBookingEngine(_props: Props) {
   };
   return (
     <div className="space-y-6 text-fg">
-      {/* 1. HERO BANNER: PLANET'S LOWEST PRICE FLIGHT GUARANTEE */}
-      <div className="relative overflow-hidden rounded-3xl border-2 border-amber-500/50 bg-gradient-to-br from-[#0A1628] via-[#112544] to-[#070D18] p-5 sm:p-7 text-white shadow-2xl">
-        {/* Glow Effects */}
-        <div className="absolute -top-20 -right-20 size-60 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 size-52 rounded-full bg-amber-500/20 blur-2xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-black text-cyan-300 ring-1 ring-cyan-400/40">
-              <Sparkles className="size-3.5 text-amber-400 animate-spin" />
-              <span>GDS Direct Wholesale Rates · ₹0 Convenience Fee</span>
-            </div>
-
-            <h2 className="font-display text-2xl sm:text-3xl font-black tracking-tight">
-              Fly Anywhere at the{" "}
-              <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200 bg-clip-text text-transparent">
-                Planet&apos;s Lowest Price
-              </span>
-            </h2>
-
-            <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-              Bypass retail OTA markups. We stream live GDS consolidator wholesale fares with{" "}
-              <span className="font-bold text-emerald-400">₹0 Convenience Fee</span> (saving you ₹499–₹799 per ticket vs MakeMyTrip / EaseMyTrip) + instant Split-Ticketing optimizer.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-3 pt-1 text-xs">
-              <span className="flex items-center gap-1 text-emerald-400 font-bold">
-                <CheckCircle2 className="size-4" />
-                <span>₹0 Convenience Fee Always</span>
-              </span>
-              <span className="flex items-center gap-1 text-amber-300 font-bold">
-                <Award className="size-4" />
-                <span>2x Difference Price Match Guarantee</span>
-              </span>
-              <span className="flex items-center gap-1 text-cyan-300 font-bold">
-                <ShieldCheck className="size-4" />
-                <span>Instant PNR &amp; DGCA Protected</span>
-              </span>
-            </div>
+      {/* 1. LIVE FLIGHT SEARCH */}
+      <div className="relative overflow-hidden rounded-3xl border border-border bg-surface p-5 sm:p-7 shadow-sm">
+        <div className="relative z-10 space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary ring-1 ring-primary/20">
+            <Sparkles className="size-3.5" />
+            <span>Live supplier search</span>
           </div>
-
-          {/* Real-Time Live Savings Badge */}
-          <div className="rounded-2xl border border-amber-400/40 bg-gradient-to-b from-amber-500/15 to-surface/40 p-4 text-center space-y-1 shadow-lg shrink-0">
-            <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider">
-              Average Traveler Savings
-            </span>
-            <p className="font-mono text-3xl font-black text-white">
-              ₹850 – ₹2,400
-            </p>
-            <p className="text-[11px] text-emerald-400 font-semibold">
-              Per Booking with KingPay
-            </p>
+          <h2 className="font-display text-2xl sm:text-3xl font-black tracking-tight text-fg">Search real-time flight offers</h2>
+          <p className="text-xs sm:text-sm text-muted max-w-2xl leading-relaxed">
+            Airports are searchable by city, airport name or IATA code. Results are shown only when the configured travel provider returns live offers; no fallback or fabricated fare is shown.
+          </p>
+          <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
+            <span className="flex items-center gap-1"><CheckCircle2 className="size-4 text-emerald-600" /> Live provider response required</span>
+            <span className="flex items-center gap-1"><ShieldCheck className="size-4 text-primary" /> No fake PNR / savings</span>
           </div>
         </div>
       </div>
 
       {/* 2. FLIGHT SEARCH COCKPIT */}
       <div className="rounded-2xl border border-border bg-surface p-5 shadow-sm space-y-4">
-        {/* Trip Type & Concession Fare Selector */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3">
-          {/* Trip Type */}
-          <div className="flex items-center gap-1 rounded-xl bg-surface-2 p-1 border border-border/60 text-xs font-bold">
-            <button
-              type="button"
-              onClick={() => setTripType("one_way")}
-              className={`rounded-lg px-3 py-1.5 transition ${
-                tripType === "one_way"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-muted hover:text-fg"
-              }`}
-            >
-              One Way
-            </button>
-            <button
-              type="button"
-              onClick={() => setTripType("round_trip")}
-              className={`rounded-lg px-3 py-1.5 transition ${
-                tripType === "round_trip"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-muted hover:text-fg"
-              }`}
-            >
-              Round Trip
-            </button>
-          </div>
-
-          {/* Concession Fare Filter Chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto text-xs font-semibold scrollbar-none">
-            <span className="text-muted text-[11px] mr-1">Special Fare:</span>
-            {[
-              { id: "regular", label: "Regular", icon: "✈️" },
-              { id: "student", label: "Student (15% Off + 10kg)", icon: "🎓" },
-              { id: "defence", label: "Armed Forces (50% Off)", icon: "🪖" },
-              { id: "senior", label: "Senior Citizen (50% Off)", icon: "🧓" },
-              { id: "corporate", label: "Corporate SME", icon: "💼" },
-            ].map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => setConcession(c.id as ConcessionFareType)}
-                className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 transition ${
-                  concession === c.id
-                    ? "bg-amber-500/20 text-amber-800 dark:text-amber-200 border border-amber-400 font-bold"
-                    : "bg-surface-2 text-muted border border-border/60 hover:text-fg"
-                }`}
-              >
-                <span>{c.icon}</span>
-                <span>{c.label}</span>
-              </button>
-            ))}
+          <div>
+            <span className="text-xs font-bold text-fg">One-way live supplier search</span>
+            <p className="text-[10px] text-muted">Round-trip and special-fare pricing will be enabled only when supported by the connected provider.</p>
           </div>
         </div>
 
@@ -640,124 +546,32 @@ export function FlightBookingEngine(_props: Props) {
               </div>
             </div>
 
-            {/* High-Margin Cross-Sell Add-ons */}
-            <div className="space-y-2 text-xs">
-              <span className="font-bold text-fg block">Optional Trip Protection &amp; Comfort:</span>
-
-              {/* 1. Travel Insurance (High Margin for Platform) */}
-              <label className="flex items-center justify-between rounded-xl border border-border/80 bg-surface-2 p-3 cursor-pointer hover:border-primary transition">
-                <div className="flex items-center gap-2.5">
-                  <input
-                    type="checkbox"
-                    checked={addTravelInsurance}
-                    onChange={(e) => setAddTravelInsurance(e.target.checked)}
-                    className="size-4 rounded text-primary focus:ring-primary"
-                  />
-                  <div>
-                    <span className="font-bold text-fg">Digit Travel Protection Shield (+₹199)</span>
-                    <p className="text-[10px] text-muted">
-                      ₹5,00,000 emergency medical + ₹10,000 delay reimbursement + lost baggage cover.
-                    </p>
-                  </div>
-                </div>
-                <span className="rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold px-2 py-0.5 text-[10px]">
-                  Recommended
-                </span>
-              </label>
-
-              {/* 2. Hot Meal */}
-              <label className="flex items-center justify-between rounded-xl border border-border/80 bg-surface-2 p-3 cursor-pointer hover:border-primary transition">
-                <div className="flex items-center gap-2.5">
-                  <input
-                    type="checkbox"
-                    checked={addMeal}
-                    onChange={(e) => setAddMeal(e.target.checked)}
-                    className="size-4 rounded text-primary focus:ring-primary"
-                  />
-                  <div>
-                    <span className="font-bold text-fg">Inflight Hot Meal &amp; Beverage (+₹250)</span>
-                    <p className="text-[10px] text-muted">Chef-curated fresh hot meal on board.</p>
-                  </div>
-                </div>
-              </label>
-
-              {/* 3. Extra Baggage */}
-              <label className="flex items-center justify-between rounded-xl border border-border/80 bg-surface-2 p-3 cursor-pointer hover:border-primary transition">
-                <div className="flex items-center gap-2.5">
-                  <input
-                    type="checkbox"
-                    checked={addExtraBaggage}
-                    onChange={(e) => setAddExtraBaggage(e.target.checked)}
-                    className="size-4 rounded text-primary focus:ring-primary"
-                  />
-                  <div>
-                    <span className="font-bold text-fg">Extra 5 kg Prepaid Baggage (+₹950)</span>
-                    <p className="text-[10px] text-muted">Save 50% vs airport counter baggage rates.</p>
-                  </div>
-                </div>
-              </label>
+            <div className="rounded-xl border border-border bg-surface-2 p-3 text-xs">
+              <span className="font-bold text-fg block">Supplier price</span>
+              <p className="text-[10px] text-muted mt-1">The amount below comes from the live supplier offer. Ancillaries such as insurance, meals and extra baggage are not fabricated by this flow.</p>
             </div>
 
-            {/* Price Breakdown */}
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5 text-xs space-y-2">
+            {/* Live Supplier Price */}
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-3.5 text-xs space-y-2">
               <div className="flex justify-between text-muted">
-                <span>Base Fare ({passengers} Passenger{passengers > 1 ? "s" : ""}):</span>
-                <span className="font-mono">₹{(selectedFlight.baseFare * passengers).toLocaleString("en-IN")}</span>
+                <span>Live supplier fare ({passengers} passenger{passengers > 1 ? "s" : ""}):</span>
+                <span className="font-mono">{selectedFlight.kingPayPrice.toLocaleString("en-IN", { style: "currency", currency: "INR" })}</span>
               </div>
-              <div className="flex justify-between text-muted">
-                <span>Airport Taxes &amp; Security:</span>
-                <span className="font-mono">₹{(selectedFlight.taxes * passengers).toLocaleString("en-IN")}</span>
-              </div>
-              <div className="flex justify-between text-emerald-600 font-bold">
-                <span>Convenience Fee:</span>
-                <span>₹0 (100% Waived)</span>
-              </div>
-              {addTravelInsurance && (
-                <div className="flex justify-between text-muted">
-                  <span>Digit Travel Insurance:</span>
-                  <span className="font-mono">+₹{199 * passengers}</span>
-                </div>
-              )}
-              {addMeal && (
-                <div className="flex justify-between text-muted">
-                  <span>Inflight Meal:</span>
-                  <span className="font-mono">+₹{250 * passengers}</span>
-                </div>
-              )}
-              {addExtraBaggage && (
-                <div className="flex justify-between text-muted">
-                  <span>Extra Baggage:</span>
-                  <span className="font-mono">+₹{950 * passengers}</span>
-                </div>
-              )}
-              <div className="border-t border-border/60 pt-2 flex justify-between items-center font-bold text-sm">
-                <span className="text-fg">Total Payable:</span>
-                <span className="font-mono text-lg text-primary">
-                  ₹{(
-                    selectedFlight.kingPayPrice * passengers +
-                    (addTravelInsurance ? 199 * passengers : 0) +
-                    (addMeal ? 250 * passengers : 0) +
-                    (addExtraBaggage ? 950 * passengers : 0)
-                  ).toLocaleString("en-IN")}
-                </span>
+              <div className="border-t border-border/60 pt-2 text-[10px] text-muted">
+                No platform fee, discount or ancillary amount is asserted here unless it is returned by a verified integration.
               </div>
             </div>
 
-            {/* 1-Tap Payment Button */}
             <div className="space-y-2 pt-2">
               <Button
                 onClick={handleBookFlight}
                 disabled={isBooking}
                 className="w-full bg-primary text-white hover:bg-primary/90 font-bold text-sm py-3 rounded-xl shadow-lg"
               >
-                {isBooking ? (
-                  "Confirming Ticket via GDS..."
-                ) : (
-                  `⚡ 1-Tap Pay & Confirm via KingPay Wallet (Bal: ₹${walletBalance})`
-                )}
+                {isBooking ? "Submitting genuine provider booking..." : "Confirm with live travel provider"}
               </Button>
               <p className="text-[10px] text-center text-muted">
-                Zero payment gateway fee. 100% instant refund if flight is cancelled by airline.
+                No wallet is debited by this screen. A booking is reported confirmed only after the configured supplier returns success.
               </p>
             </div>
           </div>
