@@ -100,12 +100,10 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
 
   // Confirmed e-Ticket Modal
   const [confirmedTicket, setConfirmedTicket] = useState<{
-    pnr: string;
+    bookingId?: string;
+    pnr?: string;
     flight: FlightResult;
     passenger: string;
-    totalPaid: number;
-    savings: number;
-    qrToken: string;
   } | null>(null);
 
   const resolveAirport = (value: string): Airport | undefined => {
