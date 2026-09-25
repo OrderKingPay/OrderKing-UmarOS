@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { TravelLocationPicker, type TravelLocation } from "./travel-location-picker";
 
 export type Airport = {
   code: string;
@@ -52,15 +53,25 @@ type Props = {
 
 export function FlightBookingEngine(_props: Props) {
   // Search state
-  const [originAirport, setOriginAirport] = useState<string>("IXS");
-  const [destinationAirport, setDestinationAirport] = useState<string>("CCU");
+  const [originLocation, setOriginLocation] = useState<TravelLocation | null>({
+    code: "IXS",
+    city: "Silchar",
+    name: "Silchar Airport",
+    country: "India",
+    subtype: "AIRPORT",
+  });
+  const [destinationLocation, setDestinationLocation] = useState<TravelLocation | null>({
+    code: "CCU",
+    city: "Kolkata",
+    name: "Netaji Subhas Chandra Bose International Airport",
+    country: "India",
+    subtype: "AIRPORT",
+  });
   const [departureDate, setDepartureDate] = useState<string>(
     new Date(Date.now() + 86400000).toISOString().split("T")[0]!
   );
   const [passengers, setPassengers] = useState<number>(1);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [originSearch, setOriginSearch] = useState<string>("Silchar (IXS)");
-  const [destinationSearch, setDestinationSearch] = useState<string>("Kolkata (CCU)");
   const [searchError, setSearchError] = useState<string | null>(null);
 
   // Booking Modal State
@@ -80,17 +91,6 @@ export function FlightBookingEngine(_props: Props) {
     passenger: string;
   } | null>(null);
 
-  const resolveAirport = (value: string): Airport | undefined => {
-    const normalized = value.trim().toLowerCase();
-    return POPULAR_AIRPORTS.find(
-      (airport) =>
-        airport.code.toLowerCase() === normalized ||
-        airport.city.toLowerCase() === normalized ||
-        `${airport.city} (${airport.code})`.toLowerCase() === normalized ||
-        airport.name.toLowerCase() === normalized
-    );
-  };
-
   const formatDuration = (isoDuration?: string): string => {
     if (!isoDuration) return "Supplier duration";
     const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/i);
@@ -101,12 +101,12 @@ export function FlightBookingEngine(_props: Props) {
   };
 
   const handleSearch = async () => {
-    const origin = resolveAirport(originSearch);
-    const destination = resolveAirport(destinationSearch);
+    const origin = originLocation;
+    const destination = destinationLocation;
 
     if (!origin || !destination) {
-      setSearchError("Select a valid airport from the search suggestions.");
-      toast.error("Please choose valid airports.");
+      setSearchError("Select both airports from the live search suggestions.");
+      toast.error("Please choose valid airports from the search list.");
       return;
     }
     if (origin.code === destination.code) {
@@ -114,9 +114,6 @@ export function FlightBookingEngine(_props: Props) {
       toast.error("Origin and destination cannot be the same.");
       return;
     }
-
-    setOriginAirport(origin.code);
-    setDestinationAirport(destination.code);
     setSearchError(null);
     setIsSearching(true);
     setFlightResults([]);
@@ -265,47 +262,21 @@ export function FlightBookingEngine(_props: Props) {
 
         {/* Airport Selectors & Date Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          {/* Origin */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-muted uppercase">From Airport:</label>
-            <input
-              list="orderking-airports"
-              value={originSearch}
-              onChange={(e) => {
-                setOriginSearch(e.target.value);
-                const airport = resolveAirport(e.target.value);
-                if (airport) setOriginAirport(airport.code);
-              }}
-              placeholder="Search airport, city or IATA code"
-              className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-bold text-fg focus:border-primary focus:outline-none"
-              aria-label="Search origin airport"
-            />
-          </div>
+          <TravelLocationPicker
+            mode="FLIGHT"
+            value={originLocation}
+            onChange={setOriginLocation}
+            label="From Airport"
+            placeholder="Search city, airport or IATA"
+          />
 
-          {/* Destination */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-muted uppercase">To Airport:</label>
-            <input
-              list="orderking-airports"
-              value={destinationSearch}
-              onChange={(e) => {
-                setDestinationSearch(e.target.value);
-                const airport = resolveAirport(e.target.value);
-                if (airport) setDestinationAirport(airport.code);
-              }}
-              placeholder="Search airport, city or IATA code"
-              className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-bold text-fg focus:border-primary focus:outline-none"
-              aria-label="Search destination airport"
-            />
-          </div>
-
-          <datalist id="orderking-airports">
-            {POPULAR_AIRPORTS.map((a) => (
-              <option key={a.code} value={`${a.city} (${a.code})`}>
-                {a.name}, {a.country}
-              </option>
-            ))}
-          </datalist>
+          <TravelLocationPicker
+            mode="FLIGHT"
+            value={destinationLocation}
+            onChange={setDestinationLocation}
+            label="To Airport"
+            placeholder="Search city, airport or IATA"
+          />
 
           {/* Departure Date */}
           <div className="space-y-1">
@@ -364,7 +335,7 @@ export function FlightBookingEngine(_props: Props) {
       <div className="space-y-3">
         <div className="flex items-center justify-between text-xs">
           <span className="font-bold text-fg">
-            Available Flights for {originAirport} ➔ {destinationAirport} ({flightResults.length} options)
+            Available Flights for {originLocation?.code || "—"} ➔ {destinationLocation?.code || "—"} ({flightResults.length} options)
           </span>
           <span className="text-muted text-[10px]">Live provider results only</span>
         </div>
