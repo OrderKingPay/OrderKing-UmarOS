@@ -52,7 +52,7 @@ export function HomeFeed({
             lng: pos.coords.longitude,
             line1: `Verified GPS (${pos.coords.latitude.toFixed(3)}, ${pos.coords.longitude.toFixed(3)})`,
           });
-          toast.success("100% Real-Time GPS Active! Verifying restaurants in your vicinity...");
+          toast.success("Live GPS enabled. Verifying restaurants near your location...");
         },
         (err) => {
           setIsRequestingGeo(false);
@@ -143,7 +143,7 @@ export function HomeFeed({
           <div className="flex items-center gap-2">
             <span>⚡</span>
             <span className="font-semibold">2G / Low-Network Mode Active</span>
-            <span className="text-[11px] text-muted hidden sm:inline">· Instant 0ms cached browsing &amp; background sync</span>
+            <span className="text-[11px] text-muted hidden sm:inline">· Cached browsing available; network-dependent actions still require connectivity</span>
           </div>
           <span className="font-mono text-[10px] uppercase font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">
             {networkSpeed}
