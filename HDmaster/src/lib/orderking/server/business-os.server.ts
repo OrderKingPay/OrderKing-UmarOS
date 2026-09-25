@@ -5,41 +5,41 @@ import { founderApprovalGates } from "../ai/founder-approval-gates";
 import { autonomousCommandOrchestrator } from "../ai/autonomous-command-orchestrator";
 
 export const getPendingApprovals = createServerFn({ method: "GET" }).handler(async () => {
-  return founderApprovalGates.listPendingRequests();
+  return  as any;
 });
 
 export const getBudgetStatus = createServerFn({ method: "GET" }).handler(async () => {
-  return liveOrchestrationEngine.getBudgetStatus();
+  return  as any;
 });
 
 export const getRegisteredAdapters = createServerFn({ method: "GET" }).handler(async () => {
-  return liveOrchestrationEngine.listRegisteredAdapters();
+  return  as any;
 });
 
 export const getFinancialPnL = createServerFn({ method: "GET" }).handler(async () => {
-  return businessOsModules.calculateFinancialPnL();
+  return  as any;
 });
 
 export const getLawfulOpportunities = createServerFn({ method: "GET" }).handler(async () => {
-  return businessOsModules.discoverLawfulOpportunities();
+  return  as any;
 });
 
 export const getKitchenSlas = createServerFn({ method: "GET" }).handler(async () => {
-  return businessOsModules.auditKitchenSlas();
+  return  as any;
 });
 
 export const getInventoryAlerts = createServerFn({ method: "GET" }).handler(async () => {
-  return businessOsModules.inspectInventoryAlerts();
+  return  as any;
 });
 
 export const getSreHealth = createServerFn({ method: "GET" }).handler(async () => {
-  return businessOsModules.inspectSreHealth();
+  return  as any;
 });
 
 export const getMinimalStaffRoster = createServerFn({ method: "GET" }).handler(async () => {
-  return businessOsModules.getMinimalStaffRoster();
+  return  as any;
 });
 
 export const getAuditChain = createServerFn({ method: "GET" }).handler(async () => {
-  return founderApprovalGates.getAuditChain();
+  return  as any;
 });
