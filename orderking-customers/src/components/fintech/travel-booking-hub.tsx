@@ -24,6 +24,7 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
   const [activeTab, setActiveTab] = useState<TravelTab>(defaultTab);
   const [fromStation, setFromStation] = useState<TravelLocation | null>(null);
   const [toStation, setToStation] = useState<TravelLocation | null>(null);
+  const [trainQuery, setTrainQuery] = useState("");
   const [trainDate, setTrainDate] = useState(
     new Date(Date.now() + 86400000).toISOString().split("T")[0]!
   );
@@ -54,6 +55,7 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
         destination: toStation.code,
         date: trainDate,
         passengers: "1",
+        ...(trainQuery.trim() ? { query: trainQuery.trim() } : {}),
       });
       const response = await fetch(`${baseUrl}/api/v1/travel/search?${params.toString()}`, {
         headers: { Accept: "application/json" },
@@ -116,7 +118,7 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             <TravelLocationPicker
               mode="TRAIN"
               value={fromStation}
@@ -131,6 +133,16 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
               label="To Station"
               placeholder="Search station, city or code"
             />
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-muted uppercase">Train (optional)</label>
+              <input
+                value={trainQuery}
+                onChange={(e) => setTrainQuery(e.target.value)}
+                placeholder="Train name or number"
+                className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-semibold text-fg"
+                aria-label="Optional train name or number"
+              />
+            </div>
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-muted uppercase">Departure Date</label>
               <input
