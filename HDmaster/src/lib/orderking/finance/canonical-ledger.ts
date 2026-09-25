@@ -133,13 +133,6 @@ export class CanonicalLedger {
       timestamp: string;
     };
 
-    const hydrate = async (
-      tx: Awaited<ReturnType<typeof withDbTransaction>> extends never ? never : Parameters<NonNullable<unknown>>[0],
-    ): Promise<LedgerTransaction> => {
-      throw new Error("unreachable");
-    };
-    void hydrate;
-
     return withDbTransaction(async (tx) => {
       // Serialize the hash chain and idempotency decision on one database transaction.
       await tx.query("select pg_advisory_xact_lock(hashtext($1))", ["orderking.canonical-ledger"]);
