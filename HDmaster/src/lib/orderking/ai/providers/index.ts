@@ -35,7 +35,7 @@ export class ModelRouterService {
     }
 
     // Auto-fallback hierarchy
-    const priority = ["gemini", "anthropic", "openai", "xai"];
+    const priority = ["openai", "gemini", "anthropic", "xai"];
     for (const id of priority) {
       const p = this.providers.get(id);
       if (p && p.isConfigured) return p;
