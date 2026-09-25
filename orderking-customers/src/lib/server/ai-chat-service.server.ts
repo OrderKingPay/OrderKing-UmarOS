@@ -217,18 +217,18 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
 }
 
 export function executeLocalSovereignCognitivePass(
-  query: string,
-  messages: ChatMessage[],
-  founderUpiVpa: string = "orderking@okhdfcbank"
+  _query: string,
+  _messages: ChatMessage[],
+  _founderUpiVpa?: string
 ): {
   text: string;
   executionSteps: AgentExecutionStep[];
   actionCard?: any;
   mediaCard?: any;
 } {
-  // No real AI model is connected — return honest guidance
+  // Retained for backwards compatibility only. Never represents a real AI provider.
   return {
-    text: `I don't have an AI provider connected right now, so I can't generate a real answer to your question.\n\nTo enable full AI chat, please add at least one API key in **Settings**:\n- **GEMINI_API_KEY** — Google Gemini (recommended, free tier available)\n- **OPENAI_API_KEY** — OpenAI GPT-4o\n- **ANTHROPIC_API_KEY** — Anthropic Claude\n- **XAI_API_KEY** — xAI Grok\n\nOnce configured, I'll answer any question using real AI — just like ChatGPT, Grok, or Gemini.`,
+    text: "OPENAI_CHAT_REQUIRED: this legacy local cognitive pass is disabled.",
     executionSteps: [],
   };
 }
@@ -305,8 +305,8 @@ export async function executeFounderAiChat(
 
     return {
       text: engineeringResult,
-      modelUsed: "sovereign-local-core",
-      provider: "Local Sovereign",
+      modelUsed: "deterministic-operational-tool",
+      provider: "HDmaster Operational Tools",
       executionSteps: [],
       latencyMs: Date.now() - startTime,
     };
