@@ -73,13 +73,46 @@ const env = (key: string): string | undefined => {
 // Explicit off-switch. The deployer sets `VITE_AUTH_ENABLED=true` when it
 // provisions auth; set it to "false" to force auth off everywhere (dev user).
 const authDisabled = env("VITE_AUTH_ENABLED") === "false";
+const isVercelProduction =
+  process.env.VERCEL_ENV === "production" ||
+  (process.env.VERCEL === "1" && process.env.NODE_ENV === "production");
+
+const databaseUrl = env("DATABASE_URL");
+
+if (isVercelProduction) {
+  const missing: string[] = [];
+  for (const key of [
+    "VITE_AUTH_ENABLED",
+    "BETTER_AUTH_SECRET",
+    "DATABASE_URL",
+    "GROK_AUTH_ISSUER",
+    "GROK_AUTH_CLIENT_ID",
+    "GROK_AUTH_CLIENT_SECRET",
+    "BETTER_AUTH_URL",
+  ]) {
+    if (!env(key)) missing.push(key);
+  }
+  if (env("VITE_AUTH_ENABLED") !== "true") missing.push("VITE_AUTH_ENABLED=true");
+  if (missing.length > 0) {
+    throw new Error(
+      "PRODUCTION_AUTH_CONFIGURATION_ERROR: real production auth is not fully configured. Missing: " +
+        missing.join(", ")
+    );
+  }
+}
 
 // Broker federation creds: the deployer injects a per-app client when deployed;
 // otherwise fall back to the shared live-preview client, which the broker accepts
 // for any `*.grok-sandbox.com` callback (see `./preview`).
-const grokIssuer = env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
-const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
-const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
+const grokIssuer = isVercelProduction
+  ? env("GROK_AUTH_ISSUER")!
+  : env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
+const grokClientId = isVercelProduction
+  ? env("GROK_AUTH_CLIENT_ID")!
+  : env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
+const grokClientSecret = isVercelProduction
+  ? env("GROK_AUTH_CLIENT_SECRET")!
+  : env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
 
 /** True when federated sign-in is active (real auth is enforced). */
 export const authConfigured =
@@ -128,8 +161,6 @@ const trustedOrigins: string[] = [
   'https://orderking-riders.vercel.app',
   'https://apps-integration.vercel.app'
 ];
-
-const databaseUrl = env("DATABASE_URL");
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
