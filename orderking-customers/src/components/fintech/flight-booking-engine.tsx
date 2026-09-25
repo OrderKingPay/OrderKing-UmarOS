@@ -13,18 +13,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { TravelLocationPicker, type TravelLocation } from "./travel-location-picker";
 
-export type Airport = {
-  code: string;
-  city: string;
-  name: string;
-  country: string;
-  nearbyHub?: string;
-  isInternational?: boolean;
-};
-
-import ALL_AIRPORTS_DATA from "./airports.json";
-
-export const POPULAR_AIRPORTS: Airport[] = ALL_AIRPORTS_DATA as Airport[];
 
 export type FlightResult = {
   id: string;
