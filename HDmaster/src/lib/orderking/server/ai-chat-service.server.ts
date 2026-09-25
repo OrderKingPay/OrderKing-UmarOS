@@ -29,7 +29,7 @@ import { FOUNDER_TOOLS, executeFounderTool } from "../ai/founder-tools.server";
 import { ensureWorkspace, appendAudit } from "./workspace.server.ts";
 import { requirePermission } from "../rbac.ts";
 import { z } from "zod";
-import { UniversalExecutionEngine } from "../ai/universal-superintelligence-engine.server.ts";
+import { UniversalSuperintelligenceEngine } from "../ai/universal-superintelligence-engine.server.ts";
 
 export interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -566,7 +566,7 @@ export async function executeFounderAiChat(
     try {
       onStreamEvent?.({ type: "step", data: { stepNumber: 1, totalSteps: 4, label: "Universal Engine: Understanding", status: "RUNNING", detail: "Parsing directive..." } });
 
-      const result = await UniversalExecutionEngine.execute({
+      const result = await UniversalSuperintelligenceEngine.execute({
         orgId: "system",
         owner: request.userId || request.userContext?.userId || "founder",
         instruction: currentQuery,
