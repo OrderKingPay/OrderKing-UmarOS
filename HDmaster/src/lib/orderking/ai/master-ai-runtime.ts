@@ -17,7 +17,14 @@ import {
   type AllowedRepo,
 } from "./workspace-repos.server.ts";
 import { getSpecialist, type SpecialistPersona } from "./specialists.ts";
-import { routeModelTurn } from "./model-router.server.ts"; import type { ChatRequest as ModelCallRequest, ChatChunk as ModelCallResponse, AIProvider as AiProvider, ChatRequest['messages'][0] as ModelMessage, ToolDefinition as ModelToolDefinition } from "./providers/provider-interface.ts";
+import { routeModelTurn } from "./model-router.server.ts";
+import type {
+  ChatRequest as ModelCallRequest,
+  ChatChunk as ModelCallResponse,
+  AIProvider as AiProvider,
+  ChatMessage as ModelMessage,
+  ToolDefinition as ModelToolDefinition,
+} from "./providers/provider-interface.ts";
 import { calculateFounderRetainedCashVault } from "../finance/founder-vault.ts";
 import { calculateMasterProfitEngine } from "../finance/profit-engine.ts";
 
@@ -2694,7 +2701,7 @@ export async function runMasterAi(
         return {
           ok: true,
           text: `Action \`${input.approvedCallName}\` was approved and executed successfully.\n\n\`\`\`json\n${JSON.stringify(result, null, 2)}\n\`\`\``,
-          provider: input.provider || "local_deterministic",
+          provider: input.provider || "system-execution",
           model: "governed-execution-engine",
           specialist: { id: specialist.id, name: specialist.name, team: specialist.team, title: specialist.title },
           toolCalls: [{ callId: input.approvedCallId, name: input.approvedCallName, status: "executed", risk: spec.risk }],
@@ -2721,7 +2728,7 @@ export async function runMasterAi(
   const toolCallsSummary: ToolCallResult[] = [];
   const pendingApprovals: PendingApproval[] = [];
   const evidence = new Set<string>(["RESULT"]);
-  let activeProvider: AiProvider = input.provider || "local_deterministic";
+  let activeProvider: AiProvider = input.provider || "none";
   let activeModel = "orderking-master-ai-v1";
   let finalText = "";
 

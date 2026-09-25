@@ -39,7 +39,9 @@ function HomePage() {
         }
       />
       {q.error ? <ErrorBanner message={q.error.message} onRetry={() => void q.refetch()} /> : null}
-      <p className="mb-4 text-xs text-subtle">{q.data?.period ?? "Today"} · {tr("sim.short")}</p>
+      <p className="mb-4 text-xs text-subtle">
+        {q.data?.period ?? "Today"} · {q.data?.dataMode === "LIVE" ? "LIVE DATA" : q.data?.dataMode === "SIMULATED" ? "SIMULATED DATA" : "SHARED CORE NOT CONNECTED"}
+      </p>
       <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-subtle">{tr("home.happening")}</h2>
       <div className="mb-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi label="Orders today" value={dash(q.data?.today?.orders)} />
@@ -72,7 +74,7 @@ function HomePage() {
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <Kpi label="GMV today" value={q.data?.kpis ? formatINR(q.data.kpis.gmvPaise) : dash(undefined)} />
             <Kpi label="Platform revenue" value={q.data?.kpis ? formatINR(q.data.kpis.revenuePaise) : dash(undefined)} />
-            <Kpi label="Contribution" value={q.data?.kpis ? formatINR(q.data.kpis.contributionPaise) : dash(undefined)} hint="After variable costs. Simulated." />
+            <Kpi label="Contribution" value={q.data?.kpis ? formatINR(q.data.kpis.contributionPaise) : dash(undefined)} hint={q.data?.dataMode === "LIVE" ? "After variable costs." : "Not live-verified."} />
             <Kpi label="Refunds" value={q.data?.kpis ? formatINR(q.data.kpis.refundsPaise) : dash(undefined)} />
           </div>
         </>

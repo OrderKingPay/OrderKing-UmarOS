@@ -46,6 +46,7 @@ export interface Sql {
  */
 const globalRef = globalThis as typeof globalThis & {
   __pgSqlPromise__?: Promise<Sql>;
+  __pgPool__?: import("pg").Pool;
   __pgliteInstance__?: Promise<import("@electric-sql/pglite").PGlite>;
   __pgliteMigrateChain__?: Promise<void>;
 };
@@ -93,7 +94,8 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const pool = new Pool({ connectionString: databaseUrl });
+    globalRef.__pgPool__ ??= new Pool({ connectionString: databaseUrl });
+    const pool = globalRef.__pgPool__;
     return toSql(async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
       return res.rows as T[];
@@ -192,6 +194,48 @@ export function getSql(): Promise<Sql> {
     throw err;
   });
   return sqlPromise;
+}
+
+/**
+ * Run a set of database operations inside one real database transaction.
+ * Neon uses one checked-out pg client; PGLite uses its native transaction API.
+ */
+export async function withDbTransaction<T>(fn: (tx: Sql) => Promise<T>): Promise<T> {
+  await getSql();
+
+  if (dbSource === "neon") {
+    const pool = globalRef.__pgPool__;
+    if (!pool) throw new Error("Neon pool is not initialized.");
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const tx = toSql(async <R>(text: string, params: unknown[]) => {
+        const result = await client.query(text, params);
+        return result.rows as R[];
+      });
+      const result = await fn(tx);
+      await client.query("COMMIT");
+      return result;
+    } catch (error) {
+      try {
+        await client.query("ROLLBACK");
+      } catch {
+        // Preserve the original database error.
+      }
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  const pg = await getPglite();
+  return pg.transaction(async (tx) => {
+    const sql = toSql(async <R>(text: string, params: unknown[]) => {
+      const result = await tx.query<R>(text, params);
+      return result.rows;
+    });
+    return fn(sql);
+  });
 }
 
 /**

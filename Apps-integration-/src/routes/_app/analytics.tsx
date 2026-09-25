@@ -28,7 +28,9 @@ function AnalyticsPage() {
         <option value="7d">7 days</option>
         <option value="30d">30 days</option>
       </select>
-      <p className="mb-3 text-xs text-subtle">{q.data?.period} · SIMULATED DATA</p>
+      <p className="mb-3 text-xs text-subtle">
+        {q.data?.period} · {q.data?.dataMode === "LIVE" ? "LIVE DATA" : q.data?.dataMode === "SIMULATED" ? "SIMULATED DATA" : "SHARED CORE NOT CONNECTED"}
+      </p>
       <div className="mb-6 grid gap-3 sm:grid-cols-3">
         {(q.data?.customers ?? []).map((c) => (
           <Kpi key={c.status} label={`Customers ${c.status}`} value={String(c.n)} />

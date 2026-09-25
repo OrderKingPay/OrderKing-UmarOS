@@ -1275,25 +1275,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     setShowScratchCard(true);
   };
 
-  const handleVerifyUpiPin = (pin: string) => {
+  const handleVerifyUpiPin = (_pin: string) => {
     if (!selectedBankForBalance) return;
-    if (pin.length < 4) {
-      toast.error("Please enter your 4-digit UPI PIN");
-      return;
-    }
-    setPinVerifying(true);
-    setTimeout(() => {
-      setPinVerifying(false);
-      const randomBal = selectedBankForBalance.balance || Math.floor(12000 + Math.random() * 85000);
-      setBalanceRevealed((prev) => ({
-        ...prev,
-        [selectedBankForBalance.id]: randomBal,
-      }));
-      playSoundboxChime(100);
-      toast.success(`✅ ${selectedBankForBalance.bankName} balance verified via NPCI UPI!`);
-      setSelectedBankForBalance(null);
-      setUpiPinInput("");
-    }, 850);
+    setPinVerifying(false);
+    setUpiPinInput("");
+    toast.error("Bank balance verification is unavailable: no authorized bank/NPCI provider is connected.");
   };
 
   const handleStartAddBank = (bankName: string) => {
@@ -1302,49 +1288,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleSimVerification = () => {
-    setSimVerifying(true);
-    setTimeout(() => {
-      setSimVerifying(false);
-      const newAccNumber = `•••• ${Math.floor(1000 + Math.random() * 9000)}`;
-      const newBank: BankAccount = {
-        id: `bank_${Date.now()}`,
-        bankName: selectedBankToAdd,
-        bankCode: selectedBankToAdd.toLowerCase().replace(/[^a-z]/g, "").slice(0, 5),
-        accountNumberMasked: newAccNumber,
-        accountType: "Savings",
-        isPrimary: false,
-        balance: Math.floor(15000 + Math.random() * 50000),
-        balanceCheckedAt: "Just now",
-        color: "from-emerald-700 to-teal-900",
-        icon: "🏛️",
-      };
-      const updated = [...linkedBanks, newBank];
-      setLinkedBanks(updated);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("ok_kingpay_linked_banks", JSON.stringify(updated));
-      }
-      setAddBankStep("success");
-      playSoundboxChime(500);
-      toast.success(`🎉 ${selectedBankToAdd} linked successfully to KingPay UPI!`);
-    }, 1200);
+    setSimVerifying(false);
+    setAddBankStep("sim");
+    toast.error("Bank linking is unavailable: no authorized bank/NPCI account-linking provider is connected.");
   };
 
   const handleSelfTransferSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const amt = parseInt(selfTransferAmount, 10);
-    if (isNaN(amt) || amt <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-    if (selfFromBank === selfToBank) {
-      toast.error("Source and destination accounts must be different");
-      return;
-    }
-    const fromName = linkedBanks.find((b) => b.id === selfFromBank)?.bankName || "Primary Account";
-    const toName = linkedBanks.find((b) => b.id === selfToBank)?.bankName || "Secondary Account";
-    playSoundboxChime(amt);
-    toast.success(`⚡ Self-Transfer of ₹${amt} from ${fromName} to ${toName} completed via UPI! (0% Fee)`);
-    setShowSelfTransferModal(false);
+    toast.error("Self-account transfer is unavailable until a real bank/UPI transfer provider is connected.");
   };
 
   const handleBuyGold = (e: React.FormEvent) => {

@@ -1,8 +1,13 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createFileRoute } from "@tanstack/react-router";
 import { handleTravelHttp } from "@/lib/orderking/server/travel-http.server";
 
-export const APIRoute = createAPIFileRoute("/api/v1/travel/book")({
-  POST: async ({ request, params }) => {
-    return handleTravelHttp(request, params as Record<string, string | undefined>);
+export const Route = createFileRoute("/api/v1/travel/book")({
+  server: {
+    handlers: {
+      OPTIONS: async ({ request, params }) =>
+        handleTravelHttp(request, params as Record<string, string | undefined>),
+      POST: async ({ request, params }) =>
+        handleTravelHttp(request, params as Record<string, string | undefined>),
+    },
   },
 });

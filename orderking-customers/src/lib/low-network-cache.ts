@@ -2,7 +2,7 @@
  * Low-Network & 2G Offline-First Cache Layer
  * OrderKing Customer App
  * 
- * Guarantees 0ms instant response on 2G, EDGE, or unstable border networks:
+ * Provides best-effort offline/low-network caching without claiming zero network latency:
  * - Aggressive localStorage snapshotting for catalog, active orders, and KingPay balances.
  * - Auto-detects 2G/slow network via Network Information API or fetch latency.
  * - Queues background offline mutations and synchronizes upon network recovery.

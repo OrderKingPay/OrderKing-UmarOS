@@ -8,7 +8,7 @@ export type Bootstrap = {
   branding: BrandingConfig;
   flags: FeatureFlag[];
   nav: NavSection[];
-  dataMode: "SIMULATED";
+  dataMode: "LIVE" | "SIMULATED" | "NOT_CONNECTED";
 };
 
 const Ctx = createContext<{

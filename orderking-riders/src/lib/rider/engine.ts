@@ -547,7 +547,7 @@ export class RiderEngine {
       failReason: null,
       createdAt: now,
       updatedAt: now,
-      dataMode: "SIMULATED",
+      dataMode: offer.dataMode,
     };
     await this.store.insertDelivery(delivery);
     await this.recordTransition(delivery, null, "ACCEPTED", "RIDER", rider.userId, "accepted offer");
@@ -561,7 +561,7 @@ export class RiderEngine {
           salt: secret.salt,
           attempts: 0,
           verifiedAt: null,
-          simulatedPlain: otp,
+          simulatedPlain: offer.dataMode === "SIMULATED" ? otp : null,
         },
         rider.userId,
       );
@@ -823,7 +823,7 @@ export class RiderEngine {
         amountPaise: d.expectedPayoutPaise,
         note: "Delivery payout",
         at: this.now(),
-        dataMode: "SIMULATED",
+        dataMode: d.dataMode,
       },
     ];
     if (cfg.flags.incentives && d.packageCount > 1) {
@@ -868,7 +868,7 @@ export class RiderEngine {
           amountPaise: waitBonusPaise,
           note: `Kitchen wait-time bonus (${extraMins} mins)`,
           at: this.now(),
-          dataMode: "SIMULATED",
+          dataMode: d.dataMode,
         });
       }
     }
@@ -900,7 +900,7 @@ export class RiderEngine {
       photoBytes: input.bytes ?? null,
       photoDataUrl: input.dataUrl ?? null,
       capturedAt: this.now(),
-      dataMode: "SIMULATED" as const,
+      dataMode: d.dataMode,
     };
     await this.store.insertPod(pod, userId);
     return { id: pod.id, method: pod.method, capturedAt: pod.capturedAt };

@@ -9,7 +9,7 @@ import { can, assertNoPrivilegeEscalation, PERMISSIONS, ROLE_CATALOG, type Permi
 import { canTransition } from "../engine/orders";
 import { assertRefundAllowed, restaurantSettlement } from "../engine/finance";
 import { parseNlQuery } from "../engine/nl";
-import { computeEconomics, DEFAULT_PILOT_ASSUMPTIONS } from "../unit-economics";
+import { computeEconomics } from "../unit-economics";
 import { mulBps } from "../money";
 import { newId, requestId } from "../ids";
 import { visibleNav } from "../nav";
@@ -18,6 +18,28 @@ import type { BrandingConfig, DateRangeKey } from "../types";
 
 export type FnResult<T> = { ok: true; data: T } | { ok: false; error: string; code: string };
 export type JsonRow = Record<string, string | number | boolean | null>;
+export type IntegrationDataMode = "LIVE" | "SIMULATED" | "NOT_CONNECTED";
+
+async function integrationDataMode(
+  sql: Awaited<ReturnType<typeof getSql>>,
+): Promise<IntegrationDataMode> {
+  const sharedCoreConnected =
+    process.env.ORDERKING_SHARED_CORE_CONNECTED?.trim().toLowerCase() === "true";
+  if (sharedCoreConnected) return "LIVE";
+
+  const rows = await sql<{ value: string }>`
+    select value from config_kv
+    where org_id = ${ORG_ID} and key = ${"data_mode"}
+  `;
+  const raw = rows[0]?.value;
+  try {
+    const parsed = raw ? JSON.parse(raw) as { mode?: string } : null;
+    if (parsed?.mode === "SIMULATED") return "SIMULATED";
+  } catch {
+    // Invalid stored mode never counts as live.
+  }
+  return "NOT_CONNECTED";
+}
 
 function fail(err: unknown): FnResult<never> {
   if (err instanceof AppError) return { ok: false, error: err.message, code: err.code };
@@ -117,10 +139,10 @@ export const getBootstrap = createServerFn({ method: "GET" })
     branding: BrandingConfig;
     flags: { key: string; enabled: boolean; description: string }[];
     nav: ReturnType<typeof visibleNav>;
-    dataMode: "SIMULATED";
+    dataMode: IntegrationDataMode;
   }>> => {
     try {
-      const { actor, branding, flags } = await requireEmployee(context.userId);
+      const { sql, actor, branding, flags } = await requireEmployee(context.userId);
       return {
         ok: true,
         data: {
@@ -128,7 +150,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
           branding,
           flags,
           nav: visibleNav(actor.permissions),
-          dataMode: "SIMULATED",
+          dataMode: await integrationDataMode(sql),
         },
       };
     } catch (err) {
@@ -211,6 +233,7 @@ export const getOpsHome = createServerFn({ method: "GET" })
       return {
         ok: true as const,
         data: {
+          dataMode: await integrationDataMode(sql),
           today: ops[0],
           kpis,
           weekKpis,
@@ -233,6 +256,7 @@ export const getCeoDashboard = createServerFn({ method: "GET" })
       const bounds = rangeBounds(data.range ?? "today", data.from, data.to);
       const yesterday = rangeBounds("yesterday");
       const money = await moneyTotals(sql, actor.orgId, bounds.from, bounds.to);
+      const dataMode = await integrationDataMode(sql);
       const prior = await moneyTotals(sql, actor.orgId, yesterday.from, yesterday.to);
       const counts = await sql<{ restaurants: number; riders: number; customers: number; online: number }>`
         select
@@ -251,17 +275,26 @@ export const getCeoDashboard = createServerFn({ method: "GET" })
         limit 5
       `;
       const weak = [...top].sort((a, b) => a.gmv - b.gmv).slice(0, 3);
-      const input = {
-        ...DEFAULT_PILOT_ASSUMPTIONS,
-        orders: money.orders || DEFAULT_PILOT_ASSUMPTIONS.orders,
-        aovPaise: money.aovPaise || DEFAULT_PILOT_ASSUMPTIONS.aovPaise,
+      const observedEconomics = {
+        orders: money.orders,
+        aovPaise: money.aovPaise,
+        commissionBps: money.gmvPaise ? Math.round((money.restaurantCommissionPaise * 10_000) / money.gmvPaise) : 0,
+        deliveryFeePaise: money.orders ? Math.trunc(money.deliveryRevenuePaise / money.orders) : 0,
+        customerFeePaise: money.orders ? Math.trunc(money.customerFeesPaise / money.orders) : 0,
+        riderPayoutPaise: money.orders ? Math.trunc(money.riderCostPaise / money.orders) : 0,
+        paymentCostBps: money.gmvPaise ? Math.round((money.paymentCostPaise * 10_000) / money.gmvPaise) : 0,
+        platformDiscountPaise: money.orders ? Math.trunc(money.promotionalCostPaise / money.orders) : 0,
+        refundRateBps: money.gmvPaise ? Math.round((money.refundsPaise * 10_000) / money.gmvPaise) : 0,
+        supportCostPaise: money.orders ? Math.trunc(money.supportCostPaise / money.orders) : 0,
+        infraCostPaise: money.orders ? Math.trunc(money.infraCostPaise / money.orders) : 0,
+        marketingSpendPaise: 0,
       };
-      const slice = computeEconomics(input);
+      const slice = computeEconomics(observedEconomics);
       return {
         ok: true as const,
         data: {
           period: bounds.label,
-          simulated: true,
+          dataMode,
           money,
           prior,
           counts: counts[0],
@@ -766,7 +799,10 @@ export const getFinance = createServerFn({ method: "GET" })
         where s.org_id = ${actor.orgId}
         order by s.party_type, party_name
       `;
-      return { ok: true as const, data: { money, settlements, period: bounds.label, simulated: true } };
+      return {
+        ok: true as const,
+        data: { money, settlements, period: bounds.label, dataMode: await integrationDataMode(sql) },
+      };
     } catch (err) {
       return fail(err);
     }
@@ -1058,7 +1094,16 @@ export const getAnalytics = createServerFn({ method: "GET" })
       const customers = can(actor.permissions, "view_customers")
         ? await sql<{ status: string; n: number }>`select status, count(*)::int as n from customers where org_id = ${actor.orgId} group by status`
         : [];
-      return { ok: true as const, data: { restaurants, riders, customers, period: bounds.label } };
+      return {
+        ok: true as const,
+        data: {
+          restaurants,
+          riders,
+          customers,
+          period: bounds.label,
+          dataMode: await integrationDataMode(sql),
+        },
+      };
     } catch (err) {
       return fail(err);
     }

@@ -8,6 +8,7 @@ export interface TravelSearchQuery {
   returnDate?: string;
   passengers: number;
   class?: string;
+  keyword?: string;
 }
 
 export interface NormalizedTravelResult {

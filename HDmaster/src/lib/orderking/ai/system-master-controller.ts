@@ -43,7 +43,7 @@ export interface SystemRestartResult {
 }
 
 export class SystemMasterController {
-  private autoCleanEnabled: boolean = true;
+  private autoCleanEnabled: boolean = false;
   private refreshCount: number = 0;
   private restartCount: number = 0;
 
@@ -79,9 +79,9 @@ export class SystemMasterController {
       audioResynced: true,
       speechRecognitionActive: true,
       memoryPreserved: true,
-      glitchesClearedCount: 4,
+      glitchesClearedCount: 0,
       latencyMs: Math.max(1, latency),
-      message: "Soft Refresh Complete: Audio buffer resynced, DOM glitches cleared. 100% connected with zero data loss.",
+      message: "Soft Refresh Complete: browser speech state resynchronized. No data was deleted or altered.",
     };
   }
 
@@ -152,7 +152,7 @@ export class SystemMasterController {
       duplicateItemsCount: duplicatesList.length,
       duplicateSizeBytes,
       formattedDuplicateSize: `${mb} MB`,
-      staleCachesCount: 6,
+      staleCachesCount: 0,
       problematicItemsCount: 0,
       duplicatesList,
       suggestions,
@@ -162,6 +162,23 @@ export class SystemMasterController {
   // 4. PURGE DUPLICATES & JUNK
   public purgeDuplicatesAndJunk(): { freedBytes: number; freedFormatted: string; removedDuplicatesCount: number } {
     const report = this.scanJunkAndDuplicates();
+    return {
+      freedBytes: 0,
+      freedFormatted: "0 B",
+      removedDuplicatesCount: 0,
+    };
+  }
+
+  public purgeApprovedDuplicatesAndJunk(approvedByFounder: boolean): {
+    freedBytes: number;
+    freedFormatted: string;
+    removedDuplicatesCount: number;
+  } {
+    if (!approvedByFounder) {
+      return { freedBytes: 0, freedFormatted: "0 B", removedDuplicatesCount: 0 };
+    }
+
+    const report = this.scanJunkAndDuplicates();
     let freedBytes = 0;
 
     for (const dup of report.duplicatesList) {
@@ -169,7 +186,6 @@ export class SystemMasterController {
       freedBytes += dup.duplicate.sizeBytes;
     }
 
-    // Also purge stale browser caches
     const cacheResult = mediaStorageVault.purgeStorage({
       purgeImages: false,
       purgeVideos: false,
@@ -219,7 +235,7 @@ export class SystemMasterController {
     status: string;
   } {
     const fixedItems: string[] = [];
-    const memoryReclaimedBytes = 1450000; // ~1.45 MB reclaimed
+    let memoryReclaimedBytes = 0;
 
     // 1. Audio context lock clearing
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
