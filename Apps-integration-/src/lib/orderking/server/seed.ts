@@ -76,19 +76,27 @@ export async function ensureSeeded(sql: Sql): Promise<void> {
       (${ORG_ID}, ${"settings"}, ${JSON.stringify(DEFAULT_SETTINGS)}),
       (${ORG_ID}, ${"data_mode"}, ${JSON.stringify({ mode: declaredMode })})
     `;
-  } else {
+  }
+
+  const dataModeRow = await sql<{ value: string }>`
+    select value from config_kv where org_id = ${ORG_ID} and key = ${"data_mode"}
+  `;
+  if (!dataModeRow[0]) {
     await sql`
       insert into config_kv (org_id, key, value)
       values (${ORG_ID}, ${"data_mode"}, ${JSON.stringify({ mode: declaredMode })})
-      on conflict (org_id, key)
-      do update set value = excluded.value, updated_at = now()
-      where ${declaredMode} <> "SIMULATED" or config_kv.value = '' or config_kv.value is null
+      on conflict (org_id, key) do nothing
+    `;
+  } else if (declaredMode !== "SIMULATED") {
+    await sql`
+      update config_kv
+      set value = ${JSON.stringify({ mode: declaredMode })}, updated_at = now()
+      where org_id = ${ORG_ID} and key = ${"data_mode"}
     `;
   }
 
   const restCount = await sql<{ n: number }>`select count(*)::int as n from restaurants where org_id = ${ORG_ID}`;
   if ((restCount[0]?.n ?? 0) > 0 || !demoSeedEnabled || sharedCoreConnected) return;
-
   await seedMarketplace(sql);
 }
 
