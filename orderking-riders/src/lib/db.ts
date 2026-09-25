@@ -16,6 +16,14 @@ const databaseUrl =
  * the app has a working database even with nothing configured — the live preview
  * included. Swap in Neon later by just setting `DATABASE_URL`; no code changes.
  */
+const isProduction =
+  typeof process !== "undefined" &&
+  (process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production");
+
+if (isProduction && !databaseUrl) {
+  throw new Error("Rider production database is not configured: DATABASE_URL is required.");
+}
+
 export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
 
 /**
