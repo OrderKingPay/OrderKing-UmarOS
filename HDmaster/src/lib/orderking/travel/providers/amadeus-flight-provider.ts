@@ -198,7 +198,10 @@ export class AmadeusFlightProvider implements TravelProvider {
         arrivalTime: lastSegment.arrival.at,
         carrier: {
           code: firstSegment.carrierCode,
-          name: firstSegment.carrierCode,
+          name: String(
+            data.dictionaries?.carriers?.[firstSegment.carrierCode] ||
+            firstSegment.carrierCode
+          ),
         },
         price: {
           amount: Number(offer.price?.total || 0),
