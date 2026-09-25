@@ -1,10 +1,11 @@
 import type { DispatchPort, ReadyOrderEvent, EligibleRider } from "./dispatch.ts";
 
 // In a real implementation, this would connect to Postgres
-import { sql } from "../../database/db.ts";
+import { getSql } from "@/lib/db";
 
 export class LiveDispatchAdapter implements DispatchPort {
   async enqueueReady(event: ReadyOrderEvent): Promise<{ jobId: string }> {
+    const sql = await getSql();
     const res = await sql`
       INSERT INTO dispatch_jobs (
         order_id, 
@@ -25,6 +26,7 @@ export class LiveDispatchAdapter implements DispatchPort {
   }
 
   async findEligibleRiders(jobId: string): Promise<EligibleRider[]> {
+    const sql = await getSql();
     const jobRes = await sql`SELECT * FROM dispatch_jobs WHERE id = ${jobId}`;
     if (!jobRes.length) return [];
     
@@ -62,11 +64,13 @@ export class LiveDispatchAdapter implements DispatchPort {
   }
 
   async offerToRider(jobId: string, riderId: string, timeoutSeconds: number) {
+    const sql = await getSql();
+    const safeTimeout = Math.max(1, Math.min(600, Math.trunc(timeoutSeconds)));
     const res = await sql`
       INSERT INTO dispatch_offers (
         job_id, rider_id, status, expires_at
       ) VALUES (
-        ${jobId}, ${riderId}, 'OPEN', NOW() + interval '${timeoutSeconds} seconds'
+        ${jobId}, ${riderId}, 'OPEN', NOW() + (${safeTimeout} || ' seconds')::interval
       )
       RETURNING id, job_id, rider_id, status
     `;
@@ -79,6 +83,7 @@ export class LiveDispatchAdapter implements DispatchPort {
   }
 
   async exclusiveAccept(offerId: string, riderId: string): Promise<boolean> {
+    const sql = await getSql();
     const res = await sql`
       UPDATE dispatch_offers 
       SET status = 'ACCEPTED' 
