@@ -31,7 +31,14 @@ export class LiveDispatchAdapter implements DispatchPort {
     const job = jobRes[0];
     
     // Find riders within 5km using PostGIS or bounding box
-    const riders = await sql`
+    const riders = await sql<{
+      rider_id: string;
+      user_id: string;
+      status: string;
+      kyc_status: string;
+      lat: number;
+      lng: number;
+    }>`
       SELECT r.rider_id, r.user_id, r.status, r.kyc_status, l.lat, l.lng
       FROM riders r
       JOIN rider_locations l ON r.rider_id = l.rider_id
@@ -44,7 +51,7 @@ export class LiveDispatchAdapter implements DispatchPort {
       )
     `;
 
-    return riders.map((r: any) => ({
+    return riders.map((r) => ({
       riderId: r.rider_id,
       userId: r.user_id,
       status: r.status,
