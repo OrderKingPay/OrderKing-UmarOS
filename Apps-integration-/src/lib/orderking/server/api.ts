@@ -1084,7 +1084,16 @@ export const getAnalytics = createServerFn({ method: "GET" })
       const customers = can(actor.permissions, "view_customers")
         ? await sql<{ status: string; n: number }>`select status, count(*)::int as n from customers where org_id = ${actor.orgId} group by status`
         : [];
-      return { ok: true as const, data: { restaurants, riders, customers, period: bounds.label } };
+      return {
+        ok: true as const,
+        data: {
+          restaurants,
+          riders,
+          customers,
+          period: bounds.label,
+          dataMode: await integrationDataMode(sql),
+        },
+      };
     } catch (err) {
       return fail(err);
     }
