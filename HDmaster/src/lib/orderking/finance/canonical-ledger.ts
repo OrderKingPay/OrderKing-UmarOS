@@ -357,9 +357,9 @@ export class CanonicalLedger {
     }
 
     const validTransitions: Record<SettlementState, SettlementState[]> = {
-      CALCULATED: ["VALIDATED", "FAILED"],
-      VALIDATED: ["APPROVED", "FAILED"],
-      APPROVED: ["INITIATED", "FAILED"],
+      CALCULATED: ["VALIDATED", "FAILED", "FRAUD_FROZEN"],
+      VALIDATED: ["APPROVED", "FAILED", "FRAUD_FROZEN"],
+      APPROVED: ["INITIATED", "FAILED", "FRAUD_FROZEN"],
       INITIATED: ["PROVIDER_PENDING", "FAILED"],
       PROVIDER_PENDING: ["PROVIDER_CONFIRMED", "FAILED", "RETRYABLE"],
       PROVIDER_CONFIRMED: ["BANK_PROCESSING", "PAID", "FAILED"],
@@ -368,6 +368,7 @@ export class CanonicalLedger {
       FAILED: ["RETRYABLE", "ESCALATED"],
       RETRYABLE: ["INITIATED", "FAILED"],
       ESCALATED: ["APPROVED", "FAILED"],
+      FRAUD_FROZEN: ["VALIDATED", "FAILED", "ESCALATED"],
     };
 
     const allowed = validTransitions[batch.state];
