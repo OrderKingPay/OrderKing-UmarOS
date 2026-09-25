@@ -34,6 +34,16 @@ export const Route = createRootRoute({
         { title: config.brand.seoTitle },
         { name: "description", content: config.brand.seoDescription },
         { name: "theme-color", content: config.brand.primaryColor },
+
+          { property: "og:title", content: config.brand.seoTitle },
+          { property: "og:description", content: config.brand.seoDescription },
+          { property: "og:image", content: config.brand.ogImageUrl },
+          { property: "og:type", content: "website" },
+          { name: "twitter:card", content: "summary_large_image" },
+          { name: "twitter:title", content: config.brand.seoTitle },
+          { name: "twitter:description", content: config.brand.seoDescription },
+          { name: "twitter:image", content: config.brand.ogImageUrl },
+        
       ],
       links: [
         { rel: "preconnect", href: "https://vitals.vercel-insights.com" },
