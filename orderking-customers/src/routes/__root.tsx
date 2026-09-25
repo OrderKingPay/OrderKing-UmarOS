@@ -70,6 +70,7 @@ function Root() {
       <head>
         <Meta />
           <Links />
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </head>
       <body>
         <PreviewHostBridge />

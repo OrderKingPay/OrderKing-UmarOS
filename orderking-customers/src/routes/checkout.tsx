@@ -81,9 +81,7 @@ function CheckoutPage() {
       void trackAnalytics({ data: { name: "checkout_started" } });
       const idempotencyKey = newId("idem");
       const cfg = await loadConfig();
-        if (method === "RAZORPAY_ONLINE") {
-          await createRazorpayOrder({ data: { amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey } });
-        }
+        // Handle RAZORPAY_ONLINE later
       let orderNotes = notes;
       if (noCutlery) {
         orderNotes = `[🌱 No Cutlery Needed] ${orderNotes}`.trim();
@@ -94,15 +92,51 @@ function CheckoutPage() {
       if (roundupGold && goldRoundupPaise > 0) {
         orderNotes = `[✨ 24K Gold Savings: ₹${(goldRoundupPaise / 100).toFixed(2)}] ${orderNotes}`.trim();
       }
-      const result = cfg.marketplace.launchMode === "live"
-        ? await placeOrderViaHDmaster({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: method === "RAZORPAY_ONLINE" ? "UPI_SANDBOX" : method, notes: orderNotes, idempotencyKey } })
-        : await placeOrder({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: method === "RAZORPAY_ONLINE" ? "UPI_SANDBOX" : method, notes: orderNotes, idempotencyKey } });
-      clear();
-      toast.success(t("orders.placed"));
-      void navigate({ to: "/orders/$id", params: { id: result.orderId } });
+      const placeFinalOrder = async (finalPaymentMethod: string) => {
+        const result = cfg.marketplace.launchMode === "live"
+          ? await placeOrderViaHDmaster({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod as any, notes: orderNotes, idempotencyKey } })
+          : await placeOrder({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod as any, notes: orderNotes, idempotencyKey } });
+        clear();
+        toast.success(t("orders.placed"));
+        void navigate({ to: "/orders/$id", params: { id: result.orderId } });
+      };
+
+      if (method === "RAZORPAY_ONLINE") {
+        const rzpOrder = await createRazorpayOrder({ data: { amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey } });
+        const options = {
+          key: rzpOrder.keyId,
+          amount: rzpOrder.amountPaise,
+          currency: rzpOrder.currency,
+          name: cfg.brand.name,
+          description: "OrderKing Food Delivery",
+          image: cfg.brand.logoUrl,
+          order_id: rzpOrder.orderId,
+          handler: async function (response: any) {
+            await placeFinalOrder("UPI_SANDBOX");
+          },
+          prefill: {
+            name: user.name ?? "",
+            email: user.email ?? "",
+            contact: user.phone ?? ""
+          },
+          theme: {
+            color: cfg.brand.primaryColor
+          }
+        };
+        // @ts-ignore
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", function (response: any) {
+          toast.error("Payment failed. Please try again.");
+          setBusy(false);
+        });
+        rzp.open();
+      } else {
+        await placeFinalOrder(method);
+      }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : t("checkout.failed"));
-    } finally { setBusy(false); }
+      setBusy(false);
+    }
   };
 
   const basePayable = (quote.data?.quote.totalPaise ?? 0) + tipPaise;
