@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import { requirePermission } from "@/lib/orderking/rbac";
 import { appendAudit, ensureWorkspace, nid } from "@/lib/orderking/server/workspace.server";
 import { getSql } from "@/lib/db";
@@ -54,8 +55,11 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
         );
         if (entry.status === "BLOCKED_AML") return json({ error: "Payment blocked by AML policy", code: "AML_BLOCKED" }, 403);
       }
+    if (process.env.VERCEL_ENV === "production" && input.paymentMethod === "UPI_SANDBOX") {
+      return json({ error: "Sandbox UPI is not available in production.", code: "SANDBOX_PAYMENT_BLOCKED" }, 400);
+    }
     const paymentStatus = input.paymentMethod === "COD" ? "PENDING" : input.paymentMethod === "KING_PAY" ? "PAID_WALLET" : "AUTHORIZED_SANDBOX";
-    await sql`insert into orders (id,org_id,city_id,zone_id,restaurant_id,customer_id,status,payment_status,payment_method,food_paise,restaurant_discount_paise,platform_discount_paise,delivery_fee_paise,service_fee_paise,tax_paise,total_paise,commission_paise,promised_at,placed_at,data_mode,delivery_address_json,delivery_lat,delivery_lng,delivery_otp) values (${orderId},${ws.ctx.orgId},${input.cityId},${input.zoneId},${input.restaurantId},${customerId},'PENDING',${paymentStatus},${input.paymentMethod},${input.foodPaise},${input.restaurantDiscountPaise},${input.platformDiscountPaise},${input.deliveryFeePaise},${input.serviceFeePaise},${input.taxPaise},${input.totalPaise},${input.commissionPaise},now()+interval '45 minutes',now(),${ws.dataMode},${JSON.stringify(input.address)},${input.address.lat ?? null},${input.address.lng ?? null},${Math.floor(1000 + Math.random() * 9000).toString()})`;
+    await sql`insert into orders (id,org_id,city_id,zone_id,restaurant_id,customer_id,status,payment_status,payment_method,food_paise,restaurant_discount_paise,platform_discount_paise,delivery_fee_paise,service_fee_paise,tax_paise,total_paise,commission_paise,promised_at,placed_at,data_mode,delivery_address_json,delivery_lat,delivery_lng,delivery_otp) values (${orderId},${ws.ctx.orgId},${input.cityId},${input.zoneId},${input.restaurantId},${customerId},'PENDING',${paymentStatus},${input.paymentMethod},${input.foodPaise},${input.restaurantDiscountPaise},${input.platformDiscountPaise},${input.deliveryFeePaise},${input.serviceFeePaise},${input.taxPaise},${input.totalPaise},${input.commissionPaise},now()+interval '45 minutes',now(),${ws.dataMode},${JSON.stringify(input.address)},${input.address.lat ?? null},${input.address.lng ?? null},${randomInt(1000, 10000).toString()})`;
     for (const line of input.lines) await sql`insert into order_items (id,org_id,order_id,menu_item_id,name,qty,unit_paise) values (${nid("oit")},${ws.ctx.orgId},${orderId},${line.itemId},${line.name},${line.qty},${line.unitPaise})`;
     await sql`insert into order_events (id,org_id,order_id,actor_employee_id,from_status,to_status,action,note) values (${nid("ev")},${ws.ctx.orgId},${orderId},${ws.ctx.employeeId},null,'PENDING','customer.order_created',${JSON.stringify({ customerRef: input.customerRef, address: input.address, notes: input.notes ?? null })})`;
     await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.customer_created", targetType: "order", targetId: orderId, next: { status: "PENDING", customerId, restaurantId: input.restaurantId, dataMode: ws.dataMode }, reason: "Customer application order" });
