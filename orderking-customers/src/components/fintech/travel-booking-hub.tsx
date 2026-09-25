@@ -28,6 +28,7 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
   );
   const [trainSearching, setTrainSearching] = useState(false);
   const [trainStatus, setTrainStatus] = useState<string | null>(null);
+  const [trainResults, setTrainResults] = useState<any[]>([]);
 
   const searchTrains = async () => {
     if (!fromStation.trim() || !toStation.trim()) {
@@ -37,6 +38,7 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
 
     setTrainSearching(true);
     setTrainStatus(null);
+    setTrainResults([]);
 
     try {
       const baseUrl = (import.meta.env.VITE_HDMASTER_API_BASE_URL || "https://hdmaster.vercel.app").replace(/\/$/, "");
@@ -57,6 +59,7 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
       }
 
       if (Array.isArray(data.results) && data.results.length > 0) {
+        setTrainResults(data.results);
         setTrainStatus(`Live rail provider returned ${data.results.length} result(s).`);
       } else {
         const details = Array.isArray(data.errors) && data.errors.length
@@ -139,6 +142,34 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
             <Search className="size-4 mr-2" />
             {trainSearching ? "Checking live rail provider..." : "Search live trains"}
           </Button>
+
+          {trainResults.length > 0 && (
+            <div className="space-y-2">
+              {trainResults.map((train) => {
+                const raw = train?.rawProviderData || {};
+                const platform = raw.platform ?? raw.boardingPlatform ?? raw.platformNumber ?? null;
+                return (
+                  <div key={train.id} className="rounded-xl border border-border bg-surface-2 p-3 text-xs">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="font-bold text-fg">{train.carrier?.name || train.carrier?.code || "Rail provider"}</p>
+                        <p className="text-muted">{train.origin?.code} → {train.destination?.code}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-mono font-bold text-fg">
+                          {Number(train.price?.amount || 0).toLocaleString("en-IN", { style: "currency", currency: train.price?.currency || "INR" })}
+                        </p>
+                        {platform !== null && <p className="text-[10px] text-muted">Platform {String(platform)}</p>}
+                      </div>
+                    </div>
+                    <p className="mt-2 text-[10px] text-muted">
+                      {train.departureTime ? new Date(train.departureTime).toLocaleString() : "Departure time supplied by provider"} · {train.providerId || "live provider"}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {trainStatus && (
             <div className="rounded-xl border border-border bg-surface-2 p-3 text-xs text-muted flex items-start gap-2">
