@@ -75,7 +75,7 @@ export function TravelLocationPicker({ mode, value, onChange, label, placeholder
 
   useEffect(() => {
     if (mode !== "FLIGHT") return;
-    const keyword = input.trim();
+    const keyword = input.trim().replace(/\s*\([A-Z0-9]{3,4}\)\s*$/i, "").trim();
     if (keyword.length < 2) {
       setRemoteLocations([]);
       setLoading(false);
