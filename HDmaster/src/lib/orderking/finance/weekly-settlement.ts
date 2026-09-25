@@ -30,6 +30,7 @@ export type RestaurantWeeklySettlement = {
   tcsDeductionPaise: number;       // 1% TCS (CGST Act Section 52)
   tdsDeductionPaise: number;       // 1% TDS (Income Tax Section 194-O)
   platformReimbursementsPaise: number;
+  kingCoinsLiabilityFundedPaise: number;
   netPayablePaise: number;
   payoutStatus: "PENDING" | "PROCESSING" | "PAID";
 };
@@ -96,11 +97,13 @@ export function calculateRestaurantWeeklySettlement(params: {
   restaurantDiscountsPaise: number;
   packagingChargesPaise?: number;
   platformReimbursementsPaise?: number;
+  kingCoinsBurnedPaise?: number;
   commissionBps: number; // e.g. 1200 for 12%
   pgFeeBps?: number;     // e.g. 180 for 1.8%
 }): RestaurantWeeklySettlement {
   const packaging = params.packagingChargesPaise ?? 0;
   const reimbursements = params.platformReimbursementsPaise ?? 0;
+  const kingCoinsFunded = params.kingCoinsBurnedPaise ?? 0;
   const netFoodSales = Math.max(0, params.grossSalesPaise - params.restaurantDiscountsPaise);
 
   // 1. Commission & 18% GST on commission

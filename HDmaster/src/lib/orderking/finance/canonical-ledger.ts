@@ -1,6 +1,7 @@
 // Canonical Double-Entry Financial Ledger (Order King Core FinTech)
 // Strictly enforces double-entry balancing (sum(debits) === sum(credits)),
 // idempotency on all transactions, settlement state lifecycles, and audit logging.
+import { fraudShield, OrderRiskContext } from '../security/fraud-shield';
 
 
 export type LedgerAccountType =
@@ -43,6 +44,9 @@ export interface LedgerTransaction {
   timestamp: string;
   auditHash: string;
   previousHash: string;
+  isFraudSuspicious?: boolean;
+  fraudReasons?: string[];
+  fraudScore?: number;
 }
 
 export type SettlementState =
@@ -118,6 +122,9 @@ export class CanonicalLedger {
     eventType: LedgerTransaction["eventType"];
     orderId?: string;
     entries: Omit<LedgerEntry, "entryId" | "transactionId" | "timestamp">[];
+    isFraudSuspicious?: boolean;
+    fraudReasons?: string[];
+    fraudScore?: number;
   }): { success: boolean; transactionId: string; message: string } {
     // 1. RBAC validation for high-risk financial tasks (refunds, ledger adjustments, vault)
     const highRiskEvents = ["ORDER_CANCELLED_REFUND", "FOUNDER_VAULT_DEPOSIT", "GST_TAX_REMITTANCE"];
@@ -194,6 +201,9 @@ export class CanonicalLedger {
       timestamp,
       auditHash,
       previousHash: this.lastAuditHash,
+      isFraudSuspicious: params.isFraudSuspicious,
+      fraudReasons: params.fraudReasons,
+      fraudScore: params.fraudScore,
     };
 
     this.transactions.set(transactionId, tx);

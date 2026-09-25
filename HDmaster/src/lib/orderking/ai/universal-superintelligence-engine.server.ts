@@ -47,7 +47,7 @@ interface ExecutionPlan {
 
 // ─── Engine ──────────────────────────────────────────────────────────────────
 
-export class UniversalExecutionEngine {
+export class UniversalSuperintelligenceEngine {
 
   /**
    * Resolve a real configured provider or return null.

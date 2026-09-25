@@ -6,7 +6,7 @@ startCleanup();
 
 
 export default defineEventHandler(async (event) => {
-  const req = event.node.req;
+  const req = event.node?.req || (event as any).req;
 
   // 1. CORS Headers (Robust)
   setResponseHeader(event, "Access-Control-Allow-Origin", "*");
@@ -23,8 +23,11 @@ export default defineEventHandler(async (event) => {
 
   // Fast-path OPTIONS requests (debounce/preflight)
   if (req.method === "OPTIONS") {
-    event.node.res.statusCode = 204;
-    event.node.res.end();
+    const res = event.node?.res || (event as any).res;
+    if (res) {
+      res.statusCode = 204;
+      res.end();
+    }
     return;
   }
 

@@ -1,6 +1,7 @@
 // Live Multi-Model Orchestration Engine (HDmaster Core OS)
 // Concurrently coordinates frontier AI models, cross-validates outputs,
 // eliminates hallucinations, respects provider quotas/costs, and returns concise executive results.
+import { surgePricingEngine } from "../finance/surge-engine";
 
 
 export interface AIProviderAdapter {
@@ -51,6 +52,8 @@ export interface MultiModelConsensusResult {
   totalCostInr: number;
   auditSignature: string;
   hallucinationFreeVerified: boolean;
+  deliveryBasePaise: number;
+  surgeMultiplier: number;
 }
 
 export class LiveOrchestrationEngine {
@@ -199,6 +202,12 @@ export class LiveOrchestrationEngine {
     prompt: string;
     systemPrompt?: string;
     preferredProviders?: string[];
+    surgeParams?: {
+      riderSupplyDensity: number;
+      incomingOrderVelocity: number;
+      weatherConditionMultiplier?: number;
+      timeOfDayMultiplier?: number;
+    };
   }): Promise<MultiModelConsensusResult> {
     const consensusId = `cons-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -310,6 +319,20 @@ export class LiveOrchestrationEngine {
       .substring(0, 16)
       .toUpperCase();
 
+    let surgeMultiplier = 1.0;
+    let deliveryBasePaise = 4000;
+
+    if (params.surgeParams) {
+      const surgeResult = surgePricingEngine.calculateSurge({
+        riderSupplyDensity: params.surgeParams.riderSupplyDensity,
+        incomingOrderVelocity: params.surgeParams.incomingOrderVelocity,
+        weatherConditionMultiplier: params.surgeParams.weatherConditionMultiplier,
+        timeOfDayMultiplier: params.surgeParams.timeOfDayMultiplier,
+      });
+      surgeMultiplier = surgeResult.multiplier;
+      deliveryBasePaise = surgeResult.adjustedDeliveryBasePaise;
+    }
+
     return {
       consensusId,
       timestamp,
@@ -322,6 +345,8 @@ export class LiveOrchestrationEngine {
       totalCostInr: parseFloat(totalCost.toFixed(4)),
       auditSignature: `SIG_${auditSignature}`,
       hallucinationFreeVerified: true,
+      deliveryBasePaise,
+      surgeMultiplier,
     };
   }
 }

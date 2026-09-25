@@ -38,8 +38,8 @@ describe('Real End-to-End Database Lifecycle Test', () => {
       VALUES ('${payId}', '${orderId}', 'COD', 'pending', 30000, 'INR') ON CONFLICT (id) DO NOTHING
     `);
 
-    const res = await sql.query(`SELECT status FROM orders WHERE id = '${orderId}'`);
-    assert.equal(res.rows[0].status, 'PENDING');
+    const res = await sql.query(`SELECT status FROM orders WHERE id = '${orderId}'`) as any;
+    assert.equal(res[0].status, 'PENDING');
 
     // 4. Restaurant Acceptance (Partner)
     await sql.query(`UPDATE orders SET status = 'CONFIRMED' WHERE id = '${orderId}'`);
@@ -51,11 +51,11 @@ describe('Real End-to-End Database Lifecycle Test', () => {
     await sql.query(`UPDATE payments SET status = 'collected' WHERE order_id = '${orderId}'`);
 
     // 6. Verify Financial Ledger
-    const p = await sql.query(`SELECT provider, status, amount_paise FROM payments WHERE order_id = '${orderId}'`);
-    assert.equal(p.rows[0].status, 'collected');
+    const p = await sql.query(`SELECT provider, status, amount_paise FROM payments WHERE order_id = '${orderId}'`) as any;
+    assert.equal(p[0].status, 'collected');
 
-    const fo = await sql.query(`SELECT status FROM orders WHERE id = '${orderId}'`);
-    assert.equal(fo.rows[0].status, 'DELIVERED');
+    const fo = await sql.query(`SELECT status FROM orders WHERE id = '${orderId}'`) as any;
+    assert.equal(fo[0].status, 'DELIVERED');
     
     console.log("✅ REAL END-TO-END DATABASE LIFECYCLE COMPLETED SUCCESSFULLY.");
   });
