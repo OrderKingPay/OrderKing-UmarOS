@@ -39,13 +39,13 @@ export class ModelRouterService {
     }
 
     // Auto-fallback hierarchy
-    const priority = ["gemini", "anthropic", "openai", "xai"];
+    const priority = ["openai", "gemini", "anthropic", "xai"];
     for (const id of priority) {
       const p = this.providers.get(id);
       if (p && p.isConfigured) return p;
     }
 
-    return this.localFallback;
+    throw new Error("BLOCKED: No real AI provider API keys are configured. Local deterministic fallback is disabled.");
   }
 
   listProviderStatuses(): ProviderStatus[] {
@@ -90,11 +90,6 @@ export class ModelRouterService {
 
   async executeWithFallback(request: ChatRequest, preferredId?: string): Promise<ChatResponse> {
     const p = this.getProvider(preferredId);
-    try {
-      return await p.chat(request);
-    } catch (err) {
-      console.warn(`Provider ${p.id} failed, falling back to local deterministic:`, err);
-      return await this.localFallback.chat(request);
-    }
+    return await p.chat(request);
   }
 }
