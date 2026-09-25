@@ -1,3 +1,7 @@
+const fs = require('fs');
+let file = 'HDmaster/src/lib/orderking/finance/canonical-ledger.test.ts';
+
+const content = 
 import test, { describe } from "node:test";
 import assert from "node:assert/strict";
 import { canonicalLedger } from "./canonical-ledger.ts";
@@ -13,3 +17,6 @@ describe("Canonical Double-Entry Financial Ledger Engine", () => {
     assert.ok(Array.isArray(batches));
   });
 });
+;
+
+fs.writeFileSync(file, content);

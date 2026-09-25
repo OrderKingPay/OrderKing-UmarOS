@@ -1,8 +1,14 @@
 import pg from 'pg';
 
 const { Client } = pg;
+
+if (!process.env.DATABASE_URL) {
+  console.error("DATABASE_URL is missing. Please set it in your environment variables.");
+  process.exit(1);
+}
+
 const client = new Client({
-  connectionString: 'postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres'
+  connectionString: process.env.DATABASE_URL
 });
 
 async function run() {

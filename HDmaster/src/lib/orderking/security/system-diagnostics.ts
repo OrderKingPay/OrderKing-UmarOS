@@ -89,13 +89,13 @@ export class SystemDiagnosticsEngine {
   /**
    * Runs comprehensive diagnostics across all sub-systems.
    */
-  public static runFullDiagnostics(): SystemDiagnosticsReport {
+  public static async runFullDiagnostics(): Promise<SystemDiagnosticsReport> {
     const evaluatedAt = new Date().toISOString();
     const components: ComponentHealth[] = [];
     const incidents: SystemIncident[] = [];
 
     // 1. Finance & Canonical Double-Entry Ledger Check
-    const financeHealth = this.checkLedgerHealth();
+    const financeHealth = await this.checkLedgerHealth();
     components.push(financeHealth);
     if (financeHealth.status === 'CRITICAL' || financeHealth.status === 'DEGRADED') {
       incidents.push({
@@ -192,12 +192,13 @@ export class SystemDiagnosticsEngine {
   // SUBSYSTEM CHECKS
   // -------------------------------------------------------------------------
 
-  private static checkLedgerHealth(): ComponentHealth {
+  private static async checkLedgerHealth(): Promise<ComponentHealth> {
     const t0 = Date.now();
-    const integrity = canonicalLedger.verifyLedgerChainIntegrity();
-    const transactions = canonicalLedger.listTransactions();
-    const pendingSettlements = canonicalLedger.listSettlementBatches().filter(
-      (b) => b.state === 'CALCULATED' || b.state === 'VALIDATED'
+    const integrity = await canonicalLedger.verifyLedgerChainIntegrity();
+    const transactions = await canonicalLedger.listTransactions();
+    const allBatches = await canonicalLedger.listSettlementBatches();
+    const pendingSettlements = allBatches.filter(
+      (b: any) => b.state === 'CALCULATED' || b.state === 'VALIDATED'
     ).length;
     const latencyMs = Date.now() - t0;
 

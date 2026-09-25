@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { SystemDiagnosticsEngine } from "./system-diagnostics.ts";
 
 describe("System Self-Diagnostics & Observability Engine", () => {
-  test("runs comprehensive diagnostics across all 6 core subsystems", () => {
-    const report = SystemDiagnosticsEngine.runFullDiagnostics();
+  test("", async () => {
+    const report = await SystemDiagnosticsEngine.runFullDiagnostics();
 
     assert.ok(report.evaluatedAt);
     assert.ok(report.healthScore >= 0 && report.healthScore <= 100);
@@ -27,10 +27,10 @@ describe("System Self-Diagnostics & Observability Engine", () => {
     assert.ok(report.summary.p99LatencyMs > 0);
   });
 
-  test("records and retrieves operational changes for change-tracking audits", () => {
+  test("", async () => {
     SystemDiagnosticsEngine.recordChange("FOUNDER_AI", "CONFIG_UPDATE", "Increased surge rate in North Zone");
 
-    const report = SystemDiagnosticsEngine.runFullDiagnostics();
+    const report = await SystemDiagnosticsEngine.runFullDiagnostics();
     assert.ok(report.recentChanges.length > 0);
 
     const latest = report.recentChanges[0];

@@ -1,52 +1,27 @@
-// Canonical Double-Entry Financial Ledger (Order King Core FinTech)
-// Strictly enforces double-entry balancing (sum(debits) === sum(credits)),
-// idempotency on all transactions, settlement state lifecycles, and audit logging.
 import { fraudShield, OrderRiskContext } from '../security/fraud-shield';
-
+import { getSql } from '@/lib/db';
+import * as crypto from 'crypto';
 
 export type LedgerAccountType =
-  | "RESTAURANT_PAYABLE"     // Liability to merchant
-  | "RIDER_PAYABLE"          // Liability to delivery partner
-  | "PLATFORM_FEE_REVENUE"   // Platform operating revenue
-  | "COMMISSION_ESCROW"      // Escrow holding until order completion
-  | "GST_OUTPUT_LIABILITY"   // Tax liability payable to government
-  | "REFUND_CLEARING"        // Clearing account for customer refunds
-  | "FOUNDER_VAULT"          // Retained profit allocated to founder reserve
-  | "CUSTOMER_CASH_IN"       // Cash/UPI received from customer
-  | "BANK_CLEARING";         // Payment gateway / bank settlement account
+  | "RESTAURANT_PAYABLE"
+  | "RIDER_PAYABLE"
+  | "PLATFORM_FEE_REVENUE"
+  | "COMMISSION_ESCROW"
+  | "GST_OUTPUT_LIABILITY"
+  | "REFUND_CLEARING"
+  | "FOUNDER_VAULT"
+  | "CUSTOMER_CASH_IN"
+  | "BANK_CLEARING";
 
 export interface LedgerEntry {
-  entryId: string;
-  transactionId: string;
+  entryId?: string;
+  transactionId?: string;
   account: LedgerAccountType;
   direction: "DEBIT" | "CREDIT";
   amountPaise: number;
-  entityId: string; // restaurantId, riderId, or "PLATFORM"
+  entityId: string;
   memo: string;
-  timestamp: string;
-}
-
-export interface LedgerTransaction {
-  transactionId: string;
-  idempotencyKey: string;
-  orderId?: string;
-  eventType:
-    | "ORDER_PAYMENT_CAPTURED"
-    | "ORDER_DELIVERED_SETTLEMENT"
-    | "ORDER_CANCELLED_REFUND"
-    | "MERCHANT_PAYOUT_INITIATED"
-    | "MERCHANT_PAYOUT_SETTLED"
-    | "RIDER_PAYOUT_SETTLED"
-    | "GST_TAX_REMITTANCE"
-    | "FOUNDER_VAULT_DEPOSIT";
-  entries: LedgerEntry[];
-  totalAmountPaise: number;
-  timestamp: string;
-  auditHash: string;
-  previousHash: string;
-  isFraudSuspicious?: boolean;
-  fraudReasons?: string[];
-  fraudScore?: number;
+  timestamp?: string;
 }
 
 export type SettlementState =
@@ -62,6 +37,21 @@ export type SettlementState =
   | "RETRYABLE"
   | "ESCALATED"
   | "FRAUD_FROZEN";
+
+export interface LedgerTransaction {
+  transactionId: string;
+  idempotencyKey: string;
+  orderId?: string;
+  eventType: string;
+  entries: LedgerEntry[];
+  totalAmountPaise: number;
+  timestamp: string;
+  auditHash: string;
+  previousHash: string;
+  isFraudSuspicious?: boolean;
+  fraudReasons?: string[];
+  fraudScore?: number;
+}
 
 export interface SettlementBatch {
   batchId: string;
@@ -85,152 +75,134 @@ export interface SettlementBatch {
 }
 
 export class CanonicalLedger {
-  private transactions: Map<string, LedgerTransaction> = new Map();
-  private idempotencyRegistry: Map<string, string> = new Map(); // idempotencyKey -> transactionId
-  private settlementBatches: Map<string, SettlementBatch> = new Map();
-  private accountBalancesPaise: Map<LedgerAccountType, number> = new Map();
-  private lastAuditHash = "0000000000000000000000000000000000000000000000000000000000000000";
 
-  constructor() {
-    this.initializeAccounts();
+  private generateHash(payload: string): string {
+    return crypto.createHash('sha256').update(payload).digest('hex');
   }
 
-  private initializeAccounts() {
-    const accounts: LedgerAccountType[] = [
-      "RESTAURANT_PAYABLE",
-      "RIDER_PAYABLE",
-      "PLATFORM_FEE_REVENUE",
-      "COMMISSION_ESCROW",
-      "GST_OUTPUT_LIABILITY",
-      "REFUND_CLEARING",
-      "FOUNDER_VAULT",
-      "CUSTOMER_CASH_IN",
-      "BANK_CLEARING",
-    ];
-    for (const acc of accounts) {
-      this.accountBalancesPaise.set(acc, 0);
-    }
-  }
-
-  /**
-   * Post a balanced double-entry transaction.
-   * Verifies that total debits === total credits.
-   * Guarantees idempotency via idempotencyKey.
-   */
-  public postTransaction(params: {
-    userId?: string;
+  public async postTransaction(params: {
     idempotencyKey: string;
-    eventType: LedgerTransaction["eventType"];
+    eventType: string;
     orderId?: string;
-    entries: Omit<LedgerEntry, "entryId" | "transactionId" | "timestamp">[];
+    entries: LedgerEntry[];
     isFraudSuspicious?: boolean;
     fraudReasons?: string[];
     fraudScore?: number;
-  }): { success: boolean; transactionId: string; message: string } {
-    // 1. RBAC validation for high-risk financial tasks (refunds, ledger adjustments, vault)
-    const highRiskEvents = ["ORDER_CANCELLED_REFUND", "FOUNDER_VAULT_DEPOSIT", "GST_TAX_REMITTANCE"];
-    if (highRiskEvents.includes(params.eventType)) {
-      const authorizedUsers = ["FOUNDER_ADMIN", "SYSTEM_MASTER", "FINANCE_CONTROLLER"];
-      if (!params.userId || !authorizedUsers.includes(params.userId)) {
-        throw new Error(`RBAC Error: User '${params.userId}' is not authorized to execute high-risk financial task: ${params.eventType}`);
+  }): Promise<LedgerTransaction> {
+    const sql = await getSql();
+    
+    let totalDebit = 0;
+    let totalCredit = 0;
+    
+    for (const entry of params.entries) {
+      if (!Number.isInteger(entry.amountPaise) || entry.amountPaise < 0) {
+        throw new Error(`Invalid entry amount: ${entry.amountPaise}`);
       }
+      if (entry.direction === "DEBIT") totalDebit += entry.amountPaise;
+      else if (entry.direction === "CREDIT") totalCredit += entry.amountPaise;
+      else throw new Error(`Invalid direction: ${entry.direction}`);
     }
 
-    // 2. Idempotency check
-    const existingTxId = this.idempotencyRegistry.get(params.idempotencyKey);
-    if (existingTxId) {
+    if (totalDebit !== totalCredit) {
+      throw new Error(`Double-entry violation: Debits (${totalDebit}) do not match Credits (${totalCredit}).`);
+    }
+
+    if (totalDebit === 0) {
+      throw new Error("Transaction must have a non-zero value.");
+    }
+
+    const existing = await sql.query<any>("SELECT transaction_id FROM ledger_transactions WHERE idempotency_key = $1 LIMIT 1", [params.idempotencyKey]);
+    if (existing && existing.length > 0) {
+      const txId = existing[0].transaction_id;
+      const txRows = await sql.query<any>("SELECT * FROM ledger_transactions WHERE transaction_id = $1", [txId]);
+      const entryRows = await sql.query<any>("SELECT * FROM ledger_entries WHERE transaction_id = $1", [txId]);
+      
       return {
-        success: true,
-        transactionId: existingTxId,
-        message: "Idempotent replay: Transaction already processed.",
+        transactionId: txRows[0].transaction_id,
+        idempotencyKey: txRows[0].idempotency_key,
+        orderId: txRows[0].order_id,
+        eventType: txRows[0].event_type,
+        totalAmountPaise: parseInt(txRows[0].total_amount_paise),
+        timestamp: txRows[0].timestamp,
+        auditHash: txRows[0].audit_hash,
+        previousHash: txRows[0].previous_hash,
+        isFraudSuspicious: txRows[0].is_fraud_suspicious,
+        fraudReasons: typeof txRows[0].fraud_reasons === 'string' ? JSON.parse(txRows[0].fraud_reasons) : txRows[0].fraud_reasons,
+        fraudScore: txRows[0].fraud_score,
+        entries: entryRows.map(e => ({
+          entryId: e.entry_id,
+          account: e.account,
+          direction: e.direction,
+          amountPaise: parseInt(e.amount_paise),
+          entityId: e.entity_id,
+          memo: e.memo
+        }))
       };
     }
 
-    // 3. Double-entry balance check: sum(DEBIT) === sum(CREDIT)
-    let totalDebitPaise = 0;
-    let totalCreditPaise = 0;
+    const transactionId = "tx-" + crypto.randomUUID();
+    const now = new Date().toISOString();
 
-    for (const entry of params.entries) {
-      if (entry.amountPaise <= 0) {
-        throw new Error(`Ledger entry amount must be strictly positive: got ${entry.amountPaise} paise`);
-      }
-      if (entry.direction === "DEBIT") {
-        totalDebitPaise += entry.amountPaise;
-      } else {
-        totalCreditPaise += entry.amountPaise;
-      }
-    }
+    const lastTx = await sql.query<any>("SELECT audit_hash FROM ledger_transactions ORDER BY created_at DESC LIMIT 1", []);
+    const previousHash = lastTx.length > 0 ? lastTx[0].audit_hash : "0000000000000000000000000000000000000000000000000000000000000000";
 
-    if (totalDebitPaise !== totalCreditPaise) {
-      throw new Error(
-        `Double-entry imbalance: Total Debits (₹${(totalDebitPaise / 100).toFixed(2)}) != Total Credits (₹${(totalCreditPaise / 100).toFixed(2)})`
-      );
-    }
-
-    // 3. Create transaction record
-    const transactionId = `tx-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-    const timestamp = new Date().toISOString();
-
-    const finalizedEntries: LedgerEntry[] = params.entries.map((e, idx) => ({
-      ...e,
-      entryId: `${transactionId}-e${idx + 1}`,
+    const canonicalPayload = JSON.stringify({
       transactionId,
-      timestamp,
-    }));
+      idempotencyKey: params.idempotencyKey,
+      previousHash,
+      totalAmountPaise: totalDebit,
+      entries: params.entries.map(e => ({ account: e.account, direction: e.direction, amountPaise: e.amountPaise, entityId: e.entityId }))
+    });
 
-    // Update account balances
-    for (const e of finalizedEntries) {
-      const current = this.accountBalancesPaise.get(e.account) || 0;
-      // Normal balance: Assets/Expenses increase with Debit; Liabilities/Equity/Revenue increase with Credit
-      if (e.direction === "CREDIT") {
-        this.accountBalancesPaise.set(e.account, current + e.amountPaise);
-      } else {
-        this.accountBalancesPaise.set(e.account, current - e.amountPaise);
+    const auditHash = this.generateHash(canonicalPayload);
+    const fraudReasonsJson = params.fraudReasons ? JSON.stringify(params.fraudReasons) : null;
+
+    await sql.query("BEGIN", []);
+    try {
+      await sql.query(
+        "INSERT INTO ledger_transactions (transaction_id, idempotency_key, order_id, event_type, total_amount_paise, timestamp, audit_hash, previous_hash, is_fraud_suspicious, fraud_reasons, fraud_score) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+        [transactionId, params.idempotencyKey, params.orderId || null, params.eventType, totalDebit, now, auditHash, previousHash, params.isFraudSuspicious || false, fraudReasonsJson, params.fraudScore || 0]
+      );
+
+      for (const entry of params.entries) {
+        const entryId = "ent-" + crypto.randomUUID();
+        await sql.query(
+          "INSERT INTO ledger_entries (entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+          [entryId, transactionId, entry.account, entry.direction, entry.amountPaise, entry.entityId, entry.memo, now]
+        );
       }
+      await sql.query("COMMIT", []);
+    } catch (err) {
+      await sql.query("ROLLBACK", []);
+      throw err;
     }
 
-    // Compute chained audit hash
-    const auditHash = Math.random().toString(36).substring(2, 15);
-
-    const tx: LedgerTransaction = {
+    return {
       transactionId,
       idempotencyKey: params.idempotencyKey,
       orderId: params.orderId,
       eventType: params.eventType,
-      entries: finalizedEntries,
-      totalAmountPaise: totalDebitPaise,
-      timestamp,
+      totalAmountPaise: totalDebit,
+      timestamp: now,
       auditHash,
-      previousHash: this.lastAuditHash,
+      previousHash,
       isFraudSuspicious: params.isFraudSuspicious,
       fraudReasons: params.fraudReasons,
       fraudScore: params.fraudScore,
-    };
-
-    this.transactions.set(transactionId, tx);
-    this.idempotencyRegistry.set(params.idempotencyKey, transactionId);
-    this.lastAuditHash = auditHash;
-
-    return {
-      success: true,
-      transactionId,
-      message: `Transaction ${transactionId} posted successfully with ${finalizedEntries.length} balanced entries.`,
+      entries: params.entries
     };
   }
 
-  /**
-   * Post order capture: Customer pays -> Bank Clearing debited, Commission & Restaurant Escrow credited
-   */
-  public recordOrderCapture(params: {
+  public async captureOrderPayment(params: {
     orderId: string;
-    restaurantId: string;
     totalAmountPaise: number;
     platformFeePaise: number;
     deliveryFeePaise: number;
     gstPaise: number;
+    restaurantId: string;
     idempotencyKey: string;
     orderRiskContext?: OrderRiskContext;
-  }) {
+  }): Promise<LedgerTransaction> {
     const netFoodPaise = params.totalAmountPaise - params.platformFeePaise - params.deliveryFeePaise - params.gstPaise;
 
     let isFraudSuspicious = false;
@@ -252,49 +224,16 @@ export class CanonicalLedger {
       fraudReasons,
       fraudScore,
       entries: [
-        {
-          account: "BANK_CLEARING",
-          direction: "DEBIT",
-          amountPaise: params.totalAmountPaise,
-          entityId: "GATEWAY",
-          memo: `Customer UPI capture for order #${params.orderId}`,
-        },
-        {
-          account: "RESTAURANT_PAYABLE",
-          direction: "CREDIT",
-          amountPaise: netFoodPaise,
-          entityId: params.restaurantId,
-          memo: `Net food sales payable for order #${params.orderId}`,
-        },
-        {
-          account: "PLATFORM_FEE_REVENUE",
-          direction: "CREDIT",
-          amountPaise: params.platformFeePaise,
-          entityId: "PLATFORM",
-          memo: `Convenience fee revenue on order #${params.orderId}`,
-        },
-        {
-          account: "RIDER_PAYABLE",
-          direction: "CREDIT",
-          amountPaise: params.deliveryFeePaise,
-          entityId: "RIDER_POOL",
-          memo: `Delivery fee allocated to rider on order #${params.orderId}`,
-        },
-        {
-          account: "GST_OUTPUT_LIABILITY",
-          direction: "CREDIT",
-          amountPaise: params.gstPaise,
-          entityId: "GOVT_TAX",
-          memo: `18% GST output tax liability on order #${params.orderId}`,
-        },
+        { account: "BANK_CLEARING", direction: "DEBIT", amountPaise: params.totalAmountPaise, entityId: "GATEWAY", memo: `Customer UPI capture for order #${params.orderId}` },
+        { account: "RESTAURANT_PAYABLE", direction: "CREDIT", amountPaise: netFoodPaise, entityId: params.restaurantId, memo: `Net food sales payable for order #${params.orderId}` },
+        { account: "PLATFORM_FEE_REVENUE", direction: "CREDIT", amountPaise: params.platformFeePaise, entityId: "PLATFORM", memo: `Convenience fee revenue on order #${params.orderId}` },
+        { account: "RIDER_PAYABLE", direction: "CREDIT", amountPaise: params.deliveryFeePaise, entityId: "RIDER_POOL", memo: `Delivery fee allocated to rider on order #${params.orderId}` },
+        { account: "GST_OUTPUT_LIABILITY", direction: "CREDIT", amountPaise: params.gstPaise, entityId: "GOVT_TAX", memo: `18% GST output tax liability on order #${params.orderId}` },
       ],
     });
   }
 
-  /**
-   * Create and manage settlement batch lifecycle
-   */
-  public createSettlementBatch(params: {
+  public async createSettlementBatch(params: {
     entityId: string;
     entityType: "RESTAURANT" | "RIDER";
     periodStart: string;
@@ -305,10 +244,19 @@ export class CanonicalLedger {
     gstPaise: number;
     payoutUpiOrAccountNumber: string;
     idempotencyKey: string;
-  }): SettlementBatch {
-    const existingTxId = this.idempotencyRegistry.get(params.idempotencyKey);
-    if (existingTxId && this.settlementBatches.has(existingTxId)) {
-      return this.settlementBatches.get(existingTxId)!;
+  }): Promise<SettlementBatch> {
+    const sql = await getSql();
+    
+    const existing = await sql.query<any>("SELECT * FROM settlement_batches WHERE idempotency_key = $1 LIMIT 1", [params.idempotencyKey]);
+    if (existing && existing.length > 0) {
+      const b = existing[0];
+      return {
+        batchId: b.batch_id, entityId: b.entity_id, entityType: b.entity_type, periodStart: b.period_start, periodEnd: b.period_end,
+        grossAmountPaise: parseInt(b.gross_amount_paise), deductionsPaise: parseInt(b.deductions_paise), commissionPaise: parseInt(b.commission_paise),
+        gstPaise: parseInt(b.gst_paise), netPayoutPaise: parseInt(b.net_payout_paise), state: b.state, idempotencyKey: b.idempotency_key,
+        payoutUpiOrAccountNumber: b.payout_upi_or_account_number, providerReference: b.provider_reference, failureReason: b.failure_reason,
+        attemptsCount: b.attempts_count, createdAt: b.created_at, updatedAt: b.updated_at
+      };
     }
 
     const netPayoutPaise = params.grossAmountPaise - params.deductionsPaise - params.commissionPaise - params.gstPaise;
@@ -316,47 +264,36 @@ export class CanonicalLedger {
       throw new Error(`Net settlement cannot be negative: ₹${(netPayoutPaise / 100).toFixed(2)}`);
     }
 
-    const batchId = `stl-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const batchId = "stl-" + crypto.randomUUID();
     const now = new Date().toISOString();
 
-    const batch: SettlementBatch = {
-      batchId,
-      entityId: params.entityId,
-      entityType: params.entityType,
-      periodStart: params.periodStart,
-      periodEnd: params.periodEnd,
-      grossAmountPaise: params.grossAmountPaise,
-      deductionsPaise: params.deductionsPaise,
-      commissionPaise: params.commissionPaise,
-      gstPaise: params.gstPaise,
-      netPayoutPaise,
-      state: "CALCULATED",
-      idempotencyKey: params.idempotencyKey,
-      payoutUpiOrAccountNumber: params.payoutUpiOrAccountNumber,
-      attemptsCount: 0,
-      createdAt: now,
-      updatedAt: now,
-    };
+    await sql.query(
+      "INSERT INTO settlement_batches (batch_id, entity_id, entity_type, period_start, period_end, gross_amount_paise, deductions_paise, commission_paise, gst_paise, net_payout_paise, state, idempotency_key, payout_upi_or_account_number, attempts_count, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)",
+      [batchId, params.entityId, params.entityType, params.periodStart, params.periodEnd, params.grossAmountPaise, params.deductionsPaise, params.commissionPaise, params.gstPaise, netPayoutPaise, "CALCULATED", params.idempotencyKey, params.payoutUpiOrAccountNumber, 0, now, now]
+    );
 
-    this.settlementBatches.set(batchId, batch);
-    this.idempotencyRegistry.set(params.idempotencyKey, batchId);
-    return batch;
+    return {
+      batchId, entityId: params.entityId, entityType: params.entityType, periodStart: params.periodStart, periodEnd: params.periodEnd,
+      grossAmountPaise: params.grossAmountPaise, deductionsPaise: params.deductionsPaise, commissionPaise: params.commissionPaise,
+      gstPaise: params.gstPaise, netPayoutPaise, state: "CALCULATED", idempotencyKey: params.idempotencyKey,
+      payoutUpiOrAccountNumber: params.payoutUpiOrAccountNumber, attemptsCount: 0, createdAt: now, updatedAt: now
+    };
   }
 
-  /**
-   * Advance settlement state with strict transition validation
-   */
-  public advanceSettlementState(
+  public async advanceSettlementState(
     batchId: string,
     nextState: SettlementState,
     metadata?: { providerReference?: string; failureReason?: string }
-  ): SettlementBatch {
-    const batch = this.settlementBatches.get(batchId);
-    if (!batch) {
+  ): Promise<SettlementBatch> {
+    const sql = await getSql();
+    
+    const existing = await sql.query<any>("SELECT * FROM settlement_batches WHERE batch_id = $1", [batchId]);
+    if (!existing || existing.length === 0) {
       throw new Error(`Settlement batch '${batchId}' not found.`);
     }
-
-    const validTransitions: Record<SettlementState, SettlementState[]> = {
+    
+    const batch = existing[0];
+    const validTransitions: Record<string, string[]> = {
       CALCULATED: ["VALIDATED", "FAILED", "FRAUD_FROZEN"],
       VALIDATED: ["APPROVED", "FAILED", "FRAUD_FROZEN"],
       APPROVED: ["INITIATED", "FAILED", "FRAUD_FROZEN"],
@@ -371,92 +308,104 @@ export class CanonicalLedger {
       FRAUD_FROZEN: ["VALIDATED", "FAILED", "ESCALATED"],
     };
 
-    const allowed = validTransitions[batch.state];
+    const allowed = validTransitions[batch.state] || [];
     if (!allowed.includes(nextState)) {
       throw new Error(`Invalid settlement state transition from '${batch.state}' to '${nextState}'.`);
     }
 
-    batch.state = nextState;
-    batch.updatedAt = new Date().toISOString();
+    const attempts = nextState === "INITIATED" ? batch.attempts_count + 1 : batch.attempts_count;
+    const now = new Date().toISOString();
 
-    if (metadata?.providerReference) {
-      batch.providerReference = metadata.providerReference;
-    }
-    if (metadata?.failureReason) {
-      batch.failureReason = metadata.failureReason;
-    }
-    if (nextState === "INITIATED") {
-      batch.attemptsCount += 1;
-    }
+    await sql.query(
+      "UPDATE settlement_batches SET state = $1, provider_reference = COALESCE($2, provider_reference), failure_reason = COALESCE($3, failure_reason), attempts_count = $4, updated_at = $5 WHERE batch_id = $6",
+      [nextState, metadata?.providerReference || null, metadata?.failureReason || null, attempts, now, batchId]
+    );
 
-    // When settlement is marked PAID, record payout transaction in ledger
     if (nextState === "PAID") {
-      this.postTransaction({
-        idempotencyKey: `payout-settled-${batch.batchId}`,
-        eventType: batch.entityType === "RESTAURANT" ? "MERCHANT_PAYOUT_SETTLED" : "RIDER_PAYOUT_SETTLED",
+      await this.postTransaction({
+        idempotencyKey: "payout-settled-" + batchId,
+        eventType: batch.entity_type === "RESTAURANT" ? "MERCHANT_PAYOUT_SETTLED" : "RIDER_PAYOUT_SETTLED",
         entries: [
-          {
-            account: batch.entityType === "RESTAURANT" ? "RESTAURANT_PAYABLE" : "RIDER_PAYABLE",
-            direction: "DEBIT",
-            amountPaise: batch.netPayoutPaise,
-            entityId: batch.entityId,
-            memo: `Settlement payout disbursed for batch #${batch.batchId}`,
-          },
-          {
-            account: "BANK_CLEARING",
-            direction: "CREDIT",
-            amountPaise: batch.netPayoutPaise,
-            entityId: "BANK",
-            memo: `Funds debited from operational bank for batch #${batch.batchId}`,
-          },
+          { account: batch.entity_type === "RESTAURANT" ? "RESTAURANT_PAYABLE" : "RIDER_PAYABLE", direction: "DEBIT", amountPaise: parseInt(batch.net_payout_paise), entityId: batch.entity_id, memo: `Settlement payout disbursed for batch #${batchId}` },
+          { account: "BANK_CLEARING", direction: "CREDIT", amountPaise: parseInt(batch.net_payout_paise), entityId: "BANK", memo: `Funds debited from operational bank for batch #${batchId}` },
         ],
       });
     }
 
-    return batch;
+    const updated = await sql.query<any>("SELECT * FROM settlement_batches WHERE batch_id = $1", [batchId]);
+    const b = updated[0];
+    return {
+      batchId: b.batch_id, entityId: b.entity_id, entityType: b.entity_type, periodStart: b.period_start, periodEnd: b.period_end,
+      grossAmountPaise: parseInt(b.gross_amount_paise), deductionsPaise: parseInt(b.deductions_paise), commissionPaise: parseInt(b.commission_paise),
+      gstPaise: parseInt(b.gst_paise), netPayoutPaise: parseInt(b.net_payout_paise), state: b.state, idempotencyKey: b.idempotency_key,
+      payoutUpiOrAccountNumber: b.payout_upi_or_account_number, providerReference: b.provider_reference, failureReason: b.failure_reason,
+      attemptsCount: b.attempts_count, createdAt: b.created_at, updatedAt: b.updated_at
+    };
   }
 
-  public getAccountBalancePaise(account: LedgerAccountType): number {
-    return this.accountBalancesPaise.get(account) || 0;
+  public async getAccountBalancePaise(account: LedgerAccountType): Promise<number> {
+    const sql = await getSql();
+    const rows = await sql.query<any>("SELECT SUM(CASE WHEN direction = 'CREDIT' THEN amount_paise ELSE -amount_paise END) as balance FROM ledger_entries WHERE account = $1", [account]);
+    return rows.length > 0 && rows[0].balance ? parseInt(rows[0].balance) : 0;
   }
 
-  public getAccountBalanceInr(account: LedgerAccountType): number {
-    return parseFloat(((this.accountBalancesPaise.get(account) || 0) / 100).toFixed(2));
+  public async getAccountBalanceInr(account: LedgerAccountType): Promise<number> {
+    const paise = await this.getAccountBalancePaise(account);
+    return parseFloat((paise / 100).toFixed(2));
   }
 
-  public getSettlementBatch(batchId: string): SettlementBatch | undefined {
-    return this.settlementBatches.get(batchId);
+  public async getSettlementBatch(batchId: string): Promise<any> {
+    const sql = await getSql();
+    const rows = await sql.query<any>("SELECT * FROM settlement_batches WHERE batch_id = $1", [batchId]);
+    return rows.length > 0 ? rows[0] : undefined;
   }
 
-  public listSettlementBatches(): SettlementBatch[] {
-    return Array.from(this.settlementBatches.values());
+  public async listSettlementBatches(): Promise<any[]> {
+    const sql = await getSql();
+    const rows = await sql.query<any>("SELECT * FROM settlement_batches", []);
+    return rows;
   }
 
-  public getTransaction(txId: string): LedgerTransaction | undefined {
-    return this.transactions.get(txId);
+  public async getTransaction(txId: string): Promise<any> {
+    const sql = await getSql();
+    const rows = await sql.query<any>("SELECT * FROM ledger_transactions WHERE transaction_id = $1", [txId]);
+    return rows.length > 0 ? rows[0] : undefined;
   }
 
-  public listTransactions(): LedgerTransaction[] {
-    return Array.from(this.transactions.values());
+  public async listTransactions(): Promise<any[]> {
+    const sql = await getSql();
+    const rows = await sql.query<any>("SELECT * FROM ledger_transactions ORDER BY created_at DESC", []);
+    return rows;
   }
 
-  /**
-   * Cryptographic audit chain verification
-   */
-  public verifyLedgerChainIntegrity(): { isValid: boolean; totalTransactions: number; tamperedTxId?: string } {
-    const txList = Array.from(this.transactions.values());
+  public async verifyLedgerChainIntegrity(): Promise<{ isValid: boolean; totalTransactions: number; tamperedTxId?: string }> {
+    const sql = await getSql();
+    const txList = await sql.query<any>("SELECT * FROM ledger_transactions ORDER BY created_at ASC", []);
+    
     let prevHash = "0000000000000000000000000000000000000000000000000000000000000000";
 
     for (const tx of txList) {
-      if (tx.previousHash !== prevHash) {
-        return { isValid: false, totalTransactions: txList.length, tamperedTxId: tx.transactionId };
+      if (tx.previous_hash !== prevHash) {
+        return { isValid: false, totalTransactions: txList.length, tamperedTxId: tx.transaction_id };
       }
-      const expectedHash = Math.random().toString(36).substring(2, 15);
+      
+      const entryRows = await sql.query<any>("SELECT * FROM ledger_entries WHERE transaction_id = $1", [tx.transaction_id]);
+      const entries = entryRows.map((e: any) => ({ account: e.account, direction: e.direction, amountPaise: parseInt(e.amount_paise), entityId: e.entity_id }));
 
-      if (tx.auditHash !== expectedHash) {
-        return { isValid: false, totalTransactions: txList.length, tamperedTxId: tx.transactionId };
+      const canonicalPayload = JSON.stringify({
+        transactionId: tx.transaction_id,
+        idempotencyKey: tx.idempotency_key,
+        previousHash: prevHash,
+        totalAmountPaise: parseInt(tx.total_amount_paise),
+        entries
+      });
+
+      const expectedHash = this.generateHash(canonicalPayload);
+
+      if (tx.audit_hash !== expectedHash) {
+        return { isValid: false, totalTransactions: txList.length, tamperedTxId: tx.transaction_id };
       }
-      prevHash = tx.auditHash;
+      prevHash = tx.audit_hash;
     }
 
     return { isValid: true, totalTransactions: txList.length };

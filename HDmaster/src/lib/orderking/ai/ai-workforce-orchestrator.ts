@@ -326,7 +326,7 @@ export class AiWorkforceOrchestrator {
           break;
         }
         case "RECONCILIATION_AI": {
-          const audit = canonicalLedger.verifyLedgerChainIntegrity();
+          const audit = await canonicalLedger.verifyLedgerChainIntegrity();
           resultData = { audit, reconciledTransactionsCount: audit.totalTransactions };
           break;
         }

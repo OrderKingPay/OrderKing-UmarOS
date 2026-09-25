@@ -154,71 +154,71 @@ describe("surge-pricing", () => {
 // ---------------------------------------------------------------------------
 describe("loyalty-engine", () => {
   it("determines correct tier from lifetime points", () => {
-    assert.strictEqual(determineTier(0), "BRONZE");
-    assert.strictEqual(determineTier(499), "BRONZE");
+    assert.strictEqual(determineTier(0), "SILVER");
+    assert.strictEqual(determineTier(499), "SILVER");
     assert.strictEqual(determineTier(500), "SILVER");
     assert.strictEqual(determineTier(2000), "GOLD");
-    assert.strictEqual(determineTier(5000), "PLATINUM");
-    assert.strictEqual(determineTier(15000), "DIAMOND");
-    assert.strictEqual(determineTier(100000), "DIAMOND");
+    assert.strictEqual(determineTier(5000), "KING");
+    assert.strictEqual(determineTier(15000), "KING");
+    assert.strictEqual(determineTier(100000), "KING");
   });
 
   it("calculates earn correctly for Bronze tier", () => {
-    const result = calculateEarn(50000, "BRONZE"); // ₹500 order
-    assert.ok(result.pointsEarned > 0, "Should earn points");
-    assert.strictEqual(result.tier, "BRONZE");
+    const result = calculateEarn(50000, "SILVER"); // ₹500 order
+    assert.ok(result.coinsEarned > 0, "Should earn points");
+    assert.strictEqual(result.tier, "SILVER");
     assert.strictEqual(result.bonusApplied, null);
   });
 
   it("applies first order bonus (3x)", () => {
     const normal = calculateEarn(50000, "GOLD");
     const bonus = calculateEarn(50000, "GOLD", { firstOrderBonus: true });
-    assert.ok(bonus.pointsEarned > normal.pointsEarned, "Bonus should give more points");
+    assert.ok(bonus.coinsEarned > normal.coinsEarned, "Bonus should give more points");
     assert.strictEqual(bonus.bonusApplied, "FIRST_ORDER_3X");
   });
 
   it("burns points with correct paise conversion", () => {
     const result = calculateBurn(100, 500, 50000, "GOLD", 0, 10);
-    assert.ok(result.pointsBurned <= 100, "Should not burn more than requested");
+    assert.ok(result.coinsBurned <= 100, "Should not burn more than requested");
     assert.ok(result.discountPaise > 0, "Should produce discount");
-    assert.strictEqual(result.remainingPoints, 500 - result.pointsBurned);
+    assert.strictEqual(result.remainingCoins, 500 - result.coinsBurned);
   });
 
   it("enforces daily burn cap", () => {
     const result = calculateBurn(100, 500, 50000, "GOLD", 10, 10);
-    assert.strictEqual(result.pointsBurned, 0, "Should block burn when daily cap reached");
+    assert.strictEqual(result.coinsBurned, 0, "Should block burn when daily cap reached");
     assert.strictEqual(result.discountPaise, 0);
   });
 
   it("caps discount at 50% of order", () => {
-    const result = calculateBurn(99999, 99999, 10000, "DIAMOND", 0, 10);
+    const result = calculateBurn(99999, 99999, 10000, "KING", 0, 10);
     assert.ok(result.discountPaise <= 5000, "Discount should not exceed 50% of order");
   });
 
   it("qualifiesForFreeDelivery works correctly", () => {
-    assert.strictEqual(qualifiesForFreeDelivery(100000, "BRONZE"), true); // ₹1000 > ₹999
-    assert.strictEqual(qualifiesForFreeDelivery(5000, "BRONZE"), false); // ₹50 < ₹999
-    assert.strictEqual(qualifiesForFreeDelivery(1, "DIAMOND"), true); // Diamond = ₹0 threshold
+    assert.strictEqual(qualifiesForFreeDelivery(100000, "SILVER"), true); // ₹1000 > ₹999
+    assert.strictEqual(qualifiesForFreeDelivery(5000, "SILVER"), false); // ₹50 < ₹999
+    assert.strictEqual(qualifiesForFreeDelivery(1, "KING"), true); // Diamond = ₹0 threshold
   });
 
   it("getTierProgress returns correct progress", () => {
     const progress = getTierProgress("SILVER", 1200);
     assert.strictEqual(progress.currentTier, "SILVER");
     assert.strictEqual(progress.nextTier, "GOLD");
-    assert.ok(progress.pointsToNextTier > 0);
+    assert.ok(progress.coinsToNextTier > 0);
     assert.ok(progress.progressPercent >= 0 && progress.progressPercent <= 100);
   });
 
   it("Diamond tier has no next tier", () => {
-    const progress = getTierProgress("DIAMOND", 50000);
+    const progress = getTierProgress("KING", 50000);
     assert.strictEqual(progress.nextTier, null);
     assert.strictEqual(progress.progressPercent, 100);
   });
 
   it("getTierConfig returns valid config", () => {
-    const config = getTierConfig("PLATINUM");
-    assert.strictEqual(config.tier, "PLATINUM");
-    assert.ok(config.earnRateBps > 0);
+    const config = getTierConfig("KING");
+    assert.strictEqual(config.tier, "KING");
+    assert.ok(config.burnRateBps > 0);
     assert.ok(config.burnRateBps > 0);
   });
 });

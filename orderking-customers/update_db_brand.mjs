@@ -1,5 +1,11 @@
 import pg from "pg";
-const dbUrl = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres";
+const dbUrl = process.env.DATABASE_URL;
+
+if (!dbUrl) {
+  console.error("DATABASE_URL is missing. Please set it in your environment variables.");
+  process.exit(1);
+}
+
 const pool = new pg.Pool({ connectionString: dbUrl, ssl: { rejectUnauthorized: false } });
 
 async function updateBrand() {

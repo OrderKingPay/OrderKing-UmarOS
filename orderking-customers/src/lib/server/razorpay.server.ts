@@ -22,9 +22,9 @@ export function getRazorpayConfig() {
   const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
   return {
-    keyId: keyId || "rzp_test_placeholder",
-    keySecret: keySecret || "placeholder_secret",
-    webhookSecret: webhookSecret || "placeholder_webhook",
+    keyId: keyId,
+    keySecret: keySecret,
+    webhookSecret: webhookSecret,
     hasCredentials: !!(keyId && keySecret),
   };
 }
