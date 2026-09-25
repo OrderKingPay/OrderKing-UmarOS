@@ -2141,7 +2141,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
           approvedCallArgs: overrideInput?.approvedCallArgs,
         },
       }),
-    onSuccess: (r) => {
+    onSuccess: (r: any) => {
       if (r.ok) {
         setLog((prev) => [
           ...prev,

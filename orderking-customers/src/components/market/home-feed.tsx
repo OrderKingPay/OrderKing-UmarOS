@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";

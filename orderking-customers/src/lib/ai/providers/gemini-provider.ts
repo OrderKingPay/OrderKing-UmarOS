@@ -64,10 +64,10 @@ export class GoogleGeminiProvider implements AIProvider {
     }
 
     // 10x Capability: Native Real-time Google Search (Web Grounding)
-    payload.tools = [{ googleSearch: {} }];
+    payload.tools = [{ googleSearch: {} }] as any[];
 
     if (functionDeclarations && functionDeclarations.length > 0) {
-      payload.tools.push({ functionDeclarations });
+      (payload.tools as any[]).push({ functionDeclarations });
     }
 
     const response = await fetch(url, {
@@ -162,10 +162,10 @@ export class GoogleGeminiProvider implements AIProvider {
     }
 
     // 10x Capability: Native Real-time Google Search (Web Grounding)
-    payload.tools = [{ googleSearch: {} }];
+    payload.tools = [{ googleSearch: {} }] as any[];
 
     if (functionDeclarations && functionDeclarations.length > 0) {
-      payload.tools.push({ functionDeclarations });
+      (payload.tools as any[]).push({ functionDeclarations });
     }
 
     const response = await fetch(url, {

@@ -1,7 +1,13 @@
 import { Car, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function VehicleGarageHub() {
+interface VehicleGarageHubProps {
+  walletBalance: number;
+  onDeductWallet: (amount: number, description: string) => boolean;
+  onOpenScanner: () => void;
+}
+
+export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner }: VehicleGarageHubProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
       <div className="size-16 rounded-full bg-surface-2 flex items-center justify-center text-muted relative">

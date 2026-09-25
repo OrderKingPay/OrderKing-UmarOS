@@ -239,7 +239,7 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
     setFlightResults([]); // clear old results
 
     try {
-      const res = await fetch(\`https://hdmaster.vercel.app/api/v1/travel/search?originCode=\${originAirport}&destinationCode=\${destinationAirport}&departureDate=\${departureDate}&passengers=\${passengers}\`);
+      const res = await fetch(`https://hdmaster.vercel.app/api/v1/travel/search?originCode=${originAirport}&destinationCode=${destinationAirport}&departureDate=${departureDate}&passengers=${passengers}`);
       const data = await res.json();
       
       if (data.results && data.results.length > 0) {
@@ -248,7 +248,7 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
             id: r.id,
             airline: r.carrier.name,
             airlineCode: r.carrier.code,
-            flightNumber: \`\${r.carrier.code}-123\`,
+            flightNumber: `${r.carrier.code}-123`,
             departureAirport: r.origin.code,
             arrivalAirport: r.destination.code,
             departureTime: new Date(r.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -265,15 +265,15 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
             mealIncluded: false,
          }));
          setFlightResults(mapped);
-         toast.success(\`✈️ Found \${mapped.length} live flights from Amadeus with ₹0 Convenience Fee!\`);
+         toast.success(`✈️ Found ${mapped.length} live flights from Amadeus with ₹0 Convenience Fee!`);
       } else {
          setFlightResults(generateFlightResults());
-         toast.success(\`✈️ Found \${generateFlightResults().length} flights with Guaranteed Lowest Fares!\`);
+         toast.success(`✈️ Found ${generateFlightResults().length} flights with Guaranteed Lowest Fares!`);
       }
     } catch (err) {
       // Fallback to dummy data
       setFlightResults(generateFlightResults());
-      toast.success(\`✈️ Found \${generateFlightResults().length} flights with Guaranteed Lowest Fares!\`);
+      toast.success(`✈️ Found ${generateFlightResults().length} flights with Guaranteed Lowest Fares!`);
     } finally {
       setIsSearching(false);
     }

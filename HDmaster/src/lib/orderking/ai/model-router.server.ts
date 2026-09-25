@@ -4,14 +4,15 @@ import { AnthropicProvider } from "./providers/anthropic-provider.ts";
 import { XAIProvider } from "./providers/xai-provider.ts";
 import type { ChatRequest, ChatResponse, AIProvider, ToolDefinition } from "./providers/provider-interface.ts";
 
-export type AiProviderType = "openai" | "gemini" | "anthropic" | "xai" | "none";
+export type AiProviderType = "openai" | "gemini" | "anthropic" | "xai" | "none" | "local_deterministic";
 
-export function detectAvailableProviders(): AiProviderType[] {
-  const available: AiProviderType[] = [];
-  if (process.env.OPENAI_API_KEY) available.push("openai");
-  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) available.push("gemini");
-  if (process.env.ANTHROPIC_API_KEY) available.push("anthropic");
-  if (process.env.XAI_API_KEY) available.push("xai");
+export function detectAvailableProviders(): { provider: AiProviderType; ready: boolean }[] {
+  const available: { provider: AiProviderType; ready: boolean }[] = [];
+  available.push({ provider: "local_deterministic" as AiProviderType, ready: true });
+  if (process.env.OPENAI_API_KEY) available.push({ provider: "openai", ready: true });
+  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) available.push({ provider: "gemini", ready: true });
+  if (process.env.ANTHROPIC_API_KEY) available.push({ provider: "anthropic", ready: true });
+  if (process.env.XAI_API_KEY) available.push({ provider: "xai", ready: true });
   return available;
 }
 
@@ -21,7 +22,7 @@ export function selectActiveProvider(preferred?: string): { provider: AiProvider
     return { provider: "none", instance: null };
   }
   
-  const target = (preferred && available.includes(preferred as AiProviderType)) ? preferred : available[0];
+  const target = (preferred && available.some(a => a.provider === preferred)) ? preferred : available[0].provider;
 
   let instance: AIProvider | null = null;
   switch (target) {
@@ -45,7 +46,7 @@ export async function routeModelTurn(request: ChatRequest, preferredProvider?: A
 
 export async function runCognitiveConsensus(request: ChatRequest): Promise<ChatResponse> {
   // A genuine multi-provider evaluation using all available configured providers.
-  const available = detectAvailableProviders();
+  const available = detectAvailableProviders().map(a => a.provider);
   if (available.length === 0) {
     throw new Error("No AI providers configured. Consensus impossible.");
   }

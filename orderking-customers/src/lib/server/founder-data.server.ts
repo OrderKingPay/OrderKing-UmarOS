@@ -37,7 +37,7 @@ export async function getUniversalPlatformsFromDb(): Promise<ConnectedPlatform[]
     apiLatencyMs: Number(r.api_latency_ms),
     lastSyncTime: String(r.last_sync_time),
     authMethod: String(r.auth_method) as any,
-    guardrailProtection: r.guardrail_protection || { sandboxVerified: true, zeroDataLeak: true, rollbackSnapshotReady: true, rateLimitSafe: true },
+    guardrailProtection: (r.guardrail_protection || { sandboxVerified: true, zeroDataLeak: true, rollbackSnapshotReady: true, rateLimitSafe: true }) as any,
     supportedActions: Array.isArray(r.supported_actions) ? r.supported_actions : []
   }));
 }
@@ -74,7 +74,7 @@ export async function getSeparableModulesFromDb(): Promise<SeparableModule[]> {
     filesCount: Number(r.files_count),
     bundleSizeKb: Number(r.bundle_size_kb),
     techStack: Array.isArray(r.tech_stack) ? r.tech_stack : [],
-    standalonePackageJson: typeof r.standalone_package_json === 'object' ? r.standalone_package_json : { name: "", version: "1.0.0", scripts: {}, dependencies: {} },
+    standalonePackageJson: (typeof r.standalone_package_json === 'object' && r.standalone_package_json !== null) ? (r.standalone_package_json as any) : { name: "", version: "1.0.0", scripts: {}, dependencies: {} },
     sampleComponentCode: String(r.sample_component_code)
   }));
 }

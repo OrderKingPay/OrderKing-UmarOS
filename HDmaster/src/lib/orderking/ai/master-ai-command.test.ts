@@ -175,7 +175,7 @@ test("Order King Master AI - Multi-Model Cognitive Consensus Quorum Engine", asy
     tools: [],
   };
 
-  const consensus = await runCognitiveConsensus(req);
+  const consensus = (await runCognitiveConsensus(req)) as any;
   assert.equal(consensus.consensusReached, true);
   assert.ok(consensus.confidenceScore >= 0.85);
   assert.ok(consensus.modelsParticipated.length >= 3);

@@ -32,7 +32,7 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
 
     const config = getRazorpayConfig();
 
-    if (!config.hasCredentials) {
+    if (!config.hasCredentials || !config.keyId || !config.keySecret) {
       throw new Error("Razorpay credentials missing. Payment creation BLOCKED (Fail-Closed Enforcement).");
     }
 

@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createRootRoute, Meta, Links, Outlet, Scripts } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { AppProviders } from "@/components/providers";
@@ -68,8 +68,7 @@ function Root() {
   return (
     <html lang="en" className="antialiased" suppressHydrationWarning>
       <head>
-        <Meta />
-          <Links />
+        <HeadContent />
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </head>
       <body>

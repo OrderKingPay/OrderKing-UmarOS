@@ -38,7 +38,7 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
   .handler(async ({ data }: { data: RazorpayOrderRequest }): Promise<RazorpayOrderResponse> => {
     const config = getRazorpayConfig();
 
-    if (!config.hasCredentials) {
+    if (!config.hasCredentials || !config.keyId || !config.keySecret) {
       throw new Error("Razorpay credentials missing. Payment creation BLOCKED (Fail-Closed Enforcement).");
     }
 
@@ -81,7 +81,7 @@ export function verifyRazorpaySignature(params: {
   razorpaySignature: string;
 }): boolean {
   const config = getRazorpayConfig();
-  if (!config.hasCredentials) {
+  if (!config.hasCredentials || !config.keySecret) {
     throw new Error("Razorpay credentials missing. Signature verification REJECTED (Fail-Closed Enforcement).");
   }
 
@@ -98,7 +98,7 @@ export function verifyRazorpaySignature(params: {
  */
 export function verifyWebhookSignature(payload: string, signature: string): boolean {
   const config = getRazorpayConfig();
-  if (!config.hasCredentials) {
+  if (!config.hasCredentials || !config.webhookSecret) {
     throw new Error("Razorpay credentials missing. Webhook signature REJECTED (Fail-Closed Enforcement).");
   }
 

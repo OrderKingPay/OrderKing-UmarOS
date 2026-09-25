@@ -107,7 +107,7 @@ function CheckoutPage() {
           key: rzpOrder.keyId,
           amount: rzpOrder.amountPaise,
           currency: rzpOrder.currency,
-          name: cfg.brand.name,
+          name: cfg.brand.appName,
           description: "OrderKing Food Delivery",
           image: cfg.brand.logoUrl,
           order_id: rzpOrder.orderId,
@@ -115,9 +115,9 @@ function CheckoutPage() {
             await placeFinalOrder("UPI_SANDBOX");
           },
           prefill: {
-            name: user.name ?? "",
-            email: user.email ?? "",
-            contact: user.phone ?? ""
+            name: (user as any).name ?? "",
+            email: (user as any).email ?? "",
+            contact: (user as any).phone ?? ""
           },
           theme: {
             color: cfg.brand.primaryColor

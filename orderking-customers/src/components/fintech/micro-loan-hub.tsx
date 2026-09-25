@@ -6,7 +6,7 @@ interface MicroLoanHubProps {
   onDisburseToWallet: (amount: number) => void;
 }
 
-export function MicroLoanHub() {
+export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHubProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
       <div className="size-16 rounded-full bg-surface-2 flex items-center justify-center text-muted relative">
