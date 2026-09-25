@@ -7,7 +7,20 @@ import { isLang, translate, type Lang } from "@/lib/i18n";
 import { htmlLang } from "@/lib/locale";
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 15_000, refetchOnWindowFocus: false } },
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 60 * 24,
+      refetchOnWindowFocus: true,
+      networkMode: 'offlineFirst',
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
+    },
+    mutations: {
+      networkMode: 'offlineFirst',
+      retry: 3
+    }
+  }
 });
 
 const BrandContext = createContext<PublicAppConfig>(DEFAULT_CONFIG);
