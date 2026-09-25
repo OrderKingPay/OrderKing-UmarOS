@@ -45,7 +45,7 @@ const DEFAULT_SPONSORED_ADS: SponsoredRestaurantAd[] = [
     name: "Kolkata Sweet Corner",
     emojiFallback: "🍮",
     rating: 4.7,
-    cuisine: "Mithai & Chaat",
+    cuisine: "Mithai & COrderKing",
     adSpendRank: 4,
     specialOffer: "Fresh Rosogolla",
   },

@@ -193,7 +193,7 @@ export function getMindReaderSnapshot(hourOverride?: number): MindReaderSnapshot
         },
         {
           id: "dish_mr_8",
-          dishName: "Crispy Samosa Chaat with Sweet Curd & Tamarind",
+          dishName: "Crispy Samosa COrderKing with Sweet Curd & Tamarind",
           restaurantId: "rest_sharma_sweets",
           restaurantName: "Sharma Sweets & Snacks",
           cuisine: "Street Food",
@@ -204,7 +204,7 @@ export function getMindReaderSnapshot(hourOverride?: number): MindReaderSnapshot
           whyRecommended: "Tangy, spicy, and crunchy street-style evening delight.",
           icon: "🥙",
           isVeg: true,
-          tag: "Top Rated Chaat",
+          tag: "Top Rated COrderKing",
           instantExpressAvailable: true,
         },
         {

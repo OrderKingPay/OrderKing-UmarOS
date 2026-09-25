@@ -36,25 +36,9 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
   const maxCredit = 50000;
 
   const handleApplyCredit = () => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + tenureDays);
-
-      setActiveLoan({
-        id: `LOAN-${Date.now().toString().slice(-6)}`,
-        amount: creditAmount,
-        disbursedAt: new Date().toLocaleDateString("en-IN"),
-        dueAt: dueDate.toLocaleDateString("en-IN"),
-        repaid: false,
-      });
-
-      onDisburseToWallet(creditAmount);
-      toast.success(
-        `🎉 ₹${creditAmount.toLocaleString("en-IN")} instantly disbursed to your King Pay Wallet! 0% interest for ${tenureDays} days.`
-      );
-    }, 800);
+    toast.error(
+      "Integration Pending: Financial APIs (Razorpay/NBFC) are currently disconnected per audit mandate OK-AUDIT-002. No simulated loans allowed."
+    );
   };
 
   const handleRepayLoan = () => {
@@ -203,20 +187,13 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
         {/* Action Button */}
         <Button
           onClick={handleApplyCredit}
-          disabled={isProcessing || (activeLoan !== null && !activeLoan.repaid)}
-          className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs py-3 shadow-md"
+          disabled={true}
+          className="w-full bg-slate-200 text-slate-500 font-black text-xs py-3 shadow-none cursor-not-allowed"
         >
-          {isProcessing ? (
-            <span className="flex items-center gap-2">
-              <RefreshCw className="size-4 animate-spin" />
-              Disbursing Instantly to King Pay Wallet...
-            </span>
-          ) : (
-            <span className="flex items-center gap-2">
-              <Zap className="size-4" />
-              Get ₹{creditAmount.toLocaleString("en-IN")} Instantly in Wallet (0% Interest)
-            </span>
-          )}
+          <span className="flex items-center gap-2">
+            <Zap className="size-4" />
+            Backend Integration Required
+          </span>
         </Button>
       </div>
 
