@@ -10,30 +10,40 @@ import type {
   StructuredRequest,
   ToolCall,
 } from "./provider-interface.ts";
+import { GoogleGenAI } from "@google/genai";
 
 export class GoogleGeminiProvider implements AIProvider {
   readonly id = "gemini";
   readonly name = "Google Gemini Core";
-  readonly supportedModels = ["gemini-2.0-flash", "gemini-2.5-pro", "gemini-1.5-pro"];
+  readonly supportedModels = ["gemini-2.5-pro", "gemini-2.0-flash", "gemini-1.5-pro"];
 
+  private ai: GoogleGenAI;
   private apiKey: string | undefined;
 
   constructor(apiKey?: string) {
     this.apiKey = apiKey || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    if (this.apiKey) {
+      this.ai = new GoogleGenAI({ apiKey: this.apiKey });
+    } else {
+      // Mock initialization to satisfy typescript, will throw in isConfigured check
+      this.ai = new GoogleGenAI({ apiKey: "unconfigured" });
+    }
   }
 
   get isConfigured(): boolean {
     return Boolean(this.apiKey && this.apiKey.trim().length > 0);
   }
 
-  async chat(input: ChatRequest): Promise<ChatResponse> {
+  private ensureConfigured() {
     if (!this.isConfigured) {
       throw new Error("Gemini API key is not configured in environment (GEMINI_API_KEY).");
     }
+  }
 
+  async chat(input: ChatRequest): Promise<ChatResponse> {
+    this.ensureConfigured();
     const start = Date.now();
-    const model = input.model || "gemini-2.0-flash";
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`;
+    const model = input.model || "gemini-2.5-pro";
 
     const contents = input.messages
       .filter((m) => m.role !== "system")
@@ -41,82 +51,51 @@ export class GoogleGeminiProvider implements AIProvider {
         role: m.role === "assistant" ? "model" : "user",
         parts: Array.isArray(m.content)
           ? m.content.map((p) => ({ text: p.text || "" }))
-          : [{ text: m.content }],
+          : [{ text: m.content as string }],
       }));
 
-    const functionDeclarations = input.tools?.map((t) => ({
-      name: t.name,
-      description: t.description,
-      parameters: t.parameters,
+    const tools = input.tools?.map(t => ({
+        functionDeclarations: [{
+            name: t.name,
+            description: t.description,
+            parameters: t.parameters as any
+        }]
     }));
 
-    const payload: Record<string, unknown> = {
-      contents,
-      generationConfig: {
-        temperature: input.temperature ?? 0.4,
-        maxOutputTokens: input.maxTokens ?? 4096,
-        ...(input.responseFormat === "json_object" ? { responseMimeType: "application/json" } : {}),
-      },
-    };
-
-    if (input.systemPrompt) {
-      payload.systemInstruction = { parts: [{ text: input.systemPrompt }] };
-    }
-
-    if (functionDeclarations && functionDeclarations.length > 0) {
-      payload.tools = [{ functionDeclarations }];
-    }
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+    const response = await this.ai.models.generateContent({
+        model,
+        contents,
+        config: {
+            temperature: input.temperature ?? 0.4,
+            maxOutputTokens: input.maxTokens ?? 4096,
+            systemInstruction: input.systemPrompt,
+            tools: tools?.length ? tools : undefined,
+            responseMimeType: input.responseFormat === "json_object" ? "application/json" : "text/plain"
+        }
     });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Gemini API error (${response.status}): ${errText}`);
-    }
+    const text = response.text || "";
+    const functionCalls = response.functionCalls || [];
+    
+    const toolCalls: ToolCall[] = functionCalls.map((fc, idx) => ({
+      callId: `gemini_call_${idx}_${Date.now()}`,
+      name: fc.name,
+      arguments: fc.args as Record<string, unknown>,
+    }));
 
-    const data = (await response.json()) as {
-      candidates?: Array<{
-        content?: {
-          parts?: Array<{
-            text?: string;
-            functionCall?: { name: string; args: Record<string, unknown> };
-          }>;
-        };
-      }>;
-      usageMetadata?: {
-        promptTokenCount?: number;
-        candidatesTokenCount?: number;
-        totalTokenCount?: number;
-      };
-    };
-
-    const candidate = data.candidates?.[0]?.content?.parts ?? [];
-    const textParts = candidate.map((p) => p.text).filter(Boolean);
-    const toolCalls: ToolCall[] = candidate
-      .filter((p) => p.functionCall)
-      .map((p, idx) => ({
-        callId: `gemini_call_${idx}_${Date.now()}`,
-        name: p.functionCall!.name,
-        arguments: p.functionCall!.args || {},
-      }));
-
-    const promptTokens = data.usageMetadata?.promptTokenCount || 0;
-    const completionTokens = data.usageMetadata?.candidatesTokenCount || 0;
-    const totalTokens = data.usageMetadata?.totalTokenCount || promptTokens + completionTokens;
+    const usage = response.usageMetadata;
+    const promptTokens = usage?.promptTokenCount || 0;
+    const completionTokens = usage?.candidatesTokenCount || 0;
 
     return {
       provider: this.id,
       model,
-      text: textParts.join("\n").trim(),
+      text: text,
       toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
       usage: {
         promptTokens,
         completionTokens,
-        totalTokens,
+        totalTokens: usage?.totalTokenCount || promptTokens + completionTokens,
         estimatedCostUsd: (promptTokens * 0.0001 + completionTokens * 0.0004) / 1000,
       },
       latencyMs: Date.now() - start,
@@ -124,22 +103,38 @@ export class GoogleGeminiProvider implements AIProvider {
   }
 
   async *stream(input: ChatRequest): AsyncIterable<ChatChunk> {
-    const full = await this.chat(input);
-    const words = full.text.split(" ");
-    for (let i = 0; i < words.length; i += 3) {
-      const delta = words.slice(i, i + 3).join(" ") + " ";
-      yield {
-        deltaText: delta,
-        done: i + 3 >= words.length,
-      };
+    this.ensureConfigured();
+    const model = input.model || "gemini-2.5-pro";
+
+    const contents = input.messages
+      .filter((m) => m.role !== "system")
+      .map((m) => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: Array.isArray(m.content)
+          ? m.content.map((p) => ({ text: p.text || "" }))
+          : [{ text: m.content as string }],
+      }));
+
+    const stream = await this.ai.models.generateContentStream({
+        model,
+        contents,
+        config: {
+            temperature: input.temperature ?? 0.4,
+            maxOutputTokens: input.maxTokens ?? 4096,
+            systemInstruction: input.systemPrompt
+        }
+    });
+
+    for await (const chunk of stream) {
+        yield {
+            deltaText: chunk.text || "",
+            done: false
+        };
     }
-    if (full.toolCalls) {
-      yield {
+    yield {
         deltaText: "",
-        toolCalls: full.toolCalls,
-        done: true,
-      };
-    }
+        done: true
+    };
   }
 
   async analyze(input: AnalysisRequest): Promise<AnalysisResponse> {
@@ -153,19 +148,13 @@ export class GoogleGeminiProvider implements AIProvider {
         },
       ],
       systemPrompt:
-        "You are an elite enterprise strategy analyst. Return concise executive findings, tactical recommendations, and confidence score. Return strictly valid JSON with keys: 'summary' (string), 'findings' (array of strings), 'recommendations' (array of strings), and 'confidenceScore' (number between 0 and 1).",
+        "You are an elite enterprise strategy analyst. Return strictly valid JSON with keys: 'summary' (string), 'findings' (array of strings), 'recommendations' (array of strings), and 'confidenceScore' (number between 0 and 1). No markdown.",
       responseFormat: "json_object",
     });
 
-    let parsed: any;
-    try {
-      parsed = JSON.parse(res.text);
-    } catch (e) {
-      throw new Error(`Gemini analyze failed to return valid JSON. Raw response: ${res.text}`);
-    }
-
+    const parsed = JSON.parse(res.text);
     if (!parsed.summary || !Array.isArray(parsed.findings)) {
-        throw new Error(`Gemini analyze response did not match schema. Raw response: ${res.text}`);
+      throw new Error(`Invalid schema from Gemini analyze: ${res.text}`);
     }
 
     return {
@@ -190,19 +179,13 @@ export class GoogleGeminiProvider implements AIProvider {
         },
       ],
       systemPrompt:
-        "You are a Principal Software Engineer. Write clean, robust, zero-placeholder code with full type definitions and error handling. Return strictly valid JSON with keys: 'code' (string of the raw code), 'explanation' (string), 'unitTests' (optional string), 'dependencies' (optional array of strings).",
+        "You are a Principal Software Engineer. Write clean, robust code. Return strictly valid JSON with keys: 'code' (string), 'explanation' (string), 'unitTests' (optional string), 'dependencies' (optional array of strings).",
       responseFormat: "json_object",
     });
 
-    let parsed: any;
-    try {
-      parsed = JSON.parse(res.text);
-    } catch (e) {
-      throw new Error(`Gemini generateCode failed to return valid JSON. Raw response: ${res.text}`);
-    }
-
+    const parsed = JSON.parse(res.text);
     if (!parsed.code) {
-        throw new Error(`Gemini generateCode response did not contain 'code'. Raw response: ${res.text}`);
+      throw new Error(`Invalid schema from Gemini generateCode: ${res.text}`);
     }
 
     return {
@@ -229,7 +212,6 @@ export class GoogleGeminiProvider implements AIProvider {
       responseFormat: "json_object",
     });
 
-    const clean = res.text.replace(/```json/g, "").replace(/```/g, "").trim();
-    return JSON.parse(clean) as T;
+    return JSON.parse(res.text) as T;
   }
 }
