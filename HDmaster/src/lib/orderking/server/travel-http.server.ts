@@ -5,17 +5,37 @@ export async function handleTravelHttp(request: Request, params: Record<string, 
     const path = url.pathname;
 
     if (request.method === "GET" && path.includes("search")) {
-        const origin = url.searchParams.get("origin") || "";
-        const destination = url.searchParams.get("destination") || "";
-        const date = url.searchParams.get("date") || "";
+        const origin =
+            url.searchParams.get("origin") ||
+            url.searchParams.get("originCode") ||
+            "";
+        const destination =
+            url.searchParams.get("destination") ||
+            url.searchParams.get("destinationCode") ||
+            "";
+        const date =
+            url.searchParams.get("date") ||
+            url.searchParams.get("departureDate") ||
+            "";
         const mode = (url.searchParams.get("mode") || "FLIGHT").toUpperCase() as any;
+        const passengers = Math.max(1, Number(url.searchParams.get("passengers") || 1));
+
+        if (!origin || !destination || !date) {
+            return new Response(
+                JSON.stringify({
+                    error: "INVALID_TRAVEL_SEARCH",
+                    details: "origin/originCode, destination/destinationCode and date/departureDate are required."
+                }),
+                { status: 400, headers: { "Content-Type": "application/json" } }
+            );
+        }
 
         const result = await TravelOrchestrator.search({
             mode,
             originCode: origin,
             destinationCode: destination,
             departureDate: date,
-            passengers: 1
+            passengers
         });
         return new Response(JSON.stringify(result), { headers: { "Content-Type": "application/json" } });
     }
