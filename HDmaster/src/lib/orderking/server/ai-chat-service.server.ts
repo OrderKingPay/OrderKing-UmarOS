@@ -602,131 +602,19 @@ export async function executeFounderAiChat(
     }
   }
 
-  // 3. Resolve Model & Provider Selection
-  const registry = getVerifiedModelRegistry();
-  const requestedModelId = request.modelId || "auto-supreme-orchestrator";
-
-  let activeRecord = registry.find((m) => m.id === requestedModelId) || registry[0];
-
-
-  // Auto-Select Logic:
-  if (requestedModelId === "auto-supreme-orchestrator") {
-    const geminiKey = getProviderApiKey("gemini");
-    const anthropicKey = getProviderApiKey("anthropic");
-    const openaiKey = getProviderApiKey("openai");
-    const xaiKey = getProviderApiKey("xai");
-
-    const hasAttachment = request.messages.some((m) => m.attachments && m.attachments.length > 0);
-
-    if (hasAttachment && geminiKey) {
-      activeRecord = registry.find((m) => m.id === "gemini-2-5-pro") || activeRecord;
-    } else if (anthropicKey && (currentQuery.includes("code") || currentQuery.includes("architecture"))) {
-      activeRecord = registry.find((m) => m.id === "claude-4-6-opus") || activeRecord;
-    } else if (openaiKey) {
-      activeRecord = registry.find((m) => m.id === "gpt-5-6-omni") || activeRecord;
-    } else if (geminiKey) {
-      activeRecord = registry.find((m) => m.id === "gemini-2-5-pro") || activeRecord;
-    } else if (xaiKey) {
-      activeRecord = registry.find((m) => m.id === "grok-4-6-super") || activeRecord;
-    } else {
-      activeRecord = registry.find((m) => m.id === "sovereign-ultra") || registry[0];
-    }
+  // 3. OpenAI-only production chat routing.
+  // The chat surface intentionally uses OpenAI as its sole model provider.
+  // Other providers may remain registered for non-chat integrations, but they
+  // are never used by this founder/customer chat path.
+  const openaiApiKey = request.apiKeys?.openai || getProviderApiKey("openai");
+  if (!openaiApiKey) {
+    throw new Error("OPENAI_CHAT_CONFIGURATION_REQUIRED: configure OPENAI_API_KEY before using AI chat.");
   }
 
-  // 3. Double Engine Consensus (Multi-Model Synthesis)
-  if (requestedModelId === "ensemble-consensus") {
-    const activeProvidersList: Array<{ name: string; id: string; provider: any; model: string }> = [];
-    const geminiKey = getProviderApiKey("gemini");
-    const anthropicKey = getProviderApiKey("anthropic");
-    const openaiKey = getProviderApiKey("openai");
-    const xaiKey = getProviderApiKey("xai");
-
-    if (geminiKey) activeProvidersList.push({ name: "Google Gemini 2.0 Flash", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: "gemini-2.0-flash" });
-    if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude 3.7", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: "claude-3-7-sonnet-20250219" });
-    if (openaiKey) activeProvidersList.push({ name: "OpenAI GPT-4o", id: "openai", provider: new OpenAIProvider(openaiKey), model: "gpt-4o" });
-    if (xaiKey) activeProvidersList.push({ name: "xAI Grok 2", id: "xai", provider: new XAIProvider(xaiKey), model: "grok-2-1212" });
-
-    // Always include Sovereign Local Core
-    const localRes = executeLocalSovereignCognitivePass(currentQuery, request.messages, request.founderUpiVpa);
-
-    if (activeProvidersList.length >= 2) {
-      // Double Engine mode
-      const engine1 = activeProvidersList[0];
-      const engine2 = activeProvidersList[1];
-
-      onStreamEvent?.({ type: "step", data: { stepNumber: 1, totalSteps: 2, label: `Engine 1 (${engine1.name}) Processing`, status: "RUNNING", detail: "Generating primary response..." } });
-      
-      let primaryResponse = "";
-      try {
-        const res1 = await engine1.provider.chat({
-          messages: request.messages.map((m) => ({ role: m.role, content: m.content })),
-          model: engine1.model,
-        });
-        primaryResponse = res1.text;
-      } catch (e) {
-        primaryResponse = localRes.text;
-      }
-      onStreamEvent?.({ type: "step", data: { stepNumber: 1, totalSteps: 2, label: `Engine 1 (${engine1.name}) Processing`, status: "COMPLETED", detail: "Primary generation complete." } });
-
-      onStreamEvent?.({ type: "step", data: { stepNumber: 2, totalSteps: 2, label: `Engine 2 (${engine2.name}) Validation`, status: "RUNNING", detail: "Validating and refining output for perfection..." } });
-      
-      let finalResponse = "";
-      try {
-        const validationMessages: any[] = [
-          ...request.messages.map((m) => ({ role: m.role, content: m.content })),
-          { role: "assistant", content: primaryResponse },
-          { role: "user", content: "Critically review your previous response. Ensure it is 100% realistic, accurate, and highly professional. Remove any meta-commentary or introductory filler. Output only the final, perfected, direct response." }
-        ];
-        
-        const res2 = await engine2.provider.chat({
-          messages: validationMessages,
-          model: engine2.model,
-        });
-        finalResponse = res2.text;
-      } catch (e) {
-        finalResponse = primaryResponse;
-      }
-      onStreamEvent?.({ type: "step", data: { stepNumber: 2, totalSteps: 2, label: `Engine 2 (${engine2.name}) Validation`, status: "COMPLETED", detail: "Validation complete." } });
-
-      onStreamEvent?.({ type: "delta", data: finalResponse });
-      onStreamEvent?.({ type: "done", data: { text: finalResponse } });
-
-      return {
-        text: finalResponse,
-        modelUsed: "double-engine-v1",
-        provider: "HDmaster Double Engine",
-        responders: [engine1.name, engine2.name],
-        executionSteps: [],
-        latencyMs: Date.now() - startTime,
-      };
-    } else if (activeProvidersList.length === 1) {
-      // Single engine fallback
-      const engine1 = activeProvidersList[0];
-      try {
-        const res1 = await engine1.provider.chat({
-          messages: request.messages.map((m) => ({ role: m.role, content: m.content })),
-          model: engine1.model,
-        });
-        onStreamEvent?.({ type: "delta", data: res1.text });
-        onStreamEvent?.({ type: "done", data: { text: res1.text } });
-        return { text: res1.text, modelUsed: engine1.model, provider: engine1.name, responders: [engine1.name], executionSteps: [], latencyMs: Date.now() - startTime };
-      } catch (e) {
-        // fallthrough
-      }
-    }
-
-    // Default local fallback
-    onStreamEvent?.({ type: "delta", data: localRes.text });
-    onStreamEvent?.({ type: "done", data: { text: localRes.text } });
-
-    return {
-      text: localRes.text,
-      modelUsed: "sovereign-local-core",
-      provider: "Local Sovereign",
-      responders: ["Umar Sovereign Local Core"],
-      executionSteps: [],
-      latencyMs: Date.now() - startTime,
-    };
+  const registry = getVerifiedModelRegistry();
+  const activeRecord = registry.find((m) => m.provider === "OpenAI");
+  if (!activeRecord) {
+    throw new Error("OPENAI_CHAT_REGISTRY_ERROR: the verified OpenAI model record is missing.");
   }
 
   // 4. External Cloud Provider Execution
@@ -832,38 +720,19 @@ export async function executeFounderAiChat(
           latencyMs: Date.now() - startTime,
         };
       } catch (err) {
-        console.warn(`[ai-chat] Provider ${activeRecord.provider} failed, falling back to Local Sovereign Core:`, err);
+        const message = err instanceof Error ? err.message : "OpenAI request failed";
         onStreamEvent?.({
-          type: "step",
-          data: {
-            stepNumber: 3,
-            totalSteps: 4,
-            label: "Local Core Fallback",
-            status: "COMPLETED",
-            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). Seamlessly routing to Local Sovereign Core.`,
-          },
+          type: "error",
+          data: { code: "OPENAI_CHAT_REQUEST_FAILED", message },
         });
+        throw new Error(`OPENAI_CHAT_REQUEST_FAILED: ${message}`);
       }
     }
   }
 
-  // 5. No external provider available — honest fallback
-  const localRes = executeLocalSovereignCognitivePass(currentQuery, request.messages, request.founderUpiVpa);
-  onStreamEvent?.({ type: "delta", data: localRes.text });
-  onStreamEvent?.({
-    type: "done",
-    data: {
-      text: localRes.text,
-      executionSteps: [],
-      modelUsed: "none",
-    },
-  });
+  // OpenAI is required. There is deliberately no local, deterministic,
+  // synthetic, or third-party fallback in production chat.
+  throw new Error("OPENAI_CHAT_UNAVAILABLE: OpenAI chat execution did not complete.");
 
-  return {
-    text: localRes.text,
-    modelUsed: "none",
-    provider: "None Connected",
-    executionSteps: [],
-    latencyMs: Date.now() - startTime,
-  };
+
 }
