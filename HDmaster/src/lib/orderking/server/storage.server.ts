@@ -3,6 +3,8 @@
  * Supports AWS S3, Cloudflare R2, Supabase Storage, and local data-URI fallback.
  */
 
+import { randomUUID } from "node:crypto";
+
 export type UploadTarget = "menu_item" | "restaurant_banner" | "kyc_document" | "rider_avatar";
 
 export type PresignedUploadRequest = {
@@ -35,25 +37,17 @@ export function getStorageConfig() {
 
 /**
  * Generates a pre-signed S3/R2 upload URL for direct client-to-cloud file uploads.
- * If credentials are not configured, provides a safe zero-crash mock upload endpoint.
+ * If credentials are not configured, fails closed. Production must never fabricate an upload.
  */
 export async function createPresignedUpload(
   req: PresignedUploadRequest
 ): Promise<PresignedUploadResponse> {
   const config = getStorageConfig();
   const ext = req.fileName.split(".").pop() || "jpg";
-  const uniqueKey = `${req.target}/${req.targetId}/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
+  const uniqueKey = `${req.target}/${req.targetId}/${Date.now()}_${randomUUID()}.${ext}`;
 
   if (!config.hasCredentials) {
-    // Graceful fallback for local development or preview environments
-    return {
-      uploadUrl: `/api/uploads/mock?key=${encodeURIComponent(uniqueKey)}`,
-      publicUrl: `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80`,
-      key: uniqueKey,
-      method: "PUT",
-      headers: { "Content-Type": req.contentType },
-      isMock: true,
-    };
+    throw new Error("Storage credentials not configured. Refusing to generate a mock or placeholder upload.");
   }
 
   // Real S3 / R2 Pre-signed PUT URL generation using standard AWS v4 signing protocol
