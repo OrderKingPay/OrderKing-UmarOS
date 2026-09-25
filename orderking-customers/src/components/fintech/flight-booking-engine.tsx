@@ -8,8 +8,6 @@ import {
   Sparkles,
   Info,
   Clock,
-  Luggage,
-  Utensils,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -408,11 +406,7 @@ export function FlightBookingEngine(_props: Props) {
                     <div className="flex items-center gap-2">
                       <h4 className="font-bold text-sm text-fg">{flight.airline}</h4>
                       <span className="font-mono text-xs text-muted">#{flight.flightNumber}</span>
-                      {concession !== "regular" && (
-                        <span className="rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 px-1.5 py-0.2 text-[9px] font-bold">
-                          {concession.toUpperCase()} UNLOCKED
-                        </span>
-                      )}
+
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted mt-1">
                       <span className="flex items-center gap-1">
