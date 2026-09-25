@@ -136,7 +136,7 @@ export function CustomerShell({
         {isDeliveryActive ? (
           <ul className="mx-auto grid max-w-lg grid-cols-5 items-center md:max-w-5xl relative">
             <NavItem to="/" icon={House} label={t("common.home")} active={path === "/"} />
-            <NavItem to="/search" icon={Search} label={t("common.search")} active={path.startsWith("/search")} />
+            <NavItem to="/king-pay" icon={Zap} label="King Pay" active={path.startsWith("/king-pay")} highlight={true} />
             <NavItem
               to="/cart"
               icon={ShoppingBag}
