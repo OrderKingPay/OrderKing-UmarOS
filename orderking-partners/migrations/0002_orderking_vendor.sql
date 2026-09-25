@@ -48,6 +48,9 @@ create table if not exists restaurants (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+-- Existing deployments may have a legacy restaurants table without owner_user_id.
+alter table restaurants add column if not exists owner_user_id text;
+
 create index if not exists restaurants_owner_idx on restaurants (owner_user_id);
 create index if not exists restaurants_label_idx on restaurants (data_label, verification_status);
 
