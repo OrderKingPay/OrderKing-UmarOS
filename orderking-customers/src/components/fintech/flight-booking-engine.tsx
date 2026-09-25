@@ -221,47 +221,51 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
       setIsSearching(false);
     }
   };
-  const handleBookFlight = () => {
-    if (!selectedFlight) return;
-
-    let totalAmount = selectedFlight.kingPayPrice * passengers;
-    if (addTravelInsurance) totalAmount += 199 * passengers;
-    if (addMeal) totalAmount += 250 * passengers;
-    if (addExtraBaggage) totalAmount += 950 * passengers;
-
-    if (walletBalance < totalAmount) {
-      toast.error(
-        `Insufficient wallet balance. Total payable is ₹${totalAmount}. Please top up your KingPay wallet.`
-      );
+  const handleBookFlight = async () => {
+    if (!selectedFlight?.rawProviderData || !selectedFlight.providerId) {
+      toast.error("This offer cannot be booked because a genuine provider offer is missing.");
+      return;
+    }
+    if (!passengerName.trim() || !contactMobile.trim()) {
+      toast.error("Enter the passenger name and contact mobile before booking.");
       return;
     }
 
     setIsBooking(true);
-
-    setTimeout(() => {
-      const ok = onDeductWallet(
-        totalAmount,
-        `Confirmed Flight Ticket: ${selectedFlight.airlineCode}-${selectedFlight.flightNumber} (${selectedFlight.departureAirport}➔${selectedFlight.arrivalAirport})`
-      );
-
-      if (ok) {
-        const pnr = `KP${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-        setConfirmedTicket({
-          pnr,
-          flight: selectedFlight,
-          passenger: passengerName,
-          totalPaid: totalAmount,
-          savings: selectedFlight.savingsAmount * passengers + 499, // includes waived convenience fee
-          qrToken: `BOARDING-PASS-${pnr}-${selectedFlight.departureAirport}-${selectedFlight.arrivalAirport}`,
-        });
-        toast.success(`🎉 Flight Confirmed! PNR: ${pnr}. Boarding Pass Ready!`);
+    try {
+      const baseUrl = (import.meta.env.VITE_HDMASTER_API_BASE_URL || "https://hdmaster.vercel.app").replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/api/v1/travel/book`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          resultId: selectedFlight.id,
+          providerId: selectedFlight.providerId,
+          rawProviderData: selectedFlight.rawProviderData,
+          passengerDetails: [{
+            name: { firstName: passengerName.trim().split(/\s+/)[0] || passengerName.trim(), lastName: passengerName.trim().split(/\s+/).slice(1).join(" ") || undefined },
+            gender: passengerGender.toUpperCase(),
+            contact: { phone: contactMobile.trim() },
+          }],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data?.error || data?.message || "The live travel provider did not confirm the booking.");
       }
-
-      setIsBooking(false);
+      setConfirmedTicket({
+        bookingId: data.bookingId,
+        pnr: data.pnr,
+        flight: selectedFlight,
+        passenger: passengerName.trim(),
+      });
+      toast.success(data.pnr ? `Provider booking confirmed. PNR: ${data.pnr}` : "Provider booking confirmed.");
       setSelectedFlight(null);
-    }, 1100);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Live travel booking failed.");
+    } finally {
+      setIsBooking(false);
+    }
   };
-
   return (
     <div className="space-y-6 text-fg">
       {/* 1. HERO BANNER: PLANET'S LOWEST PRICE FLIGHT GUARANTEE */}
