@@ -65,7 +65,9 @@ function FinancePage() {
         }
       />
       {q.error ? <ErrorBanner message={q.error.message} onRetry={() => void q.refetch()} /> : null}
-      <p className="mb-3 text-xs text-subtle">{q.data?.period} · SIMULATED DATA</p>
+      <p className="mb-3 text-xs text-subtle">
+        {q.data?.period} · {q.data?.dataMode === "LIVE" ? "LIVE DATA" : q.data?.dataMode === "SIMULATED" ? "SIMULATED DATA" : "SHARED CORE NOT CONNECTED"}
+      </p>
       {m ? (
         <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Kpi label="GMV" value={formatINR(m.gmvPaise)} />
