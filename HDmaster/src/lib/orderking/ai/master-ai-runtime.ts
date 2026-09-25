@@ -2694,7 +2694,7 @@ export async function runMasterAi(
         return {
           ok: true,
           text: `Action \`${input.approvedCallName}\` was approved and executed successfully.\n\n\`\`\`json\n${JSON.stringify(result, null, 2)}\n\`\`\``,
-          provider: input.provider || "local_deterministic",
+          provider: input.provider || "openai",
           model: "governed-execution-engine",
           specialist: { id: specialist.id, name: specialist.name, team: specialist.team, title: specialist.title },
           toolCalls: [{ callId: input.approvedCallId, name: input.approvedCallName, status: "executed", risk: spec.risk }],
@@ -2721,7 +2721,7 @@ export async function runMasterAi(
   const toolCallsSummary: ToolCallResult[] = [];
   const pendingApprovals: PendingApproval[] = [];
   const evidence = new Set<string>(["RESULT"]);
-  let activeProvider: AiProvider = input.provider || "local_deterministic";
+  let activeProvider: AiProvider = input.provider || "openai";
   let activeModel = "orderking-master-ai-v1";
   let finalText = "";
 
