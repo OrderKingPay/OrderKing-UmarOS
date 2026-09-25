@@ -554,33 +554,23 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
                   </div>
                 </div>
 
-                {/* Price Matrix Comparison & Booking Action */}
+                {/* Supplier Price & Booking Action */}
                 <div className="flex items-center justify-between md:justify-end gap-4 pt-3 md:pt-0 border-t md:border-t-0 border-border/60">
                   <div className="text-right">
-                    <div className="flex items-center gap-1.5 justify-end">
-                      <span className="text-[11px] text-muted line-through">
-                        ₹{flight.competitorPrice.toLocaleString("en-IN")}
-                      </span>
-                      <span className="rounded bg-rose-500/10 text-rose-600 px-1.5 py-0.2 text-[10px] font-bold">
-                        Save ₹{flight.savingsAmount}
-                      </span>
-                    </div>
+                    <p className="text-[10px] uppercase tracking-wide text-muted">Live supplier total</p>
                     <p className="font-mono text-2xl font-black text-fg">
-                      ₹{flight.kingPayPrice.toLocaleString("en-IN")}
+                      {flight.kingPayPrice.toLocaleString("en-IN", { style: "currency", currency: "INR" })}
                     </p>
-                    <span className="text-[10px] text-emerald-600 font-bold block">
-                      ⚡ ₹0 Convenience Fee
-                    </span>
                   </div>
 
                   <Button
                     onClick={() => setSelectedFlight(flight)}
                     className="bg-primary text-white hover:bg-primary/90 font-bold text-xs px-4 py-2.5 rounded-xl shadow-md shrink-0"
                   >
-                    Book Lowest ➔
+                    Continue ➔
                   </Button>
                 </div>
-              </div>
+                            </div>
             </div>
           ))}
         </div>
