@@ -540,8 +540,8 @@ export async function executeFounderAiChat(
 
     return {
       text: workforceResult,
-      modelUsed: "sovereign-local-core",
-      provider: "Local Sovereign",
+      modelUsed: "deterministic-operational-tool",
+      provider: "HDmaster Operational Tools",
       executionSteps: [],
       latencyMs: Date.now() - startTime,
     };
