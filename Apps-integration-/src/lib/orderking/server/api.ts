@@ -233,6 +233,7 @@ export const getOpsHome = createServerFn({ method: "GET" })
       return {
         ok: true as const,
         data: {
+          dataMode: await integrationDataMode(sql),
           today: ops[0],
           kpis,
           weekKpis,
