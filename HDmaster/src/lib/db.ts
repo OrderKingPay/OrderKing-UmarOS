@@ -16,6 +16,15 @@ const databaseUrl =
  * the app has a working database even with nothing configured — the live preview
  * included. Swap in Neon later by just setting `DATABASE_URL`; no code changes.
  */
+const isVercelProduction = process.env.VERCEL_ENV === "production";
+
+if (isVercelProduction && !databaseUrl) {
+  throw new Error(
+    "PRODUCTION_CONFIGURATION_ERROR: DATABASE_URL is required on the production deployment. " +
+    "Refusing to start on ephemeral PGLite."
+  );
+}
+
 export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
 
 /**
