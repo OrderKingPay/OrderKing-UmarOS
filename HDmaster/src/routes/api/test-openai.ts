@@ -8,12 +8,13 @@ export const Route = createFileRoute("/api/test-openai")({
       GET: async ({ request }) => {
         try {
           const url = new URL(request.url);
-          const isAuthorized = url.searchParams.get("token") === "UMAR_OS_ADMIN";
+          const adminToken = process.env.UMAR_OS_ADMIN_TOKEN?.trim();
+          const isAuthorized = Boolean(adminToken) && url.searchParams.get("token") === adminToken;
           
           if (!isAuthorized) {
             return new Response(JSON.stringify({
               status: "UNAUTHORIZED",
-              evidence: "Authorization check failed. You must provide ?token=UMAR_OS_ADMIN in the URL to execute this phase 1 operation."
+              evidence: "Authorization check failed. A configured UMAR_OS_ADMIN_TOKEN is required."
             }), { status: 401, headers: { "Content-Type": "application/json" } });
           }
 
@@ -77,9 +78,8 @@ export const Route = createFileRoute("/api/test-openai")({
         } catch (e: any) {
           return new Response(JSON.stringify({
             status: "FAILED",
-            evidence: "Real OpenAI API Request Failed. Likely an invalid API key.",
-            error: e.message
-          }), { status: 500, headers: { "Content-Type": "application/json" } });
+            evidence: "Real OpenAI API request failed. Server error details are withheld to avoid leaking credentials."
+          }), { status: 502, headers: { "Content-Type": "application/json" } });
         }
       }
     }
