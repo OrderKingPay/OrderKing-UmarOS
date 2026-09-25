@@ -70,7 +70,7 @@ type Props = {
   onDeductWallet: (amount: number, description: string) => boolean;
 };
 
-export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
+export function FlightBookingEngine(_props: Props) {
   // Search state
   const [tripType, setTripType] = useState<"one_way" | "round_trip">("one_way");
   const [originAirport, setOriginAirport] = useState<string>("IXS");
@@ -773,112 +773,114 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
         </div>
       )}
 
-      {/* 5. CONFIRMED E-TICKET MODAL */}
+      {/* 5. CONFIRMED BOOKING MODAL */}
+
       {confirmedTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 backdrop-blur-md overflow-y-auto">
+
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md overflow-y-auto">
+
           <div className="w-full max-w-md rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-surface to-surface-2 p-5 sm:p-6 shadow-2xl space-y-4">
-            <div className="text-center space-y-1">
-              <div className="size-14 rounded-full bg-emerald-500/20 text-emerald-600 text-2xl flex items-center justify-center mx-auto shadow-inner">
-                ✓
-              </div>
-              <h3 className="font-display font-black text-xl text-fg">Flight Ticket Confirmed!</h3>
-              <p className="text-xs text-muted">Boarding pass generated and sent to WhatsApp</p>
+
+            <div className="text-center space-y-2">
+
+              <div className="size-14 rounded-full bg-emerald-500/20 text-emerald-600 text-2xl flex items-center justify-center mx-auto shadow-inner">✓</div>
+
+              <h3 className="font-display font-black text-xl text-fg">Provider Booking Confirmed</h3>
+
+              <p className="text-xs text-muted">Shown only after the configured live travel provider returned success.</p>
+
             </div>
 
-            {/* Digital Boarding Pass Ticket */}
-            <div className="rounded-2xl border-2 border-dashed border-primary/40 bg-surface p-4 text-xs space-y-3 relative shadow-md">
-              <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+
+
+            <div className="rounded-2xl border border-primary/30 bg-surface p-4 text-xs space-y-3">
+
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+
                 <div>
-                  <span className="text-[9px] uppercase font-bold text-muted block">Airline</span>
-                  <span className="font-bold text-fg text-sm">{confirmedTicket.flight.airline}</span>
+
+                  <span className="text-[9px] uppercase font-bold text-muted block">Airline / Provider</span>
+
+                  <span className="font-bold text-fg text-sm">{confirmedTicket.flight.airline} · {confirmedTicket.flight.airlineCode}</span>
+
                 </div>
+
                 <div className="text-right">
-                  <span className="text-[9px] uppercase font-bold text-muted block">PNR Number</span>
-                  <span className="font-mono font-black text-base text-primary tracking-widest">
-                    {confirmedTicket.pnr}
-                  </span>
+
+                  <span className="text-[9px] uppercase font-bold text-muted block">PNR</span>
+
+                  <span className="font-mono font-black text-base text-primary tracking-widest">{confirmedTicket.pnr || "Not returned"}</span>
+
                 </div>
+
               </div>
+
+
 
               <div className="flex items-center justify-between">
+
                 <div>
-                  <span className="font-mono text-xl font-black text-fg">
-                    {confirmedTicket.flight.departureAirport}
-                  </span>
+
+                  <span className="font-mono text-xl font-black text-fg">{confirmedTicket.flight.departureAirport}</span>
+
                   <p className="text-[10px] text-muted">{confirmedTicket.flight.departureTime}</p>
+
                 </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-[10px] font-mono text-muted">{confirmedTicket.flight.duration}</span>
-                  <Plane className="size-4 text-primary my-0.5" />
-                  <span className="text-[9px] font-bold text-emerald-600">Confirmed</span>
-                </div>
+
+                <Plane className="size-4 text-primary" />
+
                 <div className="text-right">
-                  <span className="font-mono text-xl font-black text-fg">
-                    {confirmedTicket.flight.arrivalAirport}
-                  </span>
+
+                  <span className="font-mono text-xl font-black text-fg">{confirmedTicket.flight.arrivalAirport}</span>
+
                   <p className="text-[10px] text-muted">{confirmedTicket.flight.arrivalTime}</p>
+
                 </div>
+
               </div>
 
-              <div className="border-t border-border/60 pt-2 flex items-center justify-between">
-                <div>
-                  <span className="text-[9px] text-muted block">Passenger</span>
-                  <span className="font-bold text-fg">{confirmedTicket.passenger}</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-[9px] text-muted block">Total Paid (0 Fee)</span>
-                  <span className="font-mono font-bold text-fg">₹{confirmedTicket.totalPaid.toLocaleString("en-IN")}</span>
-                </div>
+
+
+              <div className="border-t border-border/60 pt-3">
+
+                <span className="text-[9px] text-muted block">Passenger</span>
+
+                <span className="font-bold text-fg">{confirmedTicket.passenger}</span>
+
               </div>
 
-              {/* Simulated QR Code for Boarding Gate */}
-              <div className="rounded-xl bg-surface-2 p-3 text-center space-y-1 border border-border">
-                <div className="size-24 mx-auto bg-white p-1.5 rounded-lg shadow-xs flex items-center justify-center">
-                  <Ticket className="size-16 text-slate-800" />
+
+
+              {confirmedTicket.bookingId && (
+
+                <div className="border-t border-border/60 pt-3">
+
+                  <span className="text-[9px] text-muted block">Provider Booking ID</span>
+
+                  <span className="font-mono font-bold text-fg break-all">{confirmedTicket.bookingId}</span>
+
                 </div>
-                <span className="text-[10px] font-mono text-muted block">Gate Barcode: {confirmedTicket.qrToken}</span>
-              </div>
+
+              )}
+
             </div>
 
-            {/* Savings Callout */}
-            <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-2.5 text-center text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-              🎉 You saved ₹{confirmedTicket.savings.toLocaleString("en-IN")} on this booking vs other travel apps!
+
+
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-[10px] text-muted">
+
+              No fake boarding pass, QR code, competitor savings or payment receipt is generated by this screen. Those require verified supplier/payment integrations.
+
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-2">
-              <Button
-                onClick={() => {
-                  toast.success("e-Ticket PDF downloaded to your device!");
-                }}
-                className="w-full bg-primary text-white font-bold text-xs py-2.5 rounded-xl shadow"
-              >
-                <Download className="size-3.5 mr-1.5" />
-                Download e-Ticket &amp; Boarding Pass
-              </Button>
 
-              <Button
-                variant="outline"
-                onClick={() => {
-                  const msg = `✈️ My flight from ${confirmedTicket.flight.departureAirport} to ${confirmedTicket.flight.arrivalAirport} is confirmed on KingPay! PNR: ${confirmedTicket.pnr}. Booked at the planet's lowest price with ₹0 convenience fee!`;
-                  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
-                }}
-                className="w-full text-xs font-semibold border-border"
-              >
-                <Share2 className="size-3.5 mr-1.5" />
-                Share on WhatsApp
-              </Button>
 
-              <Button
-                variant="ghost"
-                onClick={() => setConfirmedTicket(null)}
-                className="w-full text-xs"
-              >
-                Done
-              </Button>
-            </div>
+            <Button variant="ghost" onClick={() => setConfirmedTicket(null)} className="w-full text-xs">Done</Button>
+
           </div>
+
         </div>
+
       )}
     </div>
   );
