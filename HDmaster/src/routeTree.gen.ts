@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ApiTestOpenaiRouteImport } from './routes/api/test-openai'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppModuleRouteImport } from './routes/app/$module'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
@@ -44,6 +45,11 @@ const AppRouteRoute = AppRouteRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTestOpenaiRoute = ApiTestOpenaiRouteImport.update({
+  id: '/api/test-openai',
+  path: '/api/test-openai',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/api/test-openai': typeof ApiTestOpenaiRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/api/test-openai': typeof ApiTestOpenaiRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/api/test-openai': typeof ApiTestOpenaiRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/api/test-openai'
     | '/app/$module'
     | '/app/'
     | '/api/ai/chat'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/api/test-openai'
     | '/app/$module'
     | '/app'
     | '/api/ai/chat'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/api/test-openai'
     | '/app/$module'
     | '/app/'
     | '/api/ai/chat'
@@ -283,6 +295,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiTestOpenaiRoute: typeof ApiTestOpenaiRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiAiTestConnectionRoute: typeof ApiAiTestConnectionRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -319,6 +332,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/test-openai': {
+      id: '/api/test-openai'
+      path: '/api/test-openai'
+      fullPath: '/api/test-openai'
+      preLoaderRoute: typeof ApiTestOpenaiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -507,6 +527,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiTestOpenaiRoute: ApiTestOpenaiRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiAiTestConnectionRoute: ApiAiTestConnectionRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
@@ -524,12 +545,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
