@@ -60,7 +60,8 @@ export type SettlementState =
   | "PAID"
   | "FAILED"
   | "RETRYABLE"
-  | "ESCALATED";
+  | "ESCALATED"
+  | "FRAUD_FROZEN";
 
 export interface SettlementBatch {
   batchId: string;
@@ -228,13 +229,28 @@ export class CanonicalLedger {
     deliveryFeePaise: number;
     gstPaise: number;
     idempotencyKey: string;
+    orderRiskContext?: OrderRiskContext;
   }) {
     const netFoodPaise = params.totalAmountPaise - params.platformFeePaise - params.deliveryFeePaise - params.gstPaise;
+
+    let isFraudSuspicious = false;
+    let fraudReasons: string[] = [];
+    let fraudScore = 0;
+
+    if (params.orderRiskContext) {
+      const evaluation = fraudShield.evaluateOrderRisk(params.orderRiskContext);
+      isFraudSuspicious = evaluation.isFraudulent;
+      fraudReasons = evaluation.reasons;
+      fraudScore = evaluation.riskScore;
+    }
 
     return this.postTransaction({
       idempotencyKey: params.idempotencyKey,
       eventType: "ORDER_PAYMENT_CAPTURED",
       orderId: params.orderId,
+      isFraudSuspicious,
+      fraudReasons,
+      fraudScore,
       entries: [
         {
           account: "BANK_CLEARING",

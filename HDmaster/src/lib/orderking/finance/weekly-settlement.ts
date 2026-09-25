@@ -122,8 +122,8 @@ export function calculateRestaurantWeeklySettlement(params: {
   // Total deductions
   const totalDeductions = commission + gstOnCommission + pgFee + gstOnPgFee + tcsDeduction + tdsDeduction;
 
-  // Net payable
-  const netPayable = Math.max(0, netFoodSales + packaging + reimbursements - totalDeductions);
+  // Net payable (Platform funds KingCoins, so we reimburse the restaurant if they collected less cash due to it, OR it's just tracked. Usually, if customer pays less, OrderKing adds it to netPayable so restaurant gets full amount)
+  const netPayable = Math.max(0, netFoodSales + packaging + reimbursements + kingCoinsFunded - totalDeductions);
 
   return {
     restaurantId: params.restaurantId,
@@ -142,6 +142,7 @@ export function calculateRestaurantWeeklySettlement(params: {
     tcsDeductionPaise: tcsDeduction,
     tdsDeductionPaise: tdsDeduction,
     platformReimbursementsPaise: reimbursements,
+    kingCoinsLiabilityFundedPaise: kingCoinsFunded,
     netPayablePaise: netPayable,
     payoutStatus: "PENDING",
   };

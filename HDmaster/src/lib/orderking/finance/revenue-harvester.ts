@@ -73,6 +73,7 @@ export type RevenueHarvestSummary = {
   streams: IncomeStreamYield[];
   corporateCateringContracts: CorporateCateringContract[];
   meityClaim: MeityClaimSchedule;
+  kingCoinsLiabilityPaise: number;
   ledgerEntriesToPost: Array<{
     accountKey: string;
     entryType: "CREDIT" | "DEBIT";
@@ -330,6 +331,7 @@ export function calculatePlanetaryRevenueHarvest(options: {
   activeRestaurantsCount?: number;
   monthlyOrdersCount?: number;
   monthlyGmvPaise?: number;
+  kingCoinsMintedMonthlyPaise?: number;
 }): RevenueHarvestSummary {
   if (!options.ownerConsent) {
     throw new Error("OWNER_CONSENT_REQUIRED: Revenue harvest and money execution requires explicit owner consent.");
@@ -338,6 +340,7 @@ export function calculatePlanetaryRevenueHarvest(options: {
   const restaurants = options.activeRestaurantsCount ?? 150;
   const orders = options.monthlyOrdersCount ?? 25000;
   const gmv = options.monthlyGmvPaise ?? 750000000; // ₹75 Lakhs GMV
+  const kingCoinsLiability = options.kingCoinsMintedMonthlyPaise ?? Math.round(gmv * 0.05); // Assume 5% average cashback liability
 
   // 1. MeitY 0.40% Reimbursement
   const meityClaim = generateMeityUpiClaimSchedule({
@@ -637,6 +640,18 @@ export function calculatePlanetaryRevenueHarvest(options: {
       amountPaise: Math.round(totalNonDilutiveGrantVaultPaise / 12),
       description: "Amortized monthly accrual of verified non-dilutive government grants",
     },
+    {
+      accountKey: "LIABILITY_KINGCOINS_UNREDEEMED",
+      entryType: "CREDIT" as const,
+      amountPaise: kingCoinsLiability,
+      description: "Accrued liability for KingCoins earned by users but not yet redeemed",
+    },
+    {
+      accountKey: "EXPENSE_KINGCOINS_PROVISION",
+      entryType: "DEBIT" as const,
+      amountPaise: kingCoinsLiability,
+      description: "Monthly provision expense for KingCoins cashback liability",
+    },
   ];
 
   // Verify Double-Entry Balance
@@ -655,6 +670,7 @@ export function calculatePlanetaryRevenueHarvest(options: {
     streams,
     corporateCateringContracts: CORPORATE_CATERING_PIPELINE,
     meityClaim,
+    kingCoinsLiabilityPaise: kingCoinsLiability,
     ledgerEntriesToPost,
     executionAuditSummary: `Revenue Harvester successfully verified with Owner Consent. Total Monthly Run-Rate: ₹${(totalMonthlyCollectibleYieldPaise / 100).toLocaleString("en-IN")}. Non-Dilutive Grant Capital: ₹${(totalNonDilutiveGrantVaultPaise / 100).toLocaleString("en-IN")}. Double-entry ledger balanced with integer-paise precision.`,
   };
