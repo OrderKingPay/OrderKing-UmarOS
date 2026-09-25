@@ -456,7 +456,10 @@ export const getDeliveryFn = createServerFn({ method: "GET" })
     try {
       const e = await engine();
       const delivery = await e.getDelivery(context.userId, data.deliveryId);
-      const simulatedOtp = await e.otpForSimulation(context.userId, data.deliveryId);
+      const simulatedOtp =
+        delivery.dataMode === "SIMULATED"
+          ? await e.otpForSimulation(context.userId, data.deliveryId)
+          : null;
       return { delivery, simulatedOtp };
     } catch (err) {
       fail(err);
