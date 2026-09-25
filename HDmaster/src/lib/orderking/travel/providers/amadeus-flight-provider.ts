@@ -26,7 +26,10 @@ export class AmadeusFlightProvider implements TravelProvider {
   }
 
   isAvailable(): boolean {
-    return Boolean(process.env.AMADEUS_API_KEY && process.env.AMADEUS_API_SECRET);
+    const hasCredentials = Boolean(process.env.AMADEUS_API_KEY && process.env.AMADEUS_API_SECRET);
+    const productionRequiresExplicitBase = process.env.VERCEL_ENV === "production";
+    const hasExplicitBase = Boolean(process.env.AMADEUS_API_BASE_URL?.trim());
+    return hasCredentials && (!productionRequiresExplicitBase || hasExplicitBase);
   }
 
   async searchLocations(keyword: string, limit = 12): Promise<Array<{
@@ -37,7 +40,7 @@ export class AmadeusFlightProvider implements TravelProvider {
     subtype?: string;
   }>> {
     if (!this.isAvailable()) {
-      throw new Error("Amadeus airport/city search requires configured API credentials.");
+      throw new Error("Amadeus airport/city search requires configured API credentials and, in production, an explicit API base URL.");
     }
 
     const normalizedKeyword = keyword.trim();
@@ -132,7 +135,7 @@ export class AmadeusFlightProvider implements TravelProvider {
       return {
         error: "EXTERNAL_PROVIDER_BLOCKED",
         blocked: true,
-        details: "Amadeus API key and secret are required for genuine live flight search."
+        details: "Amadeus API key, secret and an explicit production API base URL are required for genuine live flight search."
       };
     }
 
