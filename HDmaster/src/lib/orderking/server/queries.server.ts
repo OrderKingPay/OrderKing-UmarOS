@@ -476,6 +476,22 @@ export async function interveneOrder(
       next: { action: input.action, toStatus: input.toStatus, riderId: input.riderId },
       reason: input.reason,
     });
+
+    const newStatus = input.action === "cancel" ? "CANCELLED" : 
+                      input.action === "assign_rider" ? "RIDER_ASSIGNED" :
+                      input.action === "transition" ? input.toStatus : null;
+
+    if (newStatus) {
+      const { NotificationService } = await import("@/lib/orderking/server/NotificationService");
+      NotificationService.sendOrderStatusUpdate(
+        ws.ctx.orgId,
+        input.orderId,
+        order.customerId,
+        newStatus,
+        { reason: input.reason ?? "" }
+      ).catch(err => console.error("[NotificationError]", err));
+    }
+
     return { ok: true as const };
   });
 }

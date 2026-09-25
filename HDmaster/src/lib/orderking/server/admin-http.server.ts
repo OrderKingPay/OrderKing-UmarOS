@@ -76,8 +76,9 @@ async function transitionRestaurantOrder(
     restaurant_id: string;
     city_id: string;
     data_mode: string;
+    customer_id: string;
   }>(
-    `select id, status, restaurant_id, city_id, data_mode from orders
+    `select id, status, restaurant_id, city_id, data_mode, customer_id from orders
      where id=$1 and org_id=$2 ${ws.ctx.cityId ? "and city_id=$3" : ""} limit 1`,
     ws.ctx.cityId ? [input.orderId, ws.ctx.orgId, ws.ctx.cityId] : [input.orderId, ws.ctx.orgId],
   );
@@ -115,6 +116,16 @@ async function transitionRestaurantOrder(
     next: { status: input.to, actor: "restaurant" },
     reason: input.reason,
   });
+
+  // Fire push notification in the background
+  const { NotificationService } = await import("@/lib/orderking/server/NotificationService");
+  NotificationService.sendOrderStatusUpdate(
+    ws.ctx.orgId,
+    input.orderId,
+    order.customer_id,
+    input.to,
+    { reason: input.reason ?? "" }
+  ).catch(err => console.error("[NotificationError]", err));
 
   const result = {
     ok: true as const,
