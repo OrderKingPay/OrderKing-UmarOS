@@ -18,6 +18,28 @@ import type { BrandingConfig, DateRangeKey } from "../types";
 
 export type FnResult<T> = { ok: true; data: T } | { ok: false; error: string; code: string };
 export type JsonRow = Record<string, string | number | boolean | null>;
+export type IntegrationDataMode = "LIVE" | "SIMULATED" | "NOT_CONNECTED";
+
+async function integrationDataMode(
+  sql: Awaited<ReturnType<typeof getSql>>,
+): Promise<IntegrationDataMode> {
+  const sharedCoreConnected =
+    process.env.ORDERKING_SHARED_CORE_CONNECTED?.trim().toLowerCase() === "true";
+  if (sharedCoreConnected) return "LIVE";
+
+  const rows = await sql<{ value: string }>`
+    select value from config_kv
+    where org_id = ${ORG_ID} and key = ${"data_mode"}
+  `;
+  const raw = rows[0]?.value;
+  try {
+    const parsed = raw ? JSON.parse(raw) as { mode?: string } : null;
+    if (parsed?.mode === "SIMULATED") return "SIMULATED";
+  } catch {
+    // Invalid stored mode never counts as live.
+  }
+  return "NOT_CONNECTED";
+}
 
 function fail(err: unknown): FnResult<never> {
   if (err instanceof AppError) return { ok: false, error: err.message, code: err.code };
@@ -117,10 +139,10 @@ export const getBootstrap = createServerFn({ method: "GET" })
     branding: BrandingConfig;
     flags: { key: string; enabled: boolean; description: string }[];
     nav: ReturnType<typeof visibleNav>;
-    dataMode: "SIMULATED";
+    dataMode: IntegrationDataMode;
   }>> => {
     try {
-      const { actor, branding, flags } = await requireEmployee(context.userId);
+      const { sql, actor, branding, flags } = await requireEmployee(context.userId);
       return {
         ok: true,
         data: {
@@ -128,7 +150,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
           branding,
           flags,
           nav: visibleNav(actor.permissions),
-          dataMode: "SIMULATED",
+          dataMode: await integrationDataMode(sql),
         },
       };
     } catch (err) {
@@ -233,6 +255,7 @@ export const getCeoDashboard = createServerFn({ method: "GET" })
       const bounds = rangeBounds(data.range ?? "today", data.from, data.to);
       const yesterday = rangeBounds("yesterday");
       const money = await moneyTotals(sql, actor.orgId, bounds.from, bounds.to);
+      const dataMode = await integrationDataMode(sql);
       const prior = await moneyTotals(sql, actor.orgId, yesterday.from, yesterday.to);
       const counts = await sql<{ restaurants: number; riders: number; customers: number; online: number }>`
         select
@@ -261,7 +284,7 @@ export const getCeoDashboard = createServerFn({ method: "GET" })
         ok: true as const,
         data: {
           period: bounds.label,
-          simulated: true,
+          dataMode: await integrationDataMode(sql),
           money,
           prior,
           counts: counts[0],
@@ -766,7 +789,10 @@ export const getFinance = createServerFn({ method: "GET" })
         where s.org_id = ${actor.orgId}
         order by s.party_type, party_name
       `;
-      return { ok: true as const, data: { money, settlements, period: bounds.label, simulated: true } };
+      return {
+        ok: true as const,
+        data: { money, settlements, period: bounds.label, dataMode: await integrationDataMode(sql) },
+      };
     } catch (err) {
       return fail(err);
     }
