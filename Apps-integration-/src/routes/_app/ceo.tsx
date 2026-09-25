@@ -32,6 +32,7 @@ function CeoPage() {
     },
   });
   const qc = useQueryClient();
+  const dataMode = q.data?.dataMode ?? "NOT_CONNECTED";
   const tick = useMutation({
     mutationFn: async () => {
       const r = await runMarketplaceTick();
@@ -64,11 +65,11 @@ function CeoPage() {
         description="Business health first. Simulation does not change a live marketplace."
         actions={
           <>
-            <Button variant="secondary" onClick={() => tick.mutate()} disabled={tick.isPending}>
-              Simulate one delivery
+            <Button variant="secondary" onClick={() => tick.mutate()} disabled={tick.isPending || dataMode !== "SIMULATED"}>
+              {dataMode === "SIMULATED" ? "Simulate one delivery" : "Demo delivery disabled"}
             </Button>
-            <Button variant="outline" onClick={() => e2e.mutate()} disabled={e2e.isPending}>
-              Run admin walkthrough
+            <Button variant="outline" onClick={() => e2e.mutate()} disabled={e2e.isPending || dataMode !== "SIMULATED"}>
+              {dataMode === "SIMULATED" ? "Run admin walkthrough" : "Demo walkthrough disabled"}
             </Button>
           </>
         }
@@ -113,6 +114,7 @@ function TodayPane({ data }: { data?: {
   period: string;
   money: { orders: number; gmvPaise: number; contributionPaise: number; aovPaise: number; deliverySuccessBps: number };
   prior: { orders: number };
+  dataMode: "LIVE" | "SIMULATED" | "NOT_CONNECTED";
   counts: { restaurants: number; riders: number; customers: number; online: number };
   top: Array<{ id: string; name: string; gmv: number; orders: number }>;
   weak: Array<{ id: string; name: string; gmv: number }>;
@@ -120,7 +122,9 @@ function TodayPane({ data }: { data?: {
   if (!data) return <p className="text-sm text-muted">Loading…</p>;
   return (
     <div className="space-y-6">
-      <p className="text-xs text-subtle">{data.period} · SIMULATED DATA</p>
+      <p className="text-xs text-subtle">
+        {data.period} · {data.dataMode === "LIVE" ? "LIVE DATA" : data.dataMode === "SIMULATED" ? "SIMULATED DATA" : "SHARED CORE NOT CONNECTED"}
+      </p>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi label="Orders" value={String(data.money.orders)} hint={`Yesterday ${data.prior.orders}`} />
         <Kpi label="GMV" value={formatINR(data.money.gmvPaise)} />
