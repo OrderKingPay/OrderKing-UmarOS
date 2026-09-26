@@ -1,4 +1,4 @@
-import { createHmac, randomBytes } from "node:crypto";
+import { createHash, createHmac, randomBytes } from "node:crypto";
 
 export type UploadTarget = "menu_item" | "restaurant_banner" | "kyc_document" | "rider_avatar";
 
@@ -19,7 +19,7 @@ export type PresignedUploadResponse = {
 };
 
 function sha256Hex(value: string): string {
-  return createHmac("sha256", "").update(value).digest("hex");
+  return createHash("sha256").update(value).digest("hex");
 }
 
 function hmac(key: Buffer | string, value: string): Buffer {
