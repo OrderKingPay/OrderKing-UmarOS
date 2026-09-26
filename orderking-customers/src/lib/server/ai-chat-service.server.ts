@@ -217,30 +217,22 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
 }
 
 export function executeLocalSovereignCognitivePass(
-  query: string,
-  messages: ChatMessage[],
-  founderUpiVpa: string = "orderking@okhdfcbank"
+  _query: string,
+  _messages: ChatMessage[],
+  _founderUpiVpa: string = "orderking@okhdfcbank"
 ): {
   text: string;
   executionSteps: AgentExecutionStep[];
   actionCard?: any;
   mediaCard?: any;
 } {
-  // No real AI model is connected — return honest guidance
+  // Production truth gate: no embedded local LLM is bundled.
   return {
-    text: `I don't have an AI provider connected right now, so I can't generate a real answer to your question.\n\nTo enable full AI chat, please add at least one API key in **Settings**:\n- **GEMINI_API_KEY** — Google Gemini (recommended, free tier available)\n- **OPENAI_API_KEY** — OpenAI GPT-4o\n- **ANTHROPIC_API_KEY** — Anthropic Claude\n- **XAI_API_KEY** — xAI Grok\n\nOnce configured, I'll answer any question using real AI — just like ChatGPT, Grok, or Gemini.`,
+    text: "AI provider unavailable. Configure a verified external model provider; no simulated AI response will be returned.",
     executionSteps: [],
   };
 }
 
-/**
- * ============================================================================
- * SUPREME AUTONOMOUS EMPLOYEE REPLACEMENT ENGINE (ZOMATO-LEVEL CAPABILITIES)
- * ============================================================================
- * This subsystem replaces human operational roles (Dispatchers, Fraud Analysts,
- * Support Managers, Financial Auditors) with 10000x accuracy and real-time execution.
- * It is explicitly designed to outperform Zomato-level human operations natively.
- */
 export async function executeAutonomousEmployeeTask(taskType: string, payload: any): Promise<any> {
   const startTime = Date.now();
   const sql = await getSql();
