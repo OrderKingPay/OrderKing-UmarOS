@@ -78,6 +78,7 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
   const [departureDate, setDepartureDate] = useState<string>(
     new Date(Date.now() + 86400000).toISOString().split("T")[0]!
   );
+  const [returnDate, setReturnDate] = useState<string>("");
   const [passengers, setPassengers] = useState<number>(1);
   const [concession, setConcession] = useState<ConcessionFareType>("regular");
   const [enableSplitTicket, setEnableSplitTicket] = useState<boolean>(true);
@@ -127,8 +128,10 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
         passengers: String(passengers),
       });
       if (tripType === "round_trip") {
-        const returnDate = window.prompt("Return date (YYYY-MM-DD):", departureDate);
-        if (!returnDate) return;
+        if (!returnDate || returnDate <= departureDate) {
+          toast.error("Select a return date after the departure date.");
+          return;
+        }
         params.set("returnDate", returnDate);
       }
       if (concession === "corporate") params.set("class", "BUSINESS");
@@ -355,6 +358,20 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
 
         {/* Airport Selectors & Date Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          {/* Return date for round trips */}
+          {tripType === "round_trip" && (
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-muted uppercase">Return Date:</label>
+              <input
+                type="date"
+                value={returnDate}
+                min={departureDate}
+                onChange={(e) => setReturnDate(e.target.value)}
+                className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-bold text-fg focus:border-primary focus:outline-none"
+              />
+            </div>
+          )}
+
           {/* Origin */}
           <div className="space-y-1">
             <label className="text-[11px] font-bold text-muted uppercase">From Airport:</label>
