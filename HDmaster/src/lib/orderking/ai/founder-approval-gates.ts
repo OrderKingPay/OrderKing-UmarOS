@@ -3,6 +3,8 @@
 // Maintains an immutable HMAC-SHA256 chained audit log with 1-click rollback support.
 
 
+import { createHash, randomUUID } from "node:crypto";
+
 export type ApprovalRiskDomain =
   | "FINANCIAL"     // Payouts, refunds > ₹500, bank account updates
   | "LEGAL"         // Contracts, merchant agreements, regulatory filings
@@ -68,6 +70,10 @@ export class FounderApprovalGates {
     return true;
   }
 
+  private hashAuditPayload(payload: string): string {
+    return createHash("sha256").update(payload, "utf8").digest("hex");
+  }
+
   public createApprovalRequest(params: {
     domain: ApprovalRiskDomain;
     title: string;
@@ -78,10 +84,19 @@ export class FounderApprovalGates {
     reversible?: boolean;
     rollbackAction?: { actionName: string; payload: Record<string, unknown> };
   }): PendingApprovalRequest {
-    const id = `gate-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-    const createdAt = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const id = `gate-${randomUUID()}`;
+    const createdAt = new Date().toISOString();
 
-    const auditHash = Math.random().toString(36).substring(2, 15);
+    const auditHash = this.hashAuditPayload(JSON.stringify({
+      id,
+      domain: params.domain,
+      title: params.title,
+      targetEntity: params.targetEntity,
+      amountInr: params.amountInr ?? null,
+      payload: params.payload,
+      previousAuditHash: this.lastHash,
+      createdAt,
+    }));
 
     const req: PendingApprovalRequest = {
       id,
@@ -161,7 +176,15 @@ export class FounderApprovalGates {
     const timestamp = new Date().toISOString();
     const previousHash = this.lastHash;
 
-    const hash = Math.random().toString(36).substring(2, 15);
+    const hash = this.hashAuditPayload(JSON.stringify({
+      sequence,
+      timestamp,
+      previousHash,
+      action: entry.action,
+      domain: entry.domain,
+      actor: entry.actor,
+      details: entry.details,
+    }));
 
     const completeEntry: AuditLogEntry = {
       sequence,

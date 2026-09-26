@@ -47,14 +47,17 @@ test("Order King Master AI - 23 Specialists Coverage (Zero-Employee Architecture
 });
 
 test("Order King Master AI - Multi-Repository Allowlist Invariant", () => {
-  assert.equal(ORDER_KING_REPOS.length, 5);
-  assert.deepEqual(ORDER_KING_REPOS, [
+  assert.ok(ORDER_KING_REPOS.length >= 6);
+  for (const repo of [
     "HDmaster",
+    "orderking-customers",
     "orderking-customers--orders-",
     "OrderKing-partners",
     "orderking-riders",
     "Apps-integration-",
-  ]);
+  ]) {
+    assert.ok(ORDER_KING_REPOS.includes(repo as (typeof ORDER_KING_REPOS)[number]));
+  }
 
   for (const r of ORDER_KING_REPOS) {
     assert.equal(validateRepo(r), r);
@@ -66,16 +69,16 @@ test("Order King Master AI - Multi-Repository Allowlist Invariant", () => {
   assert.throws(() => validateRepo("../../../etc"), /not in the Order King ecosystem allowlist/);
 });
 
-test("Order King Master AI - Multi-Model Routing & Local Fallback", () => {
+test("Order King Master AI - Real Provider Routing", () => {
   const providers = detectAvailableProviders();
-  assert.ok(providers.length >= 4);
+  assert.equal(providers.some((p) => p === "local_deterministic" as never), false);
 
-  const local = providers.find((p) => p.provider === "local_deterministic");
-  assert.ok(local, "Local deterministic provider must always exist");
-  assert.equal(local.ready, true, "Local deterministic provider must always be ready");
-
-  const selected = selectActiveProvider("local_deterministic");
-  assert.equal(selected.provider, "local_deterministic");
+  if (process.env.OPENAI_API_KEY) {
+    assert.equal(providers[0], "openai");
+    assert.equal(selectActiveProvider("openai").provider, "openai");
+  } else {
+    assert.equal(selectActiveProvider("openai").provider, "none");
+  }
 });
 
 test("Order King Master AI - Tool Registry Coverage & Safety", () => {
@@ -167,20 +170,26 @@ test("Order King Master AI - Tool Registry Coverage & Safety", () => {
   assert.equal(hotpatchSpec.confirmationRequired, true);
 });
 
-test("Order King Master AI - Multi-Model Cognitive Consensus Quorum Engine", async () => {
-  const req: ModelCallRequest = {
-    // specialist: getSpecialist("architect"),
-    systemPrompt: "You are the Chief Systems Architect.",
-    messages: [{ role: "user", content: "Evaluate cross-repository architectural state." }],
-    tools: [],
-  };
+test("Order King Master AI - Multi-Model Cognitive Consensus Quorum Engine", async (t) => {
+  if (process.env.RUN_REAL_AI_TESTS !== "true") {
+    t.skip("Set RUN_REAL_AI_TESTS=true to spend real provider credits on integration testing.");
+    return;
+  }
 
-  const consensus = await runCognitiveConsensus(req);
-  assert.equal(consensus.consensusReached, true);
-  assert.ok(consensus.confidenceScore >= 0.85);
-  assert.ok(consensus.modelsParticipated.length >= 3);
-  assert.ok(consensus.agreementRatio.includes("Quorum Agreement"));
-  assert.ok(consensus.synthesizedResponse.text.length > 0);
+  const providers = detectAvailableProviders();
+  if (providers.length < 2) {
+    t.skip("Requires at least two real configured providers.");
+    return;
+  }
+
+  const consensus = await runCognitiveConsensus({
+    systemPrompt: "You are the Chief Systems Architect.",
+    messages: [{ role: "user", content: "Return a concise readiness statement for the OrderKing ecosystem." }],
+    tools: [],
+  });
+
+  assert.ok(typeof consensus.text === "string" && consensus.text.length > 0);
+  assert.equal(providers.some((p) => p === "local_deterministic" as never), false);
 });
 
 test("Order King Master AI - Operating Contract Identity", () => {

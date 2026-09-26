@@ -85,8 +85,8 @@ export class OpenAIProvider implements AIProvider {
     });
 
     if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`OpenAI API error (${response.status}): ${err}`);
+      await response.text().catch(() => "");
+      throw new Error(`OpenAI API request failed (HTTP ${response.status}). Check OPENAI_API_KEY, model access, and provider availability.`);
     }
 
     const data = (await response.json()) as {
@@ -196,8 +196,8 @@ export class OpenAIProvider implements AIProvider {
     });
 
     if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`OpenAI API error (${response.status}): ${err}`);
+      await response.text().catch(() => "");
+      throw new Error(`OpenAI streaming request failed (HTTP ${response.status}). Check OPENAI_API_KEY, model access, and provider availability.`);
     }
 
     if (!response.body) throw new Error("No body");

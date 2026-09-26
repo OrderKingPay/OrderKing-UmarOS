@@ -1,4 +1,4 @@
-type GitHubRepo = "HDmaster" | "orderking-customers--orders-" | "OrderKing-partners" | "orderking-riders" | "Apps-integration-";
+type GitHubRepo = "HDmaster" | "orderking-customers--orders-" | "orderking-customers" | "OrderKing-partners" | "orderking-riders" | "Apps-integration-";
 
 type GitHubConfig = { token: string; owner: string };
 
@@ -12,7 +12,7 @@ function config(): GitHubConfig {
 
 function repoName(repo: unknown): GitHubRepo {
   const value = typeof repo === "string" ? repo : "HDmaster";
-  const allowed: GitHubRepo[] = ["HDmaster", "orderking-customers--orders-", "OrderKing-partners", "orderking-riders", "Apps-integration-"];
+  const allowed: GitHubRepo[] = ["HDmaster", "orderking-customers--orders-", "orderking-customers", "OrderKing-partners", "orderking-riders", "Apps-integration-"];
   if (!allowed.includes(value as GitHubRepo)) throw new Error("Repository is outside the Order King allowlist");
   return value as GitHubRepo;
 }

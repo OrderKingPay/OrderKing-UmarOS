@@ -15,7 +15,7 @@ export class LocalDeterministicProvider implements AIProvider {
   readonly id = "local_deterministic";
   readonly name = "Local Sovereign Core Engine";
   readonly supportedModels = ["sovereign-ultra-deterministic", "local-v2"];
-  readonly isConfigured = true;
+  readonly isConfigured = false;
 
   async chat(input: ChatRequest): Promise<ChatResponse> {
     const start = Date.now();

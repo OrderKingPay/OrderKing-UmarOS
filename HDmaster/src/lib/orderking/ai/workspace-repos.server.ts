@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises";
+import * as fsSync from "node:fs";
 import * as path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -8,6 +9,7 @@ const execFileAsync = promisify(execFile);
 export type AllowedRepo =
   | "HDmaster"
   | "orderking-customers--orders-"
+  | "orderking-customers"
   | "OrderKing-partners"
   | "orderking-riders"
   | "Apps-integration-";
@@ -15,6 +17,7 @@ export type AllowedRepo =
 export const ORDER_KING_REPOS: readonly AllowedRepo[] = [
   "HDmaster",
   "orderking-customers--orders-",
+  "orderking-customers",
   "OrderKing-partners",
   "orderking-riders",
   "Apps-integration-",
@@ -37,17 +40,22 @@ export function resolveRepoPath(repoName: AllowedRepo): string {
   const currentDir = process.cwd();
   
   // Option 1: cwd is inside HDmaster, parent directory contains the other repos
-  const parentSideBySide = path.resolve(currentDir, "..", repoName);
-  // Option 2: cwd is OrderKing root
-  const childSubdir = path.resolve(currentDir, repoName);
-  // Option 3: Hardcoded known workspace fallback
-  const standardWorkspace = path.resolve("C:\\Users\\hasan\\OrderKing", repoName);
+  const candidateNames =
+    repoName === "orderking-customers--orders-"
+      ? ["orderking-customers", "orderking-customers--orders-"]
+      : [repoName];
 
-  if (path.basename(currentDir).toLowerCase() === repoName.toLowerCase()) {
+  if (candidateNames.some((candidate) => path.basename(currentDir).toLowerCase() === candidate.toLowerCase())) {
     return currentDir;
   }
-  
-  return parentSideBySide;
+
+  const candidates = candidateNames.flatMap((candidate) => [
+    path.resolve(currentDir, "..", candidate),
+    path.resolve(currentDir, candidate),
+    path.resolve("C:\\Users\\hasan\\OrderKing", candidate),
+  ]);
+
+  return candidates.find((candidate) => fsSync.existsSync(candidate)) ?? candidates[0]!;
 }
 
 function safeRelativePath(rawPath: string): string {

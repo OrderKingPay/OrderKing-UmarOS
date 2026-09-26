@@ -3,6 +3,8 @@
  * Supports AWS S3, Cloudflare R2, Supabase Storage, and local data-URI fallback.
  */
 
+import { randomUUID } from "node:crypto";
+
 export type UploadTarget = "menu_item" | "restaurant_banner" | "kyc_document";
 
 export type PresignedUploadRequest = {
@@ -37,7 +39,7 @@ export async function createPresignedUpload(
 ): Promise<PresignedUploadResponse> {
   const config = getStorageConfig();
   const ext = req.fileName.split(".").pop() || "jpg";
-  const uniqueKey = `${req.target}/${req.targetId}/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
+  const uniqueKey = `${req.target}/${req.targetId}/${Date.now()}_${randomUUID()}.${ext}`;
 
   if (!config.hasCredentials) {
     throw new Error("Storage credentials not configured. Refusing to generate mock upload.");
