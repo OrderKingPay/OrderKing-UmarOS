@@ -141,3 +141,30 @@ export class AmadeusFlightProvider implements TravelProvider {
     };
   }
 }
+
+
+export type AmadeusLocation = {
+  id: string;
+  type: string;
+  name?: string;
+  iataCode?: string;
+  subType?: string;
+  address?: { cityName?: string; countryCode?: string };
+};
+
+export async function searchAmadeusLocations(keyword: string): Promise<AmadeusLocation[]> {
+  const normalized = keyword.trim();
+  if (normalized.length < 2) return [];
+  const clientId = process.env.AMADEUS_CLIENT_ID?.trim();
+  const clientSecret = process.env.AMADEUS_CLIENT_SECRET?.trim();
+  if (!clientId || !clientSecret) throw new Error("Amadeus OAuth credentials are not configured");
+  const token = await getAccessToken();
+  const params = new URLSearchParams({ subType: "AIRPORT,CITY", keyword: normalized, page: "1", max: "20" });
+  const res = await resilientFetch(
+    `https://test.api.amadeus.com/v1/reference-data/locations?${params.toString()}`,
+    { timeoutMs: 8000, headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) throw new Error(`Amadeus location search failed with status ${res.status}`);
+  const data = await res.json() as { data?: AmadeusLocation[] };
+  return Array.isArray(data.data) ? data.data.filter((x) => x.iataCode) : [];
+}
