@@ -122,7 +122,7 @@ export function SystemMasterSettingsModal({ isOpen, onClose }: Props) {
 
             {/* OpenAI */}
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-zinc-400">OPENAI_API_KEY (GPT-4o, o3-mini)</label>
+              <label className="text-[10px] font-mono text-zinc-400">OPENAI_API_KEY (GPT-5.6 Sol/Terra/Luna)</label>
               <input
                 type="password"
                 value={openaiKey}
