@@ -1208,6 +1208,8 @@ export class RiderEngine {
   }
 
   async otpForSimulation(userId: string, deliveryId: string) {
+    const cfg = await this.cfg();
+    if (cfg.dataMode !== "SIMULATED") return null;
     const d = await this.requireOwnedDelivery(userId, deliveryId);
     const rec = await this.store.getOtp(d.id);
     return rec?.simulatedPlain ?? null;
