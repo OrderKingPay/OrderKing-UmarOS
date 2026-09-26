@@ -17,6 +17,6 @@ if (fs.existsSync(p2)) {
 
 if (fs.existsSync(p3)) {
   let c = fs.readFileSync(p3, 'utf8');
-  c = c.replace('.then((n) => n.s)', '.then((n) => n.default || n.s || n)');
+  c = c.replace('.then((n) => n.s)', '.then((n) => n?.default || n?.s || n)');
   fs.writeFileSync(p3, c);
 }
