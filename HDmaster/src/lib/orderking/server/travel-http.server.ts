@@ -1,30 +1,60 @@
 import { TravelOrchestrator } from "../travel/index.ts";
+import {
+  travelBookingRequestSchema,
+  travelModeSchema,
+  travelSearchQuerySchema,
+} from "../travel/schemas/travel-schemas.ts";
 
-export async function handleTravelHttp(request: Request, params: Record<string, string | undefined>) {
-    const url = new URL(request.url);
-    const path = url.pathname;
+function json(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+    },
+  });
+}
 
-    if (request.method === "GET" && path.includes("search")) {
-        const origin = url.searchParams.get("origin") || "";
-        const destination = url.searchParams.get("destination") || "";
-        const date = url.searchParams.get("date") || "";
-        const mode = (url.searchParams.get("mode") || "FLIGHT").toUpperCase() as any;
+export async function handleTravelHttp(
+  request: Request,
+  _params: Record<string, string | undefined>,
+): Promise<Response> {
+  const url = new URL(request.url);
 
-        const result = await TravelOrchestrator.search({
-            mode,
-            originCode: origin,
-            destinationCode: destination,
-            departureDate: date,
-            passengers: 1
-        });
-        return new Response(JSON.stringify(result), { headers: { "Content-Type": "application/json" } });
+  if (request.method === "GET" && url.pathname.includes("/search")) {
+    const parsed = travelSearchQuerySchema.safeParse({
+      mode: (url.searchParams.get("mode") ?? "FLIGHT").toUpperCase(),
+      originCode: url.searchParams.get("originCode") ?? url.searchParams.get("origin") ?? "",
+      destinationCode:
+        url.searchParams.get("destinationCode") ?? url.searchParams.get("destination") ?? "",
+      departureDate: url.searchParams.get("departureDate") ?? url.searchParams.get("date") ?? "",
+      returnDate: url.searchParams.get("returnDate") ?? undefined,
+      passengers: Number(url.searchParams.get("passengers") ?? "1"),
+      class: url.searchParams.get("class") ?? undefined,
+    });
+
+    if (!parsed.success) {
+      return json({ error: "INVALID_TRAVEL_SEARCH", details: parsed.error.flatten() }, 400);
     }
 
-    if (request.method === "POST" && path.includes("book")) {
-        const body = await request.json();
-        const result = await TravelOrchestrator.book(body);
-        return new Response(JSON.stringify(result), { headers: { "Content-Type": "application/json" } });
+    const result = await TravelOrchestrator.search(parsed.data);
+    return json(result);
+  }
+
+  if (request.method === "POST" && url.pathname.includes("/book")) {
+    const body = await request.json().catch(() => null);
+    const parsed = travelBookingRequestSchema.safeParse(body);
+    if (!parsed.success) {
+      return json({ error: "INVALID_TRAVEL_BOOKING", details: parsed.error.flatten() }, 400);
     }
 
-    return new Response(JSON.stringify({ error: "Not Found" }), { status: 404, headers: { "Content-Type": "application/json" } });
+    const provider = parsed.data.providerId;
+    if (!travelModeSchema.options.includes("FLIGHT") && provider === "amadeus_flight") {
+      return json({ error: "PROVIDER_CONFIGURATION_ERROR" }, 500);
+    }
+
+    return json(await TravelOrchestrator.book(parsed.data));
+  }
+
+  return json({ error: "Not Found" }, 404);
 }
