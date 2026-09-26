@@ -1,4 +1,5 @@
 import { TravelOrchestrator } from "../travel/index.ts";
+import { searchAmadeusLocations } from "../travel/providers/amadeus-flight-provider.ts";
 import {
   travelBookingRequestSchema,
   travelSearchQuerySchema,
@@ -19,6 +20,20 @@ export async function handleTravelHttp(
   _params: Record<string, string | undefined>,
 ): Promise<Response> {
   const url = new URL(request.url);
+
+  if (request.method === "GET" && url.pathname.includes("/locations")) {
+    const keyword = url.searchParams.get("keyword")?.trim() ?? "";
+    if (keyword.length < 2 || keyword.length > 80) return json({ error: "INVALID_LOCATION_SEARCH" }, 400);
+    try {
+      const locations = await searchAmadeusLocations(keyword);
+      return json({ results: locations.map((x) => ({
+        id: x.id, code: x.iataCode, name: x.name, city: x.address?.cityName,
+        country: x.address?.countryCode, subType: x.subType,
+      })) });
+    } catch (error) {
+      return json({ error: "EXTERNAL_PROVIDER_BLOCKED", blocked: true, details: error instanceof Error ? error.message : "Airport/city provider unavailable" }, 503);
+    }
+  }
 
   if (request.method === "GET" && url.pathname.includes("/search")) {
     const parsed = travelSearchQuerySchema.safeParse({
