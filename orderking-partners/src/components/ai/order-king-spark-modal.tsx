@@ -15,13 +15,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  orderKingSpark,
-  SparkChatMessage,
-  SparkMenuItem,
-  SparkKitchenAnomaly,
-  SparkSettlementSummary,
-} from "@/lib/ai/order-king-spark";
+import { askAssistant } from "@/lib/server/api-more";
+import { useVendor } from "@/components/use-vendor";
 
 interface OrderKingSparkModalProps {
   isOpen: boolean;
@@ -29,24 +24,22 @@ interface OrderKingSparkModalProps {
 }
 
 export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProps) {
-  const [messages, setMessages] = useState<SparkChatMessage[]>([
+  const { restaurantId } = useVendor();
+  const [messages, setMessages] = useState<Array<{ id: string; sender: "user" | "spark"; text: string; timestamp: string }>>([
     {
       id: "init",
       sender: "spark",
-      text: `### 🍳 Order King Spark Active
-Namaste Partner! I am **Order King Spark**, your autonomous kitchen operations and growth partner.
-
-I monitor your **0% commission direct earnings**, kitchen preparation velocity, and menu availability in real time. How can I help your kitchen right now?`,
+      text: "### 🍳 OrderKing Restaurant AI\nAsk about your verified orders, sales, menu availability, preparation issues, settlements, or restaurant operations. Answers come from your authorized restaurant data and a real OpenAI provider; no simulated restaurant data is used.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
   const [inputQuery, setInputQuery] = useState("");
-  const [menuItems, setMenuItems] = useState<SparkMenuItem[]>(orderKingSpark.getMenuItems());
+  const [sending, setSending] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSend = (text: string) => {
-    if (!text.trim()) return;
+  const handleSend = async (text: string) => {
+    if (!text.trim() || sending) return;
 
     const userMsg: SparkChatMessage = {
       id: `usr-${Date.now()}`,
@@ -55,9 +48,100 @@ I monitor your **0% commission direct earnings**, kitchen preparation velocity, 
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
 
-    const sparkReply = orderKingSpark.handleRestaurantQuery(text);
-    setMessages((prev) => [...prev, userMsg, sparkReply]);
+    setMessages((prev) => [...prev, userMsg]);
     setInputQuery("");
+    setSending(true);
+    try {
+      const result = await askAssistant({ data: { restaurantId, question: text.trim() } });
+      setMessages((prev) => [...prev, {
+        id: `spark-${Date.now()}`,
+        sender: "spark" as const,
+        text: result.text,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      }]);
+    } catch (error) {
+      setMessages((prev) => [...prev, {
+        id: `spark-error-${Date.now()}`,
+        sender: "spark" as const,
+        text: `Restaurant AI request failed: ${error instanceof Error ? error.message : "Unknown error"}. No simulated answer was generated.`,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      }]);
+    } finally {
+      setSending(false);
+    }
+  };
+
+mport { useState } from "react";
+import {
+  Bot,
+  Sparkles,
+  X,
+  Send,
+  AlertTriangle,
+  CheckCircle2,
+  TrendingUp,
+  DollarSign,
+  Utensils,
+  Clock,
+  ArrowRight,
+  ShieldCheck,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { askAssistant } from "@/lib/server/api-more";
+import { useVendor } from "@/components/use-vendor";
+
+interface OrderKingSparkModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProps) {
+  const { restaurantId } = useVendor();
+  const [messages, setMessages] = useState<Array<{ id: string; sender: "user" | "spark"; text: string; timestamp: string }>>([
+    {
+      id: "init",
+      sender: "spark",
+      text: "### 🍳 OrderKing Restaurant AI\nAsk about your verified orders, sales, menu availability, preparation issues, settlements, or restaurant operations. Answers come from your authorized restaurant data and a real OpenAI provider; no simulated restaurant data is used.",
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    },
+  ]);
+  const [inputQuery, setInputQuery] = useState("");
+  const [sending, setSending] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleSend = async (text: string) => {
+    if (!text.trim() || sending) return;
+
+    const userMsg: SparkChatMessage = {
+      id: `usr-${Date.now()}`,
+      sender: "user",
+      text: text.trim(),
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setInputQuery("");
+    setSending(true);
+    try {
+      const result = await askAssistant({ data: { restaurantId, question: text.trim() } });
+      setMessages((prev) => [...prev, {
+        id: `spark-${Date.now()}`,
+        sender: "spark" as const,
+        text: result.text,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      }]);
+    } catch (error) {
+      setMessages((prev) => [...prev, {
+        id: `spark-error-${Date.now()}`,
+        sender: "spark" as const,
+        text: `Restaurant AI request failed: ${error instanceof Error ? error.message : "Unknown error"}. No simulated answer was generated.`,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      }]);
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleToggleItem = (itemId: string) => {
@@ -136,15 +220,7 @@ I monitor your **0% commission direct earnings**, kitchen preparation velocity, 
               >
                 <div className="whitespace-pre-wrap">{msg.text}</div>
 
-                {/* Render Action Cards */}
-                {msg.actionCard?.type === "settlement_breakdown" && (
-                  <div className="mt-3 p-3 rounded-xl bg-black/60 border border-emerald-500/30 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-zinc-400">Aggregator Loss Avoided:</span>
-                      <span className="font-bold text-emerald-400 font-mono">
-                        +₹{(((msg.actionCard.data.summary as SparkSettlementSummary).swiggyZomatoLossAvoidedPaise || 0) / 100).toLocaleString("en-IN")}
-                      </span>
-                    </div>
+              </div>
                     <div className="flex items-center justify-between text-xs border-t border-zinc-800 pt-1.5">
                       <span className="text-zinc-400">OrderKing Commission:</span>
                       <span className="font-bold text-emerald-400 font-mono">₹0 (0%)</span>
@@ -230,11 +306,11 @@ I monitor your **0% commission direct earnings**, kitchen preparation velocity, 
           <Button
             type="button"
             onClick={() => handleSend(inputQuery)}
-            disabled={!inputQuery.trim()}
+            disabled={!inputQuery.trim() || sending}
             className="h-10 px-4 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shrink-0 shadow-md"
           >
             <Send className="size-3.5 mr-1.5" />
-            <span>Send</span>
+            <span>{sending ? "Thinking…" : "Send"}</span>
           </Button>
         </div>
       </div>
