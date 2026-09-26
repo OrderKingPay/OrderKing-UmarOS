@@ -12,18 +12,10 @@ import { ACTIVE_DELIVERY_ZONES, isDeliveryActiveInLocation } from "../geo/geofen
 export type AiModelId =
   | "auto-supreme-orchestrator"
   | "ensemble-consensus"
+  | "gpt-5-6-sol"
   | "sovereign-ultra"
-  | "claude-4-6-opus"
-  | "gpt-5-6-sol"
-  | "grok-4-6-super"
-  | "spacex-orbital"
   | "codex-supreme"
-  | "gemini-3-8-ultra"
-  | "deepseek-r1-sovereign"
-  | "claude-3-7-sonnet"
-  | "gpt-5-6-sol"
-  | "gemini-2-5-pro"
-  | "grok-3";
+  | "deepseek-r1-sovereign";
 
 /**
  * Autonomously selects the best AI model engine based on prompt domain, complexity, and latency requirements.
@@ -34,18 +26,18 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
     return { model: "ensemble-consensus", reason: "Auto-routed to Ensemble Multi-Model Consensus: Running all strongest models simultaneously." };
   }
   if (q.includes("code") || q.includes("schema") || q.includes("api") || q.includes("scaffold") || q.includes("react") || q.includes("sql") || q.includes("git")) {
-    return { model: "codex-supreme", reason: "Auto-routed to Codex Supreme Architect for maximum precision code synthesis." };
+    return { model: "gpt-5-6-sol", reason: "Auto-routed to the verified OpenAI GPT-5.6 Sol provider; code tools are used when actually connected." };
   }
   if (q.includes("live") || q.includes("score") || q.includes("news") || q.includes("trending") || q.includes("cricket") || q.includes("match")) {
-    return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 SuperGrok Ultra for real-time live telemetric intelligence." };
+    return { model: "gpt-5-6-sol", reason: "Auto-routed to verified OpenAI GPT-5.6 Sol; live data tools are used only when actually connected." };
   }
   if (q.includes("video") || q.includes("image") || q.includes("render") || q.includes("4k") || q.includes("reel")) {
-    return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra for photorealistic multimodal & 4K video generation." };
+    return { model: "gpt-5-6-sol", reason: "Auto-routed to verified OpenAI GPT-5.6 Sol for multimodal reasoning; media generation requires a separately verified image/video provider." };
   }
   if (q.includes("invoice") || q.includes("client") || q.includes("contract") || q.includes("legal") || q.includes("upwork") || q.includes("pitch")) {
-    return { model: "claude-4-6-opus", reason: "Auto-routed to Claude 4.6 Opus for enterprise contractual & high-ticket negotiation excellence." };
+    return { model: "gpt-5-6-sol", reason: "Auto-routed to verified OpenAI GPT-5.6 Sol." };
   }
-  return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra flagship executive reasoning engine." };
+  return { model: "gpt-5-6-sol", reason: "Auto-routed to verified OpenAI GPT-5.6 Sol." };
 }
 
 export interface ChatAttachment { content?: string;
