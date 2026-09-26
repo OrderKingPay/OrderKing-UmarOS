@@ -32,7 +32,7 @@ export class OpenAIProvider implements AIProvider {
     }
 
     const start = Date.now();
-    const model = input.model || "gpt-5.6-terra";
+    const model = input.model || process.env.OPENAI_CUSTOMER_MODEL?.trim() || "gpt-5.6-terra";
     const url = "https://api.openai.com/v1/chat/completions";
 
     const messages: Array<Record<string, unknown>> = [];
