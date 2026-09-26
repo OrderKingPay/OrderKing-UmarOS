@@ -200,8 +200,15 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
     }
   };
 
-  const handleBookFlight = () => {
-    if (!selectedFlight) return;
+  const handleBookFlight = async () => {
+    if (!selectedFlight?.providerId || !selectedFlight.rawProviderData) {
+      toast.error("This offer has no verified provider booking payload. No charge will be made.");
+      return;
+    }
+    if (!passengerName.trim() || !/^[0-9]{10}$/.test(contactMobile)) {
+      toast.error("Enter a valid passenger name and 10-digit mobile number.");
+      return;
+    }
 
     let totalAmount = selectedFlight.kingPayPrice * passengers;
     if (addTravelInsurance) totalAmount += 199 * passengers;
@@ -209,36 +216,62 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
     if (addExtraBaggage) totalAmount += 950 * passengers;
 
     if (walletBalance < totalAmount) {
-      toast.error(
-        `Insufficient wallet balance. Total payable is ₹${totalAmount}. Please top up your KingPay wallet.`
-      );
+      toast.error(`Insufficient wallet balance. Total payable is ₹${totalAmount}.`);
       return;
     }
 
     setIsBooking(true);
+    try {
+      const baseUrl = import.meta.env.VITE_HDMASTER_URL || "https://hdmaster.vercel.app";
+      const res = await fetch(`${baseUrl}/api/v1/travel/book`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          resultId: selectedFlight.id,
+          providerId: selectedFlight.providerId,
+          rawProviderData: selectedFlight.rawProviderData,
+          passengerDetails: [{
+            id: "1",
+            dateOfBirth: `${new Date().getFullYear() - Number(passengerAge || 0)}-01-01`,
+            name: {
+              firstName: passengerName.trim().split(/\s+/)[0],
+              lastName: passengerName.trim().split(/\s+/).slice(1).join(" ") || "Passenger",
+            },
+            gender: passengerGender.toUpperCase(),
+            contact: { phones: [{ deviceType: "MOBILE", countryCallingCode: "91", number: contactMobile }] },
+          }],
+        }),
+      });
+      const data = await res.json() as { success?: boolean; status?: string; bookingId?: string; pnr?: string; error?: string };
 
-    setTimeout(() => {
-      const ok = onDeductWallet(
-        totalAmount,
-        `Confirmed Flight Ticket: ${selectedFlight.airlineCode}-${selectedFlight.flightNumber} (${selectedFlight.departureAirport}➔${selectedFlight.arrivalAirport})`
-      );
-
-      if (ok) {
-        const pnr = `KP${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-        setConfirmedTicket({
-          pnr,
-          flight: selectedFlight,
-          passenger: passengerName,
-          totalPaid: totalAmount,
-          savings: selectedFlight.savingsAmount * passengers + 499, // includes waived convenience fee
-          qrToken: `BOARDING-PASS-${pnr}-${selectedFlight.departureAirport}-${selectedFlight.arrivalAirport}`,
-        });
-        toast.success(`🎉 Flight Confirmed! PNR: ${pnr}. Boarding Pass Ready!`);
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Travel provider rejected the booking.");
       }
 
-      setIsBooking(false);
+      const ok = onDeductWallet(
+        totalAmount,
+        `Confirmed Flight Ticket: ${selectedFlight.airlineCode}-${selectedFlight.flightNumber} (${selectedFlight.departureAirport}→${selectedFlight.arrivalAirport})`,
+      );
+      if (!ok) {
+        toast.error("Provider confirmed the booking, but wallet settlement failed. No false confirmation is shown; contact support immediately with booking ID.");
+        return;
+      }
+
+      setConfirmedTicket({
+        pnr: data.pnr || data.bookingId || "PROVIDER-CONFIRMED",
+        flight: selectedFlight,
+        passenger: passengerName,
+        totalPaid: totalAmount,
+        savings: 0,
+        qrToken: "",
+      });
+      toast.success(`Flight booking confirmed by ${selectedFlight.providerId}.`);
       setSelectedFlight(null);
-    }, 1100);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Live flight booking failed.");
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   return (
