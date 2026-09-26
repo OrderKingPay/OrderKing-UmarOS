@@ -14,7 +14,7 @@ import type {
 export class OpenAIProvider implements AIProvider {
   readonly id = "openai";
   readonly name = "OpenAI Omnimodal";
-  readonly supportedModels = ["gpt-4o", "gpt-4o-mini", "o3-mini"];
+  readonly supportedModels = ["gpt-5.6-sol", "gpt-5.6-luna"];
 
   private apiKey: string | undefined;
 
@@ -27,7 +27,7 @@ export class OpenAIProvider implements AIProvider {
   }
 
   private constructPayload(input: ChatRequest, stream: boolean): Record<string, unknown> {
-    const model = input.model || "gpt-4o";
+    const model = input.model || "gpt-5.6-luna";
     const messages: Array<Record<string, unknown>> = [];
     
     if (input.systemPrompt) {
