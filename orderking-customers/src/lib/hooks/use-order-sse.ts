@@ -16,79 +16,50 @@ export function useOrderSSE(orderId: string | undefined, onEvent?: (e: OrderSSEE
   const [isSlowNetwork, setIsSlowNetwork] = useState(false);
   const retryRef = useRef(0);
 
-  useEffect(() => {
+    useEffect(() => {
     if (!orderId) return;
-    let source: EventSource | null = null;
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    let pollingTimer: ReturnType<typeof setInterval> | null = null;
+    
+    // 1000x Realism: Supabase Realtime WebSocket Connection
+    let channel: any;
     let cancelled = false;
 
-    async function pollFallback() {
+    import("@/lib/db-cloud").then(({ supabase }) => {
       if (cancelled) return;
-      try {
-        const res = await fetch(`/api/orders/${orderId}/status`, { cache: "no-store" });
-        if (res.ok) {
-          const data = (await res.json()) as OrderSSEEvent;
-          setLastEvent(data);
-          onEvent?.(data);
-          setConnected(true);
-        }
-      } catch {
-        setConnected(false);
-      }
-    }
-
-    function connect() {
-      if (cancelled) return;
-      try {
-        source = new EventSource(`/api/orders/${orderId}/stream`);
-        source.onopen = () => {
-          setConnected(true);
-          setIsSlowNetwork(false);
-          retryRef.current = 0;
-          if (pollingTimer) {
-            clearInterval(pollingTimer);
-            pollingTimer = null;
-          }
-        };
-        source.onmessage = (e) => {
-          try {
-            const data = JSON.parse(e.data) as OrderSSEEvent;
+      channel = supabase
+        .channel(public:orders: + orderId)
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "orders",
+            filter: id=eq. + orderId,
+          },
+          (payload: any) => {
+            const data: OrderSSEEvent = {
+              orderId: payload.new.id,
+              status: payload.new.status,
+              riderLat: payload.new.rider_lat,
+              riderLng: payload.new.rider_lng,
+              timestamp: new Date().toISOString()
+            };
             setLastEvent(data);
             onEvent?.(data);
-          } catch {
-            /* ignore malformed events */
+            setConnected(true);
           }
-        };
-        source.onerror = () => {
-          setConnected(false);
-          source?.close();
-          retryRef.current = Math.min(retryRef.current + 1, 5);
-          if (retryRef.current >= 3) {
-            setIsSlowNetwork(true);
-            if (!pollingTimer) {
-              void pollFallback();
-              pollingTimer = setInterval(() => void pollFallback(), 8000);
-            }
+        )
+        .subscribe((status: string) => {
+          if (status === 'SUBSCRIBED') {
+            setConnected(true);
           }
-          const jitter = Math.floor(Math.random() * 1000);
-          timer = setTimeout(connect, 1000 * Math.pow(2, retryRef.current) + jitter);
-        };
-      } catch {
-        setIsSlowNetwork(true);
-        if (!pollingTimer) {
-          void pollFallback();
-          pollingTimer = setInterval(() => void pollFallback(), 8000);
-        }
-      }
-    }
+        });
+    }).catch(err => console.warn("Supabase realtime error", err));
 
-    connect();
     return () => {
       cancelled = true;
-      source?.close();
-      if (timer) clearTimeout(timer);
-      if (pollingTimer) clearInterval(pollingTimer);
+      if (channel) {
+        import("@/lib/db-cloud").then(({ supabase }) => supabase.removeChannel(channel));
+      }
     };
   }, [orderId]);
 

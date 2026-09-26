@@ -700,12 +700,23 @@ export class PgStore implements RiderStore {
     );
   }
 
-  async insertLocation(p: LocationPing, userId: string) {
+    async insertLocation(p: LocationPing, userId: string) {
     await this.sql.query(
-      `insert into location_pings (id, rider_id, user_id, delivery_id, lat, lng, accuracy_m, at)
-       values ($1,$2,$3,$4,$5,$6,$7,$8)`,
+      insert into location_pings (id, rider_id, user_id, delivery_id, lat, lng, accuracy_m, at)
+       values ($1,$2,$3,$4,$5,$6,$7,$8),
       [p.id, p.riderId, userId, p.deliveryId, p.point.lat, p.point.lng, p.accuracyM, p.at],
     );
+
+    if (p.deliveryId) {
+      // 1000x Realism: Instantly sync rider location to the master orders table 
+      // for 60fps Supabase Realtime broadcast to the customer.
+      await this.sql.query(
+        update orders 
+         set rider_lat = $1, rider_lng = $2, last_ping_at = now()
+         where id = (select order_id from deliveries where id = $3 limit 1),
+        [p.point.lat, p.point.lng, p.deliveryId]
+      );
+    }
   }
 
   async pruneLocations(userId: string, keepAfterIso: string, maxRows: number) {

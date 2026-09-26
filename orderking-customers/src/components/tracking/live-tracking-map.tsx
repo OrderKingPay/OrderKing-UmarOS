@@ -48,7 +48,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: "mapbox://styles/mapbox/dark-v11",
+      style: "mapbox://styles/mapbox/navigation-night-v1",
       center: [initialLng, initialLat],
       zoom: 15,
       pitch: 45,
@@ -125,7 +125,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
         {
           event: "UPDATE",
           schema: "public",
-          table: "dispatch_jobs",
+          table: "orders",
           filter: `id=eq.${dispatchJobId}`,
         },
         (payload: any) => {
