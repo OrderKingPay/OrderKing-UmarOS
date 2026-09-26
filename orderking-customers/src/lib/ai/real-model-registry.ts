@@ -198,10 +198,10 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       },
     },
     {
-      id: "gpt-5-6-omni",
-      displayName: "OpenAI GPT-4o / o3-mini",
+      id: "gpt-5-6-sol",
+      displayName: "OpenAI GPT-5.6 Sol",
       provider: "OpenAI",
-      realApiId: "gpt-4o",
+      realApiId: "gpt-5.6-sol",
       connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
       authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "OPENAI_API_KEY",
@@ -213,7 +213,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       measuredLatencyMs: openaiKey ? 165 : 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
-      description: "OpenAI omnimodal flagship engine supporting function calling, code generation, and low-latency voice. Connect via OPENAI_API_KEY.",
+      description: "OpenAI GPT-5.6 Sol for high-capability reasoning, coding, multimodal input and tool-enabled workflows. Connect via OPENAI_API_KEY.",
       capabilities: {
         canStream: true,
         canProcessImages: true,
