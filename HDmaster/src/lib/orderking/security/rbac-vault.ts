@@ -1,4 +1,4 @@
-import { jwtVerify, type JWTPayload, type KeyLike } from "jose";
+import { jwtVerify, type JWTPayload } from "jose";
 
 export type VerifiedJwt = {
   payload: JWTPayload;
