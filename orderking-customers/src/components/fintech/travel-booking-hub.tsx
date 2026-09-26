@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Plane, Train, Bus, Car } from "lucide-react";
 import { FlightBookingEngine } from "./flight-booking-engine";
 import { TrainBookingEngine } from "./train-booking-engine";
+import { BusBookingEngine } from "./bus-booking-engine";
+import { CabBookingEngine } from "./cab-booking-engine";
 
 export type TravelTab = "flights" | "trains" | "buses" | "cabs";
 
@@ -52,16 +54,12 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
           <TrainBookingEngine walletBalance={walletBalance} onDeductWallet={onDeductWallet} />
         )}
 
-        {(activeTab === "buses" || activeTab === "cabs") && (
-          <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
-            <div className="size-16 rounded-full bg-surface-2 flex items-center justify-center text-muted">
-              {activeTab === "buses" ? <Bus className="size-8" /> : <Car className="size-8" />}
-            </div>
-            <h3 className="font-display text-xl font-bold text-fg capitalize">{activeTab} Coming Soon</h3>
-            <p className="text-muted max-w-xs text-sm">
-              We are working on integrating live providers for {activeTab}.
-            </p>
-          </div>
+        {activeTab === "buses" && (
+          <BusBookingEngine walletBalance={walletBalance} onDeductWallet={onDeductWallet} />
+        )}
+
+        {activeTab === "cabs" && (
+          <CabBookingEngine walletBalance={walletBalance} onDeductWallet={onDeductWallet} />
         )}
       </div>
     </div>

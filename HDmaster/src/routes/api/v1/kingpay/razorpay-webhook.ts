@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { verifyWebhookSignature } from "@/lib/orderking/payments/razorpay.server";
-import { recordDoubleEntry } from "@/lib/orderking/finance/canonical-ledger";
+import { canonicalLedger } from "@/lib/orderking/finance/canonical-ledger";
 import { z } from "zod";
 
 const RazorpayWebhookSchema = z.object({
@@ -42,7 +42,7 @@ export const Route = createFileRoute("/api/v1/kingpay/razorpay-webhook" as any)(
             const payment = data.payload.payment.entity;
             const accountId = payment.notes?.accountId || "PLATFORM_HOLDING";
 
-            await recordDoubleEntry({
+            await canonicalLedger.postTransaction({
               idempotencyKey: `rzp_capture_${payment.id}`,
               eventType: "RAZORPAY_PAYMENT_CAPTURED",
               orderId: payment.order_id,

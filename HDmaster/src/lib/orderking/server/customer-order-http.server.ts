@@ -66,7 +66,29 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     const result = { orderId, status: "PENDING", paymentStatus, totalPaise: input.totalPaise, dataMode: ws.dataMode };
     await sql`insert into idempotency_keys (key,org_id,employee_id,action,response_json) values (${idempotencyKey},${ws.ctx.orgId},${ws.ctx.employeeId},'order.customer_create',${JSON.stringify(result)}) on conflict (key) do nothing`;
     return json({ data: result });
-  } catch (err) { const message = err instanceof Error ? err.message : "Unexpected error"; return json({ error: message, code: message === "Unauthorized" ? "UNAUTHORIZED" : "BAD_REQUEST" }, message === "Unauthorized" ? 401 : 400); }
+  } catch (err) { 
+    const message = err instanceof Error ? err.message : "Unexpected error"; 
+    
+    // Enterprise DLQ Integration
+    if (request.method === "POST") {
+      try {
+        const body = (await request.clone().json().catch(() => ({}))) as any;
+        const { enqueueToDlq } = await import("@/lib/orderking/server/dlq.server");
+        
+        let orgId = "system"; 
+        try {
+          const ws = await ensureWorkspace(serviceUserId(request));
+          orgId = ws.ctx.orgId;
+        } catch (_) {}
+
+        await enqueueToDlq(orgId, "ORDER_TRANSITION", body, message);
+      } catch (dlqErr) {
+        console.error("Failed to enqueue DLQ:", dlqErr);
+      }
+    }
+    
+    return json({ error: message, code: message === "Unauthorized" ? "UNAUTHORIZED" : "BAD_REQUEST" }, message === "Unauthorized" ? 401 : 400); 
+  }
 }
 
 export async function handleCustomerOrderCancelHttp(request: Request, orderId: string): Promise<Response> {
@@ -92,7 +114,29 @@ export async function handleCustomerOrderCancelHttp(request: Request, orderId: s
     const result = { orderId: order.id, status: "CANCELLED", authoritative: "HDmaster" as const };
     await sql`insert into idempotency_keys (key,org_id,employee_id,action,response_json) values (${idempotencyKey},${ws.ctx.orgId},${ws.ctx.employeeId},'order.customer_cancel',${JSON.stringify(result)}) on conflict (key) do nothing`;
     return json({ data: result });
-  } catch (err) { const message = err instanceof Error ? err.message : "Unexpected error"; return json({ error: message, code: message === "Unauthorized" ? "UNAUTHORIZED" : "BAD_REQUEST" }, message === "Unauthorized" ? 401 : 400); }
+  } catch (err) { 
+    const message = err instanceof Error ? err.message : "Unexpected error"; 
+    
+    // Enterprise DLQ Integration
+    if (request.method === "POST") {
+      try {
+        const body = (await request.clone().json().catch(() => ({}))) as any;
+        const { enqueueToDlq } = await import("@/lib/orderking/server/dlq.server");
+        
+        let orgId = "system"; 
+        try {
+          const ws = await ensureWorkspace(serviceUserId(request));
+          orgId = ws.ctx.orgId;
+        } catch (_) {}
+
+        await enqueueToDlq(orgId, "ORDER_TRANSITION", body, message);
+      } catch (dlqErr) {
+        console.error("Failed to enqueue DLQ:", dlqErr);
+      }
+    }
+    
+    return json({ error: message, code: message === "Unauthorized" ? "UNAUTHORIZED" : "BAD_REQUEST" }, message === "Unauthorized" ? 401 : 400); 
+  }
 }
 export async function handleCustomerOrderListHttp(request: Request): Promise<Response> {
   try {

@@ -155,6 +155,8 @@ export function startCleanup(intervalMs = DEFAULTS.cleanupIntervalMs) {
         store.delete(key);
       }
     }
+    // Enterprise DLQ integration
+    import("./dlq.server").then((m) => m.processDlqBatch().catch(() => {})).catch(() => {});
   }, intervalMs);
 }
 

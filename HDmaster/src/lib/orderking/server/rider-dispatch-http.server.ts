@@ -122,6 +122,27 @@ export async function handleRiderOffersHttp(request: Request): Promise<Response>
     return json({ data: result });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unexpected error";
+    
+    // Enterprise DLQ Integration: Cache failed transaction intents for automatic retry
+    if (request.method === "POST") {
+      try {
+        const userId = serviceUserId(request);
+        const body = (await request.clone().json().catch(() => ({}))) as any;
+        const { enqueueToDlq } = await import("@/lib/orderking/server/dlq.server");
+        
+        // orgId may not be known if error happened early, fallback to system
+        let orgId = "system"; 
+        try {
+          const ws = await ensureWorkspace(await serviceUserId(request));
+          orgId = ws.ctx.orgId;
+        } catch (_) {}
+
+        await enqueueToDlq(orgId, "RIDER_DISPATCH", body, message);
+      } catch (dlqErr) {
+        console.error("Failed to enqueue DLQ:", dlqErr);
+      }
+    }
+
     return json({ error: message, code: message === "Unauthorized" ? "UNAUTHORIZED" : "BAD_REQUEST" }, message === "Unauthorized" ? 401 : 400);
   }
 }

@@ -5,6 +5,8 @@ import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { OfflineDetector } from "@/components/offline-detector";
 import { platformConfig } from "@/lib/platform-config";
+import { flushQueue } from "@/lib/offline/durable-queue";
+import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
 import appCss from "../styles.css?url";
 
 const queryClient = new QueryClient({
@@ -58,7 +60,48 @@ export const Route = createRootRoute({
   component: Root,
 });
 
+import { useEffect } from "react";
+import { supabaseCloud } from "@/lib/db-cloud";
+
 function Root() {
+  useEffect(() => {
+    flushQueue(transitionOrderViaHDmaster);
+    
+    const handleOnline = () => {
+      flushQueue(transitionOrderViaHDmaster);
+    };
+    
+    window.addEventListener("online", handleOnline);
+    
+    // Supabase Realtime WebSocket for inventory and orders
+    const channel = supabaseCloud
+      .channel("partner_realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "item_availability" },
+        () => {
+          console.log("[Realtime] Inventory changed, invalidating catalog");
+          queryClient.invalidateQueries({ queryKey: ["catalog"] });
+          queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders" },
+        () => {
+          console.log("[Realtime] Order changed, invalidating orders");
+          queryClient.invalidateQueries({ queryKey: ["orders"] });
+          queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      supabaseCloud.removeChannel(channel);
+    };
+  }, []);
+
   return (
     <html lang="en" className="antialiased" suppressHydrationWarning>
       <head>

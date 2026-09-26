@@ -5,6 +5,7 @@ import { DEFAULT_CONFIG } from "@/lib/config/defaults";
 import type { PublicAppConfig } from "@/lib/config/types";
 import { isLang, translate, type Lang } from "@/lib/i18n";
 import { htmlLang } from "@/lib/locale";
+import { flushQueue } from "@/lib/offline/durable-queue";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,6 +62,7 @@ export function AppProviders({
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", config.brand.primaryColor);
     document.documentElement.lang = htmlLang(lang);
     document.documentElement.style.setProperty("--radius-lg", `${config.brand.radiusPx}px`);
+    flushQueue();
   }, [config, lang]);
   const setLang = (next: Lang) => {
     setLangState(next);

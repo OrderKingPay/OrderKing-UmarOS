@@ -34,7 +34,7 @@ export type MasterAiInput = {
   question: string;
   mode: "ops" | "ceo";
   specialistId?: string;
-  provider?: AiProvider;
+  provider?: string;
   conversation?: Array<{ role: "user" | "assistant"; content: string }>;
   reasoningEffort?: "low" | "medium" | "high" | "xhigh";
   approvedCallId?: string;
@@ -63,7 +63,7 @@ export type MasterAiRuntimeResult =
   | {
       ok: true;
       text: string;
-      provider: AiProvider;
+      provider: string;
       model: string;
       specialist: { id: string; name: string; team: string; title: string };
       toolCalls: ToolCallResult[];

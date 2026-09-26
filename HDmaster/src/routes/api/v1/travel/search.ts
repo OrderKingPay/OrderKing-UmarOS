@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { handleTravelHttp } from "@/lib/orderking/server/travel-http.server";
 
-export const Route = createFileRoute("/api/v1/travel/search")({
+export const Route = createFileRoute("/api/v1/travel/search" as any)({
   server: {
     handlers: {
       OPTIONS: async ({ request, params }) =>

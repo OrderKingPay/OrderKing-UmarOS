@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MoneyText } from "@/components/money-text";
@@ -9,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { REJECT_REASONS, type OrderState } from "@/lib/orders/state-machine";
 import { advanceSimulatedRider } from "@/lib/server/api-orders";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
+import { enqueueMutation } from "@/lib/offline/durable-queue";
 
 export type OrderView = {
   id: string;
@@ -72,17 +74,48 @@ export function OrderCard({
   const [reason, setReason] = useState<(typeof REJECT_REASONS)[number]>("item_unavailable");
   const [error, setError] = useState<string | null>(null);
 
+  const qc = useQueryClient();
+
   async function act(action: "accept" | "reject" | "preparing" | "ready") {
     setBusy(true);
     setError(null);
     try {
+      const idempotencyKey = actionKey(order.id, action);
+      
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        // Optimistic offline update
+        await enqueueMutation({
+          restaurantId: restaurantId!,
+          orderId: order.id,
+          action,
+          reason: action === "reject" ? reason : undefined,
+          idempotencyKey
+        });
+        
+        qc.setQueryData(["orders", restaurantId, "live"], (old: any) => {
+          if (!old) return old;
+          const nextState: Record<string, string> = { accept: "ACCEPTED", reject: "REJECTED", preparing: "PREPARING", ready: "READY" };
+          return {
+            ...old,
+            orders: old.orders.map((o: any) => 
+              o.id === order.id ? { ...o, state: nextState[action] || o.state } : o
+            )
+          };
+        });
+        
+        clearActionKey(order.id, action);
+        setRejectOpen(false);
+        onChanged?.();
+        return;
+      }
+      
       await transitionOrderViaHDmaster({
         data: {
           restaurantId,
           orderId: order.id,
           action,
           reason: action === "reject" ? reason : undefined,
-          idempotencyKey: actionKey(order.id, action),
+          idempotencyKey,
         },
       });
       clearActionKey(order.id, action);

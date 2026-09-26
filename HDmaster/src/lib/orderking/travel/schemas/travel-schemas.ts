@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const travelModeSchema = z.enum(["FLIGHT", "TRAIN", "BUS", "HOTEL"]);
+export const travelModeSchema = z.enum(["FLIGHT", "TRAIN", "BUS", "HOTEL", "CAB"]);
 export type TravelMode = z.infer<typeof travelModeSchema>;
 
 export const travelSearchQuerySchema = z.object({

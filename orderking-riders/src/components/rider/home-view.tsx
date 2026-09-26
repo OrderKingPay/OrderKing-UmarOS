@@ -442,6 +442,30 @@ function OfferCard({
         </div>
         <Badge tone="sim">{t("simulated")}</Badge>
       </div>
+      
+      {/* 1000x Realism: Deep Learning Dispatch Metrics */}
+      {(offer as any).aiMetrics ? (
+        <div className="mt-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs space-y-2">
+           <div className="flex items-center justify-between font-bold">
+              <span className="text-primary flex items-center gap-1">
+                <span className="animate-pulse">⚡</span> AI Smart Match
+              </span>
+              <span className="text-foreground border border-primary/30 rounded px-1.5 py-0.5 bg-primary/10">
+                Score: {(offer as any).aiMetrics.score}/100
+              </span>
+           </div>
+           <div className="grid grid-cols-2 gap-2 text-[10px] text-muted-foreground">
+              <div>Weather: <span className="font-bold text-foreground">{(offer as any).aiMetrics.weather}</span></div>
+              <div>Traffic: <span className="font-bold text-foreground">{(offer as any).aiMetrics.traffic}</span></div>
+           </div>
+           {(offer as any).aiMetrics.surge && (
+             <div className="text-[10px] text-amber-500 font-bold bg-amber-500/10 rounded px-2 py-1 mt-1 border border-amber-500/20 text-center">
+               🔥 HIGH DEMAND SURGE APPLIED
+             </div>
+           )}
+        </div>
+      ) : null}
+
       <p className="mt-3 flex items-center gap-2 font-display text-2xl tabular-nums">
         <Clock3 className="size-5" />
         {remaining}s
@@ -449,7 +473,7 @@ function OfferCard({
       <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
         <div>
           <dt className="text-muted-foreground">{t("expectedPayout")}</dt>
-          <dd className="tabular-nums">{formatPaise(offer.expectedPayoutPaise)}</dd>
+          <dd className="tabular-nums font-bold text-lg text-emerald-500">{formatPaise(offer.expectedPayoutPaise)}</dd>
         </div>
         <div>
           <dt className="text-muted-foreground">{t("distance")}</dt>
@@ -472,13 +496,13 @@ function OfferCard({
         </p>
       ) : null}
       {offer.restaurant.specialPickupInstructions ? (
-        <p className="mt-3 text-sm text-muted-foreground">{offer.restaurant.specialPickupInstructions}</p>
+        <p className="mt-3 text-sm text-muted-foreground border-l-2 border-primary/50 pl-2">{offer.restaurant.specialPickupInstructions}</p>
       ) : null}
       <p className="mt-2 text-xs text-muted-foreground">
         {t("estimated")} · {offer.restaurant.preparationStatus}
       </p>
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <Button size="lg" disabled={pending} onClick={onAccept}>
+        <Button size="lg" disabled={pending} onClick={onAccept} className="shadow-lg shadow-primary/20">
           {t("accept")}
         </Button>
         <Button size="lg" variant="outline" disabled={pending} onClick={onDecline}>

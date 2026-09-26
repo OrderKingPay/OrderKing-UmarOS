@@ -105,10 +105,21 @@ export async function executeSmartDispatch(
     active_order_id: string | null;
   }>`
     SELECT 
-      id, name, vehicle, lat, lng, acceptance_bps, active_order_id
+      id, name, vehicle, lat, lng, acceptance_bps, active_order_id,
+      ST_Distance(
+        ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography,
+        ST_SetSRID(ST_MakePoint(${restaurantLng}, ${restaurantLat}), 4326)::geography
+      ) as distance_meters
     FROM riders
     WHERE status in ('AVAILABLE', 'ONLINE')
       AND (zone_code = ${zoneCode} OR zone_code is null)
+      AND lat IS NOT NULL AND lng IS NOT NULL
+      AND ST_DWithin(
+        ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography,
+        ST_SetSRID(ST_MakePoint(${restaurantLng}, ${restaurantLat}), 4326)::geography,
+        15000 -- 15km max dispatch radius
+      )
+    ORDER BY distance_meters ASC
     LIMIT 25;
   `;
 
@@ -291,15 +302,28 @@ export async function cascadeNextNearestRider(
     lat: number | null;
     lng: number | null;
     rating_x10: number;
+    distance_meters: number;
   }>`
-    SELECT id, name, lat, lng, rating_x10
+    SELECT id, name, lat, lng, rating_x10,
+      ST_Distance(
+        ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography,
+        ST_SetSRID(ST_MakePoint(${restLng}, ${restLat}), 4326)::geography
+      ) as distance_meters
     FROM riders
     WHERE org_id = ${orgId}
       AND city_id = ${order.city_id}
       AND status in ('ACTIVE', 'ONLINE')
       AND online = 1
       AND data_mode = 'PRODUCTION'
-      AND active_order_id is null;
+      AND active_order_id is null
+      AND lat IS NOT NULL AND lng IS NOT NULL
+      AND ST_DWithin(
+        ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography,
+        ST_SetSRID(ST_MakePoint(${restLng}, ${restLat}), 4326)::geography,
+        20000 -- 20km max cascade radius
+      )
+    ORDER BY distance_meters ASC
+    LIMIT 10;
   `;
 
   // Filter out riders already contacted

@@ -8,10 +8,23 @@ startCleanup();
 export default defineEventHandler(async (event) => {
   const req = event.node?.req || (event as any).req;
 
-  // 1. CORS Headers (Robust)
-  setResponseHeader(event, "Access-Control-Allow-Origin", "*");
-  setResponseHeader(event, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  setResponseHeader(event, "Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept");
+  // 1. CORS Headers (Robust & Explicit)
+  const allowedOrigins = [
+    "https://customer.orderking.app",
+    "https://partner.orderking.app",
+    "https://rider.orderking.app",
+    "http://localhost:8080",
+    "http://localhost:8081",
+    "http://localhost:8082"
+  ];
+  const origin = getRequestHeader(event, "origin");
+  if (origin && allowedOrigins.includes(origin)) {
+    setResponseHeader(event, "Access-Control-Allow-Origin", origin);
+  } else {
+    setResponseHeader(event, "Access-Control-Allow-Origin", "https://customer.orderking.app"); // fallback
+  }
+  setResponseHeader(event, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+  setResponseHeader(event, "Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, x-order-king-rider-user-id");
 
   // 2. Security Headers (Perfectly tuned for massive scale)
   setResponseHeader(event, "X-DNS-Prefetch-Control", "off");

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { recordDoubleEntry } from "@/lib/orderking/finance/canonical-ledger";
-import { RBACVault } from "@/lib/orderking/security/rbac-vault";
+import { canonicalLedger } from "@/lib/orderking/finance/canonical-ledger";
+import { verifyBearerJwt, requireJwtSubject, requireJwtRole } from "@/lib/orderking/security/rbac-vault";
 import { randomUUID } from "crypto";
 
 const TransferRequestSchema = z.object({
@@ -17,12 +17,15 @@ export const Route = createFileRoute("/api/v1/kingpay/transfer" as any)({
       POST: async ({ request }) => {
         try {
           const token = request.headers.get("Authorization") || "";
-          const auth = RBACVault.verifyAndAuthorize(token.replace("Bearer ", ""), ["FOUNDER", "ADMIN"]);
+          const { payload } = await verifyBearerJwt(token);
+          const role = requireJwtRole(payload, ["FOUNDER", "ADMIN"]);
+          const userId = requireJwtSubject(payload);
+          const auth = { userId, role };
 
           const body = await request.json();
           const data = TransferRequestSchema.parse(body);
 
-          await recordDoubleEntry({
+          await canonicalLedger.postTransaction({
             idempotencyKey: data.idempotencyKey,
             eventType: "KINGPAY_USER_TRANSFER",
             memo: data.memo,

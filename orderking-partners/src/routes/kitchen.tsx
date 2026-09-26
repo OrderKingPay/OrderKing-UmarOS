@@ -22,37 +22,77 @@ const COLS = [
   { state: "RIDER_ASSIGNED", key: "kitchen.pickup" },
 ] as const;
 
-function playKitchenBell() {
+// Global continuous alarm state
+let alarmAudioCtx: AudioContext | null = null;
+let alarmOscillator: OscillatorNode | null = null;
+let alarmGain: GainNode | null = null;
+let isAlarmPlaying = false;
+
+function startContinuousAlarm() {
+  if (isAlarmPlaying) return;
   try {
     const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (!AudioContextClass) return;
-    const ctx = new AudioContextClass();
     
-    // Play a distinctive two-stage kitchen chime (G5 -> C6)
-    const playNote = (freq: number, startTime: number, duration: number) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(freq, startTime);
-      
-      gain.gain.setValueAtTime(0.2, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.start(startTime);
-      osc.stop(startTime + duration);
-    };
-
-    const now = ctx.currentTime;
-    playNote(783.99, now, 0.25);        // G5 note
-    playNote(1046.50, now + 0.18, 0.4); // C6 bell note
-    playNote(783.99, now + 0.45, 0.25); // Repeat chime
-    playNote(1046.50, now + 0.63, 0.5);
-  } catch {
-    /* ignore audio context restrictions */
+    if (!alarmAudioCtx) {
+      alarmAudioCtx = new AudioContextClass();
+    }
+    
+    if (alarmAudioCtx.state === 'suspended') {
+      alarmAudioCtx.resume();
+    }
+    
+    alarmOscillator = alarmAudioCtx.createOscillator();
+    alarmGain = alarmAudioCtx.createGain();
+    
+    alarmOscillator.type = "square";
+    const lfo = alarmAudioCtx.createOscillator();
+    lfo.type = "square";
+    lfo.frequency.value = 2; // Beeps twice a second
+    
+    const lfoGain = alarmAudioCtx.createGain();
+    lfoGain.gain.value = 800; // Modulation depth
+    
+    lfo.connect(lfoGain);
+    lfoGain.connect(alarmOscillator.frequency);
+    
+    alarmOscillator.frequency.value = 800; // Base frequency
+    
+    alarmGain.gain.value = 0.05; // Master volume
+    
+    alarmOscillator.connect(alarmGain);
+    alarmGain.connect(alarmAudioCtx.destination);
+    
+    alarmOscillator.start();
+    lfo.start();
+    
+    isAlarmPlaying = true;
+  } catch (e) {
+    console.error("Failed to start continuous alarm", e);
   }
+}
+
+function stopContinuousAlarm() {
+  if (!isAlarmPlaying) return;
+  try {
+    if (alarmOscillator) {
+      alarmOscillator.stop();
+      alarmOscillator.disconnect();
+      alarmOscillator = null;
+    }
+    if (alarmGain) {
+      alarmGain.disconnect();
+      alarmGain = null;
+    }
+    isAlarmPlaying = false;
+  } catch (e) {
+    console.error("Failed to stop alarm", e);
+  }
+}
+
+function playKitchenBell() {
+  startContinuousAlarm();
+  setTimeout(stopContinuousAlarm, 1000);
 }
 
 function speakKitchenOrder(orderId: string, totalPaise: number) {
@@ -85,14 +125,22 @@ function KitchenPage() {
   const pending = q.data?.orders.filter((o: any) => o.state === "PLACED").length ?? 0;
   const prev = useRef(pending);
   useEffect(() => {
-    if (isFeatureEnabled("new_order_sound") && soundOn && pending > prev.current) {
-      playKitchenBell();
-      const latest = q.data?.orders.find((o: any) => o.state === "PLACED");
-      if (latest) {
-        speakKitchenOrder(latest.id, latest.prices?.customerTotalPaise ?? 0);
+    if (isFeatureEnabled("new_order_sound") && soundOn && pending > 0) {
+      startContinuousAlarm();
+      
+      // Still speak once if a new order arrives
+      if (pending > prev.current) {
+        const latest = q.data?.orders.find((o: any) => o.state === "PLACED");
+        if (latest) {
+          speakKitchenOrder(latest.id, latest.prices?.customerTotalPaise ?? 0);
+        }
       }
+    } else {
+      stopContinuousAlarm();
     }
     prev.current = pending;
+    
+    return () => stopContinuousAlarm();
   }, [pending, soundOn, q.data?.orders]);
 
   return (
