@@ -475,3 +475,48 @@ export const assistantSnapshotFn = createServerFn({ method: "GET" })
     }
   });
 
+
+
+export const riderAiSupportFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { message: string; locale?: LocaleCode; deliveryId?: string | null }) => input)
+  .handler(async ({ context, data }) => {
+    const apiKey = process.env.OPENAI_API_KEY?.trim();
+    if (!apiKey) throw new RiderError("AI_UNAVAILABLE", "OpenAI support is not configured on the rider server.", 503);
+    const message = data.message.trim();
+    if (!message) throw new RiderError("INVALID", "Describe the issue first.", 400);
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: process.env.OPENAI_RIDER_MODEL?.trim() || "gpt-4o-mini",
+        temperature: 0.2,
+        messages: [
+          {
+            role: "system",
+            content: [
+              "You are OrderKing Rider AI Support.",
+              "Give concise, practical, safety-first guidance for delivery partners.",
+              "Never claim money was credited, a call was placed, a rider was reassigned, or an operational action occurred unless a verified tool result confirms it.",
+              "For financial, safety, account, KYC, or delivery-state mutations, explain the next verified action and escalate when required.",
+              "If the issue requires a platform mutation, direct the rider to the appropriate in-app action or support ticket.",
+              `Rider user id: ${context.userId}`,
+              `Locale: ${data.locale ?? "en"}`,
+              `Delivery id: ${data.deliveryId ?? "none"}`,
+            ].join("\n"),
+          },
+          { role: "user", content: message },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new RiderError("AI_UNAVAILABLE", `OpenAI support request failed (${response.status}). ${body.slice(0, 300)}`, 503);
+    }
+    const body = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+    const text = body.choices?.[0]?.message?.content?.trim();
+    if (!text) throw new RiderError("AI_UNAVAILABLE", "OpenAI returned no support response.", 503);
+    return { provider: "openai", model: process.env.OPENAI_RIDER_MODEL?.trim() || "gpt-4o-mini", text };
+  });
