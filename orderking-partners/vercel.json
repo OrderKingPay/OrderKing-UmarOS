@@ -33,5 +33,8 @@
         }
       ]
     }
-  ]
+  ],
+  "version": 2,
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build"
 }
