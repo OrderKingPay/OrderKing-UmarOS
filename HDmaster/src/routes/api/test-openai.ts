@@ -37,7 +37,7 @@ export const Route = createFileRoute("/api/test-openai")({
           const startTime = Date.now();
           
           const response = await provider.chat({
-            model: "gpt-4o-mini",
+            model: "gpt-5.6-luna",
             systemPrompt: "You are Umar OS. You must use the get_server_time tool to fetch the time.",
             messages: [{ role: "user", content: "Establish connection and execute the get_server_time tool." }],
             tools: [getServerTimeTool]

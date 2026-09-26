@@ -12,18 +12,10 @@ import { ACTIVE_DELIVERY_ZONES, isDeliveryActiveInLocation } from "../geo/geofen
 export type AiModelId =
   | "auto-supreme-orchestrator"
   | "ensemble-consensus"
+  | "gpt-5-6-sol"
   | "sovereign-ultra"
-  | "claude-4-6-opus"
-  | "gpt-5-6-omni"
-  | "grok-4-6-super"
-  | "spacex-orbital"
   | "codex-supreme"
-  | "gemini-3-8-ultra"
-  | "deepseek-r1-sovereign"
-  | "claude-3-7-sonnet"
-  | "gpt-4o"
-  | "gemini-2-5-pro"
-  | "grok-3";
+  | "deepseek-r1-sovereign";
 
 /**
  * Autonomously selects the best AI model engine based on prompt domain, complexity, and latency requirements.
@@ -34,18 +26,18 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
     return { model: "ensemble-consensus", reason: "Auto-routed to Ensemble Multi-Model Consensus: Running all strongest models simultaneously." };
   }
   if (q.includes("code") || q.includes("schema") || q.includes("api") || q.includes("scaffold") || q.includes("react") || q.includes("sql") || q.includes("git")) {
-    return { model: "codex-supreme", reason: "Auto-routed to Codex Supreme Architect for maximum precision code synthesis." };
+    return { model: "gpt-5-6-sol", reason: "Auto-routed to the verified OpenAI GPT-5.6 Sol provider; code tools are used when actually connected." };
   }
   if (q.includes("live") || q.includes("score") || q.includes("news") || q.includes("trending") || q.includes("cricket") || q.includes("match")) {
-    return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 SuperGrok Ultra for real-time live telemetric intelligence." };
+    return { model: "gpt-5-6-sol", reason: "Auto-routed to verified OpenAI GPT-5.6 Sol; live data tools are used only when actually connected." };
   }
   if (q.includes("video") || q.includes("image") || q.includes("render") || q.includes("4k") || q.includes("reel")) {
-    return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra for photorealistic multimodal & 4K video generation." };
+    return { model: "gpt-5-6-sol", reason: "Auto-routed to verified OpenAI GPT-5.6 Sol for multimodal reasoning; media generation requires a separately verified image/video provider." };
   }
   if (q.includes("invoice") || q.includes("client") || q.includes("contract") || q.includes("legal") || q.includes("upwork") || q.includes("pitch")) {
-    return { model: "claude-4-6-opus", reason: "Auto-routed to Claude 4.6 Opus for enterprise contractual & high-ticket negotiation excellence." };
+    return { model: "gpt-5-6-sol", reason: "Auto-routed to verified OpenAI GPT-5.6 Sol." };
   }
-  return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra flagship executive reasoning engine." };
+  return { model: "gpt-5-6-sol", reason: "Auto-routed to verified OpenAI GPT-5.6 Sol." };
 }
 
 export interface ChatAttachment { content?: string;
@@ -333,6 +325,30 @@ export async function getEnterpriseBlueprints(): Promise<Record<string, Enterpri
   const mod = await import('../server/supreme-founder-data.server');
   return mod.getEnterpriseBlueprintsFromDb();
 }
+function founderBlockedResponse(
+  intent: string,
+  detectedLanguage: string,
+  reason: string,
+) {
+  const text =
+    detectedLanguage === "hi-IN"
+      ? `यह कार्रवाई अभी लाइव सत्यापित सेवा से जुड़ी नहीं है: ${reason}`
+      : detectedLanguage === "bn-IN"
+        ? `এই কাজটি এখনো লাইভ যাচাইকৃত সার্ভিসের সাথে সংযুক্ত নয়: ${reason}`
+        : `Action blocked: ${reason}`;
+
+  return {
+    intent,
+    detectedLanguage,
+    responseMarkdown: `### Action Not Executed\n\n${text}\n\nNo simulated record, payment, booking, deployment, payout, or completion claim was generated.`,
+    voiceSpokenText: text,
+    executionSteps: [
+      { stepNumber: 1, totalSteps: 1, label: "Verified execution gate", status: "PENDING", detail: reason },
+    ],
+    actionCard: { type: "system_settings", data: { status: "BLOCKED", reason } },
+  };
+}
+
 export async function parseFounderQuery(query: string, founderUpiVpa: string = "orderking@okhdfcbank"): Promise<{
   intent:
     | "client_sales"
@@ -392,589 +408,43 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
   if (isHindi) detectedLanguage = "hi-IN";
   else if (isBengali) detectedLanguage = "bn-IN";
 
-  // 1. Sovereign Purifier & Storage Cleaner Command
-  if (
-    q.startsWith("/clean") ||
-    q.includes("clean cache") ||
-    q.includes("purge cache") ||
-    q.includes("clean storage") ||
-    q.includes("storage cleaner") ||
-    q.includes("purifier") ||
-    q.includes("clean everything")
-  ) {
-    const inspection = mediaStorageVault.inspectSystemStorage();
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Scanning Disk & Memory Quotas", status: "COMPLETED", detail: `Scanned ${inspection.formattedTotalSize} across temporary files` },
-      { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Guarantee", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
-      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "100x cleaner than browser cache tools active" },
-      { stepNumber: 4, totalSteps: 4, label: "Performance Optimizer Ready", status: "COMPLETED", detail: `Current Speed Score: ${inspection.speedOptimizationScore}%` },
-    ];
-
-    const responseMarkdown = `### 🧹 Sovereign Cache & Storage Purifier Armed (100x Cleaner)
-- **Total Temporary Storage**: **${inspection.formattedTotalSize}** (${inspection.itemCount} cached items)
-- **Generated Media Footprint**: ${(inspection.breakdown.generatedImagesBytes / (1024 * 1024)).toFixed(1)} MB Images · ${(inspection.breakdown.generatedVideosBytes / (1024 * 1024)).toFixed(1)} MB Videos
-- **Current Performance Score**: **${inspection.speedOptimizationScore}%**
-
-> [!IMPORTANT]
-> **🛡️ 100% Core Protection Shield**: Zero danger to critical assets. Your verified Client Leads, King Pay UPI Invoices, MSA Contracts, and Founder Vault Keys are **permanently locked & protected**.
-
-Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and boost engine performance by 100x!`;
-
-    const voiceSpokenText = isHindi
-      ? `Sovereign Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
-      : isBengali
-      ? `Sovereign Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Apnar client leads ebong invoices 100% safe.`
-      : `Sovereign Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Your client leads and invoices are 100% protected and safe.`;
-
-    return {
-      intent: "storage_purifier",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "storage_purifier",
-        data: inspection,
-      },
-    };
+    if (q.startsWith("/clean") || q.includes("clean cache") || q.includes("purge cache") || q.includes("clean storage") || q.includes("storage cleaner") || q.includes("purifier") || q.includes("clean everything")) {
+    return founderBlockedResponse("storage_purifier", detectedLanguage, "Live storage inspection/purge is not connected to a verified server-side storage service.");
   }
 
-  // 2. Unlimited Free AI Image Generation
-  if (
-    q.startsWith("/image") ||
-    q.includes("generate image") ||
-    q.includes("create image") ||
-    q.includes("make image") ||
-    q.includes("draw image") ||
-    q.includes("generate an image")
-  ) {
-    const rawPrompt = query
-      .replace(/^\/image/i, "")
-      .replace(/generate (an )?image (of )?/i, "")
-      .replace(/create (an )?image (of )?/i, "")
-      .replace(/make (an )?image (of )?/i, "")
-      .trim() || "Futuristic OrderKing luxury food delivery hub with golden drones and neon lights, 8k octane render";
-
-    const seed = Math.floor(Math.random() * 999999);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-      rawPrompt + ", 8k resolution, cinematic lighting, photorealistic, commercial grade, award winning"
-    )}?width=1024&height=1024&nologo=true&seed=${seed}`;
-
-    // Auto-save to Media Storage Vault
-    mediaStorageVault.addItem({
-      type: "image",
-      title: rawPrompt.slice(0, 45),
-      prompt: rawPrompt,
-      url: imageUrl,
-      sizeBytes: 2150000,
-      mimeType: "image/jpeg",
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Parsing High-Precision Visual Prompt", status: "COMPLETED", detail: rawPrompt },
-      { stepNumber: 2, totalSteps: 4, label: "Routing to Unlimited Free Neural Engine", status: "COMPLETED", detail: "Zero API charges · 1024x1024 Ultra Resolution" },
-      { stepNumber: 3, totalSteps: 4, label: "Synthesizing Photorealistic Asset", status: "COMPLETED", detail: "Ray-traced lighting and dynamic shaders rendered" },
-      { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent cloud & local storage indexed" },
-    ];
-
-    const responseMarkdown = `### 🎨 Supreme AI Image Generated (100% Free & Unlimited)
-- **Prompt**: *"${rawPrompt}"*
-- **Resolution**: **1024 × 1024 (Ultra HD)** | **Cost**: **$0.00 (Unlimited Forever)**
-- **Vault Status**: Indexed in **HD Master Media Vault** (ready to download, enlarge, or embed in client pitch decks).
-
-![Generated AI Image](${imageUrl})
-
-You can download this image, copy its direct CDN link, or command further edits below!`;
-
-    const voiceSpokenText = isHindi
-      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Yeh 100% free hai aur aapke media vault me save ho gaya hai.`
-      : isBengali
-      ? `Ami apnar jonno high-resolution AI image toiri korechi. Eta 100% free ebong apnar media vault e save hoyeche.`
-      : `I have generated your high-resolution AI image. It is 100% free with unlimited generation capacity and has been saved to your Media Vault.`;
-
-    return {
-      intent: "media_generation",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      mediaCard: {
-        type: "image",
-        prompt: rawPrompt,
-        url: imageUrl,
-        style: "Photorealistic 8K",
-      },
-      actionCard: {
-        type: "media_generator",
-        data: {
-          type: "image",
-          prompt: rawPrompt,
-          url: imageUrl,
-        },
-      },
-    };
+  if (q.startsWith("/image") || q.includes("generate image") || q.includes("create image") || q.includes("make image") || q.includes("draw image") || q.includes("generate an image")) {
+    return founderBlockedResponse("media_generation", detectedLanguage, "A production image-generation provider and persistent media vault are not connected to this legacy command path.");
   }
 
-  // 3. Unlimited Free AI Video Generation
-  if (
-    q.startsWith("/video") ||
-    q.includes("generate video") ||
-    q.includes("create video") ||
-    q.includes("make video") ||
-    q.includes("ai video") ||
-    q.includes("motion video")
-  ) {
-    const rawPrompt = query
-      .replace(/^\/video/i, "")
-      .replace(/generate (a )?video (of )?/i, "")
-      .replace(/create (a )?video (of )?/i, "")
-      .replace(/make (a )?video (of )?/i, "")
-      .trim() || "Cinematic OrderKing 15-minute drone delivery flight through neon city streets";
-
-    const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
-
-    mediaStorageVault.addItem({
-      type: "video",
-      title: rawPrompt.slice(0, 45),
-      prompt: rawPrompt,
-      url: videoUrl,
-      sizeBytes: 8400000,
-      mimeType: "video/mp4",
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Compiling Kinetic Motion Script", status: "COMPLETED", detail: rawPrompt },
-      { stepNumber: 2, totalSteps: 4, label: "Simulating 60FPS Video Keyframes", status: "COMPLETED", detail: "Motion interpolation and procedural particles generated" },
-      { stepNumber: 3, totalSteps: 4, label: "Encoding MP4 Stream", status: "COMPLETED", detail: "WebCodecs hardware acceleration active · 100% Free" },
-      { stepNumber: 4, totalSteps: 4, label: "Registering in HD Master Media Vault", status: "COMPLETED", detail: "Playback ready with instant download option" },
-    ];
-
-    const responseMarkdown = `### 🎬 Supreme AI Video Generated (100% Free & Unlimited)
-- **Prompt**: *"${rawPrompt}"*
-- **Format**: **MP4 60FPS** | **Cost**: **$0.00 (Unlimited Forever)**
-- **Vault Status**: Indexed in **HD Master Media Vault** (ready to play, download, and showcase to enterprise clients).
-
-The video is ready for playback below with full audio-visual motion capabilities!`;
-
-    const voiceSpokenText = isHindi
-      ? `Maine aapke liye cinematic AI video clip generate kar diya hai. Yeh playback aur download ke liye ready hai.`
-      : isBengali
-      ? `Ami apnar jonno cinematic AI video clip toiri korechi. Eta playback ebong download korar jonno ready.`
-      : `I have generated your cinematic AI video clip. It is ready for playback, download, and commercial deployment.`;
-
-    return {
-      intent: "media_generation",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      mediaCard: {
-        type: "video",
-        prompt: rawPrompt,
-        url: videoUrl,
-        style: "Cinematic 60FPS",
-      },
-      actionCard: {
-        type: "media_generator",
-        data: {
-          type: "video",
-          prompt: rawPrompt,
-          url: videoUrl,
-        },
-      },
-    };
+  if (q.startsWith("/video") || q.includes("generate video") || q.includes("create video") || q.includes("make video") || q.includes("ai video") || q.includes("motion video")) {
+    return founderBlockedResponse("media_generation", detectedLanguage, "A production video-generation/render service and persistent media vault are not connected to this legacy command path.");
   }
 
-  // Business Action 1: Client Prospect & High-Margin Pitch
-  if (
-    q.startsWith("/client") ||
-    q.includes("client lead") ||
-    q.includes("find client") ||
-    q.includes("pitch client") ||
-    q.includes("find clients to sell our food delivery software") ||
-    q.includes("sell our food delivery software") ||
-    (q.includes("client") && (q.includes("software") || q.includes("prospect") || q.includes("restaurant") || q.includes("dhundte") || q.includes("pitch")))
-  ) {
-    const lead = (await getCuratedClientLeads())[0];
-    const invoice = generateFounderClientInvoice({
-      clientName: lead.businessName,
-      amountInr: lead.projectBudget,
-      description: `Turnkey White-Label Software License & Setup for ${lead.businessName}`,
-      founderUpiVpa,
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Scanning Market Radar", status: "COMPLETED", detail: "Scanned 14 local food brands in Karimganj & Silchar" },
-      { stepNumber: 2, totalSteps: 5, label: "Isolating High-Margin Lead", status: "COMPLETED", detail: `Identified ${lead.businessName} (GMV: ₹18.5L/mo, Loss: 28% to Swiggy)` },
-      { stepNumber: 3, totalSteps: 5, label: "Compiling Turnkey Pitch", status: "COMPLETED", detail: "Generated 0% Commission & Price Parity ROI calculation" },
-      { stepNumber: 4, totalSteps: 5, label: "Minting Advance Invoice", status: "COMPLETED", detail: `50% Advance Lock: ₹${invoice.advanceRequiredInr.toLocaleString("en-IN")} via King Pay UPI` },
-      { stepNumber: 5, totalSteps: 5, label: "Deploying Edge Preview", status: "COMPLETED", detail: "Client sandbox ready at https://royal-darbar.orderking.in" },
-    ];
-
-    const responseMarkdown = `### 🎯 High-Value Client Prospect Isolated: **${lead.businessName}**
-- **Location**: ${lead.location} | **Estimated Monthly GMV**: ${lead.monthlyRevenueEst}
-- **Client Pain Point**: ${lead.painPoint}
-- **Autonomous Solution**: ${lead.suggestedSolution}
-- **Total Contract Value**: **₹${lead.projectBudget.toLocaleString("en-IN")}** (50% Milestone Advance: **₹${invoice.advanceRequiredInr.toLocaleString("en-IN")}**)
-- **Client ROI Impact**: ${lead.potentialGmvGrowth}
-
----
-#### 👑 Automated Client Pitch & Zero-Aggregator Guarantee:
-> *"Respected Management at ${lead.businessName}, you are currently losing over ₹5,00,000 every single month to 28% aggregator commissions. With our OrderKing Turnkey White-Label Deployment, you retain 100% of your earnings, get instant direct UPI bank settlements, and eliminate middlemen entirely. We can have your custom branded app live in 48 hours."*
-
-Ready to lock this contract and receive the advance payment immediately into your founder account.`;
-
-    const voiceSpokenText = isHindi
-      ? `Maine ${lead.businessName} ke liye high-ticket proposal tayyar kar liya hai. Deal ki total value ₹${lead.projectBudget.toLocaleString("en-IN")} hai, aur 50% advance invoice ready hai jo sidhe aapke UPI account me aayega.`
-      : isBengali
-      ? `Ami ${lead.businessName} er jonno high-value proposal toiri korechi. Deal er value ₹${lead.projectBudget.toLocaleString("en-IN")} ebong 50% advance invoice ready ache.`
-      : `I have isolated a premier high-ticket client for you: ${lead.businessName}. The total contract value is ₹${lead.projectBudget.toLocaleString("en-IN")} with a 50% advance invoice generated directly to your founder UPI account.`;
-
-    return {
-      intent: "client_sales",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "lead_pitch",
-        data: { lead, invoice },
-      },
-    };
+  if (q.startsWith("/client") || q.includes("client lead") || q.includes("find client") || q.includes("pitch client") || q.includes("find clients to sell our food delivery software") || q.includes("sell our food delivery software") || (q.includes("client") && (q.includes("software") || q.includes("prospect") || q.includes("restaurant") || q.includes("dhundte") || q.includes("pitch")))) {
+    return founderBlockedResponse("client_sales", detectedLanguage, "No verified CRM/lead source is connected to this legacy prospecting command; static leads are not claimable.");
   }
 
-  // Business Action 2: Remote Contract Radar & Proposals
-  if (
-    q.startsWith("/job") ||
-    q.includes("remote gig") ||
-    q.includes("remote contract") ||
-    q.includes("remote freelance") ||
-    q.includes("find high paid remote contracts") ||
-    q.includes("freelance job") ||
-    (q.includes("upwork") && (q.includes("contract") || q.includes("proposal") || q.includes("bid")))
-  ) {
-    const gig = (await getCuratedRemoteGigs())[0];
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Scanning Remote Radar", status: "COMPLETED", detail: "Scanned Upwork Enterprise, Toptal, and US direct clients" },
-      { stepNumber: 2, totalSteps: 4, label: "Filtering $100+/hr Contracts", status: "COMPLETED", detail: `Isolated ${gig.title} paying $${gig.hourlyRateUsd}/hr` },
-      { stepNumber: 3, totalSteps: 4, label: "Tailoring Proof-of-Work", status: "COMPLETED", detail: "Linked live double-entry ledger & sub-50ms PGlite state machine" },
-      { stepNumber: 4, totalSteps: 4, label: "Synthesizing Bid Proposal", status: "COMPLETED", detail: "Ready to submit with 85%+ interview conversion guarantee" },
-    ];
-
-    const responseMarkdown = `### 💼 High-Paid Remote Contract Match: **${gig.title}**
-- **Client**: ${gig.clientLocation} | **Platform**: ${gig.platform}
-- **Rate**: **$${gig.hourlyRateUsd}/hr** (~₹${(gig.hourlyRateUsd * 86).toLocaleString("en-IN")}/hr) or **$${gig.fixedBudgetUsd?.toLocaleString("en-US")} Fixed Contract** (~₹${((gig.fixedBudgetUsd || 0) * 86).toLocaleString("en-IN")})
-- **Duration**: ${gig.duration} | **Skills Match**: ${gig.matchScore}%
-- **Scope**: ${gig.description}
-
----
-#### ⚡ Tailored High-Converting Proposal (Ready to Submit):
-\`\`\`markdown
-${gig.proposalTemplate}
-\`\`\`
-- **Strategy**: Direct proof of work showing OrderKing's live double-entry ledger and sub-50ms PGlite state machine. Guarantees 85%+ interview conversion.`;
-
-    const voiceSpokenText = isHindi
-      ? `Aapke liye ek $${gig.hourlyRateUsd} prati ghanta ka high-paying remote contract match hua hai. Iski fixed value lagbhag $${gig.fixedBudgetUsd} dollar hai. Maine custom proposal generate kar diya hai.`
-      : isBengali
-      ? `Apnar jonno ekta $${gig.hourlyRateUsd} per hour high-paying remote contract paowa geche. Fixed value $${gig.fixedBudgetUsd} dollars. Ami proposal ready korechi.`
-      : `I have secured a high-paying remote contract opportunity paying $${gig.hourlyRateUsd} per hour or a $${gig.fixedBudgetUsd?.toLocaleString()} fixed milestone. The proposal with your production credentials is ready to submit.`;
-
-    return {
-      intent: "remote_jobs",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "remote_gig_bid",
-        data: gig,
-      },
-    };
+  if (q.startsWith("/job") || q.includes("remote gig") || q.includes("remote contract") || q.includes("remote freelance") || q.includes("find high paid remote contracts") || q.includes("freelance job") || (q.includes("upwork") && (q.includes("contract") || q.includes("proposal") || q.includes("bid")))) {
+    return founderBlockedResponse("remote_jobs", detectedLanguage, "No verified live marketplace/job connector is connected; static opportunities and conversion guarantees are not claimable.");
   }
 
-  // Business Action 3: Autonomous Enterprise Blueprint Scaffolder
-  if (
-    q.startsWith("/scaffold") ||
-    q.includes("scaffold app") ||
-    q.includes("scaffold website") ||
-    q.includes("scaffold erp") ||
-    q.includes("scaffold heavy enterprise") ||
-    q.includes("enterprise blueprint") ||
-    q.includes("hospital erp web app") ||
-    q.includes("multi vendor marketplace app")
-  ) {
-    const bp = q.includes("hospital")
-      ? (await getEnterpriseBlueprints()).hospital_erp
-      : q.includes("fintech") || q.includes("ledger")
-      ? (await getEnterpriseBlueprints()).fintech_ledger
-      : (await getEnterpriseBlueprints()).multi_vendor_marketplace;
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Architecting Domain Model", status: "COMPLETED", detail: `Designed schema for ${bp.targetOrganization}` },
-      { stepNumber: 2, totalSteps: 5, label: "Scaffolding PostgreSQL Tables", status: "COMPLETED", detail: `${bp.databaseSchema.length} relational tables with indexes generated` },
-      { stepNumber: 3, totalSteps: 5, label: "Writing Production TypeScript Code", status: "COMPLETED", detail: "Generated App.tsx, api-routes.ts, and schema.sql" },
-      { stepNumber: 4, totalSteps: 5, label: "Spinning Up Interactive Sandbox", status: "COMPLETED", detail: "Live clickable UI preview rendered in chat" },
-      { stepNumber: 5, totalSteps: 5, label: "Assembling Client Handoff Bundle", status: "COMPLETED", detail: `Admin credentials & edge preview live at ${bp.livePreviewUrl}` },
-    ];
-
-    const responseMarkdown = `### 🚀 Autonomous Enterprise Scaffolding: **${bp.title}**
-- **Target Organization**: ${bp.targetOrganization}
-- **Commercial Valuation**: **₹${bp.commercialValueInr.toLocaleString("en-IN")}** | **Delivery SLA**: ${bp.estimatedBuildTime}
-- **Live Preview Link**: [${bp.livePreviewUrl}](${bp.livePreviewUrl})
-
----
-#### 🛠️ Production Architecture & Code Structure:
-- **Core Tech Stack**: ${bp.techStack.join(" · ")}
-- **Database Tables Scaffolded**:
-${bp.databaseSchema.map((t) => `  - \`${t}\``).join("\n")}
-- **Production API Endpoints**:
-${bp.apiEndpoints.map((e) => `  - \`${e}\``).join("\n")}
-- **Frontend Pages & Routes**:
-${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
-
-**Interactive Sandbox & Multi-File Code Ready Below!** You can test the working app, view files, and export the handoff bundle.`;
-
-    const voiceSpokenText = isHindi
-      ? `Maine ${bp.title} ka complete enterprise architecture, multi-file code aur live interactive preview sandbox scaffold kar diya hai. Iski market value ₹${bp.commercialValueInr.toLocaleString("en-IN")} hai.`
-      : isBengali
-      ? `Ami ${bp.title} er full enterprise code, database schema ebong live interactive preview toiri korechi. Er market value ₹${bp.commercialValueInr.toLocaleString("en-IN")}.`
-      : `I have autonomously scaffolded the enterprise architecture, multi-file production code, and an interactive live sandbox for ${bp.title}. The commercial valuation is ₹${bp.commercialValueInr.toLocaleString("en-IN")}.`;
-
-    return {
-      intent: "enterprise_blueprint",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "enterprise_blueprint",
-        data: bp,
-      },
-    };
+  if (q.startsWith("/scaffold") || q.includes("scaffold app") || q.includes("scaffold website") || q.includes("scaffold erp") || q.includes("scaffold heavy enterprise") || q.includes("enterprise blueprint") || q.includes("hospital erp web app") || q.includes("multi vendor marketplace app")) {
+    return founderBlockedResponse("enterprise_blueprint", detectedLanguage, "This legacy path has no verified live project provisioning/deployment backend; it must not claim a live preview or client handoff.");
   }
 
-  // Business Action 4: Invoice Generation & King Pay UPI Link
-  if (
-    q.startsWith("/invoice") ||
-    q.includes("generate invoice") ||
-    q.includes("create invoice") ||
-    q.includes("send invoice") ||
-    q.includes("invoice for client") ||
-    q.includes("client invoice") ||
-    q.includes("upi invoice")
-  ) {
-    const inv = generateFounderClientInvoice({
-      clientName: "Enterprise Client (Turnkey Software License)",
-      amountInr: 75000,
-      description: "OrderKing Sovereign Cloud Software License & POS Deployment",
-      founderUpiVpa,
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Compiling Legal Invoice", status: "COMPLETED", detail: `Invoice #${inv.invoiceNumber} generated with 18% GST allocation` },
-      { stepNumber: 2, totalSteps: 4, label: "Generating King Pay UPI Deep-Link", status: "COMPLETED", detail: `50% Advance Lock (₹${inv.advanceRequiredInr.toLocaleString("en-IN")})` },
-      { stepNumber: 3, totalSteps: 4, label: "Encoding Dynamic QR Matrix", status: "COMPLETED", detail: "Compatible with GPay, PhonePe, Paytm, BHIM, CRED" },
-      { stepNumber: 4, totalSteps: 4, label: "Verifying Section 79 Protection", status: "COMPLETED", detail: "Direct founder bank settlement with 0% gateway cut" },
-    ];
-
-    const responseMarkdown = `### 💵 Instant Founder Invoice & King Pay UPI Link Generated
-- **Invoice Number**: \`${inv.invoiceNumber}\`
-- **Total Amount**: **₹${inv.amountInr.toLocaleString("en-IN")}**
-- **50% Advance Required**: **₹${inv.advanceRequiredInr.toLocaleString("en-IN")}**
-- **Payout Destination**: **${inv.payoutAccount}**
-- **Direct UPI Deep-Link**: \`${inv.upiPaymentLink}\`
-
----
-> [!NOTE]
-> **Zero Gateway Cuts**: Payments made via this link or QR code deposit 100% of the funds straight into your designated bank account with zero intermediary commission fees.`;
-
-    const voiceSpokenText = isHindi
-      ? `Aapke liye ₹${inv.amountInr.toLocaleString("en-IN")} ka direct UPI invoice generate ho gaya hai. 50% advance payment sidhe aapke bank account me transfer hoga.`
-      : isBengali
-      ? `Apnar jonno ₹${inv.amountInr.toLocaleString("en-IN")} er direct UPI invoice toiri hoyeche. 50% advance taka direct apnar account e joma hobe.`
-      : `I have generated an instant ₹${inv.amountInr.toLocaleString("en-IN")} invoice. The 50% advance payment link and QR code are ready to collect funds directly into your founder account.`;
-
-    return {
-      intent: "invoice_pay",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "invoice_pay",
-        data: inv,
-      },
-    };
+  if (q.startsWith("/invoice") || q.includes("generate invoice") || q.includes("create invoice") || q.includes("send invoice") || q.includes("invoice for client") || q.includes("client invoice") || q.includes("upi invoice")) {
+    return founderBlockedResponse("invoice_pay", detectedLanguage, "Live invoice persistence, payment collection, tax calculation, and settlement confirmation are not connected to the canonical payment backend.");
   }
 
-  // 1. Universal Platform & App Connector / Enforcer
-  if (
-    q.includes("connect") ||
-    q.includes("integrate") ||
-    q.includes("platform") ||
-    q.includes("force app") ||
-    q.includes("external app") ||
-    q.includes("github") ||
-    q.includes("upwork") ||
-    q.includes("whatsapp") ||
-    q.includes("zomato") ||
-    q.includes("swiggy") ||
-    q.includes("shopify") ||
-    q.includes("connector") ||
-    q.includes("sync app") ||
-    q.includes("enforce task")
-  ) {
-    let matchedPlatform = (await getUniversalPlatforms())[0]; // GitHub default
-    if (q.includes("upwork") || q.includes("contract") || q.includes("bid")) matchedPlatform = (await getUniversalPlatforms())[1];
-    else if (q.includes("whatsapp") || q.includes("message") || q.includes("chat")) matchedPlatform = (await getUniversalPlatforms())[2];
-    else if (q.includes("zomato") || q.includes("swiggy") || q.includes("menu")) matchedPlatform = (await getUniversalPlatforms())[3];
-    else if (q.includes("shopify") || q.includes("store") || q.includes("ecommerce")) matchedPlatform = (await getUniversalPlatforms())[4];
-    else if (q.includes("pay") || q.includes("upi") || q.includes("bank")) matchedPlatform = (await getUniversalPlatforms())[5];
-    else if (q.includes("google") || q.includes("meet") || q.includes("drive") || q.includes("sheet")) matchedPlatform = (await getUniversalPlatforms())[6];
-    else if (q.includes("aws") || q.includes("cloud") || q.includes("deploy") || q.includes("edge")) matchedPlatform = (await getUniversalPlatforms())[7];
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Initializing Sovereign App Connector", status: "COMPLETED", detail: `Handshake established with ${matchedPlatform.name}` },
-      { stepNumber: 2, totalSteps: 5, label: "Validating HMAC-SHA256 Security Guardrails", status: "COMPLETED", detail: "Zero Token Leak Sandbox active · Automated rollback snapshot created" },
-      { stepNumber: 3, totalSteps: 5, label: "Auditing Active Platform Permissions", status: "COMPLETED", detail: `${matchedPlatform.authMethod} authenticated · Latency: ${matchedPlatform.apiLatencyMs}ms` },
-      { stepNumber: 4, totalSteps: 5, label: "Arming Force-Execution Engine", status: "COMPLETED", detail: `${matchedPlatform.supportedActions.length} strict actions ready for founder execution` },
-      { stepNumber: 5, totalSteps: 5, label: "Founder Safety Protocol Engaged", status: "COMPLETED", detail: "100% data loss prevention active · Results piped directly back to founder" },
-    ];
-
-    const responseMarkdown = `### 🌐 Universal Platform & App Connector Active: **${matchedPlatform.name}**
-- **Connection Status**: **${matchedPlatform.status}** (Latency: \`${matchedPlatform.apiLatencyMs}ms\` · Auth: \`${matchedPlatform.authMethod}\`)
-- **Safety Guardrail**: **100% Verified** (Zero data leak, automatic rollback snapshot, rate-limit protector active)
-- **Available Actions to Enforce**:
-${matchedPlatform.supportedActions.map((a) => `  - **${a.label}** (\`${a.safetyLevel}\`): ${a.description}`).join("\n")}
-
-> [!NOTE]
-> **Founder Safety Shield**: All external apps and APIs are forced to execute within our isolated sandbox. If an external service throws an error or rate limit, our automated rollback restores state in **sub-10ms** with zero business impact.
-
-Use the interactive card below to force task execution on **${matchedPlatform.name}** or browse other connected platforms.`;
-
-    const voiceSpokenText = isHindi
-      ? `Maine ${matchedPlatform.name} ke saath sovereign integration verify kar li hai. Safety guardrails active hain aur aap 1-click me task enforce kar sakte hain.`
-      : isBengali
-      ? `Ami ${matchedPlatform.name} er sathe sovereign connection verify korechi. Safety guardrail active ache ebong apni 1-click e kaaj force korte paren.`
-      : `Universal Platform Connector is synchronized with ${matchedPlatform.name}. All safety guardrails and rollback snapshots are verified. Ready to force task execution on your order.`;
-
-    return {
-      intent: "platform_connector",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "platform_connector",
-        data: {
-          selectedPlatform: matchedPlatform,
-          allPlatforms: (await getUniversalPlatforms()),
-        },
-      },
-    };
+  if (q.includes("connect") || q.includes("integrate") || q.includes("platform") || q.includes("force app") || q.includes("external app") || q.includes("github") || q.includes("upwork") || q.includes("whatsapp") || q.includes("zomato") || q.includes("swiggy") || q.includes("shopify") || q.includes("connector") || q.includes("sync app") || q.includes("enforce task")) {
+    return founderBlockedResponse("platform_connector", detectedLanguage, "This legacy connector path cannot claim synchronization or rollback guarantees; use only connectors that report verified live authorization.");
   }
 
-  // 2. World-Class Fastest Video & Image Creation & Editing Studio
-  if (
-    q.includes("edit video") ||
-    q.includes("create video") ||
-    q.includes("fastest video") ||
-    q.includes("long video") ||
-    q.includes("reel") ||
-    q.includes("9:16") ||
-    q.includes("16:9") ||
-    q.includes("commercial video") ||
-    q.includes("realistic video") ||
-    q.includes("edit image") ||
-    q.includes("photo edit") ||
-    q.includes("video studio") ||
-    q.includes("image studio") ||
-    q.includes("video creator") ||
-    q.includes("aspect ratio") ||
-    q.includes("subtitles")
-  ) {
-    const isLongForm = q.includes("long") || q.includes("documentary") || q.includes("15 min") || q.includes("30 min") || q.includes("10 min");
-    const isReel = q.includes("reel") || q.includes("9:16") || q.includes("tiktok") || q.includes("short");
-    const aspectRatio: VideoAspectRatio = isReel ? "9:16" : q.includes("1:1") ? "1:1" : q.includes("21:9") ? "21:9" : "16:9";
-    const duration: VideoDurationPreset = isLongForm ? "10m" : isReel ? "30s" : "60s";
-
-    const promptText = query
-      .replace(/edit video( of)?/i, "")
-      .replace(/create video( of)?/i, "")
-      .replace(/fastest video( of)?/i, "")
-      .replace(/long video( of)?/i, "")
-      .trim() || "Ultra-realistic cinematic commercial presentation of OrderKing 15-minute delivery ecosystem with 3D CGI HUD graphics";
-
-    const videoConfig: VideoEditorStudioConfig = {
-      id: `vid-studio-${Date.now()}`,
-      title: promptText.slice(0, 50),
-      prompt: promptText,
-      aspectRatio,
-      duration,
-      resolution: "4k_60fps",
-      voiceover: "young_female_aria",
-      voiceoverLanguage: isHindi ? "hi-IN" : isBengali ? "bn-IN" : "en-IN",
-      autoSubtitles: true,
-      colorGrade: "cinematic_hdr",
-      fps: 60,
-      videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4",
-      thumbnailUrl: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1080&auto=format&fit=crop",
-      isLongForm,
-      exportFormat: "MP4_H265",
-      renderSpeedMultiplier: "100,000x Realtime WebCodecs Turbo (World's #1 Fastest)",
-      commercialRightsCertified: true,
-    };
-
-    // Auto-save to media vault
-    mediaStorageVault.addItem({
-      type: "video",
-      title: `[${aspectRatio}] ${videoConfig.title}`,
-      prompt: promptText,
-      url: videoConfig.videoUrl,
-      thumbnailUrl: videoConfig.thumbnailUrl,
-      sizeBytes: isLongForm ? 48500000 : 9200000,
-      mimeType: "video/mp4",
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Activating Sovereign Neural Video Engine", status: "COMPLETED", detail: "Allocated WebCodecs hardware rendering cluster with 60FPS precision" },
-      { stepNumber: 2, totalSteps: 5, label: `Configuring Frame Canvas [${aspectRatio}]`, status: "COMPLETED", detail: `Target: ${aspectRatio} · Resolution: 4K Ultra HD · Duration: ${duration}` },
-      { stepNumber: 3, totalSteps: 5, label: "Acoustic Voiceover & Subtitles Synthesis", status: "COMPLETED", detail: "Voice: Aria Ultra-Realistic Female · Dynamic animated karaoke subtitles generated" },
-      { stepNumber: 4, totalSteps: 5, label: "Applying 8K Cinematic HDR Color Grade", status: "COMPLETED", detail: "Dynamic range balanced, volumetric motion blur applied" },
-      { stepNumber: 5, totalSteps: 5, label: "Encoding at 100,000x Realtime Speed", status: "COMPLETED", detail: "World #1 fastest export · Zero token charges · Ready in Media Vault" },
-    ];
-
-    const responseMarkdown = `### 🎬 World-Class Fastest Video & Image Creation Studio
-- **Project**: **"${promptText}"**
-- **Aspect Ratio**: **${aspectRatio}** (${isReel ? "Vertical Reel / Shorts" : aspectRatio === "16:9" ? "Cinematic Widescreen (YouTube/Commercial)" : aspectRatio})
-- **Duration**: **${duration}** (${isLongForm ? "Long-Form Commercial Presentation" : "High-Impact Commercial Spot"})
-- **Resolution**: **4K Ultra HD (60 FPS)** | **Export Pipeline**: **100,000x Turbo WebCodecs**
-- **Acoustic Voiceover**: Ultra-realistic Young Female Voice (\`${videoConfig.voiceoverLanguage}\`) with **Auto-Animated Subtitles**.
-- **Commercial Rights**: **100% Verified Commercial License** (Ready for client pitches, TV broadcast, or social ads).
-
-Your studio controls, aspect ratio switcher, timeline duration, and instant 4K preview player are loaded below!`;
-
-    const voiceSpokenText = isHindi
-      ? `Aapka video aur image creation studio ready hai. Maine ${aspectRatio} aspect ratio aur 4K quality me render initiate kar diya hai. Auto-subtitles aur young female voiceover enabled hain.`
-      : isBengali
-      ? `Apnar video ebong image studio ready. Ami ${aspectRatio} aspect ratio ebong 4K quality te render shuru korechi. Auto-subtitles ebong voiceover enabled ache.`
-      : `Your world-class video studio is armed. Rendered in ${aspectRatio} aspect ratio at 4K 60FPS with ultra-realistic young female narration and dynamic animated subtitles. Ready to edit or export.`;
-
-    return {
-      intent: "video_editor_studio",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "video_editor_studio",
-        data: videoConfig,
-      },
-    };
+  if (q.includes("edit video") || q.includes("create video") || q.includes("fastest video") || q.includes("long video") || q.includes("reel") || q.includes("9:16") || q.includes("16:9") || q.includes("commercial video") || q.includes("realistic video") || q.includes("edit image") || q.includes("photo edit") || q.includes("video studio") || q.includes("image studio") || q.includes("video creator") || q.includes("aspect ratio") || q.includes("subtitles")) {
+    return founderBlockedResponse("video_editor_studio", detectedLanguage, "The legacy media studio path contains sample assets only; no verified production render/export backend is connected.");
   }
 
-  if (q.includes("image") || q.includes("video") || q.includes("studio") || q.includes("media") || q.includes("generate image") || q.includes("generate video")) {
+if (q.includes("image") || q.includes("video") || q.includes("studio") || q.includes("media") || q.includes("generate image") || q.includes("generate video")) {
     const isVideo = q.includes("video");
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Booting AI Media Studio", status: "COMPLETED", detail: "Allocated supreme GPU rendering cluster" },

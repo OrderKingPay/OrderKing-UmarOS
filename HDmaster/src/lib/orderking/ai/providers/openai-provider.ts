@@ -14,7 +14,7 @@ import type {
 export class OpenAIProvider implements AIProvider {
   readonly id = "openai";
   readonly name = "OpenAI Omnimodal";
-  readonly supportedModels = ["gpt-4o", "gpt-4o-mini", "o3-mini"];
+  readonly supportedModels = ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"];
 
   private apiKey: string | undefined;
 
@@ -27,7 +27,7 @@ export class OpenAIProvider implements AIProvider {
   }
 
   private constructPayload(input: ChatRequest, stream: boolean): Record<string, unknown> {
-    const model = input.model || "gpt-4o";
+    const model = input.model || "gpt-5.6-sol";
     const messages: Array<Record<string, unknown>> = [];
     
     if (input.systemPrompt) {
@@ -97,6 +97,14 @@ export class OpenAIProvider implements AIProvider {
 
     const promptTokens = data.usage?.prompt_tokens || 0;
     const completionTokens = data.usage?.completion_tokens || 0;
+    const pricing: Record<string, { inputPerMillion: number; outputPerMillion: number }> = {
+      "gpt-5.6-sol": { inputPerMillion: 4, outputPerMillion: 20 },
+      "gpt-5.6-terra": { inputPerMillion: 2, outputPerMillion: 12 },
+      "gpt-5.6-luna": { inputPerMillion: 0.2, outputPerMillion: 1.2 },
+    };
+    const rate = pricing[payload.model as string] || pricing["gpt-5.6-sol"];
+    const estimatedCostUsd =
+      (promptTokens * rate.inputPerMillion + completionTokens * rate.outputPerMillion) / 1_000_000;
 
     return {
       provider: this.id,
@@ -107,7 +115,7 @@ export class OpenAIProvider implements AIProvider {
         promptTokens,
         completionTokens,
         totalTokens: promptTokens + completionTokens,
-        estimatedCostUsd: (promptTokens * 0.0025 + completionTokens * 0.01) / 1000,
+        estimatedCostUsd,
       },
       latencyMs: Date.now() - start,
     };

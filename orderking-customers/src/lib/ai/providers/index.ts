@@ -3,7 +3,6 @@ import { GoogleGeminiProvider } from "./gemini-provider.ts";
 import { OpenAIProvider } from "./openai-provider.ts";
 import { AnthropicProvider } from "./anthropic-provider.ts";
 import { XAIProvider } from "./xai-provider.ts";
-import { LocalDeterministicProvider } from "./local-deterministic-provider.ts";
 
 export * from "./provider-interface.ts";
 export * from "./gemini-provider.ts";
@@ -22,14 +21,12 @@ export interface ProviderStatus {
 
 export class ModelRouterService {
   private providers: Map<string, AIProvider> = new Map();
-  private localFallback = new LocalDeterministicProvider();
 
   constructor() {
     this.providers.set("gemini", new GoogleGeminiProvider());
     this.providers.set("openai", new OpenAIProvider());
     this.providers.set("anthropic", new AnthropicProvider());
     this.providers.set("xai", new XAIProvider());
-    this.providers.set("local_deterministic", this.localFallback);
   }
 
   getProvider(preferredId?: string): AIProvider {
@@ -38,14 +35,13 @@ export class ModelRouterService {
       if (p.isConfigured) return p;
     }
 
-    // Auto-fallback hierarchy
-    const priority = ["gemini", "anthropic", "openai", "xai"];
+    const priority = ["openai", "gemini", "anthropic", "xai"];
     for (const id of priority) {
       const p = this.providers.get(id);
       if (p && p.isConfigured) return p;
     }
 
-    return this.localFallback;
+    throw new Error("No external AI provider is configured for this deployment.");
   }
 
   listProviderStatuses(): ProviderStatus[] {
@@ -78,23 +74,11 @@ export class ModelRouterService {
         supportedModels: ["grok-2", "grok-3"],
         requiredEnvVar: "XAI_API_KEY",
       },
-      {
-        id: "local_deterministic",
-        name: "Local Sovereign Engine (Zero-Dep)",
-        isConfigured: true,
-        supportedModels: ["sovereign-ultra-deterministic"],
-        requiredEnvVar: "NONE (Always Active)",
-      },
     ];
   }
 
   async executeWithFallback(request: ChatRequest, preferredId?: string): Promise<ChatResponse> {
     const p = this.getProvider(preferredId);
-    try {
-      return await p.chat(request);
-    } catch (err) {
-      console.warn(`Provider ${p.id} failed, falling back to local deterministic:`, err);
-      return await this.localFallback.chat(request);
-    }
+    return await p.chat(request);
   }
 }

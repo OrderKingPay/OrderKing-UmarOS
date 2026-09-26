@@ -327,7 +327,7 @@ export function executeLocalSovereignCognitivePass(
 } {
   // No real AI model is connected — return honest guidance
   return {
-    text: `I don't have an AI provider connected right now, so I can't generate a real answer to your question.\n\nTo enable full AI chat, please add at least one API key in **Settings**:\n- **GEMINI_API_KEY** — Google Gemini (recommended, free tier available)\n- **OPENAI_API_KEY** — OpenAI GPT-4o\n- **ANTHROPIC_API_KEY** — Anthropic Claude\n- **XAI_API_KEY** — xAI Grok\n\nOnce configured, I'll answer any question using real AI — just like ChatGPT, Grok, or Gemini.`,
+    text: `I don't have an AI provider connected right now, so I can't generate a real answer to your question.\n\nTo enable full AI chat, please add at least one API key in **Settings**:\n- **GEMINI_API_KEY** — Google Gemini (recommended, free tier available)\n- **OPENAI_API_KEY** — OpenAI GPT-5.6 Sol\n- **ANTHROPIC_API_KEY** — Anthropic Claude\n- **XAI_API_KEY** — xAI Grok\n\nOnce configured, I'll answer any question using real AI — just like ChatGPT, Grok, or Gemini.`,
     executionSteps: [],
   };
 }
@@ -508,7 +508,7 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
  * 1. Checks engineering commands -> runs real workspace tools.
  * 2. Checks workforce/approval commands -> runs real DB queries.
  * 3. Checks active provider -> if connected, calls real model API with real streaming.
- * 4. If external provider missing key -> gracefully and truthfully executes via Sovereign Local Core.
+ * 4. If no external provider is configured or a provider fails, fail closed; never return a fabricated local answer.
  */
 export async function executeFounderAiChat(
   request: AiChatRequest,
@@ -623,7 +623,7 @@ export async function executeFounderAiChat(
     } else if (anthropicKey && (currentQuery.includes("code") || currentQuery.includes("architecture"))) {
       activeRecord = registry.find((m) => m.id === "claude-4-6-opus") || activeRecord;
     } else if (openaiKey) {
-      activeRecord = registry.find((m) => m.id === "gpt-5-6-omni") || activeRecord;
+      activeRecord = registry.find((m) => m.id === "gpt-5-6-sol") || activeRecord;
     } else if (geminiKey) {
       activeRecord = registry.find((m) => m.id === "gemini-2-5-pro") || activeRecord;
     } else if (xaiKey) {
@@ -643,11 +643,8 @@ export async function executeFounderAiChat(
 
     if (geminiKey) activeProvidersList.push({ name: "Google Gemini 2.0 Flash", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: "gemini-2.0-flash" });
     if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude 3.7", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: "claude-3-7-sonnet-20250219" });
-    if (openaiKey) activeProvidersList.push({ name: "OpenAI GPT-4o", id: "openai", provider: new OpenAIProvider(openaiKey), model: "gpt-4o" });
+    if (openaiKey) activeProvidersList.push({ name: "OpenAI GPT-5.6 Sol", id: "openai", provider: new OpenAIProvider(openaiKey), model: "gpt-5.6-sol" });
     if (xaiKey) activeProvidersList.push({ name: "xAI Grok 2", id: "xai", provider: new XAIProvider(xaiKey), model: "grok-2-1212" });
-
-    // Always include Sovereign Local Core
-    const localRes = executeLocalSovereignCognitivePass(currentQuery, request.messages, request.founderUpiVpa);
 
     if (activeProvidersList.length >= 2) {
       // Double Engine mode
@@ -664,7 +661,7 @@ export async function executeFounderAiChat(
         });
         primaryResponse = res1.text;
       } catch (e) {
-        primaryResponse = localRes.text;
+        throw new Error("Primary consensus provider failed.");
       }
       onStreamEvent?.({ type: "step", data: { stepNumber: 1, totalSteps: 2, label: `Engine 1 (${engine1.name}) Processing`, status: "COMPLETED", detail: "Primary generation complete." } });
 
@@ -715,15 +712,13 @@ export async function executeFounderAiChat(
       }
     }
 
-    // Default local fallback
-    onStreamEvent?.({ type: "delta", data: localRes.text });
-    onStreamEvent?.({ type: "done", data: { text: localRes.text } });
-
+    const blockedText = "Consensus is unavailable because fewer than two verified external AI providers are configured or the configured providers failed. No simulated response will be returned.";
+    onStreamEvent?.({ type: "error", data: { message: blockedText } });
     return {
-      text: localRes.text,
-      modelUsed: "sovereign-local-core",
-      provider: "Local Sovereign",
-      responders: ["Umar Sovereign Local Core"],
+      text: blockedText,
+      modelUsed: "none",
+      provider: "None Connected",
+      responders: [],
       executionSteps: [],
       latencyMs: Date.now() - startTime,
     };
@@ -840,27 +835,19 @@ export async function executeFounderAiChat(
             totalSteps: 4,
             label: "Local Core Fallback",
             status: "COMPLETED",
-            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). Seamlessly routing to Local Sovereign Core.`,
+            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). No fallback response will be generated.`,
           },
         });
       }
     }
   }
 
-  // 5. No external provider available — honest fallback
-  const localRes = executeLocalSovereignCognitivePass(currentQuery, request.messages, request.founderUpiVpa);
-  onStreamEvent?.({ type: "delta", data: localRes.text });
-  onStreamEvent?.({
-    type: "done",
-    data: {
-      text: localRes.text,
-      executionSteps: [],
-      modelUsed: "none",
-    },
-  });
+  // 5. No external provider available: fail closed.
+  const blockedText = "No verified external AI provider is configured for this deployment. Add a provider key and redeploy; no simulated or local fallback response will be returned.";
+  onStreamEvent?.({ type: "error", data: { message: blockedText } });
 
   return {
-    text: localRes.text,
+    text: blockedText,
     modelUsed: "none",
     provider: "None Connected",
     executionSteps: [],

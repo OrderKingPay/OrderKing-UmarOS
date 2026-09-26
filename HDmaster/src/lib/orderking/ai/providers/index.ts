@@ -62,9 +62,9 @@ export class ModelRouterService {
       },
       {
         id: "openai",
-        name: "OpenAI GPT-4o / o3-mini",
+        name: "OpenAI GPT-5.6 Sol",
         isConfigured: Boolean(process.env.OPENAI_API_KEY),
-        supportedModels: ["gpt-4o", "o3-mini"],
+        supportedModels: ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"],
         requiredEnvVar: "OPENAI_API_KEY",
       },
       {

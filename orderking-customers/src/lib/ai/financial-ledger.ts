@@ -43,44 +43,8 @@ export function assertReality(evidence: string[] | undefined): RealityAssertionR
   };
 }
 
-export const IMMUTABLE_FINANCIAL_LEDGER: FinancialEvent[] = [
-  {
-    id: "FEV-101",
-    type: "payment_confirmed",
-    amount: 49999,
-    currency: "INR",
-    provider: "UPI_DIRECT",
-    providerEventId: "UPI-ICICI-893472019482",
-    timestamp: "2026-09-20 18:42 IST",
-    verified: true,
-    clientName: "Apex Retailers Consortium",
-    description: "PROD-901 Turnkey FinTech POS License",
-  },
-  {
-    id: "FEV-102",
-    type: "invoice_created",
-    amount: 149999,
-    currency: "INR",
-    provider: "UPI_DIRECT",
-    providerEventId: "INV-RD-901",
-    timestamp: "2026-09-21 11:15 IST",
-    verified: true,
-    clientName: "Royal Darbar Palace",
-    description: "White-Label Direct Ordering App Milestone 1 & 2",
-  },
-  {
-    id: "FEV-103",
-    type: "payment_pending",
-    amount: 45000,
-    currency: "INR",
-    provider: "UPI_DIRECT",
-    providerEventId: "TXN-PENDING-4902",
-    timestamp: "2026-09-21 14:30 IST",
-    verified: true,
-    clientName: "Royal Darbar Palace",
-    description: "Milestone 1 Advance Payment (Awaiting Bank Webhook)",
-  },
-];
+export const IMMUTABLE_FINANCIAL_LEDGER: FinancialEvent[] = [];
+
 
 export interface TimeframeRevenueMetrics {
   timeframe: "TODAY" | "THIS_WEEK" | "THIS_MONTH" | "THIS_YEAR";

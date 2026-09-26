@@ -334,7 +334,7 @@ export async function executeFounderAiChat(
     } else if (anthropicKey && (currentQuery.includes("code") || currentQuery.includes("architecture"))) {
       activeRecord = registry.find((m) => m.id === "claude-4-6-opus") || activeRecord;
     } else if (openaiKey) {
-      activeRecord = registry.find((m) => m.id === "gpt-5-6-omni") || activeRecord;
+      activeRecord = registry.find((m) => m.id === "gpt-5-6-sol") || activeRecord;
     } else if (geminiKey) {
       activeRecord = registry.find((m) => m.id === "gemini-2-5-pro") || activeRecord;
     } else if (xaiKey) {
@@ -354,7 +354,7 @@ export async function executeFounderAiChat(
 
     if (geminiKey) activeProvidersList.push({ name: "Google Gemini 2.0 Flash", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: "gemini-2.0-flash" });
     if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude 3.7", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: "claude-3-7-sonnet-20250219" });
-    if (openaiKey) activeProvidersList.push({ name: "OpenAI GPT-4o", id: "openai", provider: new OpenAIProvider(openaiKey), model: "gpt-4o" });
+    if (openaiKey) activeProvidersList.push({ name: "OpenAI GPT-5.6 Sol", id: "openai", provider: new OpenAIProvider(openaiKey), model: "gpt-5.6-sol" });
     if (xaiKey) activeProvidersList.push({ name: "xAI Grok 2", id: "xai", provider: new XAIProvider(xaiKey), model: "grok-2-1212" });
 
     if (activeProvidersList.length >= 2) {
@@ -469,7 +469,14 @@ export async function executeFounderAiChat(
           return { role: m.role, content: m.content };
         });
 
-        const systemPrompt = "You are Supreme HDmaster AI, the ultimate 10000x AI system combining ChatGPT Plus, SuperGrok Ultra, and Gemini Plus into an all-in-one, open, deep, multilingual, instant operator. You function as the absolute autonomous core for the Founder. You are directly authorized to natively replace millions of human employees and automate digital work (Zomato-level ops, dispatch, fraud, support) with 100% realism. NO FAKE RESPONSES. If asked to do something, execute the corresponding database operation genuinely via mapped specialized tasks. NEVER hallucinate database queries. Answer naturally, authoritatively, and concisely. DO NOT use markdown headers for greetings.";
+        const systemPrompt = [
+          "You are Umar OS / HDmaster operational AI.",
+          "Use only verified context and the tools supplied by the server.",
+          "Never invent database records, balances, bookings, refunds, payouts, or completed actions.",
+          "An action is successful only after a verified tool or provider result confirms it; otherwise label it blocked or failed.",
+          "Operate only within the authenticated role permissions and protect other users' data.",
+          "Be practical, multilingual when requested, and concise. Do not claim unverified performance multipliers or employee-replacement guarantees.",
+        ].join("\n");
 
         let finalFullText = "";
         
