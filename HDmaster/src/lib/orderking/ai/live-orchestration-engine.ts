@@ -136,7 +136,7 @@ export class LiveOrchestrationEngine {
       name: "OpenAI",
       vendor: "OpenAI",
       isConfigured: Boolean(process.env.OPENAI_API_KEY),
-      activeModels: ["gpt-5-6-omni", "gpt-4o", "o3-mini"],
+      activeModels: ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"],
       costPer1kTokensUsd: { input: 0.0025, output: 0.01 },
       maxContextTokens: 128000,
       async executePrompt({ model, prompt }) {
