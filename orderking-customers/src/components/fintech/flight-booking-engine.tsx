@@ -88,13 +88,13 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
 
   // Booking Modal State
   const [selectedFlight, setSelectedFlight] = useState<FlightResult | null>(null);
-  const [addTravelInsurance, setAddTravelInsurance] = useState<boolean>(true);
+  const [addTravelInsurance, setAddTravelInsurance] = useState<boolean>(false);
   const [addMeal, setAddMeal] = useState<boolean>(false);
   const [addExtraBaggage, setAddExtraBaggage] = useState<boolean>(false);
-  const [passengerName, setPassengerName] = useState<string>("Hasan Choudhury");
-  const [passengerAge, setPassengerAge] = useState<string>("28");
+  const [passengerName, setPassengerName] = useState<string>("");
+  const [passengerAge, setPassengerAge] = useState<string>("");
   const [passengerGender, setPassengerGender] = useState<"Male" | "Female" | "Other">("Male");
-  const [contactMobile, setContactMobile] = useState<string>("9876543210");
+  const [contactMobile, setContactMobile] = useState<string>("");
   const [isBooking, setIsBooking] = useState<boolean>(false);
   const [flightResults, setFlightResults] = useState<FlightResult[]>([]);
 
