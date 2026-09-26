@@ -167,11 +167,11 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                   RESTAURANT AI
                 </span>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
-                  0% COMMISSION
+                  RESTAURANT AI
                 </span>
               </div>
               <span className="text-[11px] text-zinc-400 block mt-0.5">
-                Kitchen SLAs · Menu Management · Daily Net Settlements
+                Verified restaurant data · Operations · Menu · Settlements
               </span>
             </div>
           </div>
@@ -188,10 +188,10 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
         {/* Quick Suggestion Pills */}
         <div className="flex items-center gap-2 overflow-x-auto px-4 py-2 border-b border-zinc-800/80 bg-zinc-900/60 scrollbar-none">
           {[
-            { label: "💰 0% Commission Savings", query: "Show my settlement and commission savings" },
-            { label: "📋 Menu Availability", query: "Show my menu and availability" },
-            { label: "🍳 Kitchen Prep SLA", query: "Check kitchen prep SLA and delays" },
-            { label: "🚀 Growth Advice", query: "Give me growth ideas to increase repeat orders" },
+            { label: "💰 Settlement & Earnings", query: "Show my verified settlement and earnings data" },
+            { label: "📋 Menu Availability", query: "Show my current menu availability" },
+            { label: "🍳 Kitchen SLA", query: "Check verified kitchen prep SLA and delays" },
+            { label: "🚀 Growth Advice", query: "Give me evidence-based growth ideas from my restaurant data" },
           ].map((pill, idx) => (
             <button
               key={idx}
