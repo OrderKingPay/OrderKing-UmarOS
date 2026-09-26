@@ -77,54 +77,8 @@ export function calculateUnitEconomics(
 }
 
 // Initial Curated Opportunities with Truthful Accounting Statuses
-export const INITIAL_FINANCIAL_RECORDS: FinancialTruthRecord[] = [
-  {
-    id: "FIN-REC-001",
-    title: "White-Label Direct Ordering App & Fleet Integration",
-    clientName: "Royal Darbar Palace",
-    category: "client_services",
-    stage: "INVOICED",
-    estimatedValueInr: 149999,
-    invoicedAmountInr: 149999,
-    confirmedReceivedInr: 0, // 0 until confirmed by bank/UPI
-    economics: calculateUnitEconomics(149999, 0, 0, 450, 120, 2500),
-    sourceEvidence: "Direct founder field meeting in Karimganj pilot market.",
-    invoiceId: "INV-RD-901",
-    currency: "INR",
-    createdAt: "2026-09-21",
-  },
-  {
-    id: "FIN-REC-002",
-    title: "Autonomous AI Agent & Real-Time Voice Synthesis Lead",
-    clientName: "Austin AI Stealth Startup",
-    category: "freelance_contract",
-    stage: "APPLIED",
-    estimatedValueInr: 2688000, // $32,000 converted at ₹84/USD
-    invoicedAmountInr: 0,
-    confirmedReceivedInr: 0,
-    economics: calculateUnitEconomics(2688000, 10, 2, 1200, 450, 50000),
-    sourceEvidence: "Direct contract post via US Client Remote Network (Austin, TX).",
-    currency: "USD",
-    createdAt: "2026-09-22",
-  },
-  {
-    id: "FIN-REC-003",
-    title: "Sovereign FinTech POS Turnkey License #PROD-901",
-    clientName: "Apex Retailers Consortium",
-    category: "digital_product",
-    stage: "REVENUE_RECORDED",
-    estimatedValueInr: 49999,
-    invoicedAmountInr: 49999,
-    confirmedReceivedInr: 49999, // Confirmed actual revenue
-    economics: calculateUnitEconomics(49999, 0, 0, 200, 50, 500),
-    sourceEvidence: "Direct Escrow Settlement via Founder Direct Private Escrow (**4892).",
-    invoiceId: "INV-APEX-104",
-    paymentTxnRef: "UPI-ICICI-893472019482",
-    currency: "INR",
-    createdAt: "2026-09-20",
-    verifiedAt: "2026-09-20 18:42 IST",
-  },
-];
+export const INITIAL_FINANCIAL_RECORDS: FinancialTruthRecord[] = [];
+
 
 export interface FinancialTelemetrySummary {
   actualConfirmedRevenueInr: number;
