@@ -3223,30 +3223,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 </button>
               </div>
 
-              {/* Viewfinder simulation */}
+              {/* Active Viewfinder UI */}
               <div className="relative my-4 aspect-square w-full overflow-hidden rounded-xl border-2 border-dashed border-primary bg-black/80 flex flex-col items-center justify-center">
                 <div className="absolute inset-x-4 top-1/2 h-0.5 bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
                 <span className="text-4xl animate-bounce">🎯</span>
                 <p className="mt-2 text-xs text-white/80 font-medium">Align any BharatQR / UPI QR code</p>
-                <div className="mt-4 flex gap-1">
-                  {["Chai (₹20)", "Grocery (₹150)", "Fuel (₹500)"].map((preset) => {
-                    const [name, pAmt] = preset.split(" (₹");
-                    const amtVal = pAmt.replace(")", "");
-                    return (
-                      <button
-                        key={name}
-                        type="button"
-                        onClick={() => {
-                          setScanRecipient(`${name.toLowerCase()}@upi`);
-                          setScanAmount(amtVal);
-                        }}
-                        className="rounded-full bg-white/20 hover:bg-white/30 px-2 py-0.5 text-[10px] text-white font-semibold transition"
-                      >
-                        {preset}
-                      </button>
-                    );
-                  })}
-                </div>
+                
               </div>
 
               <form onSubmit={handleScanPaySubmit} className="space-y-3">
