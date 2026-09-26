@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { createTicketFn, listTicketsFn } from "@/lib/server/rider-fns";
+import { createTicketFn, listTicketsFn, riderAiSupportFn } from "@/lib/server/rider-fns";
 import type { TicketTopic } from "@/lib/rider/types";
 import { useEffect, useState, type FormEvent } from "react";
 
@@ -32,8 +32,9 @@ function Page() {
   const [tickets, setTickets] = useState<Awaited<ReturnType<typeof listTicketsFn>>>([]);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [aiResolution, setAiResolution] = useState<{ title: string; detail: string; actionText?: string } | null>(null);
-  const [compensationClaimed, setCompensationClaimed] = useState(false);
+  const [aiResolution, setAiResolution] = useState<string>("");
+  const [aiMessage, setAiMessage] = useState("");
+  const [aiPending, setAiPending] = useState(false);
 
   async function load() {
     try {
@@ -63,31 +64,20 @@ function Page() {
     }
   }
 
-  function handleQuickDispute(type: "cod" | "delay" | "breakdown" | "unreachable") {
-    if (type === "delay") {
-      setAiResolution({
-        title: "⚡ ₹50 Wait-Time Compensation Approved",
-        detail: "Merchant kitchen prep time exceeded 15 minutes. ₹50 has been credited directly to your daily earnings wallet.",
-        actionText: "Credited to Wallet",
-      });
-      setCompensationClaimed(true);
-    } else if (type === "cod") {
-      setAiResolution({
-        title: "🛡️ Cash-on-Delivery Discrepancy Protected",
-        detail: "Customer claim flagged. Our AI system has logged customer OTP verification. You are protected from deduction.",
-      });
-    } else if (type === "breakdown") {
-      setAiResolution({
-        title: "🔧 Vehicle Breakdown SOS Initiated",
-        detail: "Order has been broadcasted to the nearest active rider for handover. Your acceptance rate will not be impacted.",
-      });
-    } else if (type === "unreachable") {
-      setAiResolution({
-        title: "📞 Customer Unreachable Protocol",
-        detail: "Automated IVR call triggered to customer. If unanswered within 5 minutes, safe return protocol is authorized.",
-      });
+  async function askRiderAi() {
+    if (!aiMessage.trim()) return;
+    setAiPending(true);
+    setAiResolution("");
+    try {
+      const result = await riderAiSupportFn({ data: { message: aiMessage, locale: "en" } });
+      setAiResolution(result.text);
+    } catch (err) {
+      setError(errorMessage(err, "OpenAI rider support is unavailable. Create a support ticket for verified assistance."));
+    } finally {
+      setAiPending(false);
     }
   }
+
 
   return (
     <AppShell>
@@ -175,93 +165,40 @@ function Page() {
           </div>
         </Card>
 
-        {/* ⚡ 24x7 AI Rider Dispatch & Dispute Copilot */}
+        {/* Real OpenAI Rider Support */}
         <Card className="space-y-3 p-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold">🤖 1-Tap Instant Dispute Resolutions</h2>
-            <span className="text-[11px] text-muted-foreground">Zero human delay</span>
+            <h2 className="text-sm font-bold">🤖 OpenAI Rider Support</h2>
+            <span className="text-[11px] text-muted-foreground">Server-side · verified actions only</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Tap an issue for instant automated algorithmic resolution while on the road:
+            Describe a delivery, payment, vehicle, app, or safety issue. OpenAI can explain the next step; it cannot falsely claim that a platform action happened.
           </p>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <button
-              type="button"
-              onClick={() => handleQuickDispute("delay")}
-              className="flex items-center justify-between rounded-lg border border-border bg-surface p-3 text-left hover:bg-accent transition-colors"
-            >
-              <div>
-                <div className="text-xs font-bold">⏱️ Kitchen Prep Delay &gt; 15 mins</div>
-                <div className="text-[11px] text-muted-foreground">Claim ₹50 instant wait-time credit</div>
-              </div>
-              <Badge tone="online">{compensationClaimed ? "Claimed" : "Instant ₹50"}</Badge>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDispute("cod")}
-              className="flex items-center justify-between rounded-lg border border-border bg-surface p-3 text-left hover:bg-accent transition-colors"
-            >
-              <div>
-                <div className="text-xs font-bold">💵 Customer Refusing COD Cash</div>
-                <div className="text-[11px] text-muted-foreground">OTP verify &amp; protect wallet float</div>
-              </div>
-              <Badge tone="muted">Shield</Badge>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDispute("breakdown")}
-              className="flex items-center justify-between rounded-lg border border-border bg-surface p-3 text-left hover:bg-accent transition-colors"
-            >
-              <div>
-                <div className="text-xs font-bold">🛵 Bike Breakdown / Flat Tyre</div>
-                <div className="text-[11px] text-muted-foreground">Auto re-dispatch without penalty</div>
-              </div>
-              <Badge tone="muted">Re-route</Badge>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDispute("unreachable")}
-              className="flex items-center justify-between rounded-lg border border-border bg-surface p-3 text-left hover:bg-accent transition-colors"
-            >
-              <div>
-                <div className="text-xs font-bold">📞 Customer Not Answering Call</div>
-                <div className="text-[11px] text-muted-foreground">Trigger 3-call automated IVR bot</div>
-              </div>
-              <Badge tone="muted">Auto IVR</Badge>
-            </button>
+          <div className="flex gap-2">
+            <Input value={aiMessage} onChange={(e) => setAiMessage(e.target.value)} placeholder="What problem are you facing right now?" />
+            <Button type="button" disabled={aiPending || !aiMessage.trim()} onClick={() => void askRiderAi()}>{aiPending ? "Thinking…" : "Ask AI"}</Button>
           </div>
+          {aiResolution ? <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm whitespace-pre-wrap">{aiResolution}</div> : null}
+          <Button type="button" variant="outline" className="w-full" onClick={() => { setTopic("OTHER"); setMessage(aiMessage); document.getElementById("rider-support-ticket")?.scrollIntoView({ behavior: "smooth" }); }}>
+            Create verified support ticket
+          </Button>
+        </Card>
 
-          {/* AI Dispute Resolution Banner */}
-          {aiResolution ? (
-            <div className="mt-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">{aiResolution.title}</span>
-                {aiResolution.actionText ? (
-                  <span className="rounded bg-emerald-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                    {aiResolution.actionText}
-                  </span>
-                ) : null}
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">{aiResolution.detail}</p>
-            </div>
-          ) : null}
-
-          {/* Direct 24x7 WhatsApp SOS */}
-          <div className="pt-1">
-            <a
-              href="https://wa.me/919223166166?text=URGENT%20RIDER%20SOS:%20Delivery%20Partner%20assistance%20needed%20immediately"
-              target="_blank"
-              rel="noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] p-2.5 text-xs font-bold text-white hover:bg-[#1EBE5D] transition-colors"
-            >
-              <span>💬</span>
-              <span>Direct 24x7 WhatsApp Rider SOS Escalation</span>
-            </a>
+        {/* Emergency & statutory escalation */}
+        <Card className="border-amber-500/30 bg-amber-500/5 p-4">
+          <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+            <span className="text-lg">⚖️</span>
+            <h2 className="text-sm font-bold tracking-tight">Safety & statutory escalation</h2>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">Use emergency services for immediate danger; use platform support for operational disputes.</p>
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <a href="tel:112" className="rounded-lg border border-red-200 bg-red-50 p-2.5 text-xs font-bold text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">🚨 112 Emergency SOS</a>
+            <a href="tel:1930" className="rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-xs font-bold text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">💳 1930 Cyber Fraud</a>
           </div>
         </Card>
 
         {/* Traditional Ticket Logging */}
-        <Card>
+        <Card id="rider-support-ticket">
           <form onSubmit={submit} className="space-y-3">
             <Label>{t("createTicket")}</Label>
             <select
