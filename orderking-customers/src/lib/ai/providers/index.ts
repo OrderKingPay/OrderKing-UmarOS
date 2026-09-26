@@ -3,7 +3,6 @@ import { GoogleGeminiProvider } from "./gemini-provider.ts";
 import { OpenAIProvider } from "./openai-provider.ts";
 import { AnthropicProvider } from "./anthropic-provider.ts";
 import { XAIProvider } from "./xai-provider.ts";
-import { LocalDeterministicProvider } from "./local-deterministic-provider.ts";
 
 export * from "./provider-interface.ts";
 export * from "./gemini-provider.ts";
@@ -22,14 +21,11 @@ export interface ProviderStatus {
 
 export class ModelRouterService {
   private providers: Map<string, AIProvider> = new Map();
-  private localFallback = new LocalDeterministicProvider();
-
   constructor() {
     this.providers.set("gemini", new GoogleGeminiProvider());
     this.providers.set("openai", new OpenAIProvider());
     this.providers.set("anthropic", new AnthropicProvider());
     this.providers.set("xai", new XAIProvider());
-    this.providers.set("local_deterministic", this.localFallback);
   }
 
   getProvider(preferredId?: string): AIProvider {
@@ -38,14 +34,14 @@ export class ModelRouterService {
       if (p.isConfigured) return p;
     }
 
-    // Auto-fallback hierarchy
-    const priority = ["gemini", "anthropic", "openai", "xai"];
+    // External-provider-only hierarchy. Local deterministic code is not presented as a language-model fallback.
+    const priority = ["openai", "anthropic", "gemini", "xai"];
     for (const id of priority) {
       const p = this.providers.get(id);
       if (p && p.isConfigured) return p;
     }
 
-    return this.localFallback;
+    throw new Error("No external AI provider is configured. Configure OpenAI, Anthropic, Gemini, or xAI before using AI chat.");
   }
 
   listProviderStatuses(): ProviderStatus[] {
@@ -66,9 +62,9 @@ export class ModelRouterService {
       },
       {
         id: "openai",
-        name: "OpenAI GPT-4o / o3-mini",
+        name: "OpenAI GPT-5.6 Luna / GPT-5.6 Sol",
         isConfigured: Boolean(process.env.OPENAI_API_KEY),
-        supportedModels: ["gpt-4o", "o3-mini"],
+        supportedModels: ["gpt-5.6-luna", "gpt-5.6-sol"],
         requiredEnvVar: "OPENAI_API_KEY",
       },
       {
@@ -93,8 +89,15 @@ export class ModelRouterService {
     try {
       return await p.chat(request);
     } catch (err) {
-      console.warn(`Provider ${p.id} failed, falling back to local deterministic:`, err);
-      return await this.localFallback.chat(request);
+      console.warn(`Provider ${p.id} failed; trying remaining external providers:`, err);
+      const priority = ["openai", "anthropic", "gemini", "xai"];
+      for (const id of priority) {
+        if (id === p.id) continue;
+        const candidate = this.providers.get(id);
+        if (!candidate?.isConfigured) continue;
+        try { return await candidate.chat(request); } catch (candidateError) { console.warn(`Provider ${id} failed:`, candidateError); }
+      }
+      throw new Error("All configured external AI providers failed. No simulated/local AI response is permitted.");
     }
   }
 }
