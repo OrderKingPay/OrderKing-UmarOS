@@ -12,83 +12,56 @@ export class UberCabProvider implements TravelProvider {
   supportedModes = ["CAB"] as ("FLIGHT" | "TRAIN" | "BUS" | "HOTEL" | "CAB")[];
 
   isAvailable(): boolean {
-    return true;
+    return Boolean(process.env.CAB_PROVIDER_API_URL?.trim() && process.env.CAB_PROVIDER_API_TOKEN?.trim());
   }
 
-  async search(query: TravelSearchQuery): Promise<NormalizedTravelResult[]> {
+  async search(query: TravelSearchQuery): Promise<NormalizedTravelResult[] | { error: string; blocked: boolean; details?: string }> {
     if (query.mode !== "CAB") return [];
-    
-    // Simulate real API latency
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    if (!this.isAvailable()) {
+      return {
+        error: "EXTERNAL_PROVIDER_BLOCKED",
+        blocked: true,
+        details: "No licensed cab provider API is configured. No synthetic driver, ETA, vehicle, fare, or booking data is returned.",
+      };
+    }
 
-    const baseFare = 250 + Math.random() * 300;
+    const response = await fetch(process.env.CAB_PROVIDER_API_URL!, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.CAB_PROVIDER_API_TOKEN!}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "search", query }),
+    });
 
-    return [
-      {
-        id: `cab_mini_${Date.now()}`,
-        providerId: this.id,
-        mode: "CAB",
-        origin: { code: query.originCode, name: query.originCode },
-        destination: { code: query.destinationCode, name: query.destinationCode },
-        departureTime: "Now",
-        arrivalTime: "3 mins",
-        carrier: { code: "UBER_X", name: "Tata Tiago / Swift (Mini)" },
-        price: { amount: Math.round(baseFare), currency: "INR" },
-        rawProviderData: {
-          category: "Mini",
-          model: "Tata Tiago / Swift",
-          driverName: "Raj Kumar",
-          rating: 4.7,
-          etaMins: 3,
-        }
-      },
-      {
-        id: `cab_sedan_${Date.now()}`,
-        providerId: this.id,
-        mode: "CAB",
-        origin: { code: query.originCode, name: query.originCode },
-        destination: { code: query.destinationCode, name: query.destinationCode },
-        departureTime: "Now",
-        arrivalTime: "5 mins",
-        carrier: { code: "UBER_PREMIER", name: "Dzire / Etios (Sedan)" },
-        price: { amount: Math.round(baseFare * 1.3), currency: "INR" },
-        rawProviderData: {
-          category: "Sedan",
-          model: "Dzire / Etios",
-          driverName: "Mohammed Ali",
-          rating: 4.9,
-          etaMins: 5,
-        }
-      },
-      {
-        id: `cab_suv_${Date.now()}`,
-        providerId: this.id,
-        mode: "CAB",
-        origin: { code: query.originCode, name: query.originCode },
-        destination: { code: query.destinationCode, name: query.destinationCode },
-        departureTime: "Now",
-        arrivalTime: "8 mins",
-        carrier: { code: "UBER_XL", name: "Innova / Ertiga (SUV)" },
-        price: { amount: Math.round(baseFare * 1.8), currency: "INR" },
-        rawProviderData: {
-          category: "SUV",
-          model: "Innova / Ertiga",
-          driverName: "Sandeep Singh",
-          rating: 4.8,
-          etaMins: 8,
-        }
-      }
-    ];
+    const payload = await response.json().catch(() => ({})) as { results?: NormalizedTravelResult[]; error?: string };
+    if (!response.ok) {
+      return { error: "EXTERNAL_PROVIDER_ERROR", blocked: true, details: payload.error ?? `Cab provider returned HTTP ${response.status}.` };
+    }
+    return Array.isArray(payload.results) ? payload.results : [];
   }
 
   async book(request: TravelBookingRequest): Promise<TravelBookingResponse> {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    return {
-      success: true,
-      bookingId: `UBER-${Math.random().toString(36).substring(7).toUpperCase()}`,
-      pnr: `CAB-${Math.floor(Math.random() * 10000)}`,
-      status: "CONFIRMED",
-      message: "Driver assigned successfully via Uber/Ola.",
-    };
+    if (!this.isAvailable()) {
+      return {
+        success: false,
+        status: "BLOCKED_BY_EXTERNAL_PROVIDER",
+        error: "No licensed cab provider booking API is configured. No driver assignment or booking reference was created.",
+      };
+    }
+
+    const response = await fetch(process.env.CAB_PROVIDER_API_URL!, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.CAB_PROVIDER_API_TOKEN!}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "book", request }),
+    });
+    const payload = await response.json().catch(() => ({})) as TravelBookingResponse;
+    if (!response.ok) {
+      return { success: false, status: "FAILED", error: payload.error ?? `Cab provider returned HTTP ${response.status}.` };
+    }
+    return payload;
   }
 }
