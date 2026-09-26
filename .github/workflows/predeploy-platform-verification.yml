@@ -1,0 +1,56 @@
+name: Predeploy Platform Verification
+
+on:
+  push:
+    branches:
+      - "predeploy/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: HDmaster
+            path: HDmaster
+          - app: customers
+            path: orderking-customers
+          - app: partners
+            path: orderking-partners
+          - app: riders
+            path: orderking-riders
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.path }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ matrix.path }}/package-lock.json
+
+      - name: Install exact dependency graph
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Production build
+        run: npm run build
+
+      - name: Contract sanity
+        run: |
+          node -e "const p=require('./package.json'); if(!p.scripts?.build) throw new Error('Missing build script'); if(!p.scripts?.typecheck) throw new Error('Missing typecheck script'); console.log('Verified', p.name)"
