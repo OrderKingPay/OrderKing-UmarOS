@@ -54,54 +54,72 @@ export const addStaff = createServerFn({ method: "POST" }).middleware([authMiddl
   });
 });
 
-export const askAssistant = createServerFn({ method: "POST" }).middleware([authMiddleware]).validator((d: { restaurantId?: string; question: string }) => d).handler(async ({ context, data }) => {
-  return withVendor(context.userId, data.restaurantId, "assistant.use", async (sql, ctx) => {
-    if (!platformConfig.featureFlags.restaurant_ai) return { ok: false as const, error: "NOT_CONNECTED", text: "Assistant is turned off." };
-    const apiKey = process.env.XAI_API_KEY; const question = data.question.trim().slice(0, 500); if (!question) throw new Error("Ask a question");
-    const today = await sql<{ orders: number; delivered: number; pending: number; cancelled: number; rejected: number; sales_paise: number; payable_paise: number; restaurant_discount_paise: number; platform_discount_paise: number; commission_paise: number }>`select count(*)::int as orders, count(*) filter (where state = 'DELIVERED')::int as delivered, count(*) filter (where state = 'PLACED')::int as pending, count(*) filter (where state = 'CANCELLED')::int as cancelled, count(*) filter (where state = 'REJECTED')::int as rejected, coalesce(sum(customer_total_paise) filter (where state = 'DELIVERED'),0)::int as sales_paise, coalesce(sum(restaurant_payable_paise) filter (where state = 'DELIVERED'),0)::int as payable_paise, coalesce(sum(restaurant_discount_paise),0)::int as restaurant_discount_paise, coalesce(sum(platform_funded_discount_paise),0)::int as platform_discount_paise, coalesce(sum(commission_paise) filter (where state = 'DELIVERED'),0)::int as commission_paise from orders where restaurant_id = ${ctx.restaurantId} and placed_at >= date_trunc('day', now())`;
-    const items = await sql<{ name: string; qty: number }>`select oi.item_name as name, sum(oi.quantity)::int as qty from order_items oi join orders o on o.id = oi.order_id where o.restaurant_id = ${ctx.restaurantId} and o.placed_at >= date_trunc('day', now()) group by oi.item_name order by qty desc limit 8`;
-    const unavailable = await sql<{ name: string; status: string }>`select i.name, a.status from item_availability a join items i on i.id = a.item_id where a.restaurant_id = ${ctx.restaurantId} and a.status <> 'available'`;
-    const hours = await sql<{ hour: number; c: number }>`select extract(hour from placed_at at time zone 'Asia/Kolkata')::int as hour, count(*)::int as c from orders where restaurant_id = ${ctx.restaurantId} and placed_at >= now() - interval '7 days' group by 1 order by c desc limit 5`;
-    const authorized = { dataLabel: ctx.dataLabel, restaurantName: ctx.restaurantName, verificationStatus: ctx.verificationStatus, today: today[0] ?? { orders: 0, delivered: 0, pending: 0, cancelled: 0, rejected: 0, sales_paise: 0, payable_paise: 0, restaurant_discount_paise: 0, platform_discount_paise: 0, commission_paise: 0 }, topItemsToday: items, unavailableItems: unavailable, busyHoursLast7Days: hours, note: "Amounts are integer paise. Divide by 100 for rupees. Do not invent any number not in this object." };
-    await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'user', ${question})`;
-    if (!apiKey) {
-      const qLower = question.toLowerCase();
-      let text = "";
-      const tData = authorized.today;
-      const salesRupees = (tData.sales_paise / 100).toLocaleString("en-IN");
-      const payableRupees = (tData.payable_paise / 100).toLocaleString("en-IN");
-
-      if (qLower.includes("today") || qLower.includes("order") || qLower.includes("sales") || qLower.includes("earning")) {
-        text = `📊 **Today's Kitchen Performance for ${authorized.restaurantName}:**\n• Total Orders: ${tData.orders}\n• Delivered: ${tData.delivered}\n• Pending/Cooking: ${tData.pending}\n• Cancelled/Rejected: ${tData.cancelled + tData.rejected}\n• Customer Sales: ₹${salesRupees}\n• Net Restaurant Payable: ₹${payableRupees} (after 10% commission)`;
-      } else if (qLower.includes("settle") || qLower.includes("payout") || qLower.includes("payment") || qLower.includes("bank")) {
-        text = `💳 **OrderKing Settlement Cycle:**\n• Payouts occur **weekly every Wednesday** for all orders delivered between Monday and Sunday.\n• Net earnings are transferred directly via NEFT/UPI to your verified bank account.\n• Full transparent statements with statutory GST (5%), TCS (0.5%), and TDS (0.1%) are available under the **Settlements** tab.`;
-      } else if (qLower.includes("item") || qLower.includes("top") || qLower.includes("popular") || qLower.includes("dish")) {
-        const topList = authorized.topItemsToday.length > 0
-          ? authorized.topItemsToday.map((it, idx) => `${idx + 1}. **${it.name}** (${it.qty} sold)`).join("\n")
-          : "No dish orders placed yet today.";
-        text = `🍲 **Top Selling Dishes Today:**\n${topList}`;
-      } else if (qLower.includes("stock") || qLower.includes("86") || qLower.includes("unavailable")) {
-        const unavailList = authorized.unavailableItems.length > 0
-          ? authorized.unavailableItems.map((it) => `• **${it.name}** (${it.status})`).join("\n")
-          : "All menu items are currently marked available.";
-        text = `⚠️ **Unavailable / Out of Stock Items:**\n${unavailList}\n\nYou can toggle item availability instantly in the **Menu** tab.`;
-      } else if (qLower.includes("print") || qLower.includes("thermal") || qLower.includes("esc/pos") || qLower.includes("kot")) {
-        text = `🖨️ **Thermal Printer & KOT Setup Guide:**\n• **Hardware Support:** Works with any 58mm or 80mm ESC/POS printer (Epson, TVS, Star, NGX, Everycom).\n• **Network / Wi-Fi:** Enter your printer's LAN IP (e.g. 192.168.1.100) and port (default 9100) in **Settings > Hardware Gateway**.\n• **Bluetooth:** Click "Scan & Pair Device" to connect wireless Bluetooth thermal printers directly from your tablet/phone.\n• **Dual KOT:** Toggle "Dual Routing" to automatically split Food KOTs to the kitchen and Drink KOTs to the counter.\n• **Test Print:** You can dispatch a test receipt at any time in **Settings > Hardware Gateway**!`;
-      } else if (qLower.includes("pos") || qLower.includes("petpooja") || qLower.includes("urbanpiper") || qLower.includes("posist") || qLower.includes("dotpe") || qLower.includes("table")) {
-        text = `🏬 **Universal POS Integration Guide:**\n• **Petpooja:** Enter your Restaurant Key & Outlet ID in **Settings > Hardware Gateway** and copy your OrderKing Webhook URL into the Petpooja Developer Portal.\n• **UrbanPiper:** Connect your Hub API Key and Store ID to route OrderKing, Zomato, and Swiggy into one billing terminal.\n• **Restroworks (POSist) & DotPe:** Enter your Merchant Key and Secret Token for live KDS order injection.\n• **Any Custom POS:** Use our universal REST Webhook: \`https://api.orderking.in/v1/pos/webhook/${ctx.restaurantId}\` to connect any legacy billing system.\n• Full status and 1-click test ping are available in **Settings > Hardware Gateway**!`;
-      } else if (qLower.includes("rush") || qLower.includes("pause") || qLower.includes("time") || qLower.includes("prep")) {
-        text = `🔥 **Rush Hour & Pause Controls:**\n• During high peak traffic, click **"🔥 Rush Hour (+10m)"** on your Dashboard to automatically add a 10-minute prep buffer.\n• To stop receiving new orders temporarily, click **"⏸️ Pause Orders"** on your Dashboard.`;
-      } else {
-        text = `👋 Hello! I am your OrderKing Partner Kitchen Assistant.\n\nHere is your current status for **${authorized.restaurantName}**:\n• Today: ${tData.orders} orders (₹${salesRupees} sales)\n• Delivered: ${tData.delivered} | Pending: ${tData.pending}\n\nYou can ask me about **today's sales**, **weekly settlements**, **thermal printers & KOT**, **Petpooja / UrbanPiper POS**, **top dishes**, **out-of-stock items**, or **rush controls**!`;
+export const askAssistant = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string; question: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "assistant.use", async (sql, ctx) => {
+      if (!platformConfig.featureFlags.restaurant_ai) {
+        return { ok: false as const, error: "NOT_CONNECTED", text: "Restaurant AI is disabled." };
       }
 
+      const question = data.question.trim().slice(0, 1000);
+      if (!question) throw new Error("Ask a question");
+
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        return {
+          ok: false as const,
+          error: "AI_PROVIDER_NOT_CONFIGURED",
+          text: "Restaurant AI is not configured on this deployment. No simulated answer will be shown.",
+        };
+      }
+
+      const today = await sql<{ orders: number; delivered: number; pending: number; cancelled: number; rejected: number; sales_paise: number; payable_paise: number; restaurant_discount_paise: number; platform_discount_paise: number; commission_paise: number }>`select count(*)::int as orders, count(*) filter (where state = 'DELIVERED')::int as delivered, count(*) filter (where state = 'PLACED')::int as pending, count(*) filter (where state = 'CANCELLED')::int as cancelled, count(*) filter (where state = 'REJECTED')::int as rejected, coalesce(sum(customer_total_paise) filter (where state = 'DELIVERED'),0)::int as sales_paise, coalesce(sum(restaurant_payable_paise) filter (where state = 'DELIVERED'),0)::int as payable_paise, coalesce(sum(restaurant_discount_paise),0)::int as restaurant_discount_paise, coalesce(sum(platform_funded_discount_paise),0)::int as platform_discount_paise, coalesce(sum(commission_paise) filter (where state = 'DELIVERED'),0)::int as commission_paise from orders where restaurant_id = ${ctx.restaurantId} and placed_at >= date_trunc('day', now())`;
+      const items = await sql<{ name: string; qty: number }>`select oi.item_name as name, sum(oi.quantity)::int as qty from order_items oi join orders o on o.id = oi.order_id where o.restaurant_id = ${ctx.restaurantId} and o.placed_at >= date_trunc('day', now()) group by oi.item_name order by qty desc limit 8`;
+      const unavailable = await sql<{ name: string; status: string }>`select i.name, a.status from item_availability a join items i on i.id = a.item_id where a.restaurant_id = ${ctx.restaurantId} and a.status <> 'available'`;
+      const hours = await sql<{ hour: number; c: number }>`select extract(hour from placed_at at time zone 'Asia/Kolkata')::int as hour, count(*)::int as c from orders where restaurant_id = ${ctx.restaurantId} and placed_at >= now() - interval '7 days' group by 1 order by c desc limit 5`;
+
+      const snapshot = {
+        dataLabel: ctx.dataLabel,
+        restaurantName: ctx.restaurantName,
+        verificationStatus: ctx.verificationStatus,
+        today: today[0] ?? { orders: 0, delivered: 0, pending: 0, cancelled: 0, rejected: 0, sales_paise: 0, payable_paise: 0, restaurant_discount_paise: 0, platform_discount_paise: 0, commission_paise: 0 },
+        topItemsToday: items,
+        unavailableItems: unavailable,
+        busyHoursLast7Days: hours,
+      };
+
+      await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'user', ${question})`;
+
+      const response = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: "gpt-5.6",
+          input: [
+            {
+              role: "system",
+              content: "You are OrderKing Restaurant AI. Answer only from the authorized restaurant snapshot supplied by the server. Never invent metrics, prices, policies, integrations, refunds, payouts, or actions. You may recommend actions, but do not claim an action was executed unless the platform confirms it. Protect other restaurants and customer privacy. Amounts ending in _paise are integer paise; convert to INR only when useful.",
+            },
+            {
+              role: "user",
+              content: `Authorized restaurant snapshot:\n${JSON.stringify(snapshot)}\n\nRestaurant question:\n${question}`,
+            },
+          ],
+          max_output_tokens: 700,
+        }),
+      });
+
+      if (!response.ok) {
+        return { ok: false as const, error: "OPENAI_REQUEST_FAILED", text: `Restaurant AI unavailable (provider HTTP ${response.status}).` };
+      }
+
+      const body = await response.json() as { output_text?: string };
+      const text = body.output_text?.trim();
+      if (!text) return { ok: false as const, error: "EMPTY_AI_RESPONSE", text: "Restaurant AI returned no answer." };
+
       await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'assistant', ${text})`;
-      return { ok: true as const, text, snapshot: authorized };
-    }
-    const res = await fetch("https://api.x.ai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` }, body: JSON.stringify({ model: "grok-4.5", max_tokens: 500, messages: [{ role: "system", content: "You are the Order King Partner kitchen assistant. You may only use the JSON snapshot of THIS restaurant. Never invent financial figures. If a number is missing, say it is not in the authorised data. Never mention other restaurants or private customer names. Amounts are integer paise. Speak plainly for a small restaurant owner in Assam. Label simulated data as simulated." }, { role: "user", content: `Authorised snapshot:\n${JSON.stringify(authorized)}\n\nQuestion: ${question}` }] }) });
-    if (!res.ok) return { ok: false as const, error: "NOT_CONNECTED", text: `Assistant unavailable (${res.status}).` };
-    const body = (await res.json()) as { choices?: { message?: { content?: string } }[] }; const text = body.choices?.[0]?.message?.content ?? "No answer.";
-    await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'assistant', ${text})`;
-    return { ok: true as const, text, snapshot: authorized };
+      return { ok: true as const, text, snapshot };
+    });
   });
-});
