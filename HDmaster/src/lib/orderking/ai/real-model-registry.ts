@@ -199,21 +199,21 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     },
     {
       id: "gpt-5-6-omni",
-      displayName: "OpenAI GPT-4o / o3-mini",
+      displayName: "OpenAI GPT-5.6 Sol / Terra / Luna",
       provider: "OpenAI",
-      realApiId: "gpt-4o",
+      realApiId: "gpt-5.6-sol",
       connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
       authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "OPENAI_API_KEY",
       supportedModalities: ["text", "vision", "code", "file"],
-      contextWindow: "128k tokens",
+      contextWindow: "1.05M tokens",
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
       measuredLatencyMs: openaiKey ? 165 : 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
-      description: "OpenAI omnimodal flagship engine supporting function calling, code generation, and low-latency voice. Connect via OPENAI_API_KEY.",
+      description: "OpenAI GPT-5.6 family. Sol is the flagship for complex work; Terra balances intelligence and cost; Luna is optimized for high-volume workloads. Connect via OPENAI_API_KEY.",
       capabilities: {
         canStream: true,
         canProcessImages: true,
@@ -343,7 +343,12 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
       });
       testSuccess = res.ok;
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      realModelReturned = "gpt-4o";
+      const body = (await res.json()) as { data?: Array<{ id?: string }> };
+      const available = new Set((body.data ?? []).map((m) => m.id).filter((id): id is string => Boolean(id)));
+      if (!available.has(target.realApiId)) {
+        throw new Error(`Configured OpenAI model ${target.realApiId} is not available to this API key.`);
+      }
+      realModelReturned = target.realApiId;
     } else if (target.provider === "Anthropic") {
       const res = await fetch("https://api.anthropic.com/v1/models", {
         method: "GET",
