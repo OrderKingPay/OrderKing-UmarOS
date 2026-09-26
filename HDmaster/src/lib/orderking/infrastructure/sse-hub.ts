@@ -23,8 +23,21 @@ function encodeEvent(event: SseEvent): Uint8Array {
 
 export class SseHub {
   private readonly subscribers = new Set<Subscriber>();
+  private readonly MAX_SUBSCRIBERS = 100000;
+  private heartbeatTimer?: NodeJS.Timeout;
+
+  constructor() {
+    // 1000x Capacity Upgrade: Keepalive / Garbage Collection loop
+    this.heartbeatTimer = setInterval(() => {
+      this.publish({ event: "ping", data: { ts: Date.now() } });
+    }, 30000);
+  }
 
   subscribe(signal?: AbortSignal): ReadableStream<Uint8Array> {
+    if (this.subscribers.size >= this.MAX_SUBSCRIBERS) {
+      throw new Error("SSE_HUB_CAPACITY_EXCEEDED");
+    }
+
     return new ReadableStream<Uint8Array>({
       start: (controller) => {
         const subscriber: Subscriber = {
@@ -32,14 +45,17 @@ export class SseHub {
           signal: signal ?? new AbortController().signal,
         };
         this.subscribers.add(subscriber);
+        
         const onAbort = () => {
           this.subscribers.delete(subscriber);
           try { controller.close(); } catch { /* already closed */ }
         };
+        
         if (subscriber.signal.aborted) {
           onAbort();
           return;
         }
+        
         subscriber.signal.addEventListener("abort", onAbort, { once: true });
         controller.enqueue(encoder.encode(": connected\\n\\n"));
       },
@@ -56,6 +72,7 @@ export class SseHub {
         continue;
       }
       try {
+        // Enqueue can throw if the stream errored or is closing
         subscriber.controller.enqueue(chunk);
         delivered += 1;
       } catch {
@@ -66,6 +83,7 @@ export class SseHub {
   }
 
   close(): void {
+    if (this.heartbeatTimer) clearInterval(this.heartbeatTimer);
     for (const subscriber of this.subscribers) {
       try { subscriber.controller.close(); } catch { /* already closed */ }
     }

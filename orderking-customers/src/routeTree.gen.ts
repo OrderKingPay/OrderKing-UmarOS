@@ -29,6 +29,7 @@ import { Route as LegalTermsRouteImport } from './routes/legal/terms'
 import { Route as OrdersIndexRouteImport } from './routes/orders/index'
 import { Route as OrdersIdRouteImport } from './routes/orders/$id'
 import { Route as RSlugRouteImport } from './routes/r/$slug'
+import { Route as TrackingDispatchJobIdRouteImport } from './routes/tracking.$dispatchJobId'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/settings'
 import { Route as ApiAdminTestConnectionRouteImport } from './routes/api/admin/test-connection'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
@@ -135,6 +136,11 @@ const RSlugRoute = RSlugRouteImport.update({
   path: '/r/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrackingDispatchJobIdRoute = TrackingDispatchJobIdRouteImport.update({
+  id: '/tracking/$dispatchJobId',
+  path: '/tracking/$dispatchJobId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
   id: '/api/admin/settings',
   path: '/api/admin/settings',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/orders/$id': typeof OrdersIdRoute
   '/r/$slug': typeof RSlugRoute
+  '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
   '/account/': typeof AccountIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/orders/$id': typeof OrdersIdRoute
   '/r/$slug': typeof RSlugRoute
+  '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
   '/account': typeof AccountIndexRoute
   '/orders': typeof OrdersIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
@@ -235,6 +243,7 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/orders/$id': typeof OrdersIdRoute
   '/r/$slug': typeof RSlugRoute
+  '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
   '/account/': typeof AccountIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/orders/$id'
     | '/r/$slug'
+    | '/tracking/$dispatchJobId'
     | '/account/'
     | '/orders/'
     | '/api/admin/settings'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/orders/$id'
     | '/r/$slug'
+    | '/tracking/$dispatchJobId'
     | '/account'
     | '/orders'
     | '/api/admin/settings'
@@ -318,6 +329,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/orders/$id'
     | '/r/$slug'
+    | '/tracking/$dispatchJobId'
     | '/account/'
     | '/orders/'
     | '/api/admin/settings'
@@ -346,6 +358,7 @@ export interface RootRouteChildren {
   LegalTermsRoute: typeof LegalTermsRoute
   OrdersIdRoute: typeof OrdersIdRoute
   RSlugRoute: typeof RSlugRoute
+  TrackingDispatchJobIdRoute: typeof TrackingDispatchJobIdRoute
   AccountIndexRoute: typeof AccountIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
@@ -497,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tracking/$dispatchJobId': {
+      id: '/tracking/$dispatchJobId'
+      path: '/tracking/$dispatchJobId'
+      fullPath: '/tracking/$dispatchJobId'
+      preLoaderRoute: typeof TrackingDispatchJobIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/settings': {
       id: '/api/admin/settings'
       path: '/api/admin/settings'
@@ -554,6 +574,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalTermsRoute: LegalTermsRoute,
   OrdersIdRoute: OrdersIdRoute,
   RSlugRoute: RSlugRoute,
+  TrackingDispatchJobIdRoute: TrackingDispatchJobIdRoute,
   AccountIndexRoute: AccountIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,

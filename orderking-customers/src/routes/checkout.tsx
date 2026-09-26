@@ -437,20 +437,7 @@ function CheckoutPage() {
               </div>
             </label>
 
-            {/* Sandbox UPI for local dev & simulation */}
-            <label className={`mt-2 flex min-h-14 cursor-pointer items-start gap-3 rounded-[var(--radius-lg)] border transition ${method === "UPI_SANDBOX" ? "border-primary bg-primary/5 p-3.5" : "border-border bg-surface p-3"}`}>
-              <input
-                type="radio"
-                name="pay"
-                className="mt-1 size-4 text-primary focus:ring-primary"
-                checked={method === "UPI_SANDBOX"}
-                onChange={() => setMethod("UPI_SANDBOX")}
-              />
-              <div>
-                <span className="block font-medium">{t("checkout.upiSandbox")}</span>
-                <span className="block text-xs text-muted mt-0.5">{t("checkout.upiSandboxHint")}</span>
-              </div>
-            </label>
+            
           </section>
 
           <div className="mt-6 rounded-[var(--radius-xl)] bg-surface p-4">

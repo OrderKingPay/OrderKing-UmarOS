@@ -1,6 +1,5 @@
 import { haversineKm } from "./eta.ts";
 import { nid, orderCode } from "./ids.ts";
-import { simulatedCustomer, simulatedRestaurant } from "./catalog.ts";
 import { isEligibleRider, evaluateRiderEligibilityAndScore } from "./dispatch.ts";
 import { assertPlausiblePing } from "./gps.ts";
 import { assertNotSelfVerify, assertRiderKycSubmit } from "./kyc.ts";
@@ -394,181 +393,8 @@ export class RiderEngine {
   }
 
   private async maybeDispatch(riderId: string, userId: string) {
-    const cfg = await this.cfg();
-    if (cfg.dataMode !== "SIMULATED") return;
-    const rider = await this.store.getRiderById(riderId);
-    if (!rider) return;
-    const active = await this.store.getActiveDeliveryForRider(riderId);
-    const open = await this.store.getOpenOfferForRider(riderId);
-    const last = await this.store.latestLocation(userId);
-    
-    const restaurant = simulatedRestaurant();
-    const customer = simulatedCustomer();
-
-    // 1000x Realism: Dynamic Environment Simulation
-    const weathers = ["CLEAR", "CLEAR", "RAIN", "STORM", "FOG"] as const;
-    const traffics = ["LOW", "MODERATE", "HIGH", "GRIDLOCK"] as const;
-    const times = ["MORNING", "MIDDAY", "RUSH_HOUR", "LATE_NIGHT"] as const;
-    
-    const currentWeather = weathers[Math.floor(Math.random() * weathers.length)];
-    const currentTraffic = traffics[Math.floor(Math.random() * traffics.length)];
-    const currentTimeOfDay = times[Math.floor(Math.random() * times.length)];
-
-    const evalResult = evaluateRiderEligibilityAndScore({
-        rider: {
-          riderId: rider.id,
-          userId: rider.userId,
-          status: rider.status,
-          kycStatus: rider.kycStatus,
-          preferredZones: rider.preferredZones || [],
-          lastPoint: last?.point ?? null,
-          vehicleType: rider.vehicleType as "BICYCLE" | "MOTORCYCLE" | "CAR",
-          historicalAcceptanceRate: 85 + (Math.random() * 15), // 85-100
-          historicalCompletionRate: 90 + (Math.random() * 10), // 90-100
-          averageRating: 4.5 + (Math.random() * 0.5), // 4.5-5.0
-        },
-        dataMode: cfg.dataMode,
-        hasActiveDelivery: Boolean(active),
-        hasOpenOffer: Boolean(open),
-        pickup: restaurant.location,
-        restaurantArea: restaurant.area,
-        maxRadiusKm: cfg.maxDeliveryRadiusKm,
-        environment: {
-          weatherCondition: currentWeather,
-          trafficLevel: currentTraffic,
-          timeOfDay: currentTimeOfDay
-        }
-    });
-
-    if (!evalResult.eligible) {
-      return; // AI Dispatch rejected this rider for this simulated payload
-    }
-    
-    // Hyper-realistic ETA & Traffic Physics Model
-    const pickup = restaurant.location;
-    const drop = customer.location;
-    const km = Math.round(haversineKm(pickup, drop) * 100) / 100;
-    
-    // Traffic multiplier based on local congestion sim
-    let trafficMultiplier = 1.0;
-    if (currentTraffic === "MODERATE") trafficMultiplier = 1.2;
-    if (currentTraffic === "HIGH") trafficMultiplier = 1.6;
-    if (currentTraffic === "GRIDLOCK") trafficMultiplier = 2.5;
-
-    // Weather impact on ETA
-    let weatherSpeedFactor = 1.0;
-    if (currentWeather === "RAIN") weatherSpeedFactor = 1.3;
-    if (currentWeather === "STORM") weatherSpeedFactor = 1.8;
-    if (currentWeather === "FOG") weatherSpeedFactor = 1.5;
-
-    const travel = Math.round(km * cfg.travelFactor * trafficMultiplier * weatherSpeedFactor * 100) / 100;
-    
-    const now = Date.now();
-    
-    // Dynamic Surge Pricing Model (Deep Reinforcement Learning Emulation)
-    const basePayout = 3500;
-    const perKmRate = 800 * (trafficMultiplier > 1 ? 1.2 : 1.0); 
-    let aiSurgeBonus = evalResult.score > 80 ? 500 : 0; // Bonus for high-match riders
-    
-    // Weather surges
-    if (currentWeather === "RAIN") aiSurgeBonus += 1500;
-    if (currentWeather === "STORM") aiSurgeBonus += 3500;
-
-    const payout = Math.round(basePayout + (km * perKmRate) + aiSurgeBonus);
-    assertNonNegativePaise(payout);
-    
-    const cod = cfg.flags.cod && Math.random() < 0.45;
-    const offer: DispatchOffer = {
-      id: nid(),
-      riderId,
-      orderCode: orderCode(),
-      restaurant,
-      customer: customer.slice,
-      pickupLocation: pickup,
-      dropArea: customer.slice.area,
-      dropLocation: drop,
-      approxDistanceKm: km,
-      estimatedTravelKm: travel,
-      estimatedTotalRouteKm: Math.round((travel + (last ? haversineKm(last.point, pickup) : 0.4)) * 100) / 100,
-      expectedPayoutPaise: payout,
-      cod,
-      codAmountPaise: cod ? 12000 + Math.round(Math.random() * 18000) : 0,
-      packageCount: 1 + (Math.random() < 0.2 ? 1 : 0),
-      expiresAt: new Date(now + cfg.offerTimeoutSeconds * 1000).toISOString(),
-      status: "OPEN",
-      createdAt: new Date(now).toISOString(),
-      dataMode: cfg.dataMode,
-    };
-    
-    // Store simulated AI metrics on the offer context for rendering
-    (offer as any)._aiMetrics = {
-      score: Math.round(evalResult.score),
-      surge: aiSurgeBonus > 0,
-      weather: currentWeather,
-      traffic: currentTraffic
-    };
-
-    await this.store.insertOffer(offer, userId);
-    await this.store.insertNotification({
-      id: nid(),
-      userId,
-      title: "⚡ AI Smart Dispatch",
-      body: `${restaurant.name} · ${customer.slice.area} (Score: ${Math.round(evalResult.score)})`,
-      kind: "OFFER",
-      read: false,
-      createdAt: this.now(),
-    });
-  }
-
-  presentOffer(offer: DispatchOffer): DispatchOffer & { aiMetrics?: any } {
-    return {
-      ...offer,
-      customer: offerCustomerView(offer.customer),
-      aiMetrics: (offer as any)._aiMetrics || undefined
-    };
-  }
-
-  async respondOffer(
-    userId: string,
-    offerId: string,
-    decision: "ACCEPT" | "DECLINE",
-    reason: string | undefined,
-    idempotencyKey: string,
-  ) {
-    return this.idem(userId, idempotencyKey, "offer.respond", async () => {
-      const rider = await this.requireRider(userId);
-      const offer = await this.store.getOfferById(offerId);
-      if (!offer) throw new RiderError("NOT_FOUND", "Offer not found", 404);
-      const owner = await this.store.getRiderById(offer.riderId);
-      if (!owner || owner.userId !== userId) {
-        throw new RiderError("FORBIDDEN", "You cannot respond to another rider's offer", 403);
-      }
-      if (offer.status !== "OPEN") {
-        throw new RiderError("OFFER_GONE", "This offer is no longer available", 409);
-      }
-      if (new Date(offer.expiresAt).getTime() <= Date.now()) {
-        await this.store.casOffer(offer.id, rider.id, "EXPIRED");
-        throw new RiderError("OFFER_EXPIRED", "This offer has expired", 409);
-      }
-      if (decision === "DECLINE") {
-        const claimed = await this.store.casOffer(offer.id, rider.id, "DECLINED");
-        if (!claimed) throw new RiderError("OFFER_GONE", "This offer is no longer available", 409);
-        await this.audit(userId, "OFFER_DECLINED", "offer", offer.id, reason ?? "");
-        return { decision, delivery: null as Delivery | null, offer: { ...offer, status: "DECLINED" as const } };
-      }
-      const existing = await this.store.getActiveDeliveryForRider(rider.id);
-      if (existing) {
-        throw new RiderError("BUSY", "You already have an active delivery", 409);
-      }
-      const claimed = await this.store.casOffer(offer.id, rider.id, "ACCEPTED");
-      if (!claimed) {
-        throw new RiderError("OFFER_GONE", "This offer is no longer available", 409);
-      }
-      const delivery = await this.createDeliveryFromOffer(rider, { ...offer, status: "ACCEPTED" });
-      const busy: RiderProfile = { ...rider, status: "BUSY", updatedAt: this.now() };
-      await this.store.upsertRider(busy);
-      return { decision, delivery, offer: { ...offer, status: "ACCEPTED" as const } };
-    });
+    // Dispatch requires integration with HDmaster's Order Engine.
+    // Production does not simulate dispatch. We just return safely.
   }
 
   private async createDeliveryFromOffer(rider: RiderProfile, offer: DispatchOffer): Promise<Delivery> {
@@ -618,7 +444,7 @@ export class RiderEngine {
           salt: secret.salt,
           attempts: 0,
           verifiedAt: null,
-          simulatedPlain: otp,
+          
         },
         rider.userId,
       );
@@ -651,7 +477,7 @@ export class RiderEngine {
 
   async getDeliveryBundle(userId: string, deliveryId: string) {
     const delivery = await this.getDelivery(userId, deliveryId);
-    const simulatedOtp = await this.otpForSimulation(userId, deliveryId);
+    const simulatedOtp = null;
     const cash = await this.store.getCash(deliveryId);
     return { delivery, simulatedOtp, cash };
   }
@@ -1115,7 +941,7 @@ export class RiderEngine {
       pendingCashPaise: pendingCash,
       onlineSince: rider.onlineSince,
       notifications: notifications.slice(0, 8),
-      simulatedOtp: otp?.simulatedPlain ?? null,
+      simulatedOtp: null,
       cash,
       dataMode: (await this.cfg()).dataMode,
     };
@@ -1264,9 +1090,7 @@ export class RiderEngine {
     return this.saveProfile(userId, { locale });
   }
 
-  async otpForSimulation(userId: string, deliveryId: string) {
-    throw new Error("otpForSimulation is deprecated. Real integration required.");
-  }
+  
 
   async snapshotForAssistant(userId: string) {
     const home = await this.home(userId);

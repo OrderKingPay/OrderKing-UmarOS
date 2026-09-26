@@ -1,0 +1,51 @@
+name: Production Build Verification
+on:
+  push:
+    branches:
+      - main
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build All Apps
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Verify HDmaster Build
+        working-directory: ./HDmaster
+        run: |
+          npm ci
+          npm run build
+
+      - name: Verify orderking-customers Build
+        working-directory: ./orderking-customers
+        run: |
+          npm ci
+          npm run build
+
+      - name: Verify orderking-partners Build
+        working-directory: ./orderking-partners
+        run: |
+          npm ci
+          npm run build
+
+      - name: Verify orderking-riders Build
+        working-directory: ./orderking-riders
+        run: |
+          npm ci
+          npm run build
+
+      - name: Verify Apps-integration Build
+        working-directory: ./Apps-integration-
+        run: |
+          npm ci
+          npm run build
