@@ -123,7 +123,6 @@ export function FounderCommandPage() {
   const [dispatchMode, setDispatchMode] = useState<"AI_AUTO" | "MANUAL_OVERRIDE">("AI_AUTO");
   const [productionMode, setProductionMode] = useState<"LIVE_PRODUCTION" | "SIMULATION_TEST">("LIVE_PRODUCTION");
   const [broadcastMessage, setBroadcastMessage] = useState("");
-  const [isBroadcasting, setIsBroadcasting] = useState(false);
 
   // Creator Engine State
   const [creatorPrompt, setCreatorPrompt] = useState("");
@@ -300,39 +299,17 @@ export function FounderCommandPage() {
         </div>
       </header>
 
-      {/* Executive Financial Truth & Zero-Fabrication Telemetry Bar (Clean, Eye-Friendly Graphite) */}
+      {/* Executive Financial Truth & Zero-Fabrication Telemetry Bar */}
       <div className="flex flex-wrap items-center justify-between text-xs px-1 text-zinc-400 gap-2">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-zinc-300">Financial Ledger Mode:</span>
-          <Badge
-            tone={useDemoRecords ? "warn" : "primary"}
-            className={
-              useDemoRecords
-                ? "border border-amber-500/40 text-amber-400 bg-amber-500/10 text-[10px] font-semibold"
-                : "border border-emerald-500/40 text-emerald-400 bg-emerald-500/10 text-[10px] font-semibold"
-            }
-          >
-            {useDemoRecords ? "Sample Demo Presets" : "NO VERIFIED PRODUCTION DATA (₹0)"}
+          <Badge className="border border-emerald-500/40 text-emerald-400 bg-emerald-500/10 text-[10px] font-semibold">
+            NO VERIFIED PRODUCTION DATA
           </Badge>
         </div>
-        <button
-          onClick={() => {
-            const next = !useDemoRecords;
-            setUseDemoRecords(next);
-            if (typeof window !== "undefined" && window.localStorage) {
-              window.localStorage.setItem("umar_os_use_demo_financials", String(next));
-            }
-            toast.success(
-              next
-                ? "Loaded sample demo presets for demonstration."
-                : "Reset to Clean Live Ledger: Confirmed Revenue is ₹0."
-            );
-          }}
-          className="text-[11px] font-medium text-amber-400/90 hover:text-amber-300 hover:underline transition flex items-center gap-1"
-        >
-          <RotateCcw className="size-3" />
-          <span>{useDemoRecords ? "Switch to Clean Live ₹0" : "Load Sample Presets"}</span>
-        </button>
+        <span className="text-[11px] text-zinc-500">
+          Revenue, payouts and tax figures appear here only after verified backend records are available.
+        </span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
