@@ -150,26 +150,10 @@ export class CanonicalLedger {
 
     const transactionId = "tx-" + crypto.randomUUID();
     const now = new Date().toISOString();
-
-    // Chain state is a single locked row. It prevents concurrent transactions from
-    // producing two valid-looking entries with the same previous hash.
-    const chainState = await sql.query<{ last_audit_hash: string }>(
-      "SELECT last_audit_hash FROM ledger_chain_state WHERE id = 1 FOR UPDATE",
-    );
-    const previousHash =
-      chainState[0]?.last_audit_hash ??
-      "0000000000000000000000000000000000000000000000000000000000000000";
-
-    const canonicalPayload = JSON.stringify({
-      transactionId,
-      idempotencyKey: params.idempotencyKey,
-      previousHash,
-      totalAmountPaise: totalDebit,
-      entries: params.entries.map(e => ({ account: e.account, direction: e.direction, amountPaise: e.amountPaise, entityId: e.entityId }))
-    });
-
-    const auditHash = this.generateHash(canonicalPayload);
     const fraudReasonsJson = params.fraudReasons ? JSON.stringify(params.fraudReasons) : null;
+    let previousHash = "0000000000000000000000000000000000000000000000000000000000000000";
+    let auditHash = "";
+    let duplicateTxId: string | null = null;
 
     await sql.transaction(async (tx) => {
       const lockedExisting = await tx.query<any>(
@@ -177,8 +161,30 @@ export class CanonicalLedger {
         [params.idempotencyKey],
       );
       if (lockedExisting.length > 0) {
+        duplicateTxId = lockedExisting[0].transaction_id;
         return;
       }
+
+      const chainState = await tx.query<{ last_audit_hash: string }>(
+        "SELECT last_audit_hash FROM ledger_chain_state WHERE id = 1 FOR UPDATE",
+      );
+      previousHash =
+        chainState[0]?.last_audit_hash ??
+        "0000000000000000000000000000000000000000000000000000000000000000";
+
+      const canonicalPayload = JSON.stringify({
+        transactionId,
+        idempotencyKey: params.idempotencyKey,
+        previousHash,
+        totalAmountPaise: totalDebit,
+        entries: params.entries.map((e) => ({
+          account: e.account,
+          direction: e.direction,
+          amountPaise: e.amountPaise,
+          entityId: e.entityId,
+        })),
+      });
+      auditHash = this.generateHash(canonicalPayload);
 
       await tx.query(
         "INSERT INTO ledger_transactions (transaction_id, idempotency_key, order_id, event_type, total_amount_paise, timestamp, audit_hash, previous_hash, is_fraud_suspicious, fraud_reasons, fraud_score) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
@@ -198,6 +204,40 @@ export class CanonicalLedger {
         [auditHash],
       );
     });
+
+    if (duplicateTxId) {
+      const txRows = await sql.query<any>(
+        "SELECT * FROM ledger_transactions WHERE transaction_id = $1",
+        [duplicateTxId],
+      );
+      const entryRows = await sql.query<any>(
+        "SELECT * FROM ledger_entries WHERE transaction_id = $1",
+        [duplicateTxId],
+      );
+      const txRow = txRows[0];
+      if (!txRow) throw new Error("Idempotent transaction disappeared");
+      return {
+        transactionId: txRow.transaction_id,
+        idempotencyKey: txRow.idempotency_key,
+        orderId: txRow.order_id,
+        eventType: txRow.event_type,
+        totalAmountPaise: parseInt(txRow.total_amount_paise),
+        timestamp: txRow.timestamp,
+        auditHash: txRow.audit_hash,
+        previousHash: txRow.previous_hash,
+        isFraudSuspicious: txRow.is_fraud_suspicious,
+        fraudReasons: typeof txRow.fraud_reasons === "string" ? JSON.parse(txRow.fraud_reasons) : txRow.fraud_reasons,
+        fraudScore: txRow.fraud_score,
+        entries: entryRows.map((entry) => ({
+          entryId: entry.entry_id,
+          account: entry.account,
+          direction: entry.direction,
+          amountPaise: parseInt(entry.amount_paise),
+          entityId: entry.entity_id,
+          memo: entry.memo,
+        })),
+      };
+    }
 
     return {
       transactionId,
