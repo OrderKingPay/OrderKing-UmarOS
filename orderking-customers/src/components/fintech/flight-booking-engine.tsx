@@ -61,6 +61,8 @@ export type FlightResult = {
   cabinBaggage: string;
   checkInBaggage: string;
   mealIncluded: boolean;
+  providerId?: string;
+  rawProviderData?: unknown;
 };
 
 type Props = {
@@ -103,177 +105,93 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
     qrToken: string;
   } | null>(null);
 
-  // Generate realistic flight results based on origin & destination
-  const generateFlightResults = (): FlightResult[] => {
-    const isDomestic =
-      !POPULAR_AIRPORTS.find((a) => a.code === originAirport)?.isInternational &&
-      !POPULAR_AIRPORTS.find((a) => a.code === destinationAirport)?.isInternational;
-
-    let baseA = 2450;
-    let baseB = 2950;
-    let baseC = 3400;
-
-    if (!isDomestic) {
-      baseA = 12500;
-      baseB = 14800;
-      baseC = 16200;
-    } else if (
-      (originAirport === "DEL" && destinationAirport === "BOM") ||
-      (originAirport === "BOM" && destinationAirport === "DEL")
-    ) {
-      baseA = 3100;
-      baseB = 3650;
-      baseC = 4100;
-    }
-
-    // Apply concession discounts
-    let concessionMultiplier = 1.0;
-    if (concession === "student") concessionMultiplier = 0.85; // 15% off base
-    if (concession === "defence") concessionMultiplier = 0.5; // 50% off base
-    if (concession === "senior") concessionMultiplier = 0.5; // 50% off base
-
-    const taxes = isDomestic ? 450 : 2200;
-
-    const calcKingPay = (base: number) => Math.round(base * concessionMultiplier + taxes);
-    const calcCompetitor = (kpPrice: number) => kpPrice + 499 + 350; // ₹499 convenience fee + ₹350 OTA retail markup
-
-    return [
-      {
-        id: "fl_1",
-        airline: "IndiGo",
-        airlineCode: "6E",
-        flightNumber: "6E-2084",
-        departureAirport: originAirport,
-        arrivalAirport: destinationAirport,
-        departureTime: "07:30 AM",
-        arrivalTime: "08:45 AM",
-        duration: "1h 15m",
-        stops: "Non-stop",
-        baseFare: Math.round(baseA * concessionMultiplier),
-        taxes,
-        kingPayPrice: calcKingPay(baseA),
-        competitorPrice: calcCompetitor(calcKingPay(baseA)),
-        savingsAmount: calcCompetitor(calcKingPay(baseA)) - calcKingPay(baseA),
-        cabinBaggage: "7 kg",
-        checkInBaggage: concession === "student" ? "25 kg (Student +10kg)" : "15 kg",
-        mealIncluded: concession === "corporate",
-      },
-      {
-        id: "fl_2",
-        airline: "Air India",
-        airlineCode: "AI",
-        flightNumber: "AI-754",
-        departureAirport: originAirport,
-        arrivalAirport: destinationAirport,
-        departureTime: "11:15 AM",
-        arrivalTime: "12:35 PM",
-        duration: "1h 20m",
-        stops: "Non-stop",
-        baseFare: Math.round(baseB * concessionMultiplier),
-        taxes,
-        kingPayPrice: calcKingPay(baseB),
-        competitorPrice: calcCompetitor(calcKingPay(baseB)),
-        savingsAmount: calcCompetitor(calcKingPay(baseB)) - calcKingPay(baseB),
-        cabinBaggage: "7 kg",
-        checkInBaggage: concession === "student" ? "25 kg (Student +10kg)" : "15 kg",
-        mealIncluded: true,
-      },
-      {
-        id: "fl_3",
-        airline: "Akasa Air",
-        airlineCode: "QP",
-        flightNumber: "QP-1492",
-        departureAirport: originAirport,
-        arrivalAirport: destinationAirport,
-        departureTime: "03:40 PM",
-        arrivalTime: "05:00 PM",
-        duration: "1h 20m",
-        stops: "Non-stop",
-        baseFare: Math.round(baseC * concessionMultiplier),
-        taxes,
-        kingPayPrice: calcKingPay(baseC),
-        competitorPrice: calcCompetitor(calcKingPay(baseC)),
-        savingsAmount: calcCompetitor(calcKingPay(baseC)) - calcKingPay(baseC),
-        cabinBaggage: "7 kg",
-        checkInBaggage: concession === "student" ? "25 kg (Student +10kg)" : "15 kg",
-        mealIncluded: false,
-      },
-      // Split-ticket / Skiplagged special deal
-      ...(enableSplitTicket
-        ? [
-            {
-              id: "fl_split",
-              airline: "Smart Split-PNR (IndiGo + SpiceJet)",
-              airlineCode: "SPLIT",
-              flightNumber: "6E-312 / SG-881",
-              departureAirport: originAirport,
-              arrivalAirport: destinationAirport,
-              departureTime: "06:15 AM",
-              arrivalTime: "09:30 AM",
-              duration: "3h 15m",
-              stops: "1 Stop" as const,
-              layoverCity: originAirport === "IXS" ? "Guwahati (GAU)" : "Kolkata (CCU)",
-              baseFare: Math.round(baseA * 0.8 * concessionMultiplier),
-              taxes: Math.round(taxes * 0.9),
-              kingPayPrice: Math.round((baseA * 0.8 * concessionMultiplier + taxes * 0.9)),
-              competitorPrice: calcCompetitor(calcKingPay(baseA)) + 650,
-              savingsAmount:
-                calcCompetitor(calcKingPay(baseA)) + 650 -
-                Math.round(baseA * 0.8 * concessionMultiplier + taxes * 0.9),
-              isSplitTicket: true,
-              cabinBaggage: "7 kg",
-              checkInBaggage: "15 kg",
-              mealIncluded: false,
-            },
-          ]
-        : []),
-    ];
-  };
-
   const handleSearch = async () => {
     if (originAirport === destinationAirport) {
       toast.error("Origin and destination airports cannot be the same.");
       return;
     }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(departureDate) || passengers < 1 || passengers > 9) {
+      toast.error("Enter a valid travel date and 1–9 passengers.");
+      return;
+    }
+
     setIsSearching(true);
-    setFlightResults([]); // clear old results
+    setFlightResults([]);
 
     try {
-      const res = await fetch(`https://hdmaster.vercel.app/api/v1/travel/search?originCode=${originAirport}&destinationCode=${destinationAirport}&departureDate=${departureDate}&passengers=${passengers}`);
-      const data = await res.json();
-      
-      if (data.results && data.results.length > 0) {
-         // Map the generic NormalizedTravelResult to FlightResult for this component
-         const mapped = data.results.map((r: any) => ({
-            id: r.id,
-            airline: r.carrier.name,
-            airlineCode: r.carrier.code,
-            flightNumber: `${r.carrier.code}-123`,
-            departureAirport: r.origin.code,
-            arrivalAirport: r.destination.code,
-            departureTime: new Date(r.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            arrivalTime: new Date(r.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            duration: "1h 30m",
-            stops: "Non-stop",
-            baseFare: r.price.amount,
-            taxes: 450,
-            kingPayPrice: r.price.amount + 450,
-            competitorPrice: r.price.amount + 450 + 650,
-            savingsAmount: 650,
-            cabinBaggage: "7 kg",
-            checkInBaggage: "15 kg",
-            mealIncluded: false,
-         }));
-         setFlightResults(mapped);
-         toast.success(`✈️ Found ${mapped.length} live flights from Amadeus with ₹0 Convenience Fee!`);
-      } else {
-         setFlightResults(generateFlightResults());
-         toast.success(`✈️ Found ${generateFlightResults().length} flights with Guaranteed Lowest Fares!`);
+      const params = new URLSearchParams({
+        mode: "FLIGHT",
+        originCode: originAirport,
+        destinationCode: destinationAirport,
+        departureDate,
+        passengers: String(passengers),
+      });
+      if (tripType === "round_trip") {
+        const returnDate = window.prompt("Return date (YYYY-MM-DD):", departureDate);
+        if (!returnDate) return;
+        params.set("returnDate", returnDate);
       }
+      if (concession === "corporate") params.set("class", "BUSINESS");
+
+      const baseUrl = import.meta.env.VITE_HDMASTER_URL || "https://hdmaster.vercel.app";
+      const res = await fetch(`${baseUrl}/api/v1/travel/search?${params.toString()}`, {
+        headers: { Accept: "application/json" },
+      });
+      const data = await res.json() as {
+        results?: Array<{
+          id: string;
+          providerId: string;
+          origin: { code: string; name?: string };
+          destination: { code: string; name?: string };
+          departureTime: string;
+          arrivalTime: string;
+          carrier: { code: string; name: string };
+          price: { amount: number; currency: string };
+          rawProviderData: unknown;
+        }>;
+        errors?: Array<{ error?: string; blocked?: boolean; details?: string }>;
+      };
+
+      if (!res.ok) {
+        throw new Error(data.errors?.[0]?.details || "Travel search failed");
+      }
+
+      if (!data.results?.length) {
+        const blocked = data.errors?.find((e) => e.blocked);
+        throw new Error(
+          blocked?.details ||
+          "No live flight offers were returned for this route/date. No simulated results are shown.",
+        );
+      }
+
+      const mapped: FlightResult[] = data.results.map((r) => ({
+        id: r.id,
+        airline: r.carrier.name,
+        airlineCode: r.carrier.code,
+        flightNumber: r.carrier.code,
+        departureAirport: r.origin.code,
+        arrivalAirport: r.destination.code,
+        departureTime: new Date(r.departureTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        arrivalTime: new Date(r.arrivalTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        duration: "See provider itinerary",
+        stops: "Non-stop",
+        baseFare: r.price.amount,
+        taxes: 0,
+        kingPayPrice: r.price.amount,
+        competitorPrice: r.price.amount,
+        savingsAmount: 0,
+        cabinBaggage: "Provider fare rules",
+        checkInBaggage: "Provider fare rules",
+        mealIncluded: false,
+        rawProviderData: r.rawProviderData,
+        providerId: r.providerId,
+      } as FlightResult & { rawProviderData: unknown; providerId: string }));
+
+      setFlightResults(mapped);
+      toast.success(`Found ${mapped.length} live flight offers.`);
     } catch (err) {
-      // Fallback to dummy data
-      setFlightResults(generateFlightResults());
-      toast.success(`✈️ Found ${generateFlightResults().length} flights with Guaranteed Lowest Fares!`);
+      setFlightResults([]);
+      toast.error(err instanceof Error ? err.message : "Live flight search failed.");
     } finally {
       setIsSearching(false);
     }
