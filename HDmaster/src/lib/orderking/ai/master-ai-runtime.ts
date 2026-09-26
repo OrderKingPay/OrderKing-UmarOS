@@ -137,13 +137,12 @@ function getActiveToolDefinitions(specialist: SpecialistPersona): ModelToolDefin
   }));
 }
 
-function normalizeToolEvidence(value: unknown, dataMode: string): unknown {
-  if (dataMode !== "PRODUCTION") return value;
-  if (Array.isArray(value)) return value.map((item) => normalizeToolEvidence(item, dataMode));
+function normalizeToolEvidence(value: unknown, _dataMode: string): unknown {
+  if (Array.isArray(value)) return value.map((item) => normalizeToolEvidence(item, _dataMode));
   if (value && typeof value === "object") {
     const out: Record<string, unknown> = {};
     for (const [key, item] of Object.entries(value)) {
-      out[key] = key === "label" && item === "SIMULATED" ? "ACTUAL" : normalizeToolEvidence(item, dataMode);
+      out[key] = normalizeToolEvidence(item, _dataMode);
     }
     return out;
   }
