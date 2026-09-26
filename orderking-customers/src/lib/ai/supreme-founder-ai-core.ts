@@ -16,14 +16,14 @@ export type AiModelId =
   | "ensemble-consensus"
   | "sovereign-ultra"
   | "claude-4-6-opus"
-  | "gpt-5-6-omni"
+  | "gpt-5-6-sol"
   | "grok-4-6-super"
   | "spacex-orbital"
   | "codex-supreme"
   | "gemini-3-8-ultra"
   | "deepseek-r1-sovereign"
   | "claude-3-7-sonnet"
-  | "gpt-4o"
+  | "gpt-5-6-sol"
   | "gemini-2-5-pro"
   | "grok-3";
 
