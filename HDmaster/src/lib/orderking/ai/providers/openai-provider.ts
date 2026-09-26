@@ -27,7 +27,7 @@ export class OpenAIProvider implements AIProvider {
   }
 
   private constructPayload(input: ChatRequest, stream: boolean): Record<string, unknown> {
-    const model = input.model || "gpt-5.6-sol";
+    const model = input.model || process.env.OPENAI_FOUNDER_MODEL?.trim() || "gpt-5.6-sol";
     const messages: Array<Record<string, unknown>> = [];
     
     if (input.systemPrompt) {
