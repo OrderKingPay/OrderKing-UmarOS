@@ -143,7 +143,7 @@ export class OpenAIProvider implements AIProvider {
       throw new Error("OpenAI API key is not configured in environment (OPENAI_API_KEY).");
     }
 
-    const model = input.model || "gpt-4o";
+    const model = input.model || "gpt-5.6-luna";
     const url = "https://api.openai.com/v1/chat/completions";
 
     const messages: Array<Record<string, unknown>> = [];
