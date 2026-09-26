@@ -456,10 +456,11 @@ export const getDeliveryFn = createServerFn({ method: "GET" })
     try {
       const e = await engine();
       const delivery = await e.getDelivery(context.userId, data.deliveryId);
-      const simulatedOtp =
+      const otpResult =
         process.env.NODE_ENV === "production"
           ? null
-          : ((await e.otpForSimulation(context.userId, data.deliveryId)) as string | null);
+          : await e.otpForSimulation(context.userId, data.deliveryId);
+      const simulatedOtp = typeof otpResult === "string" ? otpResult : null;
       return { delivery, simulatedOtp };
     } catch (err) {
       fail(err);
