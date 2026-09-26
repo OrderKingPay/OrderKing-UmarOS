@@ -1964,7 +1964,7 @@ You can ask me anything across software engineering, architecture, business anal
                 {
                   label: "Multi-Model Consensus",
                   icon: Cpu,
-                  query: "Execute multi-model consensus across OpenAI GPT-4o, Claude 3.7 Sonnet, Grok 2, Gemini 2.0 Flash, Codex, and DeepSeek",
+                  query: "Execute multi-model consensus across OpenAI GPT-5.6 Sol, Claude 3.7 Sonnet, Grok 2, Gemini 2.0 Flash, Codex, and DeepSeek",
                   color: "text-cyan-400",
                 },
                 {
@@ -2111,7 +2111,7 @@ You can ask me anything across software engineering, architecture, business anal
               >
                 <option value="auto-supreme-orchestrator">⚡ Auto Supreme Orchestrator (Autonomous Best)</option>
                 <option value="ensemble-consensus">🧠 Multi-Model Consensus (Real Verification)</option>
-                <option value="gpt-5-6-omni">🔮 OpenAI GPT-4o (Frontier Multimodal)</option>
+                <option value="gpt-5-6-sol">🔮 OpenAI GPT-5.6 Sol (Frontier Reasoning)</option>
                 <option value="claude-4-6-opus">⚡ Anthropic Claude 3.7 Sonnet (Hybrid Reasoning)</option>
                 <option value="grok-4-6-super">🚀 xAI Grok 2 (Real-Time Intelligence)</option>
                 <option value="gemini-3-8-ultra">💎 Google Gemini 2.0 Flash (Fast Reasoning)</option>
@@ -2422,7 +2422,7 @@ You can ask me anything across software engineering, architecture, business anal
             {[
               {
                 label: "🧠 Run Model Consensus",
-                query: "Execute multi-model consensus across OpenAI GPT-4o, Claude 3.7 Sonnet, Grok 2, Gemini 2.0 Flash, Codex, and DeepSeek",
+                query: "Execute multi-model consensus across OpenAI GPT-5.6 Sol, Claude 3.7 Sonnet, Grok 2, Gemini 2.0 Flash, Codex, and DeepSeek",
               },
               {
                 label: "🚀 Deploy New App Live",
