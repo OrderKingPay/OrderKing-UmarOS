@@ -1,7 +1,7 @@
 import type { DispatchPort, ReadyOrderEvent, EligibleRider } from "./dispatch.ts";
 
 // In a real implementation, this would connect to Postgres
-import { sql } from "../../database/db.ts";
+import { sql } from "../database/db.ts";
 
 export class LiveDispatchAdapter implements DispatchPort {
   async enqueueReady(event: ReadyOrderEvent): Promise<{ jobId: string }> {
@@ -54,7 +54,7 @@ export class LiveDispatchAdapter implements DispatchPort {
     }));
   }
 
-  async offerToRider(jobId: string, riderId: string, timeoutSeconds: number) {
+  async offerToRider(jobId: string, riderId: string, timeoutSeconds: number): Promise<any> {
     const res = await sql`
       INSERT INTO dispatch_offers (
         job_id, rider_id, status, expires_at

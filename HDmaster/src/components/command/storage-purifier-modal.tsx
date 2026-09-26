@@ -94,23 +94,21 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
     setIsPurging(true);
     setPurgeSuccess(false);
 
-    setTimeout(() => {
-      const result = mediaStorageVault.purgeStorage({
-        purgeImages,
-        purgeVideos,
-        purgeAttachments,
-        purgeChatCache,
-        purgeApiCache,
-      });
+    const result = mediaStorageVault.purgeStorage({
+      purgeImages,
+      purgeVideos,
+      purgeAttachments,
+      purgeChatCache,
+      purgeApiCache,
+    });
 
-      setIsPurging(false);
-      setPurgeSuccess(true);
+    setIsPurging(false);
+    setPurgeSuccess(true);
       const freedMb = (result.freedBytes / (1024 * 1024)).toFixed(2);
       setLastFreedMb(freedMb);
       refreshInspection();
       toast.success(`🧹 100x Purge Completed! Freed ${freedMb} MB of junk. HD Master speed boosted!`);
       if (onPurgeCompleted) onPurgeCompleted();
-    }, 1200);
   };
 
   const handleDeleteSingleItem = (id: string) => {

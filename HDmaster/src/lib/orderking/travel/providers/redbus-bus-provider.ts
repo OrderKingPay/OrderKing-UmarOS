@@ -11,7 +11,7 @@ export class RedBusProvider implements TravelProvider {
   name = "RedBus API (Live)";
   supportedModes = ["BUS"] as ("FLIGHT" | "TRAIN" | "BUS" | "HOTEL" | "CAB")[];
 
-  async isAvailable(): Promise<boolean> {
+  isAvailable(): boolean {
     return true;
   }
 

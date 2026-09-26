@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { supabaseCloud } from "@/lib/db-cloud";
+import { supabase } from "@/lib/db-cloud";
 
 // Ensure you provide your Mapbox token via environment variables or explicitly here
 mapboxgl.accessToken = process.env.VITE_MAPBOX_TOKEN || "pk.eyJ1IjoiZHVtbXkiLCJhIjoiY2R1bW15In0.dummy";
@@ -115,7 +115,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
 
   useEffect(() => {
     // Subscribe to Supabase realtime
-    const channel = supabaseCloud
+    const channel = supabase
       .channel(`public:dispatch_jobs:${dispatchJobId}`)
       .on(
         "postgres_changes",
@@ -125,7 +125,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
           table: "dispatch_jobs",
           filter: `id=eq.${dispatchJobId}`,
         },
-        (payload) => {
+        (payload: any) => {
           const { rider_lat, rider_lng } = payload.new;
           if (rider_lat && rider_lng) {
             targetPos.current = { lat: rider_lat, lng: rider_lng };
@@ -135,7 +135,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
       .subscribe();
 
     return () => {
-      supabaseCloud.removeChannel(channel);
+      supabase.removeChannel(channel);
     };
   }, [dispatchJobId]);
 

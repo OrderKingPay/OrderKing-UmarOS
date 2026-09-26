@@ -50,17 +50,20 @@ export const getHomeFn = createServerFn({ method: "GET" })
           if (offers && offers.length > 0) {
             const o = offers[0];
             const existingOffer = await e.getStore().getOpenOfferForRider(home.rider.id);
-            if (!existingOffer || existingOffer.publicId !== o.order_id) {
+            if (!existingOffer || existingOffer.orderCode !== o.order_id) {
               if (existingOffer) {
                  await e.getStore().casOffer(existingOffer.id, home.rider.id, "EXPIRED");
               }
-              const restaurant = { id: o.restaurant_id ?? "live_restaurant", name: o.restaurant_name, address: o.restaurant_address, lat: o.restaurant_lat ?? 0, lng: o.restaurant_lng ?? 0 };
-              const customer = { id: "live_customer", name: o.customer_name ?? "Customer", address: o.customer_address ?? o.zone_name, lat: o.customer_lat ?? 0, lng: o.customer_lng ?? 0 };
+              const restaurant = { id: o.restaurant_id ?? "live_restaurant", name: o.restaurant_name ?? "Restaurant", area: "", address: o.restaurant_address ?? "", location: { lat: o.restaurant_lat ?? 0, lng: o.restaurant_lng ?? 0 }, phoneMasked: "XXX", specialPickupInstructions: null, preparationStatus: "READY" as const };
+              const customer = { displayName: o.customer_name ?? "Customer", area: o.zone_name ?? "", address: o.customer_address ?? o.zone_name ?? "", contactMasked: null, contactAllowed: false, instructions: null };
               await e.getStore().insertDelivery({
                 id: o.order_id,
-                publicId: o.order_id,
+                orderCode: o.order_id,
+                orderId: o.order_id,
+                offerId: o.id,
+                userId: context.userId,
                 riderId: home.rider.id,
-                state: "SEARCHING",
+                state: "OFFERED",
                 dataMode: "LIVE",
                 totalPaise: o.total_paise,
                 expectedDistanceM: o.distance_m ?? 0,
@@ -76,7 +79,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
               });
               await e.getStore().insertOffer({
                 id: o.id,
-                publicId: o.order_id,
+                orderCode: o.order_id,
                 orderId: o.order_id,
                 riderId: home.rider.id,
                 dataMode: "LIVE",

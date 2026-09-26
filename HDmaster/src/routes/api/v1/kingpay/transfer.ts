@@ -31,16 +31,18 @@ export const Route = createFileRoute("/api/v1/kingpay/transfer" as any)({
             memo: data.memo,
             entries: [
               {
-                accountId: auth.userId,
+                account: auth.userId as any,
                 direction: "DEBIT",
                 amountPaise: data.amountPaise,
-                entityId: "USER"
+                entityId: "USER",
+                memo: data.memo || "Transfer Out"
               },
               {
-                accountId: data.recipientAccountId,
+                account: data.recipientAccountId as any,
                 direction: "CREDIT",
                 amountPaise: data.amountPaise,
-                entityId: "USER"
+                entityId: "USER",
+                memo: data.memo || "Transfer In"
               }
             ]
           });

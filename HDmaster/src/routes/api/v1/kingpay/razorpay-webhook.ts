@@ -49,16 +49,18 @@ export const Route = createFileRoute("/api/v1/kingpay/razorpay-webhook" as any)(
               memo: `Razorpay payment captured for account ${accountId}`,
               entries: [
                 {
-                  accountId: "RAZORPAY_GATEWAY_RECEIVABLE",
+                  account: "BANK_CLEARING" as any,
                   direction: "DEBIT",
                   amountPaise: payment.amount,
-                  entityId: "GATEWAY"
+                  entityId: "GATEWAY",
+                  memo: "Gateway clearing debit"
                 },
                 {
-                  accountId: accountId,
+                  account: accountId as any,
                   direction: "CREDIT",
                   amountPaise: payment.amount,
-                  entityId: "USER"
+                  entityId: "USER",
+                  memo: "User cash in credit"
                 }
               ]
             });

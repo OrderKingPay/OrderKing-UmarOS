@@ -44,24 +44,7 @@ export function OrderKingCommandSuiteModal({
   const [isCallActive, setIsCallActive] = useState(false);
   const [callTarget, setCallTarget] = useState<string | null>(null);
   const [callDuration, setCallDuration] = useState(0);
-  const [callLogs, setCallLogs] = useState<Array<{ id: string; target: string; role: string; time: string; status: string; transcript: string }>>([
-    {
-      id: "call-1",
-      target: "Taj Royal Biryani Kitchen",
-      role: "Restaurant Partner",
-      time: "10 mins ago",
-      status: "COMPLETED",
-      transcript: "AI: Order #OK-8924 prep delayed by 12 mins. Chef: Dum biryani ready in 3 mins, packaging now.",
-    },
-    {
-      id: "call-2",
-      target: "Rider Rahul Roy (ID: RD-402)",
-      role: "Delivery Fleet",
-      time: "25 mins ago",
-      status: "COMPLETED",
-      transcript: "AI: Please proceed to pick up feasting order from Silchar Food Hub. Rider: En route, reaching in 2 mins.",
-    },
-  ]);
+  const [callLogs, setCallLogs] = useState<Array<{ id: string; target: string; role: string; time: string; status: string; transcript: string }>>([]);
 
   if (!isOpen) return null;
 
@@ -71,19 +54,7 @@ export function OrderKingCommandSuiteModal({
     setCallDuration(0);
     toast.success(`📞 Connecting autonomous voice call to ${target}...`);
 
-    setTimeout(() => {
-      setIsCallActive(false);
-      const newLog = {
-        id: `call-${Date.now()}`,
-        target,
-        role,
-        time: "Just now",
-        status: "COMPLETED",
-        transcript: `AI: Autonomous dispatch handshake executed with ${target}. Telemetry confirmed and recorded to Sovereign Ledger.`,
-      };
-      setCallLogs((prev) => [newLog, ...prev]);
-      toast.success(`✅ Call completed with ${target}. Transcript saved!`);
-    }, 4500);
+    throw new Error("NO MOCK CLAIMS: Real automated call dispatch is not implemented yet.");
   };
 
   return (

@@ -38,11 +38,7 @@ export function GrowthVaultView() {
   };
 
   const testDns = () => {
-    setDnsStatus("TESTING");
-    setTimeout(() => {
-      setDnsStatus("VERIFIED");
-      toast.success("DNS configuration valid! Pointing to OrderKing Anycast Edge (76.76.21.21).");
-    }, 1200);
+    throw new Error("NO MOCK CLAIMS: Real DNS testing API is not connected.");
   };
 
   return (
@@ -192,16 +188,7 @@ export function GrowthVaultView() {
                 variant="primary"
                 className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center gap-2 shadow-md"
                 onClick={() => {
-                  if (!ownerConsent) {
-                    toast.error("Owner consent required before execution.");
-                    return;
-                  }
-                  setHarvestState("HARVESTING");
-                  setTimeout(() => {
-                    setHarvestState("COMPLETED");
-                    setHarvestOutput(harvestData.executionAuditSummary);
-                    toast.success("Revenue harvest executed! All 8 streams balanced and credited to Owner Escrow.");
-                  }, 800);
+                  throw new Error("NO MOCK CLAIMS: Real revenue harvest API is not connected.");
                 }}
                 disabled={harvestState === "HARVESTING"}
               >

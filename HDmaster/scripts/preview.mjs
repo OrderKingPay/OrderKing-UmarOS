@@ -109,7 +109,8 @@ export function previewOwners({ portPids, pidFilePid, cmdlineOf }) {
 
 async function waitForExit(pids, { isAlive, sleep, timeoutMs, pollMs }) {
   let remaining = pids.filter((pid) => isAlive(pid));
-  for (let waited = 0; remaining.length > 0 && waited < timeoutMs; waited += pollMs) {
+  const timeout = AbortSignal.timeout(timeoutMs);
+  while (remaining.length > 0 && !timeout.aborted) {
     await sleep(pollMs);
     remaining = remaining.filter((pid) => isAlive(pid));
   }
@@ -279,8 +280,8 @@ async function stop(announce = true) {
 }
 
 async function waitForReady(failure) {
-  const deadline = Date.now() + READY_TIMEOUT_MS;
-  while (Date.now() < deadline && failure() === null) {
+  const timeout = AbortSignal.timeout(READY_TIMEOUT_MS);
+  while (!timeout.aborted && failure() === null) {
     try {
       // Any HTTP response means the server is bound; a 404 is still ready.
       await fetch(PREVIEW_URL, { signal: AbortSignal.timeout(2000) });

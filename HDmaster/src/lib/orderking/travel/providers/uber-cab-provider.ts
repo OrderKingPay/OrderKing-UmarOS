@@ -11,7 +11,7 @@ export class UberCabProvider implements TravelProvider {
   name = "Uber/Ola Aggregator (Live)";
   supportedModes = ["CAB"] as ("FLIGHT" | "TRAIN" | "BUS" | "HOTEL" | "CAB")[];
 
-  async isAvailable(): Promise<boolean> {
+  isAvailable(): boolean {
     return true;
   }
 

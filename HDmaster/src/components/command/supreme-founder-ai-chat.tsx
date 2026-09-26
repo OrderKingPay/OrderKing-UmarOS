@@ -1151,15 +1151,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
   };
 
   const handleTurboRender = () => {
-    setIsExporting(true);
-    playAudioTone("ping");
-    toast.info("⚡ 100,000x WebCodecs Turbo Render processing keyframes...");
-
-    setTimeout(() => {
-      setIsExporting(false);
-      playAudioTone("chime");
-      toast.success(`✨ Render complete in 380ms! 60FPS ${resolution} master ready for commercial broadcast.`);
-    }, 850);
+    throw new Error("NO MOCK CLAIMS: Real video rendering API is not connected.");
   };
 
   // Aspect ratio styling container calculation
@@ -1440,27 +1432,11 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
   const [hasSaved, setHasSaved] = useState(false);
 
   const handleRestart = () => {
-    setIsRestarting(true);
-    playAudioTone("ping");
-    toast.info("🔄 Graceful System Restart: Rebooting module engines without dropping state...");
-
-    setTimeout(() => {
-      setIsRestarting(false);
-      playAudioTone("chime");
-      toast.success("✅ System Restart Complete! All founder data, chats, and invoices 100% preserved.");
-    }, 900);
+    throw new Error("NO MOCK CLAIMS: Real restart API is not connected.");
   };
 
   const handleRefresh = () => {
-    setIsRefreshing(true);
-    playAudioTone("ping");
-    toast.info("⚡ Zero-Downtime Refresh: Hot-fixing glitches & flushing stale buffers...");
-
-    setTimeout(() => {
-      setIsRefreshing(false);
-      playAudioTone("chime");
-      toast.success("✨ Zero-Downtime Refresh Complete: All glitches fixed with 0 disconnections!");
-    }, 450);
+    throw new Error("NO MOCK CLAIMS: Real refresh API is not connected.");
   };
 
   const handleSave = () => {

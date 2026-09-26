@@ -92,72 +92,8 @@ export function SupremeCreatorEngine() {
     setIsGenerating(true);
     setGeneratedCode(null);
 
-    setTimeout(() => {
-      setIsGenerating(false);
-      const newProjId = `proj-${Date.now().toString().slice(-4)}`;
-      const newProjName = prompt.slice(0, 35) + "...";
-      const newLiveUrl = `https://${newProjId}.orderking.in`;
+    throw new Error("NO MOCK CLAIMS: Real generation API is not connected.");
 
-      const generatedProject: CreatedProject = {
-        id: newProjId,
-        name: newProjName,
-        type: prompt.toLowerCase().includes("app") ? "app" : prompt.toLowerCase().includes("system") ? "business_system" : "website",
-        description: prompt,
-        liveUrl: newLiveUrl,
-        deployedAt: "Just now",
-        status: "LIVE",
-        filesCount: 32,
-        monthlyRevenueEst: "₹1,50,000+",
-      };
-
-      setProjects([generatedProject, ...projects]);
-      setGeneratedCode(`// 👑 HD MASTER SUPREME CODE GENERATOR - ZERO EXTERNAL AI DEPENDENCY
-// Generated Project: ${newProjName}
-// Deployed URL: ${newLiveUrl}
-
-import React from "react";
-import { Zap, ShieldCheck, CreditCard } from "lucide-react";
-
-export default function App() {
-  return (
-    <main className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6">
-      <header className="max-w-3xl text-center space-y-4">
-        <h1 className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-amber-400 via-orange-400 to-emerald-400 bg-clip-text text-transparent">
-          ${newProjName}
-        </h1>
-        <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-          ${prompt}
-        </p>
-      </header>
-
-      <section className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl w-full">
-        <div className="p-4 rounded-xl border border-white/10 bg-white/5">
-          <Zap className="size-6 text-amber-400 mb-2" />
-          <h3 className="font-bold text-sm">Instant 0-Lag Engine</h3>
-          <p className="text-xs text-slate-400 mt-1">Autonomous local execution with zero latency.</p>
-        </div>
-        <div className="p-4 rounded-xl border border-white/10 bg-white/5">
-          <CreditCard className="size-6 text-emerald-400 mb-2" />
-          <h3 className="font-bold text-sm">Direct Founder Income</h3>
-          <p className="text-xs text-slate-400 mt-1">100% legal revenue channeled to founder account.</p>
-        </div>
-        <div className="p-4 rounded-xl border border-white/10 bg-white/5">
-          <ShieldCheck className="size-6 text-cyan-400 mb-2" />
-          <h3 className="font-bold text-sm">Section 79 Shield</h3>
-          <p className="text-xs text-slate-400 mt-1">Total personal privacy with intermediary protection.</p>
-        </div>
-      </section>
-
-      <div className="mt-8 flex gap-3">
-        <button className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-sm shadow-lg hover:brightness-110 transition">
-          Purchase &amp; Access Now ➔
-        </button>
-      </div>
-    </main>
-  );
-}`);
-      toast.success(`🚀 Complete system "${newProjName}" generated and deployed live to ${newLiveUrl}!`);
-    }, 1200);
   };
 
   return (

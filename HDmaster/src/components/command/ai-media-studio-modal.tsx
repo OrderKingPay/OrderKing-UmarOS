@@ -163,26 +163,7 @@ export function AiMediaStudioModal({
       });
     }, 250);
 
-    setTimeout(() => {
-      clearInterval(progressInterval);
-      setGenerationProgress(100);
-      setIsGenerating(false);
-
-      const newItem = mediaStorageVault.addItem({
-        type: "image",
-        title: finalPrompt.slice(0, 45),
-        prompt: finalPrompt,
-        url: imageUrl,
-        sizeBytes: Math.round(width * height * (upscale8K ? 2.8 : 1.8)),
-        mimeType: "image/jpeg",
-        aspectRatio,
-        style: styleObj.label,
-      });
-
-      setGeneratedItem(newItem);
-      setVaultItems(mediaStorageVault.getItems());
-      toast.success(`🎨 8K Photorealistic AI Image synthesized in ${aspectRatio} format!`);
-    }, 1200);
+    throw new Error("NO MOCK CLAIMS: Real image generation API is not connected.");
   };
 
   const handleGenerateVideo = () => {
@@ -205,27 +186,7 @@ export function AiMediaStudioModal({
 
     const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
 
-    setTimeout(() => {
-      clearInterval(progressInterval);
-      setGenerationProgress(100);
-      setIsGenerating(false);
-
-      const newItem = mediaStorageVault.addItem({
-        type: "video",
-        title: `${finalPrompt.slice(0, 40)} (${durationObj.label})`,
-        prompt: finalPrompt,
-        url: videoUrl,
-        sizeBytes: durationObj.seconds * 1800000,
-        mimeType: "video/mp4",
-        aspectRatio,
-        durationSeconds: durationObj.seconds,
-        style: `Camera: ${cameraMotion} · Speed: ${motionSpeed} · Voice: ${voiceoverVoice} (${selectedLang})`,
-      });
-
-      setGeneratedItem(newItem);
-      setVaultItems(mediaStorageVault.getItems());
-      toast.success(`🎬 Elite AI Video Rendered (${durationObj.label}, ${aspectRatio}) with Voiceover!`);
-    }, 1500);
+    throw new Error("NO MOCK CLAIMS: Real video generation API is not connected.");
   };
 
   const handleGenerateMultiScene = () => {
@@ -241,29 +202,7 @@ export function AiMediaStudioModal({
 
     const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
 
-    setTimeout(() => {
-      clearInterval(progressInterval);
-      setGenerationProgress(100);
-      setIsGenerating(false);
-
-      const newItem = mediaStorageVault.addItem({
-        type: "video",
-        title: `Commercial Masterpiece (${multiScenes.length} Scenes, ${totalSeconds}s)`,
-        prompt: multiScenes.map((s) => `${s.title}: ${s.prompt}`).join(" || "),
-        url: videoUrl,
-        sizeBytes: totalSeconds * 1950000,
-        mimeType: "video/mp4",
-        aspectRatio,
-        durationSeconds: totalSeconds,
-        isMultiScene: true,
-        scenesCount: multiScenes.length,
-        style: `Multi-Scene Stitched Commercial · ${selectedLang} Narrator · 4K 60FPS`,
-      });
-
-      setGeneratedItem(newItem);
-      setVaultItems(mediaStorageVault.getItems());
-      toast.success(`🏆 Commercial Multi-Scene Masterpiece (${multiScenes.length} scenes, ${totalSeconds}s) Stitched Successfully!`);
-    }, 1800);
+    throw new Error("NO MOCK CLAIMS: Real multi-scene generation API is not connected.");
   };
 
   const handleDeleteVaultItem = (id: string) => {

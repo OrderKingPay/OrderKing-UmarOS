@@ -2728,19 +2728,17 @@ export async function runMasterAi(
   const toolCallsSummary: ToolCallResult[] = [];
   const pendingApprovals: PendingApproval[] = [];
   const evidence = new Set<string>(["RESULT"]);
-  let activeProvider: AiProvider = input.provider || "local_deterministic";
+  let activeProvider: string = input.provider || "local_deterministic";
   let activeModel = "orderking-master-ai-v1";
   let finalText = "";
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
     const modelResponse = await routeModelTurn({
-      specialist,
       systemPrompt,
       messages,
       tools: toolDefinitions,
       reasoningEffort: input.reasoningEffort,
-      preferredProvider: input.provider,
-    });
+    }, input.provider as any);
 
     activeProvider = modelResponse.provider;
     activeModel = modelResponse.model;

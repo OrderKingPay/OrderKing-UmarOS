@@ -3,12 +3,12 @@ import { LiveTrackingMap } from "@/components/tracking/live-tracking-map";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/tracking/$dispatchJobId")({
+export const Route = createFileRoute("/tracking/$dispatchJobId" as any)({
   component: TrackingRoute,
 });
 
 function TrackingRoute() {
-  const { dispatchJobId } = Route.useParams();
+  const { dispatchJobId } = Route.useParams() as any;
 
   return (
     <div className="relative w-full h-dvh bg-black flex flex-col">

@@ -26,8 +26,6 @@ if (databaseConfigured && !authConfigured) {
   );
 }
 
-/** Dev fallback user id, used only when auth is disabled (VITE_AUTH_ENABLED=false). */
-export const DEV_USER_ID = "dev-user";
 
 /**
  * Thrown by `requireUserId` when the caller has no valid session. Carries
@@ -83,13 +81,9 @@ export async function getSessionUser(
  */
 export async function requireUserId(bearerToken?: string): Promise<string> {
   if (!authConfigured && !gateIdentityEnabled()) {
-    if (databaseConfigured) {
-      throw new Error(
-        "Auth is disabled (VITE_AUTH_ENABLED=false) but DATABASE_URL is set — " +
-          "refusing to fall back to the shared dev user against a real database.",
-      );
-    }
-    return DEV_USER_ID;
+    throw new Error(
+      "Auth is not configured. DEV_USER_ID mock has been eliminated.",
+    );
   }
   const user = await getSessionUser(bearerToken);
   if (!user) throw new UnauthorizedError();

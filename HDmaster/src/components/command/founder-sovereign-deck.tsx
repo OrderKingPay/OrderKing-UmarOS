@@ -138,44 +138,27 @@ export function FounderSovereignDeck() {
   };
 
   const handleBroadcastToFleet = () => {
-    if (!broadcastMessage.trim()) return;
-    setIsBroadcasting(true);
-    setTimeout(() => {
-      setIsBroadcasting(false);
-      toast.success(`📢 Broadcast pushed to 32 active riders: "${broadcastMessage}"`);
-      addAuditEntry("FLEET_PUSH_BROADCAST", broadcastMessage);
-      setBroadcastMessage("");
-    }, 600);
+    throw new Error("NO MOCK CLAIMS: Real broadcast API is not connected.");
   };
 
   const handleBatchSettlement = () => {
-    toast.success("💰 Instant settlement batch executed: ₹68,450 cleared to 18 merchants & 28 riders!");
-    addAuditEntry("INSTANT_BATCH_SETTLEMENT", "Cleared ₹68,450 to 18 restaurants and 28 riders");
+    throw new Error("NO MOCK CLAIMS: Real batch settlement API is not connected.");
   };
 
   const handleInstantKycSweep = () => {
-    toast.success("🛡️ Instant KYC verification sweep completed: 6 pending partner documents verified!");
-    addAuditEntry("KYC_AUTO_VERIFY", "6 pending partner documents verified against statutory records");
+    throw new Error("NO MOCK CLAIMS: Real KYC API is not connected.");
   };
 
   const handleReindexSearch = () => {
-    toast.success("🔍 Semantic and fuzzy food search index rebuilt successfully (<12ms query time)!");
-    addAuditEntry("SEARCH_INDEX_REBUILD", "Full catalog re-indexed with fuzzy synonym expansion");
+    throw new Error("NO MOCK CLAIMS: Real search reindexing API is not connected.");
   };
 
   const handlePurgeCache = () => {
-    toast.success("🧹 Edge and in-memory caches purged! Live catalog and prices synchronized.");
-    addAuditEntry("CACHE_PURGE", "Flushed stale edge and memory caches across all nodes");
+    throw new Error("NO MOCK CLAIMS: Real cache purge API is not connected.");
   };
 
   const handleTriggerSelfUpgrade = () => {
-    const result = selfUpgrader.triggerSelfUpgradeCycle();
-    setRecentUpgrade(result);
-    setSelfUpgradeStats(selfUpgrader.getEngineStats());
-    toast.success(
-      `⚡ Autonomous Upgrade Cycle #${result.cycle} executed! +${result.performanceGainPct}% performance gain, ${result.memoryOptimizedMb}MB memory reclaimed.`
-    );
-    addAuditEntry("AUTONOMOUS_UPGRADE_CYCLE", `Executed cycle #${result.cycle} with zero external dependencies`);
+    throw new Error("NO MOCK CLAIMS: Real self-upgrade API is not connected.");
   };
 
   return (

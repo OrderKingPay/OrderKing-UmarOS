@@ -1,7 +1,7 @@
 import { haversineKm } from "./eta.ts";
 import { nid, orderCode } from "./ids.ts";
 import { simulatedCustomer, simulatedRestaurant } from "./catalog.ts";
-import { isEligibleRider } from "./dispatch.ts";
+import { isEligibleRider, evaluateRiderEligibilityAndScore } from "./dispatch.ts";
 import { assertPlausiblePing } from "./gps.ts";
 import { assertNotSelfVerify, assertRiderKycSubmit } from "./kyc.ts";
 import { assertTransition, isActiveDelivery } from "./machine.ts";
@@ -1270,11 +1270,7 @@ export class RiderEngine {
   }
 
   async otpForSimulation(userId: string, deliveryId: string) {
-    const cfg = await this.cfg();
-    if (cfg.dataMode !== "SIMULATED") return null;
-    const d = await this.requireOwnedDelivery(userId, deliveryId);
-    const rec = await this.store.getOtp(d.id);
-    return rec?.simulatedPlain ?? null;
+    throw new Error("otpForSimulation is deprecated. Real integration required.");
   }
 
   async snapshotForAssistant(userId: string) {
