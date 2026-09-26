@@ -1,7 +1,6 @@
 import { TravelOrchestrator } from "../travel/index.ts";
 import {
   travelBookingRequestSchema,
-  travelModeSchema,
   travelSearchQuerySchema,
 } from "../travel/schemas/travel-schemas.ts";
 
@@ -46,11 +45,6 @@ export async function handleTravelHttp(
     const parsed = travelBookingRequestSchema.safeParse(body);
     if (!parsed.success) {
       return json({ error: "INVALID_TRAVEL_BOOKING", details: parsed.error.flatten() }, 400);
-    }
-
-    const provider = parsed.data.providerId;
-    if (!travelModeSchema.options.includes("FLIGHT") && provider === "amadeus_flight") {
-      return json({ error: "PROVIDER_CONFIGURATION_ERROR" }, 500);
     }
 
     return json(await TravelOrchestrator.book(parsed.data));
