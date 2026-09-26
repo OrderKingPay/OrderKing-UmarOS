@@ -33,11 +33,15 @@ export async function getUniversalPlatformsFromDb(): Promise<ConnectedPlatform[]
     category: String(r.category) as any,
     description: String(r.description),
     icon: String(r.icon),
-    status: String(r.status) as any,
-    apiLatencyMs: Number(r.api_latency_ms),
-    lastSyncTime: String(r.last_sync_time),
+    // Database seed rows are not proof of a live OAuth/API connection.
+    // Expose seeded CONNECTED records as STANDBY until a real connector writes verified state.
+    status: String(r.status) === "CONNECTED" ? "STANDBY" : String(r.status) as any,
+    apiLatencyMs: String(r.status) === "CONNECTED" ? 0 : Number(r.api_latency_ms),
+    lastSyncTime: String(r.status) === "CONNECTED" ? "NOT_VERIFIED" : String(r.last_sync_time),
     authMethod: String(r.auth_method) as any,
-    guardrailProtection: (r.guardrail_protection || { sandboxVerified: true, zeroDataLeak: true, rollbackSnapshotReady: true, rateLimitSafe: true }) as any,
+    guardrailProtection: String(r.status) === "CONNECTED"
+      ? { sandboxVerified: false, zeroDataLeak: false, rollbackSnapshotReady: false, rateLimitSafe: false }
+      : (r.guardrail_protection || {}) as any,
     supportedActions: Array.isArray(r.supported_actions) ? r.supported_actions : []
   }));
 }
