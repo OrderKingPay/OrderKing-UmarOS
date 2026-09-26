@@ -1,7 +1,7 @@
 // Umar OS: Autonomous Frontier Model Updater & Registry Engine
 // Tracks, verifies, and manages frontier AI model releases (GPT-4o, Claude 3.7 Sonnet, Grok 2, Gemini 2.0 Flash)
-// Guarantees Umar OS always routes to the highest capability verified models.
-// Checks API keys and reports truthful connection telemetry without simulations.
+// Never claims a model is live without an actual connectivity check.
+// API-key presence alone is not treated as a successful model connection.
 
 export interface UpgradableModelInfo {
   id: string;
@@ -17,70 +17,37 @@ export interface UpgradableModelInfo {
 
 export const INITIAL_MODEL_REGISTRY: UpgradableModelInfo[] = [
   {
-    id: "gpt-4o",
-    name: "OpenAI GPT-4o",
-    generation: "gpt-4o",
+    id: "gpt-5.6-sol",
+    name: "OpenAI GPT-5.6 Sol",
+    generation: "gpt-5.6-sol",
     provider: "OpenAI",
-    releaseDate: "Production Verified",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["Multimodal vision & text", "Structured outputs & tool calling", "Sub-150ms TTFT"],
-    performanceGainPct: 35,
-    benchmarkScore: 99.8,
+    releaseDate: "Current OpenAI flagship",
+    status: "PENDING_FOUNDER_APPROVAL",
+    improvements: ["Complex reasoning", "Coding", "Multimodal input", "Tool-enabled workflows"],
+    performanceGainPct: 0,
+    benchmarkScore: 0,
   },
   {
-    id: "claude-3-7-sonnet",
-    name: "Anthropic Claude 3.7 Sonnet",
-    generation: "claude-3-7-sonnet-20250219",
-    provider: "Anthropic",
-    releaseDate: "Production Verified",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["Hybrid extended thinking", "Deep systems architecture", "Flawless contractual drafting"],
-    performanceGainPct: 40,
-    benchmarkScore: 99.9,
+    id: "gpt-5.6-terra",
+    name: "OpenAI GPT-5.6 Terra",
+    generation: "gpt-5.6-terra",
+    provider: "OpenAI",
+    releaseDate: "Current OpenAI cost/performance tier",
+    status: "PENDING_FOUNDER_APPROVAL",
+    improvements: ["Reasoning", "Coding", "Multimodal input", "Tool-enabled workflows"],
+    performanceGainPct: 0,
+    benchmarkScore: 0,
   },
   {
-    id: "grok-2",
-    name: "xAI Grok 2",
-    generation: "grok-2-1212",
-    provider: "xAI",
-    releaseDate: "Production Verified",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["Real-time web search integration", "Truthful live retrieval", "Mathematical analysis"],
-    performanceGainPct: 38,
-    benchmarkScore: 99.4,
-  },
-  {
-    id: "gemini-2-0-flash",
-    name: "Google Gemini 2.0 Flash",
-    generation: "gemini-2.0-flash",
-    provider: "Google DeepMind",
-    releaseDate: "Production Verified",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["1M token context window", "Native multimodal vision & audio", "High-throughput token streaming"],
-    performanceGainPct: 42,
-    benchmarkScore: 99.6,
-  },
-  {
-    id: "codex-supreme",
-    name: "Codex Supreme Architect",
-    generation: "codex-local-v1",
-    provider: "Codex Sovereign",
-    releaseDate: "Always Active",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["Deterministic code synthesis", "Zero-defect typechecking", "Instant edge bundling"],
-    performanceGainPct: 50,
-    benchmarkScore: 100.0,
-  },
-  {
-    id: "deepseek-r1-sovereign",
-    name: "DeepSeek R1 Sovereign Reasoner",
-    generation: "deepseek-r1-local",
-    provider: "DeepSeek Sovereign",
-    releaseDate: "Always Active",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["Mathematical verification", "Zero-fee ledger arbitration", "Extreme algorithmic efficiency"],
-    performanceGainPct: 44,
-    benchmarkScore: 99.7,
+    id: "gpt-5.6-luna",
+    name: "OpenAI GPT-5.6 Luna",
+    generation: "gpt-5.6-luna",
+    provider: "OpenAI",
+    releaseDate: "Current OpenAI high-volume tier",
+    status: "PENDING_FOUNDER_APPROVAL",
+    improvements: ["Cost-sensitive workloads", "Coding", "Multimodal input", "Tool-enabled workflows"],
+    performanceGainPct: 0,
+    benchmarkScore: 0,
   },
 ];
 
@@ -132,93 +99,38 @@ export class AutonomousModelUpdater {
     availableUpgrades: UpgradableModelInfo[];
   } {
     const hasOpenAI = Boolean(getEnvOrStorage("OPENAI_API_KEY"));
-    const hasAnthropic = Boolean(getEnvOrStorage("ANTHROPIC_API_KEY"));
-    const hasGoogle = Boolean(getEnvOrStorage("GEMINI_API_KEY"));
-    const hasXAI = Boolean(getEnvOrStorage("XAI_API_KEY"));
+    const availableUpgrades = this.registry.map((model) => ({
+      ...model,
+      status: hasOpenAI ? "PENDING_FOUNDER_APPROVAL" as const : "PENDING_FOUNDER_APPROVAL" as const,
+    }));
 
-    const availableUpgrades: UpgradableModelInfo[] = [
-      {
-        id: "o3-mini",
-        name: "OpenAI o3-mini Reasoning Engine",
-        generation: "o3-mini",
-        provider: "OpenAI",
-        releaseDate: "Production Ready",
-        status: hasOpenAI ? "AVAILABLE_UPDATE" : "PENDING_FOUNDER_APPROVAL",
-        improvements: ["Ultra-low latency math & coding", "Customizable reasoning effort", "STEM benchmark leader"],
-        performanceGainPct: 45,
-        benchmarkScore: 99.7,
-      },
-      {
-        id: "gemini-2-0-pro-exp",
-        name: "Gemini 2.0 Pro Experimental",
-        generation: "gemini-2.0-pro-exp-02-05",
-        provider: "Google DeepMind",
-        releaseDate: "Experimental Frontier",
-        status: hasGoogle ? "AVAILABLE_UPDATE" : "PENDING_FOUNDER_APPROVAL",
-        improvements: ["Advanced coding & complex problem solving", "2M token context", "Deep world knowledge"],
-        performanceGainPct: 48,
-        benchmarkScore: 99.9,
-      },
-      {
-        id: "claude-3-5-haiku",
-        name: "Anthropic Claude 3.5 Haiku",
-        generation: "claude-3-5-haiku-20241022",
-        provider: "Anthropic",
-        releaseDate: "Production Ready",
-        status: hasAnthropic ? "AVAILABLE_UPDATE" : "PENDING_FOUNDER_APPROVAL",
-        improvements: ["Sub-80ms first token response", "High accuracy JSON extraction", "Cost-effective routing"],
-        performanceGainPct: 30,
-        benchmarkScore: 98.9,
-      },
-    ];
+    const notifications: PendingUpgradeNotification[] = hasOpenAI
+      ? []
+      : [{
+          upgradeId: "openai-key-required",
+          title: "OpenAI provider configuration required",
+          sourceProvider: "OpenAI",
+          suggestedAction: "Configure OPENAI_API_KEY and run live model connectivity tests before enabling production routing.",
+          autoApply: false,
+          benchmarkGain: "Not measured",
+          detectedAt: "Not verified",
+        }];
 
-    const nextGenReleases: PendingUpgradeNotification[] = [
-      {
-        upgradeId: "o3-mini",
-        title: "OpenAI o3-mini Reasoning Tier Available",
-        sourceProvider: "OpenAI Official API",
-        suggestedAction: hasOpenAI
-          ? "Route high-complexity math and logic queries to o3-mini for faster reasoning."
-          : "Add OPENAI_API_KEY to unlock live o3-mini inference.",
-        autoApply: hasOpenAI,
-        benchmarkGain: "+45% Math & Logic Efficiency",
-        detectedAt: "Live",
-      },
-      {
-        upgradeId: "gemini-2-0-pro-exp",
-        title: "Gemini 2.0 Pro Experimental Available",
-        sourceProvider: "Google DeepMind Official API",
-        suggestedAction: hasGoogle
-          ? "Activate 2.0 Pro for 2M token context long-document synthesis."
-          : "Add GEMINI_API_KEY to route to Gemini 2.0 Pro.",
-        autoApply: hasGoogle,
-        benchmarkGain: "+48% Context Synthesis",
-        detectedAt: "Live",
-      },
-    ];
-
-    this.pendingNotifications = nextGenReleases;
-
-    const connectedCount = [hasOpenAI, hasAnthropic, hasGoogle, hasXAI].filter(Boolean).length;
-    const summary = `Model Registry Verified: 2 Sovereign local cores always active. ${connectedCount}/4 cloud API providers configured. 2 production upgrades ready for routing.`;
-
+    this.pendingNotifications = notifications;
     return {
-      updatesFound: true,
-      notifications: this.pendingNotifications,
-      summary,
-      activeModelsCount: this.registry.length,
+      updatesFound: notifications.length > 0,
+      notifications,
+      summary: hasOpenAI
+        ? "OpenAI models are configured but still require live connectivity verification before being marked production-active."
+        : "No verified external AI provider is configured.",
+      activeModelsCount: 0,
       availableUpgrades,
     };
   }
 
-  public applyUpgrade(upgradeId: string): boolean {
-    const existingIndex = this.registry.findIndex((m) => m.id === upgradeId);
-    if (existingIndex !== -1) {
-      this.registry[existingIndex].status = "ACTIVE_PRODUCTION";
-      return true;
-    }
+  public applyUpgrade(_upgradeId: string): boolean {
+    // Registry changes are not treated as provider verification or live routing.
     return false;
-  }
-}
+  }}
 
 export const autonomousModelUpdater = AutonomousModelUpdater.getInstance();
