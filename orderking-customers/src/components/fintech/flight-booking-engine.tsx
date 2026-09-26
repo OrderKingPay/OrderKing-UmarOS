@@ -32,9 +32,7 @@ export type Airport = {
   isInternational?: boolean;
 };
 
-import ALL_AIRPORTS_DATA from "./airports.json";
-
-export const POPULAR_AIRPORTS: Airport[] = ALL_AIRPORTS_DATA as Airport[];
+export const POPULAR_AIRPORTS: Airport[] = [];
 
 export type ConcessionFareType = "regular" | "student" | "defence" | "senior" | "corporate";
 
@@ -75,6 +73,10 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
   const [tripType, setTripType] = useState<"one_way" | "round_trip">("one_way");
   const [originAirport, setOriginAirport] = useState<string>("IXS");
   const [destinationAirport, setDestinationAirport] = useState<string>("CCU");
+  const [originLabel, setOriginLabel] = useState<string>("IXS");
+  const [destinationLabel, setDestinationLabel] = useState<string>("CCU");
+  const [originOptions, setOriginOptions] = useState<Airport[]>([]);
+  const [destinationOptions, setDestinationOptions] = useState<Airport[]>([]);
   const [departureDate, setDepartureDate] = useState<string>(
     new Date(Date.now() + 86400000).toISOString().split("T")[0]!
   );
@@ -105,6 +107,22 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
     savings: number;
     qrToken: string;
   } | null>(null);
+
+  const searchLocations = async (keyword: string, setter: (items: Airport[]) => void) => {
+    if (keyword.trim().length < 2) { setter([]); return; }
+    try {
+      const baseUrl = import.meta.env.VITE_HDMASTER_URL || "https://hdmaster.vercel.app";
+      const res = await fetch(`${baseUrl}/api/v1/travel/locations?keyword=${encodeURIComponent(keyword.trim())}`, { headers: { Accept: "application/json" } });
+      const data = await res.json() as { results?: Array<{ code?: string; name?: string; city?: string; country?: string }> };
+      if (!res.ok) throw new Error(data && "details" in data ? String((data as any).details) : "Live airport lookup unavailable");
+      setter((data.results ?? []).filter((x) => x.code).map((x) => ({
+        code: x.code!, city: x.city || x.name || x.code!, name: x.name || x.city || x.code!, country: x.country || "",
+      })));
+    } catch (err) {
+      setter([]);
+      toast.error(err instanceof Error ? err.message : "Airport lookup failed.");
+    }
+  };
 
   const handleSearch = async () => {
     if (originAirport === destinationAirport) {
@@ -286,33 +304,32 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-black text-cyan-300 ring-1 ring-cyan-400/40">
               <Sparkles className="size-3.5 text-amber-400 animate-spin" />
-              <span>GDS Direct Wholesale Rates · ₹0 Convenience Fee</span>
+              <span>Live provider fares · provider fees shown before payment</span>
             </div>
 
             <h2 className="font-display text-2xl sm:text-3xl font-black tracking-tight">
               Fly Anywhere at the{" "}
               <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200 bg-clip-text text-transparent">
-                Planet&apos;s Lowest Price
+                Live Flight Search
               </span>
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-              Bypass retail OTA markups. We stream live GDS consolidator wholesale fares with{" "}
-              <span className="font-bold text-emerald-400">₹0 Convenience Fee</span> (saving you ₹499–₹799 per ticket vs MakeMyTrip / EaseMyTrip) + instant Split-Ticketing optimizer.
+              Live flight availability and pricing are returned directly from the configured provider. Final fare rules, taxes, baggage, and provider fees are shown from the live offer before booking.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-1 text-xs">
               <span className="flex items-center gap-1 text-emerald-400 font-bold">
                 <CheckCircle2 className="size-4" />
-                <span>₹0 Convenience Fee Always</span>
+                <span>Live provider availability</span>
               </span>
               <span className="flex items-center gap-1 text-amber-300 font-bold">
                 <Award className="size-4" />
-                <span>2x Difference Price Match Guarantee</span>
+                <span>Provider-confirmed booking only</span>
               </span>
               <span className="flex items-center gap-1 text-cyan-300 font-bold">
                 <ShieldCheck className="size-4" />
-                <span>Instant PNR &amp; DGCA Protected</span>
+                <span>Verified provider booking flow</span>
               </span>
             </div>
           </div>
@@ -323,10 +340,10 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
               Average Traveler Savings
             </span>
             <p className="font-mono text-3xl font-black text-white">
-              ₹850 – ₹2,400
+              Live
             </p>
             <p className="text-[11px] text-emerald-400 font-semibold">
-              Per Booking with KingPay
+              Provider fare source
             </p>
           </div>
         </div>
@@ -408,33 +425,19 @@ export function FlightBookingEngine({ walletBalance, onDeductWallet }: Props) {
           {/* Origin */}
           <div className="space-y-1">
             <label className="text-[11px] font-bold text-muted uppercase">From Airport:</label>
-            <select
-              value={originAirport}
-              onChange={(e) => setOriginAirport(e.target.value)}
-              className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-bold text-fg focus:border-primary focus:outline-none"
-            >
-              {POPULAR_AIRPORTS.map((a) => (
-                <option key={a.code} value={a.code}>
-                  {a.city} ({a.code}) - {a.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <input value={originLabel} onChange={(e) => { setOriginLabel(e.target.value); void searchLocations(e.target.value, setOriginOptions); }} placeholder="Search any airport or city" className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-bold text-fg focus:border-primary focus:outline-none" />
+              {originOptions.length > 0 && <div className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-border bg-surface shadow-2xl">{originOptions.map((a) => <button key={a.code} type="button" className="block w-full px-3 py-2 text-left text-sm hover:bg-surface-2" onClick={() => { setOriginAirport(a.code); setOriginLabel(`${a.city} (${a.code}) - ${a.name}`); setOriginOptions([]); }}>{a.city} ({a.code}) — {a.name}</button>)}</div>}
+            </div>
           </div>
 
           {/* Destination */}
           <div className="space-y-1">
             <label className="text-[11px] font-bold text-muted uppercase">To Airport:</label>
-            <select
-              value={destinationAirport}
-              onChange={(e) => setDestinationAirport(e.target.value)}
-              className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-bold text-fg focus:border-primary focus:outline-none"
-            >
-              {POPULAR_AIRPORTS.map((a) => (
-                <option key={a.code} value={a.code}>
-                  {a.city} ({a.code}) - {a.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <input value={destinationLabel} onChange={(e) => { setDestinationLabel(e.target.value); void searchLocations(e.target.value, setDestinationOptions); }} placeholder="Search any airport or city" className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-bold text-fg focus:border-primary focus:outline-none" />
+              {destinationOptions.length > 0 && <div className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-border bg-surface shadow-2xl">{destinationOptions.map((a) => <button key={a.code} type="button" className="block w-full px-3 py-2 text-left text-sm hover:bg-surface-2" onClick={() => { setDestinationAirport(a.code); setDestinationLabel(`${a.city} (${a.code}) - ${a.name}`); setDestinationOptions([]); }}>{a.city} ({a.code}) — {a.name}</button>)}</div>}
+            </div>
           </div>
 
           {/* Departure Date */}
