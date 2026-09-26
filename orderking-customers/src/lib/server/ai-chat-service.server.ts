@@ -305,8 +305,8 @@ export async function executeFounderAiChat(
 
     return {
       text: engineeringResult,
-      modelUsed: "sovereign-local-core",
-      provider: "Local Sovereign",
+      modelUsed: "engineering-runtime",
+      provider: "HDmaster Workspace Tools",
       executionSteps: [],
       latencyMs: Date.now() - startTime,
     };
@@ -357,9 +357,6 @@ export async function executeFounderAiChat(
     if (openaiKey) activeProvidersList.push({ name: "OpenAI GPT-4o", id: "openai", provider: new OpenAIProvider(openaiKey), model: "gpt-4o" });
     if (xaiKey) activeProvidersList.push({ name: "xAI Grok 2", id: "xai", provider: new XAIProvider(xaiKey), model: "grok-2-1212" });
 
-    // Always include Sovereign Local Core
-    const localRes = executeLocalSovereignCognitivePass(currentQuery, request.messages, request.founderUpiVpa);
-
     if (activeProvidersList.length >= 2) {
       // Double Engine mode
       const engine1 = activeProvidersList[0];
@@ -375,7 +372,7 @@ export async function executeFounderAiChat(
         });
         primaryResponse = res1.text;
       } catch (e) {
-        primaryResponse = localRes.text;
+        throw e;
       }
       onStreamEvent?.({ type: "step", data: { stepNumber: 1, totalSteps: 2, label: `Engine 1 (${engine1.name}) Processing`, status: "COMPLETED", detail: "Primary generation complete." } });
 
@@ -426,15 +423,13 @@ export async function executeFounderAiChat(
       }
     }
 
-    // Default local fallback
-    onStreamEvent?.({ type: "delta", data: localRes.text });
-    onStreamEvent?.({ type: "done", data: { text: localRes.text } });
-
+    const blockedText = "No second real AI provider is configured for consensus, or the configured providers failed. No simulated response will be returned.";
+    onStreamEvent?.({ type: "error", data: { message: blockedText } });
     return {
-      text: localRes.text,
-      modelUsed: "sovereign-local-core",
-      provider: "Local Sovereign",
-      responders: ["Umar Sovereign Local Core"],
+      text: blockedText,
+      modelUsed: "none",
+      provider: "None Connected",
+      responders: [],
       executionSteps: [],
       latencyMs: Date.now() - startTime,
     };
@@ -543,47 +538,26 @@ export async function executeFounderAiChat(
           latencyMs: Date.now() - startTime,
         };
       } catch (err) {
-        console.warn(`[ai-chat] Provider ${activeRecord.provider} failed, falling back to Local Sovereign Core:`, err);
+        console.warn(`[ai-chat] Provider ${activeRecord.provider} failed; refusing simulated fallback:`, err);
         onStreamEvent?.({
           type: "step",
           data: {
             stepNumber: 3,
             totalSteps: 4,
-            label: "Local Core Fallback",
-            status: "COMPLETED",
-            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). Seamlessly routing to Local Sovereign Core.`,
+            label: "Provider Failure",
+            status: "WAITING",
+            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). No simulated fallback is permitted.`,
           },
         });
       }
     }
   }
 
-  // 5. No external provider available — fallback to free Pollinations API
-  let fallbackText = "I am currently operating offline. Please check your network connection.";
-  try {
-    const pRes = await fetch("https://text.pollinations.ai/openai", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "openai",
-        messages: [
-          { role: "system", content: "You are HDmaster AI, the number one AI on earth, designed by OrderKing elite engineers to replace ChatGPT Plus, Grok, and Gemini. You are extremely realistic, powerful, and natural." },
-          ...request.messages.map(m => ({ role: m.role, content: m.content }))
-        ]
-      })
-    });
-    const pData = await pRes.json();
-    fallbackText = pData?.choices?.[0]?.message?.content || fallbackText;
-  } catch (e) {
-    console.error("Pollinations fallback failed:", e);
-  }
-  onStreamEvent?.({ type: "delta", data: fallbackText });
-  onStreamEvent?.({ type: "done", data: { text: fallbackText, executionSteps: [], modelUsed: "hdmaster-omni" } });
-
-  const localRes = { text: fallbackText };
-
+  // 5. No external provider available: fail closed.
+  const blockedText = "No real AI provider is configured for this deployment. Add a verified provider key and redeploy; no simulated or third-party fallback response will be shown.";
+  onStreamEvent?.({ type: "error", data: { message: blockedText } });
   return {
-    text: localRes.text,
+    text: blockedText,
     modelUsed: "none",
     provider: "None Connected",
     executionSteps: [],
