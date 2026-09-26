@@ -91,7 +91,7 @@ export async function requireUserId(bearerToken?: string): Promise<string> {
     }
     return DEV_USER_ID;
   }
-  const user = await getSessionUser(bearerToken);
+  console.log("HEADERS:", Object.fromEntries(getRequest()?.headers.entries() || [])); const user = await getSessionUser(bearerToken);
   if (!user) throw new UnauthorizedError();
   return user.id;
 }
