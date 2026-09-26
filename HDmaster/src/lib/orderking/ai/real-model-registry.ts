@@ -85,7 +85,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       displayName: "👑 Umar Sovereign Local Engine",
       provider: "Local Sovereign",
       realApiId: "sovereign-local-core",
-      connectionStatus: "CONNECTED",
+      connectionStatus: "UNAVAILABLE",
       authStatus: "LOCAL_CORE",
       supportedModalities: ["text", "code", "file"],
       contextWindow: "128k tokens (In-Memory)",
@@ -108,7 +108,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       displayName: "⚡ Auto-Select Best Model (Supreme Orchestrator)",
       provider: "Orchestrator",
       realApiId: "dynamic-router-v1",
-      connectionStatus: "CONNECTED",
+      connectionStatus: "UNAVAILABLE",
       authStatus: "LOCAL_CORE",
       supportedModalities: ["text", "vision", "voice", "code", "file"],
       contextWindow: "Dynamic",
@@ -131,7 +131,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       displayName: "🧠 Multi-Model Ensemble Consensus",
       provider: "Consensus",
       realApiId: "multi-model-consensus-v1",
-      connectionStatus: "CONNECTED",
+      connectionStatus: "UNAVAILABLE",
       authStatus: "LOCAL_CORE",
       supportedModalities: ["text", "code", "file"],
       contextWindow: "Aggregated",
@@ -304,14 +304,27 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
   const registry = getVerifiedModelRegistry();
   const target = registry.find((m) => m.id === modelId) || registry[0];
 
-  if (target.provider === "Local Sovereign" || target.id === "auto-supreme-orchestrator" || target.id === "ensemble-consensus") {
+  if (target.provider === "Local Sovereign") {
     return {
       modelId: target.id,
-      success: true,
-      status: "CONNECTED",
-      latencyMs: Date.now() - start + 2,
+      success: false,
+      status: "CONFIGURATION_REQUIRED",
+      latencyMs: Date.now() - start,
       realModelUsed: target.realApiId,
-      message: `Verified: ${target.displayName} is active and operating with 100% local deterministic health.`,
+      message: "No embedded local LLM is bundled with this deployment. Configure a verified external provider.",
+      timestamp,
+    };
+  }
+
+  if (target.id === "auto-supreme-orchestrator" || target.id === "ensemble-consensus") {
+    const ready = Boolean(getProviderApiKey("openai") || getProviderApiKey("gemini") || getProviderApiKey("anthropic") || getProviderApiKey("xai"));
+    return {
+      modelId: target.id,
+      success: ready,
+      status: ready ? "CONNECTED" : "CONFIGURATION_REQUIRED",
+      latencyMs: Date.now() - start,
+      realModelUsed: target.realApiId,
+      message: ready ? "Verified: at least one real external provider is configured." : "Configuration Required: no real external provider is configured.",
       timestamp,
     };
   }
