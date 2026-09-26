@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Train, Search, CreditCard, ChevronDown, CheckCircle2, AlertTriangle, X, Scan, QrCode } from "lucide-react";
+import { Train, ChevronDown, CheckCircle2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import POPULAR_STATIONS from "./stations.json";
@@ -188,7 +188,7 @@ export function TrainBookingEngine({ walletBalance, onDeductWallet }: Props) {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                 </span>
-                IRCTC Authorized Partner
+                LIVE TRAIN SEARCH · LICENSED PROVIDER REQUIRED
               </div>
               <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white flex items-center gap-3">
                 <Train className="size-8 sm:size-10 text-indigo-400" strokeWidth={2.5} />
@@ -250,7 +250,7 @@ export function TrainBookingEngine({ walletBalance, onDeductWallet }: Props) {
             onClick={handleSearch}
             disabled={isSearching}
           >
-            {isSearching ? "Searching IRCTC..." : "Search Trains"}
+            {isSearching ? "Checking live provider..." : "Search Live Trains"}
           </Button>
         </div>
       </div>
@@ -258,7 +258,7 @@ export function TrainBookingEngine({ walletBalance, onDeductWallet }: Props) {
       {/* Train Results */}
       {trainResults.length > 0 && (
         <div className="mt-8 px-2 space-y-4">
-          <h3 className="font-display text-lg font-bold">Top Recommended Trains</h3>
+          <h3 className="font-display text-lg font-bold">Live Train Results</h3>
           
           <div className="space-y-4">
             {trainResults.map((train) => (
