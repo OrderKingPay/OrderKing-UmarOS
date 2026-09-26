@@ -60,17 +60,13 @@ export async function checkRateLimit(
   const sql = await getSql();
   const windowSeconds = windowMs / 1000;
 
-  await sql.query("BEGIN");
-  try {
-    await sql.query(
-      "select pg_advisory_xact_lock(hashtext($1))",
-      [bucketKey],
-    );
-    await sql.query(
+  return sql.transaction(async (tx) => {
+    await tx.query(
       "delete from rate_limit_events where bucket_key = $1 and occurred_at <= now() - ($2::double precision * interval '1 second')",
       [bucketKey, windowSeconds],
     );
-    const rows = await sql.query<{ count: number; oldest: string | null }>(
+    await tx.query("select pg_advisory_xact_lock(hashtext($1))", [bucketKey]);
+    const rows = await tx.query<{ count: number; oldest: string | null }>(
       "select count(*)::int as count, min(occurred_at)::text as oldest from rate_limit_events where bucket_key = $1",
       [bucketKey],
     );
@@ -79,29 +75,15 @@ export async function checkRateLimit(
 
     if (count >= maxRequests) {
       const resetMs = Math.max(1, oldest + windowMs - Date.now());
-      await sql.query("ROLLBACK");
-      return {
-        allowed: false,
-        remaining: 0,
-        resetMs,
-        retryAfterMs: resetMs,
-      };
+      return { allowed: false, remaining: 0, resetMs, retryAfterMs: resetMs };
     }
 
-    await sql.query(
+    await tx.query(
       "insert into rate_limit_events (bucket_key, occurred_at) values ($1, now())",
       [bucketKey],
     );
-    await sql.query("COMMIT");
-    return {
-      allowed: true,
-      remaining: Math.max(0, maxRequests - count - 1),
-      resetMs: windowMs,
-    };
-  } catch (error) {
-    try { await sql.query("ROLLBACK"); } catch { /* preserve original error */ }
-    throw error;
-  }
+    return { allowed: true, remaining: Math.max(0, maxRequests - count - 1), resetMs: windowMs };
+  });
 }
 
 export function getRateLimitHeaders(result: RateLimitResult): Record<string, string> {
