@@ -66,8 +66,6 @@ export const getHomeFn = createServerFn({ method: "GET" })
                 state: "OFFERED",
                 dataMode: "LIVE",
                 expectedPayoutPaise: o.expected_payout_paise ?? 0,
-                expectedDistanceM: o.distance_m ?? 0,
-                expectedEtaSeconds: o.eta_seconds ?? 0,
                 restaurant,
                 customer,
                 pickupWindowStart: o.offered_at,
