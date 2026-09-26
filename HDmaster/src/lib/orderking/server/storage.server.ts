@@ -45,15 +45,7 @@ export async function createPresignedUpload(
   const uniqueKey = `${req.target}/${req.targetId}/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
 
   if (!config.hasCredentials) {
-    // Graceful fallback for local development or preview environments
-    return {
-      uploadUrl: `/api/uploads/mock?key=${encodeURIComponent(uniqueKey)}`,
-      publicUrl: `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80`,
-      key: uniqueKey,
-      method: "PUT",
-      headers: { "Content-Type": req.contentType },
-      isMock: true,
-    };
+    throw new Error("Storage credentials not configured. Refusing to generate a simulated upload URL.");
   }
 
   // Real S3 / R2 Pre-signed PUT URL generation using standard AWS v4 signing protocol
