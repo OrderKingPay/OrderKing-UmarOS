@@ -122,6 +122,14 @@ export class OpenAIProvider implements AIProvider {
     const promptTokens = data.usage?.prompt_tokens || 0;
     const completionTokens = data.usage?.completion_tokens || 0;
     const totalTokens = data.usage?.total_tokens || promptTokens + completionTokens;
+    const pricing: Record<string, { inputPerMillion: number; outputPerMillion: number }> = {
+      "gpt-5.6-sol": { inputPerMillion: 4, outputPerMillion: 20 },
+      "gpt-5.6-terra": { inputPerMillion: 2, outputPerMillion: 12 },
+      "gpt-5.6-luna": { inputPerMillion: 0.2, outputPerMillion: 1.2 },
+    };
+    const rate = pricing[model] || pricing["gpt-5.6-sol"];
+    const estimatedCostUsd =
+      (promptTokens * rate.inputPerMillion + completionTokens * rate.outputPerMillion) / 1_000_000;
 
     return {
       provider: this.id,
@@ -132,7 +140,7 @@ export class OpenAIProvider implements AIProvider {
         promptTokens,
         completionTokens,
         totalTokens,
-        estimatedCostUsd: (promptTokens * 0.0025 + completionTokens * 0.01) / 1000,
+        estimatedCostUsd,
       },
       latencyMs: Date.now() - start,
     };
