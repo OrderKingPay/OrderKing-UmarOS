@@ -75,29 +75,7 @@ export function FounderSovereignDeck() {
 
   const [auditLog, setAuditLog] = useState<
     Array<{ id: string; action: string; timestamp: string; status: "SUCCESS" | "EXECUTING"; detail: string }>
-  >([
-    {
-      id: "ord-901",
-      action: "FOUNDER_SESSION_INIT",
-      timestamp: "Just now",
-      status: "SUCCESS",
-      detail: "Sovereign Executive Command Deck initialized with full root authorization",
-    },
-    {
-      id: "ord-900",
-      action: "MERCHANT_SETTLEMENT_SWEEP",
-      timestamp: "12m ago",
-      status: "SUCCESS",
-      detail: "Batch payout of ₹42,500 settled directly to 14 partner restaurant bank accounts",
-    },
-    {
-      id: "ord-899",
-      action: "SURGE_ALGORITHM_CALIBRATION",
-      timestamp: "1h ago",
-      status: "SUCCESS",
-      detail: "Karimganj Town zone surge locked at 1.0x (0% extra fee guarantee enforced)",
-    },
-  ]);
+  >([]);
 
   // Simulation Mutation
   const advanceSim = useMutation({
@@ -126,39 +104,31 @@ export function FounderSovereignDeck() {
   };
 
   const handleToggleFreeze = () => {
-    const next = !platformFrozen;
-    setPlatformFrozen(next);
-    if (next) {
-      toast.error("🚨 PLATFORM FREEZE ACTIVATED: New orders temporarily paused across all zones!");
-      addAuditEntry("PLATFORM_CIRCUIT_BREAKER", "Emergency order freeze engaged across all zones");
-    } else {
-      toast.success("✅ PLATFORM FREEZE LIFTED: Normal marketplace operations restored!");
-      addAuditEntry("PLATFORM_RESUME", "Marketplace order placement resumed");
-    }
+    toast.error("Live platform circuit-breaker API is not connected. No production state was changed.");
   };
 
   const handleBroadcastToFleet = () => {
-    throw new Error("NO MOCK CLAIMS: Real broadcast API is not connected.");
+    toast.error("Live fleet broadcast API is not connected. No message was sent.");
   };
 
   const handleBatchSettlement = () => {
-    throw new Error("NO MOCK CLAIMS: Real batch settlement API is not connected.");
+    toast.error("Live settlement service is not connected. No payout was created.");
   };
 
   const handleInstantKycSweep = () => {
-    throw new Error("NO MOCK CLAIMS: Real KYC API is not connected.");
+    toast.error("Live KYC provider is not connected. No verification was performed.");
   };
 
   const handleReindexSearch = () => {
-    throw new Error("NO MOCK CLAIMS: Real search reindexing API is not connected.");
+    toast.error("Live search indexing service is not connected. No reindex was performed.");
   };
 
   const handlePurgeCache = () => {
-    throw new Error("NO MOCK CLAIMS: Real cache purge API is not connected.");
+    toast.error("Live cache service is not connected. No cache was purged.");
   };
 
   const handleTriggerSelfUpgrade = () => {
-    throw new Error("NO MOCK CLAIMS: Real self-upgrade API is not connected.");
+    toast.error("Live autonomous code-upgrade service is not connected. No code was changed.");
   };
 
   return (
