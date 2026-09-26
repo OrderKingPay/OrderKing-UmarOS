@@ -36,48 +36,9 @@ export type PaidProduct = {
 };
 
 export function FounderIncomeProducts() {
-  const [products, setProducts] = useState<PaidProduct[]>([
-    {
-      id: "prod-01",
-      title: "OrderKing Restaurant SaaS White-Label License",
-      priceInr: 49999,
-      category: "software",
-      salesCount: 14,
-      totalEarnedInr: 699986,
-      checkoutLink: "https://pay.orderking.in/l/saas-license",
-      status: "ACTIVE",
-    },
-    {
-      id: "prod-02",
-      title: "Sovereign Quick-Commerce Fleet Blueprint & Codebase",
-      priceInr: 19999,
-      category: "digital_asset",
-      salesCount: 28,
-      totalEarnedInr: 559972,
-      checkoutLink: "https://pay.orderking.in/l/fleet-blueprint",
-      status: "ACTIVE",
-    },
-    {
-      id: "prod-03",
-      title: "1-on-1 High-Scale Marketplace Architecture Consulting (1 Hour)",
-      priceInr: 15000,
-      category: "consulting",
-      salesCount: 8,
-      totalEarnedInr: 120000,
-      checkoutLink: "https://pay.orderking.in/l/founder-consulting",
-      status: "ACTIVE",
-    },
-    {
-      id: "prod-04",
-      title: "Turnkey Dark Kitchen Web & Order System",
-      priceInr: 34999,
-      category: "website",
-      salesCount: 9,
-      totalEarnedInr: 314991,
-      checkoutLink: "https://pay.orderking.in/l/turnkey-kitchen",
-      status: "ACTIVE",
-    },
-  ]);
+  const [products] = useState<PaidProduct[]>([]);
+
+
 
   const [newTitle, setNewTitle] = useState("");
   const [newPrice, setNewPrice] = useState("");
@@ -85,8 +46,8 @@ export function FounderIncomeProducts() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const totalGrossIncome = products.reduce((acc, p) => acc + p.totalEarnedInr, 0);
-  const netFounderTakehome = Math.round(totalGrossIncome * 0.82); // After 18% GST allocation
-  const gstAllocated = totalGrossIncome - netFounderTakehome;
+  const netFounderTakehome = 0;
+  const gstAllocated = 0;
 
   const handleCreateProduct = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,24 +56,7 @@ export function FounderIncomeProducts() {
       return;
     }
 
-    const price = Number(newPrice);
-    const prodId = `prod-${Date.now().toString().slice(-4)}`;
-    const newProd: PaidProduct = {
-      id: prodId,
-      title: newTitle,
-      priceInr: price,
-      category: newCategory,
-      salesCount: 0,
-      totalEarnedInr: 0,
-      checkoutLink: `https://pay.orderking.in/l/${prodId}`,
-      status: "ACTIVE",
-    };
-
-    setProducts([newProd, ...products]);
-    setNewTitle("");
-    setNewPrice("");
-    setShowCreateModal(false);
-    toast.success(`🎉 Paid product "${newTitle}" created! Shareable payment link generated.`);
+    toast.error("Live Stripe/Razorpay product creation is not connected. No local-only product or payment link was created.");
   };
 
   const copyLink = (link: string) => {
@@ -128,35 +72,35 @@ export function FounderIncomeProducts() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
         <div className="rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-950/40 via-slate-900 to-black p-4 shadow-lg space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">Total Gross Product Revenue</span>
+            <span className="text-xs font-semibold">Verified Gross Product Revenue</span>
             <DollarSign className="size-4 text-emerald-400" />
           </div>
           <p className="text-2xl font-black text-white font-mono">
             ₹{totalGrossIncome.toLocaleString("en-IN")}
           </p>
-          <span className="text-[10px] text-emerald-400 font-bold">● 100% Legal Direct Income</span>
+          <span className="text-[10px] text-emerald-400 font-bold">● Verified ledger only</span>
         </div>
 
         <div className="rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-950/40 via-slate-900 to-black p-4 shadow-lg space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">Net Founder Take-Home (Tax-Paid)</span>
+            <span className="text-xs font-semibold">Verified Founder Payouts</span>
             <Wallet className="size-4 text-amber-400" />
           </div>
           <p className="text-2xl font-black text-amber-300 font-mono">
             ₹{netFounderTakehome.toLocaleString("en-IN")}
           </p>
-          <span className="text-[10px] text-slate-400">Direct Founder Bank Deposit</span>
+          <span className="text-[10px] text-slate-400">Requires verified settlement ledger</span>
         </div>
 
         <div className="rounded-2xl border border-white/15 bg-slate-900 p-4 shadow-lg space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">GST Reserve (18% Compliance)</span>
+            <span className="text-xs font-semibold">Verified Tax Reserve</span>
             <ShieldCheck className="size-4 text-cyan-400" />
           </div>
           <p className="text-2xl font-black text-cyan-400 font-mono">
             ₹{gstAllocated.toLocaleString("en-IN")}
           </p>
-          <span className="text-[10px] text-muted">GSTR-1 &amp; GSTR-3B Ready</span>
+          <span className="text-[10px] text-muted">Requires verified accounting source</span>
         </div>
       </div>
 
@@ -186,7 +130,12 @@ export function FounderIncomeProducts() {
       {/* PRODUCTS DIRECTORY */}
       <div className="rounded-2xl border border-white/15 bg-black/60 p-4 shadow-xl space-y-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {products.map((p) => (
+          {products.length === 0 ? (
+            <div className="col-span-full rounded-xl border border-dashed border-white/15 p-6 text-center text-xs text-slate-400">
+              No verified live products are loaded.
+            </div>
+          ) : (
+            products.map((p) => (
             <div
               key={p.id}
               className="rounded-xl border border-white/10 bg-slate-950/80 p-4 shadow-xs space-y-3 flex flex-col justify-between hover:border-amber-400/40 transition"
@@ -224,7 +173,8 @@ export function FounderIncomeProducts() {
                 </Button>
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
       </div>
 
