@@ -123,6 +123,7 @@ export function FounderCommandPage() {
   const [dispatchMode, setDispatchMode] = useState<"AI_AUTO" | "MANUAL_OVERRIDE">("AI_AUTO");
   const [productionMode, setProductionMode] = useState<"LIVE_PRODUCTION" | "SIMULATION_TEST">("LIVE_PRODUCTION");
   const [broadcastMessage, setBroadcastMessage] = useState("");
+  const isBroadcasting = false;
 
   // Creator Engine State
   const [creatorPrompt, setCreatorPrompt] = useState("");
