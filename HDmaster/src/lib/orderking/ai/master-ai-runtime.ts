@@ -17,10 +17,14 @@ import {
   type AllowedRepo,
 } from "./workspace-repos.server.ts";
 import { getSpecialist, type SpecialistPersona } from "./specialists.ts";
-import { routeModelTurn } from "./model-router.server.ts"; 
-import type { ChatRequest, ChatChunk as ModelCallResponse, AIProvider as AiProvider, ToolDefinition as ModelToolDefinition } from "./providers/provider-interface.ts";
-type ModelCallRequest = ChatRequest;
-type ModelMessage = ChatRequest['messages'][0];
+import { routeModelTurn } from "./model-router.server.ts";
+import type {
+  ChatRequest as ModelCallRequest,
+  ChatChunk as ModelCallResponse,
+  AIProvider as AiProvider,
+  ChatMessage as ModelMessage,
+  ToolDefinition as ModelToolDefinition,
+} from "./providers/provider-interface.ts";
 import { calculateFounderRetainedCashVault } from "../finance/founder-vault.ts";
 import { calculateMasterProfitEngine } from "../finance/profit-engine.ts";
 
@@ -30,7 +34,7 @@ export type MasterAiInput = {
   question: string;
   mode: "ops" | "ceo";
   specialistId?: string;
-  provider?: string;
+  provider?: AiProvider;
   conversation?: Array<{ role: "user" | "assistant"; content: string }>;
   reasoningEffort?: "low" | "medium" | "high" | "xhigh";
   approvedCallId?: string;
@@ -59,7 +63,7 @@ export type MasterAiRuntimeResult =
   | {
       ok: true;
       text: string;
-      provider: string;
+      provider: AiProvider;
       model: string;
       specialist: { id: string; name: string; team: string; title: string };
       toolCalls: ToolCallResult[];
@@ -2724,19 +2728,21 @@ export async function runMasterAi(
   const toolCallsSummary: ToolCallResult[] = [];
   const pendingApprovals: PendingApproval[] = [];
   const evidence = new Set<string>(["RESULT"]);
-  let activeProvider: string = input.provider || "local_deterministic";
+  let activeProvider: AiProvider = input.provider || "local_deterministic";
   let activeModel = "orderking-master-ai-v1";
   let finalText = "";
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
     const modelResponse = await routeModelTurn({
-      model: activeModel,
+      specialist,
       systemPrompt,
       messages,
-      tools: toolDefinitions as any,
-    }, activeProvider as any);
+      tools: toolDefinitions,
+      reasoningEffort: input.reasoningEffort,
+      preferredProvider: input.provider,
+    });
 
-    activeProvider = modelResponse.provider as unknown as string;
+    activeProvider = modelResponse.provider;
     activeModel = modelResponse.model;
 
     // If model returned text and no tool calls, we are finished!
