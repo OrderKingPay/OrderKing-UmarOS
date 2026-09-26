@@ -198,22 +198,22 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       },
     },
     {
-      id: "gpt-5-6-omni",
-      displayName: "OpenAI GPT-4o / o3-mini",
+      id: "gpt-5-6-sol",
+      displayName: "OpenAI GPT-5.6 Sol / GPT-5.6 Luna",
       provider: "OpenAI",
-      realApiId: "gpt-4o",
+      realApiId: "gpt-5.6-sol",
       connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
       authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "OPENAI_API_KEY",
       supportedModalities: ["text", "vision", "code", "file"],
-      contextWindow: "128k tokens",
+      contextWindow: "1.05M tokens",
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
       measuredLatencyMs: openaiKey ? 165 : 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
-      description: "OpenAI omnimodal flagship engine supporting function calling, code generation, and low-latency voice. Connect via OPENAI_API_KEY.",
+      description: "OpenAI GPT-5.6 flagship reasoning engine with function tools, web search, file search, and computer-use support through the Responses API. Connect via OPENAI_API_KEY.",
       capabilities: {
         canStream: true,
         canProcessImages: true,
@@ -343,7 +343,7 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
       });
       testSuccess = res.ok;
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      realModelReturned = "gpt-4o";
+      realModelReturned = "gpt-5.6-sol";
     } else if (target.provider === "Anthropic") {
       const res = await fetch("https://api.anthropic.com/v1/models", {
         method: "GET",
