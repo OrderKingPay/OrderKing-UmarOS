@@ -3,8 +3,11 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { supabase } from "@/lib/db-cloud";
 
-// Ensure you provide your Mapbox token via environment variables or explicitly here
-mapboxgl.accessToken = process.env.VITE_MAPBOX_TOKEN || "pk.eyJ1IjoiZHVtbXkiLCJhIjoiY2R1bW15In0.dummy";
+const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
+if (!mapboxToken) {
+  throw new Error("Mapbox configuration is missing. Live tracking cannot start without a real token.");
+}
+mapboxgl.accessToken = mapboxToken;
 
 interface LiveTrackingMapProps {
   dispatchJobId: string;
