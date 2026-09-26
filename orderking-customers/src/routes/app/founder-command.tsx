@@ -65,7 +65,6 @@ import { DependencyInspectorHub } from "@/components/ai/dependency-inspector-hub
 import { EmergencyRecoveryHub } from "@/components/ai/emergency-recovery-hub";
 import { RevenueGrowthCostHub } from "@/components/ai/revenue-growth-cost-hub";
 import { calculateFinancialTelemetry, INITIAL_FINANCIAL_RECORDS } from "@/lib/ai/financial-truth-engine";
-import { InstantDeployEngine } from "@/lib/ai/instant-deploy-engine";
 import { SystemMasterSettingsModal } from "@/components/command/system-master-settings-modal";
 
 export const Route = createFileRoute("/app/founder-command")({
@@ -106,15 +105,7 @@ export function FounderCommandPage() {
     | "launch"
   >("supreme_ai");
 
-  const [useDemoRecords, setUseDemoRecords] = useState<boolean>(() => {
-    if (typeof window !== "undefined" && window.localStorage) {
-      const saved = window.localStorage.getItem("umar_os_use_demo_financials");
-      if (saved !== null) return saved === "true";
-    }
-    return false; // Default to clean live ledger (₹0) for absolute realism
-  });
-
-  const activeFinancialRecords = useDemoRecords ? INITIAL_FINANCIAL_RECORDS : [];
+  const activeFinancialRecords: typeof INITIAL_FINANCIAL_RECORDS = [];
   const financialTelemetry = calculateFinancialTelemetry(activeFinancialRecords);
 
   // Practical Business Launch & Field Ops State
@@ -123,8 +114,8 @@ export function FounderCommandPage() {
   const [merchantUpiVpa, setMerchantUpiVpa] = useState("orderking@okhdfcbank");
   const [launchVoucherCode, setLaunchVoucherCode] = useState("LAUNCH100");
   const [launchVoucherDiscount, setLaunchVoucherDiscount] = useState(100);
-  const [activeRidersCount, setActiveRidersCount] = useState(8);
-  const [activeKitchensCount, setActiveKitchensCount] = useState(14);
+  const [activeRidersCount, setActiveRidersCount] = useState(0);
+  const [activeKitchensCount, setActiveKitchensCount] = useState(0);
 
   // Master Circuit Breakers State
   const [platformFrozen, setPlatformFrozen] = useState(false);
@@ -145,61 +136,26 @@ export function FounderCommandPage() {
     timestamp: string;
   } | null>(null);
 
-  // Founder Income Products State
-  const [products, setProducts] = useState([
-    {
-      id: "PROD-901",
-      name: "Sovereign FinTech & POS Turnkey License",
-      priceInr: 49999,
-      salesCount: 14,
-      totalEarned: 699986,
-      payoutAccount: "Founder Direct Private Escrow (**4892)",
-      status: "ACTIVE",
-    },
-    {
-      id: "PROD-902",
-      name: "Autonomous Cloud Kitchen Management System",
-      priceInr: 29999,
-      salesCount: 28,
-      totalEarned: 839972,
-      payoutAccount: "Founder Direct Private Escrow (**4892)",
-      status: "ACTIVE",
-    },
-    {
-      id: "PROD-903",
-      name: "Ultra-Fast Hyperlocal Logistics AI Engine",
-      priceInr: 79999,
-      salesCount: 8,
-      totalEarned: 639992,
-      payoutAccount: "Founder Direct Private Escrow (**4892)",
-      status: "ACTIVE",
-    },
-  ]);
+  // Founder Income Products: load only from a verified backend source.
+  const products: Array<{
+    id: string;
+    name: string;
+    priceInr: number;
+    salesCount: number;
+    totalEarned: number;
+    payoutAccount: string;
+    status: string;
+  }> = [];
 
   // Audit Log State
-  const [auditLog, setAuditLog] = useState([
-    {
-      id: "HD-901",
-      action: "FOUNDER_SESSION_INIT",
-      timestamp: "Just now",
-      status: "SUCCESS",
-      detail: "Sovereign Executive Command Deck initialized with full root authorization",
-    },
-    {
-      id: "HD-900",
-      action: "MERCHANT_SETTLEMENT_SWEEP",
-      timestamp: "12m ago",
-      status: "SUCCESS",
-      detail: "Batch payout of ₹42,500 settled directly to 14 partner restaurant bank accounts",
-    },
-    {
-      id: "HD-899",
-      action: "SURGE_ALGORITHM_CALIBRATION",
-      timestamp: "1h ago",
-      status: "SUCCESS",
-      detail: "Karimganj Town zone surge locked at 1.0x (0% extra fee guarantee enforced)",
-    },
-  ]);
+  const [auditLog, setAuditLog] = useState<Array<{
+    id: string;
+    action: string;
+    timestamp: string;
+    status: string;
+    detail: string;
+  }>>([]);
+
 
   const handleToggleFreeze = () => {
     const next = !platformFrozen;
@@ -225,22 +181,7 @@ export function FounderCommandPage() {
       toast.error("Enter alert message to broadcast");
       return;
     }
-    setIsBroadcasting(true);
-    setTimeout(() => {
-      setIsBroadcasting(false);
-      toast.success("Broadcast dispatched to all active riders, restaurants & customers!");
-      setAuditLog((prev) => [
-        {
-          id: `HD-${Date.now()}`,
-          action: "EMERGENCY_PUSH_BROADCAST",
-          timestamp: "Just now",
-          status: "SUCCESS",
-          detail: `Broadcast: "${broadcastMessage}"`,
-        },
-        ...prev,
-      ]);
-      setBroadcastMessage("");
-    }, 600);
+    toast.error("Live fleet/merchant broadcast service is not connected. No message was sent.");
   };
 
   const handleGenerateProject = () => {
@@ -248,30 +189,7 @@ export function FounderCommandPage() {
       toast.error("Please enter app/website specification prompt");
       return;
     }
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-      const deployTarget = InstantDeployEngine.getInstance().deployProject(creatorPrompt);
-      const proj = {
-        name: deployTarget.projectName,
-        description: creatorPrompt,
-        routes: ["/", "/catalog", "/checkout", "/tracking", "/api/orders"],
-        liveUrl: deployTarget.liveUrl,
-        timestamp: "Just now",
-      };
-      setCreatedProject(proj);
-      toast.error("DEPLOYMENT BLOCKED: External API Configuration Required");
-      setAuditLog((prev) => [
-        {
-          id: `HD-${Date.now()}`,
-          action: "SUPREME_CREATOR_DEPLOYMENT",
-          timestamp: "Just now",
-          status: "BLOCKED",
-          detail: `Deployment blocked for '${deployTarget.projectName}'. Missing provider credentials.`,
-        },
-        ...prev,
-      ]);
-    }, 600);
+    toast.error("Live deployment service is not connected from this founder surface. No project or live URL was created.");
   };
 
   return (
