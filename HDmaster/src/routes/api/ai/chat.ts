@@ -57,7 +57,6 @@ export const Route = createFileRoute("/api/ai/chat")({
           );
         }
       },
-      },
     },
   },
 });
