@@ -111,12 +111,20 @@ export class CanonicalLedger {
       throw new Error("Transaction must have a non-zero value.");
     }
 
-    const existing = await sql.query<any>("SELECT transaction_id FROM ledger_transactions WHERE idempotency_key = $1 LIMIT 1", [params.idempotencyKey]);
+    const existing = await sql.query<any>(
+      "SELECT transaction_id FROM ledger_transactions WHERE idempotency_key = $1 LIMIT 1",
+      [params.idempotencyKey],
+    );
     if (existing && existing.length > 0) {
       const txId = existing[0].transaction_id;
-      const txRows = await sql.query<any>("SELECT * FROM ledger_transactions WHERE transaction_id = $1", [txId]);
-      const entryRows = await sql.query<any>("SELECT * FROM ledger_entries WHERE transaction_id = $1", [txId]);
-      
+      const txRows = await sql.query<any>(
+        "SELECT * FROM ledger_transactions WHERE transaction_id = $1",
+        [txId],
+      );
+      const entryRows = await sql.query<any>(
+        "SELECT * FROM ledger_entries WHERE transaction_id = $1",
+        [txId],
+      );
       return {
         transactionId: txRows[0].transaction_id,
         idempotencyKey: txRows[0].idempotency_key,
@@ -127,24 +135,30 @@ export class CanonicalLedger {
         auditHash: txRows[0].audit_hash,
         previousHash: txRows[0].previous_hash,
         isFraudSuspicious: txRows[0].is_fraud_suspicious,
-        fraudReasons: typeof txRows[0].fraud_reasons === 'string' ? JSON.parse(txRows[0].fraud_reasons) : txRows[0].fraud_reasons,
+        fraudReasons: typeof txRows[0].fraud_reasons === "string" ? JSON.parse(txRows[0].fraud_reasons) : txRows[0].fraud_reasons,
         fraudScore: txRows[0].fraud_score,
-        entries: entryRows.map(e => ({
+        entries: entryRows.map((e) => ({
           entryId: e.entry_id,
           account: e.account,
           direction: e.direction,
           amountPaise: parseInt(e.amount_paise),
           entityId: e.entity_id,
-          memo: e.memo
-        }))
+          memo: e.memo,
+        })),
       };
     }
 
     const transactionId = "tx-" + crypto.randomUUID();
     const now = new Date().toISOString();
 
-    const lastTx = await sql.query<any>("SELECT audit_hash FROM ledger_transactions ORDER BY created_at DESC LIMIT 1", []);
-    const previousHash = lastTx.length > 0 ? lastTx[0].audit_hash : "0000000000000000000000000000000000000000000000000000000000000000";
+    // Chain state is a single locked row. It prevents concurrent transactions from
+    // producing two valid-looking entries with the same previous hash.
+    const chainState = await sql.query<{ last_audit_hash: string }>(
+      "SELECT last_audit_hash FROM ledger_chain_state WHERE id = 1 FOR UPDATE",
+    );
+    const previousHash =
+      chainState[0]?.last_audit_hash ??
+      "0000000000000000000000000000000000000000000000000000000000000000";
 
     const canonicalPayload = JSON.stringify({
       transactionId,
@@ -157,25 +171,33 @@ export class CanonicalLedger {
     const auditHash = this.generateHash(canonicalPayload);
     const fraudReasonsJson = params.fraudReasons ? JSON.stringify(params.fraudReasons) : null;
 
-    await sql.query("BEGIN", []);
-    try {
-      await sql.query(
+    await sql.transaction(async (tx) => {
+      const lockedExisting = await tx.query<any>(
+        "SELECT transaction_id FROM ledger_transactions WHERE idempotency_key = $1 FOR UPDATE",
+        [params.idempotencyKey],
+      );
+      if (lockedExisting.length > 0) {
+        return;
+      }
+
+      await tx.query(
         "INSERT INTO ledger_transactions (transaction_id, idempotency_key, order_id, event_type, total_amount_paise, timestamp, audit_hash, previous_hash, is_fraud_suspicious, fraud_reasons, fraud_score) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
-        [transactionId, params.idempotencyKey, params.orderId || null, params.eventType, totalDebit, now, auditHash, previousHash, params.isFraudSuspicious || false, fraudReasonsJson, params.fraudScore || 0]
+        [transactionId, params.idempotencyKey, params.orderId || null, params.eventType, totalDebit, now, auditHash, previousHash, params.isFraudSuspicious || false, fraudReasonsJson, params.fraudScore || 0],
       );
 
       for (const entry of params.entries) {
         const entryId = "ent-" + crypto.randomUUID();
-        await sql.query(
+        await tx.query(
           "INSERT INTO ledger_entries (entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-          [entryId, transactionId, entry.account, entry.direction, entry.amountPaise, entry.entityId, entry.memo, now]
+          [entryId, transactionId, entry.account, entry.direction, entry.amountPaise, entry.entityId, entry.memo, now],
         );
       }
-      await sql.query("COMMIT", []);
-    } catch (err) {
-      await sql.query("ROLLBACK", []);
-      throw err;
-    }
+
+      await tx.query(
+        "UPDATE ledger_chain_state SET last_audit_hash = $1 WHERE id = 1",
+        [auditHash],
+      );
+    });
 
     return {
       transactionId,
