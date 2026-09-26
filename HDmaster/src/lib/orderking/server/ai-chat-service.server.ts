@@ -835,27 +835,19 @@ export async function executeFounderAiChat(
             totalSteps: 4,
             label: "Local Core Fallback",
             status: "COMPLETED",
-            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). Seamlessly routing to Local Sovereign Core.`,
+            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). No fallback response will be generated.`,
           },
         });
       }
     }
   }
 
-  // 5. No external provider available — honest fallback
-  const localRes = executeLocalSovereignCognitivePass(currentQuery, request.messages, request.founderUpiVpa);
-  onStreamEvent?.({ type: "delta", data: localRes.text });
-  onStreamEvent?.({
-    type: "done",
-    data: {
-      text: localRes.text,
-      executionSteps: [],
-      modelUsed: "none",
-    },
-  });
+  // 5. No external provider available: fail closed.
+  const blockedText = "No verified external AI provider is configured for this deployment. Add a provider key and redeploy; no simulated or local fallback response will be returned.";
+  onStreamEvent?.({ type: "error", data: { message: blockedText } });
 
   return {
-    text: localRes.text,
+    text: blockedText,
     modelUsed: "none",
     provider: "None Connected",
     executionSteps: [],
