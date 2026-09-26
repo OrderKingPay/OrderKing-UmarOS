@@ -104,35 +104,6 @@ export function TrainBookingEngine({ walletBalance, onDeductWallet }: Props) {
     totalPaid: number;
   } | null>(null);
 
-  const generateDummyResults = () => {
-    return [
-      {
-        id: "tr_1",
-        trainName: "Rajdhani Express",
-        trainNumber: "12952",
-        departureStation: originStation,
-        arrivalStation: destinationStation,
-        departureTime: "16:30",
-        arrivalTime: "08:15",
-        duration: "15h 45m",
-        baseFare: 2850,
-        classes: ["1A", "2A", "3A"]
-      },
-      {
-        id: "tr_2",
-        trainName: "Duronto Express",
-        trainNumber: "12240",
-        departureStation: originStation,
-        arrivalStation: destinationStation,
-        departureTime: "23:10",
-        arrivalTime: "14:20",
-        duration: "15h 10m",
-        baseFare: 2600,
-        classes: ["1A", "2A", "3A", "SL"]
-      }
-    ];
-  };
-
   const handleSearch = async () => {
     if (originStation === destinationStation) {
       toast.error("Origin and destination stations cannot be the same.");
@@ -142,66 +113,65 @@ export function TrainBookingEngine({ walletBalance, onDeductWallet }: Props) {
     setTrainResults([]);
 
     try {
-      const res = await fetch(`https://hdmaster.vercel.app/api/v1/travel/search?mode=TRAIN&originCode=${originStation}&destinationCode=${destinationStation}&departureDate=${departureDate}&passengers=${passengers}`);
-      const data = await res.json();
-      
-      if (data.results && data.results.length > 0) {
-         toast.success(`🚂 Found ${data.results.length} live trains from IRCTC!`);
-         setTrainResults(data.results.map((r: any) => ({
-           id: r.id,
-           trainName: r.carrier.name,
-           trainNumber: r.carrier.code,
-           departureStation: r.origin.code,
-           arrivalStation: r.destination.code,
-           departureTime: new Date(r.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-           arrivalTime: new Date(r.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-           duration: "12h",
-           baseFare: r.price.amount,
-           classes: ["3A", "SL"]
-         })));
-      } else if (data.error && data.blocked) {
-         toast.error(`IRCTC Provider Blocked: ${data.details || data.error}`);
-         setTrainResults([]);
-      } else {
-         setTrainResults(generateDummyResults());
-         toast.success(`🚂 Found ${generateDummyResults().length} trains!`);
+      const params = new URLSearchParams({
+        mode: "TRAIN",
+        originCode: originStation,
+        destinationCode: destinationStation,
+        departureDate,
+        passengers: String(passengers),
+      });
+      const baseUrl = import.meta.env.VITE_HDMASTER_URL || "https://hdmaster.vercel.app";
+      const res = await fetch(`${baseUrl}/api/v1/travel/search?${params.toString()}`, {
+        headers: { Accept: "application/json" },
+      });
+      const data = await res.json() as {
+        results?: Array<{
+          id: string;
+          providerId: string;
+          origin: { code: string };
+          destination: { code: string };
+          departureTime: string;
+          arrivalTime: string;
+          carrier: { code: string; name: string };
+          price: { amount: number };
+          rawProviderData: unknown;
+        }>;
+        errors?: Array<{ error?: string; blocked?: boolean; details?: string }>;
+      };
+
+      if (!res.ok) throw new Error(data.errors?.[0]?.details || "Train search failed");
+      if (!data.results?.length) {
+        const blocked = data.errors?.find((e) => e.blocked);
+        throw new Error(
+          blocked?.details ||
+          "No live train availability was returned. No simulated trains are shown.",
+        );
       }
+
+      setTrainResults(data.results.map((r) => ({
+        id: r.id,
+        trainName: r.carrier.name,
+        trainNumber: r.carrier.code,
+        departureStation: r.origin.code,
+        arrivalStation: r.destination.code,
+        departureTime: new Date(r.departureTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        arrivalTime: new Date(r.arrivalTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        duration: "See provider itinerary",
+        baseFare: r.price.amount,
+        classes: [],
+      })));
+      toast.success(`Found ${data.results.length} live train offers.`);
     } catch (err) {
-      setTrainResults(generateDummyResults());
-      toast.success(`🚂 Found ${generateDummyResults().length} trains!`);
+      setTrainResults([]);
+      toast.error(err instanceof Error ? err.message : "Live train search failed.");
     } finally {
       setIsSearching(false);
     }
   };
 
-  const handleBookTrain = () => {
+  const handleBookTrain = async () => {
     if (!selectedTrain) return;
-
-    let totalAmount = selectedTrain.baseFare * passengers;
-    if (walletBalance < totalAmount) {
-      toast.error(
-        `Insufficient wallet balance. Total payable is ₹${totalAmount}. Please top up your KingPay wallet.`
-      );
-      return;
-    }
-
-    setIsBooking(true);
-    setTimeout(() => {
-      const success = onDeductWallet(totalAmount, `IRCTC Train Booking: ${originStation}-${destinationStation}`);
-      if (success) {
-        toast.success(`Successfully booked train ticket! Deducted ₹${totalAmount} from wallet.`);
-        setConfirmedTicket({
-          pnr: `TRN${Math.floor(Math.random() * 1000000000)}`,
-          train: selectedTrain,
-          passenger: passengerName,
-          totalPaid: totalAmount,
-        });
-        setSelectedTrain(null);
-      } else {
-        toast.error("Failed to process transaction. Please try again.");
-      }
-      setIsBooking(false);
-    }, 1500);
+    toast.error("This train result does not yet expose a licensed booking payload. No wallet deduction or fake confirmation will occur.");
   };
 
   return (
