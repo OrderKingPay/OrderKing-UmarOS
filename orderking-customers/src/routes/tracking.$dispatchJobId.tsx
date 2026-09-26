@@ -3,7 +3,7 @@ import { LiveTrackingMap } from "@/components/tracking/live-tracking-map";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/tracking/$dispatchJobId" as const)({
+export const Route = createFileRoute("/tracking/$dispatchJobId")({
   component: TrackingRoute,
 });
 
