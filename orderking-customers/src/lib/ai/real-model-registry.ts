@@ -213,7 +213,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       measuredLatencyMs: openaiKey ? 165 : 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
-      description: "OpenAI GPT-5.6 flagship reasoning engine with function tools, web search, file search, and computer-use support through the Responses API. Connect via OPENAI_API_KEY.",
+      description: "OpenAI GPT-5.6 flagship reasoning model. The provider adapter uses the configured OpenAI API and reports the actual model ID used by the deployment.",
       capabilities: {
         canStream: true,
         canProcessImages: true,
