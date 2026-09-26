@@ -5,6 +5,7 @@ on:
     branches:
       - ci/diagnose-partner-build
 
+# Diagnostic branch only; never runs on main.
 permissions:
   contents: read
 
