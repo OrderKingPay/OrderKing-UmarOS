@@ -11,7 +11,7 @@ const TransferRequestSchema = z.object({
   memo: z.string().optional()
 });
 
-export const Route = createFileRoute("/api/v1/kingpay/transfer" as any)({
+export const Route = createFileRoute("/api/v1/kingpay/transfer")({
   server: {
     handlers: {
       POST: async ({ request }) => {
