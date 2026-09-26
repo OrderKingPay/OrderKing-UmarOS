@@ -18,3 +18,12 @@ AS $$
   DELETE FROM rate_limit_events
   WHERE occurred_at < now() - interval '15 minutes';
 $$;
+
+CREATE TABLE IF NOT EXISTS ledger_chain_state (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  last_audit_hash TEXT NOT NULL
+);
+
+INSERT INTO ledger_chain_state (id, last_audit_hash)
+VALUES (1, repeat('0', 64))
+ON CONFLICT (id) DO NOTHING;
