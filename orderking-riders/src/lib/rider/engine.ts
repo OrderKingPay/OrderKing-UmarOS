@@ -497,7 +497,7 @@ export class RiderEngine {
       expiresAt: new Date(now + cfg.offerTimeoutSeconds * 1000).toISOString(),
       status: "OPEN",
       createdAt: new Date(now).toISOString(),
-      dataMode: "SIMULATED",
+      dataMode: cfg.dataMode,
     };
     
     // Store simulated AI metrics on the offer context for rendering
@@ -524,12 +524,7 @@ export class RiderEngine {
     return {
       ...offer,
       customer: offerCustomerView(offer.customer),
-      aiMetrics: (offer as any)._aiMetrics || { 
-        score: 95, 
-        surge: true, 
-        weather: "CLEAR", 
-        traffic: "LOW" 
-      } // Fallback simulated UI injection
+      aiMetrics: (offer as any)._aiMetrics || undefined
     };
   }
 
@@ -609,7 +604,7 @@ export class RiderEngine {
       failReason: null,
       createdAt: now,
       updatedAt: now,
-      dataMode: "SIMULATED",
+      dataMode: cfg.dataMode,
     };
     await this.store.insertDelivery(delivery);
     await this.recordTransition(delivery, null, "ACCEPTED", "RIDER", rider.userId, "accepted offer");
@@ -885,7 +880,7 @@ export class RiderEngine {
         amountPaise: d.expectedPayoutPaise,
         note: "Delivery payout",
         at: this.now(),
-        dataMode: "SIMULATED",
+        dataMode: cfg.dataMode,
       },
     ];
     if (cfg.flags.incentives && d.packageCount > 1) {
@@ -898,7 +893,7 @@ export class RiderEngine {
         amountPaise: 500,
         note: "Multi-package",
         at: this.now(),
-        dataMode: "SIMULATED",
+        dataMode: cfg.dataMode,
       });
     }
     if (d.tipPaise && d.tipPaise > 0) {
@@ -911,7 +906,7 @@ export class RiderEngine {
         amountPaise: d.tipPaise,
         note: "Customer tip ❤️",
         at: this.now(),
-        dataMode: "SIMULATED",
+        dataMode: cfg.dataMode,
       });
     }
     // Zomato Partner Model: Wait-time compensation when kitchen prep exceeds 10 minutes
@@ -930,7 +925,7 @@ export class RiderEngine {
           amountPaise: waitBonusPaise,
           note: `Kitchen wait-time bonus (${extraMins} mins)`,
           at: this.now(),
-          dataMode: "SIMULATED",
+          dataMode: cfg.dataMode,
         });
       }
     }
@@ -962,7 +957,7 @@ export class RiderEngine {
       photoBytes: input.bytes ?? null,
       photoDataUrl: input.dataUrl ?? null,
       capturedAt: this.now(),
-      dataMode: "SIMULATED" as const,
+      dataMode: (await this.cfg()).dataMode,
     };
     await this.store.insertPod(pod, userId);
     return { id: pod.id, method: pod.method, capturedAt: pod.capturedAt };
@@ -1152,7 +1147,7 @@ export class RiderEngine {
         cashReconciled: reconciled,
         netPayable: net,
       },
-      dataMode: "SIMULATED" as const,
+      dataMode: (await this.cfg()).dataMode,
     };
   }
 
@@ -1170,7 +1165,7 @@ export class RiderEngine {
         amountPaise: net,
         status: "PAYABLE" as const,
         confirmedPaidAt: null,
-        dataMode: "SIMULATED" as const,
+        dataMode: (await this.cfg()).dataMode,
       };
       await this.store.insertSettlement(s, userId);
       rows = [s];
@@ -1279,7 +1274,7 @@ export class RiderEngine {
     const earnings = await this.earnings(userId, range);
     const history = await this.history(userId, range);
     return {
-      dataMode: "SIMULATED" as const,
+      dataMode: (await this.cfg()).dataMode,
       riderName: home.rider.fullName,
       status: home.rider.status,
       kycStatus: home.rider.kycStatus,
