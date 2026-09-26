@@ -65,7 +65,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
                 riderId: home.rider.id,
                 state: "OFFERED",
                 dataMode: "LIVE",
-                totalPaise: o.total_paise,
+                expectedPayoutPaise: o.expected_payout_paise ?? 0,
                 expectedDistanceM: o.distance_m ?? 0,
                 expectedEtaSeconds: o.eta_seconds ?? 0,
                 restaurant,
@@ -80,11 +80,10 @@ export const getHomeFn = createServerFn({ method: "GET" })
               await e.getStore().insertOffer({
                 id: o.id,
                 orderCode: o.order_id,
-                orderId: o.order_id,
                 riderId: home.rider.id,
                 dataMode: "LIVE",
                 status: "OPEN",
-                totalPaise: o.total_paise,
+                expectedPayoutPaise: o.expected_payout_paise ?? 0,
                 expectedDistanceM: o.distance_m ?? 0,
                 expectedEtaSeconds: o.eta_seconds ?? 0,
                 restaurant,
@@ -457,7 +456,10 @@ export const getDeliveryFn = createServerFn({ method: "GET" })
     try {
       const e = await engine();
       const delivery = await e.getDelivery(context.userId, data.deliveryId);
-      const simulatedOtp = process.env.NODE_ENV === "production" ? null : await e.otpForSimulation(context.userId, data.deliveryId);
+      const simulatedOtp =
+        process.env.NODE_ENV === "production"
+          ? null
+          : ((await e.otpForSimulation(context.userId, data.deliveryId)) as string | null);
       return { delivery, simulatedOtp };
     } catch (err) {
       fail(err);
