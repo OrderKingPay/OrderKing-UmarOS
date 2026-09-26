@@ -623,7 +623,7 @@ export async function executeFounderAiChat(
     } else if (anthropicKey && (currentQuery.includes("code") || currentQuery.includes("architecture"))) {
       activeRecord = registry.find((m) => m.id === "claude-4-6-opus") || activeRecord;
     } else if (openaiKey) {
-      activeRecord = registry.find((m) => m.id === "gpt-5-6-omni") || activeRecord;
+      activeRecord = registry.find((m) => m.id === "gpt-5-6-sol") || activeRecord;
     } else if (geminiKey) {
       activeRecord = registry.find((m) => m.id === "gemini-2-5-pro") || activeRecord;
     } else if (xaiKey) {
