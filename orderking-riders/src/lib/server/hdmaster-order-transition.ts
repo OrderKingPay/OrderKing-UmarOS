@@ -39,6 +39,12 @@ export async function transitionLiveOrder(input: {
   action: string;
   idempotencyKey: string;
   reason?: string;
+  telemetry?: {
+    batteryLevel: number;
+    gpsAccuracyMeters: number;
+    networkType: string;
+    speedKmh: number;
+  };
 }) {
   const transition = mapDeliveryAction(input.deliveryState, input.action, input.reason);
   if (!transition) return { skipped: true as const };
@@ -53,7 +59,15 @@ export async function transitionLiveOrder(input: {
       "X-Correlation-Id": correlationId,
       "X-Order-King-Rider-User-Id": input.riderUserId,
     },
-    body: JSON.stringify({ contractVersion: "1", riderId: input.riderId, from: transition.from, to: transition.to, reason: transition.reason, correlationId, telemetry: { batteryLevel: Math.floor(Math.random() * 60) + 40, gpsAccuracyMeters: Math.floor(Math.random() * 8) + 2, networkType: Math.random() > 0.2 ? "5G" : "4G", speedKmh: input.action === "START" ? 0 : Math.floor(Math.random() * 40) } }),
+    body: JSON.stringify({
+      contractVersion: "1",
+      riderId: input.riderId,
+      from: transition.from,
+      to: transition.to,
+      reason: transition.reason,
+      correlationId,
+      telemetry: input.telemetry ?? null,
+    }),
   });
   const payload = (await response.json().catch(() => ({}))) as { data?: unknown; error?: string };
   if (!response.ok || !payload.data) throw new Error(payload.error ?? `HDmaster rider transition failed (${response.status})`);
