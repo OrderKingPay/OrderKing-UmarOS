@@ -14,26 +14,24 @@ export function useOrderSSE(orderId: string | undefined, onEvent?: (e: OrderSSEE
   const [lastEvent, setLastEvent] = useState<OrderSSEEvent | null>(null);
   const [connected, setConnected] = useState(false);
   const [isSlowNetwork, setIsSlowNetwork] = useState(false);
-  const retryRef = useRef(0);
 
-    useEffect(() => {
+  useEffect(() => {
     if (!orderId) return;
     
-    // 1000x Realism: Supabase Realtime WebSocket Connection
     let channel: any;
     let cancelled = false;
 
     import("@/lib/db-cloud").then(({ supabase }) => {
       if (cancelled) return;
       channel = supabase
-        .channel(public:orders: + orderId)
+        .channel(`public:orders:${orderId}`)
         .on(
           "postgres_changes",
           {
             event: "UPDATE",
             schema: "public",
             table: "orders",
-            filter: id=eq. + orderId,
+            filter: `id=eq.${orderId}`,
           },
           (payload: any) => {
             const data: OrderSSEEvent = {
