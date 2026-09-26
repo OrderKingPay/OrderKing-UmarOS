@@ -17,41 +17,75 @@ export const askAssistantFn = createServerFn({ method: "POST" })
     const eng = new RiderEngine(new PgStore(sql));
     await eng.ensureRider({ id: context.userId });
     const snapshot = await eng.snapshotForAssistant(context.userId);
-    const apiKey = process.env.XAI_API_KEY;
+    const openAiKey = process.env.OPENAI_API_KEY?.trim();
+    const xAiKey = process.env.XAI_API_KEY?.trim();
     const facts = JSON.stringify(snapshot);
     const question = data.question.slice(0, 500);
-    if (!apiKey) {
-      return { ok: true as const, text: localAnswer(question, snapshot, data.busy) };
-    }
-    try {
-      const res = await fetch("https://api.x.ai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "grok-4.5",
-          max_tokens: data.busy ? 180 : 400,
-          messages: [
-            { role: "system", content: POLICY },
-            {
-              role: "system",
-              content: `Authorized snapshot for user ${context.userId}: ${facts}`,
-            },
-            { role: "user", content: question },
-          ],
-        }),
-      });
-      if (!res.ok) {
-        return { ok: true as const, text: localAnswer(question, snapshot, data.busy) };
+
+    const systemPrompt = `You are the Order King Rider assistant. Use ONLY the authorized snapshot JSON. Never invent earnings, payouts, addresses, OTPs, customer names, order states, or policies. If a fact is absent, say it is unavailable. Never encourage speeding, phone use while riding, traffic-law violations, or unsafe behavior. If the rider is BUSY or on an active delivery, keep answers short. Answer in the rider's language when obvious, otherwise English. Data mode is ${snapshot.dataMode}; never imply simulated data is live.`;
+
+    const messages = [
+      { role: "system", content: systemPrompt },
+      { role: "system", content: `Authorized snapshot for rider ${context.userId}: ${facts}` },
+      { role: "user", content: question },
+    ];
+
+    if (openAiKey) {
+      try {
+        const res = await fetch("https://api.openai.com/v1/responses", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${openAiKey}`,
+          },
+          body: JSON.stringify({
+            model: process.env.OPENAI_RIDER_MODEL?.trim() || "gpt-5.6-terra",
+            reasoning: { effort: data.busy ? "low" : "medium" },
+            max_output_tokens: data.busy ? 220 : 500,
+            store: false,
+            input: messages,
+          }),
+        });
+        if (res.ok) {
+          const body = (await res.json()) as {
+            output_text?: string;
+            output?: Array<{ content?: Array<{ type?: string; text?: string }> }>;
+          };
+          const text = body.output_text?.trim() || body.output
+            ?.flatMap((item) => item.content ?? [])
+            .find((item) => item.type === "output_text" && item.text?.trim())?.text?.trim();
+          if (text) return { ok: true as const, text, provider: "openai" as const };
+        }
+      } catch {
+        // Fail over to another explicitly configured provider.
       }
-      const body = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-      const text = body.choices?.[0]?.message?.content?.trim();
-      return { ok: true as const, text: text || localAnswer(question, snapshot, data.busy) };
-    } catch {
-      return { ok: true as const, text: localAnswer(question, snapshot, data.busy) };
     }
+
+    if (xAiKey) {
+      try {
+        const res = await fetch("https://api.x.ai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${xAiKey}`,
+          },
+          body: JSON.stringify({
+            model: process.env.XAI_RIDER_MODEL?.trim() || "grok-4.5",
+            max_tokens: data.busy ? 180 : 400,
+            messages,
+          }),
+        });
+        if (res.ok) {
+          const body = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+          const text = body.choices?.[0]?.message?.content?.trim();
+          if (text) return { ok: true as const, text, provider: "xai" as const };
+        }
+      } catch {
+        // Fall through to deterministic, snapshot-only guidance.
+      }
+    }
+
+    return { ok: true as const, text: localAnswer(question, snapshot, data.busy), provider: "data_only" as const };
   });
 
 function localAnswer(q: string, s: Snapshot, busy: boolean): string {
