@@ -93,8 +93,8 @@ export function TrainBookingEngine({ walletBalance, onDeductWallet }: Props) {
   // Modals
   const [selectedTrain, setSelectedTrain] = useState<TrainResult | null>(null);
   const [isBooking, setIsBooking] = useState<boolean>(false);
-  const [passengerName, setPassengerName] = useState<string>("Hasan Choudhury");
-  const [passengerAge, setPassengerAge] = useState<string>("28");
+  const [passengerName, setPassengerName] = useState<string>("");
+  const [passengerAge, setPassengerAge] = useState<string>("");
   const [passengerGender, setPassengerGender] = useState<"Male" | "Female" | "Other">("Male");
 
   const [confirmedTicket, setConfirmedTicket] = useState<{
