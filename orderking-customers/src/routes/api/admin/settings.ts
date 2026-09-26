@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSql } from "@/lib/db";
+import { verifyBearerJwt, requireJwtRole } from "@/lib/orderking/security/rbac-vault";
 
 export const Route = createFileRoute("/api/admin/settings")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         try {
+          const { payload } = await verifyBearerJwt(request.headers.get("Authorization") || "");
+          requireJwtRole(payload, ["FOUNDER", "ADMIN"]);
           const sql = await getSql();
           const rows = await sql<{ key: string, is_secret: boolean }>`
             SELECT key, is_secret FROM system_config
@@ -32,6 +35,8 @@ export const Route = createFileRoute("/api/admin/settings")({
       },
       POST: async ({ request }) => {
         try {
+          const { payload } = await verifyBearerJwt(request.headers.get("Authorization") || "");
+          requireJwtRole(payload, ["FOUNDER", "ADMIN"]);
           const body = (await request.json()) as Record<string, string>;
           const sql = await getSql();
           
