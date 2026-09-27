@@ -151,9 +151,9 @@ export function FounderCommandPage() {
       id: "PROD-901",
       name: "Sovereign FinTech & POS Turnkey License",
       priceInr: 49999,
-      salesCount: 14,
-      totalEarned: 699986,
-      payoutAccount: "Founder Direct Private Escrow (**4892)",
+      salesCount: 0,
+      totalEarned: 0,
+      payoutAccount: "Configured payout account required",
       status: "ACTIVE",
     },
     {
@@ -1300,7 +1300,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                 </div>
               </div>
               <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-400 text-xs font-mono">
-                Total Earned: ₹21,79,950
+                Verified earnings: awaiting live ledger data
               </Badge>
             </div>
 
@@ -1362,19 +1362,19 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-xl border border-border bg-surface-2 p-3 text-center">
                 <span className="text-xs text-muted block">Diagnostic Sweeps</span>
-                <span className="text-xl font-mono font-bold text-emerald-400">14,289</span>
+                <span className="text-xl font-mono font-bold text-emerald-400">—</span>
               </div>
               <div className="rounded-xl border border-border bg-surface-2 p-3 text-center">
                 <span className="text-xs text-muted block">Memory Leaks Patched</span>
-                <span className="text-xl font-mono font-bold text-purple-400">42 (0 remaining)</span>
+                <span className="text-xl font-mono font-bold text-purple-400">—</span>
               </div>
               <div className="rounded-xl border border-border bg-surface-2 p-3 text-center">
                 <span className="text-xs text-muted block">Query Latency Tuning</span>
-                <span className="text-xl font-mono font-bold text-amber-400">-48% avg</span>
+                <span className="text-xl font-mono font-bold text-amber-400">—</span>
               </div>
               <div className="rounded-xl border border-border bg-surface-2 p-3 text-center">
                 <span className="text-xs text-muted block">Health Score</span>
-                <span className="text-xl font-mono font-bold text-emerald-400">99.98%</span>
+                <span className="text-xl font-mono font-bold text-emerald-400">—</span>
               </div>
             </div>
           </div>
