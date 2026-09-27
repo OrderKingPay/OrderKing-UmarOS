@@ -443,16 +443,11 @@ export const ENTERPRISE_BLUEPRINTS: Record<string, EnterpriseProjectBlueprint> =
       "POST /api/v1/telehealth/session-token",
     ],
     frontendRoutes: ["/", "/opd-queue", "/doctor-console", "/patient-portal", "/billing-settlement", "/reports"],
-    livePreviewUrl: "https://preview-health.orderking.in",
+    livePreviewUrl: "",
     estimatedBuildTime: "48 Hours (Autonomous Scaffolding)",
-    commercialValueInr: 399999,
-    clientHandoffReady: true,
-    handoffCredentials: {
-      adminEmail: "director@sribhumihospital.com",
-      temporaryPass: "Sribhumi#Health2026!",
-      jwtSecret: "sk_live_hosp_902384902834092834098234",
-      databaseUrl: "postgresql://sribhumi_admin:SecurePglitePass@db.orderking.in:5432/hospital_core",
-    },
+    commercialValueInr: 0,
+    clientHandoffReady: false,
+    handoffCredentials: { adminEmail: "", temporaryPass: "", jwtSecret: "", databaseUrl: "" },
     files: [
       {
         filename: "App.tsx",
