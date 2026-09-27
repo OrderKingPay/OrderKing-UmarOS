@@ -1,5 +1,6 @@
 {
-  "compilerOptions": { "ignoreDeprecations": "5.0",
+  "compilerOptions": {
+
     "target": "ES2022",
     "lib": [
       "ES2022",
@@ -21,7 +22,7 @@
       "vite/client",
       "node"
     ],
-    "baseUrl": ".",
+
     "paths": {
       "@/*": [
         "./src/*"
@@ -34,5 +35,6 @@
     "server"
   ]
 }
+
 
 

@@ -176,15 +176,12 @@ function authPopupPlugin(): Plugin {
 // AGENTS.md § "First scaffold".
 export default defineConfig(({ command, isPreview }) => ({
   build: {
-    minify: 'esbuild',
     cssMinify: true,
     rollupOptions: {
       treeshake: true,
     },
   },
-  esbuild: {
-    drop: ['console', 'debugger'],
-  },
+  
   server: {
     host: "0.0.0.0",
     port: 8080,

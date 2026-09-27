@@ -83,7 +83,7 @@ export function AppFactoryWorkspace({
       estimatedBuildTime: "Requires real CI/CD execution",
       commercialValueInr: 0,
       clientHandoffReady: false,
-      handoffCredentials: undefined,
+      handoffCredentials: { adminEmail: "", temporaryPass: "", jwtSecret: "", databaseUrl: "" },
     };
 
     setBlueprints([newBp, ...blueprints]);
@@ -323,3 +323,4 @@ export function AppFactoryWorkspace({
     </div>
   );
 }
+
