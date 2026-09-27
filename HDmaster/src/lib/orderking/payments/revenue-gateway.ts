@@ -1,5 +1,8 @@
-// Legitimate Payment & Revenue Gateway Integration
-// Supports King Pay UPI, Razorpay, and Stripe with Webhook Verification and Zero-Fabrication Integrity
+// Provider-backed revenue gateway facade.
+// This module never invents settled transactions, balances, UTRs, or payment verification.
+// Real payment truth must come from signed provider events / the canonical ledger.
+
+import crypto from "node:crypto";
 
 export type PaymentChannel = "KING_PAY_UPI" | "RAZORPAY" | "STRIPE";
 export type PaymentStatus = "PENDING" | "CONFIRMED" | "FAILED" | "REFUNDED";
@@ -11,7 +14,7 @@ export interface PaymentTransaction {
   status: PaymentStatus;
   clientName: string;
   description: string;
-  referenceNumber: string; // UTR or provider payment ID
+  referenceNumber: string;
   providerFeeInr: number;
   netFounderDepositInr: number;
   createdAt: string;
@@ -29,34 +32,7 @@ export interface RevenueMetrics {
 }
 
 export class RevenueGatewayService {
-  private transactions: PaymentTransaction[] = [
-    {
-      id: "TXN-8801",
-      amountInr: 74999,
-      channel: "KING_PAY_UPI",
-      status: "CONFIRMED",
-      clientName: "Royal Darbar Palace",
-      description: "50% Milestone Advance - Direct Ordering App",
-      referenceNumber: "UPI-UTR-908234710293",
-      providerFeeInr: 0, // 0% gateway cut
-      netFounderDepositInr: 74999,
-      createdAt: "2026-09-21 15:40",
-      settledAt: "2026-09-21 15:41",
-    },
-    {
-      id: "TXN-8802",
-      amountInr: 50000,
-      channel: "RAZORPAY",
-      status: "CONFIRMED",
-      clientName: "Sylhet Heritage Sweets",
-      description: "POS Hardware & Cloud License Setup",
-      referenceNumber: "pay_OpL92810Xkz9",
-      providerFeeInr: 1000, // 2% standard cut
-      netFounderDepositInr: 49000,
-      createdAt: "2026-09-20 12:20",
-      settledAt: "2026-09-20 12:21",
-    },
-  ];
+  private transactions: PaymentTransaction[] = [];
 
   getTransactions(): PaymentTransaction[] {
     return [...this.transactions];
@@ -64,18 +40,15 @@ export class RevenueGatewayService {
 
   getMetrics(): RevenueMetrics {
     const confirmed = this.transactions.filter((t) => t.status === "CONFIRMED");
-    const totalGross = confirmed.reduce((acc, t) => acc + t.amountInr, 0);
-    const netFounder = confirmed.reduce((acc, t) => acc + t.netFounderDepositInr, 0);
-    // Calculate what would have been lost if standard 2.5% card/gateway fees applied
-    const savedFees = confirmed.reduce((acc, t) => (t.channel === "KING_PAY_UPI" ? acc + Math.round(t.amountInr * 0.025) : acc), 0);
-
     return {
-      totalGrossInr: totalGross,
-      netFounderDepositedInr: netFounder,
-      totalSavedGatewayFeesInr: savedFees,
+      totalGrossInr: confirmed.reduce((acc, t) => acc + t.amountInr, 0),
+      netFounderDepositedInr: confirmed.reduce((acc, t) => acc + t.netFounderDepositInr, 0),
+      totalSavedGatewayFeesInr: 0,
       confirmedTransactionsCount: confirmed.length,
-      pendingInvoicesCount: 3,
-      pendingInvoicesValueInr: 324998,
+      pendingInvoicesCount: this.transactions.filter((t) => t.status === "PENDING").length,
+      pendingInvoicesValueInr: this.transactions
+        .filter((t) => t.status === "PENDING")
+        .reduce((acc, t) => acc + t.amountInr, 0),
     };
   }
 
@@ -85,13 +58,16 @@ export class RevenueGatewayService {
     description: string;
     founderVpa?: string;
   }): { upiLink: string; qrPayload: string; transactionId: string } {
-    const vpa = params.founderVpa || "orderking@okhdfcbank";
-    const txnId = `TXN-${Date.now().toString().slice(-4)}`;
-    const upiLink = `upi://pay?pa=${vpa}&pn=OrderKing&am=${params.amountInr}&cu=INR&tn=${encodeURIComponent(
-      params.description
-    )}`;
+    if (!Number.isFinite(params.amountInr) || params.amountInr <= 0) {
+      throw new Error("UPI amount must be greater than zero.");
+    }
 
-    // Record pending transaction
+    const vpa = params.founderVpa?.trim() || process.env.ORDERKING_FOUNDER_VPA?.trim();
+    if (!vpa) throw new Error("ORDERKING_FOUNDER_VPA is not configured; UPI link creation is blocked.");
+
+    const txnId = `TXN-${crypto.randomUUID()}`;
+    const upiLink = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=${encodeURIComponent("OrderKing")}&am=${encodeURIComponent(params.amountInr.toFixed(2))}&cu=INR&tn=${encodeURIComponent(params.description)}`;
+
     this.transactions.unshift({
       id: txnId,
       amountInr: params.amountInr,
@@ -101,44 +77,51 @@ export class RevenueGatewayService {
       description: params.description,
       referenceNumber: `PENDING-${txnId}`,
       providerFeeInr: 0,
-      netFounderDepositInr: params.amountInr,
-      createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
+      netFounderDepositInr: 0,
+      createdAt: new Date().toISOString(),
     });
 
     return {
       upiLink,
-      qrPayload: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`,
+      qrPayload: `upi://pay?pa=${encodeURIComponent(vpa)}&pn=${encodeURIComponent("OrderKing")}&am=${encodeURIComponent(params.amountInr.toFixed(2))}&cu=INR&tn=${encodeURIComponent(params.description)}`,
       transactionId: txnId,
     };
   }
 
-  confirmUpiDeposit(params: {
+  confirmUpiDeposit(_params: {
     transactionId: string;
     utrNumber: string;
     verifiedAmountInr: number;
   }): { success: boolean; transaction: PaymentTransaction } {
-    const txn = this.transactions.find((t) => t.id === params.transactionId);
-    if (!txn) throw new Error(`Transaction ${params.transactionId} not found.`);
-
-    txn.status = "CONFIRMED";
-    txn.referenceNumber = params.utrNumber;
-    txn.amountInr = params.verifiedAmountInr;
-    txn.netFounderDepositInr = params.verifiedAmountInr;
-    txn.settledAt = new Date().toISOString().replace("T", " ").slice(0, 16);
-
-    return { success: true, transaction: txn };
+    throw new Error("Provider verification required. UPI deposits cannot be confirmed by client-entered UTR alone.");
   }
 
-  verifyRazorpayWebhook(payload: Record<string, unknown>, signature: string, webhookSecret?: string): boolean {
-    if (!signature || !webhookSecret) return false;
-    // In production, HMAC SHA256 verification of raw body
-    return true;
+  verifyRazorpayWebhook(payload: string, signature: string, webhookSecret?: string): boolean {
+    if (!payload || !signature || !webhookSecret) return false;
+    const expected = crypto.createHmac("sha256", webhookSecret).update(payload, "utf8").digest("hex");
+    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
   }
 
-  verifyStripeWebhook(payload: Record<string, unknown>, signature: string, webhookSecret?: string): boolean {
-    if (!signature || !webhookSecret) return false;
-    // In production, Stripe event construction and signature check
-    return true;
+  verifyStripeWebhook(payload: string, signature: string, webhookSecret?: string, toleranceSeconds = 300): boolean {
+    if (!payload || !signature || !webhookSecret) return false;
+    const parts = signature.split(",").map((p) => p.trim());
+    const timestamp = Number(parts.find((p) => p.startsWith("t="))?.slice(2));
+    const signatures = parts.filter((p) => p.startsWith("v1=")).map((p) => p.slice(3));
+    if (!Number.isFinite(timestamp) || signatures.length === 0) return false;
+    if (Math.abs(Math.floor(Date.now() / 1000) - timestamp) > toleranceSeconds) return false;
+
+    const expected = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(`${timestamp}.${payload}`, "utf8")
+      .digest("hex");
+
+    return signatures.some((value) => {
+      try {
+        return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(value));
+      } catch {
+        return false;
+      }
+    });
   }
 }
 
