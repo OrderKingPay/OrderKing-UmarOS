@@ -238,7 +238,7 @@ export const askAiSupportAssistant = createServerFn({ method: "POST" })
           status: rows[0].status,
           minutesSincePlaced: Math.max(
             0,
-            Math.floor({Date.now() - new Date(rows[0].placed_at).getTime()) / 60000),
+            Math.floor((Date.now() - new Date(rows[0].placed_at).getTime()) / 60000),
           ),
         };
       }
@@ -252,7 +252,7 @@ export const askAiSupportAssistant = createServerFn({ method: "POST" })
     }
 
     const provider = new OpenAIProvider(apiKey);
-    const response = await provider.chat"{
+    const response = await provider.chat({
       model: process.env.OPENAI_CUSTOMER_MODEL || "gpt-5.6-luna",
       responseFormat: "json_object",
       temperature: 0.15,
