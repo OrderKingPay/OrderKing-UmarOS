@@ -8,9 +8,7 @@
 
 import { supabase } from "../db-cloud";
 
-const HDMASTER_URL =
-  (typeof import.meta !== "undefined" && import.meta.env?.VITE_HDMASTER_URL) ||
-  "https://hdmaster.vercel.app";
+const AI_CHAT_URL = "/api/ai/chat";
 
 type TranslationResponse = {
   text?: string;
@@ -24,7 +22,7 @@ export class HDmasterMultilingualCore {
       throw new Error("Translation requires a restaurant ID and menu text.");
     }
 
-    const response = await fetch(`${HDMASTER_URL}/api/ai/chat`, {
+    const response = await fetch(AI_CHAT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -74,7 +72,7 @@ export class HDmasterMultilingualCore {
     if (!message) throw new Error("Rider message cannot be empty.");
     if (riderLanguageCode === "en") return message;
 
-    const response = await fetch(`${HDMASTER_URL}/api/ai/chat`, {
+    const response = await fetch(AI_CHAT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
