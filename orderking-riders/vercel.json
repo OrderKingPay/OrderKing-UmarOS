@@ -1,6 +1,6 @@
 {
   "regions": ["sin1"],
-  "installCommand": "npm install --no-audit --no-fund",
+  "installCommand": "npm ci --no-audit --no-fund",
   "buildCommand": "npm run build",
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "tanstack-start",
