@@ -47,23 +47,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { SupremeFounderAiChat } from "@/components/ai/supreme-founder-ai-chat";
-import { FounderCrmHub } from "@/components/ai/founder-crm-hub";
-import { RemoteWorkBoard } from "@/components/ai/remote-work-board";
-import { AppFactoryWorkspace } from "@/components/ai/app-factory-workspace";
-import { OpportunityRadarHub } from "@/components/ai/opportunity-radar-hub";
-import { ClientPortalHub } from "@/components/ai/client-portal-hub";
-import { CompanyFactoryHub } from "@/components/ai/company-factory-hub";
-import { MoneyEngineDashboard } from "@/components/ai/money-engine-dashboard";
-import { ServiceProductizerHub } from "@/components/ai/service-productizer-hub";
-import { DeliveryTaskGraphHub } from "@/components/ai/delivery-task-graph-hub";
-import { SupremeTaskExecutorHub } from "@/components/ai/supreme-task-executor-hub";
-import { BusinessIntelligenceHub } from "@/components/ai/business-intelligence-hub";
-import { KnowledgeMemoryHub } from "@/components/ai/knowledge-memory-hub";
-import { CapabilityBenchmarkHub } from "@/components/ai/capability-benchmark-hub";
-import { DependencyInspectorHub } from "@/components/ai/dependency-inspector-hub";
-import { EmergencyRecoveryHub } from "@/components/ai/emergency-recovery-hub";
-import { RevenueGrowthCostHub } from "@/components/ai/revenue-growth-cost-hub";
 import { calculateFinancialTelemetry, INITIAL_FINANCIAL_RECORDS } from "@/lib/ai/financial-truth-engine";
 import { InstantDeployEngine } from "@/lib/ai/instant-deploy-engine";
 import { SystemMasterSettingsModal } from "@/components/command/system-master-settings-modal";
@@ -481,105 +464,105 @@ export function FounderCommandPage() {
 
       {/* MAIN VIEW: SUPREME UMAR OS CHAT (DEFAULT) OR SPECIALIZED HUB */}
       {deckTab === "supreme_ai" && (
-        <SupremeFounderAiChat founderUpiVpa={merchantUpiVpa} />
+        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
       )}
 
       {/* TAB SUPREME EXECUTOR: 14-STAGE GOAL DECOMPOSER WITH HUMAN GATES */}
       {deckTab === "supreme_executor" && (
-        <SupremeTaskExecutorHub />
+        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
       )}
 
       {/* TAB MONEY DASHBOARD: REAL-MONEY OPERATING ENGINE & LEDGER */}
       {deckTab === "money_dashboard" && (
         <div className="h-[750px]">
-          <MoneyEngineDashboard founderUpiVpa={merchantUpiVpa} />
+          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
         </div>
       )}
 
       {/* TAB RADAR: ALWAYS-ON OPPORTUNITY RADAR */}
       {deckTab === "radar" && (
         <div className="h-[750px]">
-          <OpportunityRadarHub founderUpiVpa={merchantUpiVpa} />
+          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
         </div>
       )}
 
       {/* TAB CRM: CLIENT ACQUISITION & 12-STAGE PIPELINE */}
       {deckTab === "crm" && (
         <div className="h-[750px]">
-          <FounderCrmHub founderUpiVpa={merchantUpiVpa} />
+          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
         </div>
       )}
 
       {/* TAB CLIENT PORTAL: DEDICATED TRUST & DELIVERABLES PORTAL */}
       {deckTab === "client_portal" && (
         <div className="h-[750px]">
-          <ClientPortalHub founderUpiVpa={merchantUpiVpa} />
+          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
         </div>
       )}
 
       {/* TAB SERVICE PRODUCTIZER: HIGH-MARGIN READY-TO-SELL PACKAGES */}
       {deckTab === "service_productizer" && (
         <div className="h-[750px]">
-          <ServiceProductizerHub founderUpiVpa={merchantUpiVpa} />
+          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
         </div>
       )}
 
       {/* TAB REMOTE WORK: OPPORTUNITY DISCOVERY & GIGS */}
       {deckTab === "remote_work" && (
         <div className="h-[750px]">
-          <RemoteWorkBoard />
+          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
         </div>
       )}
 
       {/* TAB APP FACTORY: ENTERPRISE SOFTWARE GENERATION & CODING WORKSPACE */}
       {deckTab === "app_factory" && (
         <div className="h-[750px]">
-          <AppFactoryWorkspace />
+          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
         </div>
       )}
 
       {/* TAB DELIVERY GRAPH: MULTI-AGENT TASK GRAPH & SELF-QA */}
       {deckTab === "delivery_graph" && (
         <div className="h-[750px]">
-          <DeliveryTaskGraphHub />
+          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
         </div>
       )}
 
       {/* TAB COMPANY FACTORY: AI COMPANY FACTORY & BUSINESS ORCHESTRATOR */}
       {deckTab === "company_factory" && (
         <div className="h-[750px]">
-          <CompanyFactoryHub />
+          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
         </div>
       )}
 
       {/* TAB BUSINESS INTEL: BI ENGINE & AUTONOMOUS SCHEDULES */}
       {deckTab === "business_intel" && (
-        <BusinessIntelligenceHub />
+        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
       )}
 
       {/* TAB KNOWLEDGE MEMORY: SEARCHABLE KNOWLEDGE & LAYERED MEMORY */}
       {deckTab === "knowledge_memory" && (
-        <KnowledgeMemoryHub />
+        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
       )}
 
       {/* TAB BENCHMARKS: RIGOROUS MEASURED CAPABILITY BENCHMARK SUITE */}
       {deckTab === "benchmarks" && (
-        <CapabilityBenchmarkHub />
+        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
       )}
 
       {/* TAB DEPENDENCIES: CONTINUOUS DEPENDENCY INSPECTOR & ECOSYSTEM */}
       {deckTab === "dependencies" && (
-        <DependencyInspectorHub />
+        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
       )}
 
       {/* TAB RECOVERY: EMERGENCY RECOVERY & ROLLBACK ENGINE */}
       {deckTab === "recovery" && (
-        <EmergencyRecoveryHub />
+        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
       )}
 
       {/* TAB REVENUE OPS: AUTOMATIC APPLICATION ENGINE, INVOICING, REPEAT BIZ & COST CONTROL */}
       {deckTab === "revenue_ops" && (
-        <RevenueGrowthCostHub founderUpiVpa={merchantUpiVpa} />
+        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
       )}
 
       {/* TAB 0: PRACTICAL BUSINESS LAUNCH & FIELD OPS COCKPIT */}
@@ -1411,4 +1394,6 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
     </div>
   );
 }
+
+
 

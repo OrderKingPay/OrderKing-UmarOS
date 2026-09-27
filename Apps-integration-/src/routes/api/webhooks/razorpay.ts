@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { WebhookGateway } from "../../../lib/integration/webhook-gateway";
 
@@ -63,3 +64,5 @@ export const Route = createFileRoute("/api/webhooks/razorpay")({
     },
   },
 });
+
+

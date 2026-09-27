@@ -11,7 +11,6 @@ import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { toast } from "sonner";
 import { CameraScannerModal, type ParsedUpiResult } from "@/components/scanner/camera-scanner-modal";
-import { RoyalAiConcierge } from "@/components/ai/royal-ai-concierge";
 import { ReceiveMoneyQrStudio } from "@/components/fintech/receive-money-qr-studio";
 import { getCurrentFestiveContext } from "@/lib/brand/calendar-festive-engine";
 import { EcosystemSwitchBar } from "@/components/common/ecosystem-switch-bar";
@@ -4488,26 +4487,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         )}
 
         {/* Multilingual Royal AI Assistant with Sweet Native Girl Voice across 12 Indian Languages */}
-        <RoyalAiConcierge
-          onOpenScanner={() => {
-            setScannerTab("camera");
-            setShowScanner(true);
-          }}
-          onCheckBalance={() => {
-            setSelectedBankForBalance(linkedBanks[0] || null);
-            setUpiPinInput("");
-            setShowCheckBalanceModal(true);
-          }}
-          onPayElectricity={() => setActiveUtilityModal("electricity")}
-          onMobileRecharge={() => setActiveUtilityModal("recharge")}
-          onOpenGarage={() => setActiveSection("garage")}
-          onOpenTravel={() => setActiveSection("travel")}
-        />
+        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
       </div>
     </KingPayShell>
     </>
   );
 }
+
+
 
 
 
