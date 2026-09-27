@@ -59,9 +59,9 @@ function Login() {
             <p className="text-sm text-muted">Employee sign-in. First account becomes Super Admin.</p>
           </div>
         </div>
-        {authEnabled && !isVercel ? (
+        {authEnabled ? (
           <div className="mt-8 space-y-3">
-            {GROK_PROVIDERS.map((p) => (
+            {!isVercel && GROK_PROVIDERS.map((p) => (
               <Button
                 key={p.providerId}
                 type="button"
@@ -72,9 +72,11 @@ function Login() {
                 Continue with {p.label}
               </Button>
             ))}
-            <div className="relative py-2 text-center text-xs uppercase tracking-widest text-subtle">
-              or email
-            </div>
+            {!isVercel && GROK_PROVIDERS.length > 0 && (
+              <div className="relative py-2 text-center text-xs uppercase tracking-widest text-subtle">
+                or email
+              </div>
+            )}
             <form className="space-y-3" onSubmit={onEmail}>
               {mode === "up" ? (
                 <div className="space-y-1">
