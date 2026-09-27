@@ -9,6 +9,7 @@ import { Input, Label } from "@/components/ui/input";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
+  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const { user } = useCurrentUserState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,7 +59,7 @@ function Login() {
             <p className="text-sm text-muted">Employee sign-in. First account becomes Super Admin.</p>
           </div>
         </div>
-        {authEnabled ? (
+        {authEnabled && !isVercel ? (
           <div className="mt-8 space-y-3">
             {GROK_PROVIDERS.map((p) => (
               <Button

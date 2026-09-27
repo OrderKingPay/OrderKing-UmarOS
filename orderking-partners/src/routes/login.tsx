@@ -11,6 +11,7 @@ import { platformConfig } from "@/lib/platform-config";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
+  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const t = useT();
   const { user } = useCurrentUserState();
   const [mode, setMode] = useState<"in" | "up">("in");
@@ -56,7 +57,7 @@ function Login() {
           <h1 className="font-display text-3xl">{mode === "in" ? t("auth.signIn") : t("auth.signUp")}</h1>
           <p className="mt-1 text-sm text-muted">{t("landing.forOwners")}</p>
 
-          {authEnabled ? (
+          {authEnabled && !isVercel ? (
             <div className="mt-5 grid gap-2">
               {GROK_PROVIDERS.map((p) => (
                 <Button
