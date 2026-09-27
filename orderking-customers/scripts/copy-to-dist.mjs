@@ -1,5 +1,6 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+
 function copyDir(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
   let entries = fs.readdirSync(src, { withFileTypes: true });
@@ -9,6 +10,7 @@ function copyDir(src, dest) {
     entry.isDirectory() ? copyDir(srcPath, destPath) : fs.copyFileSync(srcPath, destPath);
   }
 }
+
 function run(appDir) {
     const src = path.join(appDir, '.vercel/output/static');
     const dest = path.join(appDir, 'dist/client');
@@ -17,5 +19,6 @@ function run(appDir) {
         copyDir(src, dest);
     }
 }
+
 const appDir = process.cwd();
 run(appDir);
