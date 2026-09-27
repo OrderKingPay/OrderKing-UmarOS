@@ -1,4 +1,3 @@
-import { json } from "@tanstack/start";
 
 export async function GET() {
   try {
@@ -34,3 +33,4 @@ export async function GET() {
     return new Response(JSON.stringify({ success: false, error: "Failed to fetch remote jobs" }), { status: 500 });
   }
 }
+

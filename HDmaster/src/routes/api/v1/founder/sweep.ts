@@ -1,4 +1,3 @@
-import { json } from "@tanstack/start";
 import { getSql } from "@/lib/db";
 
 // In a real application, you'd use the Razorpay SDK:
@@ -50,3 +49,4 @@ export async function POST(request: Request) {
     return new Response(JSON.stringify({ success: false, error: "Failed to sweep funds" }), { status: 500 });
   }
 }
+
