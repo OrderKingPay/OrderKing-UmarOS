@@ -94,11 +94,14 @@ export async function getEnterpriseBlueprintsFromDb(): Promise<Record<string, En
       databaseSchema: typeof r.database_schema === 'object' && r.database_schema !== null ? r.database_schema as any : {},
       apiEndpoints: Array.isArray(r.api_endpoints) ? r.api_endpoints as string[] : [],
       frontendRoutes: Array.isArray(r.frontend_routes) ? r.frontend_routes as string[] : [],
-      livePreviewUrl: String(r.live_preview_url),
+      // Blueprint metadata is not proof of deployment. Never expose seeded preview URLs,
+      // credentials, or handoff-ready claims until a real deployment and credential vault
+      // workflow has produced verified evidence.
+      livePreviewUrl: "",
       estimatedBuildTime: String(r.estimated_build_time),
-      commercialValueInr: Number(r.commercial_value_inr),
-      clientHandoffReady: Boolean(r.client_handoff_ready),
-      handoffCredentials: typeof r.handoff_credentials === 'object' && r.handoff_credentials !== null ? r.handoff_credentials as any : undefined,
+      commercialValueInr: 0,
+      clientHandoffReady: false,
+      handoffCredentials: undefined,
       files: Array.isArray(r.files) ? r.files as any[] : []
     };
   }
