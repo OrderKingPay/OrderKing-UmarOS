@@ -65,3 +65,77 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
       isSandbox: false,
     };
   });
+
+
+export type VerifyRazorpayPaymentRequest = {
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+  expectedAmountPaise: number;
+};
+
+export const verifyRazorpayPayment = createServerFn({ method: "POST" })
+  .validator((data: VerifyRazorpayPaymentRequest) => data)
+  .handler(async ({ data }) => {
+    const { getRazorpayConfig, verifyRazorpaySignature } = await import("./razorpay.server");
+    const config = getRazorpayConfig();
+
+    if (!config.hasCredentials || !config.keyId || !config.keySecret) {
+      throw new Error("Razorpay credentials missing. Payment verification BLOCKED.");
+    }
+
+    if (!data.razorpayOrderId || !data.razorpayPaymentId || !data.razorpaySignature) {
+      throw new Error("Incomplete Razorpay payment verification data.");
+    }
+
+    const signatureValid = verifyRazorpaySignature(data);
+    if (!signatureValid) throw new Error("Razorpay signature verification failed.");
+
+    const authHeader = Buffer.from(`${config.keyId}:${config.keySecret}`).toString("base64");
+    const response = await fetch(
+      `https://api.razorpay.com/v1/payments/${encodeURIComponent(data.razorpayPaymentId)}`,
+      {
+        headers: {
+          Authorization: `Basic ${authHeader}`,
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "Unknown Razorpay error");
+      throw new Error(`Razorpay payment lookup failed (${response.status}): ${errorText}`);
+    }
+
+    const payment = (await response.json()) as {
+      id?: string;
+      order_id?: string;
+      status?: string;
+      amount?: number;
+      currency?: string;
+    };
+
+    if (payment.id !== data.razorpayPaymentId) {
+      throw new Error("Razorpay payment identity mismatch.");
+    }
+    if (payment.order_id !== data.razorpayOrderId) {
+      throw new Error("Razorpay order identity mismatch.");
+    }
+    if (payment.status !== "captured") {
+      throw new Error(`Razorpay payment is not captured (status: ${payment.status ?? "unknown"}).`);
+    }
+    if (Number(payment.amount) !== Number(data.expectedAmountPaise)) {
+      throw new Error("Razorpay captured amount does not match the order total.");
+    }
+    if (payment.currency !== "INR") {
+      throw new Error("Unexpected Razorpay payment currency.");
+    }
+
+    return {
+      verified: true as const,
+      razorpayOrderId: data.razorpayOrderId,
+      razorpayPaymentId: data.razorpayPaymentId,
+      amountPaise: Number(payment.amount),
+      currency: payment.currency,
+    };
+  });
