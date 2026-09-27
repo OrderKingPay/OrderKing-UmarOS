@@ -18,14 +18,18 @@ function SettlementsPage() {
   const vendor = useVendor();
   const allowed = vendor.role ? can(vendor.role, "settlements.view") : false;
   const [instantSettling, setInstantSettling] = useState(false);
-  const [instantSuccess, setInstantSuccess] = useState(false);
+  const [instantError, setInstantError] = useState<string | null>(null);
 
-  const handleInstantSettlement = () => {
+  const handleInstantSettlement = async () => {
     setInstantSettling(true);
-    setTimeout(() => {
+    setInstantError(null);
+    try {
+      throw new Error("Instant settlement provider is not connected. No payout was initiated and no reference was generated.");
+    } catch (error) {
+      setInstantError(error instanceof Error ? error.message : "Settlement provider unavailable");
+    } finally {
       setInstantSettling(false);
-      setInstantSuccess(true);
-    }, 800);
+    }
   };
 
   const q = useQuery({
@@ -112,9 +116,9 @@ function SettlementsPage() {
             {instantSettling ? "Settling via IMPS..." : `Instant Cashout (${q.data ? formatINR(Math.max(0, Math.round(q.data.currentPayablePaise * 0.995))) : "—"})`}
           </Button>
         </div>
-        {instantSuccess && (
-          <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-            ✅ IMPS Transfer of {formatINR(Math.max(0, Math.round((q.data?.currentPayablePaise ?? 0) * 0.995)))} initiated! Reference RRN: 839201948201. Funds will reflect in under 60 seconds.
+        {instantError && (
+          <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+            {instantError}
           </p>
         )}
       </Card>
