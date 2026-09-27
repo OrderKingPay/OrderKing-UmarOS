@@ -150,6 +150,10 @@ export default defineConfig(({ command, isPreview }) => ({
     cssMinify: true,
     rollupOptions: {
       treeshake: true,
+      // pglite is a local dev-only fallback (used only when DATABASE_URL is
+      // not set). Production always uses the Neon/pg path. Externalising it
+      // prevents rolldown from bundling the 750 kB WebAssembly binary.
+      external: ["@electric-sql/pglite"],
     },
   },
   
