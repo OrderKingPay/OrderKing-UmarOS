@@ -7,7 +7,7 @@ function json(body: unknown, status = 200) { return new Response(JSON.stringify(
 function serviceUserId(request: Request): string { const authorization = request.headers.get("authorization")?.trim(); const token = process.env.ORDERKING_SERVICE_TOKEN?.trim(); const userId = process.env.ORDERKING_SERVICE_USER_ID?.trim(); if (!token || !userId || authorization !== `Bearer ${token}`) throw new Error("Unauthorized"); return userId; }
 
 type CustomerOrderInput = {
-  customerRef: string; restaurantId: string; cityId: string; zoneId: string; paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY";
+  customerRef: string; restaurantId: string; cityId: string; zoneId: string; paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY" | "RAZORPAY";
   foodPaise: number; restaurantDiscountPaise: number; platformDiscountPaise: number; deliveryFeePaise: number; serviceFeePaise: number; taxPaise: number; totalPaise: number; commissionPaise: number;
   address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string; lat?: number; lng?: number }; notes?: string;
   lines: { itemId: string; name: string; qty: number; unitPaise: number }[];
