@@ -9,7 +9,6 @@ import { useLocationStore } from "@/lib/stores/location";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { SignedIn, SignedOut, UserButton } from "@/lib/auth/gates";
 import { cn } from "@/lib/utils";
-import { FoodAiConcierge } from "@/components/ai/food-ai-concierge";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
 export function CustomerShell({
@@ -157,7 +156,7 @@ export function CustomerShell({
         )}
       </nav>
       {/* Floating Assistive Food AI Voice Concierge (Only when delivery active) */}
-      {isDeliveryActive && <FoodAiConcierge />}
+      
       <LocationDialog open={locOpen} onOpenChange={setLocOpen} />
     </div>
   );

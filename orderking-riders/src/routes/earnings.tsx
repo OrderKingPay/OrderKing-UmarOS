@@ -54,7 +54,7 @@ function Page() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="font-display text-3xl">{t("earnings")}</h1>
-          <Badge tone="sim">{t("simulated")}</Badge>
+          
         </div>
 
         {/* Peak Surge Hours Banner */}

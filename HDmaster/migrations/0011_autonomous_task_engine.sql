@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS autonomous_tasks (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   owner text not null, -- The AI agent or user owning this task
   state text not null default 'REQUESTED', 
   inputs_json text not null default '{}',

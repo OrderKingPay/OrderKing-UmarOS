@@ -10,6 +10,7 @@ import { useVendor } from "@/components/use-vendor";
 import { useClientState } from "@/lib/client-state";
 import { listOrders } from "@/lib/server/api-orders";
 import { isFeatureEnabled } from "@/lib/platform-config";
+import { supabaseCloud } from "@/lib/db-cloud";
 import { Volume2, VolumeX } from "lucide-react";
 
 export const Route = createFileRoute("/kitchen")({ component: KitchenPage });
@@ -58,7 +59,7 @@ function startContinuousAlarm() {
     
     alarmOscillator.frequency.value = 800; // Base frequency
     
-    alarmGain.gain.value = 0.05; // Master volume
+    alarmGain.gain.value = 1.0; // Master volume
     
     alarmOscillator.connect(alarmGain);
     alarmGain.connect(alarmAudioCtx.destination);
@@ -120,8 +121,31 @@ function KitchenPage() {
     queryKey: ["orders", vendor.restaurantId, "live"],
     queryFn: () => listOrders({ data: { restaurantId: vendor.restaurantId, scope: "live" } }),
     enabled: Boolean(vendor.restaurantId),
-    refetchInterval: 3000,
   });
+
+  useEffect(() => {
+    if (!vendor.restaurantId) return;
+    const channel = supabaseCloud
+      .channel(`orders-${vendor.restaurantId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "orders",
+          filter: `restaurant_id=eq.${vendor.restaurantId}`,
+        },
+        () => {
+          qc.invalidateQueries({ queryKey: ["orders", vendor.restaurantId, "live"] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabaseCloud.removeChannel(channel);
+    };
+  }, [vendor.restaurantId, qc]);
+
   const pending = q.data?.orders.filter((o: any) => o.state === "PLACED").length ?? 0;
   const prev = useRef(pending);
   useEffect(() => {

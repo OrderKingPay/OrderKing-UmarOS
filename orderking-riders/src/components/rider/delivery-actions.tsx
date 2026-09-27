@@ -94,6 +94,21 @@ export function DeliveryActions({
     setPending(true);
     try {
       const compressed = await compressImage(file, 180_000);
+      
+      // Upload to Supabase Storage
+      const { supabase } = await import("@/lib/db-cloud");
+      const path = `pod/${delivery.id}-${Date.now()}.jpg`;
+      
+      const { data, error: uploadError } = await supabase.storage
+        .from("deliveries")
+        .upload(path, file, { contentType: file.type });
+        
+      if (uploadError) {
+        throw new Error("Failed to upload photo to Supabase Storage: " + uploadError.message);
+      }
+      
+      const publicUrl = supabase.storage.from("deliveries").getPublicUrl(path).data.publicUrl;
+
       await deliveryActionFn({
         data: {
           deliveryId: delivery.id,
@@ -104,6 +119,7 @@ export function DeliveryActions({
             contentType: compressed.contentType,
             dataUrl: compressed.dataUrl,
             bytes: compressed.bytes,
+            storageUrl: publicUrl,
           },
         },
       });
@@ -122,7 +138,6 @@ export function DeliveryActions({
         <p className="font-medium">
           {t("order")} {d.orderCode}
         </p>
-        <Badge tone="sim">{t("simulated")}</Badge>
       </div>
       <p className="text-sm">
         {d.restaurant.name} · {d.packageCount} {t("packages")}
@@ -278,11 +293,6 @@ export function DeliveryActions({
                 {t("cashCollected")} {formatPaise(cash.expectedPaise)}
               </Button>
             </div>
-          ) : null}
-          {simulatedOtp ? (
-            <p className="rounded-md bg-muted px-3 py-2 text-sm">
-              {t("simOtpHint")} <span className="font-mono tabular-nums">{simulatedOtp}</span>
-            </p>
           ) : null}
           <Label>{t("enterOtp")}</Label>
           <Input inputMode="numeric" autoComplete="one-time-code" value={otp} onChange={(e) => setOtp(e.target.value)} />

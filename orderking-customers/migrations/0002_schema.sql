@@ -19,7 +19,7 @@ create table if not exists cities (
 
 create table if not exists service_zones (
   id text primary key,
-  city_id text not null references cities(id),
+  city_id text not null references cities(id) ON DELETE CASCADE,
   name text not null,
   min_order_paise integer not null,
   delivery_base_paise integer not null,
@@ -66,8 +66,8 @@ create table if not exists restaurants (
 
 create table if not exists restaurant_outlets (
   id text primary key,
-  restaurant_id text not null references restaurants(id),
-  zone_id text not null references service_zones(id),
+  restaurant_id text not null references restaurants(id) ON DELETE CASCADE,
+  zone_id text not null references service_zones(id) ON DELETE CASCADE,
   name text not null,
   address_line text not null,
   area text not null,
@@ -90,7 +90,7 @@ create table if not exists restaurant_hours (
 
 create table if not exists restaurant_categories (
   restaurant_id text not null references restaurants(id) on delete cascade,
-  category_id text not null references categories(id),
+  category_id text not null references categories(id) ON DELETE CASCADE,
   primary key (restaurant_id, category_id)
 );
 
@@ -105,7 +105,7 @@ create table if not exists menu_categories (
 create table if not exists menu_items (
   id text primary key,
   restaurant_id text not null references restaurants(id) on delete cascade,
-  category_id text not null references menu_categories(id),
+  category_id text not null references menu_categories(id) ON DELETE CASCADE,
   name_en text not null,
   name_bn text not null,
   description_en text not null default '',
@@ -116,7 +116,7 @@ create table if not exists menu_items (
   bestseller boolean not null default false,
   available boolean not null default true,
   base_price_paise integer not null,
-  platform_category_id text references categories(id),
+  platform_category_id text references categories(id) ON DELETE CASCADE,
   sort_order integer not null default 0,
   data_label text not null default 'SIMULATED'
 );
@@ -162,13 +162,13 @@ create table if not exists promotions (
   min_order_paise integer not null default 0,
   max_discount_paise integer,
   funded_by text not null,
-  restaurant_id text references restaurants(id),
+  restaurant_id text references restaurants(id) ON DELETE CASCADE,
   first_order_only boolean not null default false,
   starts_at timestamptz,
   ends_at timestamptz,
   max_redemptions integer,
   per_user_limit integer not null default 1,
-  zone_id text references service_zones(id),
+  zone_id text references service_zones(id) ON DELETE CASCADE,
   active boolean not null default true,
   data_label text not null default 'SIMULATED'
 );
@@ -196,8 +196,8 @@ create table if not exists customer_addresses (
   line1 text not null,
   landmark text,
   area text not null,
-  city_id text not null references cities(id),
-  zone_id text references service_zones(id),
+  city_id text not null references cities(id) ON DELETE CASCADE,
+  zone_id text references service_zones(id) ON DELETE CASCADE,
   lat double precision,
   lng double precision,
   instructions text,
@@ -210,8 +210,8 @@ create table if not exists orders (
   id text primary key,
   public_id text unique not null,
   user_id text not null,
-  restaurant_id text not null references restaurants(id),
-  outlet_id text not null references restaurant_outlets(id),
+  restaurant_id text not null references restaurants(id) ON DELETE CASCADE,
+  outlet_id text not null references restaurant_outlets(id) ON DELETE CASCADE,
   zone_id text not null,
   address_snapshot text not null,
   status text not null,
@@ -277,7 +277,7 @@ create table if not exists order_events (
 
 create table if not exists payments (
   id text primary key,
-  order_id text not null references orders(id),
+  order_id text not null references orders(id) ON DELETE CASCADE,
   provider text not null,
   provider_ref text,
   status text not null,
@@ -290,7 +290,7 @@ create table if not exists payments (
 
 create table if not exists refunds (
   id text primary key,
-  payment_id text not null references payments(id),
+  payment_id text not null references payments(id) ON DELETE CASCADE,
   order_id text not null,
   amount_paise integer not null,
   reason text,
@@ -300,7 +300,7 @@ create table if not exists refunds (
 
 create table if not exists promotion_redemptions (
   id text primary key,
-  promotion_id text not null references promotions(id),
+  promotion_id text not null references promotions(id) ON DELETE CASCADE,
   user_id text not null,
   order_id text,
   created_at timestamptz not null default now()
@@ -417,3 +417,6 @@ create table if not exists riders (
   kyc_status text not null default 'pending',
   created_at timestamptz not null default now()
 );
+
+
+ALTER TABLE orders ADD CONSTRAINT check_positive_food_subtotal_paise CHECK (food_subtotal_paise >= 0);

@@ -4,7 +4,7 @@
 
 create table if not exists founder_approvals (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   module text not null, -- e.g., 'FINANCE', 'GROWTH', 'SUPPORT'
   action text not null, -- e.g., 'ISSUE_PAYOUT', 'CHANGE_COMMISSION'
   details_json text not null,
@@ -20,7 +20,7 @@ create index if not exists founder_approvals_org_idx on founder_approvals (org_i
 
 create table if not exists ai_work_items (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   agent_role text not null, -- e.g., 'RESTAURANT_GROWTH_MANAGER'
   task_type text not null,
   priority int not null default 5,
@@ -35,8 +35,8 @@ create index if not exists ai_work_items_org_idx on ai_work_items (org_id, agent
 
 create table if not exists restaurant_growth_plans (
   id text primary key,
-  org_id text not null references organizations(id),
-  restaurant_id text not null references restaurants(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
+  restaurant_id text not null references restaurants(id) ON DELETE CASCADE,
   generated_by text not null,
   plan_json text not null,
   status text not null default 'ACTIVE', -- 'ACTIVE', 'IMPLEMENTED', 'SUPERSEDED'
@@ -47,7 +47,7 @@ create index if not exists rgp_restaurant_idx on restaurant_growth_plans (restau
 
 create table if not exists finance_reconciliations (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   batch_id text,
   verified_by text not null,
   discrepancy_paise int not null default 0,

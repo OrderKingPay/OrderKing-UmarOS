@@ -45,6 +45,36 @@
     0px 8px 24px -16px rgb(23 22 20 / 0.18);
 }
 
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-bg: #000000;
+    --color-background: #000000;
+    --color-surface: #111111;
+    --color-card: #111111;
+    --color-fg: #ffffff;
+    --color-foreground: #ffffff;
+    --color-muted: #222222;
+    --color-muted-foreground: #aaaaaa;
+    --color-primary: #33ff99;
+    --color-primary-foreground: #000000;
+    --color-accent: #33ff99;
+    --color-accent-foreground: #000000;
+    --color-border: #333333;
+    --color-ring: #33ff99;
+    --color-destructive: #ff5555;
+    --color-destructive-foreground: #ffffff;
+    --color-secondary: #333333;
+    --color-secondary-foreground: #ffffff;
+    --color-online: #33ff99;
+    --color-offline: #ff5555;
+    --color-busy: #ffaa00;
+    --color-cod: #ff8855;
+    --color-sim: #666666;
+    --color-paper: #222222;
+    --color-ink: #ffffff;
+  }
+}
+
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;

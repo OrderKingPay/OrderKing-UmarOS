@@ -52,7 +52,7 @@ function Login() {
   return (
     <main className="mx-auto min-h-dvh max-w-lg px-4 py-10">
       <div className="mb-4 flex items-center justify-between">
-        <Badge tone="sim">{t("simulated")}</Badge>
+        
         <button type="button" className="text-sm underline" onClick={() => setLocale(locale === "en" ? "bn" : "en")}>
           {locale === "en" ? "বাংলা" : "English"}
         </button>

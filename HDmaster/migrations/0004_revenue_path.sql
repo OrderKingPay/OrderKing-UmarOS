@@ -3,8 +3,8 @@
 
 create table if not exists payment_intents (
   id text primary key,
-  org_id text not null references organizations(id),
-  order_id text not null references orders(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
+  order_id text not null references orders(id) ON DELETE CASCADE,
   gateway text not null,
   gateway_order_id text not null,
   gateway_payment_id text,
@@ -37,8 +37,8 @@ create table if not exists payment_webhook_events (
 
 create table if not exists journal_entries (
   id text primary key,
-  org_id text not null references organizations(id),
-  order_id text references orders(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
+  order_id text references orders(id) ON DELETE CASCADE,
   source_type text not null,
   source_id text not null,
   description text not null,
@@ -49,7 +49,7 @@ create index if not exists journal_entries_order_idx on journal_entries (order_i
 
 create table if not exists journal_lines (
   id text primary key,
-  journal_id text not null references journal_entries(id),
+  journal_id text not null references journal_entries(id) ON DELETE CASCADE,
   account text not null,
   direction text not null check (direction in ('DEBIT','CREDIT')),
   amount_paise int not null check (amount_paise > 0),
@@ -70,8 +70,8 @@ create index if not exists settlement_batches_party_idx on settlement_batches (o
 
 create table if not exists settlement_items (
   id text primary key,
-  batch_id text not null references settlement_batches(id),
-  order_id text not null references orders(id),
+  batch_id text not null references settlement_batches(id) ON DELETE CASCADE,
+  order_id text not null references orders(id) ON DELETE CASCADE,
   amount_paise int not null,
   created_at timestamptz not null default now(),
   unique (batch_id, order_id)
@@ -79,9 +79,9 @@ create table if not exists settlement_items (
 
 create table if not exists rider_location_pings (
   id text primary key,
-  org_id text not null references organizations(id),
-  rider_id text not null references riders(id),
-  order_id text references orders(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
+  rider_id text not null references riders(id) ON DELETE CASCADE,
+  order_id text references orders(id) ON DELETE CASCADE,
   lat numeric not null,
   lng numeric not null,
   accuracy_m numeric,
@@ -94,9 +94,9 @@ create index if not exists rider_location_order_idx on rider_location_pings (ord
 
 create table if not exists dispatch_assignments (
   id text primary key,
-  org_id text not null references organizations(id),
-  order_id text not null references orders(id),
-  rider_id text not null references riders(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
+  order_id text not null references orders(id) ON DELETE CASCADE,
+  rider_id text not null references riders(id) ON DELETE CASCADE,
   score numeric not null default 0,
   distance_m numeric,
   eta_seconds int,

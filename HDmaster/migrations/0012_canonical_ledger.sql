@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS ledger_transactions (
 
 CREATE TABLE IF NOT EXISTS ledger_entries (
     entry_id TEXT PRIMARY KEY,
-    transaction_id TEXT NOT NULL REFERENCES ledger_transactions(transaction_id),
+    transaction_id TEXT NOT NULL REFERENCES ledger_transactions(transaction_id) ON DELETE CASCADE,
     account TEXT NOT NULL,
     direction TEXT NOT NULL CHECK (direction IN ('DEBIT', 'CREDIT')),
     amount_paise BIGINT NOT NULL,

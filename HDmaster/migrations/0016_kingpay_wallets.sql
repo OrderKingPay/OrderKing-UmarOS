@@ -13,3 +13,6 @@ CREATE TABLE IF NOT EXISTS kingpay_transactions (
   description TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+
+ALTER TABLE kingpay_wallets ADD CONSTRAINT check_positive_balance CHECK (balance_paise >= 0);

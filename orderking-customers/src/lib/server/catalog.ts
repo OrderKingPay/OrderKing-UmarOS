@@ -198,21 +198,27 @@ export const listRestaurants = createServerFn({ method: "POST" })
     }
     
     if (q) {
-      params.push(term);
-      const pos = params.length;
-      query += ` and (
-        r.name ilike $${pos} or 
-        r.cuisine_summary ilike $${pos} or 
-        r.description_en ilike $${pos} or 
-        r.description_bn ilike $${pos} or 
-        exists (
-          select 1 from menu_items m 
-          where m.restaurant_id = r.id 
-          and (m.name_en ilike $${pos} or m.name_bn ilike $${pos}) 
-          and m.available = true
-        )
-      )`;
+      const tsQuery = q.split(/[\\s]+/)
+        .map(w => w.replace(/[^a-z0-9]/gi, ''))
+        .filter(w => w.length > 0)
+        .map(w => w + ':*')
+        .join(' & ');
+
+      if (tsQuery) {
+        params.push(tsQuery);
+        const pos = params.length;
+        query += ` and (
+          r.search_vector @@ to_tsquery('english', $${pos}) or 
+          exists (
+            select 1 from menu_items m 
+            where m.restaurant_id = r.id 
+            and (m.search_vector @@ to_tsquery('english', $${pos})) 
+            and m.available = true
+          )
+        )`;
+      }
     }
+
     
     query += ` order by r.promoted desc, r.name`;
     
@@ -422,7 +428,38 @@ export const searchDishes = createServerFn({ method: "POST" })
     const lang = data.lang === "bn" ? "bn" : "en";
     const q = data.q?.trim() ?? "";
 
-    const rows = await sql<{
+    const tsQuery = q ? q.split(/[\\s]+/)
+      .map(w => w.replace(/[^a-z0-9]/gi, ''))
+      .filter(w => w.length > 0)
+      .map(w => w + ':*')
+      .join(' & ') : "";
+
+    const params: any[] = [];
+    let queryStr = `
+      select m.id, m.restaurant_id, m.category_id, m.name_en, m.name_bn,
+             m.description_en, m.description_bn, m.image_url, m.veg, m.bestseller,
+             m.available, m.base_price_paise,
+             r.name as restaurant_name, r.slug as restaurant_slug, r.rating_avg, r.prep_minutes,
+             mc.name_en as category_name_en, mc.name_bn as category_name_bn,
+             o.lat as outlet_lat, o.lng as outlet_lng,
+             z.delivery_base_paise, z.delivery_per_km_paise
+      from menu_items m
+      join restaurants r on r.id = m.restaurant_id and r.active = true
+      join menu_categories mc on mc.id = m.category_id
+      join restaurant_outlets o on o.restaurant_id = r.id and o.active = true
+      join service_zones z on z.id = o.zone_id
+      where m.available = true
+    `;
+
+    if (tsQuery) {
+      params.push(tsQuery);
+      const pos = params.length;
+      queryStr += ` and (m.search_vector @@ to_tsquery('english', $${pos}) or r.search_vector @@ to_tsquery('english', $${pos})) `;
+    }
+
+    queryStr += ` order by m.bestseller desc, r.rating_avg desc nulls last`;
+
+    const rows = await sql.query<{
       id: string;
       restaurant_id: string;
       category_id: string;
@@ -445,22 +482,7 @@ export const searchDishes = createServerFn({ method: "POST" })
       outlet_lng: number;
       delivery_base_paise: number;
       delivery_per_km_paise: number;
-    }>`
-      select m.id, m.restaurant_id, m.category_id, m.name_en, m.name_bn,
-             m.description_en, m.description_bn, m.image_url, m.veg, m.bestseller,
-             m.available, m.base_price_paise,
-             r.name as restaurant_name, r.slug as restaurant_slug, r.rating_avg, r.prep_minutes,
-             mc.name_en as category_name_en, mc.name_bn as category_name_bn,
-             o.lat as outlet_lat, o.lng as outlet_lng,
-             z.delivery_base_paise, z.delivery_per_km_paise
-      from menu_items m
-      join restaurants r on r.id = m.restaurant_id and r.active = true
-      join menu_categories mc on mc.id = m.category_id
-      join restaurant_outlets o on o.restaurant_id = r.id and o.active = true
-      join service_zones z on z.id = o.zone_id
-      where m.available = true
-      order by m.bestseller desc, r.rating_avg desc nulls last
-    `;
+    }>(queryStr, params);
 
     const origin = { lat: data.lat, lng: data.lng };
     const results: DishSearchResult[] = [];
@@ -474,15 +496,7 @@ export const searchDishes = createServerFn({ method: "POST" })
           row.name_en.toLowerCase().includes(data.category.toLowerCase());
         if (!catMatch) continue;
       }
-      if (q) {
-        const matches =
-          matchesQuery(row.name_en, q) ||
-          matchesQuery(row.name_bn, q) ||
-          matchesQuery(row.description_en, q) ||
-          matchesQuery(row.description_bn, q) ||
-          matchesQuery(row.restaurant_name, q);
-        if (!matches) continue;
-      }
+
 
       const dist = distanceKm(origin, { lat: row.outlet_lat, lng: row.outlet_lng });
       const fee = deliveryFee(dist, row.delivery_base_paise, row.delivery_per_km_paise, null);

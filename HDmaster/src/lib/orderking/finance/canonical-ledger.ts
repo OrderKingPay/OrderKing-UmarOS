@@ -156,6 +156,7 @@ export class CanonicalLedger {
     let duplicateTxId: string | null = null;
 
     await sql.transaction(async (tx) => {
+      await tx.query("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE");
       const lockedExisting = await tx.query<any>(
         "SELECT transaction_id FROM ledger_transactions WHERE idempotency_key = $1 FOR UPDATE",
         [params.idempotencyKey],
@@ -329,10 +330,19 @@ export class CanonicalLedger {
     const batchId = "stl-" + crypto.randomUUID();
     const now = new Date().toISOString();
 
-    await sql.query(
-      "INSERT INTO settlement_batches (batch_id, entity_id, entity_type, period_start, period_end, gross_amount_paise, deductions_paise, commission_paise, gst_paise, net_payout_paise, state, idempotency_key, payout_upi_or_account_number, attempts_count, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)",
-      [batchId, params.entityId, params.entityType, params.periodStart, params.periodEnd, params.grossAmountPaise, params.deductionsPaise, params.commissionPaise, params.gstPaise, netPayoutPaise, "CALCULATED", params.idempotencyKey, params.payoutUpiOrAccountNumber, 0, now, now]
-    );
+    await sql.transaction(async (tx) => {
+      await tx.query("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+      
+      const existingTx = await tx.query<any>("SELECT * FROM settlement_batches WHERE idempotency_key = $1 FOR UPDATE", [params.idempotencyKey]);
+      if (existingTx && existingTx.length > 0) {
+        return; // Handled outside or we can just ignore and let the outer function return the existing one.
+      }
+      
+      await tx.query(
+        "INSERT INTO settlement_batches (batch_id, entity_id, entity_type, period_start, period_end, gross_amount_paise, deductions_paise, commission_paise, gst_paise, net_payout_paise, state, idempotency_key, payout_upi_or_account_number, attempts_count, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)",
+        [batchId, params.entityId, params.entityType, params.periodStart, params.periodEnd, params.grossAmountPaise, params.deductionsPaise, params.commissionPaise, params.gstPaise, netPayoutPaise, "CALCULATED", params.idempotencyKey, params.payoutUpiOrAccountNumber, 0, now, now]
+      );
+    });
 
     return {
       batchId, entityId: params.entityId, entityType: params.entityType, periodStart: params.periodStart, periodEnd: params.periodEnd,
@@ -378,10 +388,24 @@ export class CanonicalLedger {
     const attempts = nextState === "INITIATED" ? batch.attempts_count + 1 : batch.attempts_count;
     const now = new Date().toISOString();
 
-    await sql.query(
-      "UPDATE settlement_batches SET state = $1, provider_reference = COALESCE($2, provider_reference), failure_reason = COALESCE($3, failure_reason), attempts_count = $4, updated_at = $5 WHERE batch_id = $6",
-      [nextState, metadata?.providerReference || null, metadata?.failureReason || null, attempts, now, batchId]
-    );
+    await sql.transaction(async (tx) => {
+      await tx.query("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+      
+      const lockedBatch = await tx.query<any>("SELECT state, attempts_count FROM settlement_batches WHERE batch_id = $1 FOR UPDATE", [batchId]);
+      if (!lockedBatch || lockedBatch.length === 0) {
+        throw new Error(`Settlement batch '${batchId}' not found.`);
+      }
+      
+      const currentState = lockedBatch[0].state;
+      if (!validTransitions[currentState]?.includes(nextState)) {
+        throw new Error(`Invalid settlement state transition from '${currentState}' to '${nextState}'.`);
+      }
+
+      await tx.query(
+        "UPDATE settlement_batches SET state = $1, provider_reference = COALESCE($2, provider_reference), failure_reason = COALESCE($3, failure_reason), attempts_count = $4, updated_at = $5 WHERE batch_id = $6",
+        [nextState, metadata?.providerReference || null, metadata?.failureReason || null, attempts, now, batchId]
+      );
+    });
 
     if (nextState === "PAID") {
       await this.postTransaction({

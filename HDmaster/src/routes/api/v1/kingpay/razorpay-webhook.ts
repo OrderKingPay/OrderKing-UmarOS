@@ -39,6 +39,21 @@ export const Route = createFileRoute("/api/v1/kingpay/razorpay-webhook")({
           const data = RazorpayWebhookSchema.parse(JSON.parse(rawBody));
 
           if (data.event === "payment.captured") {
+            const paymentId = data.payload.payment.entity.id;
+            
+            // Impenetrable backend validation: Always fetch the source of truth from Razorpay directly
+            // Do not trust the webhook payload alone even with signature verification.
+            const { fetchRazorpayPayment } = await import("@/lib/orderking/payments/razorpay.server");
+            const trustedPayment = await fetchRazorpayPayment(paymentId);
+            
+            if (trustedPayment.status !== "captured") {
+              return new Response(JSON.stringify({ error: "Payment is not in captured state on Razorpay servers" }), { status: 400 });
+            }
+            
+            if (trustedPayment.amount !== data.payload.payment.entity.amount) {
+              return new Response(JSON.stringify({ error: "Amount mismatch detected" }), { status: 400 });
+            }
+
             const payment = data.payload.payment.entity;
             const accountId = payment.notes?.accountId || "PLATFORM_HOLDING";
 
@@ -50,14 +65,14 @@ export const Route = createFileRoute("/api/v1/kingpay/razorpay-webhook")({
                 {
                   account: "BANK_CLEARING" as any,
                   direction: "DEBIT",
-                  amountPaise: payment.amount,
+                  amountPaise: trustedPayment.amount,
                   entityId: "GATEWAY",
                   memo: "Gateway clearing debit"
                 },
                 {
                   account: accountId as any,
                   direction: "CREDIT",
-                  amountPaise: payment.amount,
+                  amountPaise: trustedPayment.amount,
                   entityId: "USER",
                   memo: "User cash in credit"
                 }

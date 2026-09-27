@@ -2,7 +2,8 @@ import { Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -420,10 +421,13 @@ export function HomeFeed({
           {t("common.retry")}
         </button>
       ) : list.isPending ? (
-        <div className="grid gap-4 md:grid-cols-2">
-          <Skeleton className="h-52 w-full" />
-          <Skeleton className="h-52 w-full" />
-        </div>
+        <motion.div className="grid gap-4 md:grid-cols-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+              <Skeleton className="h-52 w-full rounded-[var(--radius-xl)] bg-surface-2" />
+            </motion.div>
+          ))}
+        </motion.div>
       ) : q || veg || openNow || category ? (
         <Section title={t("common.search")} items={list.data?.restaurants ?? []} empty={t("home.noResults")} />
       ) : (
@@ -469,19 +473,52 @@ export function HomeFeed({
 }
 
 function Section({ title, items, empty }: { title: string; items: RestaurantCard[]; empty?: string }) {
+  const [visibleCount, setVisibleCount] = useState(10);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastElementRef = useCallback((node: HTMLDivElement | null) => {
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && visibleCount < items.length) {
+        setVisibleCount((prev) => prev + 10);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [visibleCount, items.length]);
+
   if (!items.length) {
     return empty ? <p className="text-sm text-muted">{empty}</p> : null;
   }
   return (
     <section>
       <h2 className="mb-3 font-display text-xl">{title}</h2>
-      <div className="grid gap-4 md:grid-cols-2">
-        {items.map((r) => (
-          <KitchenCard key={r.id} restaurant={r} />
-        ))}
-      </div>
+      <motion.div 
+        className="grid gap-4 md:grid-cols-2"
+        initial="hidden" animate="visible"
+        variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+      >
+        <AnimatePresence>
+          {items.slice(0, visibleCount).map((r, i) => (
+            <motion.div
+              key={r.id}
+              ref={i === visibleCount - 1 ? lastElementRef : null}
+              layout
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <KitchenCard restaurant={r} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+      {visibleCount < items.length && (
+        <div className="mt-6 flex justify-center">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      )}
     </section>
   );
 }
-
-

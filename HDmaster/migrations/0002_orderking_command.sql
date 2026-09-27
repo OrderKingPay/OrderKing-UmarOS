@@ -13,7 +13,7 @@ create table if not exists organizations (
 );
 
 create table if not exists workspace_meta (
-  org_id text primary key references organizations(id),
+  org_id text primary key references organizations(id) ON DELETE CASCADE,
   seed_version int not null default 0,
   seeded_at timestamptz,
   data_mode text not null default 'SIMULATED'
@@ -21,7 +21,7 @@ create table if not exists workspace_meta (
 
 create table if not exists cities (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   name text not null,
   state text not null,
   country text not null default 'IN',
@@ -32,8 +32,8 @@ create index if not exists cities_org_idx on cities (org_id);
 
 create table if not exists zones (
   id text primary key,
-  org_id text not null references organizations(id),
-  city_id text not null references cities(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
+  city_id text not null references cities(id) ON DELETE CASCADE,
   name text not null,
   geometry_json text not null default '{}',
   delivery_fee_paise int not null default 0,
@@ -50,7 +50,7 @@ create index if not exists zones_org_idx on zones (org_id);
 
 create table if not exists employees (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   user_id text,
   email text not null,
   name text not null,
@@ -76,7 +76,7 @@ create index if not exists employees_city_idx on employees (city_id);
 create table if not exists employee_logins (
   id text primary key,
   org_id text not null,
-  employee_id text not null references employees(id),
+  employee_id text not null references employees(id) ON DELETE CASCADE,
   user_id text not null,
   event text not null,
   ip text,
@@ -87,9 +87,9 @@ create index if not exists employee_logins_emp_idx on employee_logins (employee_
 
 create table if not exists restaurants (
   id text primary key,
-  org_id text not null references organizations(id),
-  city_id text not null references cities(id),
-  zone_id text not null references zones(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
+  city_id text not null references cities(id) ON DELETE CASCADE,
+  zone_id text not null references zones(id) ON DELETE CASCADE,
   name text not null,
   slug text not null,
   cuisine text not null,
@@ -112,7 +112,7 @@ create index if not exists restaurants_city_idx on restaurants (city_id);
 create table if not exists menu_items (
   id text primary key,
   org_id text not null,
-  restaurant_id text not null references restaurants(id),
+  restaurant_id text not null references restaurants(id) ON DELETE CASCADE,
   category text not null,
   name text not null,
   price_paise int not null,
@@ -123,9 +123,9 @@ create index if not exists menu_items_rst_idx on menu_items (restaurant_id);
 
 create table if not exists riders (
   id text primary key,
-  org_id text not null references organizations(id),
-  city_id text not null references cities(id),
-  zone_id text not null references zones(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
+  city_id text not null references cities(id) ON DELETE CASCADE,
+  zone_id text not null references zones(id) ON DELETE CASCADE,
   name text not null,
   phone_masked text not null,
   vehicle text not null,
@@ -146,8 +146,8 @@ create index if not exists riders_city_idx on riders (city_id);
 
 create table if not exists customers (
   id text primary key,
-  org_id text not null references organizations(id),
-  city_id text not null references cities(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
+  city_id text not null references cities(id) ON DELETE CASCADE,
   display_ref text not null,
   phone_masked text not null,
   status text not null default 'ACTIVE',
@@ -163,11 +163,11 @@ create index if not exists customers_city_idx on customers (city_id);
 
 create table if not exists orders (
   id text primary key,
-  org_id text not null references organizations(id),
-  city_id text not null references cities(id),
-  zone_id text not null references zones(id),
-  restaurant_id text not null references restaurants(id),
-  customer_id text not null references customers(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
+  city_id text not null references cities(id) ON DELETE CASCADE,
+  zone_id text not null references zones(id) ON DELETE CASCADE,
+  restaurant_id text not null references restaurants(id) ON DELETE CASCADE,
+  customer_id text not null references customers(id) ON DELETE CASCADE,
   rider_id text,
   status text not null,
   payment_status text not null,
@@ -201,7 +201,7 @@ create index if not exists orders_placed_idx on orders (org_id, placed_at desc);
 create table if not exists order_items (
   id text primary key,
   org_id text not null,
-  order_id text not null references orders(id),
+  order_id text not null references orders(id) ON DELETE CASCADE,
   menu_item_id text,
   name text not null,
   qty int not null,
@@ -212,7 +212,7 @@ create index if not exists order_items_order_idx on order_items (order_id);
 create table if not exists order_events (
   id text primary key,
   org_id text not null,
-  order_id text not null references orders(id),
+  order_id text not null references orders(id) ON DELETE CASCADE,
   actor_employee_id text,
   from_status text,
   to_status text,
@@ -224,7 +224,7 @@ create index if not exists order_events_order_idx on order_events (order_id, cre
 
 create table if not exists tickets (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   city_id text,
   queue text not null,
   category text not null,
@@ -247,7 +247,7 @@ create index if not exists tickets_queue_idx on tickets (org_id, queue, status);
 
 create table if not exists ticket_messages (
   id text primary key,
-  ticket_id text not null references tickets(id),
+  ticket_id text not null references tickets(id) ON DELETE CASCADE,
   org_id text not null,
   visibility text not null,
   author_type text not null,
@@ -276,7 +276,7 @@ create index if not exists ledger_party_idx on ledger_entries (org_id, party, cr
 
 create table if not exists promotions (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   name text not null,
   kind text not null,
   funding text not null,
@@ -301,7 +301,7 @@ create index if not exists promotions_org_idx on promotions (org_id, status);
 
 create table if not exists loyalty_programs (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   name text not null,
   kind text not null,
   earn_bps int not null default 0,
@@ -312,7 +312,7 @@ create table if not exists loyalty_programs (
 
 create table if not exists cms_entries (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   surface text not null,
   slot text not null,
   title text not null,
@@ -327,7 +327,7 @@ create table if not exists cms_entries (
 create index if not exists cms_org_idx on cms_entries (org_id, surface, slot);
 
 create table if not exists branding (
-  org_id text primary key references organizations(id),
+  org_id text primary key references organizations(id) ON DELETE CASCADE,
   app_name text not null,
   logo_svg text,
   favicon_svg text,
@@ -355,7 +355,7 @@ create table if not exists branding (
 
 create table if not exists feature_flags (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   key text not null,
   state text not null default 'OFF',
   rollout_pct int not null default 0,
@@ -365,7 +365,7 @@ create table if not exists feature_flags (
 );
 
 create table if not exists platform_settings (
-  org_id text primary key references organizations(id),
+  org_id text primary key references organizations(id) ON DELETE CASCADE,
   settings_json text not null,
   updated_at timestamptz not null default now(),
   updated_by_employee_id text
@@ -443,9 +443,12 @@ create index if not exists alerts_org_idx on alerts (org_id, status, created_at 
 
 create table if not exists custom_roles (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   key text not null,
   name text not null,
   permissions_json text not null,
   unique (org_id, key)
 );
+
+
+ALTER TABLE orders ADD CONSTRAINT check_positive_food_paise CHECK (food_paise >= 0);

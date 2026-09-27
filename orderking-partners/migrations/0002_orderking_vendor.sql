@@ -390,3 +390,6 @@ create table if not exists assistant_messages (
   content text not null,
   created_at timestamptz not null default now()
 );
+
+
+ALTER TABLE orders ADD CONSTRAINT check_positive_food_value_paise CHECK (food_value_paise >= 0);

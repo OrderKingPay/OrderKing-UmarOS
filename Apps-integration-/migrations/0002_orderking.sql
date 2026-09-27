@@ -10,7 +10,7 @@ create table if not exists organizations (
 
 create table if not exists locations (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   name text not null,
   zone_code text not null,
   lat double precision,
@@ -19,15 +19,15 @@ create table if not exists locations (
 
 create table if not exists teams (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   name text not null,
   slug text not null,
-  location_id text references locations(id)
+  location_id text references locations(id) ON DELETE CASCADE
 );
 
 create table if not exists roles (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   slug text not null,
   name text not null,
   description text not null default '',
@@ -44,13 +44,13 @@ create table if not exists role_permissions (
 
 create table if not exists employees (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   user_id text,
   email text not null,
   name text not null,
-  role_id text not null references roles(id),
-  team_id text references teams(id),
-  location_id text references locations(id),
+  role_id text not null references roles(id) ON DELETE CASCADE,
+  team_id text references teams(id) ON DELETE CASCADE,
+  location_id text references locations(id) ON DELETE CASCADE,
   status text not null,
   invited_by text,
   invited_at timestamptz,
@@ -65,9 +65,9 @@ create index if not exists employees_user_id_idx on employees (user_id);
 
 create table if not exists employee_invites (
   id text primary key,
-  org_id text not null references organizations(id),
+  org_id text not null references organizations(id) ON DELETE CASCADE,
   email text not null,
-  role_id text not null references roles(id),
+  role_id text not null references roles(id) ON DELETE CASCADE,
   team_id text,
   location_id text,
   status text not null,
@@ -78,7 +78,7 @@ create table if not exists employee_invites (
 create table if not exists employee_sessions (
   id text primary key,
   org_id text not null,
-  employee_id text not null references employees(id),
+  employee_id text not null references employees(id) ON DELETE CASCADE,
   user_id text not null,
   started_at timestamptz not null default now(),
   last_seen_at timestamptz not null default now(),
@@ -89,7 +89,7 @@ create table if not exists employee_sessions (
 create table if not exists shifts (
   id text primary key,
   org_id text not null,
-  employee_id text not null references employees(id),
+  employee_id text not null references employees(id) ON DELETE CASCADE,
   started_at timestamptz not null,
   ended_at timestamptz,
   location_id text
@@ -179,9 +179,9 @@ create table if not exists riders (
 create table if not exists orders (
   id text primary key,
   org_id text not null,
-  customer_id text not null references customers(id),
-  restaurant_id text not null references restaurants(id),
-  rider_id text references riders(id),
+  customer_id text not null references customers(id) ON DELETE CASCADE,
+  restaurant_id text not null references restaurants(id) ON DELETE CASCADE,
+  rider_id text references riders(id) ON DELETE CASCADE,
   status text not null,
   payment_status text not null,
   placed_at timestamptz not null,
@@ -210,7 +210,7 @@ create index if not exists orders_org_placed_idx on orders (org_id, placed_at de
 create table if not exists order_events (
   id text primary key,
   org_id text not null,
-  order_id text not null references orders(id),
+  order_id text not null references orders(id) ON DELETE CASCADE,
   at timestamptz not null default now(),
   actor_type text not null,
   actor_id text,
@@ -223,7 +223,7 @@ create index if not exists order_events_order_idx on order_events (order_id, at)
 create table if not exists refunds (
   id text primary key,
   org_id text not null,
-  order_id text not null references orders(id),
+  order_id text not null references orders(id) ON DELETE CASCADE,
   amount_paise integer not null,
   status text not null,
   reason text not null,
@@ -270,7 +270,7 @@ create table if not exists tickets (
 
 create table if not exists ticket_messages (
   id text primary key,
-  ticket_id text not null references tickets(id),
+  ticket_id text not null references tickets(id) ON DELETE CASCADE,
   author_type text not null,
   author_id text,
   body text not null,

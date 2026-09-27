@@ -440,7 +440,7 @@ function OfferCard({
             {offer.restaurant.area} → {offer.dropArea}
           </CardMeta>
         </div>
-        <Badge tone="sim">{t("simulated")}</Badge>
+        
       </div>
       
       {/* 1000x Realism: Deep Learning Dispatch Metrics */}
