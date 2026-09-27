@@ -17,7 +17,7 @@ import { loadConfig } from "@/lib/server/load-config";
 import { useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { newId } from "@/lib/ids";
-import { createRazorpayOrder } from "@/lib/server/razorpay-order";
+import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/server/razorpay-order";
 
 export const Route = createFileRoute("/checkout")({ component: CheckoutPage });
 
@@ -92,9 +92,9 @@ function CheckoutPage() {
       if (roundupGold && goldRoundupPaise > 0) {
         orderNotes = `[✨ 24K Gold Savings: ₹${(goldRoundupPaise / 100).toFixed(2)}] ${orderNotes}`.trim();
       }
-      const placeFinalOrder = async (finalPaymentMethod: string) => {
+      const placeFinalOrder = async (finalPaymentMethod: "COD" | "KING_PAY" | "RAZORPAY", paymentReference?: string) => {
         const result = cfg.marketplace.launchMode === "live"
-          ? await placeOrderViaHDmaster({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod as any, notes: orderNotes, idempotencyKey } })
+          ? await placeOrderViaHDmaster({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod, notes: paymentReference ? `${orderNotes}\n[Razorpay Payment: ${paymentReference}]`.trim() : orderNotes, idempotencyKey } })
           : await placeOrder({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod as any, notes: orderNotes, idempotencyKey } });
         clear();
         toast.success(t("orders.placed"));
@@ -112,7 +112,18 @@ function CheckoutPage() {
           image: cfg.brand.logoUrl,
           order_id: rzpOrder.orderId,
           handler: async function (response: any) {
-            await placeFinalOrder("UPI_SANDBOX");
+            const verified = await verifyRazorpayPayment({
+              data: {
+                razorpayOrderId: response?.razorpay_order_id,
+                razorpayPaymentId: response?.razorpay_payment_id,
+                razorpaySignature: response?.razorpay_signature,
+                expectedAmountPaise: totalPayable,
+              },
+            });
+            if (!verified.verified) {
+              throw new Error("Razorpay payment could not be verified.");
+            }
+            await placeFinalOrder("RAZORPAY", verified.razorpayPaymentId);
           },
           prefill: {
             name: (user as any).name ?? "",
