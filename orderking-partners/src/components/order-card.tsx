@@ -8,7 +8,6 @@ import { actionKey, clearActionKey } from "@/lib/idempotency-client";
 import { formatINR } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { REJECT_REASONS, type OrderState } from "@/lib/orders/state-machine";
-import { advanceSimulatedRider } from "@/lib/server/api-orders";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
 import { enqueueMutation } from "@/lib/offline/durable-queue";
 
@@ -123,26 +122,6 @@ export function OrderCard({
       onChanged?.();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not update order");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function simRider() {
-    setBusy(true);
-    setError(null);
-    try {
-      await advanceSimulatedRider({
-        data: {
-          restaurantId,
-          orderId: order.id,
-          idempotencyKey: actionKey(order.id, "sim_rider"),
-        },
-      });
-      clearActionKey(order.id, "sim_rider");
-      onChanged?.();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not advance rider");
     } finally {
       setBusy(false);
     }
@@ -294,11 +273,6 @@ export function OrderCard({
           ) : null}
           {order.state === "PREPARING" ? (
             <Button size={large ? "lg" : "md"} variant="leaf" disabled={busy} onClick={() => void act("ready")}>{t("orders.ready")}</Button>
-          ) : null}
-          {dataLabel === "SIMULATED" && ["READY", "RIDER_ASSIGNED", "PICKED_UP", "ON_THE_WAY"].includes(order.state) ? (
-            <Button size={large ? "lg" : "md"} variant="secondary" disabled={busy} onClick={() => void simRider()}>
-              {t("orders.simulateRider")}
-            </Button>
           ) : null}
         </div>
       )}
