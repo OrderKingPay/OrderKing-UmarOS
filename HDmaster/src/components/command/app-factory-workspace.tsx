@@ -34,10 +34,9 @@ export function AppFactoryWorkspace() {
   const [blueprintList, setBlueprintList] = useState<EnterpriseProjectBlueprint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [terminalLogs, setTerminalLogs] = useState<string[]>([
-    "[07:00:01] App Factory compiler daemon initialized",
-    "[07:00:02] Loaded blueprints: Hospital ERP, Multi-Vendor Food, FinTech Ledger",
-    "[07:00:03] Isolated sandbox environment ready with React 19 & PostgreSQL AST parser",
+  const [terminalLogs] = useState<string[]>([
+    "No build has been executed from this browser surface.",
+    "Use repository CI/CD for authoritative typecheck, tests, migrations, and deployment results.",
   ]);
 
   useEffect(() => {
@@ -84,14 +83,9 @@ export function AppFactoryWorkspace() {
   };
 
   const handleRunBuild = () => {
-    setTerminalLogs((prev) => [
-      ...prev,
-      `[${new Date().toLocaleTimeString()}] Building ${currentBlueprint.title} for production...`,
-      `[${new Date().toLocaleTimeString()}] Typechecking React 19 components... OK (0 errors)`,
-      `[${new Date().toLocaleTimeString()}] Validating PostgreSQL schema DDL... OK (Tables, FKs, Indexes verified)`,
-      `[${new Date().toLocaleTimeString()}] Bundling edge preview artifact... Build successful in 420ms!`,
-    ]);
-    toast.success(`Build successful for ${currentBlueprint.title}!`);
+    toast.error(
+      "No local build is executed here. The UI will not fabricate build/test results; use GitHub CI or Vercel for authoritative verification."
+    );
   };
 
   return (
@@ -256,7 +250,7 @@ export function AppFactoryWorkspace() {
                 }`}
               >
                 <CheckCircle2 className="size-3 mr-1" />
-                Tests (14 Passed)
+                Verification Status
               </Button>
             </div>
 
@@ -286,7 +280,7 @@ export function AppFactoryWorkspace() {
                 <div className="flex items-center justify-between pb-2 border-b border-border/50 text-xs text-muted">
                   <span className="text-emerald-400 font-bold flex items-center gap-1.5">
                     <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-                    Interactive Client Simulation Sandbox Active
+                    Blueprint Preview · No Runtime Claim
                   </span>
                   <span>React 19 · PostgreSQL · King Pay UPI</span>
                 </div>
@@ -295,7 +289,7 @@ export function AppFactoryWorkspace() {
                   <div className="flex justify-between items-center">
                     <h4 className="text-sm font-bold text-white">{currentBlueprint.title}</h4>
                     <Badge className="bg-emerald-500/20 text-emerald-400 text-[10px]">
-                      Client Ready
+                      Blueprint Only
                     </Badge>
                   </div>
                   <p className="text-xs text-slate-300">{currentBlueprint.targetOrganization}</p>
@@ -353,7 +347,7 @@ export function AppFactoryWorkspace() {
                       <CheckCircle2 className="size-3.5 text-emerald-400" />
                       <span className="text-slate-200 font-medium">{testName}</span>
                     </div>
-                    <span className="font-mono text-[10px] text-emerald-400 font-bold">PASSED (0.02s)</span>
+                    <span className="font-mono text-[10px] text-emerald-400 font-bold">NOT EXECUTED HERE</span>
                   </div>
                 ))}
               </div>
