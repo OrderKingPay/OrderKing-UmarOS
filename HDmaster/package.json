@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "node scripts/with-app-env.mjs vite dev --host 0.0.0.0 --port 8081",
-    "build": "npm run typecheck && node scripts/with-app-env.mjs vite build && node scripts/fix-ssr.mjs",
+    "build": "npm run typecheck && node scripts/with-app-env.mjs vite build && node scripts/fix-ssr.mjs && node scripts/copy-to-dist.mjs",
     "db:migrate": "node scripts/migrate.mjs",
     "build:dev": "node scripts/with-app-env.mjs vite build --mode development",
     "preview": "node scripts/with-app-env.mjs vite preview",
@@ -99,3 +99,7 @@
     "npm": ">=10"
   }
 }
+
+
+
+
