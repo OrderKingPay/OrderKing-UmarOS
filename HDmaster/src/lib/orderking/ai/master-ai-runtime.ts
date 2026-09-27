@@ -1525,34 +1525,29 @@ async function executeTool(
     case "autonomous_customer_addiction_and_gamification_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "GAMIFICATION_RETENTION_OPTIMAL",
+        status: "LIVE_DATA_REQUIRED",
         timestamp: new Date().toISOString(),
+        dataLabel: "UNAVAILABLE",
         gamificationMetrics: {
-          dailyStreakActiveUsers: 3840,
-          luckyJackpotDailySpins: 2150,
-          kingCoinsCirculation: 4280000,
-          kingCoinsBurnRateFoodCheckout: "24.6%",
+          dailyStreakActiveUsers: null,
+          luckyJackpotDailySpins: null,
+          kingCoinsCirculation: null,
+          kingCoinsBurnRateFoodCheckout: null,
           vipClubMembersBreakdown: {
-            bronze: 2450,
-            silver: 1120,
-            gold: 380,
-            kingsCircleElite: 95,
+            bronze: null,
+            silver: null,
+            gold: null,
+            kingsCircleElite: null,
           },
-          repeatOrderFrequencyLift: "+46.8%",
-          customer7DayRetentionRate: "88.4%",
+          repeatOrderFrequencyLift: null,
+          customer7DayRetentionRate: null,
         },
-        dopamineMechanismsActive: [
-          "LUCKY_JACKPOT_SPIN_WHEEL",
-          "MYSTERY_SCRATCH_CARDS",
-          "7_DAY_STREAK_BONUSES",
-          "KING_COINS_FOOD_DISCOUNT_BURN",
-          "VIP_CLUB_TIER_MULTIPLIERS",
-        ],
-        verdict: "Customer habit and retention loops operating at maximum addiction elasticity with healthy unit economics.",
+        dopamineMechanismsActive: [],
+        verdict: "Live retention and loyalty metrics are not reported until verified production data sources are connected.",
       };
     }
 
-    case "autonomous_universal_hardware_and_pos_director": {
+     case "autonomous_universal_hardware_and_pos_director": {
       requirePermission(ws.ctx, "view_restaurants");
       return {
         status: "UNIVERSAL_HARDWARE_AND_POS_HEALTHY",
