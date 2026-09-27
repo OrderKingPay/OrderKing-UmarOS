@@ -8,7 +8,7 @@ export const Route = createFileRoute("/api/ai/chat")({
         try {
           const body = (await request.json()) as AiChatRequest;
           const acceptHeader = request.headers.get("accept") || "";
-          const prefersStream = acceptHeader.includes("text/event-stream") || true;
+          const prefersStream = acceptHeader.includes("text/event-stream");
 
           if (!body || !Array.isArray(body.messages) || body.messages.length === 0) {
             return new Response(JSON.stringify({ error: "messages array is required" }), {
