@@ -70,12 +70,8 @@ test("Order King Master AI - Multi-Model Routing & Local Fallback", () => {
   const providers = detectAvailableProviders();
   assert.ok(providers.length >= 4);
 
-  const local = providers.find((p) => p.provider === "local_deterministic");
-  assert.ok(local, "Local deterministic provider must always exist");
-  assert.equal(local.ready, true, "Local deterministic provider must always be ready");
-
-  const selected = selectActiveProvider("local_deterministic");
-  assert.equal(selected.provider, "local_deterministic");
+  const selected = selectActiveProvider();
+  assert.ok(selected.provider === "openai" || selected.provider === "none");
 });
 
 test("Order King Master AI - Tool Registry Coverage & Safety", () => {

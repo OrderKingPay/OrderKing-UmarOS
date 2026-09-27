@@ -1,5 +1,5 @@
 {
-  "compilerOptions": {
+  "compilerOptions": { "ignoreDeprecations": "6.0",
     "target": "ES2022",
     "lib": [
       "ES2022",
@@ -34,3 +34,5 @@
     "server"
   ]
 }
+
+

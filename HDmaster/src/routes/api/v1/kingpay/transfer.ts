@@ -28,7 +28,6 @@ export const Route = createFileRoute("/api/v1/kingpay/transfer")({
           await canonicalLedger.postTransaction({
             idempotencyKey: data.idempotencyKey,
             eventType: "KINGPAY_USER_TRANSFER",
-            memo: data.memo,
             entries: [
               {
                 account: auth.userId as any,

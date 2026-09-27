@@ -101,7 +101,7 @@ export async function getEnterpriseBlueprintsFromDb(): Promise<Record<string, En
       estimatedBuildTime: String(r.estimated_build_time),
       commercialValueInr: 0,
       clientHandoffReady: false,
-      handoffCredentials: undefined,
+      handoffCredentials: undefined as any,
       files: Array.isArray(r.files) ? r.files as any[] : []
     };
   }

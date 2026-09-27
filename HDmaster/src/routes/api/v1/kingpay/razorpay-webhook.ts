@@ -46,7 +46,6 @@ export const Route = createFileRoute("/api/v1/kingpay/razorpay-webhook")({
               idempotencyKey: `rzp_capture_${payment.id}`,
               eventType: "RAZORPAY_PAYMENT_CAPTURED",
               orderId: payment.order_id,
-              memo: `Razorpay payment captured for account ${accountId}`,
               entries: [
                 {
                   account: "BANK_CLEARING" as any,
