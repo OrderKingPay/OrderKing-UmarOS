@@ -111,3 +111,6 @@ create index if not exists dispatch_rider_idx on dispatch_assignments (rider_id,
 alter table notifications add column if not exists provider_message_id text;
 alter table notifications add column if not exists delivered_at timestamptz;
 create index if not exists notifications_status_idx on notifications (org_id, status, created_at desc);
+
+
+ALTER TABLE rider_location_pings ADD CONSTRAINT check_rider_one_place UNIQUE (rider_id, recorded_at);
