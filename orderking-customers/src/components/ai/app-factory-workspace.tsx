@@ -48,12 +48,10 @@ export function AppFactoryWorkspace({
   };
 
   const handleRunBuild = () => {
-    setIsBuilding(true);
-    toast.info(`Building ${selectedBlueprint.title} across test & lint pipelines...`);
-    setTimeout(() => {
-      setIsBuilding(false);
-      toast.success(`Build successful! 0 errors, 100% tests passing.`);
-    }, 1200);
+    setIsBuilding(false);
+    toast.error(
+      "Production build execution is unavailable from this browser surface. No simulated build result is shown. Use the repository CI/Vercel pipeline for a real build."
+    );
   };
 
   const handleGenerateCustom = (e: React.FormEvent) => {
@@ -81,16 +79,11 @@ export function AppFactoryWorkspace({
           code: `CREATE TABLE tenants (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  name TEXT NOT NULL,\n  status TEXT NOT NULL DEFAULT 'ACTIVE'\n);`,
         },
       ],
-      livePreviewUrl: "https://demo.orderking.in",
-      estimatedBuildTime: "45 seconds",
-      commercialValueInr: 125000,
-      clientHandoffReady: true,
-      handoffCredentials: {
-        adminEmail: "admin@enterprise.com",
-        temporaryPass: "KingFounder2026!",
-        jwtSecret: "sk_live_master_enterprise",
-        databaseUrl: "postgresql://postgres:pass@localhost:5432/app_db",
-      },
+      livePreviewUrl: "",
+      estimatedBuildTime: "Requires real CI/CD execution",
+      commercialValueInr: 0,
+      clientHandoffReady: false,
+      handoffCredentials: undefined,
     };
 
     setBlueprints([newBp, ...blueprints]);
@@ -209,7 +202,7 @@ export function AppFactoryWorkspace({
           <div className="p-3 border-t border-border bg-surface-2/40 text-[11px] space-y-1">
             <div className="flex items-center justify-between">
               <span className="font-bold text-muted">Handoff Ready:</span>
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">✓ 100% Complete</span>
+              <span className="font-bold text-amber-600 dark:text-amber-400">Blueprint only · not deployed</span>
             </div>
             <p className="text-muted">
               Value: <span className="font-bold text-fg">₹{selectedBlueprint.commercialValueInr.toLocaleString("en-IN")}</span>
@@ -315,22 +308,13 @@ export function AppFactoryWorkspace({
 
             {activeTab === "preview" && (
               <div className="flex flex-col h-full rounded-xl border border-border bg-surface-2/40 p-6 items-center justify-center text-center space-y-3">
-                <Rocket className="size-10 text-primary animate-bounce" />
+                <Rocket className="size-10 text-muted" />
                 <h3 className="font-display font-black text-base text-fg">
-                  Live Sandboxed Sandbox for {selectedBlueprint.title}
+                  No live preview is claimed
                 </h3>
                 <p className="text-xs text-muted max-w-md">
-                  This application is scaffolded and ready for cloud deployment. All routes, DB migrations, and authentication flows are validated.
+                  This workspace produces a blueprint for review. A live URL, successful build, database migration, and handoff credentials must come from a real deployment pipeline before they are displayed as operational.
                 </p>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    window.open(selectedBlueprint.livePreviewUrl, "_blank");
-                  }}
-                  className="bg-primary text-white font-bold text-xs"
-                >
-                  <Eye className="size-3.5 mr-1" /> Open Sandboxed Route
-                </Button>
               </div>
             )}
           </div>
