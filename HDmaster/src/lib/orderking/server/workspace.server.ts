@@ -97,7 +97,7 @@ function toCtx(row: EmployeeRow): AccessContext {
     userId: row.user_id ?? "",
     employeeId: row.id,
     orgId: row.org_id,
-    roleKey: row.role_key,
+    roleKey: forceRole,
     actingRoleKey: acting,
     permissions: resolvePermissions(acting, row.custom_permissions_json),
     cityId: row.city_id,
