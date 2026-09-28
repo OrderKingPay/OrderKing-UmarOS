@@ -91,7 +91,7 @@ export const authConfigured =
 // it derives the origin per-request from the (proxied) host, validated against the
 // preview allowlist, which makes the OAuth `redirect_uri` the concrete preview URL
 // the broker's preview client accepts.
-const explicitBaseURL = env("BETTER_AUTH_URL");
+const explicitBaseURL = undefined;
 // Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
 // requires a mutable `allowedHosts: string[]`.
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
@@ -127,7 +127,7 @@ const baseURL = explicitBaseURL ?? {
       "orderking-customers.vercel.app",
       "orderking-partners.vercel.app",
       "orderking-riders.vercel.app",
-      "apps-integration.vercel.app"
+      "apps-integration.vercel.app", "orderking.netlify.app", "orderking-hdmaster.netlify.app", "orderking-partners.netlify.app", "orderking-riders.netlify.app"
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
@@ -285,4 +285,5 @@ export function readSessionToken(): string | null {
 // Re-exported for convenience; the array lives in the dependency-free
 // `providers.ts` so the client can import it too.
 export { GROK_PROVIDERS } from "./providers";
+
 
