@@ -7,7 +7,8 @@ import { CustomerShell } from "@/components/market/shell";
 const askTutorFn = createServerFn({ method: "POST" })
   .validator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => data)
   .handler(async ({ data }) => {
-    const apiKey = process.env.VITE_OPENAI_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
+
     if (!apiKey) {
       return { text: "Tutor is currently resting (API Key not found in server)." };
     }

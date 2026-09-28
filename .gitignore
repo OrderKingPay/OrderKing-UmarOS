@@ -1,12 +1,41 @@
-﻿@
+@
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
 dist/
-.vercel/
 build/
+.output/
+
+# Vercel
+.vercel/
+
+# Netlify
+.netlify/
+
+# Wrangler (Cloudflare) - NEVER commit temp build files
+.wrangler/
+**/.wrangler/
+
+# Environment variables - NEVER commit real secrets
 .env
+.env.local
 .env.*.local
+.env.production
+.env.production.local
+
+# Secrets files - NEVER commit
+secrets.json
+secrets-*.json
+add_envs.cjs
+**/add_envs.cjs
+
+# Logs
 *.log
+npm-debug.log*
 
-
-# Local Netlify folder
-.netlify
+# Editor
+.DS_Store
+Thumbs.db
