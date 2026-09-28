@@ -20,6 +20,7 @@ import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as TutorRouteImport } from './routes/tutor'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as AppFounderCommandRouteImport } from './routes/app/founder-command'
 import { Route as DevBrandRouteImport } from './routes/dev/brand'
@@ -89,6 +90,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutorRoute = TutorRouteImport.update({
+  id: '/tutor',
+  path: '/tutor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountIndexRoute = AccountIndexRouteImport.update({
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/tutor': typeof TutorRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/tutor': typeof TutorRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/tutor': typeof TutorRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -266,6 +275,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
+    | '/tutor'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -294,6 +304,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
+    | '/tutor'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -322,6 +333,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
+    | '/tutor'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -351,6 +363,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
+  TutorRoute: typeof TutorRoute
   AppFounderCommandRoute: typeof AppFounderCommandRoute
   DevBrandRoute: typeof DevBrandRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
@@ -445,6 +458,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutor': {
+      id: '/tutor'
+      path: '/tutor'
+      fullPath: '/tutor'
+      preLoaderRoute: typeof TutorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/': {
@@ -567,6 +587,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
+  TutorRoute: TutorRoute,
   AppFounderCommandRoute: AppFounderCommandRoute,
   DevBrandRoute: DevBrandRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
