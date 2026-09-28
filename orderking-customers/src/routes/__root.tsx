@@ -50,7 +50,8 @@ export const Route = createRootRoute({
         { rel: "preconnect", href: "https://xezsqsptomcndbksxrvu.supabase.co" },
         { rel: "icon", type: "image/jpeg", href: "/logo.jpg" },
         { rel: "stylesheet", href: appCss },
-        { rel: "manifest", href: "/__grok/manifest.webmanifest" },
+        { rel: "manifest", href: "/manifest.json" },
+
         { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
         {
           rel: "stylesheet",
@@ -82,6 +83,8 @@ function Root() {
           </AppProviders>
         </AuthProvider>
         <Scripts />
+        <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}` }} />
+
       </body>
     </html>
   );

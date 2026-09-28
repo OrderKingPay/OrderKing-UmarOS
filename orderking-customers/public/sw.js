@@ -1,43 +1,59 @@
-/* Customer PWA: cache food photos and the offline fallback. Does not replace the grok install manifest. */
-const CACHE = "marketplace-static-v1";
-const PRECACHE = ["/offline.html", "/favicon.svg", "/icon-192.png", "/icon-512.png"];
+const CACHE_NAME = 'orderking-v1';
+const STATIC_ASSETS = [
+  '/',
+  '/manifest.json',
+];
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
-});
-
-self.addEventListener("activate", (event) => {
+// Install: cache static shell
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()),
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   );
+  self.skipWaiting();
 });
 
-self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  if (req.method !== "GET") return;
-  const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return;
+// Activate: clean old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
 
-  if (req.mode === "navigate") {
-    event.respondWith(fetch(req).catch(() => caches.match("/offline.html")));
+// Fetch: cache-first for static assets, network-first for API
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-GET and cross-origin requests
+  if (request.method !== 'GET' || url.origin !== location.origin) return;
+
+  // API calls: network-first, fallback to cache
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(
+      fetch(request)
+        .then((res) => {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(request, clone));
+          return res;
+        })
+        .catch(() => caches.match(request))
+    );
     return;
   }
 
-  const staticAsset =
-    url.pathname.startsWith("/food/") ||
-    url.pathname.startsWith("/icon") ||
-    url.pathname === "/favicon.svg" ||
-    url.pathname === "/apple-touch-icon.png" ||
-    url.pathname === "/og.jpg";
-  if (!staticAsset) return;
-
+  // Static assets: cache-first
   event.respondWith(
-    caches.open(CACHE).then(async (cache) => {
-      const hit = await cache.match(req);
-      if (hit) return hit;
-      const res = await fetch(req);
-      if (res.ok) cache.put(req, res.clone());
-      return res;
-    }),
+    caches.match(request).then(
+      (cached) =>
+        cached ||
+        fetch(request).then((res) => {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(request, clone));
+          return res;
+        })
+    )
   );
 });
