@@ -27,13 +27,12 @@ if (!fs.existsSync(targetDir)) {
 }
 
 try {
-    console.log(Running npm install in \...);
+    console.log(`Running npm install in ${targetDir}...`);
     execSync('npm install', { cwd: path.join(process.cwd(), targetDir), stdio: 'inherit' });
     
-    console.log(Running build in \...);
+    console.log(`Running build in ${targetDir}...`);
     execSync('npm run build', { cwd: path.join(process.cwd(), targetDir), stdio: 'inherit' });
     
-    // Copy the resulting dist/client and .netlify/functions-internal to the root so Netlify finds it
     console.log('Copying build artifacts to root so Netlify can publish them...');
     fs.cpSync(path.join(targetDir, 'dist'), path.join(process.cwd(), 'dist'), { recursive: true });
     
