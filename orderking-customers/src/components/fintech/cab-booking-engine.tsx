@@ -7,7 +7,7 @@ type Props = {
   onDeductWallet: (amount: number, description: string) => boolean;
 };
 
-export function CabBookingEngine({ }: Props) {
+export function CabBookingEngine() {
   const [pickup, setPickup] = useState("");
   const [drop, setDrop] = useState("");
   
@@ -42,23 +42,23 @@ export function CabBookingEngine({ }: Props) {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
            <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-amber-500/50 transition-colors">
-              <label className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> PICKUP LOCATION</label>
-              <input type="text" value={pickup} onChange={(e) => setPickup(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Pickup Location" />
+              <label htmlFor="cab-pickup" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> PICKUP LOCATION</label>
+              <input id="cab-pickup" type="text" value={pickup} onChange={(e) => setPickup(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Pickup Location" />
            </div>
            <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-amber-500/50 transition-colors">
-              <label className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> DROP LOCATION</label>
-              <input type="text" value={drop} onChange={(e) => setDrop(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Drop Location" />
+              <label htmlFor="cab-drop" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> DROP LOCATION</label>
+              <input id="cab-drop" type="text" value={drop} onChange={(e) => setDrop(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Drop Location" />
            </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
            <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-amber-500/50 transition-colors">
-              <label className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Calendar className="size-3" /> PICKUP DATE</label>
-              <input type="date" className="w-full bg-transparent text-base font-bold outline-none text-fg" defaultValue={new Date().toISOString().split('T')[0]} />
+              <label htmlFor="cab-date" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Calendar className="size-3" /> PICKUP DATE</label>
+              <input id="cab-date" type="date" className="w-full bg-transparent text-base font-bold outline-none text-fg" defaultValue={new Date().toISOString().split('T')[0]} />
            </div>
            <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-amber-500/50 transition-colors">
-              <label className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Clock className="size-3" /> PICKUP TIME</label>
-              <input type="time" className="w-full bg-transparent text-base font-bold outline-none text-fg" defaultValue="10:00" />
+              <label htmlFor="cab-time" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Clock className="size-3" /> PICKUP TIME</label>
+              <input id="cab-time" type="time" className="w-full bg-transparent text-base font-bold outline-none text-fg" defaultValue="10:00" />
            </div>
         </div>
 

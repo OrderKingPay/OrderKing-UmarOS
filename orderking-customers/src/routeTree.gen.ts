@@ -35,6 +35,8 @@ import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/setting
 import { Route as ApiAdminTestConnectionRouteImport } from './routes/api/admin/test-connection'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiRazorpayCreateOrderRouteImport } from './routes/api/razorpay/create-order'
+import { Route as ApiRazorpayVerifyRouteImport } from './routes/api/razorpay/verify'
 import { Route as ApiOrdersOrderIdStreamRouteImport } from './routes/api/orders/$orderId/stream'
 
 const IndexRoute = IndexRouteImport.update({
@@ -167,6 +169,16 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiRazorpayCreateOrderRoute = ApiRazorpayCreateOrderRouteImport.update({
+  id: '/api/razorpay/create-order',
+  path: '/api/razorpay/create-order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRazorpayVerifyRoute = ApiRazorpayVerifyRouteImport.update({
+  id: '/api/razorpay/verify',
+  path: '/api/razorpay/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiOrdersOrderIdStreamRoute = ApiOrdersOrderIdStreamRouteImport.update({
   id: '/api/orders/$orderId/stream',
   path: '/api/orders/$orderId/stream',
@@ -200,6 +212,8 @@ export interface FileRoutesByFullPath {
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
+  '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
 export interface FileRoutesByTo {
@@ -229,6 +243,8 @@ export interface FileRoutesByTo {
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
+  '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
 export interface FileRoutesById {
@@ -259,6 +275,8 @@ export interface FileRoutesById {
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
+  '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
 export interface FileRouteTypes {
@@ -290,6 +308,8 @@ export interface FileRouteTypes {
     | '/api/admin/test-connection'
     | '/api/ai/chat'
     | '/api/auth/$'
+    | '/api/razorpay/create-order'
+    | '/api/razorpay/verify'
     | '/api/orders/$orderId/stream'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -319,6 +339,8 @@ export interface FileRouteTypes {
     | '/api/admin/test-connection'
     | '/api/ai/chat'
     | '/api/auth/$'
+    | '/api/razorpay/create-order'
+    | '/api/razorpay/verify'
     | '/api/orders/$orderId/stream'
   id:
     | '__root__'
@@ -348,6 +370,8 @@ export interface FileRouteTypes {
     | '/api/admin/test-connection'
     | '/api/ai/chat'
     | '/api/auth/$'
+    | '/api/razorpay/create-order'
+    | '/api/razorpay/verify'
     | '/api/orders/$orderId/stream'
   fileRoutesById: FileRoutesById
 }
@@ -378,6 +402,8 @@ export interface RootRouteChildren {
   ApiAdminTestConnectionRoute: typeof ApiAdminTestConnectionRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiRazorpayCreateOrderRoute: typeof ApiRazorpayCreateOrderRoute
+  ApiRazorpayVerifyRoute: typeof ApiRazorpayVerifyRoute
   ApiOrdersOrderIdStreamRoute: typeof ApiOrdersOrderIdStreamRoute
 }
 
@@ -565,6 +591,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/razorpay/create-order': {
+      id: '/api/razorpay/create-order'
+      path: '/api/razorpay/create-order'
+      fullPath: '/api/razorpay/create-order'
+      preLoaderRoute: typeof ApiRazorpayCreateOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/razorpay/verify': {
+      id: '/api/razorpay/verify'
+      path: '/api/razorpay/verify'
+      fullPath: '/api/razorpay/verify'
+      preLoaderRoute: typeof ApiRazorpayVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/orders/$orderId/stream': {
       id: '/api/orders/$orderId/stream'
       path: '/api/orders/$orderId/stream'
@@ -602,6 +642,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminTestConnectionRoute: ApiAdminTestConnectionRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiRazorpayCreateOrderRoute: ApiRazorpayCreateOrderRoute,
+  ApiRazorpayVerifyRoute: ApiRazorpayVerifyRoute,
   ApiOrdersOrderIdStreamRoute: ApiOrdersOrderIdStreamRoute,
 }
 export const routeTree = rootRouteImport

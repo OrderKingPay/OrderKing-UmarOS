@@ -7,7 +7,7 @@ type Props = {
   onDeductWallet: (amount: number, description: string) => boolean;
 };
 
-export function BusBookingEngine({ }: Props) {
+export function BusBookingEngine() {
   const [from, setFrom] = useState("Bangalore");
   const [to, setTo] = useState("Hyderabad");
   
@@ -35,23 +35,23 @@ export function BusBookingEngine({ }: Props) {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
            <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-rose-500/50 transition-colors">
-              <label className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> LEAVING FROM</label>
-              <input type="text" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Origin City" />
+              <label htmlFor="bus-from" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> LEAVING FROM</label>
+              <input id="bus-from" type="text" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Origin City" />
            </div>
            <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-rose-500/50 transition-colors">
-              <label className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> GOING TO</label>
-              <input type="text" value={to} onChange={(e) => setTo(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Destination City" />
+              <label htmlFor="bus-to" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> GOING TO</label>
+              <input id="bus-to" type="text" value={to} onChange={(e) => setTo(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Destination City" />
            </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
            <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-rose-500/50 transition-colors">
-              <label className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Calendar className="size-3" /> DATE OF JOURNEY</label>
-              <input type="date" className="w-full bg-transparent text-base font-bold outline-none text-fg" defaultValue={new Date().toISOString().split('T')[0]} />
+              <label htmlFor="bus-date" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Calendar className="size-3" /> DATE OF JOURNEY</label>
+              <input id="bus-date" type="date" className="w-full bg-transparent text-base font-bold outline-none text-fg" defaultValue={new Date().toISOString().split('T')[0]} />
            </div>
            <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-rose-500/50 transition-colors">
-              <label className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Tag className="size-3" /> BUS TYPE</label>
-              <select className="w-full bg-transparent text-base font-bold outline-none text-fg">
+              <label htmlFor="bus-type" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Tag className="size-3" /> BUS TYPE</label>
+              <select id="bus-type" className="w-full bg-transparent text-base font-bold outline-none text-fg">
                 <option value="all">All Buses</option>
                 <option value="ac">AC Sleeper</option>
                 <option value="non_ac">Non-AC Sleeper</option>

@@ -47,19 +47,19 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
 
       <div className="flex-1 w-full bg-bg">
         {activeTab === "flights" && (
-          <FlightBookingEngine walletBalance={walletBalance} onDeductWallet={onDeductWallet} />
+          <FlightBookingEngine />
         )}
         
         {activeTab === "trains" && (
-          <TrainBookingEngine walletBalance={walletBalance} onDeductWallet={onDeductWallet} />
+          <TrainBookingEngine />
         )}
 
         {activeTab === "buses" && (
-          <BusBookingEngine walletBalance={walletBalance} onDeductWallet={onDeductWallet} />
+          <BusBookingEngine />
         )}
 
         {activeTab === "cabs" && (
-          <CabBookingEngine walletBalance={walletBalance} onDeductWallet={onDeductWallet} />
+          <CabBookingEngine />
         )}
       </div>
     </div>

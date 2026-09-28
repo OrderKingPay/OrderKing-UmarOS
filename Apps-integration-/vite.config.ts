@@ -149,7 +149,7 @@ export default defineConfig(({ command, isPreview }) => ({
   build: {
     cssMinify: true,
     rollupOptions: {
-      treeshake: true,
+      treeshake: false,
       // pglite is a local dev-only fallback (used only when DATABASE_URL is
       // not set). Production always uses the Neon/pg path. Externalising it
       // prevents rolldown from bundling the 750 kB WebAssembly binary.
@@ -186,6 +186,7 @@ export default defineConfig(({ command, isPreview }) => ({
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.
             serverDir: "./server",
+            minify: false,
           }),
         ]
       : []),
