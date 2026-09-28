@@ -1,4 +1,4 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts, ErrorComponent } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
@@ -30,6 +30,25 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootDocument,
+  errorComponent: ({ error }) => {
+    return (
+      <html lang="en" className="antialiased">
+        <head>
+          <HeadContent />
+        </head>
+        <body className="bg-bg text-fg">
+          <div className="flex h-screen flex-col items-center justify-center p-8 text-center">
+            <h1 className="text-2xl font-bold text-red-500 mb-2">Something went wrong</h1>
+            <p className="text-muted-foreground mb-4">We encountered an unexpected error, but we're keeping the app running.</p>
+            <pre className="text-xs bg-black/50 p-4 rounded text-left max-w-2xl overflow-auto text-red-400">
+              {error instanceof Error ? error.message : "Unknown error"}
+            </pre>
+          </div>
+          <Scripts />
+        </body>
+      </html>
+    );
+  }
 });
 
 function RootDocument() {

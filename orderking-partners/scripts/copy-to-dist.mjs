@@ -1,24 +1,22 @@
 import fs from 'fs';
 import path from 'path';
 
+const src = path.resolve('.vercel/output/static');
+const dest = path.resolve('dist/client');
+
 function copyDir(src, dest) {
-  fs.mkdirSync(dest, { recursive: true });
-  let entries = fs.readdirSync(src, { withFileTypes: true });
+  if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+  const entries = fs.readdirSync(src, { withFileTypes: true });
   for (let entry of entries) {
-    let srcPath = path.join(src, entry.name);
-    let destPath = path.join(dest, entry.name);
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
     entry.isDirectory() ? copyDir(srcPath, destPath) : fs.copyFileSync(srcPath, destPath);
   }
 }
 
-function run(appDir) {
-    const src = path.join(appDir, '.vercel/output/static');
-    const dest = path.join(appDir, 'dist/client');
-    if (fs.existsSync(src)) {
-        console.log(`Copying ${src} to ${dest}`);
-        copyDir(src, dest);
-    }
+if (fs.existsSync(src)) {
+  copyDir(src, dest);
+  console.log('Copied .vercel/output/static to dist/client');
+} else {
+  console.log('No .vercel/output/static found.');
 }
-
-const appDir = process.cwd();
-run(appDir);
