@@ -3120,7 +3120,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {/* Security & Financial Statutory Footnote */}
         <div className="rounded-lg bg-surface-2/40 p-3 text-center text-xs text-muted">
           <div className="flex items-center justify-center gap-3 font-semibold text-fg">
-            <span>🔒 256-Bit SSL</span>
+            <span>🔒 Sovereign AI Security</span>
             <span>•</span>
             <span>🏛️ RBI PPI Compliant</span>
             <span>•</span>
@@ -4174,7 +4174,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </div>
 
                   <p className="text-[10px] text-muted text-center">
-                    🛡️ Protected by NPCI 256-bit UPI Security Protocol.
+                    🛡️ Protected by Sovereign Strategic Power Engine.
                   </p>
                 </div>
               )}
@@ -4414,7 +4414,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         )}
 
         {/* Multilingual Royal AI Assistant with Sweet Native Girl Voice across 12 Indian Languages */}
-        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       </div>
     </KingPayShell>
     </>

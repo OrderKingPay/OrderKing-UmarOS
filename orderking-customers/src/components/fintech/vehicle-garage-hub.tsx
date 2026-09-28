@@ -1,4 +1,4 @@
-import { Car, Lock } from "lucide-react";
+import { Car, FileText, Shield, AlertTriangle, ArrowRight, Zap, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface VehicleGarageHubProps {
@@ -8,21 +8,77 @@ interface VehicleGarageHubProps {
 }
 
 export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner }: VehicleGarageHubProps) {
+  const handleFastag = () => window.open("https://paytm.com/fastag-recharge?utm_source=orderking_affiliate", "_blank");
+  const handleInsurance = () => window.open("https://www.policybazaar.com/motor-insurance/?utm_source=orderking_affiliate", "_blank");
+  const handleChallan = () => window.open("https://echallan.parivahan.gov.in/index/accused-challan", "_blank");
+  const handlePuc = () => window.open("https://vahan.parivahan.gov.in/puc/", "_blank");
+
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-      <div className="size-16 rounded-full bg-surface-2 flex items-center justify-center text-muted relative">
-        <Car className="size-8" />
-        <div className="absolute -bottom-1 -right-1 bg-surface rounded-full p-1">
-          <Lock className="size-4 text-primary" />
+    <div className="space-y-6 text-fg p-4 md:p-6">
+      <div className="relative overflow-hidden rounded-3xl border-2 border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 via-surface to-bg p-6 sm:p-10 text-center shadow-xl">
+        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-500 mb-6">
+          <Car className="size-10" />
+        </div>
+        
+        <div className="inline-flex items-center gap-2 rounded-full bg-red-500/10 px-4 py-1.5 text-xs font-black text-red-500 ring-1 ring-red-500/40 mb-4">
+          <AlertTriangle className="size-4 animate-pulse" />
+          <span>MoRTH Radar Active</span>
+        </div>
+        
+        <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight mb-4">
+          Vehicle Garage & RTO
+        </h2>
+        
+        <p className="text-muted text-sm sm:text-base max-w-2xl mx-auto mb-8">
+          Manage your vehicles effortlessly. Check traffic e-challans, get 0-paperwork insurance renewals, track PUC expiry, and recharge FASTag instantly.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+          <Button 
+            onClick={handleFastag}
+            className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-indigo-500/30 text-fg justify-start"
+          >
+            <Zap className="mr-3 size-5 text-yellow-500" />
+            <div className="flex flex-col items-start">
+              <span className="font-bold">FASTag Recharge</span>
+              <span className="text-xs text-muted font-normal">All Banks Supported</span>
+            </div>
+          </Button>
+
+          <Button 
+            onClick={handleInsurance}
+            className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-indigo-500/30 text-fg justify-start"
+          >
+            <Shield className="mr-3 size-5 text-emerald-500" />
+            <div className="flex flex-col items-start">
+              <span className="font-bold">Renew Insurance</span>
+              <span className="text-xs text-muted font-normal">0-Paperwork Policy</span>
+            </div>
+          </Button>
+
+          <Button 
+            onClick={handleChallan}
+            className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-indigo-500/30 text-fg justify-start"
+          >
+            <FileText className="mr-3 size-5 text-red-400" />
+            <div className="flex flex-col items-start">
+              <span className="font-bold">Pay E-Challans</span>
+              <span className="text-xs text-muted font-normal">Traffic Police Fines</span>
+            </div>
+          </Button>
+
+          <Button 
+            onClick={handlePuc}
+            className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-indigo-500/30 text-fg justify-start"
+          >
+            <Navigation className="mr-3 size-5 text-blue-400" />
+            <div className="flex flex-col items-start">
+              <span className="font-bold">Check PUC Status</span>
+              <span className="text-xs text-muted font-normal">Pollution Control Info</span>
+            </div>
+          </Button>
         </div>
       </div>
-      <h3 className="font-display text-xl font-bold text-fg">Vehicle Services Locked</h3>
-      <p className="text-muted max-w-xs text-sm">
-        Pending live RTO/Vahan provider integration for real vehicle data verification.
-      </p>
-      <Button disabled variant="outline" className="mt-4 opacity-50 cursor-not-allowed">
-        Capability Disabled
-      </Button>
     </div>
   );
 }

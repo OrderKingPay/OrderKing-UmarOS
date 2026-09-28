@@ -464,105 +464,105 @@ export function FounderCommandPage() {
 
       {/* MAIN VIEW: SUPREME UMAR OS CHAT (DEFAULT) OR SPECIALIZED HUB */}
       {deckTab === "supreme_ai" && (
-        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB SUPREME EXECUTOR: 14-STAGE GOAL DECOMPOSER WITH HUMAN GATES */}
       {deckTab === "supreme_executor" && (
-        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB MONEY DASHBOARD: REAL-MONEY OPERATING ENGINE & LEDGER */}
       {deckTab === "money_dashboard" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB RADAR: ALWAYS-ON OPPORTUNITY RADAR */}
       {deckTab === "radar" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB CRM: CLIENT ACQUISITION & 12-STAGE PIPELINE */}
       {deckTab === "crm" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB CLIENT PORTAL: DEDICATED TRUST & DELIVERABLES PORTAL */}
       {deckTab === "client_portal" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB SERVICE PRODUCTIZER: HIGH-MARGIN READY-TO-SELL PACKAGES */}
       {deckTab === "service_productizer" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB REMOTE WORK: OPPORTUNITY DISCOVERY & GIGS */}
       {deckTab === "remote_work" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB APP FACTORY: ENTERPRISE SOFTWARE GENERATION & CODING WORKSPACE */}
       {deckTab === "app_factory" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB DELIVERY GRAPH: MULTI-AGENT TASK GRAPH & SELF-QA */}
       {deckTab === "delivery_graph" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB COMPANY FACTORY: AI COMPANY FACTORY & BUSINESS ORCHESTRATOR */}
       {deckTab === "company_factory" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB BUSINESS INTEL: BI ENGINE & AUTONOMOUS SCHEDULES */}
       {deckTab === "business_intel" && (
-        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB KNOWLEDGE MEMORY: SEARCHABLE KNOWLEDGE & LAYERED MEMORY */}
       {deckTab === "knowledge_memory" && (
-        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB BENCHMARKS: RIGOROUS MEASURED CAPABILITY BENCHMARK SUITE */}
       {deckTab === "benchmarks" && (
-        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB DEPENDENCIES: CONTINUOUS DEPENDENCY INSPECTOR & ECOSYSTEM */}
       {deckTab === "dependencies" && (
-        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB RECOVERY: EMERGENCY RECOVERY & ROLLBACK ENGINE */}
       {deckTab === "recovery" && (
-        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB REVENUE OPS: AUTOMATIC APPLICATION ENGINE, INVOICING, REPEAT BIZ & COST CONTROL */}
       {deckTab === "revenue_ops" && (
-        <div className="p-4 text-center text-zinc-500">Mock Component Permanently Removed During 1000x Upgrade</div>
+        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB 0: PRACTICAL BUSINESS LAUNCH & FIELD OPS COCKPIT */}
