@@ -1,0 +1,7 @@
+{
+  "name": "orderking-root",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo \"ERROR: You did not set the Base Directory! Go to Netlify -> Site Settings -> Build & Deploy -> Edit Settings. Set the Base Directory to your app name (e.g. orderking-riders).\" && exit 1"
+  }
+}
