@@ -170,22 +170,27 @@ export const toggleFavourite = createServerFn({ method: "POST" })
   });
 
 export const listPromos = createServerFn({ method: "GET" }).handler(async () => {
-  const sql = await getSql();
-  const rows = await sql<{
-    id: string;
-    code: string | null;
-    name_en: string;
-    funded_by: string;
-    min_order_paise: number;
-  }>`select id, code, name_en, funded_by, min_order_paise from promotions where active = true`;
-  const promos: PromoView[] = rows.map((r) => ({
-    id: r.id,
-    code: r.code,
-    name: r.name_en,
-    fundedBy: r.funded_by,
-    minOrderPaise: r.min_order_paise,
-  }));
-  return { promos };
+  try {
+    const sql = await getSql();
+    const rows = await sql<{
+      id: string;
+      code: string | null;
+      name_en: string;
+      funded_by: string;
+      min_order_paise: number;
+    }>`select id, code, name_en, funded_by, min_order_paise from promotions where active = true`;
+    const promos: PromoView[] = rows.map((r) => ({
+      id: r.id,
+      code: r.code,
+      name: r.name_en,
+      fundedBy: r.funded_by,
+      minOrderPaise: r.min_order_paise,
+    }));
+    return { promos };
+  } catch (err) {
+    console.error("listPromos failed:", err);
+    return { promos: [] };
+  }
 });
 
 export const getLoyalty = createServerFn({ method: "GET" })

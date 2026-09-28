@@ -115,56 +115,66 @@ async function toCard(
 }
 
 export const listZones = createServerFn({ method: "GET" }).handler(async () => {
-  const sql = await getSql();
-  const rows = await sql<{
-    id: string;
-    name: string;
-    city_id: string;
-    city_name: string;
-    center_lat: number;
-    center_lng: number;
-    min_order_paise: number;
-    delivery_base_paise: number;
-  }>`
-    select z.id, z.name, z.city_id, c.name as city_name, z.center_lat, z.center_lng,
-           z.min_order_paise, z.delivery_base_paise
-    from service_zones z
-    join cities c on c.id = z.city_id
-    where z.active = true
-    order by z.name
-  `;
-  const zones: ZoneOption[] = rows.map((r) => ({
-    id: r.id,
-    name: r.name,
-    cityId: r.city_id,
-    cityName: r.city_name,
-    lat: r.center_lat,
-    lng: r.center_lng,
-    minOrderPaise: r.min_order_paise,
-    deliveryBasePaise: r.delivery_base_paise,
-  }));
-  return { zones };
+  try {
+    const sql = await getSql();
+    const rows = await sql<{
+      id: string;
+      name: string;
+      city_id: string;
+      city_name: string;
+      center_lat: number;
+      center_lng: number;
+      min_order_paise: number;
+      delivery_base_paise: number;
+    }>`
+      select z.id, z.name, z.city_id, c.name as city_name, z.center_lat, z.center_lng,
+             z.min_order_paise, z.delivery_base_paise
+      from service_zones z
+      join cities c on c.id = z.city_id
+      where z.active = true
+      order by z.name
+    `;
+    const zones: ZoneOption[] = rows.map((r) => ({
+      id: r.id,
+      name: r.name,
+      cityId: r.city_id,
+      cityName: r.city_name,
+      lat: r.center_lat,
+      lng: r.center_lng,
+      minOrderPaise: r.min_order_paise,
+      deliveryBasePaise: r.delivery_base_paise,
+    }));
+    return { zones };
+  } catch (err) {
+    console.error("listZones failed:", err);
+    return { zones: [] };
+  }
 });
 
 export const listCategories = createServerFn({ method: "GET" })
   .validator((input: { lang?: string }) => input)
   .handler(async ({ data }) => {
-    const sql = await getSql();
-    const rows = await sql<{
-      id: string;
-      slug: string;
-      name_en: string;
-      name_bn: string;
-      image_url: string | null;
-    }>`select id, slug, name_en, name_bn, image_url from categories where active = true order by sort_order`;
-    const lang = data.lang === "bn" ? "bn" : "en";
-    const categories: CategoryView[] = rows.map((r) => ({
-      id: r.id,
-      slug: r.slug,
-      name: lang === "bn" ? r.name_bn : r.name_en,
-      imageUrl: r.image_url,
-    }));
-    return { categories };
+    try {
+      const sql = await getSql();
+      const rows = await sql<{
+        id: string;
+        slug: string;
+        name_en: string;
+        name_bn: string;
+        image_url: string | null;
+      }>`select id, slug, name_en, name_bn, image_url from categories where active = true order by sort_order`;
+      const lang = data.lang === "bn" ? "bn" : "en";
+      const categories: CategoryView[] = rows.map((r) => ({
+        id: r.id,
+        slug: r.slug,
+        name: lang === "bn" ? r.name_bn : r.name_en,
+        imageUrl: r.image_url,
+      }));
+      return { categories };
+    } catch (err) {
+      console.error("listCategories failed:", err);
+      return { categories: [] };
+    }
   });
 
 export const listRestaurants = createServerFn({ method: "POST" })
