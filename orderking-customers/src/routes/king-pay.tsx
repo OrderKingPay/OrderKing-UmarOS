@@ -1654,115 +1654,42 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           </form>
         )}
 
-        {/* DUAL PROMINENT HERO: 1. SCAN ANY QR CODE | 2. RECEIVE MONEY & CUSTOM QR */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-          {/* CARD A: SCAN ANY QR CODE TO PAY */}
-          <div
-            tabIndex={0}
-            role="button"
-            aria-label="Scan any QR code"
+        {/* SLEEK COMPACT SCANNER & RECEIVE ACTIONS (100x MOBILE FRIENDLY) */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+          {/* SCAN QR (COMPACT) */}
+          <button
+            type="button"
             onClick={() => {
               setScannerTab("camera");
               setShowScanner(true);
             }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                setScannerTab("camera");
-                setShowScanner(true);
-              }
-            }}
-            className="group relative cursor-pointer overflow-hidden rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-950/20 via-surface to-amber-500/10 p-4 shadow-md transition-all hover:border-emerald-500 hover:shadow-xl focus:ring-4 focus:ring-emerald-500/40 focus:outline-none active:scale-[0.99]"
+            className="group relative flex items-center gap-2 overflow-hidden rounded-xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/40 to-surface p-2.5 shadow-sm transition-all hover:border-emerald-500 hover:shadow-md active:scale-95"
           >
-            <div className="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-border/60">
-              <div className="flex items-center gap-1.5">
-                <span className="flex size-2 rounded-full bg-emerald-400 animate-ping" />
-                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
-                  👑 1-Tap QR Scanner
-                </span>
-              </div>
-              <span className="rounded bg-emerald-500/15 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700 dark:text-emerald-300">
-                ⚡ 0% FEES
-              </span>
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:scale-105 transition-transform">
+              <span className="text-xl">📷</span>
             </div>
-
-            <div className="flex items-center gap-3">
-              <div className="relative shrink-0 rounded-2xl bg-gradient-to-tr from-[#0D3B2E] via-emerald-800 to-[#07241C] p-2 shadow-lg ring-2 ring-emerald-400/40 group-hover:scale-105 transition-transform duration-200">
-                <ScannerVisualGraphic className="size-14 sm:size-16" />
-                <span className="absolute -bottom-1 -right-1 rounded-full bg-amber-400 p-0.5 text-[9px] shadow-sm">
-                  ⚡
-                </span>
-              </div>
-
-              <div className="flex-1">
-                <h3 className="font-display text-base sm:text-lg font-black text-fg tracking-tight group-hover:text-primary transition">
-                  Scan Any QR Code
-                </h3>
-                <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400">
-                  Camera QR Scanner
-                </p>
-                <p className="text-[11px] text-muted mt-0.5 leading-tight">
-                  Point at any shop, merchant or friend QR to pay instantly
-                </p>
-              </div>
-
-              <div className="shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-primary px-3 py-2 text-xs font-extrabold text-white shadow-sm">
-                <span>📷 Scan</span>
-              </div>
+            <div className="flex flex-col items-start text-left">
+              <span className="text-xs font-black text-fg">Scan Any QR</span>
+              <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">Pay Instantly</span>
             </div>
-          </div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-emerald-500/10 to-transparent pointer-events-none" />
+          </button>
 
-          {/* CARD B: RECEIVE MONEY & CUSTOM QR (LUXURY GIFTING & NOTES) */}
-          <div
-            tabIndex={0}
-            role="button"
-            aria-label="Receive money and create custom QR"
+          {/* RECEIVE & MY QR (COMPACT) */}
+          <button
+            type="button"
             onClick={() => setShowReceiveQrModal(true)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                setShowReceiveQrModal(true);
-              }
-            }}
-            className="group relative cursor-pointer overflow-hidden rounded-2xl border-2 border-amber-500/50 bg-gradient-to-br from-amber-950/20 via-surface to-rose-500/10 p-4 shadow-md transition-all hover:border-amber-500 hover:shadow-xl focus:ring-4 focus:ring-amber-500/40 focus:outline-none active:scale-[0.99]"
+            className="group relative flex items-center gap-2 overflow-hidden rounded-xl border border-amber-500/40 bg-gradient-to-br from-amber-950/40 to-surface p-2.5 shadow-sm transition-all hover:border-amber-500 hover:shadow-md active:scale-95"
           >
-            <div className="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-border/60">
-              <div className="flex items-center gap-1.5">
-                <span className="flex size-2 rounded-full bg-amber-400 animate-ping" />
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
-                  ✨ Custom QR Studio
-                </span>
-              </div>
-              <span className="rounded bg-amber-500/15 px-2 py-0.5 text-[9px] font-extrabold text-amber-800 dark:text-amber-300">
-                🧧 6 LUXURY STYLES
-              </span>
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400 group-hover:scale-105 transition-transform">
+              <span className="text-xl">📲</span>
             </div>
-
-            <div className="flex items-center gap-3">
-              <div className="relative shrink-0 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-2.5 shadow-lg ring-2 ring-amber-400/40 text-black group-hover:scale-105 transition-transform duration-200 flex items-center justify-center">
-                <span className="text-3xl">📲</span>
-                <span className="absolute -bottom-1 -right-1 rounded-full bg-rose-500 text-white p-0.5 text-[9px] shadow-sm">
-                  🎁
-                </span>
-              </div>
-
-              <div className="flex-1">
-                <h3 className="font-display text-base sm:text-lg font-black text-fg tracking-tight group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">
-                  Receive Money &amp; QR
-                </h3>
-                <p className="text-xs font-bold text-amber-600 dark:text-amber-400">
-                  Custom Amounts &amp; Notes
-                </p>
-                <p className="text-[11px] text-muted mt-0.5 leading-tight">
-                  Free universal QR for Shagun, Gifts, Splits &amp; Shops
-                </p>
-              </div>
-
-              <div className="shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-3 py-2 text-xs font-extrabold text-slate-950 shadow-sm">
-                <span>📲 My QR</span>
-              </div>
+            <div className="flex flex-col items-start text-left">
+              <span className="text-xs font-black text-fg">My QR Code</span>
+              <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest">Receive Money</span>
             </div>
-          </div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-amber-500/10 to-transparent pointer-events-none" />
+          </button>
         </div>
 
         {/* 4 CORE DAILY MONEY TRANSFER & BANK ACTIONS */}
