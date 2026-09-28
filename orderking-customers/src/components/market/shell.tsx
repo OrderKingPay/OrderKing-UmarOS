@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ClipboardList, House, QrCode, Search, ShoppingBag, UserRound, Wallet, Zap } from "lucide-react";
+import { ClipboardList, House, QrCode, Search, ShoppingBag, UserRound, Wallet, Zap, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import { Wordmark } from "@/components/brand/wordmark";
 import { LocationDialog } from "@/components/market/location-dialog";
@@ -133,9 +133,10 @@ export function CustomerShell({
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
       >
         {isDeliveryActive ? (
-          <ul className="mx-auto grid max-w-lg grid-cols-5 items-center md:max-w-5xl relative">
+          <ul className="mx-auto grid max-w-lg grid-cols-6 items-center md:max-w-5xl relative">
             <NavItem to="/" icon={House} label={t("common.home")} active={path === "/"} />
             <NavItem to="/king-pay" icon={Zap} label="King Pay" active={path.startsWith("/king-pay")} highlight={true} />
+            <NavItem to="/tutor" icon={GraduationCap} label="Tutor" active={path.startsWith("/tutor")} highlight={true} badge="Free" />
             <NavItem
               to="/cart"
               icon={ShoppingBag}
@@ -147,8 +148,9 @@ export function CustomerShell({
             <NavItem to="/account" icon={UserRound} label={t("common.account")} active={path.startsWith("/account")} />
           </ul>
         ) : (
-          <ul className="mx-auto grid max-w-lg grid-cols-4 items-center md:max-w-5xl relative">
+          <ul className="mx-auto grid max-w-lg grid-cols-5 items-center md:max-w-5xl relative">
             <NavItem to="/king-pay" icon={Wallet} label="King Pay" active={path === "/" || path === "/king-pay"} highlight={true} />
+            <NavItem to="/tutor" icon={GraduationCap} label="Tutor" active={path.startsWith("/tutor")} highlight={true} badge="Free" />
             <NavItem to="/king-pay?scan=true" icon={QrCode} label="Scan & Pay" active={false} />
             <NavItem to="/orders" icon={ClipboardList} label="Passbook" active={path.startsWith("/orders")} />
             <NavItem to="/account" icon={UserRound} label={t("common.account")} active={path.startsWith("/account")} />
