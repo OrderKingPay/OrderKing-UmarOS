@@ -336,7 +336,7 @@ export function HomeFeed({
         <div className="grid grid-cols-3 gap-2">
           {/* 1. Local News */}
           <Link
-            to="/news"
+            to="/"
             className="group relative flex flex-col items-center overflow-hidden rounded-xl border border-blue-500/20 bg-gradient-to-b from-blue-500/10 to-surface p-2.5 shadow-sm transition hover:border-blue-500 hover:shadow-md active:scale-95 text-center"
           >
             <div className="flex size-9 items-center justify-center rounded-full bg-blue-500/20 text-blue-500 mb-1.5 group-hover:scale-110 transition">
@@ -348,7 +348,7 @@ export function HomeFeed({
 
           {/* 2. AI English Tutor */}
           <Link
-            to="/tutor"
+            to="/"
             className="group relative flex flex-col items-center overflow-hidden rounded-xl border border-purple-500/20 bg-gradient-to-b from-purple-500/10 to-surface p-2.5 shadow-sm transition hover:border-purple-500 hover:shadow-md active:scale-95 text-center"
           >
             <div className="absolute top-0 right-0 rounded-bl-lg bg-purple-500 px-1.5 py-0.5 text-[7px] font-black text-white shadow-sm">
@@ -363,7 +363,7 @@ export function HomeFeed({
 
           {/* 3. Part-Time Jobs */}
           <Link
-            to="/jobs"
+            to="/"
             className="group relative flex flex-col items-center overflow-hidden rounded-xl border border-amber-500/20 bg-gradient-to-b from-amber-500/10 to-surface p-2.5 shadow-sm transition hover:border-amber-500 hover:shadow-md active:scale-95 text-center"
           >
             <div className="absolute top-0 right-0 rounded-bl-lg bg-amber-500 px-1.5 py-0.5 text-[7px] font-black text-black shadow-sm animate-pulse">
