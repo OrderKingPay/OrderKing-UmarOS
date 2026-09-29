@@ -3,29 +3,70 @@ name: OrderKing production gate
 on:
   push:
     branches: [main]
+    paths:
+      - "HDmaster/**"
+      - "orderking-customers/**"
+      - "orderking-partners/**"
+      - "orderking-riders/**"
+      - "Apps-integration-/**"
+      - ".github/workflows/production-gate.yml"
+  pull_request:
+    paths:
+      - "HDmaster/**"
+      - "orderking-customers/**"
+      - "orderking-partners/**"
+      - "orderking-riders/**"
+      - "Apps-integration-/**"
+      - ".github/workflows/production-gate.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: orderking-production-gate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-matrix:
+  verify-five-apps:
+    name: Verify ${{ matrix.app }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        app:
-          - HDmaster
-          - orderking-customers
-          - orderking-partners
+        include:
+          - app: HDmaster
+            path: HDmaster
+          - app: orderking-customers
+            path: orderking-customers
+          - app: orderking-partners
+            path: orderking-partners
+          - app: orderking-riders
+            path: orderking-riders
+          - app: Apps-integration-
+            path: Apps-integration-
     defaults:
       run:
-        working-directory: ${{ matrix.app }}
+        working-directory: ${{ matrix.path }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+          cache: npm
+          cache-dependency-path: ${{ matrix.path }}/package-lock.json
+
+      - name: Install frozen dependencies
+        run: npm ci --no-audit --no-fund
+
       - name: Typecheck
         run: npm run typecheck
-      - name: Build
+
+      - name: Test
+        run: npm test
+
+      - name: Production build
         run: npm run build
