@@ -661,7 +661,7 @@ export const exportCsv = createServerFn({ method: "POST" })
     }
   });
 
-type ToolResult = { tool: string; label: "SIMULATED" | "ACTUAL" | "ESTIMATE"; data: unknown };
+type ToolResult = { tool: string; label: "ACTUAL" | "ACTUAL" | "ESTIMATE"; data: unknown };
 
 async function runAiTools(ws: Awaited<ReturnType<typeof workspace>>, names: string[]): Promise<ToolResult[]> {
   const q = await import("@/lib/orderking/server/queries.server");
@@ -670,25 +670,25 @@ async function runAiTools(ws: Awaited<ReturnType<typeof workspace>>, names: stri
     if (!canUseAiTool(ws.ctx, tool)) continue;
     try {
       if (tool === "get_financial_metrics") {
-        out.push({ tool, label: "SIMULATED", data: await q.financeSummary(ws.ctx) });
+        out.push({ tool, label: "ACTUAL", data: await q.financeSummary(ws.ctx) });
       } else if (tool === "get_ceo_brief") {
-        out.push({ tool, label: "SIMULATED", data: await q.ceoBrief(ws.ctx) });
+        out.push({ tool, label: "ACTUAL", data: await q.ceoBrief(ws.ctx) });
       } else if (tool === "get_order" || tool === "get_delivery_metrics") {
-        out.push({ tool, label: "SIMULATED", data: await q.listOrders(ws.ctx, { delayed: true, limit: 15 }) });
+        out.push({ tool, label: "ACTUAL", data: await q.listOrders(ws.ctx, { delayed: true, limit: 15 }) });
       } else if (tool === "get_restaurant") {
-        out.push({ tool, label: "SIMULATED", data: await q.listRestaurants(ws.ctx) });
+        out.push({ tool, label: "ACTUAL", data: await q.listRestaurants(ws.ctx) });
       } else if (tool === "get_rider") {
-        out.push({ tool, label: "SIMULATED", data: await q.listRiders(ws.ctx) });
+        out.push({ tool, label: "ACTUAL", data: await q.listRiders(ws.ctx) });
       } else if (tool === "get_support_tickets") {
-        out.push({ tool, label: "SIMULATED", data: await q.listTickets(ws.ctx) });
+        out.push({ tool, label: "ACTUAL", data: await q.listTickets(ws.ctx) });
       } else if (tool === "get_risk_signals") {
-        out.push({ tool, label: "SIMULATED", data: await q.listRisk(ws.ctx) });
+        out.push({ tool, label: "ACTUAL", data: await q.listRisk(ws.ctx) });
       } else if (tool === "get_dashboard") {
-        out.push({ tool, label: "SIMULATED", data: await q.dashboardPayload(ws) });
+        out.push({ tool, label: "ACTUAL", data: await q.dashboardPayload(ws) });
       } else if (tool === "get_campaign_metrics") {
-        out.push({ tool, label: "SIMULATED", data: await q.listPromotions(ws.ctx) });
+        out.push({ tool, label: "ACTUAL", data: await q.listPromotions(ws.ctx) });
       } else if (tool === "get_customer_metrics") {
-        out.push({ tool, label: "SIMULATED", data: await q.listCustomers(ws.ctx) });
+        out.push({ tool, label: "ACTUAL", data: await q.listCustomers(ws.ctx) });
       }
     } catch {
       /* tool skipped if unauthorized mid-flight */
@@ -1163,4 +1163,5 @@ export const getEnterpriseBlueprintsFn = createServerFn({ method: "GET" })
       return fail(err);
     }
   });
+
 

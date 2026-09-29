@@ -76,8 +76,27 @@ export class NotificationService {
     if (serverKey && payload.recipient.deviceToken) {
       try {
         console.log(`[Push Notification] Sending real push via FCM to ${payload.recipient.deviceToken}`);
-        // Simulated FCM request
-        // const response = await fetch('https://fcm.googleapis.com/fcm/send', { ... })
+        
+        const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `key=${serverKey}`
+          },
+          body: JSON.stringify({
+            to: payload.recipient.deviceToken,
+            notification: {
+              title: payload.content.title,
+              body: payload.content.body
+            },
+            data: payload.tracking.context
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`FCM API error: ${response.status} ${response.statusText}`);
+        }
+        
         delivered = true;
       } catch (err) {
         console.error(`[Push Notification] FCM push failed`, err);

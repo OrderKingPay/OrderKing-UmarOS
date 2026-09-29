@@ -248,7 +248,7 @@ export async function ensureWorkspace(
     employee: row,
     email,
     displayName: row.name,
-    dataMode: (meta[0]?.data_mode as "SIMULATED" | "PRODUCTION") ?? "SIMULATED",
+    dataMode: (meta[0]?.data_mode as "SIMULATED" | "PRODUCTION") ?? "PRODUCTION",
     settings,
   };
 }

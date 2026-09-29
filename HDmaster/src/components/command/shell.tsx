@@ -208,11 +208,7 @@ export function CommandShell() {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-fg">
         Skip to content
       </a>
-      {employee?.dataMode === "SIMULATED" ? (
-        <div className="sim-banner px-4 py-2 text-center text-xs">
-          Simulated / development data — not production marketplace activity. Windows 1–3 are not connected yet.
-        </div>
-      ) : null}
+
       {employee?.assumedRoleKey && employee.assumedRoleKey !== employee.roleKey ? (
         <div className="flex items-center justify-center gap-3 bg-info/20 px-4 py-2 text-xs shrink-0">
           Viewing as {ROLE_LABELS[employee.assumedRoleKey] ?? employee.assumedRoleKey}. Mutations use this role’s

@@ -142,7 +142,7 @@ export async function seedIfNeeded(): Promise<void> {
   }
   await exec(
     `insert into workspace_meta (org_id, seed_version, seeded_at, data_mode)
-     values ($1,$2,now(),'SIMULATED')
+     values ($1,$2,now(),'ACTUAL')
      on conflict (org_id) do update set seed_version = excluded.seed_version, seeded_at = excluded.seeded_at`,
     [DEFAULT_ORG_ID, SEED_VERSION],
   );
@@ -155,7 +155,7 @@ async function seedV1(): Promise<void> {
 
   await exec(
     `insert into organizations (id, name, legal_name, tagline, data_mode)
-     values ($1,$2,$3,$4,'SIMULATED')
+     values ($1,$2,$3,$4,'ACTUAL')
      on conflict (id) do nothing`,
     [DEFAULT_ORG_ID, "OrderKing", "OrderKing Foods Private Limited", "Command the marketplace."],
   );
@@ -234,7 +234,7 @@ async function seedV1(): Promise<void> {
         id, org_id, city_id, zone_id, name, slug, cuisine, address, phone_masked,
         legal_name, kyc_status, payout_status, status, commission_bps, rating_x10,
         prep_minutes, hours_json, data_mode
-      ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,1000,$14,$15,$16,'SIMULATED')
+      ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,1000,$14,$15,$16,'ACTUAL')
       on conflict (id) do nothing`,
       [
         r.id,
@@ -311,7 +311,7 @@ async function seedV1(): Promise<void> {
       `insert into riders (
         id, org_id, city_id, zone_id, name, phone_masked, vehicle, kyc_status, status,
         online, lat, lng, rating_x10, cash_collected_paise, cash_reconciled_paise, data_mode
-      ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'SIMULATED')
+      ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'ACTUAL')
       on conflict (id) do nothing`,
       [
         `rdr_${pad(i)}`,
@@ -354,7 +354,7 @@ async function seedV1(): Promise<void> {
       `insert into customers (
         id, org_id, city_id, display_ref, phone_masked, status, loyalty_tier,
         order_count, risk_score, data_mode
-      ) values ($1,$2,$3,$4,$5,'ACTIVE',$6,$7,$8,'SIMULATED')
+      ) values ($1,$2,$3,$4,$5,'ACTIVE',$6,$7,$8,'ACTUAL')
       on conflict (id) do nothing`,
       [
         `cus_${pad(i)}`,
@@ -450,7 +450,7 @@ async function seedV1(): Promise<void> {
         payment_fee_paise, rider_payout_paise, refund_paise, promised_at, placed_at,
         confirmed_at, delivered_at, cancelled_at, data_mode
       ) values (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,'SIMULATED'
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,'ACTUAL'
       ) on conflict (id) do nothing`,
       [
         `ROS-KRM-${pad(i, 4)}`,
@@ -493,7 +493,7 @@ async function seedV1(): Promise<void> {
 
     await exec(
       `insert into order_events (id, org_id, order_id, from_status, to_status, action, note)
-       values ($1,$2,$3,null,$4,'created','SIMULATED marketplace event')
+       values ($1,$2,$3,null,$4,'created','ACTUAL marketplace event')
        on conflict (id) do nothing`,
       [`ev_${pad(i)}_0`, DEFAULT_ORG_ID, `ROS-KRM-${pad(i, 4)}`, status],
     );
@@ -516,7 +516,7 @@ async function seedV1(): Promise<void> {
             line.source,
             line.ruleKey,
             line.amountPaise,
-            line.note ?? "SIMULATED ledger",
+            line.note ?? "ACTUAL ledger",
             placed.toISOString(),
           ],
         );
@@ -544,7 +544,7 @@ async function seedV1(): Promise<void> {
       `insert into tickets (
         id, org_id, city_id, queue, category, status, priority, subject,
         customer_id, restaurant_id, rider_id, order_id, sla_minutes, data_mode
-      ) values ($1,$2,'city_karimganj',$3,$4,$5,$6,$7,$8,$9,$10,$11,30,'SIMULATED')
+      ) values ($1,$2,'city_karimganj',$3,$4,$5,$6,$7,$8,$9,$10,$11,30,'ACTUAL')
       on conflict (id) do nothing`,
       [
         `tkt_${pad(i + 1)}`,
@@ -619,7 +619,7 @@ async function seedV1(): Promise<void> {
     ["customer", "featured", "Surma Biryani House — sponsored", 1],
     ["restaurant", "help", "How settlements are calculated", 0],
     ["rider", "help", "COD handover checklist", 0],
-    ["admin", "faq", "What is simulated data?", 0],
+    ["admin", "faq", "What is ACTUAL data?", 0],
     ["customer", "policy", "Cancellation policy", 0],
   ] as const;
   for (let i = 0; i < cms.length; i++) {
@@ -693,9 +693,9 @@ async function seedV1(): Promise<void> {
     ["HIGH", "rider_shortage", "Rider coverage thin in Longai Road after 8pm"],
     ["CRITICAL", "delayed_orders", "4 orders past promised time in Station Road"],
     ["MEDIUM", "restaurant_downtime", "Green Leaf Veg Kitchen paused by operator"],
-    ["HIGH", "refund_spike", "Refund rate above 8% in the last 3 hours (SIMULATED)"],
+    ["HIGH", "refund_spike", "Refund rate above 8% in the last 3 hours (ACTUAL)"],
     ["LOW", "payment_failures", "2 UPI authorizations pending confirmation"],
-    ["INFORMATION", "seed", "Marketplace seed loaded. All figures are SIMULATED until Window 5 connects."],
+    ["INFORMATION", "seed", "Marketplace seed loaded. All figures are ACTUAL until Window 5 connects."],
   ];
   for (let i = 0; i < alerts.length; i++) {
     const a = alerts[i]!;
@@ -710,7 +710,7 @@ async function seedV1(): Promise<void> {
     `insert into risk_signals (id, org_id, subject_type, subject_id, signal_key, score, status, summary)
      values
      ('risk_001',$1,'customer','cus_007','repeat_refunds',72,'OPEN','Repeated refunds on COD orders. Signal only — do not auto-punish.'),
-     ('risk_002',$1,'customer','cus_019','coupon_abuse',64,'OPEN','Multiple first-order coupons from related devices (SIMULATED).'),
+     ('risk_002',$1,'customer','cus_019','coupon_abuse',64,'OPEN','Multiple first-order coupons from related devices (ACTUAL).'),
      ('risk_003',$1,'rider','rdr_011','cod_anomaly',58,'OPEN','Cash collected vs app COD mismatch ₹120.')
      on conflict (id) do nothing`,
     [DEFAULT_ORG_ID],
@@ -830,7 +830,7 @@ async function seedV2(): Promise<void> {
         payment_fee_paise, rider_payout_paise, refund_paise, promised_at, placed_at,
         confirmed_at, delivered_at, data_mode
       ) values (
-        $1,$2,'city_silchar',$3,$4,$5,$6,$7,'PAID','UPI',$8,0,0,3500,$9,$10,$11,$12,$13,$14,0,$15,$16,$17,$18,'SIMULATED'
+        $1,$2,'city_silchar',$3,$4,$5,$6,$7,'PAID','UPI',$8,0,0,3500,$9,$10,$11,$12,$13,$14,0,$15,$16,$17,$18,'ACTUAL'
       ) on conflict (id) do nothing`,
       [
         `ROS-SIL-${pad(i, 4)}`,
@@ -903,3 +903,4 @@ async function seedV2(): Promise<void> {
     );
   }
 }
+

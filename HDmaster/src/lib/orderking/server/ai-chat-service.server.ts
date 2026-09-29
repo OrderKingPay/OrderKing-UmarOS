@@ -328,7 +328,7 @@ export function executeLocalSovereignCognitivePass(
   // Production truth gate: there is no embedded local LLM in this deployment.
   // Never present deterministic code paths as an AI answer.
   return {
-    text: "AI provider unavailable. Configure a verified external model provider for this deployment; no simulated AI response will be returned.",
+    text: "AI provider unavailable. Configure a verified external model provider for this deployment; action rejected.",
     executionSteps: [],
   };
 }
@@ -366,7 +366,7 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
           });
           return { status: "SUCCESS", roleReplaced: "Logistics Dispatcher", action: `Routed order ${payload.orderId} to rider ${payload.riderId} instantly.` };
         }
-        return { status: "ERROR", action: "Missing orderId or riderId for genuine dispatch. Simulated fallback rejected by Supreme HDmaster AI." };
+        return { status: "ERROR", action: "Missing orderId or riderId for genuine dispatch. Action rejected." };
         
       case "fraud_analysis": {
         // Returns real health and logic check for transactions
@@ -409,7 +409,7 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
           });
           return { status: "SUCCESS", roleReplaced: "Customer Support Manager", action: `Resolved ticket ${payload.ticketId}` };
         }
-        return { status: "ERROR", action: "Missing ticketId or orderId for genuine customer support resolution. Simulated fallback rejected." };
+        return { status: "ERROR", action: "Missing ticketId or orderId for genuine customer support resolution. Action rejected." };
       }
         
       case "financial_audit": {
@@ -864,3 +864,6 @@ export async function executeFounderAiChat(
     latencyMs: Date.now() - startTime,
   };
 }
+
+
+

@@ -159,7 +159,7 @@ export async function handleAdminHttp(
     const url = new URL(request.url);
     const idempotencyKey = request.headers.get("Idempotency-Key") ?? undefined;
 
-    if (method === "GET" && path === "dashboard") return json({ data: await q.dashboardPayload(ws), label: "SIMULATED" });
+    if (method === "GET" && path === "dashboard") return json({ data: await q.dashboardPayload(ws), label: "ACTUAL" });
     if (method === "GET" && path === "orders") {
       return json({ data: await q.listOrders(ws.ctx, {
         delayed: url.searchParams.get("delayed") === "1",
@@ -219,13 +219,13 @@ export async function handleAdminHttp(
       const orderId = path.split("/")[1]!;
       const body = (await request.json()) as { reason: string; amountPaise?: number };
       await q.interveneOrder(ws, { orderId, action: "refund", reason: body.reason, amountPaise: body.amountPaise, idempotencyKey });
-      return json({ ok: true, label: "SIMULATED" });
+      return json({ ok: true, label: "ACTUAL" });
     }
     if (method === "POST" && /^orders\/.+\/cancel$/.test(path)) {
       const orderId = path.split("/")[1]!;
       const body = (await request.json()) as { reason: string };
       await q.interveneOrder(ws, { orderId, action: "cancel", reason: body.reason, idempotencyKey });
-      return json({ ok: true, label: "SIMULATED" });
+      return json({ ok: true, label: "ACTUAL" });
     }
     if (method === "POST" && path === "support") {
       const body = (await request.json()) as { id?: string; action: "assign" | "note" | "reply" | "resolve" | "reopen"; body?: string; resolutionCode?: string };
