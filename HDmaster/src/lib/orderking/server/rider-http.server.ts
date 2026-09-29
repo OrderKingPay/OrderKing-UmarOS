@@ -8,7 +8,7 @@ function json(body: unknown, status = 200) { return new Response(JSON.stringify(
 function fail(err: unknown) { if (err instanceof ForbiddenError) return json({ error: err.message, code: "FORBIDDEN" }, 403); const message = err instanceof Error ? err.message : "Unexpected error"; if (message === "Unauthorized") return json({ error: message, code: "UNAUTHORIZED" }, 401); return json({ error: message, code: "BAD_REQUEST" }, 400); }
 async function resolveServiceUserId(request: Request): Promise<string> { const authorization = request.headers.get("authorization")?.trim(); const configuredToken = process.env.ORDERKING_SERVICE_TOKEN?.trim(); const configuredUserId = process.env.ORDERKING_SERVICE_USER_ID?.trim(); if (configuredToken && configuredUserId && authorization === `Bearer ${configuredToken}`) return configuredUserId; return requireUserId(); }
 
-export async function handleRiderOrderTransition(request: Request, input: { orderId: string; riderId: string; from: CanonicalOrderStatus; to: CanonicalOrderStatus; reason?: string; idempotencyKey: string; correlationId?: string }): Promise<Response> {
+export async function handleRiderOrderTransition(request: Request, input: { orderId: string; riderId: string; from: CanonicalOrderStatus; to: CanonicalOrderStatus; reason?: string; idempotencyKey: string; correlationId?: string; lat?: number; lng?: number; accuracy?: number }): Promise<Response> {
   try {
     const userId = await resolveServiceUserId(request); const ws = await ensureWorkspace(userId); requirePermission(ws.ctx, "modify_orders", { orgId: ws.ctx.orgId, cityId: ws.ctx.cityId });
     const sql = await getSql();
@@ -31,8 +31,14 @@ export async function handleRiderOrderTransition(request: Request, input: { orde
     if (input.to === "RIDER_ASSIGNED" && input.from === "READY" && order.status === "RIDER_ASSIGNED" && order.rider_id === riderId) return json({ data: { ok: true as const, contractVersion: ORDER_CONTRACT_VERSION, orderId: input.orderId, from: "READY" as const, state: "RIDER_ASSIGNED" as const, actor: "rider" as const, riderId, duplicate: true as const, dataMode: order.data_mode } });
     if (order.status !== input.from) throw new Error(`Stale order state: expected ${input.from}, found ${order.status}`);
     const updated = await sql.query<{ id: string }>(`update orders set status=$4, rider_id=case when $4='RIDER_ASSIGNED' then $6 else rider_id end, picked_up_at=case when $4='PICKED_UP' then now() else picked_up_at end, delivered_at=case when $4='DELIVERED' then now() else delivered_at end where id=$1 and org_id=$2 and status=$5 returning id`, [input.orderId, ws.ctx.orgId, order.restaurant_id, input.to, input.from, riderId]); if (!updated[0]) throw new Error("Order transition lost a concurrency race; retry with fresh state");
-    await sql.query(`insert into order_events (id, org_id, order_id, actor_employee_id, from_status, to_status, action, note) values ($1,$2,$3,$4,$5,$6,$7,$8)`, [nid("ev"), ws.ctx.orgId, input.orderId, ws.ctx.employeeId, input.from, input.to, `rider.${input.to.toLowerCase()}`, input.reason ?? null]);
-    await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.rider_transition", targetType: "order", targetId: input.orderId, previous: { status: input.from, riderId: order.rider_id }, next: { status: input.to, riderId, actor: "rider" }, reason: input.reason });
+    let h3Index = null;
+    if (input.lat && input.lng) {
+      const { latLngToCell } = await import("h3-js");
+      h3Index = latLngToCell(input.lat, input.lng, 9);
+    }
+    
+    await sql.query(`insert into order_events (id, org_id, order_id, actor_employee_id, from_status, to_status, action, note, lat, lng, h3_index) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`, [nid("ev"), ws.ctx.orgId, input.orderId, ws.ctx.employeeId, input.from, input.to, `rider.${input.to.toLowerCase()}`, input.reason ?? null, input.lat ?? null, input.lng ?? null, h3Index]);
+    await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.rider_transition", targetType: "order", targetId: input.orderId, previous: { status: input.from, riderId: order.rider_id }, next: { status: input.to, riderId, actor: "rider" }, reason: input.reason, lat: input.lat, lng: input.lng, h3Index, gpsAccuracy: input.accuracy });
     
     // Fire push notification in the background
     const { NotificationService } = await import("@/lib/orderking/server/NotificationService");

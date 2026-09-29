@@ -53,13 +53,18 @@ export async function appendAudit(input: {
   reason?: string;
   ip?: string | null;
   userAgent?: string | null;
+  // 100x Zomato-Killer Geospatial Tracking Additions
+  lat?: number | null;
+  lng?: number | null;
+  h3Index?: string | null;
+  gpsAccuracy?: number | null;
 }) {
   const sql = await getSql();
   await sql.query(
     `insert into audit_logs (
       id, org_id, employee_id, user_id, role_key, action, target_type, target_id,
-      previous_json, new_json, reason, ip, user_agent
-    ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+      previous_json, new_json, reason, ip, user_agent, lat, lng, h3_index, gps_accuracy
+    ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
     [
       nid("aud"),
       input.orgId,
@@ -74,6 +79,10 @@ export async function appendAudit(input: {
       input.reason ?? null,
       input.ip ?? null,
       input.userAgent ?? null,
+      input.lat ?? null,
+      input.lng ?? null,
+      input.h3Index ?? null,
+      input.gpsAccuracy ?? null,
     ],
   );
 }

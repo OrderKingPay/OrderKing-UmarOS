@@ -45,3 +45,7 @@ CREATE TABLE IF NOT EXISTS settlement_batches (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Zomato-Killer Mandate: Strict Constraints
+ALTER TABLE ledger_transactions ADD CONSTRAINT check_positive_transaction_amount CHECK (total_amount_paise >= 0);
+ALTER TABLE ledger_entries ADD CONSTRAINT check_positive_entry_amount CHECK (amount_paise >= 0);
