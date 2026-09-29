@@ -1,6 +1,11 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { WebhookGateway } from "../../../lib/integration/webhook-gateway";
+import {
+  getWebhookEventId,
+  markWebhookFailed,
+  markWebhookProcessed,
+  recordWebhookEvent,
+} from "../../../lib/integration/webhook-store";
 
 export const Route = createFileRoute("/api/webhooks/messagebird")({
   server: {
@@ -35,10 +40,29 @@ export const Route = createFileRoute("/api/webhooks/messagebird")({
         }
 
         try {
-          const payload = JSON.parse(rawBody);
-          console.log("Verified MessageBird Webhook Payload:", payload);
+          const payload = JSON.parse(rawBody) as Record<string, unknown>;
+          const eventId = getWebhookEventId(request.headers, payload);
+          const eventType = typeof payload.type === "string" ? payload.type : "message.event";
+          const event = await recordWebhookEvent({
+            provider: "messagebird",
+            providerEventId: eventId,
+            eventType,
+            payload,
+            signatureValid: true,
+          });
 
-          // TODO: Handle MessageBird events (e.g. message.status)
+          if (!event.duplicate || event.event.status !== "processed") {
+            try {
+              await markWebhookProcessed(event.event.id);
+            } catch (processingError) {
+              await markWebhookFailed(
+                event.event.id,
+                processingError instanceof Error ? processingError.message : "Processing failed",
+              );
+              throw processingError;
+            }
+          }
+
           return new Response(JSON.stringify({ status: "ok" }), {
             status: 200,
             headers: { "Content-Type": "application/json" },

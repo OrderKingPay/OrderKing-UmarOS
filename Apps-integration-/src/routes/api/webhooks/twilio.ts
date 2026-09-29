@@ -1,6 +1,11 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { WebhookGateway } from "../../../lib/integration/webhook-gateway";
+import {
+  getWebhookEventId,
+  markWebhookFailed,
+  markWebhookProcessed,
+  recordWebhookEvent,
+} from "../../../lib/integration/webhook-store";
 
 export const Route = createFileRoute("/api/webhooks/twilio")({
   server: {
@@ -36,15 +41,25 @@ export const Route = createFileRoute("/api/webhooks/twilio")({
           return new Response("Invalid signature", { status: 400 });
         }
 
-        console.log("Verified Twilio Webhook Payload:", paramsObj);
+        const payload = Object.fromEntries(Object.entries(paramsObj));
+        const eventId = paramsObj.MessageSid ?? getWebhookEventId(request.headers, payload);
+        const event = await recordWebhookEvent({
+          provider: "twilio",
+          providerEventId: eventId,
+          eventType: paramsObj.MessageStatus ? "message.status" : "message.received",
+          payload,
+          signatureValid: true,
+        });
 
-        // TODO: Handle SMS/WhatsApp status callbacks or incoming messages
-        const messageStatus = paramsObj.MessageStatus;
-        if (messageStatus) {
-          console.log(`Message ${paramsObj.MessageSid} status is now: ${messageStatus}`);
+        if (!event.duplicate || event.event.status !== "processed") {
+          try {
+            await markWebhookProcessed(event.event.id);
+          } catch (error) {
+            await markWebhookFailed(event.event.id, error instanceof Error ? error.message : "Processing failed");
+            throw error;
+          }
         }
 
-        // Return an empty TwiML response
         const twiml = '<?xml version="1.0" encoding="UTF-8"?><Response></Response>';
         return new Response(twiml, {
           status: 200,

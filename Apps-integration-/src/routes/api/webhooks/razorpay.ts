@@ -1,7 +1,11 @@
 import * as crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
-// @ts-expect-error - Type definitions might not resolve correctly
 import { createAPIFileRoute } from '@tanstack/react-start/api';
+import {
+  getWebhookEventId,
+  markWebhookProcessed,
+  recordWebhookEvent,
+} from '../../../lib/integration/webhook-store';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -25,9 +29,9 @@ export const APIRoute = createAPIFileRoute('/api/webhooks/razorpay')({
         .update(rawBody)
         .digest('hex');
 
-      const isValidSignature = crypto.timingSafeEqual(
+      const isValidSignature = receivedSignature.length === expectedSignature.length && crypto.timingSafeEqual(
         Buffer.from(expectedSignature),
-        Buffer.from(receivedSignature)
+        Buffer.from(receivedSignature),
       );
 
       if (!isValidSignature) {
@@ -35,7 +39,18 @@ export const APIRoute = createAPIFileRoute('/api/webhooks/razorpay')({
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized: Invalid signature' }), { status: 401 });
       }
 
-      const event = JSON.parse(rawBody);
+      const event = JSON.parse(rawBody) as Record<string, any>;
+      const stored = await recordWebhookEvent({
+        provider: 'razorpay',
+        providerEventId: getWebhookEventId(request.headers, event),
+        eventType: typeof event.event === 'string' ? event.event : 'unknown',
+        payload: event,
+        signatureValid: true,
+      });
+
+      if (stored.duplicate && stored.event.status === 'processed') {
+        return new Response(JSON.stringify({ success: true, message: 'Duplicate webhook acknowledged' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
 
       if (event.event === 'order.paid') {
         const paymentData = event.payload.payment.entity;
@@ -53,12 +68,13 @@ export const APIRoute = createAPIFileRoute('/api/webhooks/razorpay')({
           throw new Error(`Transaction Failed: ${error.message}`);
         }
 
-        console.info(`[SUCCESS] Order ${orderId} marked as paid and ledger updated.`);
+        await markWebhookProcessed(stored.event.id);
         return new Response(JSON.stringify({ success: true, message: 'Webhook processed successfully' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
       }
 
+      await markWebhookProcessed(stored.event.id);
       return new Response(JSON.stringify({ success: true, message: 'Event ignored' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[FATAL] Webhook processing error:', error);
       return new Response(JSON.stringify({ success: false, message: 'Internal Server Error' }), { status: 500 });
     }
