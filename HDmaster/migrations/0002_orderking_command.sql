@@ -452,3 +452,6 @@ create table if not exists custom_roles (
 
 
 ALTER TABLE orders ADD CONSTRAINT check_positive_food_paise CHECK (food_paise >= 0);
+-- Zomato-Killer Mandate: Strict Constraints
+ALTER TABLE orders ADD CONSTRAINT check_positive_order_value CHECK (order_value_paise >= 0);
+ALTER TABLE orders ADD CONSTRAINT check_positive_delivery_fee CHECK (delivery_fee_paise >= 0);

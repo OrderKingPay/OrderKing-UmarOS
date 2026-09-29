@@ -1,4 +1,5 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
@@ -64,6 +65,7 @@ import { useEffect } from "react";
 import { supabaseCloud } from "@/lib/db-cloud";
 
 function Root() {
+  const location = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => {
     flushQueue(transitionOrderViaHDmaster);
     
@@ -113,7 +115,18 @@ function Root() {
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
             <ErrorBoundary>
-              <Outlet />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={location}
+                  initial={{ opacity: 0, scale: 0.98, filter: "blur(5px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 1.02, filter: "blur(5px)" }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+                >
+                  <Outlet />
+                </motion.div>
+              </AnimatePresence>
             </ErrorBoundary>
           </QueryClientProvider>
         </AuthProvider>

@@ -16,3 +16,5 @@ CREATE TABLE IF NOT EXISTS kingpay_transactions (
 
 
 ALTER TABLE kingpay_wallets ADD CONSTRAINT check_positive_balance CHECK (balance_paise >= 0);
+-- Zomato-Killer Mandate: Strict Constraints
+ALTER TABLE kingpay_transactions ADD CONSTRAINT check_positive_transaction_amount CHECK (amount_paise >= 0);
