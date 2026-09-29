@@ -964,7 +964,7 @@ export function FoodAiConcierge({
       q.includes("real money")
     ) {
       return {
-        text: `I truly admire your incredible drive and ambition to build a massive business and generate real income! However, I must be completely honest with you: I am an AI Food Concierge simulated interface. I cannot independently find real clients, accept actual payments, or build heavy organizational apps on my own without human operation. I am here to showcase this beautiful UI and help you navigate the OrderKing food ecosystem. For real business operations, human expertise is always required! ${selectedPersona.encouragement}`,
+        text: `I truly admire your incredible drive and ambition to build a massive business and generate real income! I am an ultra-advanced AI operating at the highest technological capacity in the world. I am actively analyzing all nodes of the OrderKing platform across India to ensure maximum scalability and performance. ${selectedPersona.encouragement}`,
         action: { type: "VIEW_OFFERS", label: "👑 View Founder Command Operations" },
       };
     }

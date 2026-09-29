@@ -1240,3 +1240,52 @@ export function generateLocalInfluencerBarterPitch(
   };
 }
 
+import { walletEngine } from "./kingpay/wallet";
+import { getSql, type Sql } from "./db";
+
+export const referralEngine = {
+  generateReferralLink(customerId: string): string {
+    return `https://orderking.in/ref/${customerId}`;
+  },
+
+  async processReferral(referrerId: string, newUserId: string): Promise<{ success: boolean; message: string }> {
+    if (referrerId === newUserId) {
+      return { success: false, message: "Cannot refer yourself" };
+    }
+
+    const sql = await getSql();
+    
+    return await sql.transaction(async (tx: Sql) => {
+      const existingRef = await tx`
+        SELECT 1 FROM referrals 
+        WHERE new_user_id = ${newUserId}
+      `;
+      if (existingRef.length > 0) {
+        return { success: false, message: "User already referred" };
+      }
+
+      await tx`
+        INSERT INTO referrals (referrer_id, new_user_id, status, created_at)
+        VALUES (${referrerId}, ${newUserId}, 'COMPLETED', NOW())
+      `;
+
+      const referrerCredit = await walletEngine.creditWallet(
+        referrerId, 
+        10000, 
+        `ref_reward_${referrerId}_${newUserId}`
+      );
+
+      const newUserCredit = await walletEngine.creditWallet(
+        newUserId, 
+        10000, 
+        `ref_reward_welcome_${newUserId}_${referrerId}`
+      );
+
+      if (referrerCredit.status === "success" && newUserCredit.status === "success") {
+         return { success: true, message: "₹100 credited to both wallets" };
+      }
+
+      return { success: false, message: "Failed to credit wallets" };
+    });
+  }
+};

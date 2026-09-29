@@ -76,7 +76,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="relative flex h-[700px] max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-amber-500/30 bg-[#121214] text-slate-100 shadow-2xl">
+      <div className="relative flex h-[700px] max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-amber-500/30 bg-[#121214] text-slate-100 shadow-2xl break-words text-wrap">
         <div className="flex items-center justify-between border-b border-zinc-800 bg-[#18181B] px-4 py-3">
           <div className="flex items-center gap-2.5">
             <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-black">

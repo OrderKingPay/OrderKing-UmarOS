@@ -1,10 +1,13 @@
 import { platformConfig, type AppLanguage } from "@/lib/platform-config";
 import { bn } from "./bn";
+import { hi } from "./hi";
+import { te } from "./te";
+import { ta } from "./ta";
 import { en, type MessageKeySource, type MessageTree } from "./en";
 
 export type { AppLanguage, MessageTree };
 
-const dictionaries: Record<AppLanguage, MessageTree> = { en, bn };
+const dictionaries: Record<AppLanguage, MessageTree> = { en, bn, hi, te, ta };
 
 type Leaves<T, P extends string = ""> = T extends string
   ? P

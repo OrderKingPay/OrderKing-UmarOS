@@ -27,7 +27,7 @@ export function useDutyLocation(enabled: boolean, deliveryId: string | null, int
       () => {
         window.dispatchEvent(new CustomEvent("orderking-geo", { detail: { ok: false } }));
       },
-      { enableHighAccuracy: false, maximumAge: 15_000, timeout: 12_000 },
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 },
     );
     return () => navigator.geolocation.clearWatch(watch);
   }, [enabled, deliveryId, intervalSec]);

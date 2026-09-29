@@ -29,7 +29,7 @@ import { useT } from "./use-t";
 import { useVendor } from "./use-vendor";
 import { useState, type ReactNode } from "react";
 import { OrderKingSparkModal } from "./ai/order-king-spark-modal";
-
+import type { AppLanguage } from "@/lib/platform-config";
 export const PRIMARY_NAV = [
   { to: "/dashboard", key: "nav.home", icon: Home, perm: "dashboard.view" as Permission },
   { to: "/orders", key: "nav.orders", icon: ClipboardList, perm: "orders.view" as Permission },
@@ -90,7 +90,7 @@ export function VendorShell({
   if (!user) return <RedirectToSignIn />;
 
   return (
-    <div className="min-h-dvh bg-bg text-ink">
+    <div className="min-h-dvh bg-bg text-ink break-words text-wrap">
       <div className="mx-auto flex min-h-dvh max-w-6xl">
         <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r border-line p-4 md:flex">
           <div className="mb-6 flex items-center gap-2">
@@ -126,15 +126,21 @@ export function VendorShell({
               <h1 className="hidden font-display text-2xl md:block">{title}</h1>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="inline-flex h-11 items-center gap-1 rounded-[12px] border border-line bg-surface px-3 text-sm"
-                onClick={() => setLang(lang === "en" ? "bn" : "en")}
-                aria-label={t("settings.language")}
-              >
-                <Languages className="size-4" />
-                {lang === "en" ? "বাং" : "EN"}
-              </button>
+              <div className="relative">
+                <select
+                  className="h-11 appearance-none rounded-[12px] border border-line bg-surface pl-9 pr-8 text-sm outline-none transition-colors hover:bg-surface-2 focus:border-chili focus:ring-1 focus:ring-chili"
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value as AppLanguage)}
+                  aria-label={t("settings.language")}
+                >
+                  <option value="en">English</option>
+                  <option value="hi">हिंदी</option>
+                  <option value="bn">বাংলা</option>
+                  <option value="te">తెలుగు</option>
+                  <option value="ta">தமிழ்</option>
+                </select>
+                <Languages className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" />
+              </div>
               <button
                 type="button"
                 className="inline-flex h-11 items-center gap-1.5 rounded-[12px] border border-amber-500/40 bg-amber-500/10 px-3 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition shadow-sm"

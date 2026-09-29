@@ -57,7 +57,7 @@ export const platformConfig = {
   },
   localization: {
     defaultLanguage: "en" as const,
-    supportedLanguages: ["en", "bn"] as const,
+    supportedLanguages: ["en", "bn", "hi", "te", "ta"] as const,
     futureLanguages: ["as"] as const,
   },
   restaurantSettings: {

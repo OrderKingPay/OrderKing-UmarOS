@@ -2,6 +2,8 @@ import { en, type MessageTree } from "./en";
 import { bn } from "./bn";
 import { as } from "./as";
 import { hi } from "./hi";
+import { ta } from "./ta";
+import { te } from "./te";
 
 export type Lang =
   | "en"
@@ -32,7 +34,7 @@ export const LANGS: { id: Lang; name: string; native: string }[] = [
   { id: "or", name: "Odia", native: "ଓଡ଼ିଆ" },
 ];
 
-const trees: Partial<Record<Lang, MessageTree>> = { en, bn, as, hi };
+const trees: Partial<Record<Lang, MessageTree>> = { en, bn, as, hi, ta, te };
 
 export function isLang(value: string | null | undefined): value is Lang {
   return LANGS.some((l) => l.id === value);
@@ -60,4 +62,4 @@ export function translate(
   return raw.replace(/\{(\w+)\}/g, (_, key: string) => String(vars[key] ?? `{${key}}`));
 }
 
-export { en, bn, as, hi };
+export { en, bn, as, hi, ta, te };

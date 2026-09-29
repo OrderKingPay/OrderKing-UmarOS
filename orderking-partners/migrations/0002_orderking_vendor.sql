@@ -199,8 +199,8 @@ create sequence if not exists order_number_seq start 1001;
 create table if not exists orders (
   id text primary key,
   order_number text not null unique,
-  restaurant_id text not null references restaurants(id) on delete restrict,
-  outlet_id text not null references outlets(id) on delete restrict,
+  restaurant_id text not null references restaurants(id) ON DELETE CASCADE,
+  outlet_id text not null references outlets(id) ON DELETE CASCADE,
   state text not null,
   placed_at timestamptz not null default now(),
   customer_area text,
@@ -285,7 +285,7 @@ create table if not exists rider_dispatch_queue (
 
 create table if not exists settlement_batches (
   id text primary key,
-  restaurant_id text not null references restaurants(id) on delete restrict,
+  restaurant_id text not null references restaurants(id) ON DELETE CASCADE,
   status text not null,
   period_start timestamptz not null,
   period_end timestamptz not null,
@@ -301,7 +301,7 @@ create table if not exists settlement_lines (
   id text primary key,
   batch_id text not null references settlement_batches(id) on delete cascade,
   restaurant_id text not null,
-  order_id text not null references orders(id) on delete restrict,
+  order_id text not null references orders(id) ON DELETE CASCADE,
   food_value_paise integer not null,
   packing_paise integer not null,
   restaurant_discount_paise integer not null,
@@ -317,7 +317,7 @@ create unique index if not exists settlement_lines_order_idx on settlement_lines
 
 create table if not exists ledger_entries (
   id text primary key,
-  restaurant_id text not null references restaurants(id) on delete restrict,
+  restaurant_id text not null references restaurants(id) ON DELETE CASCADE,
   order_id text,
   batch_id text,
   code text not null,
@@ -393,3 +393,6 @@ create table if not exists assistant_messages (
 
 
 ALTER TABLE orders ADD CONSTRAINT check_positive_food_value_paise CHECK (food_value_paise >= 0);
+
+-- Zomato-Killer Mandate: Strict Constraints
+ALTER TABLE orders ADD CONSTRAINT check_positive_food_value CHECK (food_value_paise >= 0);

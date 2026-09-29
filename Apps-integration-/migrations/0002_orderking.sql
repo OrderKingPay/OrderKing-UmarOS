@@ -405,3 +405,7 @@ create table if not exists health_adapters (
   detail text not null,
   checked_at timestamptz not null default now()
 );
+
+-- Zomato-Killer Mandate: Strict Constraints
+ALTER TABLE orders ADD CONSTRAINT check_positive_order_value CHECK (order_value_paise >= 0);
+ALTER TABLE orders ADD CONSTRAINT check_positive_delivery_fee CHECK (delivery_fee_paise >= 0);

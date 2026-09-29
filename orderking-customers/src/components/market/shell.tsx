@@ -1,8 +1,9 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ClipboardList, House, QrCode, Search, ShoppingBag, UserRound, Wallet, Zap, GraduationCap } from "lucide-react";
+import { ClipboardList, House, QrCode, Search, ShoppingBag, UserRound, Wallet, Zap, GraduationCap, Globe } from "lucide-react";
 import { useState } from "react";
 import { Wordmark } from "@/components/brand/wordmark";
 import { LocationDialog } from "@/components/market/location-dialog";
+import { LanguageSelectorModal, ALL_INDIAN_LANGUAGES } from "@/components/common/language-selector-modal";
 import { useBrand, useT } from "@/components/providers";
 import { cartCount, useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
@@ -18,7 +19,7 @@ export function CustomerShell({
   children: React.ReactNode;
   onSearch?: () => void;
 }) {
-  const { t } = useT();
+  const { t, lang, setLang } = useT();
   const { brand } = useBrand();
   const location = useLocationStore((s) => s.location);
   const isDeliveryActive = isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
@@ -28,6 +29,7 @@ export function CustomerShell({
   const { user, isPending } = useCurrentUserState();
   const navigate = useNavigate();
   const [locOpen, setLocOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-bg pb-24 md:max-w-5xl">
@@ -39,9 +41,9 @@ export function CustomerShell({
       </a>
       <header className="sticky top-0 z-30 border-b border-border bg-bg/95 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
         <div className="flex items-center justify-between gap-2 sm:gap-3">
-          <div className="shrink-0">
+          <div className="shrink-0 max-w-[50%]">
             <Wordmark />
-            <span className="block text-[10px] font-medium tracking-wide text-primary/80">
+            <span className="block text-[10px] font-medium tracking-wide text-primary/80 break-words text-wrap">
               {isDeliveryActive ? "Have it your way, King 👑" : "King Pay · Sovereign UPI Across India 👑"}
             </span>
           </div>
@@ -64,6 +66,14 @@ export function CustomerShell({
           </Link>
 
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setLangOpen(true)}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-muted hover:text-fg"
+              aria-label="Change Language"
+            >
+              <Globe className="h-4 w-4" />
+            </button>
             {isPending ? (
               <div className="h-8 w-8 animate-pulse rounded-full bg-surface-2" />
             ) : user ? (
@@ -88,15 +98,15 @@ export function CustomerShell({
               : "bg-amber-500/10 border border-amber-400/40"
           }`}
         >
-          <span>
-            <span className="block text-xs uppercase tracking-wide text-muted">
+          <span className="flex-1 min-w-0 pr-2">
+            <span className="block text-xs uppercase tracking-wide text-muted break-words text-wrap">
               {isDeliveryActive ? t("home.deliveringTo") : "👑 King Pay Sovereign Territory"}
             </span>
-            <span className="block font-medium">
+            <span className="block font-medium break-words text-wrap">
               {isDeliveryActive ? location.label : `${location.cityName || location.label} · 0% UPI Active`}
             </span>
           </span>
-          <span className="text-sm text-primary">{t("home.changeLocation")}</span>
+          <span className="text-sm text-primary shrink-0">{t("home.changeLocation")}</span>
         </button>
         {path !== "/search" && (
           <button
@@ -160,6 +170,14 @@ export function CustomerShell({
       {/* Floating Assistive Food AI Voice Concierge (Only when delivery active) */}
       
       <LocationDialog open={locOpen} onOpenChange={setLocOpen} />
+      <LanguageSelectorModal
+        isOpen={langOpen}
+        onClose={() => setLangOpen(false)}
+        selectedCode={lang}
+        onSelectLanguage={(l) => {
+          setLang(l.code as any);
+        }}
+      />
     </div>
   );
 }
@@ -203,7 +221,7 @@ function NavItem({
             <span className="absolute -right-2 -top-1 size-2 rounded-full bg-emerald-500 ring-2 ring-surface animate-pulse" />
           )}
         </div>
-        <span>{label}</span>
+        <span className="text-center break-words text-wrap px-0.5 leading-tight">{label}</span>
       </Link>
     </li>
   );

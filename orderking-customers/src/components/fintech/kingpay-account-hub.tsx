@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LanguageSelectorModal, ALL_INDIAN_LANGUAGES, type IndianLanguageOption } from "@/components/common/language-selector-modal";
+import { useT } from "@/components/providers";
 
 interface KingPayAccountHubProps {
   walletBalance: number;
@@ -39,7 +40,8 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
   const [biometricsEnabled, setBiometricsEnabled] = useState(true);
   const [dailyLimit, setDailyLimit] = useState<number>(50000);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<IndianLanguageOption>(ALL_INDIAN_LANGUAGES[0]);
+  const { lang, setLang } = useT();
+  const selectedLanguage = ALL_INDIAN_LANGUAGES.find(l => l.code === lang) || ALL_INDIAN_LANGUAGES[0];
   const [escrowStatus, setEscrowStatus] = useState<any>(null);
 
   useEffect(() => {
@@ -391,9 +393,9 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
         isOpen={showLanguageModal}
         onClose={() => setShowLanguageModal(false)}
         selectedCode={selectedLanguage.code}
-        onSelectLanguage={(lang) => {
-          setSelectedLanguage(lang);
-          toast.success(`Language set to ${lang.nativeName} (${lang.name})`);
+        onSelectLanguage={(l) => {
+          setLang(l.code as any);
+          toast.success(`Language set to ${l.nativeName} (${l.name})`);
         }}
       />
     </div>

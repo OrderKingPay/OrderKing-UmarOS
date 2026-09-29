@@ -420,3 +420,10 @@ create table if not exists riders (
 
 
 ALTER TABLE orders ADD CONSTRAINT check_positive_food_subtotal_paise CHECK (food_subtotal_paise >= 0);
+
+-- Zomato-Killer Mandate: Strict Constraints
+ALTER TABLE orders ADD CONSTRAINT check_positive_total CHECK (total_paise >= 0);
+ALTER TABLE orders ADD CONSTRAINT check_positive_delivery_fee CHECK (delivery_fee_paise >= 0);
+
+ALTER TABLE loyalty_transactions ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE;
+ALTER TABLE loyalty_transactions ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;

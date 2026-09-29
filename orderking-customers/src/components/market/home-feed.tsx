@@ -161,7 +161,7 @@ export function HomeFeed({
       {/* 1-Tap Quick Re-Order (Zero-Friction Simplicity) */}
       {pastOrders.data?.orders?.[0] && !q && !veg && !openNow && !category ? (
         <section aria-label="1-Tap Quick Re-Order">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--radius-xl)] border-2 border-emerald-500/30 bg-emerald-500/5 p-4 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--radius-3xl)] border border-white/20 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
             <div className="flex items-center gap-3">
               <span className="text-2xl">⚡</span>
               <div>
@@ -189,7 +189,7 @@ export function HomeFeed({
       {/* Zomato-style Active Live Order Tracker Banner */}
       {activeOrder && !q && !veg && !openNow && !category ? (
         <section aria-label="Active live order">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--radius-xl)] border-2 border-primary/30 bg-primary/5 p-4 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--radius-3xl)] border border-white/20 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
             <div className="flex items-center gap-3">
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -228,7 +228,7 @@ export function HomeFeed({
             {pastOrders.data.orders.slice(0, 5).map((o) => (
               <div
                 key={o.id}
-                className="flex w-64 shrink-0 flex-col justify-between rounded-[var(--radius-xl)] border border-border bg-surface p-3.5 shadow-sm transition hover:shadow"
+                className="flex w-64 shrink-0 flex-col justify-between rounded-[var(--radius-2xl)] border border-white/20 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-2xl p-4 shadow-lg transition hover:shadow-xl"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
@@ -265,7 +265,7 @@ export function HomeFeed({
 
       {/* 100x Viral Marketing: Invite Friends & Both Get Rewarded */}
       {!q && !veg && !openNow && !category ? (
-        <section aria-label="Referral Rewards" className="rounded-[var(--radius-xl)] border border-primary/20 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4 shadow-xs">
+        <section aria-label="Referral Rewards" className="rounded-[var(--radius-3xl)] border border-white/20 dark:border-white/10 bg-gradient-to-r from-primary/20 via-white/40 to-white/10 dark:via-black/40 dark:to-black/10 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/20 text-2xl shadow-inner">
@@ -311,7 +311,7 @@ export function HomeFeed({
         <h2 className="mb-3 font-display text-xl">{t("home.categories")}</h2>
         <div className="flex gap-3 overflow-x-auto pb-1">
           {cats.isPending
-            ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24 w-24 shrink-0" />)
+            ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 w-24 shrink-0 rounded-[var(--radius-2xl)] bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 animate-pulse shadow-sm" />)
             : (cats.data?.categories ?? []).map((c) => (
                 <Link
                   key={c.id}
@@ -319,7 +319,7 @@ export function HomeFeed({
                   search={{ category: c.id }}
                   className="w-24 shrink-0 text-center text-fg no-underline"
                 >
-                  <div className="aspect-square overflow-hidden rounded-[var(--radius-lg)] bg-surface-2">
+                  <div className="aspect-square overflow-hidden rounded-[var(--radius-2xl)] bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/20 shadow-inner p-1">
                     {c.imageUrl ? (
                       <img loading="lazy" src={c.imageUrl} alt="" className="h-full w-full object-cover" />
                     ) : null}
@@ -472,7 +472,7 @@ export function HomeFeed({
         <motion.div className="grid gap-4 md:grid-cols-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
           {Array.from({ length: 4 }).map((_, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-              <Skeleton className="h-52 w-full rounded-[var(--radius-xl)] bg-surface-2" />
+              <div className="h-64 w-full rounded-[var(--radius-3xl)] bg-white/30 dark:bg-black/30 backdrop-blur-2xl border border-white/20 shadow-[0_8px_30px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col"><div className="h-40 w-full bg-black/10 dark:bg-white/10 animate-pulse" /><div className="p-4 space-y-3"><div className="h-5 w-2/3 bg-black/10 dark:bg-white/10 rounded-full animate-pulse" /><div className="h-4 w-1/3 bg-black/10 dark:bg-white/10 rounded-full animate-pulse" /></div></div>
             </motion.div>
           ))}
         </motion.div>
