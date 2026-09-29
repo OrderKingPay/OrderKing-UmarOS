@@ -9,36 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as ApiTestOpenaiRouteImport } from './routes/api/test-openai'
+import { Route as AppRouteRouteImport } from './routes/app/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppModuleRouteImport } from './routes/app/$module'
-import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
-import { Route as ApiAiTestConnectionRouteImport } from './routes/api/ai/test-connection'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AppModuleIdRouteImport } from './routes/app/$module.$id'
-import { Route as V1AdminSplatRouteImport } from './routes/v1/admin/$'
-import { Route as V1AdminCustomerOrderRouteImport } from './routes/v1/admin/customer-order'
-import { Route as V1AdminCustomerOrdersRouteImport } from './routes/v1/admin/customer-orders'
-import { Route as V1AdminMasterAiRouteImport } from './routes/v1/admin/master-ai'
-import { Route as V1AdminRiderOffersRouteImport } from './routes/v1/admin/rider-offers'
-import { Route as V1PaymentsSplatRouteImport } from './routes/v1/payments/$'
+import { Route as ApiZomatoKillerCronRouteImport } from './routes/api/zomato-killer-cron'
+import { Route as ApiTestOpenaiRouteImport } from './routes/api/test-openai'
+import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
 import { Route as V1TravelSplatRouteImport } from './routes/v1/travel/$'
-import { Route as ApiV1KingpayRazorpayWebhookRouteImport } from './routes/api/v1/kingpay/razorpay-webhook'
-import { Route as ApiV1KingpayTransferRouteImport } from './routes/api/v1/kingpay/transfer'
-import { Route as ApiV1TravelBookRouteImport } from './routes/api/v1/travel/book'
-import { Route as ApiV1TravelSearchRouteImport } from './routes/api/v1/travel/search'
-import { Route as V1AdminResourceIdRouteImport } from './routes/v1/admin/$resource.$id'
-import { Route as V1AdminCustomerOrdersIdRouteImport } from './routes/v1/admin/customer-orders/$id'
+import { Route as V1PaymentsSplatRouteImport } from './routes/v1/payments/$'
+import { Route as V1AdminRiderOffersRouteImport } from './routes/v1/admin/rider-offers'
+import { Route as V1AdminMasterAiRouteImport } from './routes/v1/admin/master-ai'
+import { Route as V1AdminCustomerOrdersRouteImport } from './routes/v1/admin/customer-orders'
+import { Route as V1AdminCustomerOrderRouteImport } from './routes/v1/admin/customer-order'
+import { Route as V1AdminSplatRouteImport } from './routes/v1/admin/$'
+import { Route as AppModuleIdRouteImport } from './routes/app/$module.$id'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiAiTestConnectionRouteImport } from './routes/api/ai/test-connection'
+import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
 import { Route as V1AdminDispatchReassignRouteImport } from './routes/v1/admin/dispatch/reassign'
-import { Route as V1AdminCustomerOrdersIdCancelRouteImport } from './routes/v1/admin/customer-orders/$id/cancel'
+import { Route as V1AdminCustomerOrdersIdRouteImport } from './routes/v1/admin/customer-orders/$id'
+import { Route as V1AdminResourceIdRouteImport } from './routes/v1/admin/$resource.$id'
+import { Route as ApiV1TravelSearchRouteImport } from './routes/api/v1/travel/search'
+import { Route as ApiV1TravelBookRouteImport } from './routes/api/v1/travel/book'
+import { Route as ApiV1KingpayTransferRouteImport } from './routes/api/v1/kingpay/transfer'
+import { Route as ApiV1KingpayRazorpayWebhookRouteImport } from './routes/api/v1/kingpay/razorpay-webhook'
 import { Route as V1AdminOrdersIdRiderTransitionRouteImport } from './routes/v1/admin/orders/$id/rider-transition'
+import { Route as V1AdminCustomerOrdersIdCancelRouteImport } from './routes/v1/admin/customer-orders/$id/cancel'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRouteRoute = AppRouteRouteImport.update({
@@ -46,14 +48,9 @@ const AppRouteRoute = AppRouteRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiTestOpenaiRoute = ApiTestOpenaiRouteImport.update({
-  id: '/api/test-openai',
-  path: '/api/test-openai',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -66,49 +63,24 @@ const AppModuleRoute = AppModuleRouteImport.update({
   path: '/$module',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const ApiAiChatRoute = ApiAiChatRouteImport.update({
-  id: '/api/ai/chat',
-  path: '/api/ai/chat',
+const ApiZomatoKillerCronRoute = ApiZomatoKillerCronRouteImport.update({
+  id: '/api/zomato-killer-cron',
+  path: '/api/zomato-killer-cron',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAiTestConnectionRoute = ApiAiTestConnectionRouteImport.update({
-  id: '/api/ai/test-connection',
-  path: '/api/ai/test-connection',
+const ApiTestOpenaiRoute = ApiTestOpenaiRouteImport.update({
+  id: '/api/test-openai',
+  path: '/api/test-openai',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
+const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
+  id: '/api/telemetry',
+  path: '/api/telemetry',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppModuleIdRoute = AppModuleIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AppModuleRoute,
-} as any)
-const V1AdminSplatRoute = V1AdminSplatRouteImport.update({
-  id: '/v1/admin/$',
-  path: '/v1/admin/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const V1AdminCustomerOrderRoute = V1AdminCustomerOrderRouteImport.update({
-  id: '/v1/admin/customer-order',
-  path: '/v1/admin/customer-order',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const V1AdminCustomerOrdersRoute = V1AdminCustomerOrdersRouteImport.update({
-  id: '/v1/admin/customer-orders',
-  path: '/v1/admin/customer-orders',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const V1AdminMasterAiRoute = V1AdminMasterAiRouteImport.update({
-  id: '/v1/admin/master-ai',
-  path: '/v1/admin/master-ai',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const V1AdminRiderOffersRoute = V1AdminRiderOffersRouteImport.update({
-  id: '/v1/admin/rider-offers',
-  path: '/v1/admin/rider-offers',
+const V1TravelSplatRoute = V1TravelSplatRouteImport.update({
+  id: '/v1/travel/$',
+  path: '/v1/travel/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const V1PaymentsSplatRoute = V1PaymentsSplatRouteImport.update({
@@ -116,9 +88,79 @@ const V1PaymentsSplatRoute = V1PaymentsSplatRouteImport.update({
   path: '/v1/payments/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const V1TravelSplatRoute = V1TravelSplatRouteImport.update({
-  id: '/v1/travel/$',
-  path: '/v1/travel/$',
+const V1AdminRiderOffersRoute = V1AdminRiderOffersRouteImport.update({
+  id: '/v1/admin/rider-offers',
+  path: '/v1/admin/rider-offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const V1AdminMasterAiRoute = V1AdminMasterAiRouteImport.update({
+  id: '/v1/admin/master-ai',
+  path: '/v1/admin/master-ai',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const V1AdminCustomerOrdersRoute = V1AdminCustomerOrdersRouteImport.update({
+  id: '/v1/admin/customer-orders',
+  path: '/v1/admin/customer-orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const V1AdminCustomerOrderRoute = V1AdminCustomerOrderRouteImport.update({
+  id: '/v1/admin/customer-order',
+  path: '/v1/admin/customer-order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const V1AdminSplatRoute = V1AdminSplatRouteImport.update({
+  id: '/v1/admin/$',
+  path: '/v1/admin/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppModuleIdRoute = AppModuleIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppModuleRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiTestConnectionRoute = ApiAiTestConnectionRouteImport.update({
+  id: '/api/ai/test-connection',
+  path: '/api/ai/test-connection',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiChatRoute = ApiAiChatRouteImport.update({
+  id: '/api/ai/chat',
+  path: '/api/ai/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const V1AdminDispatchReassignRoute = V1AdminDispatchReassignRouteImport.update({
+  id: '/v1/admin/dispatch/reassign',
+  path: '/v1/admin/dispatch/reassign',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const V1AdminCustomerOrdersIdRoute = V1AdminCustomerOrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => V1AdminCustomerOrdersRoute,
+} as any)
+const V1AdminResourceIdRoute = V1AdminResourceIdRouteImport.update({
+  id: '/v1/admin/$resource/$id',
+  path: '/v1/admin/$resource/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1TravelSearchRoute = ApiV1TravelSearchRouteImport.update({
+  id: '/api/v1/travel/search',
+  path: '/api/v1/travel/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1TravelBookRoute = ApiV1TravelBookRouteImport.update({
+  id: '/api/v1/travel/book',
+  path: '/api/v1/travel/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1KingpayTransferRoute = ApiV1KingpayTransferRouteImport.update({
+  id: '/api/v1/kingpay/transfer',
+  path: '/api/v1/kingpay/transfer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiV1KingpayRazorpayWebhookRoute =
@@ -127,54 +169,26 @@ const ApiV1KingpayRazorpayWebhookRoute =
     path: '/api/v1/kingpay/razorpay-webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiV1KingpayTransferRoute = ApiV1KingpayTransferRouteImport.update({
-  id: '/api/v1/kingpay/transfer',
-  path: '/api/v1/kingpay/transfer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiV1TravelBookRoute = ApiV1TravelBookRouteImport.update({
-  id: '/api/v1/travel/book',
-  path: '/api/v1/travel/book',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiV1TravelSearchRoute = ApiV1TravelSearchRouteImport.update({
-  id: '/api/v1/travel/search',
-  path: '/api/v1/travel/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const V1AdminResourceIdRoute = V1AdminResourceIdRouteImport.update({
-  id: '/v1/admin/$resource/$id',
-  path: '/v1/admin/$resource/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const V1AdminCustomerOrdersIdRoute = V1AdminCustomerOrdersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => V1AdminCustomerOrdersRoute,
-} as any)
-const V1AdminDispatchReassignRoute = V1AdminDispatchReassignRouteImport.update({
-  id: '/v1/admin/dispatch/reassign',
-  path: '/v1/admin/dispatch/reassign',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const V1AdminCustomerOrdersIdCancelRoute =
-  V1AdminCustomerOrdersIdCancelRouteImport.update({
-    id: '/cancel',
-    path: '/cancel',
-    getParentRoute: () => V1AdminCustomerOrdersIdRoute,
-  } as any)
 const V1AdminOrdersIdRiderTransitionRoute =
   V1AdminOrdersIdRiderTransitionRouteImport.update({
     id: '/v1/admin/orders/$id/rider-transition',
     path: '/v1/admin/orders/$id/rider-transition',
     getParentRoute: () => rootRouteImport,
   } as any)
+const V1AdminCustomerOrdersIdCancelRoute =
+  V1AdminCustomerOrdersIdCancelRouteImport.update({
+    id: '/cancel',
+    path: '/cancel',
+    getParentRoute: () => V1AdminCustomerOrdersIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
+  '/api/zomato-killer-cron': typeof ApiZomatoKillerCronRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -201,7 +215,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
+  '/api/zomato-killer-cron': typeof ApiZomatoKillerCronRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -230,7 +246,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
+  '/api/zomato-killer-cron': typeof ApiZomatoKillerCronRoute
   '/app/$module': typeof AppModuleRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/api/ai/chat': typeof ApiAiChatRoute
@@ -260,7 +278,9 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/api/telemetry'
     | '/api/test-openai'
+    | '/api/zomato-killer-cron'
     | '/app/$module'
     | '/app/'
     | '/api/ai/chat'
@@ -287,7 +307,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/api/telemetry'
     | '/api/test-openai'
+    | '/api/zomato-killer-cron'
     | '/app/$module'
     | '/app'
     | '/api/ai/chat'
@@ -315,7 +337,9 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/api/telemetry'
     | '/api/test-openai'
+    | '/api/zomato-killer-cron'
     | '/app/$module'
     | '/app/'
     | '/api/ai/chat'
@@ -344,7 +368,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiTelemetryRoute: typeof ApiTelemetryRoute
   ApiTestOpenaiRoute: typeof ApiTestOpenaiRoute
+  ApiZomatoKillerCronRoute: typeof ApiZomatoKillerCronRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiAiTestConnectionRoute: typeof ApiAiTestConnectionRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -366,11 +392,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -380,18 +406,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/test-openai': {
-      id: '/api/test-openai'
-      path: '/api/test-openai'
-      fullPath: '/api/test-openai'
-      preLoaderRoute: typeof ApiTestOpenaiRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -408,74 +427,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppModuleRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/api/ai/chat': {
-      id: '/api/ai/chat'
-      path: '/api/ai/chat'
-      fullPath: '/api/ai/chat'
-      preLoaderRoute: typeof ApiAiChatRouteImport
+    '/api/zomato-killer-cron': {
+      id: '/api/zomato-killer-cron'
+      path: '/api/zomato-killer-cron'
+      fullPath: '/api/zomato-killer-cron'
+      preLoaderRoute: typeof ApiZomatoKillerCronRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/ai/test-connection': {
-      id: '/api/ai/test-connection'
-      path: '/api/ai/test-connection'
-      fullPath: '/api/ai/test-connection'
-      preLoaderRoute: typeof ApiAiTestConnectionRouteImport
+    '/api/test-openai': {
+      id: '/api/test-openai'
+      path: '/api/test-openai'
+      fullPath: '/api/test-openai'
+      preLoaderRoute: typeof ApiTestOpenaiRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app/$module/$id': {
-      id: '/app/$module/$id'
-      path: '/$id'
-      fullPath: '/app/$module/$id'
-      preLoaderRoute: typeof AppModuleIdRouteImport
-      parentRoute: typeof AppModuleRoute
-    }
-    '/v1/admin/$': {
-      id: '/v1/admin/$'
-      path: '/v1/admin/$'
-      fullPath: '/v1/admin/$'
-      preLoaderRoute: typeof V1AdminSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/v1/admin/customer-order': {
-      id: '/v1/admin/customer-order'
-      path: '/v1/admin/customer-order'
-      fullPath: '/v1/admin/customer-order'
-      preLoaderRoute: typeof V1AdminCustomerOrderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/v1/admin/customer-orders': {
-      id: '/v1/admin/customer-orders'
-      path: '/v1/admin/customer-orders'
-      fullPath: '/v1/admin/customer-orders'
-      preLoaderRoute: typeof V1AdminCustomerOrdersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/v1/admin/master-ai': {
-      id: '/v1/admin/master-ai'
-      path: '/v1/admin/master-ai'
-      fullPath: '/v1/admin/master-ai'
-      preLoaderRoute: typeof V1AdminMasterAiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/v1/admin/rider-offers': {
-      id: '/v1/admin/rider-offers'
-      path: '/v1/admin/rider-offers'
-      fullPath: '/v1/admin/rider-offers'
-      preLoaderRoute: typeof V1AdminRiderOffersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/v1/payments/$': {
-      id: '/v1/payments/$'
-      path: '/v1/payments/$'
-      fullPath: '/v1/payments/$'
-      preLoaderRoute: typeof V1PaymentsSplatRouteImport
+    '/api/telemetry': {
+      id: '/api/telemetry'
+      path: '/api/telemetry'
+      fullPath: '/api/telemetry'
+      preLoaderRoute: typeof ApiTelemetryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/v1/travel/$': {
@@ -485,39 +455,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof V1TravelSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/v1/kingpay/razorpay-webhook': {
-      id: '/api/v1/kingpay/razorpay-webhook'
-      path: '/api/v1/kingpay/razorpay-webhook'
-      fullPath: '/api/v1/kingpay/razorpay-webhook'
-      preLoaderRoute: typeof ApiV1KingpayRazorpayWebhookRouteImport
+    '/v1/payments/$': {
+      id: '/v1/payments/$'
+      path: '/v1/payments/$'
+      fullPath: '/v1/payments/$'
+      preLoaderRoute: typeof V1PaymentsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/v1/kingpay/transfer': {
-      id: '/api/v1/kingpay/transfer'
-      path: '/api/v1/kingpay/transfer'
-      fullPath: '/api/v1/kingpay/transfer'
-      preLoaderRoute: typeof ApiV1KingpayTransferRouteImport
+    '/v1/admin/rider-offers': {
+      id: '/v1/admin/rider-offers'
+      path: '/v1/admin/rider-offers'
+      fullPath: '/v1/admin/rider-offers'
+      preLoaderRoute: typeof V1AdminRiderOffersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/v1/travel/book': {
-      id: '/api/v1/travel/book'
-      path: '/api/v1/travel/book'
-      fullPath: '/api/v1/travel/book'
-      preLoaderRoute: typeof ApiV1TravelBookRouteImport
+    '/v1/admin/master-ai': {
+      id: '/v1/admin/master-ai'
+      path: '/v1/admin/master-ai'
+      fullPath: '/v1/admin/master-ai'
+      preLoaderRoute: typeof V1AdminMasterAiRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/v1/travel/search': {
-      id: '/api/v1/travel/search'
-      path: '/api/v1/travel/search'
-      fullPath: '/api/v1/travel/search'
-      preLoaderRoute: typeof ApiV1TravelSearchRouteImport
+    '/v1/admin/customer-orders': {
+      id: '/v1/admin/customer-orders'
+      path: '/v1/admin/customer-orders'
+      fullPath: '/v1/admin/customer-orders'
+      preLoaderRoute: typeof V1AdminCustomerOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/v1/admin/$resource/$id': {
-      id: '/v1/admin/$resource/$id'
-      path: '/v1/admin/$resource/$id'
-      fullPath: '/v1/admin/$resource/$id'
-      preLoaderRoute: typeof V1AdminResourceIdRouteImport
+    '/v1/admin/customer-order': {
+      id: '/v1/admin/customer-order'
+      path: '/v1/admin/customer-order'
+      fullPath: '/v1/admin/customer-order'
+      preLoaderRoute: typeof V1AdminCustomerOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v1/admin/$': {
+      id: '/v1/admin/$'
+      path: '/v1/admin/$'
+      fullPath: '/v1/admin/$'
+      preLoaderRoute: typeof V1AdminSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/$module/$id': {
+      id: '/app/$module/$id'
+      path: '/$id'
+      fullPath: '/app/$module/$id'
+      preLoaderRoute: typeof AppModuleIdRouteImport
+      parentRoute: typeof AppModuleRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai/test-connection': {
+      id: '/api/ai/test-connection'
+      path: '/api/ai/test-connection'
+      fullPath: '/api/ai/test-connection'
+      preLoaderRoute: typeof ApiAiTestConnectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai/chat': {
+      id: '/api/ai/chat'
+      path: '/api/ai/chat'
+      fullPath: '/api/ai/chat'
+      preLoaderRoute: typeof ApiAiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v1/admin/dispatch/reassign': {
+      id: '/v1/admin/dispatch/reassign'
+      path: '/v1/admin/dispatch/reassign'
+      fullPath: '/v1/admin/dispatch/reassign'
+      preLoaderRoute: typeof V1AdminDispatchReassignRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/v1/admin/customer-orders/$id': {
@@ -527,11 +539,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof V1AdminCustomerOrdersIdRouteImport
       parentRoute: typeof V1AdminCustomerOrdersRoute
     }
-    '/v1/admin/dispatch/reassign': {
-      id: '/v1/admin/dispatch/reassign'
-      path: '/v1/admin/dispatch/reassign'
-      fullPath: '/v1/admin/dispatch/reassign'
-      preLoaderRoute: typeof V1AdminDispatchReassignRouteImport
+    '/v1/admin/$resource/$id': {
+      id: '/v1/admin/$resource/$id'
+      path: '/v1/admin/$resource/$id'
+      fullPath: '/v1/admin/$resource/$id'
+      preLoaderRoute: typeof V1AdminResourceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/travel/search': {
+      id: '/api/v1/travel/search'
+      path: '/api/v1/travel/search'
+      fullPath: '/api/v1/travel/search'
+      preLoaderRoute: typeof ApiV1TravelSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/travel/book': {
+      id: '/api/v1/travel/book'
+      path: '/api/v1/travel/book'
+      fullPath: '/api/v1/travel/book'
+      preLoaderRoute: typeof ApiV1TravelBookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/kingpay/transfer': {
+      id: '/api/v1/kingpay/transfer'
+      path: '/api/v1/kingpay/transfer'
+      fullPath: '/api/v1/kingpay/transfer'
+      preLoaderRoute: typeof ApiV1KingpayTransferRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/kingpay/razorpay-webhook': {
+      id: '/api/v1/kingpay/razorpay-webhook'
+      path: '/api/v1/kingpay/razorpay-webhook'
+      fullPath: '/api/v1/kingpay/razorpay-webhook'
+      preLoaderRoute: typeof ApiV1KingpayRazorpayWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v1/admin/orders/$id/rider-transition': {
+      id: '/v1/admin/orders/$id/rider-transition'
+      path: '/v1/admin/orders/$id/rider-transition'
+      fullPath: '/v1/admin/orders/$id/rider-transition'
+      preLoaderRoute: typeof V1AdminOrdersIdRiderTransitionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/v1/admin/customer-orders/$id/cancel': {
@@ -540,13 +587,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/v1/admin/customer-orders/$id/cancel'
       preLoaderRoute: typeof V1AdminCustomerOrdersIdCancelRouteImport
       parentRoute: typeof V1AdminCustomerOrdersIdRoute
-    }
-    '/v1/admin/orders/$id/rider-transition': {
-      id: '/v1/admin/orders/$id/rider-transition'
-      path: '/v1/admin/orders/$id/rider-transition'
-      fullPath: '/v1/admin/orders/$id/rider-transition'
-      preLoaderRoute: typeof V1AdminOrdersIdRiderTransitionRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -608,7 +648,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiTelemetryRoute: ApiTelemetryRoute,
   ApiTestOpenaiRoute: ApiTestOpenaiRoute,
+  ApiZomatoKillerCronRoute: ApiZomatoKillerCronRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiAiTestConnectionRoute: ApiAiTestConnectionRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

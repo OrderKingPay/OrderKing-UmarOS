@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
+// @ts-expect-error - Type definitions might not resolve correctly
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
@@ -11,7 +12,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 });
 
 export const APIRoute = createAPIFileRoute('/api/webhooks/razorpay')({
-  POST: async ({ request }) => {
+  POST: async ({ request }: { request: Request }) => {
     try {
       const receivedSignature = request.headers.get('x-razorpay-signature');
       if (!receivedSignature) {
