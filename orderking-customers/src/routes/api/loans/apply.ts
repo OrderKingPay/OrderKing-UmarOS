@@ -1,7 +1,10 @@
+import { createAPIFileRoute } from '@tanstack/react-start/api';
+
 
 
 // Mock NBFC API endpoint (e.g. FlexiLoans, Navi, Paisabazaar underwriting)
-export async function POST({ request }: { request: Request }) {
+export const APIRoute = createAPIFileRoute('/api/loans/apply')({
+  POST: async () => {
   try {
     const body = await request.json();
     const { panNumber, requestedAmount, income } = body;
@@ -37,4 +40,5 @@ export async function POST({ request }: { request: Request }) {
   } catch (err) {
     return Response.json({ error: "Underwriting engine error" }, { status: 500 });
   }
-}
+  }
+});

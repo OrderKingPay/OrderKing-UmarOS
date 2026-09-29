@@ -1,8 +1,11 @@
+import { createAPIFileRoute } from '@tanstack/react-start/api';
+
 
 
 // Mock BBPS Pay Bill Endpoint
 // In production, this would hit Setu/Decentro BBPS to clear the bill.
-export async function POST({ request }: { request: Request }) {
+export const APIRoute = createAPIFileRoute('/api/bbps/pay-bill')({
+  POST: async () => {
   try {
     const body = await request.json();
     const { billId, amount, paymentMethod } = body;
@@ -28,4 +31,5 @@ export async function POST({ request }: { request: Request }) {
   } catch (err) {
     return Response.json({ error: "Failed to process BBPS payment" }, { status: 500 });
   }
-}
+  }
+});

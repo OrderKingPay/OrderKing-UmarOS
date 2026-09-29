@@ -1,10 +1,13 @@
+import { createAPIFileRoute } from '@tanstack/react-start/api';
+
 import { getSql } from "@/lib/db";
 
 // In a real application, you'd use the Razorpay SDK:
 // import Razorpay from 'razorpay';
 // const razorpay = new Razorpay({ key_id: process.env.RAZORPAY_KEY, key_secret: process.env.RAZORPAY_SECRET });
 
-export async function POST(request: Request) {
+export const APIRoute = createAPIFileRoute('/api/v1/founder/sweep')({
+  POST: async () => {
   try {
     const sql = await getSql();
     
@@ -48,5 +51,6 @@ export async function POST(request: Request) {
     console.error("Failed to sweep funds:", error);
     return new Response(JSON.stringify({ success: false, error: "Failed to sweep funds" }), { status: 500 });
   }
-}
+  }
+});
 

@@ -9,90 +9,40 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as CartRouteImport } from './routes/cart'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as KingPayRouteImport } from './routes/king-pay'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as NewsRouteImport } from './routes/news'
-import { Route as OffersRouteImport } from './routes/offers'
-import { Route as RewardsRouteImport } from './routes/rewards'
-import { Route as SearchRouteImport } from './routes/search'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as SupportRouteImport } from './routes/support'
 import { Route as TutorRouteImport } from './routes/tutor'
-import { Route as AccountIndexRouteImport } from './routes/account/index'
-import { Route as AppFounderCommandRouteImport } from './routes/app/founder-command'
-import { Route as DevBrandRouteImport } from './routes/dev/brand'
-import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
-import { Route as LegalRefundsRouteImport } from './routes/legal/refunds'
-import { Route as LegalTermsRouteImport } from './routes/legal/terms'
+import { Route as SupportRouteImport } from './routes/support'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as RewardsRouteImport } from './routes/rewards'
+import { Route as OffersRouteImport } from './routes/offers'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as KingPayRouteImport } from './routes/king-pay'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CartRouteImport } from './routes/cart'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrdersIndexRouteImport } from './routes/orders/index'
-import { Route as OrdersIdRouteImport } from './routes/orders/$id'
-import { Route as RSlugRouteImport } from './routes/r/$slug'
+import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as TrackingDispatchJobIdRouteImport } from './routes/tracking.$dispatchJobId'
-import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/settings'
-import { Route as ApiAdminTestConnectionRouteImport } from './routes/api/admin/test-connection'
-import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as ApiRazorpayCreateOrderRouteImport } from './routes/api/razorpay/create-order'
+import { Route as RSlugRouteImport } from './routes/r/$slug'
+import { Route as OrdersIdRouteImport } from './routes/orders/$id'
+import { Route as LegalTermsRouteImport } from './routes/legal/terms'
+import { Route as LegalRefundsRouteImport } from './routes/legal/refunds'
+import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
+import { Route as DevBrandRouteImport } from './routes/dev/brand'
+import { Route as AppFounderCommandRouteImport } from './routes/app/founder-command'
 import { Route as ApiRazorpayVerifyRouteImport } from './routes/api/razorpay/verify'
+import { Route as ApiRazorpayCreateOrderRouteImport } from './routes/api/razorpay/create-order'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
+import { Route as ApiAdminTestConnectionRouteImport } from './routes/api/admin/test-connection'
+import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/settings'
 import { Route as ApiOrdersOrderIdStreamRouteImport } from './routes/api/orders/$orderId/stream'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CartRoute = CartRouteImport.update({
-  id: '/cart',
-  path: '/cart',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KingPayRoute = KingPayRouteImport.update({
-  id: '/king-pay',
-  path: '/king-pay',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OffersRoute = OffersRouteImport.update({
-  id: '/offers',
-  path: '/offers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RewardsRoute = RewardsRouteImport.update({
-  id: '/rewards',
-  path: '/rewards',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
+const TutorRoute = TutorRouteImport.update({
+  id: '/tutor',
+  path: '/tutor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SupportRoute = SupportRouteImport.update({
@@ -100,39 +50,59 @@ const SupportRoute = SupportRouteImport.update({
   path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TutorRoute = TutorRouteImport.update({
-  id: '/tutor',
-  path: '/tutor',
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AccountIndexRoute = AccountIndexRouteImport.update({
-  id: '/account/',
-  path: '/account/',
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppFounderCommandRoute = AppFounderCommandRouteImport.update({
-  id: '/app/founder-command',
-  path: '/app/founder-command',
+const RewardsRoute = RewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DevBrandRoute = DevBrandRouteImport.update({
-  id: '/dev/brand',
-  path: '/dev/brand',
+const OffersRoute = OffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
-  id: '/legal/privacy',
-  path: '/legal/privacy',
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LegalRefundsRoute = LegalRefundsRouteImport.update({
-  id: '/legal/refunds',
-  path: '/legal/refunds',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LegalTermsRoute = LegalTermsRouteImport.update({
-  id: '/legal/terms',
-  path: '/legal/terms',
+const KingPayRoute = KingPayRouteImport.update({
+  id: '/king-pay',
+  path: '/king-pay',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersIndexRoute = OrdersIndexRouteImport.update({
@@ -140,14 +110,9 @@ const OrdersIndexRoute = OrdersIndexRouteImport.update({
   path: '/orders/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OrdersIdRoute = OrdersIdRouteImport.update({
-  id: '/orders/$id',
-  path: '/orders/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RSlugRoute = RSlugRouteImport.update({
-  id: '/r/$slug',
-  path: '/r/$slug',
+const AccountIndexRoute = AccountIndexRouteImport.update({
+  id: '/account/',
+  path: '/account/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackingDispatchJobIdRoute = TrackingDispatchJobIdRouteImport.update({
@@ -155,24 +120,44 @@ const TrackingDispatchJobIdRoute = TrackingDispatchJobIdRouteImport.update({
   path: '/tracking/$dispatchJobId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
-  id: '/api/admin/settings',
-  path: '/api/admin/settings',
+const RSlugRoute = RSlugRouteImport.update({
+  id: '/r/$slug',
+  path: '/r/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminTestConnectionRoute = ApiAdminTestConnectionRouteImport.update({
-  id: '/api/admin/test-connection',
-  path: '/api/admin/test-connection',
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/orders/$id',
+  path: '/orders/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAiChatRoute = ApiAiChatRouteImport.update({
-  id: '/api/ai/chat',
-  path: '/api/ai/chat',
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/legal/terms',
+  path: '/legal/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
+const LegalRefundsRoute = LegalRefundsRouteImport.update({
+  id: '/legal/refunds',
+  path: '/legal/refunds',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/legal/privacy',
+  path: '/legal/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevBrandRoute = DevBrandRouteImport.update({
+  id: '/dev/brand',
+  path: '/dev/brand',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppFounderCommandRoute = AppFounderCommandRouteImport.update({
+  id: '/app/founder-command',
+  path: '/app/founder-command',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRazorpayVerifyRoute = ApiRazorpayVerifyRouteImport.update({
+  id: '/api/razorpay/verify',
+  path: '/api/razorpay/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiRazorpayCreateOrderRoute = ApiRazorpayCreateOrderRouteImport.update({
@@ -180,9 +165,24 @@ const ApiRazorpayCreateOrderRoute = ApiRazorpayCreateOrderRouteImport.update({
   path: '/api/razorpay/create-order',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiRazorpayVerifyRoute = ApiRazorpayVerifyRouteImport.update({
-  id: '/api/razorpay/verify',
-  path: '/api/razorpay/verify',
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiChatRoute = ApiAiChatRouteImport.update({
+  id: '/api/ai/chat',
+  path: '/api/ai/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminTestConnectionRoute = ApiAdminTestConnectionRouteImport.update({
+  id: '/api/admin/test-connection',
+  path: '/api/admin/test-connection',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
+  id: '/api/admin/settings',
+  path: '/api/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiOrdersOrderIdStreamRoute = ApiOrdersOrderIdStreamRouteImport.update({
@@ -422,81 +422,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cart': {
-      id: '/cart'
-      path: '/cart'
-      fullPath: '/cart'
-      preLoaderRoute: typeof CartRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/king-pay': {
-      id: '/king-pay'
-      path: '/king-pay'
-      fullPath: '/king-pay'
-      preLoaderRoute: typeof KingPayRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/offers': {
-      id: '/offers'
-      path: '/offers'
-      fullPath: '/offers'
-      preLoaderRoute: typeof OffersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rewards': {
-      id: '/rewards'
-      path: '/rewards'
-      fullPath: '/rewards'
-      preLoaderRoute: typeof RewardsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
+    '/tutor': {
+      id: '/tutor'
+      path: '/tutor'
+      fullPath: '/tutor'
+      preLoaderRoute: typeof TutorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/support': {
@@ -506,53 +436,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tutor': {
-      id: '/tutor'
-      path: '/tutor'
-      fullPath: '/tutor'
-      preLoaderRoute: typeof TutorRouteImport
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/account/': {
-      id: '/account/'
-      path: '/account'
-      fullPath: '/account/'
-      preLoaderRoute: typeof AccountIndexRouteImport
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/founder-command': {
-      id: '/app/founder-command'
-      path: '/app/founder-command'
-      fullPath: '/app/founder-command'
-      preLoaderRoute: typeof AppFounderCommandRouteImport
+    '/rewards': {
+      id: '/rewards'
+      path: '/rewards'
+      fullPath: '/rewards'
+      preLoaderRoute: typeof RewardsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dev/brand': {
-      id: '/dev/brand'
-      path: '/dev/brand'
-      fullPath: '/dev/brand'
-      preLoaderRoute: typeof DevBrandRouteImport
+    '/offers': {
+      id: '/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof OffersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/legal/privacy': {
-      id: '/legal/privacy'
-      path: '/legal/privacy'
-      fullPath: '/legal/privacy'
-      preLoaderRoute: typeof LegalPrivacyRouteImport
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/legal/refunds': {
-      id: '/legal/refunds'
-      path: '/legal/refunds'
-      fullPath: '/legal/refunds'
-      preLoaderRoute: typeof LegalRefundsRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/legal/terms': {
-      id: '/legal/terms'
-      path: '/legal/terms'
-      fullPath: '/legal/terms'
-      preLoaderRoute: typeof LegalTermsRouteImport
+    '/king-pay': {
+      id: '/king-pay'
+      path: '/king-pay'
+      fullPath: '/king-pay'
+      preLoaderRoute: typeof KingPayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orders/': {
@@ -562,18 +520,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/orders/$id': {
-      id: '/orders/$id'
-      path: '/orders/$id'
-      fullPath: '/orders/$id'
-      preLoaderRoute: typeof OrdersIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/r/$slug': {
-      id: '/r/$slug'
-      path: '/r/$slug'
-      fullPath: '/r/$slug'
-      preLoaderRoute: typeof RSlugRouteImport
+    '/account/': {
+      id: '/account/'
+      path: '/account'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AccountIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tracking/$dispatchJobId': {
@@ -583,32 +534,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackingDispatchJobIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/settings': {
-      id: '/api/admin/settings'
-      path: '/api/admin/settings'
-      fullPath: '/api/admin/settings'
-      preLoaderRoute: typeof ApiAdminSettingsRouteImport
+    '/r/$slug': {
+      id: '/r/$slug'
+      path: '/r/$slug'
+      fullPath: '/r/$slug'
+      preLoaderRoute: typeof RSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/test-connection': {
-      id: '/api/admin/test-connection'
-      path: '/api/admin/test-connection'
-      fullPath: '/api/admin/test-connection'
-      preLoaderRoute: typeof ApiAdminTestConnectionRouteImport
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/orders/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/ai/chat': {
-      id: '/api/ai/chat'
-      path: '/api/ai/chat'
-      fullPath: '/api/ai/chat'
-      preLoaderRoute: typeof ApiAiChatRouteImport
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/legal/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
+    '/legal/refunds': {
+      id: '/legal/refunds'
+      path: '/legal/refunds'
+      fullPath: '/legal/refunds'
+      preLoaderRoute: typeof LegalRefundsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/legal/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev/brand': {
+      id: '/dev/brand'
+      path: '/dev/brand'
+      fullPath: '/dev/brand'
+      preLoaderRoute: typeof DevBrandRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/founder-command': {
+      id: '/app/founder-command'
+      path: '/app/founder-command'
+      fullPath: '/app/founder-command'
+      preLoaderRoute: typeof AppFounderCommandRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/razorpay/verify': {
+      id: '/api/razorpay/verify'
+      path: '/api/razorpay/verify'
+      fullPath: '/api/razorpay/verify'
+      preLoaderRoute: typeof ApiRazorpayVerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/razorpay/create-order': {
@@ -618,11 +597,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRazorpayCreateOrderRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/razorpay/verify': {
-      id: '/api/razorpay/verify'
-      path: '/api/razorpay/verify'
-      fullPath: '/api/razorpay/verify'
-      preLoaderRoute: typeof ApiRazorpayVerifyRouteImport
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai/chat': {
+      id: '/api/ai/chat'
+      path: '/api/ai/chat'
+      fullPath: '/api/ai/chat'
+      preLoaderRoute: typeof ApiAiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/test-connection': {
+      id: '/api/admin/test-connection'
+      path: '/api/admin/test-connection'
+      fullPath: '/api/admin/test-connection'
+      preLoaderRoute: typeof ApiAdminTestConnectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/settings': {
+      id: '/api/admin/settings'
+      path: '/api/admin/settings'
+      fullPath: '/api/admin/settings'
+      preLoaderRoute: typeof ApiAdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/orders/$orderId/stream': {

@@ -1,7 +1,8 @@
-
+import { createAPIFileRoute } from '@tanstack/react-start/api';
 
 // Mock Nodal Account Escrow verification API (e.g. Yes Bank, ICICI)
-export async function GET() {
+export const APIRoute = createAPIFileRoute('/api/escrow/status')({
+  GET: async () => {
   try {
     // Simulate API delay
     await new Promise(r => setTimeout(r, 1200));
@@ -18,4 +19,5 @@ export async function GET() {
   } catch (err) {
     return Response.json({ error: "Failed to verify escrow status" }, { status: 500 });
   }
-}
+  }
+});

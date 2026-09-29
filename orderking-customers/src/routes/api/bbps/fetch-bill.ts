@@ -1,8 +1,11 @@
+import { createAPIFileRoute } from '@tanstack/react-start/api';
+
 
 
 // Mock BBPS Fetch Bill Endpoint
 // In production, this would call Setu/Decentro BBPS APIs.
-export async function POST({ request }: { request: Request }) {
+export const APIRoute = createAPIFileRoute('/api/bbps/fetch-bill')({
+  POST: async () => {
   try {
     const body = await request.json();
     const { billerId, consumerNumber } = body;
@@ -28,4 +31,5 @@ export async function POST({ request }: { request: Request }) {
   } catch (err) {
     return Response.json({ error: "Failed to fetch bill from BBPS" }, { status: 500 });
   }
-}
+  }
+});

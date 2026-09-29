@@ -1,5 +1,7 @@
+import { createAPIFileRoute } from '@tanstack/react-start/api';
 
-export async function GET() {
+export const APIRoute = createAPIFileRoute('/api/v1/founder/jobs')({
+  GET: async () => {
   try {
     // Fetch real remote jobs from RemoteOK public API
     const response = await fetch("https://remoteok.com/api");
@@ -32,5 +34,6 @@ export async function GET() {
     console.error("Failed to fetch real jobs:", error);
     return new Response(JSON.stringify({ success: false, error: "Failed to fetch remote jobs" }), { status: 500 });
   }
-}
+  }
+});
 

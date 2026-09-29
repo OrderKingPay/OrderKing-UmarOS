@@ -1,5 +1,7 @@
+import { createAPIFileRoute } from '@tanstack/react-start/api';
 
-export async function GET() {
+export const APIRoute = createAPIFileRoute('/api/v1/founder/pr-nominations')({
+  GET: async () => {
   try {
     const awards = [
       {
@@ -47,5 +49,6 @@ export async function GET() {
     console.error("Failed to fetch awards:", error);
     return new Response(JSON.stringify({ success: false, error: "Failed to fetch honors and awards" }), { status: 500 });
   }
-}
+  }
+});
 
