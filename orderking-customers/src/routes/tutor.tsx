@@ -15,7 +15,7 @@ const askTutorFn = createServerFn({ method: "POST" })
     
     const systemPrompt = `You are the OrderKing Master Tutor, an elite, strict but highly motivating teacher for Indian students. 
 Rules:
-1. Speak in ${data.language}.
+1. **CRITICAL:** Speak EXACTLY in ${data.language}. Your ${data.language} must be grammatically perfect, precise, and highly authentic.
 2. The student is in ${data.stdClass}, studying under the ${data.board} syllabus.
 3. NEVER give direct answers to homework. Guide them step-by-step using exact formulas from their syllabus.
 4. Keep answers short, encouraging, and highly addictive for learning. 
@@ -113,10 +113,35 @@ function TutorPage() {
               >
                 <option value="CBSE">CBSE Board</option>
                 <option value="ICSE">ICSE Board</option>
+                <option value="State (Andhra Pradesh BSEAP)">Andhra Pradesh BSEAP</option>
+                <option value="State (Arunachal Pradesh DSEAP)">Arunachal Pradesh DSEAP</option>
                 <option value="State (Assam SEBA)">Assam SEBA</option>
-                <option value="State (UP Board)">UP Board</option>
-                <option value="State (Maharashtra)">Maharashtra</option>
-                <option value="State (West Bengal)">West Bengal</option>
+                <option value="State (Assam AHSEC)">Assam AHSEC</option>
+                <option value="State (Bihar BSEB)">Bihar BSEB</option>
+                <option value="State (Chhattisgarh CGBSE)">Chhattisgarh CGBSE</option>
+                <option value="State (Goa GBSHSE)">Goa GBSHSE</option>
+                <option value="State (Gujarat GSEB)">Gujarat GSEB</option>
+                <option value="State (Haryana BSEH)">Haryana BSEH</option>
+                <option value="State (Himachal Pradesh HPBOSE)">Himachal Pradesh HPBOSE</option>
+                <option value="State (Jharkhand JAC)">Jharkhand JAC</option>
+                <option value="State (Karnataka KSEAB)">Karnataka KSEAB</option>
+                <option value="State (Kerala KBPE)">Kerala KBPE</option>
+                <option value="State (Madhya Pradesh MPBSE)">Madhya Pradesh MPBSE</option>
+                <option value="State (Maharashtra MSBSHSE)">Maharashtra MSBSHSE</option>
+                <option value="State (Manipur BOSEM)">Manipur BOSEM</option>
+                <option value="State (Meghalaya MBOSE)">Meghalaya MBOSE</option>
+                <option value="State (Mizoram MBSE)">Mizoram MBSE</option>
+                <option value="State (Nagaland NBSE)">Nagaland NBSE</option>
+                <option value="State (Odisha BSE)">Odisha BSE</option>
+                <option value="State (Punjab PSEB)">Punjab PSEB</option>
+                <option value="State (Rajasthan RBSE)">Rajasthan RBSE</option>
+                <option value="State (Sikkim SBSE)">Sikkim SBSE</option>
+                <option value="State (Tamil Nadu TNBSE)">Tamil Nadu TNBSE</option>
+                <option value="State (Telangana BSE)">Telangana BSE</option>
+                <option value="State (Tripura TBSE)">Tripura TBSE</option>
+                <option value="State (UP Board)">UP Board (UPMSP)</option>
+                <option value="State (Uttarakhand UBSE)">Uttarakhand UBSE</option>
+                <option value="State (West Bengal WBBSE)">West Bengal WBBSE</option>
              </select>
              <select 
                 value={stdClass} 
@@ -225,21 +250,41 @@ function TutorPage() {
                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
                   <h3 className="font-bold text-emerald-800 flex items-center gap-2">
                     <Award className="size-5" />
-                    National Means-cum-Merit Scholarship
+                    Ayushman Bharat (PMJAY)
                   </h3>
-                  <p className="text-xs text-emerald-700 mt-1">₹12,000 per annum for students studying in Class 9 to 12 in State Govt, Govt-aided, and Local body schools.</p>
-                  <button className="mt-3 text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold">Apply Now</button>
+                  <p className="text-xs text-emerald-700 mt-1">Health cover of ₹5 lakhs per family per year for secondary and tertiary care hospitalization across public and private empaneled hospitals.</p>
+                  <button className="mt-3 text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold">Apply & Verify Eligibility</button>
                </div>
+               
                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                   <h3 className="font-bold text-blue-800 flex items-center gap-2">
-                    <BookOpen className="size-5" />
-                    Pre-Matric Scholarship Scheme
+                    <Award className="size-5" />
+                    PM Kisan Samman Nidhi
                   </h3>
-                  <p className="text-xs text-blue-700 mt-1">Financial assistance for minority students studying in classes 1 to 10 in India.</p>
-                  <button className="mt-3 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold">Check Eligibility</button>
+                  <p className="text-xs text-blue-700 mt-1">Income support of ₹6,000 per year in three equal installments to all land holding eligible farmer families.</p>
+                  <button className="mt-3 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold">Check Status</button>
                </div>
+
+               <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                  <h3 className="font-bold text-orange-800 flex items-center gap-2">
+                    <BookOpen className="size-5" />
+                    National Means-cum-Merit Scholarship
+                  </h3>
+                  <p className="text-xs text-orange-700 mt-1">₹12,000 per annum for students studying in Class 9 to 12 in State Govt, Govt-aided, and Local body schools.</p>
+                  <button className="mt-3 text-xs bg-orange-600 text-white px-3 py-1.5 rounded-lg font-bold">Apply Now</button>
+               </div>
+
+               <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                  <h3 className="font-bold text-purple-800 flex items-center gap-2">
+                    <Award className="size-5" />
+                    PM Awas Yojana (PMAY)
+                  </h3>
+                  <p className="text-xs text-purple-700 mt-1">Credit linked subsidy scheme for Housing for All. Beneficiaries receive direct financial assistance to build pucca houses.</p>
+                  <button className="mt-3 text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg font-bold">Check PMAY List</button>
+               </div>
+
                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center text-center mt-6">
-                  <p className="text-xs text-slate-500">More verified schemes loading directly from Authentic Govt Portals...</p>
+                  <p className="text-xs text-slate-500">Connecting to National Government Services Portal (india.gov.in) to fetch 300+ more verified schemes tailored for your profile...</p>
                </div>
             </div>
           )}

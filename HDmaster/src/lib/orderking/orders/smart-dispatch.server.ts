@@ -161,11 +161,24 @@ export async function executeSmartDispatch(
     // Acceptance bonus (higher acceptance rate = lower penalty)
     const acceptanceBonus = (r.acceptance_bps / 10000) * 10;
 
-    // Active load penalty (batching allows 1 existing delivery with small penalty)
-    const loadPenalty = r.active_order_id ? 15 : 0;
+    // APEX DIRECTIVE V3.0 - ZOMATO-KILLER MARGIN OPTIMIZATION
+    // OrderKing Founder Profit margin must be the highest priority. 
+    // EVs and Bicycles cost OrderKing 0 fuel surcharge. Petrol costs more.
+    let vehicleCostPenalty = 0;
+    if (r.vehicle.toLowerCase().includes("petrol") || r.vehicle.toLowerCase().includes("motorcycle")) {
+      vehicleCostPenalty = 25; // High cost to OrderKing
+    } else if (r.vehicle.toLowerCase().includes("ev") || r.vehicle.toLowerCase().includes("electric")) {
+      vehicleCostPenalty = -10; // High Profit Margin for OrderKing (Zero fuel cost)
+    } else if (r.vehicle.toLowerCase().includes("bicycle")) {
+      vehicleCostPenalty = -15; // Highest Profit Margin
+    }
 
-    // Lower overall score = better candidate
-    const overallScore = distancePenalty + syncPenalty + loadPenalty - acceptanceBonus;
+    // Active load penalty (batching allows 1 existing delivery with small penalty)
+    // Batching actually SAVES money for OrderKing (one rider, two orders).
+    const loadPenalty = r.active_order_id ? -5 : 0; // Negative penalty = bonus for batching (More Profit!)
+
+    // Lower overall score = better candidate (cheaper for Founder, faster for customer)
+    const overallScore = distancePenalty + syncPenalty + loadPenalty + vehicleCostPenalty - acceptanceBonus;
 
     candidates.push({
       riderId: r.id,

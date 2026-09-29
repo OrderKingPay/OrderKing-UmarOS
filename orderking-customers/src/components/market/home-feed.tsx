@@ -334,15 +334,15 @@ export function HomeFeed({
       <section aria-label="Daily Hub">
         <h2 className="mb-2.5 font-display text-lg font-bold">Daily Hub</h2>
         <div className="grid grid-cols-3 gap-2">
-          {/* 1. Local News */}
+          {/* 1. Govt Schemes News Module (V3.0 APEX DIRECTIVE) */}
           <Link
-            to="/"
+            to="/news"
             className="group relative flex flex-col items-center overflow-hidden rounded-xl border border-blue-500/20 bg-gradient-to-b from-blue-500/10 to-surface p-2.5 shadow-sm transition hover:border-blue-500 hover:shadow-md active:scale-95 text-center"
           >
             <div className="flex size-9 items-center justify-center rounded-full bg-blue-500/20 text-blue-500 mb-1.5 group-hover:scale-110 transition">
-              <span className="text-lg">📰</span>
+              <span className="text-lg">🇮🇳</span>
             </div>
-            <span className="text-[10px] font-black uppercase text-fg leading-tight">Local News</span>
+            <span className="text-[10px] font-black uppercase text-fg leading-tight">Govt Schemes</span>
             <span className="text-[8px] font-bold text-blue-500 mt-0.5 tracking-wider">LIVE 24/7</span>
           </Link>
 

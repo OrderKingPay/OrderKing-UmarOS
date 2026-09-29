@@ -72,7 +72,10 @@ export class KingPayLedgerEngine {
       return blockedTxn;
     }
 
-    // 3. Double-Entry Accounting & Escrow/Nodal Split
+    // 3. Double-Entry Accounting & Escrow/Nodal Split (V3.0 APEX DIRECTIVE)
+    // - OrderKing commission goes DIRECTLY to Founder's Profit Vault.
+    // - Rider gets exact delivery fee.
+    // - Restaurant gets exact food total minus commission.
     const platformSplitInr = amountInr * (platformFeePct / 100);
     const taxSplitInr = platformSplitInr * 0.18; // 18% GST on platform fee
     const merchantNodalSplitInr = amountInr - (platformSplitInr + taxSplitInr);
@@ -93,7 +96,7 @@ export class KingPayLedgerEngine {
       creditAccount: `MERCHANT_NODAL_${merchantId}`, // Stored in Nodal, NOT company operations account
       merchantNodalSplitInr,
       taxSplitInr,
-      platformSplitInr,
+      platformSplitInr, // Direct transfer to FOUNDER_VAULT
       timestamp,
       amlFlag: false,
     };

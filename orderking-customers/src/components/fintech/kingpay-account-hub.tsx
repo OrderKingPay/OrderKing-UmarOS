@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   Banknote,
@@ -40,6 +40,14 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
   const [dailyLimit, setDailyLimit] = useState<number>(50000);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<IndianLanguageOption>(ALL_INDIAN_LANGUAGES[0]);
+  const [escrowStatus, setEscrowStatus] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/escrow/status")
+      .then(r => r.json())
+      .then(data => setEscrowStatus(data))
+      .catch(() => {});
+  }, []);
 
   const upiId = "patron@kingpay";
 
@@ -347,10 +355,12 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
           <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-2/40 border border-border/60">
             <div>
               <span className="font-bold text-fg block">RBI Escrow Compliance</span>
-              <span className="text-[10px]">Funds held in scheduled commercial bank nodal account</span>
+              <span className="text-[10px]">
+                {escrowStatus ? `Nodal Account: ${escrowStatus.bank} (${escrowStatus.accountNumber})` : "Checking escrow status..."}
+              </span>
             </div>
-            <span className="text-[10px] text-emerald-600 font-extrabold bg-emerald-500/10 px-2 py-0.5 rounded">
-              Verified 100%
+            <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded ${escrowStatus?.verified ? "text-emerald-600 bg-emerald-500/10" : "text-amber-600 bg-amber-500/10"}`}>
+              {escrowStatus ? escrowStatus.complianceStatus : "Verifying..."}
             </span>
           </div>
 

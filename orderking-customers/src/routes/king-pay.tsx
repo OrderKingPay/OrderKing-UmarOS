@@ -6,6 +6,7 @@ import { VehicleGarageHub } from "@/components/fintech/vehicle-garage-hub";
 import { TravelBookingHub } from "@/components/fintech/travel-booking-hub";
 import { MicroLoanHub } from "@/components/fintech/micro-loan-hub";
 import { KingPayAccountHub } from "@/components/fintech/kingpay-account-hub";
+import { KingPayPassbook } from "@/components/fintech/kingpay-passbook";
 import { useLocationStore } from "@/lib/stores/location";
 import { Button } from "@/components/ui/button";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
@@ -980,6 +981,84 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [utilityAmount, setUtilityAmount] = useState("299");
   const [utilityOperator, setUtilityOperator] = useState("Jio");
   const [paymentSource, setPaymentSource] = useState<"wallet" | string>("wallet");
+  const [fetchedBill, setFetchedBill] = useState<any>(null);
+  const [isFetchingBill, setIsFetchingBill] = useState(false);
+
+  const handleFetchBBPSBill = async () => {
+    if (!utilityInput) {
+      toast.error("Please enter ID/Number");
+      return;
+    }
+    setIsFetchingBill(true);
+    setFetchedBill(null);
+    try {
+      const billerId = activeUtilityModal === "electricity" ? "APDCL" :
+                       activeUtilityModal === "gas" ? "INDANE_GAS" :
+                       activeUtilityModal === "fastag" ? "FASTAG_NHAI" : "GENERIC_BILLER";
+                       
+      const res = await fetch("/api/bbps/fetch-bill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ billerId, consumerNumber: utilityInput })
+      });
+      if (res.ok) {
+        setFetchedBill(await res.json());
+        toast.success("Details fetched successfully from BBPS!");
+      } else {
+        toast.error("Failed to fetch details. Check input.");
+      }
+    } catch (e) {
+      toast.error("Network error while fetching from BBPS");
+    } finally {
+      setIsFetchingBill(false);
+    }
+  };
+
+  const handlePayBBPSBill = async () => {
+    if (!fetchedBill) return;
+    if (fetchedBill.billAmount > walletBalance) {
+      toast.error(`Insufficient wallet balance. Need ₹${fetchedBill.billAmount}`);
+      return;
+    }
+    
+    setIsFetchingBill(true);
+    try {
+      const res = await fetch("/api/bbps/pay-bill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ billId: fetchedBill.billId, amount: fetchedBill.billAmount, paymentMethod: "wallet" })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        const newBal = walletBalance - fetchedBill.billAmount;
+        setWalletBalance(newBal);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
+        }
+        
+        const title = activeUtilityModal === "gas" ? `Gas Booking: ${utilityInput}` :
+                      activeUtilityModal === "electricity" ? `Electricity Bill: ${utilityInput}` :
+                      `BBPS Payment: ${utilityInput}`;
+                      
+        addTransaction(fetchedBill.billAmount, title, "debit");
+        playSoundboxChime(fetchedBill.billAmount);
+        setKingCoins(c => c + 50);
+        
+        toast.success(`⚡ BBPS Payment Successful! TXN: ${data.transactionId}`);
+        setActiveUtilityModal(null);
+        setUtilityInput("");
+        setFetchedBill(null);
+      } else {
+        toast.error("Payment failed at biller end.");
+      }
+    } catch (e) {
+      toast.error("Network error during payment");
+    } finally {
+      setIsFetchingBill(false);
+    }
+  };
+
 
   const handleUtilityPayment = (title: string, amount: number) => {
     if (amount > walletBalance) {
@@ -991,6 +1070,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     if (typeof window !== "undefined") {
       localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
     }
+    addTransaction(amount, title, "debit");
     playSoundboxChime(amount);
     const earnedCoins = Math.round(amount * 0.05 * 10);
     setKingCoins((c) => c + earnedCoins);
@@ -1144,6 +1224,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         if (typeof window !== "undefined") {
           localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
         }
+        addTransaction(amount, `Biometric Transfer to ${recipient}`, "debit");
       }
       setTimeout(() => {
         setShowBiometricModal(false);
@@ -1282,6 +1363,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                if (typeof window !== "undefined") {
                  localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
                }
+               addTransaction(val, "Added Money via Razorpay", "credit");
                setShowAddMoney(false);
                playSoundboxChime(val);
                toast.success(`₹${val} added to KingPay Wallet via Razorpay!`);
@@ -1328,8 +1410,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     setWalletBalance(newBal);
     if (typeof window !== "undefined") {
       localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-      if (effective2G) {
-        try {
+    }
+    addTransaction(amt, `Scan & Pay to ${scanRecipient || "Merchant"}`, "debit");
+    if (effective2G) {
+      try {
           const rawQueue = localStorage.getItem("ok_offline_tx_queue") || "[]";
           const queue = JSON.parse(rawQueue);
           queue.push({
@@ -1344,7 +1428,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           // ignore
         }
       }
-    }
     setShowScanner(false);
     playSoundboxChime(amt);
     if (effective2G) {
@@ -1469,6 +1552,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     if (typeof window !== "undefined") {
       localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
     }
+    addTransaction(scratchReward.amount, scratchReward.title, "credit");
     setShowScratchCard(false);
     toast.success(`Claimed ₹${scratchReward.amount} cashback & +${scratchReward.coins} King Coins!`);
   };
@@ -1532,6 +1616,23 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const savedTx = localStorage.getItem("ok_kingpay_transactions");
+      if (savedTx) {
+        try {
+          setTransactions(JSON.parse(savedTx));
+        } catch {}
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && transactions.length > 0) {
+      localStorage.setItem("ok_kingpay_transactions", JSON.stringify(transactions));
+    }
+  }, [transactions]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
       const saved = localStorage.getItem("ok_kingpay_garage_vehicles");
       if (saved) {
         try {
@@ -1547,6 +1648,20 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     }
   }, []);
 
+  const addTransaction = (amount: number, description: string, type: "credit" | "debit", status: string = "success") => {
+    setTransactions((prev) => [
+      {
+        id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        title: description,
+        amount: amount,
+        type: type,
+        timestamp: new Date().toLocaleString(),
+        status: status,
+      },
+      ...prev,
+    ]);
+  };
+
   const handleDeductWallet = (amount: number, description: string): boolean => {
     if (walletBalance < amount) return false;
     const newBal = walletBalance - amount;
@@ -1554,17 +1669,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     if (typeof window !== "undefined") {
       localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
     }
-    setTransactions((prev) => [
-      {
-        id: `tx_${Date.now()}`,
-        title: description,
-        amount: -amount,
-        type: "debit",
-        timestamp: "Just now",
-        status: "success",
-      },
-      ...prev,
-    ]);
+    addTransaction(amount, description, "debit");
     playSoundboxChime(amount);
     return true;
   };
@@ -1608,19 +1713,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               if (typeof window !== "undefined") {
                 localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
               }
-              setTransactions((prev) => [
-                {
-                  id: `tx_${Date.now()}`,
-                  title: `Micro-Credit Disbursed: ₹${amount.toLocaleString("en-IN")}`,
-                  amount: amount,
-                  type: "credit",
-                  timestamp: "Just now",
-                  status: "success",
-                },
-                ...prev,
-              ]);
+              addTransaction(amount, "Loan Disbursement", "credit");
+              playSoundboxChime(amount);
             }}
           />
+        ) : activeSection === "passbook" ? (
+          <KingPayPassbook transactions={transactions} />
         ) : activeSection === "account" ? (
           <KingPayAccountHub
             walletBalance={walletBalance}
@@ -3699,6 +3797,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               if (typeof window !== "undefined") {
                 localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
               }
+              addTransaction(amt, `Paid ${res.payeeName || res.upiId}`, "debit");
               playSoundboxChime(amt);
               toast.success(`⚡ Paid ₹${amt} to ${res.payeeName || res.upiId} via KingPay!`);
 
@@ -3829,38 +3928,172 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 <div className="space-y-3">
                   <div>
                     <label className="block text-xs font-semibold text-fg mb-1">APDCL Consumer Number:</label>
-                    <input
-                      type="text"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono"
-                      value={utilityInput}
-                      onChange={(e) => setUtilityInput(e.target.value)}
-                      placeholder="e.g. 12000045892"
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono flex-1"
+                        value={utilityInput}
+                        onChange={(e) => {
+                          setUtilityInput(e.target.value);
+                          setFetchedBill(null);
+                        }}
+                        placeholder="e.g. 12000045892"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        disabled={isFetchingBill || utilityInput.length < 5}
+                        onClick={handleFetchBBPSBill}
+                        className="rounded-xl px-4 font-bold text-xs"
+                      >
+                        {isFetchingBill ? "Fetching..." : "Fetch Bill"}
+                      </Button>
+                    </div>
                   </div>
 
-                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 space-y-1">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-muted">Consumer Name:</span>
-                      <span className="font-bold text-fg">HASAN HABIBULLAH</span>
+                  {fetchedBill && (
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 space-y-1 mt-3 animate-in fade-in zoom-in-95">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-muted">Consumer Name:</span>
+                        <span className="font-bold text-fg">{fetchedBill.customerName}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-muted">Bill Due Date:</span>
+                        <span className="font-semibold text-amber-700 dark:text-amber-300">
+                          {new Date(fetchedBill.dueDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs pt-1 border-t border-border font-mono mt-1">
+                        <span className="text-muted">Bill Amount:</span>
+                        <span className="font-extrabold text-sm text-fg">₹{fetchedBill.billAmount.toLocaleString("en-IN")}</span>
+                      </div>
+                      
+                      <Button
+                        type="button"
+                        variant="primary"
+                        onClick={handlePayBBPSBill}
+                        disabled={isFetchingBill}
+                        className="w-full font-bold text-xs py-2.5 bg-primary text-white shadow mt-3"
+                      >
+                        {isFetchingBill ? "Processing..." : `⚡ Pay ₹${fetchedBill.billAmount.toLocaleString("en-IN")} Bill (0% Fee)`}
+                      </Button>
                     </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-muted">Bill Due Date:</span>
-                      <span className="font-semibold text-amber-700 dark:text-amber-300">28th of this month</span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs pt-1 border-t border-border font-mono">
-                      <span className="text-muted">Bill Amount:</span>
-                      <span className="font-extrabold text-sm text-fg">₹1,240.00</span>
+                  )}
+                </div>
+              )}
+
+              {activeUtilityModal === "gas" && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-fg mb-1">LPG Consumer ID or Registered Mobile:</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono flex-1"
+                        value={utilityInput}
+                        onChange={(e) => {
+                          setUtilityInput(e.target.value);
+                          setFetchedBill(null);
+                        }}
+                        placeholder="e.g. 7838383838"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        disabled={isFetchingBill || utilityInput.length < 5}
+                        onClick={handleFetchBBPSBill}
+                        className="rounded-xl px-4 font-bold text-xs"
+                      >
+                        {isFetchingBill ? "Fetching..." : "Fetch Bill"}
+                      </Button>
                     </div>
                   </div>
 
-                  <Button
-                    type="button"
-                    variant="primary"
-                    onClick={() => handleUtilityPayment("APDCL Electricity Bill", 1240)}
-                    className="w-full font-bold text-xs py-2.5 bg-primary text-white shadow"
-                  >
-                    ⚡ Pay ₹1,240 Bill (0% Fee)
-                  </Button>
+                  {fetchedBill && (
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 space-y-1 mt-3 animate-in fade-in zoom-in-95">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-muted">Consumer Name:</span>
+                        <span className="font-bold text-fg">{fetchedBill.customerName}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs pt-1 border-t border-border font-mono mt-1">
+                        <span className="text-muted">Booking Amount:</span>
+                        <span className="font-extrabold text-sm text-fg">₹{fetchedBill.billAmount.toLocaleString("en-IN")}</span>
+                      </div>
+                      
+                      <Button
+                        type="button"
+                        variant="primary"
+                        onClick={handlePayBBPSBill}
+                        disabled={isFetchingBill}
+                        className="w-full font-bold text-xs py-2.5 bg-primary text-white shadow mt-3"
+                      >
+                        {isFetchingBill ? "Processing..." : `⚡ Pay ₹${fetchedBill.billAmount.toLocaleString("en-IN")} (0% Fee)`}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeUtilityModal === "fastag" && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-fg mb-1">Vehicle Registration Number (FASTag):</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono flex-1 uppercase"
+                        value={utilityInput}
+                        onChange={(e) => {
+                          setUtilityInput(e.target.value.toUpperCase());
+                          setFetchedBill(null);
+                        }}
+                        placeholder="e.g. MH01AB1234"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        disabled={isFetchingBill || utilityInput.length < 5}
+                        onClick={handleFetchBBPSBill}
+                        className="rounded-xl px-4 font-bold text-xs"
+                      >
+                        {isFetchingBill ? "Fetching..." : "Fetch FASTag"}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {fetchedBill && (
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 space-y-1 mt-3 animate-in fade-in zoom-in-95">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-muted">Customer Name:</span>
+                        <span className="font-bold text-fg">{fetchedBill.customerName}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs pt-1 border-t border-border font-mono mt-1">
+                        <span className="text-muted">Current Balance:</span>
+                        <span className="font-extrabold text-sm text-fg">₹{fetchedBill.billAmount.toLocaleString("en-IN")}</span>
+                      </div>
+                      
+                      <div className="mt-3">
+                        <label className="block text-xs font-semibold text-fg mb-1">Recharge Amount (₹):</label>
+                        <input
+                          type="number"
+                          className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono"
+                          value={utilityAmount}
+                          onChange={(e) => setUtilityAmount(e.target.value)}
+                          placeholder="e.g. 500"
+                        />
+                      </div>
+
+                      <Button
+                        type="button"
+                        variant="primary"
+                        onClick={() => handleUtilityPayment(`FASTag Recharge for ${utilityInput}`, Number(utilityAmount))}
+                        disabled={isFetchingBill || !utilityAmount || Number(utilityAmount) <= 0}
+                        className="w-full font-bold text-xs py-2.5 bg-primary text-white shadow mt-3"
+                      >
+                        {isFetchingBill ? "Processing..." : `⚡ Recharge FASTag (0% Fee)`}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -4509,9 +4742,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     </KingPayShell>
     </>
   );
+
+
+
+
+
+
 }
-
-
-
-
-

@@ -204,7 +204,7 @@ export function CommandShell() {
     : undefined;
 
   return (
-    <div className="min-h-screen bg-bg text-fg" style={cssVars}>
+    <div className="h-screen bg-bg text-fg overflow-hidden" style={cssVars}>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-fg">
         Skip to content
       </a>
@@ -214,7 +214,7 @@ export function CommandShell() {
         </div>
       ) : null}
       {employee?.assumedRoleKey && employee.assumedRoleKey !== employee.roleKey ? (
-        <div className="flex items-center justify-center gap-3 bg-info/20 px-4 py-2 text-xs">
+        <div className="flex items-center justify-center gap-3 bg-info/20 px-4 py-2 text-xs shrink-0">
           Viewing as {ROLE_LABELS[employee.assumedRoleKey] ?? employee.assumedRoleKey}. Mutations use this role’s
           permissions.
           <button className="underline" type="button" onClick={() => assume.mutate(null)}>
@@ -223,10 +223,10 @@ export function CommandShell() {
         </div>
       ) : null}
 
-      <div className="flex min-h-screen">
+      <div className="flex h-full overflow-hidden">
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-40 w-64 overflow-y-auto border-r border-border bg-surface p-4 transition-transform md:static md:translate-x-0",
+            "fixed inset-y-0 left-0 z-40 w-64 overflow-y-auto border-r border-border bg-surface p-4 transition-transform md:static md:translate-x-0 shrink-0",
             navOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
           )}
         >
@@ -242,7 +242,7 @@ export function CommandShell() {
               <X className="size-5" />
             </button>
           </div>
-          <nav className="space-y-5">
+          <nav className="space-y-5 pb-20">
             {groups.map((g) => (
               <div key={g.id}>
                 <p className="mb-1 px-2 text-[10px] uppercase tracking-[0.16em] text-subtle">{t(locale, g.i18n)}</p>
@@ -272,7 +272,7 @@ export function CommandShell() {
           </nav>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col h-full overflow-y-auto">
           <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-bg/90 px-3 py-2 backdrop-blur md:px-6">
             <button type="button" className="grid size-11 place-items-center md:hidden" onClick={() => setNavOpen(true)} aria-label="Open menu">
               <Menu className="size-5" />

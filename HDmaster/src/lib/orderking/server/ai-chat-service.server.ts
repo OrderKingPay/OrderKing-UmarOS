@@ -476,11 +476,15 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
           const payout = await q.calculateRestaurantPayout(ws, payload.restaurantId, payload.period || "CURRENT_CYCLE");
           return { status: "SUCCESS", roleReplaced: "Autonomous Finance Manager", action: `Calculated deterministic payout for restaurant ${payload.restaurantId}.`, data: payout };
         }
+        if (payload.action === "execute_payout" && payload.restaurantId) {
+          const payoutResult = await q.executeBankPayout(ws, payload.restaurantId, payload.period || "CURRENT_CYCLE");
+          return { status: "SUCCESS", roleReplaced: "Zero-Employee Autonomous CFO", action: `Executed instant payout and securely deposited Founder commission for ${payload.restaurantId}.`, data: payoutResult };
+        }
         if (payload.action === "verify_batch" && payload.batchId) {
           const recon = await q.verifySettlementBatch(ws, payload.batchId);
           return { status: "SUCCESS", roleReplaced: "Autonomous Finance Manager", action: `Reconciled settlement batch ${payload.batchId}. Verified: ${recon.verified}`, data: recon };
         }
-        return { status: "ERROR", message: "Invalid finance_engine action. Supported: calculate_payout, verify_batch." };
+        return { status: "ERROR", message: "Invalid finance_engine action. Supported: calculate_payout, execute_payout, verify_batch." };
 
       case "execute_query":
         return { 

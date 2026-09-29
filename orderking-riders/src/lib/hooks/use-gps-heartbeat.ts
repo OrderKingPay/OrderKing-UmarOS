@@ -3,7 +3,7 @@ import { supabase } from "../db-cloud";
 
 type GPSPosition = { lat: number; lng: number; accuracy: number; heading: number | null; speed: number | null; ts: number };
 
-export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 5_000, onUpdate?: (pos: GPSPosition) => void, riderId?: string) {
+export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpdate?: (pos: GPSPosition) => void, riderId?: string) {
   const lastRef = useRef<GPSPosition | null>(null);
 
   useEffect(() => {

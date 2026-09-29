@@ -254,7 +254,14 @@ export const askAiSupportAssistant = createServerFn({ method: "POST" })
            required: ["issueType", "reply", "needsAction"]
         };
         
-        const prompt = `Customer message: "${data.query}". ${orderInfo ? 'Order context: ' + orderInfo : ''} Analyze intent and generate a realistic response. If order is late (>35 mins), mention 50rs compensation.`;
+        const prompt = `[APEX DIRECTIVE V3.0 OMNILINGUAL AI ENGAGED]
+Customer message: "${data.query}".
+${orderInfo ? 'Order context: ' + orderInfo : 'No specific order context provided.'}
+INSTRUCTION: 
+1. You must respond flawlessly in the EXACT NATIVE LANGUAGE the customer used (e.g., if they speak Bengali, respond in perfect Bengali; if Hindi, respond in perfect Hindi). 
+2. Be 100x more accurate and helpful than Zomato. 
+3. Keep it to max 3 sentences. Tone is elite, polite OrderKing Support. 
+4. If the order is >35 mins late, automatically mention instant ₹50 wallet compensation.`;
         
         const res = await gemini.generateStructuredOutput<any>({ prompt, schema });
         

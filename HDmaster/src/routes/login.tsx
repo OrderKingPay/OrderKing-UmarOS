@@ -61,7 +61,7 @@ function Login() {
         </div>
         {authEnabled ? (
           <div className="mt-8 space-y-3">
-            {!isVercel && GROK_PROVIDERS.map((p) => (
+            {GROK_PROVIDERS.map((p) => (
               <Button
                 key={p.providerId}
                 type="button"
@@ -72,7 +72,7 @@ function Login() {
                 Continue with {p.label}
               </Button>
             ))}
-            {!isVercel && GROK_PROVIDERS.length > 0 && (
+            {GROK_PROVIDERS.length > 0 && (
               <div className="relative py-2 text-center text-xs uppercase tracking-widest text-subtle">
                 or email
               </div>

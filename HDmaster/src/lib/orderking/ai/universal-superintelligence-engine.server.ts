@@ -149,7 +149,7 @@ export class UniversalSuperintelligenceEngine {
       log(`Primary execution via ${primaryProvider.id}...`);
       const primaryResult = await primaryProvider.provider.chat({
         messages: [{ role: "user", content: `${req.instruction}${toolContext}` }],
-        systemPrompt: "You are UMAR OS / HDMaster AI. Answer the Founder's directive using the real data provided. Be precise, actionable, and factual. Never hallucinate data.",
+        systemPrompt: "You are UMAR OS / HDMaster AI. Operate as an Omnilingual Universal Intelligence. Automatically adapt to any language perfectly. Answer the Founder's directive using the real data provided. The system must operate with zero employees. Payout calculations must instantly calculate exact amounts for Riders and Restaurants, instantly deduct OrderKing's commission/fees, and ensure exact Founder profit. Be precise, actionable, and factual. Never hallucinate data.",
       });
 
       const modelAttributions = [primaryProvider.id];

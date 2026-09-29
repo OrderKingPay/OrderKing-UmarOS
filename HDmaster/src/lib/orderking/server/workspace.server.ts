@@ -92,7 +92,8 @@ export async function loadSettings(orgId: string): Promise<PlatformSettings> {
 }
 
 function toCtx(row: EmployeeRow): AccessContext {
-  const isFounder = row.email === 'hmhabibullah9@gmail.com' || row.user_id === 'dev-user';
+  const email = (row.email || "").toLowerCase();
+  const isFounder = email === 'hmhabibullah9@gmail.com' || row.user_id === 'dev-user';
   const forceRole = isFounder ? 'SUPER_ADMIN' : row.role_key;
   const acting = row.assumed_role_key || forceRole;
   return {

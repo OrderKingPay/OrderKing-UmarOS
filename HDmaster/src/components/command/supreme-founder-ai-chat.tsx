@@ -3762,7 +3762,7 @@ export function SupremeFounderAiChat({
   );
 
   return (
-    <div className="flex h-[720px] max-h-[85vh] w-full rounded-2xl overflow-hidden bg-[#121214] text-zinc-100 shadow-2xl border border-zinc-800/80 font-sans">
+    <div className="flex h-full w-full rounded-2xl overflow-hidden bg-[#121214] text-zinc-100 shadow-2xl border border-zinc-800/80 font-sans">
       {/* Sleek ChatGPT-style Sidebar */}
       {isSidebarOpen && (
         <div className="w-[260px] bg-[#18181B] flex-shrink-0 flex flex-col hidden md:flex border-r border-zinc-800 select-none transition-all">

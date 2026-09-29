@@ -15,6 +15,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as KingPayRouteImport } from './routes/king-pay'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as SearchRouteImport } from './routes/search'
@@ -67,6 +68,11 @@ const KingPayRoute = KingPayRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OffersRoute = OffersRouteImport.update({
@@ -192,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/king-pay': typeof KingPayRoute
   '/login': typeof LoginRoute
+  '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
   '/rewards': typeof RewardsRoute
   '/search': typeof SearchRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/king-pay': typeof KingPayRoute
   '/login': typeof LoginRoute
+  '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
   '/rewards': typeof RewardsRoute
   '/search': typeof SearchRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/king-pay': typeof KingPayRoute
   '/login': typeof LoginRoute
+  '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
   '/rewards': typeof RewardsRoute
   '/search': typeof SearchRoute
@@ -288,6 +297,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/king-pay'
     | '/login'
+    | '/news'
     | '/offers'
     | '/rewards'
     | '/search'
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/king-pay'
     | '/login'
+    | '/news'
     | '/offers'
     | '/rewards'
     | '/search'
@@ -350,6 +361,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/king-pay'
     | '/login'
+    | '/news'
     | '/offers'
     | '/rewards'
     | '/search'
@@ -382,6 +394,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   KingPayRoute: typeof KingPayRoute
   LoginRoute: typeof LoginRoute
+  NewsRoute: typeof NewsRoute
   OffersRoute: typeof OffersRoute
   RewardsRoute: typeof RewardsRoute
   SearchRoute: typeof SearchRoute
@@ -449,6 +462,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/offers': {
@@ -622,6 +642,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   KingPayRoute: KingPayRoute,
   LoginRoute: LoginRoute,
+  NewsRoute: NewsRoute,
   OffersRoute: OffersRoute,
   RewardsRoute: RewardsRoute,
   SearchRoute: SearchRoute,

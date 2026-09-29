@@ -113,7 +113,7 @@ export function FounderAiOsShell() {
   };
 
   return (
-    <div className="flex min-h-[820px] rounded-2xl border-2 border-amber-500/40 bg-[#050E0B] shadow-[0_0_60px_rgba(245,158,11,0.12)] overflow-hidden font-sans text-slate-100">
+    <div className="flex h-[calc(100vh-8rem)] min-h-[600px] w-full rounded-2xl border-2 border-amber-500/40 bg-[#050E0B] shadow-[0_0_60px_rgba(245,158,11,0.12)] overflow-hidden font-sans text-slate-100">
       {/* 1. Left OS Sidebar Navigation */}
       <aside className="w-56 shrink-0 border-r border-border/70 bg-black/70 p-3 flex flex-col justify-between">
         <div className="space-y-4">
