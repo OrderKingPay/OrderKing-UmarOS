@@ -93,7 +93,8 @@ export async function loadSettings(orgId: string): Promise<PlatformSettings> {
 
 function toCtx(row: EmployeeRow): AccessContext {
   const email = (row.email || "").toLowerCase();
-  const isFounder = email === 'hmhabibullah9@gmail.com' || row.user_id === 'dev-user';
+  const founderEmails = ['hmhabibullah9@gmail.com', 'founder@orderking.app', 'hasan@orderking.app'];
+  const isFounder = founderEmails.includes(email) || row.user_id === 'dev-user';
   const forceRole = isFounder ? 'SUPER_ADMIN' : row.role_key;
   const acting = row.assumed_role_key || forceRole;
   return {
@@ -102,7 +103,10 @@ function toCtx(row: EmployeeRow): AccessContext {
     orgId: row.org_id,
     roleKey: forceRole,
     actingRoleKey: acting,
-    permissions: resolvePermissions(acting, row.custom_permissions_json),
+    permissions: Array.from(new Set([
+      ...resolvePermissions(acting, row.custom_permissions_json),
+      ...(forceRole === 'SUPER_ADMIN' ? ['assume_role' as const] : [])
+    ])),
     cityId: row.city_id,
     areaId: row.area_id,
     status: row.status,
