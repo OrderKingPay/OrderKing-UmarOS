@@ -1,0 +1,7 @@
+packages:
+  - 'HDmaster'
+  - 'orderking-customers'
+  - 'orderking-partners'
+  - 'orderking-riders'
+  - 'Apps-integration-'
+  - 'packages/*'

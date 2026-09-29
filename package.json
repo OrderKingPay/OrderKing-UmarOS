@@ -1,7 +1,14 @@
 {
-  "name": "orderking-root",
+  "name": "orderking-quadcore",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
-    "build": "node smart-build.js"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "latest"
   }
 }

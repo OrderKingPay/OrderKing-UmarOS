@@ -17,7 +17,14 @@ import { GROK_PROVIDERS } from "./providers";
  * leaves the bearer token in place, and `onRequest` keeps re-attaching it, so
  * the visitor stays signed in.
  */
+function getAppBaseUrl() {
+  if (typeof window !== "undefined") return window.location.origin;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return process.env.BETTER_AUTH_URL || "http://127.0.0.1:8080";
+}
+
 export const authClient = createAuthClient({
+  baseURL: getAppBaseUrl(),
   plugins: [genericOAuthClient()],
   fetchOptions: {
     onRequest(ctx) {

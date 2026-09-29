@@ -47,10 +47,10 @@ export class OpenAIProvider implements AIProvider {
         } else {
           // Multimodal processing for OpenAI Vision
           const oaiContent = m.content.map(part => {
-            if (part.type === "image" && (part.data || part.url)) {
+            if (part.type === "image" && (part.data || (part as any).url)) {
               return {
                 type: "image_url",
-                image_url: { url: part.data || part.url }
+                image_url: { url: part.data || (part as any).url }
               };
             }
             return { type: "text", text: part.text || JSON.stringify(part) };

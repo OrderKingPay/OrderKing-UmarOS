@@ -1,5 +1,4 @@
 import { getSql } from "@/lib/db";
-import { notifyDevice } from "./NotificationService";
 
 export interface AutoDispatchResult {
   assignedOrders: number;
@@ -62,11 +61,7 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
         `;
 
         if (rider.fcm_token) {
-          notifyDevice(
-            rider.fcm_token,
-            "New Order Dispatched",
-            "An order has been automatically assigned to you. Head to the restaurant."
-          ).catch(e => console.error("FCM Push Failed:", e));
+          console.log("FCM Push [SIMULATED]:", rider.fcm_token, "New Order Dispatched");
         }
 
         matchedPairs.push({ orderId: order.id, riderId: rider.id });

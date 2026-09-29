@@ -2020,7 +2020,7 @@ export async function ceoBrief(ctx: AccessContext) {
     },
     email: null,
     displayName: "",
-    dataMode: "ACTUAL",
+    dataMode: "PRODUCTION",
     settings: DEFAULT_SETTINGS,
   });
   const fin = await financeSummary(ctx);
