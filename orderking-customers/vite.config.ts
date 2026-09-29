@@ -150,13 +150,6 @@ export default defineConfig(({ command, isPreview }) => ({
     cssMinify: true,
     rollupOptions: {
       treeshake: true,
-      output: {
-        manualChunks: {
-          'mapbox': ['mapbox-gl'],
-          'react-vendor': ['react', 'react-dom'],
-          'framer': ['framer-motion']
-        }
-      }
     },
   },
   
