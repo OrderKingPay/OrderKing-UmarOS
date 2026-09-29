@@ -9,20 +9,41 @@ import { OfflineDetector } from "@/components/offline-detector";
 import appCss from "../styles.css?url";
 
 const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
-  const { getSessionUser } = await import("@/lib/auth/verify.server");
-  const u = await getSessionUser();
-  return u ? { id: u.id, email: u.email } : null;
+  try {
+    const { getSessionUser } = await import("@/lib/auth/verify.server");
+    const u = await getSessionUser();
+    return u ? { id: u.id, email: u.email } : null;
+  } catch (err) {
+    console.error("fetchSessionUser error:", err);
+    return null;
+  }
 });
 
 const fetchConfig = createServerFn({ method: "GET" }).handler(async () => {
-  const { loadConfig } = await import("@/lib/server/load-config");
-  return loadConfig();
+  try {
+    const { loadConfig } = await import("@/lib/server/load-config");
+    return await loadConfig();
+  } catch (err) {
+    console.error("fetchConfig error:", err);
+    return null;
+  }
 });
 
 export const Route = createRootRoute({
   beforeLoad: async () => {
-    const [sessionUser, config] = await Promise.all([fetchSessionUser(), fetchConfig()]);
+    let sessionUser = null;
+    let config = null;
+    try {
+      const [su, c] = await Promise.all([fetchSessionUser(), fetchConfig()]);
+      sessionUser = su;
+      config = c;
+    } catch (err) {
+      console.error("beforeLoad Promise.all error:", err);
+    }
     return { sessionUser, config };
+  },
+  errorComponent: ({ error }) => {
+    return <div style={{ padding: '2rem', background: '#111', color: 'white', height: '100vh' }}><h2>OrderKing Initialization Error</h2><p>Please check the database connection strings and environment variables.</p><pre style={{ background: '#222', padding: '1rem', color: '#ff7777', whiteSpace: 'pre-wrap' }}>{error.message}</pre></div>;
   },
   head: ({ loaderData, match }) => {
     const config = (match?.context as { config?: typeof DEFAULT_CONFIG } | undefined)?.config ?? DEFAULT_CONFIG;
@@ -89,3 +110,4 @@ function Root() {
     </html>
   );
 }
+

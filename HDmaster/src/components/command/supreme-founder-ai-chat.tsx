@@ -4929,7 +4929,7 @@ export function SupremeFounderAiChat({
                 }
 
                 const reader = new FileReader();
-                if (type === "image") {
+                if (type === "image" || type === "video") {
                   reader.onload = () => {
                     resolve({
                       id: crypto.randomUUID(),

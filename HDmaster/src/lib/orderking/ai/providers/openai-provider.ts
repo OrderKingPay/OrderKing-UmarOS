@@ -42,10 +42,21 @@ export class OpenAIProvider implements AIProvider {
           content: typeof m.content === "string" ? m.content : JSON.stringify(m.content),
         });
       } else {
-        messages.push({
-          role: m.role,
-          content: typeof m.content === "string" ? m.content : JSON.stringify(m.content),
-        });
+        if (typeof m.content === "string") {
+          messages.push({ role: m.role, content: m.content });
+        } else {
+          // Multimodal processing for OpenAI Vision
+          const oaiContent = m.content.map(part => {
+            if (part.type === "image" && (part.data || part.url)) {
+              return {
+                type: "image_url",
+                image_url: { url: part.data || part.url }
+              };
+            }
+            return { type: "text", text: part.text || JSON.stringify(part) };
+          });
+          messages.push({ role: m.role, content: oaiContent });
+        }
       }
     }
 
