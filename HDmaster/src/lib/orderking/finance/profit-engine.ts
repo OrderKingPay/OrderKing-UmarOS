@@ -282,7 +282,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
   const streams: RevenueStreamBreakdown[] = [
     {
       streamId: "stream_1_core_commission",
-      name: "Core Food Delivery Commission (15% Flat)",
+      name: "Core Food Delivery Commission (configured rate)",
       category: "CORE_DELIVERY",
       monthlyGrossRevenuePaise: coreCommissionPaise,
       grossMarginPercentage: "NOT_CALCULATED",
@@ -291,11 +291,11 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
     },
     {
       streamId: "stream_2_platform_convenience_fee",
-      name: "Customer Platform Technology Fee (₹4/order)",
+      name: "Customer Platform Technology Fee (configured rate)",
       category: "CORE_DELIVERY",
       monthlyGrossRevenuePaise: platformFeePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -304,7 +304,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "MERCHANT_B2B",
       monthlyGrossRevenuePaise: adAuctionRevenuePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -313,7 +313,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "CUSTOMER_FINTECH",
       monthlyGrossRevenuePaise: monthlyVipRevenuePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -322,7 +322,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "CUSTOMER_FINTECH",
       monthlyGrossRevenuePaise: bbpsRevenuePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -331,7 +331,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "AFFILIATE_ALLIANCE",
       monthlyGrossRevenuePaise: totalFinancialAffiliatesPaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -340,7 +340,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "AFFILIATE_ALLIANCE",
       monthlyGrossRevenuePaise: totalBajajRevenuePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -349,7 +349,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "AFFILIATE_ALLIANCE",
       monthlyGrossRevenuePaise: totalFuelRevenuePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -358,7 +358,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "CUSTOMER_FINTECH",
       monthlyGrossRevenuePaise: goldSpreadRevenuePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -367,7 +367,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "MERCHANT_B2B",
       monthlyGrossRevenuePaise: totalB2bRevenuePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -376,7 +376,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "TREASURY_TAX",
       monthlyGrossRevenuePaise: monthlyTreasuryYieldPaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -385,7 +385,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "TREASURY_TAX",
       monthlyGrossRevenuePaise: cleanGstItcSavingsPaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -394,7 +394,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "CUSTOMER_FINTECH",
       monthlyGrossRevenuePaise: goldRoundupMarginPaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -403,16 +403,16 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "MERCHANT_B2B",
       monthlyGrossRevenuePaise: instantPayoutFeePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
       streamId: "stream_15_franchise_royalties",
-      name: "Regional Master Franchise & District Royalties (2.5%)",
+      name: "Regional Master Franchise & District Royalties (configured rate)",
       category: "FRANCHISE_ECOSYSTEM",
       monthlyGrossRevenuePaise: franchiseRoyaltyPaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -421,7 +421,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "MERCHANT_B2B",
       monthlyGrossRevenuePaise: posSubscriptionRevenuePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -430,7 +430,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "AFFILIATE_ALLIANCE",
       monthlyGrossRevenuePaise: evBatterySwapRevenuePaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
     {
@@ -439,7 +439,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "MERCHANT_B2B",
       monthlyGrossRevenuePaise: fmcgBrandSponsorshipPaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
+      legalBasis: "Requires current contract/provider/legal configuration.",
       participantMutualBenefit: "Requires current contract, provider and participant data."
     },
   ];
@@ -449,7 +449,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       participant: "RESTAURANT",
       orderKingValueProposition:
         "15% flat commission, ₹0 onboarding fee, ₹0 forced ad spend, weekly integer-paise settlement, optional 1-tap instant cashout.",
-      competitorComparison: "NOT_BENCHMARKED"
+      competitorComparison: "NOT_BENCHMARKED",
       averageMonthlyAdvantagePaise: null, // ₹20,000 extra profit per ₹2L monthly sales
       verifiedSafeHarbor: "NOT_ASSESSED",
     },
@@ -457,7 +457,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       participant: "RIDER",
       orderKingValueProposition:
         "100% customer tips pass-through, HPCL/IOCL fleet card saving ₹1,650/mo, 40% cheaper EV battery swaps, complimentary ₹2L accident cover.",
-      competitorComparison: "NOT_BENCHMARKED"
+      competitorComparison: "NOT_BENCHMARKED",
       averageMonthlyAdvantagePaise: null, // ₹1,650/month petrol savings + insurance
       verifiedSafeHarbor: "NOT_ASSESSED",
     },
@@ -465,7 +465,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       participant: "CUSTOMER",
       orderKingValueProposition:
         "Zero inflated menu prices, ₹4 platform fee, King Coins food burn, spare-change 24K gold accumulation, instant KingPay 1-tap checkout.",
-      competitorComparison: "NOT_BENCHMARKED"
+      competitorComparison: "NOT_BENCHMARKED",
       averageMonthlyAdvantagePaise: null, // ₹120 savings per month across 8 orders
       verifiedSafeHarbor: "NOT_ASSESSED",
     },
@@ -473,7 +473,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       participant: "MERCHANT",
       orderKingValueProposition:
         "0% MDR on UPI QR payments, instant bank settlement, BBPS bill payment commission sharing, KingPay local store discoverability.",
-      competitorComparison: "NOT_BENCHMARKED"
+      competitorComparison: "NOT_BENCHMARKED",
       averageMonthlyAdvantagePaise: null, // ₹1,500/month saved on soundbox rentals & MDR
       verifiedSafeHarbor: "NOT_ASSESSED",
     },
