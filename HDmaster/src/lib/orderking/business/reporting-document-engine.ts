@@ -284,46 +284,49 @@ export class ReportingDocumentEngine {
   }
 
   private static buildFinancePL(params: ReportGenerationParams): ReportSection[] {
-    return [
-      {
-        id: 'revenue_and_gmv',
-        title: 'Gross Merchandise Value & Revenue Summary',
-        metrics: [
-          { key: 'gross_merchandise_value', label: 'Gross Merchandise Value (GMV)', value: '₹5,24,800', category: 'FACT' },
-          { key: 'customer_delivery_fees', label: 'Delivery Fees Collected from Customers', value: '₹42,600', category: 'FACT' },
-          { key: 'platform_service_fees', label: 'Platform Technology Fees (₹5-₹10/order)', value: '₹14,200', category: 'FACT' },
-          { key: 'merchant_subscriptions', label: 'Merchant Premium Subscriptions', value: '₹12,500', category: 'FACT' },
-          { key: 'in_app_ad_revenue', label: 'In-App Featured Search Auction Revenue', value: '₹6,400', category: 'FACT' },
-          { key: 'total_platform_revenue', label: 'Total Platform Gross Revenue', value: '₹75,700', category: 'CALCULATION' },
-        ],
-      },
-      {
-        id: 'operating_costs',
-        title: 'Direct Operating Expenses & Disbursements',
-        metrics: [
-          { key: 'rider_payouts', label: 'Rider Delivery Payouts & Distance Pay', value: '₹40,800', category: 'FACT', sourceNote: 'Disbursed via Canonical Ledger' },
-          { key: 'payment_gateway_fees', label: 'Payment Gateway Processing Charges (1.8% + GST)', value: '₹11,136', category: 'CALCULATION' },
-          { key: 'sms_whatsapp_costs', label: 'SMS & WhatsApp Notification Costs', value: '₹1,420', category: 'CALCULATION' },
-          { key: 'cloud_infra_costs', label: 'Cloud Infrastructure & Server Allocation', value: '₹3,200', category: 'CALCULATION' },
-          { key: 'refunds_and_disputes', label: 'Customer Goodwill Refunds & Spoilage Write-offs', value: '₹1,850', category: 'FACT' },
-          { key: 'total_operating_expenses', label: 'Total Direct Operating Expenses', value: '₹58,406', category: 'CALCULATION' },
-        ],
-      },
-      {
-        id: 'net_income',
-        title: 'Net Marketplace Contribution Margin',
-        metrics: [
-          { key: 'net_contribution_profit', label: 'Net Operating Profit (EBITDA)', value: '₹17,294', category: 'CALCULATION' },
-          { key: 'net_profit_margin_pct', label: 'Net Profit Margin on Platform Revenue', value: '22.8%', category: 'CALCULATION' },
-        ],
-        notes: [
-          'All figures balanced against Double-Entry Ledger account FOUNDER_VAULT and PLATFORM_FEE_REVENUE.',
-          'Statutory GST output tax of 18% is provisioned in GST_OUTPUT_LIABILITY and not counted as revenue.',
-        ],
-      },
-    ];
+    const d = params.customData || {};
+    const money = (v: unknown) => typeof v === "number"
+      ? "₹" + (v / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : "—";
+    const revenue = ["deliveryFeesPaise","platformFeesPaise","merchantSubscriptionsPaise","adRevenuePaise"].every((k) => typeof d[k] === "number")
+      ? Number(d.deliveryFeesPaise) + Number(d.platformFeesPaise) + Number(d.merchantSubscriptionsPaise) + Number(d.adRevenuePaise)
+      : null;
+    const costs = ["riderPayoutsPaise","paymentGatewayFeesPaise","notificationCostsPaise","cloudCostsPaise","refundsPaise"].every((k) => typeof d[k] === "number")
+      ? Number(d.riderPayoutsPaise) + Number(d.paymentGatewayFeesPaise) + Number(d.notificationCostsPaise) + Number(d.cloudCostsPaise) + Number(d.refundsPaise)
+      : null;
+    const profit = revenue != null && costs != null ? revenue - costs : null;
+    return [{
+      id: "revenue_and_gmv",
+      title: "Gross Merchandise Value & Platform Revenue",
+      metrics: [
+        ...(typeof d.gmvPaise === "number" ? [{ key: "gross_merchandise_value", label: "GMV", value: money(d.gmvPaise), category: "FACT", sourceNote: "Canonical orders" }] : []),
+        ...(typeof d.deliveryFeesPaise === "number" ? [{ key: "customer_delivery_fees", label: "Customer Delivery Fees", value: money(d.deliveryFeesPaise), category: "FACT", sourceNote: "Canonical order charges" }] : []),
+        ...(typeof d.platformFeesPaise === "number" ? [{ key: "platform_service_fees", label: "Platform Technology Fees", value: money(d.platformFeesPaise), category: "FACT", sourceNote: "Canonical fee ledger" }] : []),
+        ...(typeof d.merchantSubscriptionsPaise === "number" ? [{ key: "merchant_subscriptions", label: "Merchant Subscriptions", value: money(d.merchantSubscriptionsPaise), category: "FACT", sourceNote: "Subscription ledger" }] : []),
+        ...(typeof d.adRevenuePaise === "number" ? [{ key: "in_app_ad_revenue", label: "Sponsored Placement Revenue", value: money(d.adRevenuePaise), category: "FACT", sourceNote: "Ad/settlement ledger" }] : []),
+        ...(revenue != null ? [{ key: "total_platform_revenue", label: "Total Platform Revenue", value: money(revenue), category: "CALCULATION", sourceNote: "Sum of supplied revenue sources" }] : []),
+      ],
+    }, {
+      id: "operating_costs",
+      title: "Operating Costs & Disbursements",
+      metrics: [
+        ...(typeof d.riderPayoutsPaise === "number" ? [{ key: "rider_payouts", label: "Rider Payouts", value: money(d.riderPayoutsPaise), category: "FACT", sourceNote: "Payout ledger" }] : []),
+        ...(typeof d.paymentGatewayFeesPaise === "number" ? [{ key: "payment_gateway_fees", label: "Payment Gateway Fees", value: money(d.paymentGatewayFeesPaise), category: "FACT", sourceNote: "Provider invoice/ledger" }] : []),
+        ...(typeof d.notificationCostsPaise === "number" ? [{ key: "notification_costs", label: "Notification Costs", value: money(d.notificationCostsPaise), category: "FACT", sourceNote: "Provider spend ledger" }] : []),
+        ...(typeof d.cloudCostsPaise === "number" ? [{ key: "cloud_infra_costs", label: "Cloud Infrastructure", value: money(d.cloudCostsPaise), category: "FACT", sourceNote: "Actual cloud billing input" }] : []),
+        ...(typeof d.refundsPaise === "number" ? [{ key: "refunds_and_disputes", label: "Refunds & Disputes", value: money(d.refundsPaise), category: "FACT", sourceNote: "Refund ledger" }] : []),
+        ...(costs != null ? [{ key: "total_operating_expenses", label: "Total Operating Expenses", value: money(costs), category: "CALCULATION", sourceNote: "Sum of supplied cost sources" }] : []),
+      ],
+    }, {
+      id: "net_income",
+      title: "Net Marketplace Contribution",
+      metrics: profit != null ? [
+        { key: "net_contribution_profit", label: "Net Contribution", value: money(profit), category: "CALCULATION", sourceNote: "Revenue minus supplied operating costs" },
+        { key: "net_profit_margin_pct", label: "Contribution Margin", value: revenue && revenue !== 0 ? ((profit / revenue) * 100).toFixed(2) + "%" : "—", category: "CALCULATION", sourceNote: "Calculated from supplied values" },
+      ] : [],
+      notes: profit == null ? ["DATA_REQUIRED: complete production revenue and cost inputs were not supplied."] : [],
+    }];
   }
-
   private static buildRestaurantSettlement(params: ReportGenerationParams): ReportSection[] {
     const restaurantName = params.customData?.restaurantName || 'Spice Garden Kitchen';
     return [
