@@ -95,17 +95,17 @@ function SettlementsPage() {
         </div>
       </Card>
 
-      {/* 1-Tap Instant Daily Settlement (0.5% Fee) */}
+      {/* Instant Settlement (0.5% Fee) */}
       <Card className="border border-primary/30 bg-primary/5 p-4 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-lg">⚡</span>
-              <h3 className="font-semibold text-foreground text-sm">1-Tap Instant Daily Settlement</h3>
-              <span className="rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">IMPS Real-Time</span>
+              <h3 className="font-semibold text-foreground text-sm">Instant Settlement</h3>
+              <span className="rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">Provider-gated</span>
             </div>
             <p className="text-xs text-muted mt-1">
-              Need working capital immediately? Settle today&apos;s accrued balance ({q.data ? formatINR(q.data.currentPayablePaise) : "—"}) in 15 seconds to your registered bank account for a tiny 0.5% convenience fee.
+              Need working capital immediately? Settle today&apos;s accrued balance ({q.data ? formatINR(q.data.currentPayablePaise) : "—"}) through the configured payout provider. Provider timing and fees are shown only after verification.
             </p>
           </div>
           <Button
@@ -114,7 +114,7 @@ function SettlementsPage() {
             onClick={() => handleInstantSettlement()}
             className="shrink-0 bg-primary hover:bg-primary/90 text-white font-medium"
           >
-            {instantSettling ? "Settling via IMPS..." : `Instant Cashout (${q.data ? formatINR(Math.max(0, Math.round(q.data.currentPayablePaise * 0.995))) : "—"})`}
+            {instantSettling ? "Checking provider..." : "Check Instant Settlement"}
           </Button>
         </div>
         {instantError && (
@@ -136,7 +136,7 @@ function SettlementsPage() {
             <h3 className="font-semibold text-emerald-900 dark:text-emerald-300 text-sm">Zero Unexplained Deductions &amp; Statutory Safe Harbor</h3>
           </div>
           <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded">
-            IT Act §79 Protected
+            Provider & policy status
           </span>
         </div>
         <p className="text-muted leading-relaxed">
@@ -158,27 +158,27 @@ function SettlementsPage() {
           <div className="flex items-center gap-2">
             <span className="text-base">🚀</span>
             <h3 className="font-semibold text-indigo-900 dark:text-indigo-300 text-sm">
-              Why OrderKing is 10x More Profitable for You than Zomato
+              OrderKing Partner Economics
             </h3>
           </div>
           <span className="text-[10px] font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded">
-            +13.3% Higher Take-Home Profit
+            Live contract comparison required
           </span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
           <div className="rounded-lg border border-line bg-surface/50 p-2.5">
             <p className="text-[11px] text-muted uppercase font-medium">Platform Commission</p>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">15% Flat</span>
-              <span className="text-xs text-muted line-through">25% on Zomato</span>
+              <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">Configured contract</span>
+              <span className="text-xs text-muted line-through">External benchmark</span>
             </div>
             <p className="text-[10px] text-muted mt-1">You save ₹100 on every ₹1,000 food order.</p>
           </div>
           <div className="rounded-lg border border-line bg-surface/50 p-2.5">
             <p className="text-[11px] text-muted uppercase font-medium">Onboarding &amp; Hidden Levies</p>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">₹0 (FREE)</span>
-              <span className="text-xs text-muted line-through">₹10,000+ fee</span>
+              <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">Contract-defined</span>
+              <span className="text-xs text-muted line-through">External benchmark</span>
             </div>
             <p className="text-[10px] text-muted mt-1">Zero forced ad spend or listing penalties.</p>
           </div>
@@ -186,13 +186,13 @@ function SettlementsPage() {
             <p className="text-[11px] text-muted uppercase font-medium">Settlement Certainty</p>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-base font-bold text-primary">Integer-Paise</span>
-              <span className="text-xs text-muted">Weekly direct transfer</span>
+              <span className="text-xs text-muted">Configured payout cycle</span>
             </div>
-            <p className="text-[10px] text-muted mt-1">All deductions statutory: GST §9(5), TDS 194-O, TCS §52.</p>
+            <p className="text-[10px] text-muted mt-1">All deductions are shown from the configured contract/ledger; statutory treatment requires current tax configuration.</p>
           </div>
         </div>
         <p className="text-[11px] text-muted">
-          💡 <em>Pro-tip:</em> Because you take home ₹20,000+ extra per ₹2,00,000 monthly sales compared to Zomato, pass on 5% combo discounts to customers to triple your daily order volume!
+          💡 <em>Pro-tip:</em> Use the live settlement statement and current contract terms to choose any customer promotion.
         </p>
       </Card>
       <div className="flex gap-2">
