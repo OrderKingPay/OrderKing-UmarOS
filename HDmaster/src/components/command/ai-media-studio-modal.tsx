@@ -130,7 +130,7 @@ export function AiMediaStudioModal({
   const [multiScenes, setMultiScenes] = useState<Array<{ title: string; prompt: string; duration: number }>>([
     { title: "Scene 1: The Problem", prompt: "Frustrated customer waiting 60 minutes for cold food delivery from traditional apps in rain", duration: 15 },
     { title: "Scene 2: OrderKing Hero", prompt: "Golden futuristic OrderKing drone descends with steaming hot food in under 12 minutes", duration: 25 },
-    { title: "Scene 3: KingPay Zero Fees", prompt: "Restaurant owner checks phone showing ₹0 commission fee and instant UPI bank settlement", duration: 20 },
+    { title: "Scene 3: KingPay Zero Fees", prompt: "Restaurant owner checks phone showing configured commission terms and instant UPI bank settlement", duration: 20 },
     { title: "Scene 4: Call To Action", prompt: "Family enjoying feast together, OrderKing logo floating in 8K gold with 50% off first order banner", duration: 20 },
   ]);
 
@@ -177,42 +177,17 @@ export function AiMediaStudioModal({
   };
 
   const handleGenerateVideo = () => {
-    const finalPrompt = prompt.trim() || PRESET_VIDEO_PROMPTS[0];
-    setIsGenerating(true);
-    setGenerationProgress(15);
+    setIsGenerating(false);
+    setGenerationProgress(0);
     setGeneratedItem(null);
-
-    const durationObj = VIDEO_DURATIONS.find((d) => d.id === videoDuration) || VIDEO_DURATIONS[2];
-
-    const progressInterval = setInterval(() => {
-      setGenerationProgress((prev) => {
-        if (prev >= 92) {
-          clearInterval(progressInterval);
-          return 92;
-        }
-        return prev + 20;
-      });
-    }, 280);
-
-    const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
-
-    throw new Error("NO MOCK CLAIMS: Real video generation API is not connected.");
+    toast.info("Video generation is not activated in this deployment. Connect a verified video-generation provider and adapter; no sample/fake video is returned.");
   };
 
   const handleGenerateMultiScene = () => {
-    setIsGenerating(true);
-    setGenerationProgress(10);
+    setIsGenerating(false);
+    setGenerationProgress(0);
     setGeneratedItem(null);
-
-    const totalSeconds = multiScenes.reduce((acc, s) => acc + s.duration, 0);
-
-    const progressInterval = setInterval(() => {
-      setGenerationProgress((prev) => (prev >= 90 ? 90 : prev + 15));
-    }, 250);
-
-    const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
-
-    throw new Error("NO MOCK CLAIMS: Real multi-scene generation API is not connected.");
+    toast.info("Multi-scene video generation requires a verified video provider and render pipeline. No sample/fake video is returned.");
   };
 
   const handleDeleteVaultItem = (id: string) => {
@@ -236,7 +211,7 @@ export function AiMediaStudioModal({
                   Supreme AI Video &amp; Image Creation Studio
                 </h3>
                 <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-400/40 text-[9px] font-mono">
-                  #1 IN WORLD · 100% REALISTIC · 0 COST
+                  REAL PROVIDER · VERIFIED OUTPUTS
                 </Badge>
               </div>
               <p className="text-xs text-slate-400">
@@ -255,7 +230,7 @@ export function AiMediaStudioModal({
                 }`}
               >
                 <ImageIcon className="size-3.5" />
-                <span>8K Images</span>
+                <span>High-Resolution Images</span>
               </button>
               <button
                 type="button"
@@ -327,7 +302,7 @@ export function AiMediaStudioModal({
               <div className="space-y-2">
                 <label className="text-xs font-bold text-amber-300 flex items-center justify-between">
                   <span>Enter Photorealistic Prompt:</span>
-                  <span className="text-[10px] text-muted font-normal">8K UHD · Octane Raytracing · Zero Cost</span>
+                  <span className="text-[10px] text-muted font-normal">Provider-backed high-resolution generation</span>
                 </label>
                 <div className="flex gap-2">
                   <Input
@@ -342,7 +317,7 @@ export function AiMediaStudioModal({
                     className="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs px-5 shadow-lg"
                   >
                     {isGenerating ? <RefreshCw className="size-4 mr-1 animate-spin" /> : <Sparkles className="size-4 mr-1" />}
-                    <span>{isGenerating ? "Synthesizing..." : "Generate 8K Image"}</span>
+                    <span>{isGenerating ? "Synthesizing..." : "Generate Image"}</span>
                   </Button>
                 </div>
               </div>
@@ -418,7 +393,7 @@ export function AiMediaStudioModal({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="size-4 text-emerald-400" />
-                      <span className="text-xs font-bold text-emerald-400">8K Photorealistic Master Asset Ready</span>
+                      <span className="text-xs font-bold text-emerald-400">Photorealistic Master Asset Ready</span>
                     </div>
                     <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">
                       {generatedItem.aspectRatio || aspectRatio} · {(generatedItem.sizeBytes / (1024 * 1024)).toFixed(2)} MB
@@ -487,7 +462,7 @@ export function AiMediaStudioModal({
                       }}
                     >
                       <Download className="size-3.5 mr-1.5" />
-                      Download 8K High-Res
+                      Download High-Resolution Image
                     </Button>
 
                     <Button
@@ -530,7 +505,7 @@ export function AiMediaStudioModal({
               <div className="space-y-2">
                 <label className="text-xs font-bold text-amber-300 flex items-center justify-between">
                   <span>Enter Video Motion &amp; Cinematics Prompt:</span>
-                  <span className="text-[10px] text-muted font-normal">Kinetic AI Motion · 60FPS · 100% Realistic</span>
+                  <span className="text-[10px] text-muted font-normal">Verified video provider required</span>
                 </label>
                 <div className="flex gap-2">
                   <Input
@@ -762,7 +737,7 @@ export function AiMediaStudioModal({
                   className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs py-5 shadow-xl"
                 >
                   {isGenerating ? <RefreshCw className="size-4 mr-2 animate-spin" /> : <Film className="size-4 mr-2" />}
-                  <span>{isGenerating ? "Stitching Multi-Scene Masterpiece..." : "Stitch & Render Long Commercial Video (100% Free)"}</span>
+                  <span>{isGenerating ? "Stitching Multi-Scene Masterpiece..." : "Stitch & Render Long Commercial Video (Provider-backed rendering)"}</span>
                 </Button>
               </div>
 
