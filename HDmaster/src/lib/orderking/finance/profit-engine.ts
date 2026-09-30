@@ -286,8 +286,8 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       category: "CORE_DELIVERY",
       monthlyGrossRevenuePaise: coreCommissionPaise,
       grossMarginPercentage: "NOT_CALCULATED",
-      legalBasis: "Requires current contract/provider/legal configuration."
-      participantMutualBenefit: "Requires current contract, provider and participant data."
+      legalBasis: "Requires current contract/provider/legal configuration.",
+      participantMutualBenefit: "Requires current contract, provider and participant data.",
     },
     {
       streamId: "stream_2_platform_convenience_fee",
