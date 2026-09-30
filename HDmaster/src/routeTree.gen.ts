@@ -17,8 +17,10 @@ import { Route as AppModuleRouteImport } from './routes/app/$module'
 import { Route as ApiZomatoKillerCronRouteImport } from './routes/api/zomato-killer-cron'
 import { Route as ApiTestOpenaiRouteImport } from './routes/api/test-openai'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as V1TravelSplatRouteImport } from './routes/v1/travel/$'
 import { Route as V1PaymentsSplatRouteImport } from './routes/v1/payments/$'
+import { Route as V1AdminSettlementEscalationsRouteImport } from './routes/v1/admin/settlement-escalations'
 import { Route as V1AdminRiderOffersRouteImport } from './routes/v1/admin/rider-offers'
 import { Route as V1AdminMasterAiRouteImport } from './routes/v1/admin/master-ai'
 import { Route as V1AdminCustomerOrdersRouteImport } from './routes/v1/admin/customer-orders'
@@ -78,6 +80,11 @@ const ApiTelemetryRoute = ApiTelemetryRouteImport.update({
   path: '/api/telemetry',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const V1TravelSplatRoute = V1TravelSplatRouteImport.update({
   id: '/v1/travel/$',
   path: '/v1/travel/$',
@@ -88,6 +95,12 @@ const V1PaymentsSplatRoute = V1PaymentsSplatRouteImport.update({
   path: '/v1/payments/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const V1AdminSettlementEscalationsRoute =
+  V1AdminSettlementEscalationsRouteImport.update({
+    id: '/v1/admin/settlement-escalations',
+    path: '/v1/admin/settlement-escalations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const V1AdminRiderOffersRoute = V1AdminRiderOffersRouteImport.update({
   id: '/v1/admin/rider-offers',
   path: '/v1/admin/rider-offers',
@@ -186,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
   '/api/zomato-killer-cron': typeof ApiZomatoKillerCronRoute
@@ -200,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/v1/admin/customer-orders': typeof V1AdminCustomerOrdersRouteWithChildren
   '/v1/admin/master-ai': typeof V1AdminMasterAiRoute
   '/v1/admin/rider-offers': typeof V1AdminRiderOffersRoute
+  '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
   '/v1/travel/$': typeof V1TravelSplatRoute
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
@@ -215,6 +230,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
   '/api/zomato-killer-cron': typeof ApiZomatoKillerCronRoute
@@ -229,6 +245,7 @@ export interface FileRoutesByTo {
   '/v1/admin/customer-orders': typeof V1AdminCustomerOrdersRouteWithChildren
   '/v1/admin/master-ai': typeof V1AdminMasterAiRoute
   '/v1/admin/rider-offers': typeof V1AdminRiderOffersRoute
+  '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
   '/v1/travel/$': typeof V1TravelSplatRoute
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
@@ -246,6 +263,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/api/test-openai': typeof ApiTestOpenaiRoute
   '/api/zomato-killer-cron': typeof ApiZomatoKillerCronRoute
@@ -260,6 +278,7 @@ export interface FileRoutesById {
   '/v1/admin/customer-orders': typeof V1AdminCustomerOrdersRouteWithChildren
   '/v1/admin/master-ai': typeof V1AdminMasterAiRoute
   '/v1/admin/rider-offers': typeof V1AdminRiderOffersRoute
+  '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
   '/v1/travel/$': typeof V1TravelSplatRoute
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
@@ -278,6 +297,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/api/health'
     | '/api/telemetry'
     | '/api/test-openai'
     | '/api/zomato-killer-cron'
@@ -292,6 +312,7 @@ export interface FileRouteTypes {
     | '/v1/admin/customer-orders'
     | '/v1/admin/master-ai'
     | '/v1/admin/rider-offers'
+    | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
     | '/v1/travel/$'
     | '/api/v1/kingpay/razorpay-webhook'
@@ -307,6 +328,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/api/health'
     | '/api/telemetry'
     | '/api/test-openai'
     | '/api/zomato-killer-cron'
@@ -321,6 +343,7 @@ export interface FileRouteTypes {
     | '/v1/admin/customer-orders'
     | '/v1/admin/master-ai'
     | '/v1/admin/rider-offers'
+    | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
     | '/v1/travel/$'
     | '/api/v1/kingpay/razorpay-webhook'
@@ -337,6 +360,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/api/health'
     | '/api/telemetry'
     | '/api/test-openai'
     | '/api/zomato-killer-cron'
@@ -351,6 +375,7 @@ export interface FileRouteTypes {
     | '/v1/admin/customer-orders'
     | '/v1/admin/master-ai'
     | '/v1/admin/rider-offers'
+    | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
     | '/v1/travel/$'
     | '/api/v1/kingpay/razorpay-webhook'
@@ -368,6 +393,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiHealthRoute: typeof ApiHealthRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
   ApiTestOpenaiRoute: typeof ApiTestOpenaiRoute
   ApiZomatoKillerCronRoute: typeof ApiZomatoKillerCronRoute
@@ -379,6 +405,7 @@ export interface RootRouteChildren {
   V1AdminCustomerOrdersRoute: typeof V1AdminCustomerOrdersRouteWithChildren
   V1AdminMasterAiRoute: typeof V1AdminMasterAiRoute
   V1AdminRiderOffersRoute: typeof V1AdminRiderOffersRoute
+  V1AdminSettlementEscalationsRoute: typeof V1AdminSettlementEscalationsRoute
   V1PaymentsSplatRoute: typeof V1PaymentsSplatRoute
   V1TravelSplatRoute: typeof V1TravelSplatRoute
   ApiV1KingpayRazorpayWebhookRoute: typeof ApiV1KingpayRazorpayWebhookRoute
@@ -448,6 +475,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTelemetryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/v1/travel/$': {
       id: '/v1/travel/$'
       path: '/v1/travel/$'
@@ -460,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/v1/payments/$'
       fullPath: '/v1/payments/$'
       preLoaderRoute: typeof V1PaymentsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v1/admin/settlement-escalations': {
+      id: '/v1/admin/settlement-escalations'
+      path: '/v1/admin/settlement-escalations'
+      fullPath: '/v1/admin/settlement-escalations'
+      preLoaderRoute: typeof V1AdminSettlementEscalationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/v1/admin/rider-offers': {
@@ -648,6 +689,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiHealthRoute: ApiHealthRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
   ApiTestOpenaiRoute: ApiTestOpenaiRoute,
   ApiZomatoKillerCronRoute: ApiZomatoKillerCronRoute,
@@ -659,6 +701,7 @@ const rootRouteChildren: RootRouteChildren = {
   V1AdminCustomerOrdersRoute: V1AdminCustomerOrdersRouteWithChildren,
   V1AdminMasterAiRoute: V1AdminMasterAiRoute,
   V1AdminRiderOffersRoute: V1AdminRiderOffersRoute,
+  V1AdminSettlementEscalationsRoute: V1AdminSettlementEscalationsRoute,
   V1PaymentsSplatRoute: V1PaymentsSplatRoute,
   V1TravelSplatRoute: V1TravelSplatRoute,
   ApiV1KingpayRazorpayWebhookRoute: ApiV1KingpayRazorpayWebhookRoute,
