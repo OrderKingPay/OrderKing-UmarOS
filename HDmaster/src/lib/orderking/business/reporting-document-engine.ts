@@ -370,30 +370,40 @@ export class ReportingDocumentEngine {
     }];
   }
   private static buildRiderPayout(params: ReportGenerationParams): ReportSection[] {
-    return [
-      {
-        id: 'rider_earnings_summary',
-        title: 'Fleet Earnings & Performance Breakdown',
-        metrics: [
-          { key: 'deliveries_completed', label: 'Total Completed Deliveries', value: 34, category: 'FACT' },
-          { key: 'base_distance_pay', label: 'Base Fare & Distance Compensation', value: '₹1,530.00', category: 'FACT' },
-          { key: 'peak_surge_bonus', label: 'Peak Hour & Rain Surge Bonus', value: '₹340.00', category: 'FACT' },
-          { key: 'customer_tips_100pct', label: 'Customer Tips (100% Passthrough)', value: '₹280.00', category: 'FACT' },
-          { key: 'milestone_incentive', label: '30+ Deliveries Daily Incentive', value: '₹150.00', category: 'FACT' },
-          { key: 'gross_rider_earnings', label: 'Total Gross Earnings', value: '₹2,300.00', category: 'CALCULATION' },
-        ],
-      },
-      {
-        id: 'deductions_and_net',
-        title: 'Insurance & Net Disbursed Earnings',
-        metrics: [
-          { key: 'daily_accidental_insurance', label: 'Group Accidental Insurance Deduction', value: '₹12.00', category: 'CALCULATION' },
-          { key: 'net_payout_amount', label: 'Net Payable to UPI VPA', value: '₹2,288.00', category: 'CALCULATION' },
-        ],
-      },
-    ];
+    const d = params.customData || {};
+    const money = (v: unknown) => typeof v === "number"
+      ? "₹" + (v / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : "—";
+    const gross = ["baseDistancePaise","surgePaise","tipsPaise","incentivePaise"].every((k) => typeof d[k] === "number")
+      ? Number(d.baseDistancePaise) + Number(d.surgePaise) + Number(d.tipsPaise) + Number(d.incentivePaise)
+      : null;
+    const net = gross != null && typeof d.deductionsPaise === "number"
+      ? gross - Number(d.deductionsPaise)
+      : typeof d.netPayoutPaise === "number" ? Number(d.netPayoutPaise) : null;
+    return [{
+      id: "rider_earnings_summary",
+      title: "Fleet Earnings & Performance Breakdown",
+      metrics: [
+        ...(typeof d.deliveriesCompleted === "number" ? [{ key: "deliveries_completed", label: "Completed Deliveries", value: d.deliveriesCompleted, category: "FACT" }] : []),
+        ...(typeof d.baseDistancePaise === "number" ? [{ key: "base_distance_pay", label: "Base & Distance Compensation", value: money(d.baseDistancePaise), category: "FACT" }] : []),
+        ...(typeof d.surgePaise === "number" ? [{ key: "peak_surge_bonus", label: "Peak/Surge Bonus", value: money(d.surgePaise), category: "FACT" }] : []),
+        ...(typeof d.tipsPaise === "number" ? [{ key: "customer_tips", label: "Customer Tips", value: money(d.tipsPaise), category: "FACT" }] : []),
+        ...(typeof d.incentivePaise === "number" ? [{ key: "target_incentive", label: "Target Incentive", value: money(d.incentivePaise), category: "FACT" }] : []),
+        ...(gross != null ? [{ key: "gross_rider_earnings", label: "Gross Rider Earnings", value: money(gross), category: "CALCULATION" }] : []),
+      ],
+    }, {
+      id: "deductions_and_net",
+      title: "Deductions & Net Disbursed Earnings",
+      metrics: [
+        ...(typeof d.deductionsPaise === "number" ? [{ key: "rider_deductions", label: "Deductions", value: money(d.deductionsPaise), category: "FACT" }] : []),
+        ...(net != null ? [{ key: "net_payout_amount", label: "Net Payable", value: money(net), category: "CALCULATION" }] : []),
+      ],
+      notes: [
+        d.providerReference ? "Provider reference: " + d.providerReference : "Provider reference: NOT_SUPPLIED",
+        typeof d.disbursedAt === "string" ? "Disbursed at: " + d.disbursedAt : "Disbursement time: NOT_SUPPLIED",
+      ],
+    }];
   }
-
   private static buildOperationsSLA(params: ReportGenerationParams): ReportSection[] {
     return [
       {
