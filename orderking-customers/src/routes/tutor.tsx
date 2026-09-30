@@ -26,8 +26,6 @@ Do not pretend to have official syllabus documents unless they were provided or 
 Do not claim exam scores, rank, placement, certification, or official eligibility.
 For homework, guide the student and explain the method rather than simply claiming completion.`;
 
-    const OpenAI = (await import("openai")).default;
-    const client = new OpenAI({ apiKey });
     const history = data.history.slice(-8).map((m: any) => ({
       role: m.role === "assistant" ? "assistant" : "user",
       content: String(m.content ?? ""),
@@ -40,25 +38,36 @@ For homework, guide the student and explain the method rather than simply claimi
       "gpt-6-luna",
     ].filter(Boolean)));
 
-    let lastError: any = null;
+    let lastError = "TUTOR_AI_REQUEST_FAILED";
     for (const model of candidates) {
-      try {
-        const response = await client.responses.create({
+      const response = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
           model,
           instructions: systemPrompt,
           input: [...history, { role: "user", content: data.message }],
           reasoning: { effort: model === "gpt-6-astra" ? "high" : "medium" },
-        });
-        return { text: response.output_text || "I could not produce a tutor response.", model: response.model };
-      } catch (error: any) {
-        lastError = error;
-        const status = Number(error?.status || 0);
-        const msg = String(error?.message || "");
-        const unavailable = [400, 403, 404].includes(status) && /model|permission|access|not found|unsupported/i.test(msg);
-        if (!unavailable) break;
+        }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (response.ok) {
+        return { text: payload.output_text || "I could not produce a tutor response.", model: payload.model || model };
       }
+
+      const message = String(payload?.error?.message || "");
+      lastError = message || `OpenAI HTTP ${response.status}`;
+      const unavailable =
+        [400, 403, 404].includes(response.status) &&
+        /model|permission|access|not found|unsupported/i.test(lastError);
+      if (!unavailable) break;
     }
-    throw new Error(lastError?.message || "TUTOR_AI_REQUEST_FAILED");
+
+    throw new Error(lastError);
   });
 
 export const Route = createFileRoute('/tutor')({
