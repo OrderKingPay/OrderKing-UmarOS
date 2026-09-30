@@ -4,10 +4,17 @@ import { createServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
 import { Send, GraduationCap, Award, BookOpen, BrainCircuit, Loader2, Sparkles } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
+import { authMiddleware } from "@/lib/auth/middleware";
 
 const askTutorFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .// @ts-ignore
-  validator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => data)
+  validator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => {
+    if (!data.message?.trim()) throw new Error("Tutor question is required.");
+    if (data.message.length > 4000) throw new Error("Tutor question is too long.");
+    if (!Array.isArray(data.history) || data.history.length > 8) throw new Error("Tutor history limit exceeded.");
+    return data;
+  })
   .handler(async ({ data }: any) => {
     const apiKey = process.env.OPENAI_API_KEY;
 
@@ -32,7 +39,7 @@ Rules:
           "Authorization": `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
+          model: process.env.OPENAI_TUTOR_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-5.6-luna",
           messages: [
             { role: "system", content: systemPrompt },
             ...data.history.map((m: any) => ({ role: m.role, content: m.content })),
