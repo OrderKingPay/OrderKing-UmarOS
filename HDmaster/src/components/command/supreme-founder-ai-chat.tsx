@@ -3574,13 +3574,6 @@ export function SupremeFounderAiChat({
         })),
       }));
 
-      const apiKeys: Record<string, string> = {
-        gemini: typeof window !== "undefined" ? (window.localStorage.getItem("umar_os_apikey_gemini") || "") : "",
-        openai: typeof window !== "undefined" ? (window.localStorage.getItem("umar_os_apikey_openai") || "") : "",
-        anthropic: typeof window !== "undefined" ? (window.localStorage.getItem("umar_os_apikey_anthropic") || "") : "",
-        xai: typeof window !== "undefined" ? (window.localStorage.getItem("umar_os_apikey_xai") || "") : "",
-      };
-
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {
@@ -3592,7 +3585,6 @@ export function SupremeFounderAiChat({
           modelId: selectedModel,
           mode: isThinkEnabled ? "deep" : "auto",
           founderUpiVpa,
-          apiKeys,
         }),
       });
 
