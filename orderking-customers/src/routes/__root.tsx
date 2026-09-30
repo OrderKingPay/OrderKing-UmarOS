@@ -1,5 +1,6 @@
 
 import { createServerFn } from "@tanstack/react-start";
+import { useEffect } from "react";
 import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider } from "@/lib/auth/provider";
@@ -90,6 +91,17 @@ function Root() {
   const context = Route.useRouteContext();
   const config = context.config ?? DEFAULT_CONFIG;
   const location = useRouterState({ select: (s) => s.location });
+
+  useEffect(() => {
+    const recover = () => {
+      const key = "orderking-vite-preload-recovered";
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+      window.location.reload();
+    };
+    window.addEventListener("vite:preloadError", recover);
+    return () => window.removeEventListener("vite:preloadError", recover);
+  }, []);
   return (
     <html lang="en" className="antialiased" suppressHydrationWarning>
       <head>
