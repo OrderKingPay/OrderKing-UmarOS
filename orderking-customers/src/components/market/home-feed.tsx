@@ -73,6 +73,31 @@ export function HomeFeed({
   const [networkSpeed, setNetworkSpeed] = useState<NetworkSpeed>("NORMAL");
   const growth = useQuery({ queryKey: ["growth-referral"], queryFn: () => getGrowthStatsRpc(), retry: false, staleTime: 30_000 });
   useEffect(() => {
+    const referralCode = new URLSearchParams(window.location.search).get("ref")?.trim();
+    if (!referralCode) return;
+    document.cookie = `orderking_ref=${encodeURIComponent(referralCode)}; Max-Age=2592000; Path=/; SameSite=Lax`;
+    void fetch("/api/referrals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ referralCode, type: "VISIT", source: "home_link" }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    const stored = document.cookie.match(/(?:^|; )orderking_ref=([^;]+)/)?.[1];
+    if (!stored || !growth.data) return;
+    const referralCode = decodeURIComponent(stored);
+    if (referralCode === growth.data.referralCode) return;
+    void fetch("/api/referrals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ referralCode, type: "SIGNUP", source: "post-auth" }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }, [growth.data]);
+
+  useEffect(() => {
     setNetworkSpeed(getNetworkSpeed());
     const handleOnline = () => setNetworkSpeed(getNetworkSpeed());
     const handleOffline = () => setNetworkSpeed("OFFLINE");
@@ -277,13 +302,15 @@ export function HomeFeed({
               <div>
                 <h3 className="font-display text-base font-bold text-fg">Invite Friends</h3>
                 <p className="text-xs text-muted">
-                  Share OrderKing with friends. Any live referral reward is shown only when a verified promotion is active.
+                  {growth.data?.campaign
+                    ? `Target: ${growth.data.progress.qualified}/${growth.data.progress.target} verified qualifying orders · reward: ₹${(growth.data.campaign.rewardPerQualifiedOrderPaise / 100).toFixed(0)}`
+                    : "Share OrderKing with friends. Rewards appear only when a verified campaign is active."}
                 </p>
               </div>
             </div>
             <div className="flex w-full sm:w-auto items-center gap-2">
               <a
-                href={`https://wa.me/?text=${encodeURIComponent("Join me on OrderKing for food and everyday services: https://orderking.in/")}`}
+                href={`https://wa.me/?text=${encodeURIComponent(`Join me on OrderKing for food and everyday services: ${growth.data?.shareUrl || "https://orderking.in/"}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700 active:scale-95"
@@ -294,7 +321,7 @@ export function HomeFeed({
               <button
                 type="button"
                 onClick={() => {
-                  void navigator.clipboard?.writeText("https://orderking.in/?ref=KINGVIP");
+                  void navigator.clipboard?.writeText(growth.data?.shareUrl || "https://orderking.in/");
                   toast.success("Referral link copied to clipboard!");
                 }}
                 className="inline-flex items-center justify-center rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-fg shadow-xs transition hover:bg-surface-2"
