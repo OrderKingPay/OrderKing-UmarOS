@@ -1080,29 +1080,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     return Math.round(emi);
   };
 
-  const handleBiometricPay = (amount: number, recipient: string) => {
-    setShowBiometricModal(true);
-    setBiometricScanning(true);
+  const handleBiometricPay = (_amount: number, _recipient: string) => {
+    setShowBiometricModal(false);
+    setBiometricScanning(false);
     setBiometricSuccess(false);
-
-    setTimeout(() => {
-      setBiometricScanning(false);
-      setBiometricSuccess(true);
-      playSoundboxChime(amount);
-      setShowBiometricModal(false);
-      setTimeout(() => {
-        setBiometricSuccess(false);
-        toast.info("Biometric payment is not activated: a real UPI/WebAuthn payment provider and server-side payment confirmation are required. No wallet debit was made.");
-        setScratched(false);
-        setScratchReward({
-          title: "🎉 1-Tap Biometric Cashback!",
-          desc: "Rewarded for using military-grade WebAuthn 1-tap checkout.",
-          amount: Math.floor(10 + Math.random() * 20),
-          coins: 120,
-        });
-        setShowScratchCard(true);
-      }, 900);
-    }, 1200);
+    setShowScratchCard(false);
+    toast.info("Biometric payment is not activated: a verified UPI/WebAuthn provider and server-side payment confirmation are required.");
   };
 
   // Soundbox Voice Synthesis Chime
