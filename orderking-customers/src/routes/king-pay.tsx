@@ -849,6 +849,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     kingCoins,
     setKingCoins,
     transactions: ledgerTransactions,
+    refreshWallet,
   } = useRealKingPayWallet();
   const [activeTab, setActiveTab] = useState<"all" | "fuel" | "recharge" | "bills" | "travel" | "gas">("all");
   const [showAddMoney, setShowAddMoney] = useState(false);
@@ -1295,12 +1296,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             });
             
             if (verifyRes.ok) {
-               const newBal = walletBalance + val;
-               setWalletBalance(newBal);
-               if (typeof window !== "undefined") {
-                 localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-               }
-               addTransaction(val, "Added Money via Razorpay", "credit");
+               await refreshWallet();
                setShowAddMoney(false);
                playSoundboxChime(val);
                toast.success(`₹${val} added to KingPay Wallet via Razorpay!`);
@@ -1345,9 +1341,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     }
     const newBal = walletBalance - amt;
     setWalletBalance(newBal);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-    }
     addTransaction(amt, `Scan & Pay to ${scanRecipient || "Merchant"}`, "debit");
     if (effective2G) {
       try {
@@ -1472,10 +1465,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     const addedGrams = Number((val / 7420).toFixed(4));
     const newGold = Number((goldGrams + addedGrams).toFixed(4));
     setGoldGrams(newGold);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-      localStorage.setItem("ok_king_pay_gold_grams", String(newGold));
-    }
     setShowGoldModal(false);
     playSoundboxChime(val);
     toast.success(`🌟 Bought ${addedGrams}g of 24K 99.9% Pure Gold! Vault balance: ${newGold}g`);
@@ -1486,9 +1475,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     const newCoins = kingCoins + scratchReward.coins;
     setWalletBalance(newBal);
     setKingCoins(newCoins);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-    }
     addTransaction(scratchReward.amount, scratchReward.title, "credit");
     setShowScratchCard(false);
     toast.success(`Claimed ₹${scratchReward.amount} cashback & +${scratchReward.coins} King Coins!`);
@@ -3687,9 +3673,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               }
               const newBal = walletBalance - amt;
               setWalletBalance(newBal);
-              if (typeof window !== "undefined") {
-                localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-              }
               addTransaction(amt, `Paid ${res.payeeName || res.upiId}`, "debit");
               playSoundboxChime(amt);
               toast.success(`⚡ Paid ₹${amt} to ${res.payeeName || res.upiId} via KingPay!`);
