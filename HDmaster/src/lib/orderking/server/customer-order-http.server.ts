@@ -232,12 +232,47 @@ export async function handleCustomerOrderCancelHttp(request: Request, orderId: s
     if (!order) return json({ error: "Order not found", code: "ORDER_NOT_FOUND" }, 404);
     if (order.customer_ref !== body.customerRef) return json({ error: "Order does not belong to customer", code: "FORBIDDEN" }, 403);
     if (!["PENDING", "CONFIRMED"].includes(order.status)) return json({ error: "Order can no longer be cancelled", code: "CANCELLATION_NOT_ALLOWED", status: order.status }, 409);
-    await sql`update orders set status='CANCELLED', updated_at=now() where id=${order.id} and org_id=${ws.ctx.orgId} and status=${order.status}`;
-    await sql`insert into order_events (id,org_id,order_id,actor_employee_id,from_status,to_status,action,note) values (${nid("ev")},${ws.ctx.orgId},${order.id},${ws.ctx.employeeId},${order.status},'CANCELLED','customer.order_cancelled',${JSON.stringify({ customerRef: body.customerRef, reason: body.reason ?? null })})`;
-    await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.customer_cancelled", targetType: "order", targetId: order.id, next: { status: "CANCELLED" }, reason: body.reason ?? "Customer cancellation" });
-    const result = { orderId: order.id, status: "CANCELLED", authoritative: "HDmaster" as const };
-    await sql`insert into idempotency_keys (key,org_id,employee_id,action,response_json) values (${idempotencyKey},${ws.ctx.orgId},${ws.ctx.employeeId},'order.customer_cancel',${JSON.stringify(result)}) on conflict (key) do nothing`;
-    return json({ data: result });
+    const result = await sql.transaction(async (tx) => {
+      let refundedPaise = 0;
+      if (order.status !== "CANCELLED") {
+        const full = await tx<{ payment_method: string; payment_status: string; total_paise: number }>`
+          SELECT payment_method, payment_status, total_paise FROM orders WHERE id=${order.id} FOR UPDATE
+        `;
+        const current = full[0];
+        if (current?.payment_method === "KING_PAY" && current.payment_status === "PAID_WALLET") {
+          const refundId = `kp_refund_${order.id}`;
+          const already = await tx`SELECT id FROM kingpay_transactions WHERE id=${refundId} LIMIT 1`;
+          if (already.length === 0) {
+            await tx`
+              INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins)
+              VALUES (${body.customerRef}, 0, 0) ON CONFLICT (user_id) DO NOTHING
+            `;
+            await tx`
+              SELECT balance_paise FROM kingpay_wallets WHERE user_id=${body.customerRef} FOR UPDATE
+            `;
+            await tx`
+              UPDATE kingpay_wallets SET balance_paise = balance_paise + ${current.total_paise}, updated_at=NOW()
+              WHERE user_id=${body.customerRef}
+            `;
+            await tx`
+              INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+              VALUES (${refundId}, ${body.customerRef}, ${current.total_paise}, 'CREDIT', ${"Order cancellation refund " + order.id})
+            `;
+            refundedPaise = Number(current.total_paise);
+          }
+          await tx`UPDATE orders SET status='CANCELLED', payment_status='REFUNDED', updated_at=NOW() WHERE id=${order.id} AND org_id=${ws.ctx.orgId}`;
+        } else {
+          await tx`UPDATE orders SET status='CANCELLED', updated_at=NOW() WHERE id=${order.id} AND org_id=${ws.ctx.orgId}`;
+        }
+        await tx`
+          INSERT INTO order_events (id,org_id,order_id,actor_employee_id,from_status,to_status,action,note)
+          VALUES (${nid("ev")},${ws.ctx.orgId},${order.id},${ws.ctx.employeeId},${order.status},'CANCELLED','customer.order_cancelled',${JSON.stringify({ customerRef: body.customerRef, reason: body.reason ?? null, refundedPaise })})
+        `;
+      }
+      return { orderId: order.id, status: "CANCELLED", authoritative: "HDmaster" as const, refundedPaise };
+    });
+    await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.customer_cancelled", targetType: "order", targetId: order.id, next: { status: "CANCELLED", refundedPaise: result.refundedPaise }, reason: body.reason ?? "Customer cancellation" });
+    await sql`INSERT INTO idempotency_keys (key,org_id,employee_id,action,response_json) VALUES (${idempotencyKey},${ws.ctx.orgId},${ws.ctx.employeeId},'order.customer_cancel',${JSON.stringify(result)}) ON CONFLICT (key) DO NOTHING`;
   } catch (err) { 
     const message = err instanceof Error ? err.message : "Unexpected error"; 
     
