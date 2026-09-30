@@ -41,6 +41,18 @@ export async function handleRiderOrderTransition(request: Request, input: { orde
     await sql.query(`insert into order_events (id, org_id, order_id, actor_employee_id, from_status, to_status, action, note, lat, lng, h3_index) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`, [nid("ev"), ws.ctx.orgId, input.orderId, ws.ctx.employeeId, input.from, input.to, `rider.${input.to.toLowerCase()}`, input.reason ?? null, input.lat ?? null, input.lng ?? null, h3Index]);
     await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.rider_transition", targetType: "order", targetId: input.orderId, previous: { status: input.from, riderId: order.rider_id }, next: { status: input.to, riderId, actor: "rider" }, reason: input.reason, lat: input.lat, lng: input.lng, h3Index, gpsAccuracy: input.accuracy });
     
+    if (input.to === "DELIVERED") {
+      try {
+        const { qualifyReferralOrder } = await import("@/lib/orderking/server/growth-qualification.server");
+        const qualified = await qualifyReferralOrder(order.customer_id, input.orderId);
+        if (qualified.qualified) {
+          console.info("[growth] verified referral reward posted:", qualified.rewardPaise);
+        }
+      } catch (growthError) {
+        console.error("[growth] qualification failed after delivery:", growthError);
+      }
+    }
+
     // Fire push notification in the background
     const { NotificationService } = await import("@/lib/orderking/server/NotificationService");
     NotificationService.sendOrderStatusUpdate(
