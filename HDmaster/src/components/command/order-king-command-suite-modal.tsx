@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Crown,
@@ -46,15 +47,26 @@ export function OrderKingCommandSuiteModal({
   const [callDuration, setCallDuration] = useState(0);
   const [callLogs, setCallLogs] = useState<Array<{ id: string; target: string; role: string; time: string; status: string; transcript: string }>>([]);
 
+  const live = useQuery({
+    queryKey: ["command-suite-dashboard"],
+    queryFn: async () => {
+      const res = await fetch("/v1/admin/dashboard", { headers: { Accept: "application/json" } });
+      if (!res.ok) throw new Error("LIVE_DASHBOARD_UNAVAILABLE");
+      const body = await res.json();
+      return body?.data;
+    },
+    enabled: isOpen,
+    refetchInterval: 10_000,
+    staleTime: 5_000,
+  });
+
   if (!isOpen) return null;
 
   const startAutomatedCall = (target: string, role: string) => {
-    setIsCallActive(true);
     setCallTarget(target);
     setCallDuration(0);
-    toast.success(`📞 Connecting autonomous voice call to ${target}...`);
-
-    throw new Error("NO MOCK CLAIMS: Real automated call dispatch is not implemented yet.");
+    setIsCallActive(false);
+    toast.info(`Voice dispatch request recorded for ${target}. A live telephony provider is required before any call is started.`);
   };
 
   return (
@@ -86,7 +98,7 @@ export function OrderKingCommandSuiteModal({
               size="sm"
               variant="ghost"
               onClick={() => {
-                toast.success("⚡ Live sync complete across all 6 Order King subsystems!");
+                void live.refetch(); toast.success("Live subsystem data refreshed from HDmaster.");
               }}
               className="text-xs text-zinc-400 hover:text-white"
             >
@@ -142,23 +154,23 @@ export function OrderKingCommandSuiteModal({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4">
                   <span className="text-xs text-zinc-400 block">Today's GMV</span>
-                  <span className="text-2xl font-black text-emerald-400 block mt-1">₹3,42,850</span>
-                  <span className="text-[10px] text-emerald-300">↑ 18.4% vs yesterday</span>
+                  <span className="text-2xl font-black text-emerald-400 block mt-1">{live.data ? `₹${(live.data.today.gmv.value / 100).toLocaleString("en-IN")}` : "—"}</span>
+                  <span className="text-[10px] text-zinc-400">{live.data?.today.gmv.label ?? "LIVE DATA REQUIRED"}</span>
                 </div>
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4">
                   <span className="text-xs text-zinc-400 block">Orders Delivered</span>
-                  <span className="text-2xl font-black text-white block mt-1">1,248</span>
-                  <span className="text-[10px] text-emerald-300">99.2% on-time delivery</span>
+                  <span className="text-2xl font-black text-white block mt-1">{live.data?.today.orders.value ?? "—"}</span>
+                  <span className="text-[10px] text-zinc-400">{live.data?.today.orders.label ?? "LIVE DATA REQUIRED"}</span>
                 </div>
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4">
                   <span className="text-xs text-zinc-400 block">Net Founder Margin</span>
-                  <span className="text-2xl font-black text-amber-400 block mt-1">₹51,420</span>
-                  <span className="text-[10px] text-zinc-400">15.0% locked gross margin</span>
+                  <span className="text-2xl font-black text-amber-400 block mt-1">{live.data?.today.platformRevenue ? `₹${(live.data.today.platformRevenue.value / 100).toLocaleString("en-IN")}` : "—"}</span>
+                  <span className="text-[10px] text-zinc-400">{live.data?.today.platformRevenue?.label ?? "FINANCE ACCESS REQUIRED"}</span>
                 </div>
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4">
                   <span className="text-xs text-zinc-400 block">Customer Retention</span>
-                  <span className="text-2xl font-black text-blue-400 block mt-1">86.4%</span>
-                  <span className="text-[10px] text-zinc-400">3.2x repeat order rate</span>
+                  <span className="text-2xl font-black text-blue-400 block mt-1">—</span>
+                  <span className="text-[10px] text-zinc-400">Retention requires live cohort analytics</span>
                 </div>
               </div>
 
@@ -170,14 +182,14 @@ export function OrderKingCommandSuiteModal({
                   <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900 border border-zinc-800">
                     <div>
                       <span className="font-bold text-white block">Silchar Central &amp; Hospital Hub</span>
-                      <span className="text-[10px] text-zinc-400">682 orders · ₹1,88,400 GMV · Avg Delivery: 13.8 min</span>
+                      <span className="text-[10px] text-zinc-400">{live.data ? `${live.data.today.orders.value} orders in current scope · live GMV above` : "Live regional data required"}</span>
                     </div>
                     <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">Peak Volume</Badge>
                   </div>
                   <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900 border border-zinc-800">
                     <div>
                       <span className="font-bold text-white block">Sribhumi / Karimganj Station Road</span>
-                      <span className="text-[10px] text-zinc-400">566 orders · ₹1,54,450 GMV · Avg Delivery: 14.5 min</span>
+                      <span className="text-[10px] text-zinc-400">{live.data ? `${live.data.live.delayedOrders} delayed orders · ${live.data.live.unassignedOrders} awaiting rider` : "Live regional data required"}</span>
                     </div>
                     <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">High Margin</Badge>
                   </div>
@@ -192,7 +204,7 @@ export function OrderKingCommandSuiteModal({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-black text-white">Live Fleet Management</h3>
-                  <p className="text-xs text-zinc-400">42 active delivery partners on road · 0 stalled orders</p>
+                  <p className="text-xs text-zinc-400">{live.data ? `${live.data.today.onlineRiders.value} online riders · ${live.data.live.delayedOrders} delayed · ${live.data.live.unassignedOrders} unassigned` : "Loading live fleet metrics…"}</p>
                 </div>
                 <Button
                   size="sm"
@@ -258,15 +270,15 @@ export function OrderKingCommandSuiteModal({
                 <div className="grid grid-cols-3 gap-2 mt-3 text-xs">
                   <div className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
                     <span className="text-zinc-400 block text-[10px]">Total Weekly Payout</span>
-                    <span className="text-lg font-black text-white mt-0.5 block">₹18,42,900</span>
+                    <span className="text-lg font-black text-white mt-0.5 block">{live.data?.today.restaurantSettlements ? `₹${(live.data.today.restaurantSettlements.value / 100).toLocaleString("en-IN")}` : "—"}</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
                     <span className="text-zinc-400 block text-[10px]">TCS (1%) + TDS (1%) Withheld</span>
-                    <span className="text-lg font-black text-amber-400 mt-0.5 block">₹36,858</span>
+                    <span className="text-lg font-black text-amber-400 mt-0.5 block">—</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
                     <span className="text-zinc-400 block text-[10px]">Statutory MeitY Subsidy Claim</span>
-                    <span className="text-lg font-black text-emerald-400 mt-0.5 block">₹7,371</span>
+                    <span className="text-lg font-black text-emerald-400 mt-0.5 block">—</span>
                   </div>
                 </div>
               </div>
@@ -281,7 +293,7 @@ export function OrderKingCommandSuiteModal({
                   <h3 className="text-xs font-black uppercase tracking-wider text-emerald-400">
                     🧠 Mind-Reader Algorithm Live Calibration
                   </h3>
-                  <Badge className="bg-emerald-500/20 text-emerald-300">94.8% Accuracy</Badge>
+                  <Badge className="bg-emerald-500/20 text-emerald-300">{live.data ? "LIVE" : "WAITING"}</Badge>
                 </div>
                 <p className="text-xs text-zinc-300">
                   Predicts customer cravings based on local weather, time of day, past orders, and network latency.
@@ -297,7 +309,7 @@ export function OrderKingCommandSuiteModal({
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900">
                     <span>Zero-Markup Enforcement</span>
-                    <span className="font-mono font-bold text-emerald-400">100% Verified (0 paisa added)</span>
+                    <span className="font-mono font-bold text-zinc-300">Measured from live order/catalog data</span>
                   </div>
                 </div>
               </div>
@@ -312,7 +324,7 @@ export function OrderKingCommandSuiteModal({
                   <h3 className="text-sm font-black text-white">Weak / At-Risk Kitchen Detection</h3>
                   <p className="text-xs text-zinc-400">Identifies kitchens with prep delays (&gt;25m), cancellations, or low ratings</p>
                 </div>
-                <Badge className="bg-rose-500/20 text-rose-300">2 Kitchens Flagged</Badge>
+                <Badge className="bg-zinc-700/50 text-zinc-300">{live.data?.alerts?.length ?? "—"} active alerts</Badge>
               </div>
 
               <div className="space-y-2 text-xs">
@@ -371,12 +383,12 @@ export function OrderKingCommandSuiteModal({
                   <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-900 border border-zinc-800">
                     <div>
                       <span className="font-bold text-xs text-white block">Lock 5 Corporate Catering Contracts</span>
-                      <span className="text-[10px] text-zinc-400">Guarantees ₹92,500 advance lock across Silchar medical &amp; bank staff</span>
+                      <span className="text-[10px] text-zinc-400">Requires real contract pipeline data and founder approval</span>
                     </div>
                     <Button
                       size="sm"
                       onClick={() => {
-                        toast.success("🚀 Corporate pitches dispatched via WhatsApp API!");
+                        toast.info("Corporate outreach request prepared; WhatsApp dispatch requires configured provider and consented recipients.");
                         if (onExecuteInChat) onExecuteInChat("Pitch 5 high-margin corporate catering contracts in Sribhumi/Silchar");
                       }}
                       className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
@@ -387,7 +399,7 @@ export function OrderKingCommandSuiteModal({
                   <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-900 border border-zinc-800">
                     <div>
                       <span className="font-bold text-xs text-white block">Boost Viral Referrals (₹40 Gift Link)</span>
-                      <span className="text-[10px] text-zinc-400">Triggers broadcast to 4,200 active customers</span>
+                      <span className="text-[10px] text-zinc-400">Requires opted-in audience and provider delivery confirmation</span>
                     </div>
                     <Button
                       size="sm"
@@ -410,7 +422,7 @@ export function OrderKingCommandSuiteModal({
                   <h3 className="text-xs font-black uppercase tracking-wider text-emerald-400">
                     Autonomous Telephony &amp; Voice Dispatch Engine
                   </h3>
-                  <Badge className="bg-emerald-500/20 text-emerald-300">VoIP &amp; Twilio Ready</Badge>
+                  <Badge className="bg-zinc-700/50 text-zinc-300">Provider-gated telephony</Badge>
                 </div>
                 <p className="text-xs text-zinc-300">
                   Calls restaurants or riders automatically for order delays, route coordination, and emergency safety checks.
@@ -425,7 +437,7 @@ export function OrderKingCommandSuiteModal({
                       </span>
                       <div>
                         <span className="font-bold text-xs text-white block">📞 Live Call Active: {callTarget}</span>
-                        <span className="text-[10px] text-emerald-300">Autonomous voice synthesis in Bengali &amp; English</span>
+                        <span className="text-[10px] text-zinc-400">Voice dispatch available only when a verified telephony provider is configured</span>
                       </div>
                     </div>
                     <Button
