@@ -1,45 +1,65 @@
-// @ts-nocheck
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import OpenAI from "openai";
+import { createAPIFileRoute } from "@tanstack/react-start/api";
 
-// OPENAI API SCAFFOLDING
-// Drop your production API keys in Netlify Environment Variables:
-// VITE_OPENAI_API_KEY
+const DEFAULT_MODEL = "gpt-5.6-luna";
 
-export const APIRoute = createAPIFileRoute('/api/v1/integrations/openai')({
-  POST: async () => {
-  try {
-    const { prompt } = await request.json();
-    const openAiKey = process.env.VITE_OPENAI_API_KEY;
+export const APIRoute = createAPIFileRoute("/api/v1/integrations/openai")({
+  POST: async ({ request }: any) => {
+    try {
+      const { prompt } = await request.json();
+      const text = typeof prompt === "string" ? prompt.trim() : "";
 
-    if (!openAiKey) {
-      return new Response(JSON.stringify({ 
-        error: "Missing VITE_OPENAI_API_KEY. System is prepared but waiting for Founder to provide the key in Netlify settings." 
-      }), { status: 500 });
+      if (!text) {
+        return new Response(JSON.stringify({ error: "prompt is required" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      const apiKey = process.env.OPENAI_API_KEY?.trim();
+      if (!apiKey) {
+        return new Response(
+          JSON.stringify({
+            error: "OpenAI is not configured on this server.",
+            code: "OPENAI_NOT_CONFIGURED",
+          }),
+          {
+            status: 503,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      }
+
+      const client = new OpenAI({ apiKey });
+      const response = await client.responses.create({
+        model: process.env.OPENAI_MODEL?.trim() || DEFAULT_MODEL,
+        input: text,
+      });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          model: response.model,
+          ai_response: response.output_text,
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    } catch (error) {
+      console.error("[openai] request failed:", error);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "OpenAI request failed.",
+          code: "OPENAI_REQUEST_FAILED",
+        }),
+        {
+          status: 502,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
-    
-    // Real API Call to OpenAI will go here:
-    /*
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${openAiKey}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [{ role: "system", content: "You are the top OrderKing AI." }, { role: "user", content: prompt }]
-      })
-    });
-    const data = await res.json();
-    return new Response(JSON.stringify({ success: true, ai_response: data.choices[0].message.content }));
-    */
-    
-    return new Response(JSON.stringify({ success: true, message: "OpenAI API scaffolding ready. Waiting for keys." }), {
-      headers: { "Content-Type": "application/json" }
-    });
-
-  } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: "Internal Server Error" }), { status: 500 });
-  }
-  }
+  },
 });
