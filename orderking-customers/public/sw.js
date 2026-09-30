@@ -66,7 +66,14 @@ function shouldCacheApiResponse(request, response) {
   const cacheControl = response.headers.get("Cache-Control") || "";
   if (/private|no-store|no-cache/i.test(cacheControl)) return false;
   if (response.headers.has("Set-Cookie")) return false;
-  return true;
+
+  // Cache only explicitly public/catalog-style API paths. Never cache
+  // orders, wallets, payments, profiles, auth/session, support or finance data.
+  const path = new URL(request.url).pathname;
+  const isPublicCatalog =
+    /^\/api\/(restaurants|menu|catalog|search|cities|zones|locations|config)(\/|$)/i.test(path) ||
+    /^\/api\/(public)(\/|$)/i.test(path);
+  return isPublicCatalog;
 }
 
 self.addEventListener("install", (event) => {
