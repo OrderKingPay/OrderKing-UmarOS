@@ -803,18 +803,18 @@ export function SystemMasterSettingsModal({
               <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-2">
                 <div className="text-xs font-bold text-slate-200">Currently Configured Models</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {[
-                    { provider: "Google Gemini", model: "gemini-2.0-flash", key: "gemini" },
-                    { provider: "OpenAI", model: "gpt-4o", key: "openai" },
-                    { provider: "Anthropic", model: "claude-3-7-sonnet-20250219", key: "anthropic" },
-                    { provider: "xAI Grok", model: "grok-2", key: "xai" },
-                  ].map((p) => {
-                    const hasKey = !!getProviderApiKey(p.key);
+                  {modelsList.filter((p) =>
+                    p.provider === "Google" ||
+                    p.provider === "OpenAI" ||
+                    p.provider === "Anthropic" ||
+                    p.provider === "xAI"
+                  ).map((p) => {
+                    const hasKey = p.authStatus === "VERIFIED";
                     return (
                       <div key={p.key} className="flex items-center justify-between p-2 rounded-lg bg-black/40 border border-white/5 text-xs">
                         <div>
                           <div className="font-bold text-white">{p.provider}</div>
-                          <div className="text-[10px] font-mono text-slate-400">{p.model}</div>
+                          <div className="text-[10px] font-mono text-slate-400">{p.realApiId}</div>
                         </div>
                         <Badge className={`text-[9px] font-bold ${
                           hasKey
