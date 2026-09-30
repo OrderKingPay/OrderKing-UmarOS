@@ -820,7 +820,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [hasVotedCity, setHasVotedCity] = useState(false);
   const {
     walletBalance,
-    setWalletBalance,
     kingCoins,
     setKingCoins,
     transactions: ledgerTransactions,
