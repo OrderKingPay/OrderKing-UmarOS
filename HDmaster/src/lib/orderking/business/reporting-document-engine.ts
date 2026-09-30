@@ -215,47 +215,34 @@ export class ReportingDocumentEngine {
   // -------------------------------------------------------------------------
 
   private static buildDailyFounderBriefing(params: ReportGenerationParams): ReportSection[] {
-    const custom = params.customData || {};
-    const ordersToday = custom.ordersToday ?? 142;
-    const gmvToday = custom.gmvToday ?? 52480;
-    const activeRest = custom.activeRestaurants ?? 28;
-    const activeRiders = custom.activeRiders ?? 18;
-    const platformFee = custom.platformFeeRevenue ?? 2840; // ₹20 flat fee or subscription
-    const founderProfit = custom.founderProfit ?? 2350;
-    const competitorSavings = Math.round(gmvToday * 0.22); // 22% typical Zomato/Swiggy commission saved
-
-    return [
-      {
-        id: 'executive_kpis',
-        title: 'Founder Executive KPIs',
-        description: 'Core daily marketplace metrics verified against canonical double-entry ledger.',
-        metrics: [
-          { key: 'orders_today', label: 'Completed Orders', value: ordersToday, category: 'FACT', sourceNote: 'Order State Machine' },
-          { key: 'gmv_today', label: 'Gross Merchandise Value', value: `₹${gmvToday.toLocaleString('en-IN')}`, category: 'FACT', sourceNote: 'Payment Gateway' },
-          { key: 'platform_fee', label: 'Platform Fee Revenue', value: `₹${platformFee.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Canonical Ledger' },
-          { key: 'founder_net', label: 'Founder Net Margin', value: `₹${founderProfit.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Ledger Profit Engine' },
-          { key: 'partner_savings', label: 'Merchant Savings vs Swiggy/Zomato (22%)', value: `₹${competitorSavings.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Zero-Commission Benchmark' },
-          { key: 'active_merchants', label: 'Active Restaurant Partners', value: activeRest, category: 'FACT', sourceNote: 'OrderKing-Partners Heartbeat' },
-          { key: 'active_riders', label: 'Online Delivery Partners', value: activeRiders, category: 'FACT', sourceNote: 'OrderKing-Riders GPS Registry' },
-        ],
-      },
-      {
-        id: 'action_items',
-        title: 'Autonomous AI Recommendations & Pending Gates',
-        description: 'Prioritized founder interventions required for operational continuity.',
-        notes: [
-          'All double-entry ledger balances strictly verified with zero imbalance.',
-          'P99 API latency across customer and partner endpoints is currently 142ms (Target: <300ms).',
-        ],
-        recommendations: [
-          '3 restaurant settlement payouts exceeding ₹10,000 awaiting founder cryptographic signature approval.',
-          'Activate dynamic surge pricing (+₹15) in North Zone due to evening rain forecast.',
-          'Invite 5 newly onboarded cloud kitchens to complete menu photography audit.',
-        ],
-      },
-    ];
+    const d = params.customData || {};
+    const money = (v: unknown) => typeof v === "number"
+      ? "₹" + (v / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : "—";
+    const metrics: AttributedMetric[] = [];
+    if (typeof d.ordersToday === "number") metrics.push({ key: "orders_today", label: "Orders Today", value: d.ordersToday, category: "FACT", sourceNote: "Canonical order state" });
+    if (typeof d.gmvTodayPaise === "number") metrics.push({ key: "gmv_today", label: "GMV Today", value: money(d.gmvTodayPaise), category: "FACT", sourceNote: "Canonical order/payment data" });
+    if (typeof d.platformRevenuePaise === "number") metrics.push({ key: "platform_revenue", label: "Platform Revenue", value: money(d.platformRevenuePaise), category: "FACT", sourceNote: "Canonical ledger" });
+    if (typeof d.founderNetPaise === "number") metrics.push({ key: "founder_net", label: "Founder Net Contribution", value: money(d.founderNetPaise), category: "CALCULATION", sourceNote: "Supplied revenue minus supplied operating costs" });
+    if (typeof d.activeRestaurants === "number") metrics.push({ key: "active_restaurants", label: "Active Restaurants", value: d.activeRestaurants, category: "FACT", sourceNote: "Restaurant status" });
+    if (typeof d.onlineRiders === "number") metrics.push({ key: "online_riders", label: "Online Riders", value: d.onlineRiders, category: "FACT", sourceNote: "Rider online state" });
+    return [{
+      id: "executive_kpis",
+      title: "Founder Executive KPIs",
+      description: "Live operational and financial metrics supplied by canonical production data sources.",
+      metrics,
+      notes: [
+        typeof d.delayedOrders === "number" ? "Delayed orders: " + d.delayedOrders : "Delayed orders: DATA_REQUIRED",
+        typeof d.unassignedOrders === "number" ? "Unassigned orders: " + d.unassignedOrders : "Unassigned orders: DATA_REQUIRED",
+      ],
+    }, {
+      id: "action_items",
+      title: "Live Exceptions & Founder Gates",
+      description: "Only live exceptions or explicitly supplied recommendations are shown.",
+      notes: Array.isArray(d.notes) ? d.notes : ["No additional live notes supplied."],
+      recommendations: Array.isArray(d.recommendations) ? d.recommendations : ["No additional live recommendations supplied."],
+    }];
   }
-
   private static buildWeeklyFounderExecutive(params: ReportGenerationParams): ReportSection[] {
     return [
       {
