@@ -491,7 +491,7 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-5.6-luna",
+        model: process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-6.1-sol",
         temperature: 0.2,
         messages: [
           {
@@ -519,6 +519,6 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
     const body = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
     const text = body.choices?.[0]?.message?.content?.trim();
     if (!text) throw new RiderError("AI_UNAVAILABLE", "OpenAI returned no support response.", 503);
-    return { provider: "openai", model: process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-5.6-luna", text };
+    return { provider: "openai", model: process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-6.1-sol", text };
   });
 
