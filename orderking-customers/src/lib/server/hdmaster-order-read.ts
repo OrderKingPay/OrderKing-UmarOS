@@ -14,7 +14,7 @@ const statusMap: Record<string, OrderDetail["status"]> = {
 export const getMyHDmasterOrder = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .// @ts-ignore
-  validator((input: { orderId: string }) => input)
+  inputValidator((input: { orderId: string }) => input)
   .handler(async ({ context, data }: any) => {
     const cfg = await loadConfig();
     if (cfg.marketplace.launchMode !== "live") return { order: null as OrderDetail | null };
