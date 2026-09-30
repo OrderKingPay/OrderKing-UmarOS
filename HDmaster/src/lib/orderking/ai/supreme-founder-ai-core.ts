@@ -4,7 +4,7 @@
 
 import { mediaStorageVault } from "./media-storage-vault.ts";
 import { UniversalSuperintelligenceEngine } from "./universal-superintelligence-engine.server.ts";
-import { ensembleConsensusEngine } from "./ensemble-consensus-engine.ts";
+import { liveOrchestrationEngine } from "./live-orchestration-engine.ts";
 import { instantDeployEngine } from "./instant-deploy-engine.ts";
 import { founderPrivacyShield } from "./founder-privacy-shield.ts";
 import { autonomousModelUpdater } from "./autonomous-model-updater.ts";
@@ -1224,19 +1224,22 @@ Select any module below to **preview standalone source code, download full ZIP p
     q.includes("all strongest") ||
     q.includes("together")
   ) {
-    const consensus = ensembleConsensusEngine.executeConsensus(query);
+    const consensus = await liveOrchestrationEngine.executeMultiModelConsensus({
+      prompt: query,
+      systemPrompt: "You are Umar OS founder intelligence. Use only real configured providers. Never claim factual verification unless performed.",
+    });
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Simultaneous Multi-Model Fanout", status: "COMPLETED", detail: "GPT-5.6, Claude 4.6, Grok 4.6, Gemini 3.8, Codex, DeepSeek invoked" },
-      { stepNumber: 2, totalSteps: 4, label: "Cross-Model Critique & Verification", status: "COMPLETED", detail: "Checked 0.00% hallucinations, verified algorithmic correctness" },
-      { stepNumber: 3, totalSteps: 4, label: "Mathematical Consensus Synthesis", status: "COMPLETED", detail: `${consensus.overallConsensusAgreement}% Inter-model agreement reached` },
-      { stepNumber: 4, totalSteps: 4, label: "Single Unified Flawless Deliverable", status: "COMPLETED", detail: "Unified production solution authorized" },
+      { stepNumber: 1, totalSteps: 4, label: "Real Provider Fanout", status: "COMPLETED", detail: `${consensus.verdicts.length} configured providers returned real output.` },
+      { stepNumber: 2, totalSteps: 4, label: "Verification State", status: "COMPLETED", detail: "Provider outputs returned; independent factual verification is not asserted by this pass." },
+      { stepNumber: 3, totalSteps: 4, label: "Synthesis", status: "COMPLETED", detail: consensus.unifiedExecutiveSummary },
+      { stepNumber: 4, totalSteps: 4, label: "Unified Output", status: "COMPLETED", detail: "Real provider output returned without synthetic fallback." },
     ];
 
     return {
       intent: "ensemble_consensus",
       detectedLanguage,
       responseMarkdown: consensus.unifiedSynthesis,
-      voiceSpokenText: `All 6 strongest frontier models have executed together in complete consensus with ${consensus.overallConsensusAgreement} percent agreement. The deliverable is 100% verified with zero hallucinations.`,
+      voiceSpokenText: `Real configured providers returned output. Factual verification is only claimed when independently performed.`,
       executionSteps,
       actionCard: {
         type: "ensemble_consensus",
