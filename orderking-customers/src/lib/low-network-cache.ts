@@ -3,7 +3,7 @@
  * Low-Network & 2G Offline-First Cache Layer
  * OrderKing Customer App
  * 
- * Guarantees 0ms instant response on 2G, EDGE, or unstable border networks:
+ * Optimizes perceived response time on slow/unstable networks with local snapshots:
  * - Aggressive localStorage snapshotting for catalog, active orders, and KingPay balances.
  * - Auto-detects 2G/slow network via Network Information API or fetch latency.
  * - Queues background offline mutations and synchronizes upon network recovery.
@@ -16,8 +16,15 @@ export function getNetworkSpeed(): NetworkSpeed {
   if (!navigator.onLine) return "OFFLINE";
   
   // Check Network Information API if available
-  const conn = (navigator as unknown as { connection?: { effectiveType?: string } }).connection;
-  if (conn?.effectiveType === "slow-2g" || conn?.effectiveType === "2g") {
+  const conn = (navigator as unknown as {
+    connection?: { effectiveType?: string; saveData?: boolean; downlink?: number };
+  }).connection;
+  if (
+    conn?.effectiveType === "slow-2g" ||
+    conn?.effectiveType === "2g" ||
+    conn?.saveData === true ||
+    typeof conn?.downlink === "number" && conn.downlink < 0.4
+  ) {
     return "SLOW_2G";
   }
   return "NORMAL";
