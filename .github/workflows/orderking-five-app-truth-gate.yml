@@ -61,11 +61,11 @@ jobs:
           cache: npm
           cache-dependency-path: ${{ matrix.path }}/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install workspace dependencies
+        run: pnpm install --no-frozen-lockfile
 
       - name: Typecheck
-        run: npm run typecheck
+        run: pnpm --dir ${{ matrix.app }} run typecheck
 
       - name: Build
-        run: ${{ matrix.build }}
+        run: pnpm --dir ${{ matrix.path }} run build
