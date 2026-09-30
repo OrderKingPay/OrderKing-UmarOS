@@ -70,12 +70,13 @@ export type FounderVaultSummary = {
     glitchMoneyRetentionRule: string;
   };
   legalComplianceStatus: {
-    itActSection79Intermediary: "PROTECTED_SAFE_HARBOR";
-    incomeTaxSection194O: "COMPLIANT_WITHHOLDING_ACTIVE";
-    cgstActSection95: "COMPLIANT_RESERVE_ACTIVE";
-    cgstActSection16And17Itc: "COMPLIANT_ITC_SETOFF_ACTIVE";
-    disputeJurisdiction: "EXCLUSIVE_LOCAL_ARBITRATION";
+    itActSection79Intermediary: "NOT_ASSESSED";
+    incomeTaxSection194O: "NOT_ASSESSED";
+    cgstActSection95: "NOT_ASSESSED";
+    cgstActSection16And17Itc: "NOT_ASSESSED";
+    disputeJurisdiction: "NOT_ASSESSED";
   };
+  verificationStatus: "UNVERIFIED_CALCULATION" | "RECONCILED_LIVE";
   generatedAt: string;
 };
 
@@ -123,11 +124,11 @@ export function calculateFounderRetainedCashVault(input: FounderVaultInput): Fou
 
   const statutoryTaxReserve = gstSection95 + tdsDeduction + tcsDeduction + riderTds + netCashGstLiability;
 
-  // 5. Retained Platform Cash Float (Surplus cash staying permanently in owner bank account)
+  // 5. Calculated cash difference. It is not treated as an owner-bank balance until reconciled.
   const totalDisbursed = netDisbursedToRestaurants + netDisbursedToRiders;
   const retainedPlatformFloat = Math.max(0, input.grossCustomerInflowPaise - totalDisbursed);
 
-  // 6. Pure Owner Net Profit (Enhanced with Breakage + ITC Working Capital + Float Yield)
+  // 6. Calculated contribution proxy. It is not treated as withdrawable profit until reconciled.
   const pureOwnerNetProfit = Math.max(
     0,
     retainedPlatformFloat - statutoryTaxReserve + retainedGstWorkingCapital + section95FloatYield,
@@ -183,12 +184,13 @@ export function calculateFounderRetainedCashVault(input: FounderVaultInput): Fou
         "100% of round-off surpluses, expired credits, customer late-cancellation forfeit fees, and unallocated deposits permanently retained in Owner Bank Account.",
     },
     legalComplianceStatus: {
-      itActSection79Intermediary: "PROTECTED_SAFE_HARBOR",
-      incomeTaxSection194O: "COMPLIANT_WITHHOLDING_ACTIVE",
-      cgstActSection95: "COMPLIANT_RESERVE_ACTIVE",
-      cgstActSection16And17Itc: "COMPLIANT_ITC_SETOFF_ACTIVE",
-      disputeJurisdiction: "EXCLUSIVE_LOCAL_ARBITRATION",
+      itActSection79Intermediary: "NOT_ASSESSED",
+      incomeTaxSection194O: "NOT_ASSESSED",
+      cgstActSection95: "NOT_ASSESSED",
+      cgstActSection16And17Itc: "NOT_ASSESSED",
+      disputeJurisdiction: "NOT_ASSESSED",
     },
+    verificationStatus: "UNVERIFIED_CALCULATION",
     generatedAt: new Date().toISOString(),
   };
 }
