@@ -236,45 +236,34 @@ export function executeLocalSovereignCognitivePass(
 }
 
 export async function executeAutonomousEmployeeTask(taskType: string, payload: any): Promise<any> {
-  const startTime = Date.now();
   const sql = await getSql();
-
+  if (!["customer_support","fetch_data"].includes(taskType)) {
+    return { status: "FORBIDDEN_TASK", message: "Customer AI is restricted to typed customer support/order reads." };
+  }
   try {
-    if (taskType === "dispatch_routing") {
-       const activeOrders = await sql`select id, status, restaurant_id, delivery_address from orders where status in ('PREPARING', 'READY') limit 50`;
-       return { status: "SUCCESS", message: `Found ${activeOrders.length} active orders requiring dispatch routing.`, data: activeOrders, latencyMs: Date.now() - startTime };
-    }
-    
     if (taskType === "customer_support") {
-       const pendingTickets = await sql`select id, topic, status from support_tickets where status = 'open' limit 20`;
-       return { status: "SUCCESS", message: `Fetched ${pendingTickets.length} open tickets.`, data: pendingTickets, latencyMs: Date.now() - startTime };
+      const rows = await sql`
+        SELECT id, topic, status
+        FROM support_tickets
+        WHERE user_id = ${payload?.userId}
+        ORDER BY created_at DESC
+        LIMIT 20
+      `;
+      return { status: "SUCCESS", data: rows };
     }
-
-    if (taskType === "financial_audit") {
-       const rev = await sql`select sum(total_paise) as total_revenue from orders where status = 'DELIVERED'`;
-       return { status: "SUCCESS", message: "Financial audit complete.", data: { total_revenue: rev[0]?.total_revenue || 0 }, latencyMs: Date.now() - startTime };
+    if (String(payload?.entity) === "orders") {
+      const rows = await sql`
+        SELECT id, status, payment_status, total_paise, placed_at
+        FROM orders
+        WHERE customer_id = ${payload?.userId}
+        ORDER BY placed_at DESC
+        LIMIT 20
+      `;
+      return { status: "SUCCESS", data: rows };
     }
-
-    if (taskType === "fraud_analysis") {
-       const suspicious = await sql`select user_id, count(id) as c from orders where status = 'CANCELLED' group by user_id having count(id) > 5`;
-       return { status: "SUCCESS", message: `Found ${suspicious.length} suspicious accounts.`, data: suspicious, latencyMs: Date.now() - startTime };
-    }
-    
-    if (taskType === "fetch_data" && payload.query) {
-       if (!payload.query.toLowerCase().trim().startsWith("select")) {
-          throw new Error("Only SELECT queries are permitted for autonomous fetch_data tasks.");
-       }
-       const rows = await sql?.unsafe(payload.query);
-       return { status: "SUCCESS", message: `Executed query successfully`, count: rows.length, data: rows.slice(0, 100), latencyMs: Date.now() - startTime };
-    }
-    
-    return { 
-      status: "UNSUPPORTED_TASK", 
-      message: `Task type ${taskType} is registered but awaiting advanced continuous cognitive logic.`,
-      latencyMs: Date.now() - startTime
-    };
-  } catch (error) {
-    return { status: "ERROR", message: String(error), latencyMs: Date.now() - startTime };
+    return { status: "UNSUPPORTED_ENTITY" };
+  } catch {
+    return { status: "ERROR", message: "Customer AI task failed." };
   }
 }
 
@@ -478,13 +467,18 @@ export async function executeFounderAiChat(
             model: activeRecord.realApiId,
             systemPrompt,
             tools: [
-              
-              { name: "inspectLocalFile", description: "Read a file from disk", parameters: { type: "object", properties: { path: { type: "string" } }, required: ["path"] } },
-              { name: "searchLocalCode", description: "Search the codebase", parameters: { type: "object", properties: { term: { type: "string" } }, required: ["term"] } },
-              { name: "writeLocalFile", description: "Write content to a new file", parameters: { type: "object", properties: { path: { type: "string" }, content: { type: "string" } }, required: ["path", "content"] } },
-              { name: "editLocalFile", description: "Edit an existing file by providing the full new content", parameters: { type: "object", properties: { path: { type: "string" }, content: { type: "string" } }, required: ["path", "content"] } },
-              { name: "executeShellCommand", description: "Execute a shell command (windows cmd.exe)", parameters: { type: "object", properties: { command: { type: "string" } }, required: ["command"] } },
-              { name: "executeAutonomousEmployeeTask", description: "Execute real-time autonomous operational tasks replacing human employees (dispatch_routing, fraud_analysis, customer_support, financial_audit, fetch_data).", parameters: { type: "object", properties: { taskType: { type: "string" }, payload: { type: "object" } }, required: ["taskType", "payload"] } }
+              {
+                name: "customer_support_lookup",
+                description: "Read the authenticated customer's support/order status through approved server logic.",
+                parameters: {
+                  type: "object",
+                  properties: {
+                    orderId: { type: "string" },
+                    topic: { type: "string" }
+                  },
+                  required: []
+                }
+              }
             ]
           });
           
@@ -511,16 +505,16 @@ export async function executeFounderAiChat(
              for (const tc of toolCallsToExecute) {
                 onStreamEvent?.({ type: "step", data: { stepNumber: 1, totalSteps: 1, label: `Executing ${tc.name}`, status: "RUNNING", detail: "Running tool..." } });
                 let result = "";
-                if (tc.name === "inspectLocalFile") {
-                   try { const f = await inspectLocalFile("HDmaster", tc.arguments.path as string); result = f.content.slice(0, 4000); } catch(e) { result = String(e); }
-                } else if (tc.name === "searchLocalCode") {
-                   try { const s = await searchLocalCode(tc.arguments.term as string, "HDmaster", 5); result = JSON.stringify(s); } catch(e) { result = String(e); }
-                } else if (tc.name === "writeLocalFile" || tc.name === "editLocalFile") {
-                   try { const f = await applyLocalPatch("HDmaster", tc.arguments.path as string, tc.arguments.content as string); result = JSON.stringify(f); } catch(e) { result = String(e); }
-                } else if (tc.name === "executeShellCommand") {
-                   try { const c = await executeShellCommand("HDmaster", tc.arguments.command as string); result = JSON.stringify(c); } catch(e) { result = String(e); }
-                } else if (tc.name === "executeAutonomousEmployeeTask") {
-                   try { const t = await executeAutonomousEmployeeTask(tc.arguments.taskType as string, tc.arguments.payload as any); result = JSON.stringify(t); } catch(e) { result = String(e); }
+                if (tc.name === "customer_support_lookup") {
+                   try {
+                     const t = await executeAutonomousEmployeeTask("customer_support", {
+                       ...tc.arguments,
+                       userId: request.userId || request.userContext?.userId,
+                     });
+                     result = JSON.stringify(t);
+                   } catch {
+                     result = JSON.stringify({ status: "ERROR", message: "Customer support lookup failed." });
+                   }
                 } else {
                    result = "Tool not found.";
                 }
