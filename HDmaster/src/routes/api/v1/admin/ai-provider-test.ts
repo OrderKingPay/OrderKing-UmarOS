@@ -1,11 +1,11 @@
 // @ts-nocheck
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createFileRoute } from "@tanstack/react-router";
 import { requireUserId } from "@/lib/auth/verify.server";
 import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
 import { enforceRateLimit } from "@/lib/orderking/security/rate-limiter";
 import { testModelConnectivity } from "@/lib/orderking/ai/real-model-registry";
 
-export const APIRoute = createAPIFileRoute("/api/v1/admin/ai-provider-test")({
+export const Route = createFileRoute("/api/v1/admin/ai-provider-test")({
   POST: async ({ request }: any) => {
     try {
       const userId = await requireUserId();
