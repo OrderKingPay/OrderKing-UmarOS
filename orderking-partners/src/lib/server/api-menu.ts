@@ -9,7 +9,7 @@ import { createPresignedUpload } from "./storage.server";
 
 export const getMenu = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string }) => d)
+  .inputValidator((d: { restaurantId?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.view", async (sql, ctx) => {
       const categories = await sql<{ id: string; name: string; sort_order: number; is_active: boolean }>`
@@ -92,7 +92,7 @@ export const getMenu = createServerFn({ method: "GET" })
 
 export const saveCategory = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; id?: string; name: string; sortOrder?: number }) => d)
+  .inputValidator((d: { restaurantId?: string; id?: string; name: string; sortOrder?: number }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (sql, ctx) => {
       const name = data.name.trim();
@@ -115,7 +115,7 @@ export const saveCategory = createServerFn({ method: "POST" })
 
 export const reorderCategories = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; orderedIds: string[] }) => d)
+  .inputValidator((d: { restaurantId?: string; orderedIds: string[] }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (sql, ctx) => {
       let i = 0;
@@ -132,7 +132,7 @@ export const reorderCategories = createServerFn({ method: "POST" })
 
 export const getMenuItemUploadUrl = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; fileName: string; contentType: string; itemId?: string }) => d)
+  .inputValidator((d: { restaurantId?: string; fileName: string; contentType: string; itemId?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (_sql, ctx) => {
       const upload = await createPresignedUpload({
@@ -147,7 +147,7 @@ export const getMenuItemUploadUrl = createServerFn({ method: "POST" })
 
 export const saveItem = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: {
+  .inputValidator((d: {
     restaurantId?: string;
     id?: string;
     categoryId: string;
@@ -260,7 +260,7 @@ export const saveItem = createServerFn({ method: "POST" })
 
 export const duplicateItem = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; itemId: string }) => d)
+  .inputValidator((d: { restaurantId?: string; itemId: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (sql, ctx) => {
       const items = await sql<{ id: string }>`
@@ -303,7 +303,7 @@ export const duplicateItem = createServerFn({ method: "POST" })
 
 export const setAvailability = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: {
+  .inputValidator((d: {
     restaurantId?: string;
     itemIds: string[];
     status: AvailabilityStatus;
@@ -328,7 +328,7 @@ export const setAvailability = createServerFn({ method: "POST" })
 
 export const saveAddon = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; id?: string; name: string; pricePaise: number }) => d)
+  .inputValidator((d: { restaurantId?: string; id?: string; name: string; pricePaise: number }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (sql, ctx) => {
       paise(data.pricePaise);
