@@ -14,19 +14,19 @@ COPY Apps-integration- ./Apps-integration-
 COPY packages ./packages
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-ARG APP_NAME
-ENV APP_NAME=${APP_NAME}
+ARG APP_DIR
+ENV APP_DIR=${APP_DIR}
 
-RUN pnpm --filter ${APP_NAME} run build
+RUN pnpm --filter ${APP_DIR} run build
 
 FROM base AS runner
 WORKDIR /app
-ARG APP_NAME
-ENV APP_NAME=${APP_NAME}
+ARG APP_DIR
+ENV APP_DIR=${APP_DIR}
 ENV NODE_ENV=production
 ENV PORT=8080
 
-COPY --from=builder /app/${APP_NAME}/.output ./output
+COPY --from=builder /app/${APP_DIR}/.output ./output
 
 EXPOSE 8080
 CMD ["node", "output/server/index.mjs"]
