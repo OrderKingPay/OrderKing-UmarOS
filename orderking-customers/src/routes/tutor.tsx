@@ -9,7 +9,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 const askTutorFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .// @ts-ignore
-  validator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => {
+  inputValidator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => {
     if (!data.message?.trim()) throw new Error("Tutor question is required.");
     if (data.message.length > 4000) throw new Error("Tutor question is too long.");
     if (!Array.isArray(data.history) || data.history.length > 8) throw new Error("Tutor history limit exceeded.");
