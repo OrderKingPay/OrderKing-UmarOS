@@ -47,13 +47,13 @@ jobs:
         working-directory: .
 
       - name: Typecheck
-        run: pnpm --filter ./\"${{ matrix.app }}\" typecheck
+        run: pnpm --filter "./${{ matrix.app }}" typecheck
         working-directory: .
 
       - name: Tests
-        run: pnpm --filter ./\"${{ matrix.app }}\" test
+        run: pnpm --filter "./${{ matrix.app }}" test
         working-directory: .
 
       - name: Development build
-        run: pnpm --filter ./\"${{ matrix.app }}\" build:dev
+        run: pnpm --filter "./${{ matrix.app }}" build:dev
         working-directory: .
