@@ -324,9 +324,9 @@ export async function executeFounderAiChat(
     const hasAttachment = request.messages.some((m) => m.attachments && m.attachments.length > 0);
 
     if (hasAttachment && geminiKey) {
-      activeRecord = registry.find((m) => m.id === "gemini-2-5-pro") || activeRecord;
+      activeRecord = registry.find((m) => m.id === "gemini-runtime") || activeRecord;
     } else if (anthropicKey && (currentQuery.includes("code") || currentQuery.includes("architecture"))) {
-      activeRecord = registry.find((m) => m.id === "claude-4-6-opus") || activeRecord;
+      activeRecord = registry.find((m) => m.id === "anthropic-runtime") || activeRecord;
     } else if (openaiKey) {
       activeRecord = registry.find((m) => m.id === "openai-runtime") || activeRecord;
     } else if (geminiKey) {
@@ -432,7 +432,7 @@ export async function executeFounderAiChat(
   }
 
   // 4. External Cloud Provider Execution
-  if (activeRecord.provider !== "Local Sovereign") {
+  if (activeRecord.provider !== "Orchestrator" && activeRecord.provider !== "Consensus") {
     const providerKey = activeRecord.provider.toLowerCase();
     if (request.apiKeys && Object.keys(request.apiKeys).length > 0) {
       throw new Error("Provider API keys must be configured server-side; browser-supplied keys are rejected.");
