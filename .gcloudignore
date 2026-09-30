@@ -1,0 +1,14 @@
+.git/
+.github/
+.vscode/
+.idea/
+**/node_modules/
+**/.output/
+**/dist/
+**/.turbo/
+**/coverage/
+**/.cache/
+**/*.log
+.env
+.env.*
+!.env.example
