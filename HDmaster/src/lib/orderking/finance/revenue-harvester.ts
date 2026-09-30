@@ -34,7 +34,7 @@ export type IncomeStreamYield = {
   annualProjectedInflowPaise: number;
   settlementCycle: string;
   payoutDestination: string;
-  complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE";
+  complianceStatus: "NOT_VERIFIED" | "PROVIDER_REQUIRED" | "VERIFIED";
   actionableSteps: string[];
 };
 
@@ -71,6 +71,8 @@ export type RevenueHarvestSummary = {
   totalMonthlyCollectibleYieldPaise: number;
   totalAnnualCollectibleYieldPaise: number;
   totalNonDilutiveGrantVaultPaise: number;
+  verificationStatus: "UNVERIFIED_PROJECTION" | "VERIFIED_LIVE";
+  blockedReasons: string[];
   streams: IncomeStreamYield[];
   corporateCateringContracts: CorporateCateringContract[];
   meityClaim: MeityClaimSchedule;
@@ -338,341 +340,237 @@ export function calculatePlanetaryRevenueHarvest(options: {
     throw new Error("OWNER_CONSENT_REQUIRED: Revenue harvest and money execution requires explicit owner consent.");
   }
 
-  const restaurants = options.activeRestaurantsCount ?? 150;
-  const orders = options.monthlyOrdersCount ?? 25000;
-  const gmv = options.monthlyGmvPaise ?? 750000000; // ₹75 Lakhs GMV
-  const kingCoinsLiability = options.kingCoinsMintedMonthlyPaise ?? Math.round(gmv * 0.05); // Assume 5% average cashback liability
+  const hasLiveMarketplaceInputs =
+    Number.isFinite(options.activeRestaurantsCount) &&
+    Number.isFinite(options.monthlyOrdersCount) &&
+    Number.isFinite(options.monthlyGmvPaise);
 
-  // 1. MeitY 0.40% Reimbursement
-  const meityClaim = generateMeityUpiClaimSchedule({
-    quarter: "Q1_2026_27",
-    upiTransactionsCount: Math.round(orders * 0.85),
-    rupayTransactionsCount: Math.round(orders * 0.10),
-    totalEligibleVolumePaise: Math.round(gmv * 0.90),
-  });
+  if (!hasLiveMarketplaceInputs) {
+    return {
+      harvestTimestamp: new Date().toISOString(),
+      ownerConsentVerified: true,
+      verificationStatus: "UNVERIFIED_PROJECTION",
+      blockedReasons: [
+        "Live restaurant count, order count, and GMV telemetry were not supplied.",
+        "Government incentive, tax, bullion, BBPS, insurance, FASTag and grant streams require verified external-provider/eligibility evidence.",
+        "No ledger entries are generated from unverified projections.",
+      ],
+      totalMonthlyCollectibleYieldPaise: 0,
+      totalAnnualCollectibleYieldPaise: 0,
+      totalNonDilutiveGrantVaultPaise: 0,
+      streams: [],
+      corporateCateringContracts: [],
+      meityClaim: generateMeityUpiClaimSchedule({
+        quarter: "UNVERIFIED",
+        upiTransactionsCount: 0,
+        rupayTransactionsCount: 0,
+        totalEligibleVolumePaise: 0,
+      }),
+      kingCoinsLiabilityPaise: Math.max(0, options.kingCoinsMintedMonthlyPaise ?? 0),
+      ledgerEntriesToPost: [],
+      executionAuditSummary:
+        "Revenue execution blocked: no verified live inputs/provider evidence were available. This result is a status record, not collectible revenue.",
+    };
+  }
 
-  // 2. Corporate Catering Pipeline Aggregation
-  const totalCorpMonthlyVolumePaise = CORPORATE_CATERING_PIPELINE.reduce((sum, c) => sum + c.monthlyContractVolumePaise, 0);
-  const totalCorpMonthlyProfitPaise = CORPORATE_CATERING_PIPELINE.reduce((sum, c) => sum + c.monthlyPlatformProfitPaise, 0);
+  const restaurants = Math.max(0, Math.trunc(options.activeRestaurantsCount!));
+  const orders = Math.max(0, Math.trunc(options.monthlyOrdersCount!));
+  const gmv = Math.max(0, Math.trunc(options.monthlyGmvPaise!));
+  const kingCoinsLiability = Math.max(0, Math.trunc(options.kingCoinsMintedMonthlyPaise ?? 0));
 
-  // 3. Merchant Soundbox & POS SaaS
-  const soundboxSubscribers = Math.round(restaurants * 0.70); // 70% adoption
-  const soundboxMonthlyPaise = soundboxSubscribers * 19900; // ₹199/mo per box
-  const posSubscribers = Math.round(restaurants * 0.40); // 40% adoption
-  const posMonthlyPaise = posSubscribers * 49900; // ₹499/mo per terminal
-  const merchantSaasMonthlyPaise = soundboxMonthlyPaise + posMonthlyPaise;
+  const commissionRateBps = Number(process.env.ORDERKING_PLATFORM_COMMISSION_BPS || 0);
+  const commissionRevenuePaise =
+    commissionRateBps > 0 ? Math.round((gmv * commissionRateBps) / 10000) : 0;
 
-  // 4. FSSAI & Compliance Onboarding
-  const newMerchantsMonthly = 15;
-  const fssaiAssistanceMonthlyPaise = newMerchantsMonthly * 149900; // ₹1,499 per kitchen
-  const gstAssistanceMonthlyPaise = Math.round(newMerchantsMonthly * 0.5) * 99900; // ₹999
-  const complianceMonthlyPaise = fssaiAssistanceMonthlyPaise + gstAssistanceMonthlyPaise;
-
-  // 5. 24K Digital Gold & Silver Spread (1.80% spread)
-  const goldSalesMonthlyPaise = Math.round(gmv * 0.15); // 15% of GMV in roundups & gold gifts
-  const goldSpreadMonthlyPaise = Math.round((goldSalesMonthlyPaise * 180) / 10000);
-
-  // 6. BBPS Utility Surcharge & Recharge Commissions
-  const utilityVolumeMonthlyPaise = 500000000; // ₹50 Lakhs bill pay volume
-  const bbpsMarginMonthlyPaise = Math.round((utilityVolumeMonthlyPaise * 120) / 10000); // 1.20%
-
-  // 7. Statutory GST Input Tax Credit (ITC) Clean Retention
-  // 18% GST paid on AWS/GCP, payment gateways, marketing, and POS devices
-  const eligibleItcMonthlyPaise = 25000000; // ₹2,50,000/mo cash ITC set-off
-
-  // 8. Government Non-Dilutive Cash Grants (Total Over ₹1.00 Crore)
-  const totalNonDilutiveGrantVaultPaise = 1000000000; // ₹1,00,00,000 (Assam Startup MAS ₹55L, MSME ₹15L, NIDHI-PRAYAS ₹10L, SISFS ₹20L)
-
-  // Construct Structured Yield Table
   const streams: IncomeStreamYield[] = [
     {
-      streamId: "MEITY_ZERO_MDR_SUBSIDY",
-      name: "MeitY / NPCI 0.40% Zero-MDR UPI Reimbursement",
-      category: "GOVT_SUBSIDY",
-      legalBasis: "MeitY Scheme Notification No. 10(16)/2020-CS & Union Cabinet Order",
-      monthlyProjectedInflowPaise: Math.round(meityClaim.totalClaimAmountPaise / 3), // Monthly run rate
-      annualProjectedInflowPaise: Math.round(meityClaim.totalClaimAmountPaise * 4),
-      settlementCycle: "Quarterly DBT via PFMS / Nodal Bank Credit",
-      payoutDestination: "OrderKing Primary Business Current Account",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Aggregate quarterly UPI transaction logs with MCC 5812 / 5814",
-        "Generate cryptographic MeitY Claim XML batch",
-        "Submit claim via acquiring bank nodal portal (SBI / Razorpay Nodal)",
-      ],
-    },
-    {
-      streamId: "GST_ITC_CASH_MAXIMIZER",
-      name: "Statutory GST Input Tax Credit (ITC) Cash Working Capital Retention",
-      category: "TAX_OPTIMIZATION",
-      legalBasis: "CGST Act 2017 Sections 16 & 17, Section 9(5) Aggregator Framework",
-      monthlyProjectedInflowPaise: eligibleItcMonthlyPaise,
-      annualProjectedInflowPaise: eligibleItcMonthlyPaise * 12,
-      settlementCycle: "Monthly GSTR-3B Auto-Offset",
-      payoutDestination: "Retained permanently in Owner Bank Account as cash working capital",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Reconcile inward invoices from AWS, Google Cloud, Mapbox, and Razorpay against GSTR-2B",
-        "Offset outward GST collected from commissions and platform fees",
-        "Retain cash GST collected directly in owner account without remitting to tax dept",
-      ],
-    },
-    {
       streamId: "CORPORATE_CATERING_PIPELINE",
-      name: "Institutional & Corporate Bulk Catering (NIT Silchar, Assam Univ, DC Office, Civil Hospital)",
+      name: "Institutional / Corporate Catering",
       category: "B2B_CORPORATE",
-      legalBasis: "Commercial Service Contract & General Financial Rules (GFR) 2017 Direct Procurement",
-      monthlyProjectedInflowPaise: totalCorpMonthlyProfitPaise,
-      annualProjectedInflowPaise: totalCorpMonthlyProfitPaise * 12,
-      settlementCycle: "15-Day Consolidated GST Invoicing via RTGS / PFMS",
-      payoutDestination: "OrderKing Institutional Current Account",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Dispatch pre-filled RFP and commercial quotation letters to NIT Silchar, DC Office, and Civil Hospital",
-        "Lock 15% platform margin contract with certified cloud kitchens",
-        "Automate consolidated GST billing with zero manual paperwork",
-      ],
+      legalBasis: "Actual signed commercial contracts only.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Contract-specific",
+      payoutDestination: "Verified business bank account",
+      complianceStatus: "NOT_VERIFIED",
+      actionableSteps: ["Connect signed contract, invoice and settlement evidence before recognizing revenue."],
     },
     {
       streamId: "MERCHANT_SOUNDBOX_POS_SAAS",
-      name: "Merchant Soundbox Audio Confirmations & Cloud POS SaaS Subscriptions",
+      name: "Merchant POS / SaaS",
       category: "MERCHANT_SAAS",
-      legalBasis: "Merchant Hardware Lease & Cloud Software License Agreement",
-      monthlyProjectedInflowPaise: merchantSaasMonthlyPaise,
-      annualProjectedInflowPaise: merchantSaasMonthlyPaise * 12,
-      settlementCycle: "Monthly Recurring e-NACH / UPI Autopay Deduction",
-      payoutDestination: "OrderKing SaaS Revenue Account",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Deploy 4G Soundbox audio boxes @ ₹199/month per restaurant for instant payment announcements",
-        "Provide Cloud KOT Universal Thermal POS SaaS @ ₹499/month for instant kitchen slips",
-        "Auto-debit fees from weekly settlement float with zero collection friction",
-      ],
+      legalBasis: "Actual active subscriptions only.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Contract-specific",
+      payoutDestination: "Verified business account",
+      complianceStatus: "NOT_VERIFIED",
+      actionableSteps: ["Connect billing and successful payment telemetry before recognizing recurring revenue."],
+    },
+    {
+      streamId: "MEITY_ZERO_MDR_SUBSIDY",
+      name: "Government / Payment Incentives",
+      category: "GOVT_SUBSIDY",
+      legalBasis: "Eligibility and claims must be verified against the applicable current scheme and acquiring partner.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Provider/scheme-defined",
+      payoutDestination: "Verified settlement account",
+      complianceStatus: "PROVIDER_REQUIRED",
+      actionableSteps: ["Verify current eligibility, acquiring-bank participation and approved claim process before accruing anything."],
+    },
+    {
+      streamId: "GST_ITC_CASH_MAXIMIZER",
+      name: "GST Input Tax Credit",
+      category: "TAX_OPTIMIZATION",
+      legalBasis: "Actual books, tax invoices, eligibility and statutory filing only.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Tax-filing cycle",
+      payoutDestination: "Not a revenue account",
+      complianceStatus: "NOT_VERIFIED",
+      actionableSteps: ["Reconcile actual eligible purchase invoices and tax filings before recording ITC."],
     },
     {
       streamId: "FSSAI_COMPLIANCE_ONBOARDING",
-      name: "FSSAI & Regulatory Compliance Onboarding Facilitation Fees",
+      name: "Compliance Facilitation Services",
       category: "COMPLIANCE_FEES",
-      legalBasis: "FSS Act 2006 Statutory Compliance Facilitation",
-      monthlyProjectedInflowPaise: complianceMonthlyPaise,
-      annualProjectedInflowPaise: complianceMonthlyPaise * 12,
-      settlementCycle: "Instant upfront deduction from 1st week merchant payouts",
-      payoutDestination: "OrderKing Professional Services Account",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Provide 1-click FSSAI registration service for home kitchens & restaurants @ ₹1,499",
-        "Provide GST registration assistance for scaling kitchens @ ₹999",
-        "Issue instant digital compliance certificates",
-      ],
+      legalBasis: "Actual customer contracts and completed services only.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Contract-specific",
+      payoutDestination: "Verified business account",
+      complianceStatus: "NOT_VERIFIED",
+      actionableSteps: ["Connect actual service orders and successful collections."],
     },
     {
       streamId: "DIGITAL_GOLD_SILVER_SPREAD",
-      name: "Augmont / MMTC-PAMP 24K Digital Gold & Silver Bullion Spread",
+      name: "Digital Bullion / Savings Partner Revenue",
       category: "FINTECH_MARGIN",
-      legalBasis: "RBI Digital Bullion & Spare-Change Micro-Savings Partner API Framework",
-      monthlyProjectedInflowPaise: goldSpreadMonthlyPaise,
-      annualProjectedInflowPaise: goldSpreadMonthlyPaise * 12,
-      settlementCycle: "Daily T+1 Bullion Settlement",
-      payoutDestination: "OrderKing Bullion Margin Account",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Capture 1.80% spread on all spare-change checkout roundups (Jar/Cred model)",
-        "Enable festive gold gifting during Eid, Diwali, New Year, and Dhanteras",
-        "Zero inventory or price risk: Backed 1:1 by insured physical vault bullion",
-      ],
+      legalBasis: "Licensed/authorized provider agreement and actual transactions required.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Provider-defined",
+      payoutDestination: "Verified partner settlement",
+      complianceStatus: "PROVIDER_REQUIRED",
+      actionableSteps: ["Connect authorized bullion provider, live pricing and settlement reconciliation."],
     },
     {
       streamId: "BBPS_UTILITY_SURCHARGE",
-      name: "BBPS Utility Bill Surcharges & Mobile Recharge Commissions",
+      name: "BBPS / Utility / Recharge Revenue",
       category: "UTILITY_RECHARGE",
-      legalBasis: "RBI Bharat Bill Payment System (BBPS) Agent Institution Guidelines",
-      monthlyProjectedInflowPaise: bbpsMarginMonthlyPaise,
-      annualProjectedInflowPaise: bbpsMarginMonthlyPaise * 12,
-      settlementCycle: "Instant T+0 Commission Credit",
-      payoutDestination: "OrderKing BBPS Operating Account",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Collect ₹3.50 commission per APDCL electricity bill payment",
-        "Collect 1.80% margin on Airtel, Jio, and Vi mobile recharges",
-        "Collect 0.25% surcharge on NHAI FASTag wallet recharges",
-      ],
+      legalBasis: "Authorized BBPS/agent relationship and actual transaction reports only.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Provider-defined",
+      payoutDestination: "Verified provider settlement",
+      complianceStatus: "PROVIDER_REQUIRED",
+      actionableSteps: ["Connect a real BBPS provider and reconcile transaction/commission reports."],
     },
     {
       streamId: "VEHICLE_CHALLAN_CONVENIENCE_FEE",
-      name: "Traffic e-Challan Instant Clearance Convenience Surcharge",
+      name: "Vehicle / Challan Facilitation",
       category: "VEHICLE_FINTECH",
-      legalBasis: "Motor Vehicles Act 2019 Section 194/200 & MoRTH eChallan Digital Payment Gateway Facilitation",
-      monthlyProjectedInflowPaise: 12250000, // ₹1,22,500/mo (2,500 challans @ ₹49)
-      annualProjectedInflowPaise: 147000000, // ₹14,70,000/yr
-      settlementCycle: "Instant T+0 Split via Escrow Payment Gateway",
-      payoutDestination: "OrderKing Platform Convenience Fee Account",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Capture ₹49 - ₹75 platform convenience fee per traffic fine cleared via KingPay",
-        "Automate instant Parivahan API receipt delivery and court clearance status",
-        "Zero liability: OrderKing functions as authorized payment routing TSP",
-      ],
+      legalBasis: "Current authorized provider contract and actual transaction evidence only.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Provider-defined",
+      payoutDestination: "Verified provider settlement",
+      complianceStatus: "PROVIDER_REQUIRED",
+      actionableSteps: ["Connect the authorized vehicle/challan provider before activating customer payments."],
     },
     {
       streamId: "MOTOR_INSURANCE_POSP_COMMISSION",
-      name: "IRDAI Motor Insurance Digital Policy Renewal Commission (POSP)",
+      name: "Motor Insurance Partner Commission",
       category: "VEHICLE_FINTECH",
-      legalBasis: "IRDAI (Protection of Policyholders' Interests) Regulations 2024 & IRDAI Guidelines on Point of Sales Persons (POSP)",
-      monthlyProjectedInflowPaise: 21600000, // ₹2,16,000/mo (800 policies @ ₹1,800 avg premium, 15% POSP commission)
-      annualProjectedInflowPaise: 259200000, // ₹25,92,000/yr
-      settlementCycle: "Weekly Direct Insurer Remittance (Digit, Acko, ICICI Lombard, HDFC ERGO)",
-      payoutDestination: "OrderKing IRDAI POSP Commission Account",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Earn 15% - 25% POSP commission on Own Damage (OD) premium for all 2W and 4W renewals",
-        "Provide 0-paperwork 60-second policy generation with instant PDF delivery",
-        "Zero risk: Underwriting and claims handled 100% by licensed insurance partners",
-      ],
+      legalBasis: "Licensed insurer/intermediary arrangement and actual issued-policy reports only.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Insurer-defined",
+      payoutDestination: "Verified insurer settlement",
+      complianceStatus: "PROVIDER_REQUIRED",
+      actionableSteps: ["Connect licensed insurance partner and commission reconciliation."],
     },
     {
       streamId: "FASTAG_RECHARGE_MARGIN",
-      name: "NETC FASTag Highway Toll & Fuel Pay Interchange Margin",
+      name: "FASTag / NETC Partner Revenue",
       category: "VEHICLE_FINTECH",
-      legalBasis: "NPCI National Electronic Toll Collection (NETC) Master Circular & BBPS Directives",
-      monthlyProjectedInflowPaise: 1750000, // ₹17,500/mo (5,000 recharges @ 0.35% interchange margin on ₹50L volume)
-      annualProjectedInflowPaise: 21000000, // ₹2,10,000/yr
-      settlementCycle: "Daily T+1 BBPS / NETC Settlement",
-      payoutDestination: "OrderKing NETC Interchange Account",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Collect 0.35% interchange on all NHAI FASTag wallet top-ups",
-        "Trigger smart auto-recharge alerts when FASTag balance drops below ₹150",
-        "Zero default risk: Real-time debit with instant NETC tag balance update",
-      ],
+      legalBasis: "Authorized NETC/BBPS/provider integration and actual settlements only.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Provider-defined",
+      payoutDestination: "Verified settlement account",
+      complianceStatus: "PROVIDER_REQUIRED",
+      actionableSteps: ["Connect authorized FASTag provider and live reconciliation."],
     },
     {
       streamId: "GOVERNMENT_GRANT_DBT",
-      name: "Government Non-Dilutive Cash Grants (Assam Startup MAS, MSME Hackathon, SISFS)",
+      name: "Government Grants",
       category: "DIRECT_CASH_GRANT",
-      legalBasis: "Assam Startup Policy 2017 (Amendment 2022) & Startup India Seed Fund Scheme",
-      monthlyProjectedInflowPaise: Math.round(totalNonDilutiveGrantVaultPaise / 12),
-      annualProjectedInflowPaise: totalNonDilutiveGrantVaultPaise,
-      settlementCycle: "Direct RTGS / PFMS DBT upon milestone submission",
-      payoutDestination: "OrderKing Primary Business Current Account",
-      complianceStatus: "100_PERCENT_COMPLIANT_ACTIVE",
-      actionableSteps: [
-        "Submit finalized MAS application dossier for ₹55,00,000 cash grant at startup.assam.gov.in",
-        "Submit MSME Innovative Hackathon application for ₹15,00,000 via my.msme.gov.in",
-        "Submit DST NIDHI-PRAYAS application for ₹10,00,000 via IIT/NIT incubator TBI",
-        "Submit Startup India SISFS application for ₹20,00,000 via seedfund.startupindia.gov.in",
-      ],
+      legalBasis: "Only awarded and received grants may be recognized as actual funds.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Award/milestone-specific",
+      payoutDestination: "Verified grant bank account",
+      complianceStatus: "NOT_VERIFIED",
+      actionableSteps: ["Do not recognize any grant until an official award and actual receipt are evidenced."],
     },
   ];
 
-  const totalMonthlyCollectibleYieldPaise = streams.reduce((sum, s) => sum + s.monthlyProjectedInflowPaise, 0);
-  const totalAnnualCollectibleYieldPaise = streams.reduce((sum, s) => sum + s.annualProjectedInflowPaise, 0);
-
-  // Compile Balanced Double-Entry Ledger Entries
-  const ledgerEntriesToPost = [
-    {
-      accountKey: "ASSET_BANK_OWNER_ESCROW",
-      entryType: "DEBIT" as const,
-      amountPaise: totalMonthlyCollectibleYieldPaise,
-      description: "Immediate monthly legal revenue harvest inflow (MeitY + GST ITC + Corporate + SaaS + Gold + BBPS)",
-    },
-    {
-      accountKey: "REVENUE_MEITY_SUBSIDY",
-      entryType: "CREDIT" as const,
-      amountPaise: Math.round(meityClaim.totalClaimAmountPaise / 3),
-      description: "MeitY 0.40% zero-MDR UPI reimbursement accrued",
-    },
-    {
-      accountKey: "REVENUE_GST_ITC_RETAINED",
-      entryType: "CREDIT" as const,
-      amountPaise: eligibleItcMonthlyPaise,
-      description: "CGST Section 16 & 17 ITC cash working capital offset retained in owner account",
-    },
-    {
-      accountKey: "REVENUE_CORPORATE_CATERING",
-      entryType: "CREDIT" as const,
-      amountPaise: totalCorpMonthlyProfitPaise,
-      description: "Corporate & institutional catering 15% platform profit margin accrued",
-    },
-    {
-      accountKey: "REVENUE_MERCHANT_SAAS",
-      entryType: "CREDIT" as const,
-      amountPaise: merchantSaasMonthlyPaise,
-      description: "Soundbox audio box & cloud POS SaaS recurring subscriptions",
-    },
-    {
-      accountKey: "REVENUE_COMPLIANCE_SERVICES",
-      entryType: "CREDIT" as const,
-      amountPaise: complianceMonthlyPaise,
-      description: "FSSAI & GST onboarding assistance facilitation fees",
-    },
-    {
-      accountKey: "REVENUE_GOLD_BULLION_SPREAD",
-      entryType: "CREDIT" as const,
-      amountPaise: goldSpreadMonthlyPaise,
-      description: "24K digital gold and silver buy/sell spread margin",
-    },
-    {
-      accountKey: "REVENUE_BBPS_COMMISSION",
-      entryType: "CREDIT" as const,
-      amountPaise: bbpsMarginMonthlyPaise,
-      description: "BBPS electricity, water, and mobile recharge operator commissions",
-    },
-    {
-      accountKey: "REVENUE_VEHICLE_CHALLAN_FEE",
-      entryType: "CREDIT" as const,
-      amountPaise: 12250000,
-      description: "Traffic e-challan clearance platform convenience fee",
-    },
-    {
-      accountKey: "REVENUE_MOTOR_INSURANCE_POSP",
-      entryType: "CREDIT" as const,
-      amountPaise: 21600000,
-      description: "IRDAI motor insurance policy renewal POSP commissions",
-    },
-    {
-      accountKey: "REVENUE_FASTAG_INTERCHANGE",
-      entryType: "CREDIT" as const,
-      amountPaise: 1750000,
-      description: "NETC FASTag highway toll and fuel pay interchange margins",
-    },
-    {
-      accountKey: "REVENUE_GOVT_GRANTS_ACCRUED",
-      entryType: "CREDIT" as const,
-      amountPaise: Math.round(totalNonDilutiveGrantVaultPaise / 12),
-      description: "Amortized monthly accrual of verified non-dilutive government grants",
-    },
-    {
-      accountKey: "LIABILITY_KINGCOINS_UNREDEEMED",
-      entryType: "CREDIT" as const,
-      amountPaise: kingCoinsLiability,
-      description: "Accrued liability for KingCoins earned by users but not yet redeemed",
-    },
-    {
-      accountKey: "EXPENSE_KINGCOINS_PROVISION",
-      entryType: "DEBIT" as const,
-      amountPaise: kingCoinsLiability,
-      description: "Monthly provision expense for KingCoins cashback liability",
-    },
-  ];
-
-  // Verify Double-Entry Balance
-  const totalDebits = ledgerEntriesToPost.filter((e) => e.entryType === "DEBIT").reduce((sum, e) => sum + e.amountPaise, 0);
-  const totalCredits = ledgerEntriesToPost.filter((e) => e.entryType === "CREDIT").reduce((sum, e) => sum + e.amountPaise, 0);
-  if (totalDebits !== totalCredits) {
-    throw new Error(`LEDGER_IMBALANCE: Debits (${totalDebits}) do not equal Credits (${totalCredits}) in revenue harvest!`);
+  if (commissionRevenuePaise <= 0) {
+    streams.push({
+      streamId: "MERCHANT_SOUNDBOX_POS_SAAS",
+      name: "Marketplace Commission Revenue",
+      category: "MERCHANT_SAAS",
+      legalBasis: "Actual marketplace commercial contract/configuration.",
+      monthlyProjectedInflowPaise: 0,
+      annualProjectedInflowPaise: 0,
+      settlementCycle: "Actual settlement cycle",
+      payoutDestination: "Verified business account",
+      complianceStatus: "NOT_VERIFIED",
+      actionableSteps: ["Set ORDERKING_PLATFORM_COMMISSION_BPS from the approved live commercial terms and reconcile actual orders."],
+    });
+  } else {
+    streams.push({
+      streamId: "MERCHANT_SOUNDBOX_POS_SAAS",
+      name: "Marketplace Commission Revenue (derived from verified GMV input)",
+      category: "MERCHANT_SAAS",
+      legalBasis: "Configured commercial commission rate; actual provider/ledger reconciliation still required.",
+      monthlyProjectedInflowPaise: commissionRevenuePaise,
+      annualProjectedInflowPaise: commissionRevenuePaise * 12,
+      settlementCycle: "Actual settlement cycle",
+      payoutDestination: "Verified business account",
+      complianceStatus: "NOT_VERIFIED",
+      actionableSteps: ["Reconcile the calculated commission to the live order and settlement ledger before treating it as collectible cash."],
+    });
   }
+
+  const totalMonthlyCollectibleYieldPaise = 0;
+  const totalAnnualCollectibleYieldPaise = 0;
 
   return {
     harvestTimestamp: new Date().toISOString(),
     ownerConsentVerified: true,
+    verificationStatus: "UNVERIFIED_PROJECTION",
+    blockedReasons: [
+      "Revenue streams are tracked as capability/provider states until independently reconciled to live settlements.",
+      "No government incentive, tax benefit, grant, regulated financial-service commission or partner payout is treated as guaranteed cash.",
+    ],
     totalMonthlyCollectibleYieldPaise,
     totalAnnualCollectibleYieldPaise,
-    totalNonDilutiveGrantVaultPaise,
+    totalNonDilutiveGrantVaultPaise: 0,
     streams,
-    corporateCateringContracts: CORPORATE_CATERING_PIPELINE,
-    meityClaim,
+    corporateCateringContracts: [],
+    meityClaim: generateMeityUpiClaimSchedule({
+      quarter: "UNVERIFIED",
+      upiTransactionsCount: orders,
+      rupayTransactionsCount: 0,
+      totalEligibleVolumePaise: gmv,
+    }),
     kingCoinsLiabilityPaise: kingCoinsLiability,
-    ledgerEntriesToPost,
-    executionAuditSummary: `Revenue Harvester successfully verified with Owner Consent. Total Monthly Run-Rate: ₹${(totalMonthlyCollectibleYieldPaise / 100).toLocaleString("en-IN")}. Non-Dilutive Grant Capital: ₹${(totalNonDilutiveGrantVaultPaise / 100).toLocaleString("en-IN")}. Double-entry ledger balanced with integer-paise precision.`,
+    ledgerEntriesToPost: [],
+    executionAuditSummary:
+      `Revenue engine processed verified input counts (restaurants=${restaurants}, orders=${orders}, GMV paise=${gmv}) but recognized ₹0 collectible revenue until settlement reconciliation and provider eligibility checks complete.`,
   };
 }
+
