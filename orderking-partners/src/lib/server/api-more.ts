@@ -97,7 +97,7 @@ export const askAssistant = createServerFn({ method: "POST" })
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({
-          model: process.env.OPENAI_PARTNER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-6.1-sol",
+          model: process.env.OPENAI_PARTNER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-5.6-sol",
           input: [
             {
               role: "system",
