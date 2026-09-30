@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-
+// @ts-nocheck
 
 // noinspection JSUnusedGlobalSymbols
 
@@ -34,8 +34,8 @@ import { Route as AppAuditRouteImport } from './routes/_app/audit'
 import { Route as AppAnalyticsRouteImport } from './routes/_app/analytics'
 import { Route as AppAiRouteImport } from './routes/_app/ai'
 import { Route as ApiWebhooksTwilioRouteImport } from './routes/api/webhooks/twilio'
+import { Route as ApiWebhooksRazorpayRouteImport } from './routes/api/webhooks/razorpay'
 import { Route as ApiWebhooksMessagebirdRouteImport } from './routes/api/webhooks/messagebird'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -161,14 +161,14 @@ const ApiWebhooksTwilioRoute = ApiWebhooksTwilioRouteImport.update({
   path: '/api/webhooks/twilio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWebhooksRazorpayRoute = ApiWebhooksRazorpayRouteImport.update({
+  id: '/api/webhooks/razorpay',
+  path: '/api/webhooks/razorpay',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiWebhooksMessagebirdRoute = ApiWebhooksMessagebirdRouteImport.update({
   id: '/api/webhooks/messagebird',
   path: '/api/webhooks/messagebird',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -196,8 +196,8 @@ export interface FileRoutesByFullPath {
   '/support': typeof AppSupportRoute
   '/system': typeof AppSystemRoute
   '/tasks': typeof AppTasksRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/messagebird': typeof ApiWebhooksMessagebirdRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
   '/api/webhooks/twilio': typeof ApiWebhooksTwilioRoute
 }
 export interface FileRoutesByTo {
@@ -224,8 +224,8 @@ export interface FileRoutesByTo {
   '/system': typeof AppSystemRoute
   '/tasks': typeof AppTasksRoute
   '/': typeof AppIndexRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/messagebird': typeof ApiWebhooksMessagebirdRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
   '/api/webhooks/twilio': typeof ApiWebhooksTwilioRoute
 }
 export interface FileRoutesById {
@@ -254,8 +254,8 @@ export interface FileRoutesById {
   '/_app/system': typeof AppSystemRoute
   '/_app/tasks': typeof AppTasksRoute
   '/_app/': typeof AppIndexRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/messagebird': typeof ApiWebhooksMessagebirdRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
   '/api/webhooks/twilio': typeof ApiWebhooksTwilioRoute
 }
 export interface FileRouteTypes {
@@ -284,8 +284,8 @@ export interface FileRouteTypes {
     | '/support'
     | '/system'
     | '/tasks'
-    | '/api/auth/$'
     | '/api/webhooks/messagebird'
+    | '/api/webhooks/razorpay'
     | '/api/webhooks/twilio'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -312,8 +312,8 @@ export interface FileRouteTypes {
     | '/system'
     | '/tasks'
     | '/'
-    | '/api/auth/$'
     | '/api/webhooks/messagebird'
+    | '/api/webhooks/razorpay'
     | '/api/webhooks/twilio'
   id:
     | '__root__'
@@ -341,16 +341,16 @@ export interface FileRouteTypes {
     | '/_app/system'
     | '/_app/tasks'
     | '/_app/'
-    | '/api/auth/$'
     | '/api/webhooks/messagebird'
+    | '/api/webhooks/razorpay'
     | '/api/webhooks/twilio'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
-  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiWebhooksMessagebirdRoute: typeof ApiWebhooksMessagebirdRoute
+  ApiWebhooksRazorpayRoute: typeof ApiWebhooksRazorpayRoute
   ApiWebhooksTwilioRoute: typeof ApiWebhooksTwilioRoute
 }
 
@@ -531,18 +531,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWebhooksTwilioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/webhooks/razorpay': {
+      id: '/api/webhooks/razorpay'
+      path: '/api/webhooks/razorpay'
+      fullPath: '/api/webhooks/razorpay'
+      preLoaderRoute: typeof ApiWebhooksRazorpayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/webhooks/messagebird': {
       id: '/api/webhooks/messagebird'
       path: '/api/webhooks/messagebird'
       fullPath: '/api/webhooks/messagebird'
       preLoaderRoute: typeof ApiWebhooksMessagebirdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -603,8 +603,8 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
-  ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiWebhooksMessagebirdRoute: ApiWebhooksMessagebirdRoute,
+  ApiWebhooksRazorpayRoute: ApiWebhooksRazorpayRoute,
   ApiWebhooksTwilioRoute: ApiWebhooksTwilioRoute,
 }
 export const routeTree = rootRouteImport

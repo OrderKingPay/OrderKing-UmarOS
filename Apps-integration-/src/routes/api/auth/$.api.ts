@@ -1,7 +1,7 @@
 import { createAPIFileRoute } from '@/lib/createAPIFileRoute';
 import { auth } from "@/lib/auth/server";
 
-export const Route = createAPIFileRoute("/api/auth/$")({
+export const APIRoute = createAPIFileRoute("/api/auth/$")({
   
   server: {
     handlers: {
