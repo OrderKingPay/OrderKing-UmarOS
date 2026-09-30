@@ -45,7 +45,7 @@ export function CustomerShell({
           <div className="shrink-0 max-w-[50%]">
             <Wordmark />
             <span className="block text-[10px] font-medium tracking-wide text-primary/80 break-words text-wrap">
-              {isDeliveryActive ? "Have it your way, King 👑" : "King Pay · Sovereign UPI Across India 👑"}
+              {isDeliveryActive ? "Have it your way, King 👑" : "King Pay · Payments & Services 👑"}
             </span>
           </div>
 
@@ -59,7 +59,7 @@ export function CustomerShell({
               KingPay
             </span>
             <span className="text-emerald-400 font-extrabold whitespace-nowrap">
-              0% Fee · ₹40 Cash
+              King Pay · Provider Verified
             </span>
             <span className="hidden sm:inline text-amber-300 font-mono shrink-0">
               ⚡ 15m
@@ -104,7 +104,7 @@ export function CustomerShell({
               {isDeliveryActive ? t("home.deliveringTo") : "👑 King Pay Sovereign Territory"}
             </span>
             <span className="block font-medium break-words text-wrap">
-              {isDeliveryActive ? location.label : `${location.cityName || location.label} · 0% UPI Active`}
+              {isDeliveryActive ? location.label : `${location.cityName || location.label} · King Pay services available`}
             </span>
           </span>
           <span className="text-sm text-primary shrink-0">{t("home.changeLocation")}</span>
