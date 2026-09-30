@@ -240,20 +240,9 @@ export class LiveOrchestrationEngine {
 
         return verdict;
       } catch (err) {
-        // Safe fallback verdict
-        return {
-          providerId: adapter.id,
-          providerName: adapter.name,
-          vendor: adapter.vendor,
-          model: "fallback",
-          output: `Adapter ${adapter.name} offline or rate-limited; bypassed gracefully.`,
-          confidenceScore: 0,
-          tokensUsed: { prompt: 0, completion: 0, total: 0 },
-          estimatedCostInr: 0,
-          latencyMs: 1,
-          verifiedFactual: false,
-          keyInsights: ["Fallback triggered"],
-        } as ModelOutputVerdict;
+        throw new Error(
+          `REAL_PROVIDER_FAILURE:${adapter.id}:${err instanceof Error ? err.message : String(err)}`
+        );
       }
     });
 
@@ -274,8 +263,8 @@ export class LiveOrchestrationEngine {
     const totalCost = validVerdicts.reduce((sum, v) => sum + v.estimatedCostInr, 0);
     this.monthlyCostAccumulatorInr += totalCost;
 
-    // Pick strongest candidate (highest confidence score & lowest latency)
-    const strongest = [...validVerdicts].sort((a, b) => b.confidenceScore - a.confidenceScore || a.latencyMs - b.latencyMs)[0]!;
+    // No fabricated confidence ranking: choose the fastest successful response only.
+    const strongest = [...validVerdicts].sort((a, b) => a.latencyMs - b.latencyMs)[0]!;
 
     // Calculate cross-model consensus score
     const consensusAgreementScore = 0;
@@ -324,7 +313,7 @@ export class LiveOrchestrationEngine {
       totalTokensUsed: totalTokens,
       totalCostInr: parseFloat(totalCost.toFixed(4)),
       auditSignature: `SIG_${auditSignature}`,
-      hallucinationFreeVerified: true,
+      hallucinationFreeVerified: false,
       deliveryBasePaise,
       surgeMultiplier,
     };
