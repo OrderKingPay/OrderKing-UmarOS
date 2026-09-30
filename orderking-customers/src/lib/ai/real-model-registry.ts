@@ -6,10 +6,10 @@
 export interface VerifiedModelRecord {
   id: string;
   displayName: string;
-  provider: "Local Sovereign" | "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus";
+  provider: "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus";
   realApiId: string;
   connectionStatus: "CONNECTED" | "CONFIGURATION_REQUIRED" | "UNAVAILABLE";
-  authStatus: "VERIFIED" | "MISSING_KEY" | "LOCAL_CORE";
+  authStatus: "VERIFIED" | "MISSING_KEY";
   requiredEnvVar?: string;
   supportedModalities: ("text" | "vision" | "voice" | "code" | "file")[];
   contextWindow: string;
