@@ -39,7 +39,7 @@ Rules:
           "Authorization": `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: process.env.OPENAI_TUTOR_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-5.6-luna",
+          model: process.env.OPENAI_TUTOR_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-6.1-sol",
           messages: [
             { role: "system", content: systemPrompt },
             ...data.history.map((m: any) => ({ role: m.role, content: m.content })),
