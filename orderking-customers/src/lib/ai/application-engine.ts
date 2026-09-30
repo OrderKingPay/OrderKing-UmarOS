@@ -80,8 +80,8 @@ export const VERIFIED_FOUNDER_PORTFOLIO = [
 export function buildCustomizedApplication(opportunity: Opportunity): ApplicationDraft {
   const appId = `APP-${Date.now().toString(36)}`;
   const proposedPriceInr = opportunity.statedBudget ?? 95000;
-  const proposedPriceUsd = opportunity.statedBudgetUsd ?? null;
-  const estimatedCostInr = opportunity.estimatedCostInr ?? null;
+  const proposedPriceUsd = opportunity.currency === "USD" ? Number((opportunity.statedBudget / 84).toFixed(0)) : null;
+  const estimatedCostInr = null;
   const marginPct = estimatedCostInr == null ? 0 : Math.round(((proposedPriceInr - estimatedCostInr) / proposedPriceInr) * 100);
 
   // Match against genuine portfolio
