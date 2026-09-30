@@ -45,51 +45,7 @@ export interface StorageInspectionResult {
 const VAULT_STORAGE_KEY = "hdmaster_media_vault_v1";
 
 // Default initial cache entries representing realistic media generated in HD Master
-const INITIAL_MEDIA_ITEMS: VaultMediaItem[] = [
-  {
-    id: "media-img-01",
-    type: "image",
-    title: "OrderKing Autonomous Delivery Fleet Drone",
-    prompt: "Futuristic autonomous food delivery drone in cyberpunk Indian metro at night, golden lights, 8k octane render",
-    url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80",
-    sizeBytes: 2450000,
-    mimeType: "image/jpeg",
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-    isProtected: false,
-  },
-  {
-    id: "media-img-02",
-    type: "image",
-    title: "KingPay 3D Holographic UPI Soundbox",
-    prompt: "3D golden holographic UPI soundbox device on marble counter with emerald glowing status lights, product photography",
-    url: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=80",
-    sizeBytes: 1980000,
-    mimeType: "image/jpeg",
-    createdAt: new Date(Date.now() - 7200000).toISOString(),
-    isProtected: false,
-  },
-  {
-    id: "media-vid-01",
-    type: "video",
-    title: "OrderKing Superfast 15-Min Delivery Animation",
-    prompt: "High speed cinematic time-lapse of delivery rider riding through city streets into glowing restaurant hub",
-    url: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4",
-    sizeBytes: 8540000,
-    mimeType: "video/mp4",
-    createdAt: new Date(Date.now() - 14400000).toISOString(),
-    isProtected: false,
-  },
-  {
-    id: "media-attach-01",
-    type: "attachment",
-    title: "Client-Pitch-Decks-Q3.pdf",
-    url: "#",
-    sizeBytes: 4200000,
-    mimeType: "application/pdf",
-    createdAt: new Date(Date.now() - 28800000).toISOString(),
-    isProtected: false,
-  },
-];
+const INITIAL_MEDIA_ITEMS: VaultMediaItem[] = [];
 
 class MediaStorageVaultService {
   private items: VaultMediaItem[] = [];
@@ -110,7 +66,7 @@ class MediaStorageVaultService {
         // LocalStorage fallback
       }
     }
-    this.items = [...INITIAL_MEDIA_ITEMS];
+    this.items = typeof window === "undefined" ? [] : [...INITIAL_MEDIA_ITEMS];
   }
 
   private persist() {
@@ -159,11 +115,12 @@ class MediaStorageVaultService {
       else attachBytes += item.sizeBytes;
     }
 
-    // Ephemeral chat session cache & stale network cache
-    const chatCacheBytes = 1850000;
-    const staleApiBytes = 940000;
+    // These caches are measured at runtime elsewhere; this vault reports only
+    // bytes attributable to actual vault items.
+    const chatCacheBytes = 0;
+    const staleApiBytes = 0;
 
-    const totalSizeBytes = imagesBytes + videosBytes + attachBytes + chatCacheBytes + staleApiBytes;
+    const totalSizeBytes = imagesBytes + videosBytes + attachBytes;
 
     return {
       totalSizeBytes,
@@ -178,11 +135,11 @@ class MediaStorageVaultService {
         staleApiCacheBytes: staleApiBytes,
       },
       immutableCoreProtection: {
-        clientLeadsCount: 15,
-        clientInvoicesCount: 8,
-        enterpriseBlueprintsCount: 3,
-        activeContractsCount: 4,
-        founderVaultKeysSafe: true,
+        clientLeadsCount: 0,
+        clientInvoicesCount: 0,
+        enterpriseBlueprintsCount: 0,
+        activeContractsCount: 0,
+        founderVaultKeysSafe: false,
         isProtectedGuarantee: true,
       },
     };
