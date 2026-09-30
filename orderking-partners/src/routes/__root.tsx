@@ -66,6 +66,17 @@ import { supabaseCloud } from "@/lib/db-cloud";
 
 function Root() {
   const location = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    const recover = () => {
+      const key = "orderking-vite-preload-recovered";
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+      window.location.reload();
+    };
+    window.addEventListener("vite:preloadError", recover);
+    return () => window.removeEventListener("vite:preloadError", recover);
+  }, []);
   useEffect(() => {
     flushQueue(transitionOrderViaHDmaster);
     
