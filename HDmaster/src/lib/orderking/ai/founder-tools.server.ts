@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { getSql } from "@/lib/db";
+import OpenAI from "openai";
 import type { ToolDefinition } from "./providers/provider-interface.ts";
 
 export const FOUNDER_TOOLS: ToolDefinition[] = [
@@ -157,31 +158,60 @@ export async function executeFounderTool(name: string, args: Record<string, any>
       }
 
       case "generate_media": {
-        const { prompt, type } = args;
+        const { prompt, type, size = "1536x1024", quality = "high" } = args;
         if (!prompt || !["image", "video"].includes(type)) {
           return { error: "INVALID_REQUEST", detail: "A generation prompt and media type are required." };
         }
 
-        if (type === "image" && !process.env.OPENAI_API_KEY) {
+        if (type === "video") {
           return {
-            error: "CONFIGURATION_REQUIRED",
-            detail: "Image generation requires a real image-generation provider credential in the secure server environment.",
+            error: "PROVIDER_ADAPTER_REQUIRED",
+            status: "NOT_IMPLEMENTED",
+            detail: "No verified video-generation adapter is currently installed. The system will not return a fabricated video result.",
           };
         }
 
-        if (type === "video" && !process.env.RUNWAY_API_KEY && !process.env.SORA_API_KEY) {
+        const apiKey = process.env.OPENAI_API_KEY?.trim();
+        if (!apiKey) {
           return {
             error: "CONFIGURATION_REQUIRED",
-            detail: "Video generation requires a real video-generation provider credential in the secure server environment.",
+            detail: "Configure OPENAI_API_KEY in the secure server environment.",
           };
         }
 
-        return {
-          status: "NOT_IMPLEMENTED",
-          error: "PROVIDER_ADAPTER_REQUIRED",
-          prompt,
-          message: "Provider credentials exist, but no verified media-generation adapter is implemented in this deployment. No fake artifact or fake success status is returned.",
-        };
+        try {
+          const client = new OpenAI({ apiKey });
+          const result = await client.images.generate({
+            model: process.env.OPENAI_IMAGE_MODEL?.trim() || "gpt-image-2.5-sunburst",
+            prompt,
+            size,
+            quality,
+          });
+          const imageBase64 = result.data?.[0]?.b64_json;
+          if (!imageBase64) {
+            return {
+              error: "PROVIDER_EMPTY_RESULT",
+              status: "FAILED",
+              message: "The image provider returned no image artifact.",
+            };
+          }
+
+          return {
+            status: "SUCCESS",
+            provider: "OpenAI",
+            model: process.env.OPENAI_IMAGE_MODEL?.trim() || "gpt-image-2.5-sunburst",
+            mimeType: "image/png",
+            mediaUrl: `data:image/png;base64,${imageBase64}`,
+            prompt,
+            message: "Real image generation completed by the configured OpenAI image provider.",
+          };
+        } catch (error: any) {
+          return {
+            error: "MEDIA_PROVIDER_FAILED",
+            status: "FAILED",
+            message: error?.message || "Image generation failed.",
+          };
+        }
       }
 
       default:
