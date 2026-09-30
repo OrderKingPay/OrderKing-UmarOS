@@ -1948,31 +1948,24 @@ export async function executeTool(
 
     case "neural_fraud_sentinel": {
       requirePermission(ws.ctx, "view_risk");
+      const sql = await getSql();
+      const [cancels, failures, repeats] = await Promise.all([
+        sql`SELECT COUNT(*)::int AS count FROM orders WHERE status='CANCELLED' AND placed_at>=now()-interval '24 hours'`,
+        sql`SELECT COUNT(*)::int AS count FROM payments WHERE status IN ('failed','FAILED') AND created_at>=now()-interval '24 hours'`,
+        sql`SELECT COUNT(*)::int AS count FROM (SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(*)>=5) x`,
+      ]);
       return {
-        status: "NEURAL_FRAUD_SENTINEL_ACTIVE",
+        status: "LIVE_RULE_BASED",
         timestamp: new Date().toISOString(),
         sentinelAssessment: {
-          threatLevel: "NOMINAL_SECURE",
-          compositeRiskScore: 4,
-          nodesAnalyzed: 14820,
-          suspiciousClustersQuarantined: 3,
-          telemetrySignals: {
-            gpsSpoofingDetected: 0,
-            voucherSybilRingsNeutralized: 12,
-            collusiveRefundLoopsDetected: 0,
-            rootedMockLocationBlocks: 27,
-          },
-          capitalShieldedPaise: 34820000,
+          cancelledOrdersLast24h: Number(cancels[0]?.count||0),
+          failedPaymentsLast24h: Number(failures[0]?.count||0),
+          repeatedOrderCustomers: Number(repeats[0]?.count||0),
+          compositeRiskScore: null,
         },
-        graphAlgorithmsApplied: [
-          "Graph Neural Network (GNN) community detection for device-fingerprint clusters",
-          "Kalman-filter trajectory smoothing for rider GPS spoofing detection",
-          "Bi-directional graph flow analysis for circular merchant-customer refund collusion",
-        ],
-        result: "Zero undetected fraud rings. Platform capital and merchant trust 100% fortified.",
+        result: "No zero-fraud or zero-loss guarantee is claimed.",
       };
     }
-
     case "autonomous_hotpatch_engine": {
       requirePermission(ws.ctx, "access_AI");
       return {
