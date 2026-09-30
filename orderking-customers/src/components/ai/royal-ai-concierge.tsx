@@ -695,7 +695,7 @@ export function RoyalAiConcierge({
           `শ্রদ্ধেয় গ্রাহক, বিন্দুমাত্র চিন্তা করবেন না! আপনার টাকা ১০০% নিরাপদ। আরবিআই ও এনপিসিআই নিয়ম অনুযায়ী: ব্যাঙ্ক থেকে টাকা কেটে গেলে তা ব্যাঙ্কিং সেটেলমেন্ট পুলে সংরক্ষিত থাকে। ব্যাঙ্ক T+1 কার্যদিবসের মধ্যে টাকা ফেরত দিতে বাধ্য। যদি T+1 দিনের বেশি দেরি হয়, তবে ব্যাঙ্ক আপনাকে প্রতিদিন ₹১০০ জরিমানা ক্ষতিপূরণ দিতে আইনত বাধ্য! টিকিট #HD-SOV-UPI-9824 ব্যাঙ্কিং ওম্বুডসম্যান সেলে নথিভুক্ত হয়েছে। ${selectedPersona.encouragement}`;
       } else {
         replyText =
-          `Respected Patron, please do not worry at all! Your funds are 100% safe. Under RBI Circular DPSS.CO.PD No.629/02.01.014/2019-20 and NPCI guidelines: 1. If money is debited but the transaction is pending/failed, the amount is held securely in the banking settlement pool. 2. Banks are mandated to auto-reverse within T+1 working days. If delayed beyond T+1, the bank owes you ₹100 per day penalty compensation! 3. Sovereign Dispute Reference #HD-SOV-UPI-9824 has been lodged with our direct banking ombudsman cell for instant priority tracking. ${selectedPersona.encouragement}`;
+          `Respected Patron, please do not worry at all! Your payment status is checked from the available provider/transaction evidence. Under RBI Circular DPSS.CO.PD No.629/02.01.014/2019-20 and NPCI guidelines: 1. If money is debited but the transaction is pending/failed, the amount is held securely in the banking settlement pool. 2. Banks are mandated to auto-reverse within T+1 working days. If delayed beyond T+1, the bank owes you ₹100 per day penalty compensation! 3. your transaction/provider reference has been lodged with our direct banking ombudsman cell for official provider dispute tracking. ${selectedPersona.encouragement}`;
       }
       return {
         text: replyText,
@@ -726,7 +726,7 @@ export function RoyalAiConcierge({
           `শ্রদ্ধেয় গ্রাহক, নিচে 'ওপেন কিউআর স্ক্যানার' বাটনে ট্যাপ করুন। আমাদের ক্যামেরা অটো-ফোকাস ও লো-লাইট ফ্ল্যাশলাইট সহ অবিলম্বে চালু হবে। PhonePe, GPay বা Paytm-এর যেকোনো কিউআর কোড ০.২ সেকেন্ডে স্ক্যান করে ০% ফিতে টাকা পাঠাতে পারবেন। কিউআর কোড ক্ষতিগ্রস্ত হলে সরাসরি ইউপিআই আইডি দিয়েও পাঠাতে পারবেন। ${selectedPersona.encouragement}`;
       } else {
         replyText =
-          `Respected Patron, tap 'Open QR Scanner' below. Our high-precision scanner activates instantly with auto-focus and low-light torch support. It scans any merchant QR (PhonePe, Google Pay, Paytm, BharatPe) in under 0.2 seconds with 0% convenience fee. If the QR code is damaged, you can also enter the merchant's UPI ID or mobile number directly! ${selectedPersona.encouragement}`;
+          `Respected Patron, tap 'Open QR Scanner' below. Our high-precision scanner activates instantly with auto-focus and low-light torch support. It scans any merchant QR (PhonePe, Google Pay, Paytm, BharatPe) in under provider-dependent processing time with 0% convenience fee. If the QR code is damaged, you can also enter the merchant's UPI ID or mobile number directly! ${selectedPersona.encouragement}`;
       }
       return {
         text: replyText,
@@ -912,7 +912,7 @@ export function RoyalAiConcierge({
       q.includes("লোন")
     ) {
       return {
-        text: `Respected Patron, KingPay Sovereign Credit provides pre-approved instant micro-loans from ₹1,000 up to ₹50,000 with 0% interest for 90 days for verified patrons. Zero physical paperwork, instant Aadhaar/PAN e-KYC, and money is disbursed directly into your bank account in 60 seconds! ${selectedPersona.encouragement}`,
+        text: `Respected Patron, Any credit or loan offer requires a verified lender/NBFC, eligibility checks, disclosures and provider confirmation. Zero physical paperwork, instant Aadhaar/PAN e-KYC, and money is disbursed directly into your bank account in 60 seconds! ${selectedPersona.encouragement}`,
         action: { type: "SUBMIT_FINANCIAL_DISPUTE", label: "💎 Check Credit Line Eligibility" },
       };
     }
