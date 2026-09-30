@@ -1,68 +1,58 @@
 // @ts-nocheck
-import OpenAI from "openai";
-import { createAPIFileRoute } from "@tanstack/react-start/api";
-import { requireUserId } from "@/lib/auth/verify.server";
-import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
-import { enforceRateLimit } from "@/lib/orderking/security/rate-limiter";
+import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 
-const DEFAULT_MODEL = process.env.OPENAI_MODEL?.trim() || "";
+const executeOpenAi = createServerFn({ method: "POST" })
+  .validator((data: { prompt: string }) => {
+    if (!data.prompt?.trim()) throw new Error("prompt is required");
+    if (data.prompt.length > 12000) throw new Error("prompt too long");
+    return { prompt: data.prompt.trim() };
+  })
+  .handler(async ({ data }) => {
+    const { requireUserId } = await import("@/lib/auth/verify.server");
+    const { ensureWorkspace } = await import("@/lib/orderking/server/workspace.server");
+    const { enforceRateLimit } = await import("@/lib/orderking/security/rate-limiter");
+    const OpenAI = (await import("openai")).default;
 
-export const Route = createAPIFileRoute("/api/v1/integrations/openai")({
+    const userId = await requireUserId();
+    const workspace = await ensureWorkspace(userId);
+    if (!workspace.ctx.permissions.includes("access_AI")) {
+      throw new Error("AI_PERMISSION_REQUIRED");
+    }
+
+    const request = new Request("https://internal.local/openai", { headers: { "x-forwarded-for": userId } });
+    const limited = await enforceRateLimit(request, `hdmaster:openai-integration:${userId}`, {
+      windowMs: 60_000,
+      maxRequests: 30,
+    });
+    if (limited) throw new Error("RATE_LIMITED");
+
+    const apiKey = process.env.OPENAI_API_KEY?.trim();
+    const model = process.env.OPENAI_MODEL?.trim();
+    if (!apiKey) throw new Error("OPENAI_NOT_CONFIGURED");
+    if (!model) throw new Error("OPENAI_MODEL_NOT_CONFIGURED");
+
+    const client = new OpenAI({ apiKey });
+    const response = await client.responses.create({ model, input: data.prompt });
+    return { model: response.model, ai_response: response.output_text };
+  });
+
+export const Route = createFileRoute("/api/v1/integrations/openai")({
+  // @ts-expect-error
   server: {
     handlers: {
       POST: async ({ request }: any) => {
         try {
-          const userId = await requireUserId();
-          const workspace = await ensureWorkspace(userId);
-          if (!workspace.ctx.permissions.includes("access_AI")) {
-            return Response.json({ error: "FORBIDDEN", code: "AI_PERMISSION_REQUIRED" }, { status: 403 });
-          }
-
-          const rateLimitResponse = await enforceRateLimit(request, "hdmaster:openai-integration", {
-            windowMs: 60_000,
-            maxRequests: 30,
-          });
-          if (rateLimitResponse) return rateLimitResponse;
-
           const body = await request.json();
-          const prompt = typeof body?.prompt === "string" ? body.prompt.trim() : "";
-          if (!prompt) {
-            return Response.json({ error: "prompt is required" }, { status: 400 });
-          }
-
-          const apiKey = process.env.OPENAI_API_KEY?.trim();
-          const model = process.env.OPENAI_MODEL?.trim() || DEFAULT_MODEL;
-          if (!apiKey) {
-            return Response.json(
-              { error: "OpenAI is not configured on this server.", code: "OPENAI_NOT_CONFIGURED" },
-              { status: 503 },
-            );
-          }
-          if (!model) {
-            return Response.json(
-              { error: "OPENAI_MODEL is not configured on this server.", code: "OPENAI_MODEL_NOT_CONFIGURED" },
-              { status: 503 },
-            );
-          }
-
-          const client = new OpenAI({ apiKey });
-          const response = await client.responses.create({ model, input: prompt });
-
-          return Response.json({
-            success: true,
-            model: response.model,
-            ai_response: response.output_text,
-          });
+          const result = await executeOpenAi({ data: body });
+          return Response.json({ success: true, ...result });
         } catch (error: any) {
-          console.error("[openai] request failed:", error);
-          return Response.json(
-            {
-              success: false,
-              error: error?.status === 401 ? "Unauthorized." : "OpenAI request failed.",
-              code: error?.status === 401 ? "UNAUTHORIZED" : "OPENAI_REQUEST_FAILED",
-            },
-            { status: error?.status === 401 ? 401 : 502 },
-          );
+          const message = error?.message || "OpenAI request failed";
+          const status =
+            message === "AI_PERMISSION_REQUIRED" || message === "Unauthorized" ? 403 :
+            message === "RATE_LIMITED" ? 429 :
+            message === "OPENAI_NOT_CONFIGURED" || message === "OPENAI_MODEL_NOT_CONFIGURED" ? 503 : 502;
+          return Response.json({ success: false, error: message }, { status });
         }
       },
     },
