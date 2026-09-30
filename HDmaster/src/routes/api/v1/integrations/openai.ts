@@ -5,7 +5,7 @@ import { requireUserId } from "@/lib/auth/verify.server";
 import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
 import { enforceRateLimit } from "@/lib/orderking/security/rate-limiter";
 
-const DEFAULT_MODEL = process.env.OPENAI_MODEL?.trim() || "gpt-5.6-luna";
+const DEFAULT_MODEL = process.env.OPENAI_MODEL?.trim() || "gpt-6.1-sol";
 
 export const APIRoute = createAPIFileRoute("/api/v1/integrations/openai")({
   POST: async ({ request }: any) => {
