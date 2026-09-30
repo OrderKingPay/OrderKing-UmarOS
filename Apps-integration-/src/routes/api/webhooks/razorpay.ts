@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 import {
   getWebhookEventId,
+  markWebhookFailed,
   markWebhookProcessed,
   recordWebhookEvent,
 } from '../../../lib/integration/webhook-store';
@@ -39,11 +40,22 @@ export const APIRoute = createAPIFileRoute('/api/webhooks/razorpay')({
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized: Invalid signature' }), { status: 401 });
       }
 
-      const event = JSON.parse(rawBody) as Record<string, any>;
+      const event = JSON.parse(rawBody) as Record<string, unknown>;
+      const eventName = typeof event.event === 'string' ? event.event : 'unknown';
+      const paymentEntity =
+        event.payload && typeof event.payload === 'object' && 'payment' in event.payload &&
+        event.payload.payment && typeof event.payload.payment === 'object' && 'entity' in event.payload.payment
+          ? event.payload.payment.entity
+          : null;
+      const paymentData =
+        paymentEntity && typeof paymentEntity === 'object'
+          ? paymentEntity as Record<string, unknown>
+          : null;
+
       const stored = await recordWebhookEvent({
         provider: 'razorpay',
         providerEventId: getWebhookEventId(request.headers, event),
-        eventType: typeof event.event === 'string' ? event.event : 'unknown',
+        eventType: eventName,
         payload: event,
         signatureValid: true,
       });
@@ -52,16 +64,22 @@ export const APIRoute = createAPIFileRoute('/api/webhooks/razorpay')({
         return new Response(JSON.stringify({ success: true, message: 'Duplicate webhook acknowledged' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
       }
 
-      if (event.event === 'order.paid') {
-        const paymentData = event.payload.payment.entity;
-        const orderId = paymentData.order_id;
-        
-        // Execute an atomic ACID transaction via Supabase RPC
+      if (eventName === 'order.paid') {
+        const orderId = typeof paymentData?.order_id === 'string' ? paymentData.order_id : null;
+        const paymentId = typeof paymentData?.id === 'string' ? paymentData.id : null;
+        const amount = typeof paymentData?.amount === 'number' ? paymentData.amount : null;
+        const currency = typeof paymentData?.currency === 'string' ? paymentData.currency : null;
+
+        if (!orderId || !paymentId || !amount || amount <= 0 || !currency || currency.length !== 3) {
+          await markWebhookFailed(stored.event.id, 'Invalid Razorpay order.paid payload');
+          return new Response(JSON.stringify({ success: false, message: 'Invalid webhook payload' }), { status: 400 });
+        }
+
         const { error } = await supabase.rpc('handle_order_paid_transaction', {
           p_order_id: orderId,
-          p_payment_id: paymentData.id,
-          p_amount: paymentData.amount,
-          p_currency: paymentData.currency
+          p_payment_id: paymentId,
+          p_amount: amount,
+          p_currency: currency,
         });
 
         if (error) {
