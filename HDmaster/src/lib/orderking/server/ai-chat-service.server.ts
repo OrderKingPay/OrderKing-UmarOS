@@ -506,7 +506,7 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
  * 1. Checks engineering commands -> runs real workspace tools.
  * 2. Checks workforce/approval commands -> runs real DB queries.
  * 3. Checks active provider -> if connected, calls real model API with real streaming.
- * 4. If external provider missing key -> gracefully and truthfully executes via Sovereign Local Core.
+ * 4. If no external provider is configured, the request fails closed without synthetic output.
  */
 export async function executeFounderAiChat(
   request: AiChatRequest,
@@ -641,7 +641,7 @@ export async function executeFounderAiChat(
 
     if (geminiKey) activeProvidersList.push({ name: "Google Gemini", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash" });
     if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: process.env.ANTHROPIC_MODEL?.trim() || "claude-3-7-sonnet-20250219" });
-    if (openaiKey) activeProvidersList.push({ name: "OpenAI", id: "openai", provider: new OpenAIProvider(openaiKey), model: process.env.OPENAI_MODEL?.trim() || "gpt-6.1-sol" });
+    if (openaiKey) activeProvidersList.push({ name: "OpenAI", id: "openai", provider: new OpenAIProvider(openaiKey), model: process.env.OPENAI_MODEL?.trim() || "gpt-5.6-sol" });
     if (xaiKey) activeProvidersList.push({ name: "xAI Grok", id: "xai", provider: new XAIProvider(xaiKey), model: process.env.XAI_MODEL?.trim() || "grok-2-1212" });
 
     if (activeProvidersList.length >= 2) {
