@@ -199,7 +199,7 @@ export async function executeFounderTool(name: string, args: Record<string, any>
           return {
             status: "SUCCESS",
             provider: "OpenAI",
-            model: process.env.OPENAI_IMAGE_MODEL?.trim() || "gpt-image-2.5-sunburst",
+            model: process.env.OPENAI_IMAGE_MODEL?.trim() || "gpt-image-2",
             mimeType: "image/png",
             mediaUrl: `data:image/png;base64,${imageBase64}`,
             prompt,
