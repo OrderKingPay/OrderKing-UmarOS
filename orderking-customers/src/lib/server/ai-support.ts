@@ -123,10 +123,8 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
     }
 
     if (data.issueType === "missing_item" || data.issueType === "food_spilled") {
-      // Create a support ticket. Compensation is not claimed until policy/payment verification completes.
       const ticketId = newId("tkt");
       const title = data.issueType === "missing_item" ? "Missing item claim" : "Spilled / Damaged item claim";
-      const compensationPaise: number | undefined = undefined; // No credit is claimed until policy/provider verification completes.
 
       await sql`
         insert into support_tickets (id, user_id, order_id, topic, message, status)
@@ -136,32 +134,17 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
           ${order.id},
           ${data.issueType},
           ${`Automated claim: ${title}. Customer note: ${data.details ?? "None provided"}`},
-          'resolved'
+          'open'
         )
-      `;
-
-      // Credit wallet points
-      const points = Math.round(compensationPaise / 100);
-      await sql`
-        insert into loyalty_accounts (user_id, points, lifetime_points, tier)
-        values (${context.userId}, ${points}, ${points}, 'starter')
-        on conflict (user_id) do update set
-          points = loyalty_accounts.points + ${points},
-          updated_at = now()
-      `;
-      await sql`
-        insert into loyalty_transactions (id, user_id, order_id, delta, reason)
-        values (${newId("loy")}, ${context.userId}, ${order.id}, ${points}, 'incident_resolution_credit')
       `;
 
       return {
         ok: true,
         orderId: order.id,
         issueType: data.issueType,
-        actionTaken: "COMPENSATION_GRANTED",
-        title: "Instant Resolution & Compensation",
-        explanation: `We deeply apologize for the issue with order #${order.public_id}. We have issued an instant ₹${points} credit directly to your account. Your ticket #${ticketId} is logged for kitchen quality review.`,
-        compensationPaise,
+        actionTaken: "COMPENSATION_PENDING",
+        title: "Issue Logged — Compensation Review",
+        explanation: `Ticket #${ticketId} was opened for order #${order.public_id}. Any credit or refund will be applied only after policy and payment/ledger verification.`,
         ticketId,
       };
     }
@@ -260,7 +243,7 @@ INSTRUCTION:
     // 2. Check if asking about KingPay or KingPay Later
     if (q.includes("kingpay") || q.includes("king pay") || q.includes("wallet") || q.includes("pay later") || q.includes("credit") || q.includes("interest")) {
       return {
-        reply: `KingPay is our dedicated fintech wallet providing 1-Tap checkout with zero OTP delays, saving 2% in payment gateway surcharges. KingPay Later offers eligible customers an instant ₹2,500 credit limit at 0% interest for 15 days, auto-repaid on the 1st and 16th of each month. All wallet balances are 100% safeguarded under RBI-compliant escrow invariant accounts.`,
+        reply: `KingPay is the OrderKing payments interface. Live wallet, transfer and credit features depend on the configured payment provider, eligibility rules and verified server ledger; this assistant will not claim a credit limit, interest rate or completed transaction unless the relevant provider confirms it.`,
         links: [
           { title: "Open KingPay Hub", url: "/king-pay", badge: "Fintech Hub" },
           { title: "RBI Banking Ombudsman (CMS)", url: "https://cms.rbi.org.in", badge: "Govt Portal" },
@@ -271,7 +254,7 @@ INSTRUCTION:
     // 3. Check if asking about Recharges, LPG gas, or Bill payments
     if (q.includes("recharge") || q.includes("cylinder") || q.includes("lpg") || q.includes("gas") || q.includes("electricity") || q.includes("apdcl") || q.includes("fastag")) {
       return {
-        reply: `You can recharge prepaid mobiles (Jio, Airtel, Vi, BSNL), book Indane, HP & Bharat Gas cylinders, pay APDCL electricity bills, and recharge FASTag directly inside KingPay. Every transaction earns you 2% cashback or King Coins plus partner fuel vouchers. If your recharge or LPG booking fails, UPI reconciliation is handled within 2 hours under NPCI guidelines.`,
+        reply: `KingPay shows supported utility and travel services, but each live transaction requires a connected provider. Cashback, booking, recharge and settlement results are only reported after the partner/provider confirms them.`,
         links: [
           { title: "Book LPG & Recharges in KingPay", url: "/king-pay", badge: "Instant" },
           { title: "NPCI UPI Dispute Redressal", url: "https://www.npci.org.in/what-we-do/upi/dispute-redressal-mechanism", badge: "Official" },
@@ -282,7 +265,7 @@ INSTRUCTION:
     // 4. Check if asking about Cancel / Refund
     if (q.includes("cancel") || q.includes("refund") || q.includes("return") || q.includes("money back")) {
       return {
-        reply: `Orders can be cancelled with a 100% instant refund within 3 minutes of placement if the kitchen has not begun preparation. For prepaid UPI or KingPay orders, refunds are processed instantly back to your wallet or within 24 hours to your bank account. If an item is missing or damaged, our automated bot grants instant store credit.`,
+        reply: `Cancellation eligibility is evaluated against the live order state and policy. Refund timing depends on the payment provider, and missing/damaged item claims are recorded for review; this assistant does not claim a completed refund or credit before verification.`,
         actionChip: { label: "🛑 Cancel Order or Check Refund", issueType: "cancel_order" },
       };
     }
@@ -290,7 +273,7 @@ INSTRUCTION:
     // 5. Check if asking about Hygiene, Food Quality, or FSSAI
     if (q.includes("fssai") || q.includes("hygiene") || q.includes("cold") || q.includes("spill") || q.includes("quality") || q.includes("stale")) {
       return {
-        reply: `All partner restaurants on OrderKing are required to maintain valid FSSAI certification and adhere to strict hygiene guidelines. If your food was spilled, cold, or sub-standard, click below to receive instant compensation and report the kitchen for priority review. For severe food safety concerns, you can also log a grievance on the National FoSCoS portal.`,
+        reply: `Partner verification and food-safety requirements are enforced through onboarding and operations checks. A quality issue can be reported here for review; compensation is not claimed until eligibility and ledger/payment verification complete. For severe food safety concerns, you can also log a grievance on the National FoSCoS portal.`,
         actionChip: { label: "🍜 Report Spilled / Poor Quality Item", issueType: "food_spilled" },
         links: [
           { title: "FSSAI National Food Safety Grievance", url: "https://foscos.fssai.gov.in", badge: "FSSAI Portal" },
@@ -313,7 +296,7 @@ INSTRUCTION:
 
     // General fallback
     return {
-      reply: `I am the OrderKing 24x7 Intelligent Assistant. I can help you with live order tracking, late delivery compensation (₹50 credit if >35 min), KingPay wallet & 0% KingPay Later, recharges & LPG cylinder bookings, refunds, and official government ombudsman links. How can I assist you right now?`,
+      reply: `I am the OrderKing 24x7 Intelligent Assistant. I can help with live order status, support cases, payment-provider status, and official government resources. Any refund, credit, recharge, loan, or transfer result is only reported after verified provider/ledger confirmation.`,
       links: [
         { title: "National Consumer Helpline", url: "https://consumerhelpline.gov.in", phone: "1915" },
         { title: "RBI Banking Ombudsman", url: "https://cms.rbi.org.in" },
