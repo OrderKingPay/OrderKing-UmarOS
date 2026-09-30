@@ -328,37 +328,47 @@ export class ReportingDocumentEngine {
     }];
   }
   private static buildRestaurantSettlement(params: ReportGenerationParams): ReportSection[] {
-    const restaurantName = params.customData?.restaurantName || 'Spice Garden Kitchen';
-    return [
-      {
-        id: 'merchant_overview',
-        title: `Settlement Breakdown - ${restaurantName}`,
-        metrics: [
-          { key: 'orders_fulfilled', label: 'Orders Fulfilled', value: 86, category: 'FACT' },
-          { key: 'food_subtotal', label: 'Food Item Subtotal', value: '₹38,450', category: 'FACT' },
-          { key: 'packaging_charges', label: 'Packaging Charges Collected', value: '₹1,290', category: 'FACT' },
-          { key: 'gross_payable_before_tax', label: 'Gross Merchant Entitlement', value: '₹39,740', category: 'CALCULATION' },
-          { key: 'order_king_commission', label: 'Order King Commission (0%)', value: '₹0.00', category: 'FACT' },
-          { key: 'competitor_commission_saved', label: 'Estimated Commission Saved vs Aggregators', value: '₹8,742', category: 'CALCULATION' },
-        ],
-      },
-      {
-        id: 'statutory_deductions',
-        title: 'Taxes & Statutory Deductions',
-        metrics: [
-          { key: 'tcs_under_gst', label: 'TCS under GST (0.5% CGST + 0.5% SGST = 1%)', value: '₹384.50', category: 'CALCULATION' },
-          { key: 'tds_under_it', label: 'TDS under Section 194-O (1%)', value: '₹384.50', category: 'CALCULATION' },
-          { key: 'total_statutory_withholding', label: 'Total Statutory Withholding', value: '₹769.00', category: 'CALCULATION' },
-          { key: 'net_bank_disbursement', label: 'Net Amount Disbursed to Bank Account', value: '₹38,971.00', category: 'CALCULATION' },
-        ],
-        notes: [
-          'Settlement transition: CALCULATED -> VALIDATED -> APPROVED -> PAID.',
-          'UTR / Bank Reference: CMS904810294812 (HDFC Bank Corporate NetBanking).',
-        ],
-      },
-    ];
+    const d = params.customData || {};
+    const money = (v: unknown) => typeof v === "number"
+      ? "₹" + (v / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : "—";
+    const gross = typeof d.foodSubtotalPaise === "number" && typeof d.packingPaise === "number"
+      ? Number(d.foodSubtotalPaise) + Number(d.packingPaise)
+      : null;
+    const payable = typeof d.restaurantPayablePaise === "number"
+      ? Number(d.restaurantPayablePaise)
+      : gross != null &&
+        typeof d.restaurantDiscountPaise === "number" &&
+        typeof d.commissionPaise === "number" &&
+        typeof d.otherDeductionsPaise === "number" &&
+        typeof d.refundAdjustmentPaise === "number"
+        ? gross - Number(d.restaurantDiscountPaise) - Number(d.commissionPaise) - Number(d.otherDeductionsPaise) + Number(d.refundAdjustmentPaise)
+        : null;
+    return [{
+      id: "merchant_overview",
+      title: "Settlement Breakdown - " + (d.restaurantName || params.restaurantId || "Restaurant"),
+      metrics: [
+        ...(typeof d.ordersFulfilled === "number" ? [{ key: "orders_fulfilled", label: "Orders Fulfilled", value: d.ordersFulfilled, category: "FACT" }] : []),
+        ...(typeof d.foodSubtotalPaise === "number" ? [{ key: "food_subtotal", label: "Food Item Subtotal", value: money(d.foodSubtotalPaise), category: "FACT" }] : []),
+        ...(typeof d.packingPaise === "number" ? [{ key: "packaging_charges", label: "Packaging Charges", value: money(d.packingPaise), category: "FACT" }] : []),
+        ...(gross != null ? [{ key: "gross_entitlement", label: "Gross Merchant Entitlement", value: money(gross), category: "CALCULATION" }] : []),
+        ...(typeof d.restaurantDiscountPaise === "number" ? [{ key: "restaurant_discount", label: "Restaurant-Funded Discount", value: money(d.restaurantDiscountPaise), category: "FACT" }] : []),
+        ...(typeof d.platformFundedDiscountPaise === "number" ? [{ key: "platform_discount", label: "Platform-Funded Discount", value: money(d.platformFundedDiscountPaise), category: "FACT" }] : []),
+        ...(typeof d.commissionPaise === "number" ? [{ key: "order_king_commission", label: "OrderKing Commission", value: money(d.commissionPaise), category: "FACT" }] : []),
+        ...(typeof d.otherDeductionsPaise === "number" ? [{ key: "other_deductions", label: "Other Deductions", value: money(d.otherDeductionsPaise), category: "FACT" }] : []),
+        ...(typeof d.refundAdjustmentPaise === "number" ? [{ key: "refund_adjustments", label: "Refund Adjustments", value: money(d.refundAdjustmentPaise), category: "FACT" }] : []),
+        ...(payable != null ? [{ key: "net_payable", label: "Net Restaurant Payable", value: money(payable), category: "CALCULATION" }] : []),
+      ],
+    }, {
+      id: "settlement_status",
+      title: "Settlement Status & References",
+      metrics: [],
+      notes: [
+        d.status ? "Status: " + d.status : "Status: NOT_SUPPLIED",
+        d.providerReference ? "Provider reference: " + d.providerReference : "Provider reference: NOT_SUPPLIED",
+      ],
+    }];
   }
-
   private static buildRiderPayout(params: ReportGenerationParams): ReportSection[] {
     return [
       {
