@@ -52,21 +52,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm 12.8.1
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.8.1
+
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
-          cache-dependency-path: ${{ matrix.path }}/package-lock.json
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install frozen dependencies
-        run: npm ci --no-audit --no-fund
+        run: pnpm install --frozen-lockfile --prefer-offline
+        working-directory: .
 
       - name: Typecheck
-        run: npm run typecheck
+        run: pnpm --filter ./\"${{ matrix.path }}\" typecheck
+        working-directory: .
 
       - name: Test
-        run: npm test
+        run: pnpm --filter ./\"${{ matrix.path }}\" test
+        working-directory: .
 
       - name: Production build
-        run: npm run build
+        run: pnpm --filter ./\"${{ matrix.path }}\" build
+        working-directory: .

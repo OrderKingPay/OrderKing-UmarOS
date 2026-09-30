@@ -14,38 +14,25 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup pnpm 12.8.1
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.8.1
+
+      - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'npm'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Verify HDmaster Build
-        working-directory: ./HDmaster
-        run: |
-          npm ci
-          npm run build
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
 
-      - name: Verify orderking-customers Build
-        working-directory: ./orderking-customers
+      - name: Verify all app builds
         run: |
-          npm ci
-          npm run build
-
-      - name: Verify orderking-partners Build
-        working-directory: ./orderking-partners
-        run: |
-          npm ci
-          npm run build
-
-      - name: Verify orderking-riders Build
-        working-directory: ./orderking-riders
-        run: |
-          npm ci
-          npm run build
-
-      - name: Verify Apps-integration Build
-        working-directory: ./Apps-integration-
-        run: |
-          npm ci
-          npm run build
+          pnpm --filter ./HDmaster build
+          pnpm --filter ./orderking-customers build
+          pnpm --filter ./orderking-partners build
+          pnpm --filter ./orderking-riders build
+          pnpm --filter ./Apps-integration- build

@@ -19,15 +19,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm 12.8.1
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.8.1
+
       - name: Use Node 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
-          cache-dependency-path: orderking-partners/package-lock.json
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install
-        run: npm ci
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+        working-directory: .
 
       - name: Build
-        run: npm run build
+        run: pnpm --filter ./orderking-partners build
+        working-directory: .
