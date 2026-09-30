@@ -23,7 +23,8 @@ export type IncomeStreamId =
   | "VEHICLE_CHALLAN_CONVENIENCE_FEE"
   | "MOTOR_INSURANCE_POSP_COMMISSION"
   | "FASTAG_RECHARGE_MARGIN"
-  | "GOVERNMENT_GRANT_DBT";
+  | "GOVERNMENT_GRANT_DBT"
+  | "ORDERKING_MARKETPLACE_COMMISSION";
 
 export type IncomeStreamYield = {
   streamId: IncomeStreamId;
@@ -519,7 +520,7 @@ export function calculatePlanetaryRevenueHarvest(options: {
 
   if (commissionRevenuePaise <= 0) {
     streams.push({
-      streamId: "MERCHANT_SOUNDBOX_POS_SAAS",
+      streamId: "ORDERKING_MARKETPLACE_COMMISSION",
       name: "Marketplace Commission Revenue",
       category: "MERCHANT_SAAS",
       legalBasis: "Actual marketplace commercial contract/configuration.",
@@ -532,7 +533,7 @@ export function calculatePlanetaryRevenueHarvest(options: {
     });
   } else {
     streams.push({
-      streamId: "MERCHANT_SOUNDBOX_POS_SAAS",
+      streamId: "ORDERKING_MARKETPLACE_COMMISSION",
       name: "Marketplace Commission Revenue (derived from verified GMV input)",
       category: "MERCHANT_SAAS",
       legalBasis: "Configured commercial commission rate; actual provider/ledger reconciliation still required.",
