@@ -924,9 +924,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [selectedBankForBalance, setSelectedBankForBalance] = useState<BankAccount | null>(null);
   const [upiPinInput, setUpiPinInput] = useState("");
   const [pinVerifying, setPinVerifying] = useState(false);
-  const [balanceRevealed, setBalanceRevealed] = useState<{ [bankId: string]: number }>({
-    bank_sbi_1: 24850,
-  });
+  const [balanceRevealed, setBalanceRevealed] = useState<{ [bankId: string]: number }>({});
 
   // Add Bank Account Flow State
   const [showAddBankModal, setShowAddBankModal] = useState(false);
@@ -1069,61 +1067,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleSpinWheel = () => {
-    if (kingCoins < 100 && claimedToday) {
-      toast.error("You need at least 100 King Coins to spin the Lucky Jackpot Wheel!");
-      return;
-    }
-    setSpinning(true);
-    setSpinResult(null);
-
-    const PRIZES = [
-      { prize: "Flat ₹50 Wallet Cashback", sub: "Credited instantly to your KingPay wallet float.", icon: "💰", type: "cash" as const, value: 50 },
-      { prize: "Free Food Delivery Token", sub: "Applied automatically on your next food order.", icon: "🍔", type: "food" as const, value: 35 },
-      { prize: "500 Bonus King Coins", sub: "Boosts your VIP Club tier progress.", icon: "🪙", type: "coins" as const, value: 500 },
-      { prize: "Mystery Scratch Card", sub: "Unlocks an instant surprise reward.", icon: "🎫", type: "scratch" as const, value: 100 },
-      { prize: "Flat 20% Off Meal Voucher", sub: "Valid on all partner restaurants in Karimganj & Silchar.", icon: "🏷️", type: "food" as const, value: 100 },
-      { prize: "King Club 2X Booster", sub: "Double coin earnings on all transactions today.", icon: "👑", type: "coins" as const, value: 200 },
-    ];
-
-    setTimeout(() => {
-      const chosen = PRIZES[Math.floor(Math.random() * PRIZES.length)];
-      setSpinResult(chosen);
-      setSpinning(false);
-
-      if (chosen.type === "cash") {
-        setWalletBalance((prev) => prev + chosen.value);
-      } else if (chosen.type === "coins") {
-        setKingCoins((prev) => prev + chosen.value);
-      } else if (chosen.type === "scratch") {
-        setScratched(false);
-        setScratchReward({
-          title: "🎉 Jackpot Mystery Scratch Card!",
-          desc: "Won from the Lucky Jackpot Spin Wheel.",
-          amount: 30,
-          coins: 250,
-        });
-        setShowScratchCard(true);
-      }
-
-      if (!claimedToday) {
-        setClaimedToday(true);
-      } else {
-        setKingCoins((prev) => Math.max(0, prev - 100));
-      }
-
-      toast.success(`🎰 Jackpot Win: ${chosen.prize}!`);
-    }, 1500);
+    toast.info("Jackpot rewards are awaiting a verified promotion ledger. No cash or coins are minted in the browser.");
   };
 
-  const handleBurnCoinsForFood = (coinsToBurn: number, rupeeDiscount: number) => {
-    if (kingCoins < coinsToBurn) {
-      toast.error(`You need at least ${coinsToBurn} King Coins for a ₹${rupeeDiscount} food discount!`);
-      return;
-    }
-    setKingCoins((prev) => prev - coinsToBurn);
-    setWalletBalance((prev) => prev + rupeeDiscount);
-    toast.success(`🔥 Burned ${coinsToBurn} King Coins for ₹${rupeeDiscount} food credit added to wallet!`);
+  const handleBurnCoinsForFood = (_coinsToBurn: number, _rupeeDiscount: number) => {
+    toast.info("Coin redemption requires a verified rewards ledger. No wallet credit was created.");
   };
+
 
   // Pre-approved Loan / Credit Card Lead Application Modal
   const [selectedLoanProduct, setSelectedLoanProduct] = useState<{
@@ -1331,71 +1281,15 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const handleScanPaySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const amt = parseInt(scanAmount, 10);
-    if (isNaN(amt) || amt <= 0) {
+    if (!Number.isFinite(amt) || amt <= 0) {
       toast.error("Please enter a valid amount");
       return;
     }
-    if (amt > walletBalance) {
-      toast.error(`Insufficient wallet balance (₹${walletBalance}). Please add money.`);
-      return;
-    }
-    const newBal = walletBalance - amt;
-    setWalletBalance(newBal);
-    addTransaction(amt, `Scan & Pay to ${scanRecipient || "Merchant"}`, "debit");
-    if (effective2G) {
-      try {
-          const rawQueue = localStorage.getItem("ok_offline_tx_queue") || "[]";
-          const queue = JSON.parse(rawQueue);
-          queue.push({
-            id: `tx_off_${Date.now()}`,
-            amount: amt,
-            recipient: scanRecipient,
-            token: offlineToken,
-            timestamp: new Date().toISOString(),
-          });
-          localStorage.setItem("ok_offline_tx_queue", JSON.stringify(queue));
-        } catch {
-          // ignore
-        }
-      }
-    setShowScanner(false);
-    playSoundboxChime(amt);
-    if (effective2G) {
-      toast.success(`⚡ Offline Payment Cleared! ₹${amt} paid to ${scanRecipient} (Token: ${offlineToken}). Auto-syncs on reconnect.`);
-    } else {
-      toast.success(`₹${amt} paid to ${scanRecipient} via KingPay!`);
-    }
-
-    // Award scratch card reward
-    setScratched(false);
-    setScratchReward({
-      title: "🎉 Instant Cashback Won!",
-      desc: "Rewarded for scanning & paying via KingPay!",
-      amount: Math.floor(5 + Math.random() * 20),
-      coins: Math.floor(50 + Math.random() * 150),
-    });
-    setShowScratchCard(true);
+    toast.info("Scan & Pay is not activated: a verified UPI/payment-provider adapter and server-side transaction confirmation are required. No wallet debit was made.");
   };
 
-  const handleVerifyUpiPin = (pin: string) => {
-    if (!selectedBankForBalance) return;
-    if (pin.length < 4) {
-      toast.error("Please enter your 4-digit UPI PIN");
-      return;
-    }
-    setPinVerifying(true);
-    setTimeout(() => {
-      setPinVerifying(false);
-      const randomBal = selectedBankForBalance.balance || Math.floor(12000 + Math.random() * 85000);
-      setBalanceRevealed((prev) => ({
-        ...prev,
-        [selectedBankForBalance.id]: randomBal,
-      }));
-      playSoundboxChime(100);
-      toast.success(`✅ ${selectedBankForBalance.bankName} balance verified via NPCI UPI!`);
-      setSelectedBankForBalance(null);
-      setUpiPinInput("");
-    }, 850);
+  const handleVerifyUpiPin = (_pin: string) => {
+    toast.info("Bank balance verification requires a real bank/UPI provider. No random balance is generated.");
   };
 
   const handleStartAddBank = (bankName: string) => {
@@ -1404,80 +1298,23 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleSimVerification = () => {
-    setSimVerifying(true);
-    setTimeout(() => {
-      setSimVerifying(false);
-      const newAccNumber = `•••• ${Math.floor(1000 + Math.random() * 9000)}`;
-      const newBank: BankAccount = {
-        id: `bank_${Date.now()}`,
-        bankName: selectedBankToAdd,
-        bankCode: selectedBankToAdd.toLowerCase().replace(/[^a-z]/g, "").slice(0, 5),
-        accountNumberMasked: newAccNumber,
-        accountType: "Savings",
-        isPrimary: false,
-        balance: Math.floor(15000 + Math.random() * 50000),
-        balanceCheckedAt: "Just now",
-        color: "from-emerald-700 to-teal-900",
-        icon: "🏛️",
-      };
-      const updated = [...linkedBanks, newBank];
-      setLinkedBanks(updated);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("ok_kingpay_linked_banks", JSON.stringify(updated));
-      }
-      setAddBankStep("success");
-      playSoundboxChime(500);
-      toast.success(`🎉 ${selectedBankToAdd} linked successfully to KingPay UPI!`);
-    }, 1200);
+    setSimVerifying(false);
+    toast.info("Bank linking requires a real bank/UPI authentication adapter. No account was linked.");
   };
 
   const handleSelfTransferSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const amt = parseInt(selfTransferAmount, 10);
-    if (isNaN(amt) || amt <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-    if (selfFromBank === selfToBank) {
-      toast.error("Source and destination accounts must be different");
-      return;
-    }
-    const fromName = linkedBanks.find((b) => b.id === selfFromBank)?.bankName || "Primary Account";
-    const toName = linkedBanks.find((b) => b.id === selfToBank)?.bankName || "Secondary Account";
-    playSoundboxChime(amt);
-    toast.success(`⚡ Self-Transfer of ₹${amt} from ${fromName} to ${toName} completed via UPI! (0% Fee)`);
-    setShowSelfTransferModal(false);
+    toast.info("Self-transfer is not activated: a verified UPI/bank transfer provider is required. No transfer was made.");
   };
 
   const handleBuyGold = (e: React.FormEvent) => {
     e.preventDefault();
-    const val = parseInt(goldAmount, 10);
-    if (isNaN(val) || val <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-    if (val > walletBalance) {
-      toast.error(`Insufficient wallet balance. Please add money first.`);
-      return;
-    }
-    const newBal = walletBalance - val;
-    setWalletBalance(newBal);
-    const addedGrams = Number((val / 7420).toFixed(4));
-    const newGold = Number((goldGrams + addedGrams).toFixed(4));
-    setGoldGrams(newGold);
-    setShowGoldModal(false);
-    playSoundboxChime(val);
-    toast.success(`🌟 Bought ${addedGrams}g of 24K 99.9% Pure Gold! Vault balance: ${newGold}g`);
+    toast.info("Digital-gold purchases require a verified partner/vault provider. No wallet debit or gold credit was created.");
   };
 
   const claimScratchReward = () => {
-    const newBal = walletBalance + scratchReward.amount;
-    const newCoins = kingCoins + scratchReward.coins;
-    setWalletBalance(newBal);
-    setKingCoins(newCoins);
-    addTransaction(scratchReward.amount, scratchReward.title, "credit");
     setShowScratchCard(false);
-    toast.success(`Claimed ₹${scratchReward.amount} cashback & +${scratchReward.coins} King Coins!`);
+    toast.info("Cashback/coin rewards are not credited until a verified promotion/ledger rule executes them.");
   };
 
   const shareSplitOnWhatsApp = () => {
