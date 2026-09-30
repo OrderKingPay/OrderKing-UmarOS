@@ -2489,7 +2489,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   Check Bal
                 </button>
               </div>
-            ))
+              ))}
           </div>
         </div>
 
