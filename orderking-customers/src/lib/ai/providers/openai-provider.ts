@@ -15,7 +15,7 @@ import type {
 export class OpenAIProvider implements AIProvider {
   readonly id = "openai";
   readonly name = "OpenAI Omnimodal";
-  readonly supportedModels = ["gpt-6-sol", "gpt-6-astra", "gpt-6-luna", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"];
+  readonly supportedModels = ["gpt-6-astra", "gpt-6-sol", "gpt-6-luna", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"];
 
   private apiKey: string | undefined;
 
@@ -33,7 +33,7 @@ export class OpenAIProvider implements AIProvider {
     }
 
     const start = Date.now();
-    const model = input.model || process.env.OPENAI_MODEL?.trim() || "gpt-6-sol";
+    const model = input.model || process.env.OPENAI_MODEL?.trim() || "gpt-6-astra";
     const url = "https://api.openai.com/v1/chat/completions";
 
     const messages: Array<Record<string, unknown>> = [];
@@ -76,14 +76,33 @@ export class OpenAIProvider implements AIProvider {
       payload.tools = tools;
     }
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    const candidates = Array.from(new Set([model, "gpt-6-astra", "gpt-6-sol", "gpt-6-luna"]));
+    let response: Response | null = null;
+    for (const candidate of candidates) {
+      const candidatePayload = { ...payload, model: candidate };
+      const candidateResponse = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify(candidatePayload),
+      });
+      if (candidateResponse.ok) {
+        response = candidateResponse;
+        break;
+      }
+      const errorText = await candidateResponse.text();
+      const lower = errorText.toLowerCase();
+      const modelUnavailable =
+        candidateResponse.status === 400 || candidateResponse.status === 403 || candidateResponse.status === 404
+          ? /model|permission|access|not found|unsupported/i.test(lower)
+          : false;
+      if (!modelUnavailable || candidate === candidates[candidates.length - 1]) {
+        throw new Error(`OpenAI API error (${candidateResponse.status}): ${errorText}`);
+      }
+    }
+    if (!response) throw new Error("OpenAI returned no usable model response.");
 
     if (!response.ok) {
       const err = await response.text();
@@ -126,7 +145,7 @@ export class OpenAIProvider implements AIProvider {
 
     return {
       provider: this.id,
-      model,
+      model: (data as any).model || model,
       text: choice?.content || "",
       toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
       usage: {
