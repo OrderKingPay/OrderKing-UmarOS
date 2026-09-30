@@ -418,7 +418,7 @@ export class RiderEngine {
       cod: offer.cod,
       codAmountPaise: offer.codAmountPaise,
       pickupVerification: cfg.pickupVerification,
-      pickupCode: String(1000 + Math.floor(Math.random() * 9000)),
+      pickupCode: generateOtp(4),
       otpRequired: cfg.flags.delivery_otp,
       arrivedRestaurantAt: null,
       expectedReadyAt: null,
