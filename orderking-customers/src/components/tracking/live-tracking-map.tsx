@@ -1,14 +1,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import type * as MapboxGL from "mapbox-gl";
 import { supabase } from "@/lib/db-cloud";
-
-const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
-if (!mapboxToken) {
-  throw new Error("Mapbox configuration is missing. Live tracking cannot start without a real token.");
-}
-mapboxgl.accessToken = mapboxToken;
 
 interface LiveTrackingMapProps {
   dispatchJobId: string;
@@ -33,8 +26,9 @@ function calcBearing(startLat: number, startLng: number, destLat: number, destLn
 
 export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveTrackingMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const marker = useRef<mapboxgl.Marker | null>(null);
+  const map = useRef<MapboxGL.Map | null>(null);
+  const marker = useRef<MapboxGL.Marker | null>(null);
+  const [mapUnavailable, setMapUnavailable] = useState(false);
   
   const latRef = useRef<HTMLDivElement>(null);
   const lngRef = useRef<HTMLDivElement>(null);
@@ -45,27 +39,54 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
   const animationFrameId = useRef<number | null>(null);
 
   useEffect(() => {
-    if (map.current || !mapContainer.current) return; // initialize map only once
+    let cancelled = false;
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/navigation-night-v1",
-      center: [initialLng, initialLat],
-      zoom: 15,
-      pitch: 45,
-    });
+    const initializeMap = async () => {
+      if (map.current || !mapContainer.current) return;
 
-    const el = document.createElement('div');
+      const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
+      if (!mapboxToken) {
+        setMapUnavailable(true);
+        return;
+      }
+
+      try {
+        const [{ default: mapboxgl }] = await Promise.all([
+          import("mapbox-gl"),
+          import("mapbox-gl/dist/mapbox-gl.css"),
+        ]);
+        if (cancelled || !mapContainer.current) return;
+
+        mapboxgl.accessToken = mapboxToken;
+        map.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: "mapbox://styles/mapbox/navigation-night-v1",
+          center: [initialLng, initialLat],
+          zoom: 15,
+          pitch: 45,
+        });
+
+        const el = document.createElement('div');
     el.className = 'w-8 h-8 bg-primary rounded-full border-2 border-white shadow-[0_0_15px_rgba(var(--color-primary),0.8)] flex items-center justify-center';
     el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>`;
 
-    marker.current = new mapboxgl.Marker(el)
-      .setLngLat([initialLng, initialLat])
-      .addTo(map.current);
+        marker.current = new mapboxgl.Marker(el)
+          .setLngLat([initialLng, initialLat])
+          .addTo(map.current);
+      } catch (error) {
+        console.error("[live-tracking-map] failed to load Mapbox:", error);
+        if (!cancelled) setMapUnavailable(true);
+      }
+    };
+
+    void initializeMap();
 
     return () => {
+      cancelled = true;
       if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
       map.current?.remove();
+      map.current = null;
+      marker.current = null;
     };
   }, [initialLat, initialLng]);
 
@@ -146,6 +167,11 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
   return (
     <div className="relative w-full h-full rounded-xl overflow-hidden border border-white/10 shadow-2xl">
       <div ref={mapContainer} className="absolute inset-0" />
+      {mapUnavailable && (
+        <div className="absolute inset-0 grid place-items-center bg-surface/95 px-6 text-center text-xs text-muted">
+          Live map is unavailable in this deployment. A verified Mapbox token is required; location telemetry is not fabricated.
+        </div>
+      )}
       
       {/* HUD Overlay */}
       <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none">
@@ -169,7 +195,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
         
         <div className="flex items-center gap-2 bg-primary/20 backdrop-blur border border-primary/50 text-primary px-3 py-1.5 rounded-full">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="text-xs font-bold tracking-wide">60 FPS SYNC</span>
+          <span className="text-xs font-bold tracking-wide">ADAPTIVE LIVE SYNC</span>
         </div>
       </div>
     </div>
