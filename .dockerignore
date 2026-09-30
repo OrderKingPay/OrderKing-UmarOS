@@ -1,0 +1,17 @@
+.git
+.github
+.idea
+.vscode
+**/node_modules
+**/.vercel
+**/.output
+**/dist
+**/.turbo
+**/coverage
+**/.cache
+**/*.log
+.env
+.env.*
+!.env.example
+Dockerfile
+cloudbuild.yaml
