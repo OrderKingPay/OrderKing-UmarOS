@@ -1198,18 +1198,23 @@ export async function executeTool(
     }
     case "analyze_fintech_risk": {
       requirePermission(ws.ctx, "view_risk");
+      const sql = await getSql();
+      const [wallets,payments,cancels] = await Promise.all([
+        sql`SELECT COUNT(*)::int AS count FROM kingpay_wallets`,
+        sql`SELECT status,COUNT(*)::int AS count FROM payments GROUP BY status ORDER BY status`,
+        sql`SELECT COUNT(*)::int AS count FROM orders WHERE status='CANCELLED' AND placed_at>=now()-interval '24 hours'`,
+      ]);
       return {
-        status: "SECURE",
-        scannedWalletsCount: 1420,
-        flaggedAnomaliesCount: 0,
-        velocityCheck: "NORMAL",
-        deviceFingerprintRisk: "LOW",
-        referralLoopAbuseRisk: "ZERO_DETECTED",
-        platformCapitalExposure: "ZERO_UNGUARDED",
-        auditTimestamp: new Date().toISOString(),
+        status: "LIVE_MEASURED",
+        timestamp: new Date().toISOString(),
+        walletCount: Number(wallets[0]?.count||0),
+        paymentStatusBreakdown: payments,
+        cancellationsLast24h: Number(cancels[0]?.count||0),
+        deviceFingerprintRisk: "NOT_MEASURED",
+        referralLoopAbuseRisk: "SEE_GROWTH_LEDGER",
+        capitalExposure: "NOT_CALCULATED",
       };
     }
-
     case "run_weekly_settlements": {
       requirePermission(ws.ctx, "view_finance");
       const { AutoSettlementEngine } = await import("../finance/auto-settlement-engine");
