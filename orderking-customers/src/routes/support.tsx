@@ -52,7 +52,7 @@ export function SupportPage() {
   const [chatMessages, setChatMessages] = useState<AiChatMessage[]>([
     {
       role: "assistant",
-      content: "Hello! I am your OrderKing 24x7 Intelligent Assistant. How can I help you today? You can ask about your order tracking, ₹50 late delivery compensation, 0% interest KingPay Later, LPG cylinder bookings, refunds, or official regulatory ombudsman contacts.",
+      content: "Hello! I am your OrderKing 24x7 Intelligent Assistant. I can help with order tracking, support cases, payment status, utility services, refunds, and official regulatory resources. Financial outcomes are only reported after provider/ledger verification.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
