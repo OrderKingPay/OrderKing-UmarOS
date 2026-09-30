@@ -292,92 +292,115 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
   const registry = getVerifiedModelRegistry();
   const target = registry.find((m) => m.id === modelId) || registry[0];
 
-  if (target.provider === "Local Sovereign") {
+  if (!target) {
+    return {
+      modelId,
+      success: false,
+      status: "ERROR",
+      latencyMs: Date.now() - start,
+      realModelUsed: "",
+      message: "Unknown model id.",
+      timestamp,
+    };
+  }
+
+  const provider = target.provider;
+  if (provider === "Local Sovereign") {
     return {
       modelId: target.id,
       success: false,
       status: "CONFIGURATION_REQUIRED",
       latencyMs: Date.now() - start,
       realModelUsed: target.realApiId,
-      message: "No embedded local LLM is bundled with this deployment. Configure a verified external provider.",
+      message: "No embedded local LLM is bundled with this deployment.",
       timestamp,
     };
   }
 
   if (target.id === "auto-supreme-orchestrator" || target.id === "ensemble-consensus") {
-    const ready = Boolean(getProviderApiKey("openai") || getProviderApiKey("gemini") || getProviderApiKey("anthropic") || getProviderApiKey("xai"));
+    const ready = Boolean(
+      process.env.OPENAI_API_KEY?.trim() ||
+      process.env.GEMINI_API_KEY?.trim() ||
+      process.env.GOOGLE_API_KEY?.trim() ||
+      process.env.ANTHROPIC_API_KEY?.trim() ||
+      process.env.XAI_API_KEY?.trim()
+    );
     return {
       modelId: target.id,
       success: ready,
       status: ready ? "CONNECTED" : "CONFIGURATION_REQUIRED",
       latencyMs: Date.now() - start,
       realModelUsed: target.realApiId,
-      message: ready ? "Verified: at least one real external provider is configured." : "Configuration Required: no real external provider is configured.",
+      message: ready
+        ? "Verified: at least one real external provider is configured on the server."
+        : "Configuration required: no external provider is configured.",
       timestamp,
     };
   }
 
-  const providerKey = target.provider.toLowerCase();
-  const apiKey = getProviderApiKey(providerKey);
-
+  const apiKey = getProviderApiKey(provider.toLowerCase());
   if (!apiKey) {
     return {
       modelId: target.id,
       success: false,
       status: "CONFIGURATION_REQUIRED",
-      latencyMs: 0,
+      latencyMs: Date.now() - start,
       realModelUsed: target.realApiId,
-      message: `Configuration Required: ${target.displayName} requires ${target.requiredEnvVar} in .env or Settings.`,
+      message: `Configuration required: ${target.requiredEnvVar || "provider credential"} is missing from the server environment.`,
       timestamp,
     };
   }
 
   try {
-    // Ping external provider with a minimal test payload
-    let testSuccess = false;
-    let realModelReturned = target.realApiId;
+    let endpoint = "";
+    const headers: Record<string, string> = {};
+    let selectedModel = "";
 
-    if (target.provider === "OpenAI") {
-      const res = await fetch("https://api.openai.com/v1/models", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${apiKey}` },
-      });
-      testSuccess = res.ok;
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      realModelReturned = "gpt-5.6-sol";
-    } else if (target.provider === "Anthropic") {
-      const res = await fetch("https://api.anthropic.com/v1/models", {
-        method: "GET",
-        headers: {
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-        },
-      });
-      testSuccess = res.ok;
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      realModelReturned = "claude-3-7-sonnet";
-    } else if (target.provider === "Google") {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-      testSuccess = res.ok;
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      realModelReturned = "gemini-2.0-flash";
-    } else if (target.provider === "xAI") {
-      const res = await fetch("https://api.x.ai/v1/models", {
-        headers: { Authorization: `Bearer ${apiKey}` },
-      });
-      testSuccess = res.ok;
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      realModelReturned = "grok-2";
+    if (provider === "OpenAI") {
+      endpoint = "https://api.openai.com/v1/models";
+      headers.Authorization = `Bearer ${apiKey}`;
+      selectedModel = process.env.OPENAI_MODEL?.trim() || "";
+    } else if (provider === "Anthropic") {
+      endpoint = "https://api.anthropic.com/v1/models";
+      headers["x-api-key"] = apiKey;
+      headers["anthropic-version"] = "2023-06-01";
+      selectedModel = process.env.ANTHROPIC_MODEL?.trim() || "";
+    } else if (provider === "Google") {
+      endpoint = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`;
+      selectedModel = process.env.GEMINI_MODEL?.trim() || "";
+    } else if (provider === "xAI") {
+      endpoint = "https://api.x.ai/v1/models";
+      headers.Authorization = `Bearer ${apiKey}`;
+      selectedModel = process.env.XAI_MODEL?.trim() || "";
+    } else {
+      throw new Error(`Unsupported provider: ${provider}`);
     }
 
+    const response = await fetch(endpoint, { method: "GET", headers });
     const elapsed = Date.now() - start;
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`HTTP ${response.status}: ${body.slice(0, 180)}`);
+    }
+
+    const data = await response.json() as any;
+    const modelIds =
+      provider === "Google"
+        ? (data.models || []).map((m: any) => String(m.name || "").replace(/^models\//, "")).filter(Boolean)
+        : (data.data || []).map((m: any) => String(m.id || "")).filter(Boolean);
+
+    const realModelUsed =
+      (selectedModel && modelIds.includes(selectedModel))
+        ? selectedModel
+        : (modelIds[0] || target.realApiId);
+
     return {
       modelId: target.id,
-      success: testSuccess,
-      status: testSuccess ? "CONNECTED" : "ERROR",
+      success: true,
+      status: "CONNECTED",
       latencyMs: elapsed,
-      realModelUsed: realModelReturned,
-      message: `Successfully verified connection to ${target.provider} API (${elapsed}ms).`,
+      realModelUsed,
+      message: `Authenticated successfully with ${provider}; ${modelIds.length} model records were returned by the provider API.`,
       timestamp,
     };
   } catch (err: unknown) {
@@ -388,7 +411,7 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
       status: "ERROR",
       latencyMs: Date.now() - start,
       realModelUsed: target.realApiId,
-      message: `Connection test failed for ${target.displayName}: ${errorMsg.slice(0, 120)}`,
+      message: `Provider verification failed: ${errorMsg.slice(0, 200)}`,
       timestamp,
     };
   }
