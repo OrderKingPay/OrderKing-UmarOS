@@ -38,7 +38,7 @@ export interface ModelConnectionTestResult {
   timestamp: string;
 }
 
-// Key manager: reads from process.env or browser localStorage
+// Key manager: reads only from secure server-side environment variables
 export function getProviderApiKey(provider: string): string | undefined {
   const envMap: Record<string, string | undefined> = {
     openai: typeof process !== "undefined" ? process.env?.OPENAI_API_KEY : undefined,
@@ -50,25 +50,12 @@ export function getProviderApiKey(provider: string): string | undefined {
   const keyFromEnv = envMap[provider.toLowerCase()];
   if (keyFromEnv && keyFromEnv.trim().length > 0) return keyFromEnv.trim();
 
-  // Browser localStorage fallback if available
-  if (typeof window !== "undefined" && window.localStorage) {
-    const key = window.localStorage.getItem(`umar_os_apikey_${provider.toLowerCase()}`);
-    if (key && key.trim().length > 0) return key.trim();
-  }
-
   return undefined;
 }
 
-export function setProviderApiKey(provider: string, apiKey: string): void {
-  if (typeof window !== "undefined" && window.localStorage) {
-    if (apiKey.trim()) {
-      window.localStorage.setItem(`umar_os_apikey_${provider.toLowerCase()}`, apiKey.trim());
-    } else {
-      window.localStorage.removeItem(`umar_os_apikey_${provider.toLowerCase()}`);
-    }
-  }
+export function setProviderApiKey(_provider: string, _apiKey: string): void {
+  throw new Error("Provider API keys must be configured server-side; browser storage is intentionally disabled.");
 }
-
 /**
  * Returns the authoritative list of verified models with their exact connectivity status.
  */
@@ -116,7 +103,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
-      measuredLatencyMs: 12,
+      measuredLatencyMs: 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
       description: "Intelligently routes every query to the fastest and most capable connected model. If external models lack API keys, seamlessly executes via Sovereign Local Core with clear disclosure.",
@@ -139,7 +126,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: false,
-      measuredLatencyMs: 22,
+      measuredLatencyMs: 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
       description: "Runs all currently active connected models simultaneously and cross-verifies output invariants. Never fabricates participation: only genuinely connected models are counted.",
@@ -163,7 +150,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
-      measuredLatencyMs: geminiKey ? 140 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
       description: "Google frontier multimodal reasoning engine with high-speed tokens and 1M context window. Connect via GEMINI_API_KEY.",
@@ -187,7 +174,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: false,
-      measuredLatencyMs: anthropicKey ? 190 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
       description: "Anthropic state-of-the-art hybrid reasoning model for deep systems architecture and complex coding. Connect via ANTHROPIC_API_KEY.",
@@ -211,7 +198,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
-      measuredLatencyMs: openaiKey ? 165 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
       description: "OpenAI GPT-5.6 flagship reasoning model. The provider adapter uses the configured OpenAI API and reports the actual model ID used by the deployment.",
@@ -235,7 +222,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
-      measuredLatencyMs: xaiKey ? 180 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
       description: "xAI frontier intelligence with integrated real-time search capabilities. Connect via XAI_API_KEY.",
