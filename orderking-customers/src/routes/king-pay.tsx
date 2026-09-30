@@ -9,6 +9,7 @@ import { MicroLoanHub } from "@/components/fintech/micro-loan-hub";
 import { KingPayAccountHub } from "@/components/fintech/kingpay-account-hub";
 import { KingPayPassbook } from "@/components/fintech/kingpay-passbook";
 import { useLocationStore } from "@/lib/stores/location";
+import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 import { Button } from "@/components/ui/button";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -842,7 +843,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const isDeliveryActive = !isGeofencedFallback && isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
   const waitlistInfo = getCityWaitlistInfo(location.cityName || "Your City");
   const [hasVotedCity, setHasVotedCity] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(750);
+  const {
+    walletBalance,
+    setWalletBalance,
+    kingCoins,
+    setKingCoins,
+    transactions: ledgerTransactions,
+  } = useRealKingPayWallet();
   const [activeTab, setActiveTab] = useState<"all" | "fuel" | "recharge" | "bills" | "travel" | "gas">("all");
   const [showAddMoney, setShowAddMoney] = useState(false);
   const [addAmount, setAddAmount] = useState("500");
@@ -852,39 +859,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const handleVoteCity = () => {
     if (hasVotedCity) return;
     setHasVotedCity(true);
-    const bonus = 50;
-    const newBal = walletBalance + bonus;
-    setWalletBalance(newBal);
     if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
       localStorage.setItem(`voted_expansion_${location.cityName}`, "true");
     }
-    playSoundboxChime(bonus);
-    toast.success(`🎉 Vote Registered for ${location.cityName || "your city"}! ₹50 bonus credits added to your King Pay wallet!`);
+    toast.success(`🎉 Vote registered for ${location.cityName || "your city"}. Any promotional reward will be credited only after the partner/ledger rule is active.`);
   };
 
-  // Hydrate client storage safely after SSR mount (prevents React hydration mismatch)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const savedBal = localStorage.getItem("ok_king_pay_wallet_balance");
-      if (savedBal) setWalletBalance(parseInt(savedBal, 10));
-
-      const savedLater = localStorage.getItem("ok_king_pay_later_active");
-      if (savedLater) setPayLaterActive(savedLater === "true");
-
-      const savedGold = localStorage.getItem("ok_king_pay_gold_grams");
-      if (savedGold) setGoldGrams(parseFloat(savedGold));
-
-      const savedBanks = localStorage.getItem("ok_kingpay_linked_banks");
-      if (savedBanks) {
-        const parsed = JSON.parse(savedBanks);
-        if (Array.isArray(parsed) && parsed.length > 0) setLinkedBanks(parsed);
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
+  // Wallet balance and ledger are server-authoritative; browser storage is not used for money.
 
   // Auto-open scanner if navigated with ?scan=true (from bottom nav or quick link)
   useEffect(() => {
@@ -939,7 +920,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   // CRED-style 7-Day Check-in Streak
   const [streakDay, setStreakDay] = useState(3);
   const [claimedToday, setClaimedToday] = useState(false);
-  const [kingCoins, setKingCoins] = useState(4250);
+
 
   // Interactive Scan & Pay Simulator
   const [showScanner, setShowScanner] = useState(false);
@@ -1032,21 +1013,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
       
       if (res.ok) {
         const data = await res.json();
-        const newBal = walletBalance - fetchedBill.billAmount;
-        setWalletBalance(newBal);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-        }
-        
-        const title = activeUtilityModal === "gas" ? `Gas Booking: ${utilityInput}` :
-                      activeUtilityModal === "electricity" ? `Electricity Bill: ${utilityInput}` :
-                      `BBPS Payment: ${utilityInput}`;
-                      
-        addTransaction(fetchedBill.billAmount, title, "debit");
-        playSoundboxChime(fetchedBill.billAmount);
-        setKingCoins(c => c + 50);
-        
-        toast.success(`⚡ BBPS Payment Successful! TXN: ${data.transactionId}`);
+        toast.success(data?.message || "Payment submitted to the configured provider.");
+        setActiveUtilityModal(null);
+        setUtilityInput("");
+        setFetchedBill(null);
         setActiveUtilityModal(null);
         setUtilityInput("");
         setFetchedBill(null);
@@ -1061,24 +1031,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
 
-  const handleUtilityPayment = (title: string, amount: number) => {
-    if (amount > walletBalance) {
-      toast.error(`Insufficient KingPay balance (₹${walletBalance}). Please add money.`);
-      return;
-    }
-    const newBal = walletBalance - amount;
-    setWalletBalance(newBal);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-    }
-    addTransaction(amount, title, "debit");
-    playSoundboxChime(amount);
-    const earnedCoins = Math.round(amount * 0.05 * 10);
-    setKingCoins((c) => c + earnedCoins);
-    toast.success(`⚡ ${title} successful! Paid ₹${amount} with 0% fee. +${earnedCoins} King Coins earned!`);
-    setActiveUtilityModal(null);
-    setUtilityInput("");
+  const handleUtilityPayment = (title: string, _amount: number) => {
+    toast.info(`${title} is waiting for a verified utility/payment provider. No wallet debit was made.`);
+    return;
   };
+
 
   // CRED-style Interactive Scratch Card
   const [showScratchCard, setShowScratchCard] = useState(false);
@@ -1604,27 +1561,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   const [activeSection, setActiveSection] = useState<KingPaySection>("pay");
   const [garageAlertsCount, setGarageAlertsCount] = useState<number>(2);
-  const [transactions, setTransactions] = useState<
-    Array<{
-      id: string;
-      title: string;
-      amount: number;
-      type: "credit" | "debit";
-      timestamp: string;
-      status: string;
-    }>
-  >([]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedTx = localStorage.getItem("ok_kingpay_transactions");
-      if (savedTx) {
-        try {
-          setTransactions(JSON.parse(savedTx));
-        } catch {}
-      }
-    }
-  }, []);
+  const transactions = ledgerTransactions.map((tx: any) => ({
+    id: tx.id,
+    title: tx.description,
+    amount: Number(tx.amount_paise) / 100,
+    type: tx.type === "CREDIT" ? "credit" : "debit",
+    timestamp: tx.created_at,
+    status: "POSTED",
+  }));
 
   useEffect(() => {
     if (typeof window !== "undefined" && transactions.length > 0) {
@@ -1649,28 +1593,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     }
   }, []);
 
-  const addTransaction = (amount: number, description: string, type: "credit" | "debit", status: string = "success") => {
-    setTransactions((prev) => [
-      {
-        id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-        title: description,
-        amount: amount,
-        type: type,
-        timestamp: new Date().toLocaleString(),
-        status: status,
-      },
-      ...prev,
-    ]);
-  };
-
   const handleDeductWallet = (amount: number, description: string): boolean => {
     if (walletBalance < amount) return false;
-    const newBal = walletBalance - amount;
-    setWalletBalance(newBal);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-    }
-    addTransaction(amount, description, "debit");
+    setWalletBalance(walletBalance - amount);
     playSoundboxChime(amount);
     return true;
   };
@@ -1708,14 +1633,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         ) : activeSection === "loan" ? (
           <MicroLoanHub
             walletBalance={walletBalance}
-            onDisburseToWallet={(amount) => {
-              const newBal = walletBalance + amount;
-              setWalletBalance(newBal);
-              if (typeof window !== "undefined") {
-                localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-              }
-              addTransaction(amount, "Loan Disbursement", "credit");
-              playSoundboxChime(amount);
+            onDisburseToWallet={(_amount) => {
+              toast.info("Loan disbursement requires a verified lender/NBFC callback. No wallet credit was created.");
             }}
           />
         ) : activeSection === "passbook" ? (
