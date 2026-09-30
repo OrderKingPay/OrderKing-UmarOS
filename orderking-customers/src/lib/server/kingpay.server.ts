@@ -19,7 +19,7 @@ export const getKingpayBalance = createServerFn({ method: "GET" }).handler(async
     return { balance: rows[0].balance_paise / 100, coins: Number(rows[0].king_coins) };
   } catch (err) {
     console.error("getKingpayBalance failed:", err);
-    return { balance: 0, coins: 0 };
+    throw new Error("KINGPAY_LEDGER_UNAVAILABLE");
   }
 });
 
