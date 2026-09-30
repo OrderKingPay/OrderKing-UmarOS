@@ -204,7 +204,11 @@ self.addEventListener("sync", (event) => {
           const res = await fetch(order.url, {
             method: "POST",
             credentials: "include",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "Idempotency-Key": order.id,
+              "X-OrderKing-Offline-Replay": "1",
+            },
             body: order.body,
           });
           if (!res.ok) throw new Error("Order sync rejected: " + res.status);
