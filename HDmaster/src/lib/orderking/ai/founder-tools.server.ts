@@ -131,36 +131,56 @@ export async function executeFounderTool(name: string, args: Record<string, any>
 
       case "enhance_media": {
         const { mediaUrl, type } = args;
+        if (!mediaUrl || !["image", "video"].includes(type)) {
+          return { error: "INVALID_REQUEST", detail: "A media URL and media type are required." };
+        }
+
         if (type === "image" && !process.env.OPENAI_API_KEY && !process.env.STABILITY_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Enhancement requires OPENAI_API_KEY or STABILITY_API_KEY in environment to execute genuine 1000x realistic upscaling." };
+          return {
+            error: "CONFIGURATION_REQUIRED",
+            detail: "No real image-enhancement provider is configured. Configure a supported provider before claiming enhancement.",
+          };
         }
+
         if (type === "video" && !process.env.RUNWAY_API_KEY && !process.env.LUMA_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Video enhancement requires RUNWAY_API_KEY or LUMA_API_KEY in environment to execute frame-by-frame super-resolution." };
+          return {
+            error: "CONFIGURATION_REQUIRED",
+            detail: "No real video-enhancement provider is configured. Configure a supported provider before claiming enhancement.",
+          };
         }
-        
-        // Placeholder for genuine API call once keys are provided
+
         return {
-          status: "SUCCESS",
-          action: `Genuine 1000x Enhancement Processed for ${type}`,
-          processedUrl: mediaUrl,
-          message: "Media enhanced realistically. Identity and structural details perfectly preserved."
+          status: "NOT_IMPLEMENTED",
+          error: "PROVIDER_ADAPTER_REQUIRED",
+          message: "Provider credentials exist, but no verified enhancement adapter is implemented in this deployment. The original media will never be returned as a fake processed result.",
         };
       }
 
       case "generate_media": {
         const { prompt, type } = args;
-        if (type === "image" && !process.env.OPENAI_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Image generation requires OPENAI_API_KEY for DALL-E 3 or Midjourney." };
+        if (!prompt || !["image", "video"].includes(type)) {
+          return { error: "INVALID_REQUEST", detail: "A generation prompt and media type are required." };
         }
+
+        if (type === "image" && !process.env.OPENAI_API_KEY) {
+          return {
+            error: "CONFIGURATION_REQUIRED",
+            detail: "Image generation requires a real image-generation provider credential in the secure server environment.",
+          };
+        }
+
         if (type === "video" && !process.env.RUNWAY_API_KEY && !process.env.SORA_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Realistic video generation requires SORA_API_KEY or RUNWAY_API_KEY." };
+          return {
+            error: "CONFIGURATION_REQUIRED",
+            detail: "Video generation requires a real video-generation provider credential in the secure server environment.",
+          };
         }
 
         return {
-          status: "SUCCESS",
-          action: `Genuine Generation Processed for ${type}`,
+          status: "NOT_IMPLEMENTED",
+          error: "PROVIDER_ADAPTER_REQUIRED",
           prompt,
-          message: "Media generated realistically at world-class standards."
+          message: "Provider credentials exist, but no verified media-generation adapter is implemented in this deployment. No fake artifact or fake success status is returned.",
         };
       }
 
