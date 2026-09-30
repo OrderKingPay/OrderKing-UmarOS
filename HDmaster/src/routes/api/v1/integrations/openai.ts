@@ -1,13 +1,13 @@
 // @ts-nocheck
 import OpenAI from "openai";
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createFileRoute } from "@tanstack/react-router";
 import { requireUserId } from "@/lib/auth/verify.server";
 import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
 import { enforceRateLimit } from "@/lib/orderking/security/rate-limiter";
 
 const DEFAULT_MODEL = process.env.OPENAI_MODEL?.trim() || "gpt-6.1-sol";
 
-export const APIRoute = createAPIFileRoute("/api/v1/integrations/openai")({
+export const Route = createFileRoute("/api/v1/integrations/openai")({
   POST: async ({ request }: any) => {
     try {
       const userId = await requireUserId();
