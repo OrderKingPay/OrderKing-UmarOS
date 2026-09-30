@@ -182,7 +182,7 @@ export async function executeFounderTool(name: string, args: Record<string, any>
         try {
           const client = new OpenAI({ apiKey });
           const result = await client.images.generate({
-            model: process.env.OPENAI_IMAGE_MODEL?.trim() || "gpt-image-2.5-sunburst",
+            model: process.env.OPENAI_IMAGE_MODEL?.trim() || "gpt-image-2",
             prompt,
             size,
             quality,
