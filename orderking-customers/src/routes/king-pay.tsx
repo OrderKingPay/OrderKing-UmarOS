@@ -710,32 +710,7 @@ export type BankAccount = {
   icon: string;
 };
 
-const DEFAULT_BANKS: BankAccount[] = [
-  {
-    id: "bank_sbi_1",
-    bankName: "State Bank of India",
-    bankCode: "sbi",
-    accountNumberMasked: "•••• 4821",
-    accountType: "Savings",
-    isPrimary: true,
-    balance: 24850,
-    balanceCheckedAt: "Just now",
-    color: "from-blue-600 to-indigo-800",
-    icon: "🏛️",
-  },
-  {
-    id: "bank_hdfc_1",
-    bankName: "HDFC Bank",
-    bankCode: "hdfc",
-    accountNumberMasked: "•••• 9014",
-    accountType: "Savings",
-    isPrimary: false,
-    balance: 68120,
-    balanceCheckedAt: "Today 11:30 AM",
-    color: "from-blue-800 to-sky-900",
-    icon: "🏦",
-  },
-];
+const DEFAULT_BANKS: BankAccount[] = [];
 
 const POPULAR_BANKS_FOR_ADDING = [
   { name: "State Bank of India (SBI)", code: "sbi", icon: "🏛️", popular: true },
@@ -1340,20 +1315,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const claimStreak = () => {
-    if (claimedToday) return;
-    const bonus = streakDay * 50;
-    setKingCoins((prev) => prev + bonus);
-    setClaimedToday(true);
-    toast.success(`🎉 Claimed +${bonus} King Coins! Streak: Day ${streakDay}`);
-    setScratched(false);
-    setScratchReward({
-      title: "🎁 Daily Streak Mystery Box!",
-      desc: "Daily habit bonus powered by Brand Alliance partners.",
-      amount: Math.floor(10 + Math.random() * 25),
-      coins: 150,
-    });
-    setShowScratchCard(true);
+    toast.info("Streak rewards require a verified promotion/rewards ledger. No coins or wallet credit were created.");
   };
+
 
   const filteredServices = activeTab === "all"
     ? UTILITY_SERVICES
@@ -1389,11 +1353,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     }
   }, []);
 
-  const handleDeductWallet = (amount: number, description: string): boolean => {
-    if (walletBalance < amount) return false;
-    setWalletBalance(walletBalance - amount);
-    playSoundboxChime(amount);
-    return true;
+  const handleDeductWallet = (_amount: number, description: string): boolean => {
+    toast.info(`${description} is not activated: a verified payment/provider transaction is required. No wallet debit was made.`);
+    return false;
   };
 
   return (
@@ -3498,35 +3460,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           onClose={() => setShowScanner(false)}
           onScanSuccess={(res: ParsedUpiResult) => {
             setScanRecipient(res.upiId || res.raw);
-            const amt = res.amount ? parseInt(res.amount, 10) : 250;
-            setScanAmount(String(amt));
+            if (res.amount) setScanAmount(String(parseInt(res.amount, 10)));
             setShowScanner(false);
-
-            if (res.amount) {
-              if (amt > walletBalance) {
-                toast.error(`Scanned ₹${amt} for ${res.payeeName || res.upiId}, but wallet has ₹${walletBalance}. Please add money.`);
-                setShowAddMoney(true);
-                return;
-              }
-              const newBal = walletBalance - amt;
-              setWalletBalance(newBal);
-              addTransaction(amt, `Paid ${res.payeeName || res.upiId}`, "debit");
-              playSoundboxChime(amt);
-              toast.success(`⚡ Paid ₹${amt} to ${res.payeeName || res.upiId} via KingPay!`);
-
-              setScratched(false);
-              setScratchReward({
-                title: "🎉 Instant Cashback Won!",
-                desc: `Rewarded for paying ${res.payeeName || res.upiId}!`,
-                amount: Math.floor(5 + Math.random() * 20),
-                coins: Math.floor(50 + Math.random() * 150),
-              });
-              setShowScratchCard(true);
-            } else {
-              toast.info(`Scanned ${res.payeeName || res.upiId}. Enter amount to pay.`);
-              setScannerTab("manual");
-              setShowScanner(true);
-            }
+            toast.info(`Scanned ${res.payeeName || res.upiId || "UPI recipient"}. Payment requires a verified UPI provider and server-side confirmation; no wallet debit was made.`);
+            setScannerTab("manual");
           }}
         />
 
@@ -3561,7 +3498,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                       {activeUtilityModal === "contact" && "Pay to Contact"}
                       {activeUtilityModal === "upi" && "Pay to UPI / Bank"}
                     </h3>
-                    <p className="text-[10px] text-muted">Zero Convenience Fee · Instant BBPS Settlement</p>
+                    <p className="text-[10px] text-muted">Verified provider required · no payment is claimed until settlement confirmation</p>
                   </div>
                 </div>
                 <button
