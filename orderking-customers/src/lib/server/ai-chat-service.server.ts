@@ -328,13 +328,15 @@ export async function executeFounderAiChat(
     } else if (anthropicKey && (currentQuery.includes("code") || currentQuery.includes("architecture"))) {
       activeRecord = registry.find((m) => m.id === "claude-4-6-opus") || activeRecord;
     } else if (openaiKey) {
-      activeRecord = registry.find((m) => m.id === "gpt-5-6-sol") || activeRecord;
+      activeRecord = registry.find((m) => m.id === "openai-runtime") || activeRecord;
     } else if (geminiKey) {
-      activeRecord = registry.find((m) => m.id === "gemini-2-5-pro") || activeRecord;
+      activeRecord = registry.find((m) => m.id === "gemini-runtime") || activeRecord;
     } else if (xaiKey) {
-      activeRecord = registry.find((m) => m.id === "grok-4-6-super") || activeRecord;
+      activeRecord = registry.find((m) => m.id === "xai-runtime") || activeRecord;
+    } else if (anthropicKey) {
+      activeRecord = registry.find((m) => m.id === "anthropic-runtime") || activeRecord;
     } else {
-      activeRecord = registry.find((m) => m.id === "sovereign-ultra") || registry[0];
+      activeRecord = registry.find((m) => m.connectionStatus !== "CONFIGURATION_REQUIRED") || registry[0];
     }
   }
 
@@ -346,10 +348,10 @@ export async function executeFounderAiChat(
     const openaiKey = await getProviderApiKeyAsync("openai");
     const xaiKey = await getProviderApiKeyAsync("xai");
 
-    if (geminiKey) activeProvidersList.push({ name: "Google Gemini", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash" });
-    if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: process.env.ANTHROPIC_MODEL?.trim() || "claude-3-7-sonnet-20250219" });
+    if (geminiKey) activeProvidersList.push({ name: "Google Gemini", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: process.env.GEMINI_MODEL?.trim() || "" });
+    if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: process.env.ANTHROPIC_MODEL?.trim() || "" });
     if (openaiKey) activeProvidersList.push({ name: "OpenAI", id: "openai", provider: new OpenAIProvider(openaiKey), model: process.env.OPENAI_MODEL?.trim() || "gpt-6.1-sol" });
-    if (xaiKey) activeProvidersList.push({ name: "xAI Grok", id: "xai", provider: new XAIProvider(xaiKey), model: process.env.XAI_MODEL?.trim() || "grok-2-1212" });
+    if (xaiKey) activeProvidersList.push({ name: "xAI Grok", id: "xai", provider: new XAIProvider(xaiKey), model: process.env.XAI_MODEL?.trim() || "" });
 
     if (activeProvidersList.length >= 2) {
       // Double Engine mode
@@ -432,7 +434,10 @@ export async function executeFounderAiChat(
   // 4. External Cloud Provider Execution
   if (activeRecord.provider !== "Local Sovereign") {
     const providerKey = activeRecord.provider.toLowerCase();
-    const apiKey = request.apiKeys?.[providerKey] || await getProviderApiKeyAsync(providerKey);
+    if (request.apiKeys && Object.keys(request.apiKeys).length > 0) {
+      throw new Error("Provider API keys must be configured server-side; browser-supplied keys are rejected.");
+    }
+    const apiKey = await getProviderApiKeyAsync(providerKey);
 
     if (apiKey) {
       try {
