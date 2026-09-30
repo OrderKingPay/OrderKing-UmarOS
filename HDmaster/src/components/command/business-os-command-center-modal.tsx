@@ -434,7 +434,7 @@ export function BusinessOsCommandCenterModal({
                   <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">DB RECORDED</Badge>
                 </div>
                 <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                  {leads.map((l) => (
+                  {leads.map((l: any) => (
                     <div key={l.id} className="p-2 rounded-lg bg-black/30 flex items-center justify-between text-xs">
                       <div>
                         <span className="font-bold text-white block">{l.businessName}</span>
