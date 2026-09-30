@@ -1,6 +1,11 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getKingpayBalance, listKingpayTransactions, addKingpayMoney, deductKingpayMoney } from "@/lib/server/kingpay.server";
+import {
+  getKingpayBalanceRpc,
+  listKingpayTransactionsRpc,
+  addKingpayMoneyRpc,
+  deductKingpayMoneyRpc,
+} from "@/lib/kingpay-rpc";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 export function useRealKingPayWallet() {
@@ -9,14 +14,14 @@ export function useRealKingPayWallet() {
 
   const { data } = useQuery({
     queryKey: ["kingpay_balance", user?.id],
-    queryFn: () => getKingpayBalance(),
+    queryFn: () => getKingpayBalanceRpc(),
     enabled: !!user,
     refetchInterval: 10_000,
   });
 
   const { data: transactions = [] } = useQuery({
     queryKey: ["kingpay_transactions", user?.id],
-    queryFn: () => listKingpayTransactions(),
+    queryFn: () => listKingpayTransactionsRpc(),
     enabled: !!user,
     refetchInterval: 10_000,
   });
@@ -24,8 +29,15 @@ export function useRealKingPayWallet() {
   const walletBalance = data?.balance ?? 0;
   const kingCoins = data?.coins ?? 0;
 
+  const refreshWallet = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
+      queryClient.invalidateQueries({ queryKey: ["kingpay_transactions", user?.id] }),
+    ]);
+  };
+
   const addMoney = useMutation({
-    mutationFn: (args: { amount: number; description: string }) => addKingpayMoney({ data: args }),
+    mutationFn: (args: { amount: number; description: string }) => addKingpayMoneyRpc({ data: args }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["kingpay_transactions", user?.id] });
@@ -33,7 +45,7 @@ export function useRealKingPayWallet() {
   });
 
   const deductMoney = useMutation({
-    mutationFn: (args: { amount: number; description: string }) => deductKingpayMoney({ data: args }),
+    mutationFn: (args: { amount: number; description: string }) => deductKingpayMoneyRpc({ data: args }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
   });
 
@@ -57,5 +69,5 @@ export function useRealKingPayWallet() {
   // Coins are server-authoritative until a verified reward mutation is connected.
   const setKingCoins = (..._args: unknown[]) => {};
 
-  return { walletBalance, setWalletBalance, kingCoins, setKingCoins, transactions };
+  return { walletBalance, setWalletBalance, kingCoins, setKingCoins, transactions, refreshWallet, addMoney };
 }
