@@ -20,6 +20,7 @@ import { getNetworkSpeed, cacheGet, cacheSet, type NetworkSpeed } from "@/lib/lo
 import { getCurrentFestiveContext } from "@/lib/brand/calendar-festive-engine";
 import { EcosystemSwitchBar } from "@/components/common/ecosystem-switch-bar";
 import { PaidRestaurantAdZone } from "@/components/market/paid-restaurant-ad-zone";
+import { getGrowthStatsRpc } from "@/lib/growth-rpc";
 
 export function HomeFeed({
   q,
@@ -70,6 +71,7 @@ export function HomeFeed({
   };
 
   const [networkSpeed, setNetworkSpeed] = useState<NetworkSpeed>("NORMAL");
+  const growth = useQuery({ queryKey: ["growth-referral"], queryFn: () => getGrowthStatsRpc(), retry: false, staleTime: 30_000 });
   useEffect(() => {
     setNetworkSpeed(getNetworkSpeed());
     const handleOnline = () => setNetworkSpeed(getNetworkSpeed());
