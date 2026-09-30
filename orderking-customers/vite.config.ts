@@ -151,6 +151,19 @@ export default defineConfig(({ command, isPreview }) => ({
     rollupOptions: {
       treeshake: true,
     },
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          minSize: 20_000,
+          groups: [
+            { name: "react-vendor", test: /node_modules[\\/]react(?:-dom)?[\\/]/, priority: 30 },
+            { name: "tanstack-vendor", test: /node_modules[\\/]@tanstack[\\/]/, priority: 25 },
+            { name: "ui-vendor", test: /node_modules[\\/](?:@radix-ui|lucide-react|framer-motion|motion)[\\/]/, priority: 20 },
+            { name: "vendor", test: /node_modules[\\/]/, priority: 10 },
+          ],
+        },
+      },
+    },
   },
   
   // @ts-expect-error
