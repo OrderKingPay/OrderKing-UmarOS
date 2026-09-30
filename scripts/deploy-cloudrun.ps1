@@ -27,8 +27,17 @@ if ($currentProject -ne $ProjectId) {
   gcloud config set project $ProjectId | Out-Host
 }
 
+Write-Host "Checking Google Cloud billing status..."
+$billing = gcloud beta billing projects describe $ProjectId --format="value(billingEnabled)" 2>$null
+if ($LASTEXITCODE -ne 0 -or $billing.Trim() -ne "True") {
+  throw "Google Cloud billing is not active for project $ProjectId. Cloud Run, Cloud Build, and Artifact Registry cannot be enabled until the project is linked to an active Cloud Billing account."
+}
+
 Write-Host "Enabling required Google Cloud APIs..."
-gcloud services enable run.googleapis.com artifactregistry.googleapis.com cloudbuild.googleapis.com --project=$ProjectId | Out-Host
+gcloud services enable run.googleapis.com artifactregistry.googleapis.com cloudbuild.googleapis.com --project=$ProjectId
+if ($LASTEXITCODE -ne 0) {
+  throw "Google Cloud API enablement failed. Deployment stopped before build."
+}
 
 Write-Host "Checking Artifact Registry repository..."
 gcloud artifacts repositories describe $Repository --location=$Region --project=$ProjectId *> $null
