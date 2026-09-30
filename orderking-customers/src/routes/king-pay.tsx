@@ -890,24 +890,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     expiry: string;
   } | null>(null);
 
-  const handleBuyFuelVoucher = (brand: "HPCL (HP Pay)" | "IndianOil (IOCL ONE)" | "BPCL (SmartDrive)", amt: number) => {
-    const coinsReward = Math.round(amt * 0.02 * 10); // 2% value in coins (10 coins = ₹1)
-    const randomHex = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const prefix = brand.includes("HPCL") ? "HP" : brand.includes("IndianOil") ? "IOCL" : "BP";
-    const code = `${prefix}-${amt}-${randomHex}`;
-    
-    setGeneratedFuelVoucher({
-      code,
-      brand,
-      amount: amt,
-      coinsReward,
-      expiry: "Valid for 90 days at all retail stations across India",
-    });
-    setKingCoins((c) => c + coinsReward);
-    setShowFuelVoucherModal(true);
-    toast.success(`🎉 ${brand} ₹${amt} fuel voucher generated! +${coinsReward} King Coins credited.`);
+  const handleBuyFuelVoucher = (_brand: "HPCL (HP Pay)" | "IndianOil (IOCL ONE)" | "BPCL (SmartDrive)", _amt: number) => {
+    toast.info("Fuel vouchers require a verified partner API. No voucher code or King Coin credit was created.");
   };
-  
+
+
   // 10x Low-Bandwidth & Offline 2G Mode
   const [isOffline, setIsOffline] = useState(false);
   const [force2GMode, setForce2GMode] = useState(false);
@@ -1176,17 +1163,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
       setBiometricScanning(false);
       setBiometricSuccess(true);
       playSoundboxChime(amount);
-      if (amount <= walletBalance) {
-        const newBal = walletBalance - amount;
-        setWalletBalance(newBal);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-        }
-        addTransaction(amount, `Biometric Transfer to ${recipient}`, "debit");
-      }
+      setShowBiometricModal(false);
       setTimeout(() => {
-        setShowBiometricModal(false);
-        toast.success(`⚡ Biometric 1-Tap Verified! ₹${amount} paid to ${recipient}`);
+        setBiometricSuccess(false);
+        toast.info("Biometric payment is not activated: a real UPI/WebAuthn payment provider and server-side payment confirmation are required. No wallet debit was made.");
         setScratched(false);
         setScratchReward({
           title: "🎉 1-Tap Biometric Cashback!",
@@ -1222,8 +1202,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
       if (!rawQueue) return;
       const queue = JSON.parse(rawQueue) as Array<{ id: string; amount: number; recipient: string; timestamp: string }>;
       if (Array.isArray(queue) && queue.length > 0) {
-        localStorage.removeItem("ok_offline_tx_queue");
-        toast.success(`⚡ Reconnected: Synced ${queue.length} offline KingPay transaction${queue.length > 1 ? "s" : ""} to OrderKing core!`);
+        toast.info(`Found ${queue.length} offline payment request(s). They were not synced because no verified payment provider callback is configured.`);
       }
     } catch {
       // ignore parsing error
@@ -1569,12 +1548,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     timestamp: tx.created_at,
     status: "POSTED",
   }));
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && transactions.length > 0) {
-      localStorage.setItem("ok_kingpay_transactions", JSON.stringify(transactions));
-    }
-  }, [transactions]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
