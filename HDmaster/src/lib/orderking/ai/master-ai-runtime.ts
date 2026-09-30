@@ -1223,20 +1223,27 @@ export async function executeTool(
 
     case "optimize_affiliate_alliances": {
       requirePermission(ws.ctx, "manage_promotions");
+      const sql = await getSql();
+      const rows = await sql`
+        SELECT p.id,p.name,p.category,p.commission_type,p.commission_value,p.terms_version,
+               COUNT(DISTINCT c.id)::int AS clicks,
+               COUNT(DISTINCT CASE WHEN v.conversion_status='CONFIRMED' THEN v.id END)::int AS conversions,
+               COALESCE(SUM(CASE WHEN v.conversion_status='CONFIRMED' THEN v.commission_paise ELSE 0 END),0)::bigint AS commission_paise
+        FROM affiliate_partners p
+        LEFT JOIN affiliate_clicks c ON c.partner_id=p.id
+        LEFT JOIN affiliate_conversions v ON v.partner_id=p.id
+        WHERE p.active=true
+        GROUP BY p.id
+        ORDER BY commission_paise DESC, clicks DESC
+      `;
       return {
-        status: "OPTIMIZED",
+        status: "LIVE_MEASURED",
         timestamp: new Date().toISOString(),
-        alliances: [
-          { partner: "Amazon", ctr: "18.4%", commissionRate: "8.5%", status: "ACTIVE" },
-          { partner: "Flipkart", ctr: "16.1%", commissionRate: "7.0%", status: "ACTIVE" },
-          { partner: "Meesho", ctr: "21.3%", commissionRate: "10.0%", status: "ACTIVE" },
-          { partner: "HPCL Fuel", ctr: "14.7%", commissionRate: "₹3.50/Litre cashback", status: "ACTIVE" },
-          { partner: "IndianOil", ctr: "15.2%", commissionRate: "₹3.50/Litre cashback", status: "ACTIVE" },
-        ],
-        projectedMonthlyPassiveRevenuePaise: 8500000,
+        alliances: rows,
+        projectedMonthlyPassiveRevenuePaise: null,
+        nextAction: "Prioritize partners using confirmed conversion yield and current contractual terms; no contract is changed automatically.",
       };
     }
-
     case "audit_customer_grievance_compliance": {
       requirePermission(ws.ctx, "manage_support");
       return {
