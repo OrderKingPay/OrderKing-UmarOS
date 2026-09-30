@@ -7,7 +7,7 @@ import { withVendor, writeAudit } from "./helpers";
 import { isRestaurantRole, type RestaurantRole } from "@/lib/rbac";
 import { platformConfig } from "@/lib/platform-config";
 
-export const getReviews = createServerFn({ method: "GET" }).middleware([authMiddleware]).validator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
+export const getReviews = createServerFn({ method: "GET" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "reviews.view", async (sql, ctx) => {
     const rows = await sql<{ id: string; rating: number; body: string; created_at: string; order_id: string | null; data_label: string; response_body: string | null }>`
       select r.id, r.rating, r.body, r.created_at::text as created_at, r.order_id, r.data_label, rr.body as response_body
@@ -16,7 +16,7 @@ export const getReviews = createServerFn({ method: "GET" }).middleware([authMidd
   });
 });
 
-export const respondToReview = createServerFn({ method: "POST" }).middleware([authMiddleware]).validator((d: { restaurantId?: string; reviewId: string; body: string }) => d).handler(async ({ context, data }) => {
+export const respondToReview = createServerFn({ method: "POST" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string; reviewId: string; body: string }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "reviews.respond", async (sql, ctx) => {
     const body = data.body.trim(); if (!body) throw new Error("Reply cannot be empty");
     const owned = await sql<{ id: string }>`select id from reviews where id = ${data.reviewId} and restaurant_id = ${ctx.restaurantId}`;
@@ -26,25 +26,25 @@ export const respondToReview = createServerFn({ method: "POST" }).middleware([au
   });
 });
 
-export const getNotifications = createServerFn({ method: "GET" }).middleware([authMiddleware]).validator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
+export const getNotifications = createServerFn({ method: "GET" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "notifications.view", async (sql, ctx) => {
     const rows = await sql<{ id: string; type: string; title: string; body: string; is_read: boolean; created_at: string }>`select id, type, title, body, is_read, created_at::text as created_at from notifications where restaurant_id = ${ctx.restaurantId} order by created_at desc limit 50`;
     return { channels: notificationChannelStatus(), notifications: rows.map((n) => ({ ...n, isRead: n.is_read === true || (n.is_read as unknown) === "t", createdAt: asIso(n.created_at) })) };
   });
 });
 
-export const markNotificationsRead = createServerFn({ method: "POST" }).middleware([authMiddleware]).validator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
+export const markNotificationsRead = createServerFn({ method: "POST" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "notifications.view", async (sql, ctx) => { await sql`update notifications set is_read = true where restaurant_id = ${ctx.restaurantId}`; return { ok: true as const }; });
 });
 
-export const listStaff = createServerFn({ method: "GET" }).middleware([authMiddleware]).validator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
+export const listStaff = createServerFn({ method: "GET" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "settings.staff", async (sql, ctx) => {
     const rows = await sql<{ id: string; user_id: string; role: string; is_active: boolean; email: string | null; name: string | null }>`select s.id, s.user_id, s.role, s.is_active, u.email, u.name from restaurant_staff s left join "user" u on u.id = s.user_id where s.restaurant_id = ${ctx.restaurantId} order by s.created_at`;
     return { staff: rows, role: ctx.role };
   });
 });
 
-export const addStaff = createServerFn({ method: "POST" }).middleware([authMiddleware]).validator((d: { restaurantId?: string; email: string; role: RestaurantRole }) => d).handler(async ({ context, data }) => {
+export const addStaff = createServerFn({ method: "POST" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string; email: string; role: RestaurantRole }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "settings.staff", async (sql, ctx) => {
     if (!isRestaurantRole(data.role) || data.role === "OWNER") throw new Error("Invalid role");
     const users = await sql<{ id: string }>`select id from "user" where email = ${data.email.trim().toLowerCase()} limit 1`;
@@ -57,7 +57,7 @@ export const addStaff = createServerFn({ method: "POST" }).middleware([authMiddl
 
 export const askAssistant = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; question: string }) => d)
+  .inputValidator((d: { restaurantId?: string; question: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "assistant.use", async (sql, ctx) => {
       if (!platformConfig.featureFlags.restaurant_ai) {
