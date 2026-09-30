@@ -346,10 +346,10 @@ export async function executeFounderAiChat(
     const openaiKey = await getProviderApiKeyAsync("openai");
     const xaiKey = await getProviderApiKeyAsync("xai");
 
-    if (geminiKey) activeProvidersList.push({ name: "Google Gemini 2.0 Flash", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: "gemini-2.0-flash" });
-    if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude 3.7", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: "claude-3-7-sonnet-20250219" });
-    if (openaiKey) activeProvidersList.push({ name: "OpenAI GPT-4o", id: "openai", provider: new OpenAIProvider(openaiKey), model: "gpt-4o" });
-    if (xaiKey) activeProvidersList.push({ name: "xAI Grok 2", id: "xai", provider: new XAIProvider(xaiKey), model: "grok-2-1212" });
+    if (geminiKey) activeProvidersList.push({ name: "Google Gemini", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash" });
+    if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: process.env.ANTHROPIC_MODEL?.trim() || "claude-3-7-sonnet-20250219" });
+    if (openaiKey) activeProvidersList.push({ name: "OpenAI", id: "openai", provider: new OpenAIProvider(openaiKey), model: process.env.OPENAI_MODEL?.trim() || "gpt-5.6-luna" });
+    if (xaiKey) activeProvidersList.push({ name: "xAI Grok", id: "xai", provider: new XAIProvider(xaiKey), model: process.env.XAI_MODEL?.trim() || "grok-2-1212" });
 
     if (activeProvidersList.length >= 2) {
       // Double Engine mode
