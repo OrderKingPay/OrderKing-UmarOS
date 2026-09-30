@@ -1,3 +1,31 @@
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import {
+  Settings,
+  RefreshCw,
+  Power,
+  Trash2,
+  Sparkles,
+  ShieldCheck,
+  CheckCircle2,
+  Volume2,
+  Cpu,
+  Zap,
+  HardDrive,
+  X,
+  AlertTriangle,
+  RotateCcw,
+  Sliders,
+  Check,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  systemMasterController,
+  type DuplicateScanReport,
+  type SystemRefreshResult,
+  type SystemRestartResult,
+} from "@/lib/orderking/ai/system-master-controller";
 import {
   getVerifiedModelRegistry,
   type VerifiedModelRecord,
@@ -35,10 +63,10 @@ export function SystemMasterSettingsModal({
   const [testingModelId, setTestingModelId] = useState<string | null>(null);
   const [testResults, setTestResults] = useState<Record<string, ModelConnectionTestResult>>({});
 
-  const [geminiKeyInput] = useState("");
-  const [openaiKeyInput] = useState("");
-  const [anthropicKeyInput] = useState("");
-  const [xaiKeyInput] = useState("");
+  const [geminiKeyInput, setGeminiKeyInput] = useState("");
+  const [openaiKeyInput, setOpenaiKeyInput] = useState("");
+  const [anthropicKeyInput, setAnthropicKeyInput] = useState("");
+  const [xaiKeyInput, setXaiKeyInput] = useState("");
 
   // Chat Behavior Settings
   const [chatMode, setChatMode] = useState<"auto" | "fast" | "deep">(() => {
