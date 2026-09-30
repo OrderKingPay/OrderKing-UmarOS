@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { mediaStorageVault, VaultMediaItem } from "@/lib/orderking/ai/media-storage-vault";
+import { generateFounderImage } from "@/lib/orderking/ai/founder-media.server";
 
 interface AiMediaStudioModalProps {
   isOpen: boolean;
@@ -135,35 +136,44 @@ export function AiMediaStudioModal({
 
   if (!isOpen) return null;
 
-  const handleGenerateImage = () => {
+  const handleGenerateImage = async () => {
     const finalPrompt = prompt.trim() || PRESET_IMAGE_PROMPTS[0];
     setIsGenerating(true);
-    setGenerationProgress(10);
+    setGenerationProgress(8);
     setGeneratedItem(null);
-
-    const styleObj = PRESET_IMAGE_STYLES.find((s) => s.id === selectedStyle) || PRESET_IMAGE_STYLES[0];
-    const arObj = ASPECT_RATIOS.find((a) => a.id === aspectRatio) || ASPECT_RATIOS[0];
-    const width = Math.min(arObj.width, 1920);
-    const height = Math.min(arObj.height, 1920);
-    const seed = Math.floor(Math.random() * 9999999);
-
-    const qualityModifiers = upscale8K ? "8k uhd, photorealistic, masterpiece, highly intricate, sharp focus" : "";
-
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-      `${finalPrompt}, ${styleObj.modifier}, ${qualityModifiers}`
-    )}?width=${width}&height=${height}&nologo=true&seed=${seed}`;
-
-    const progressInterval = setInterval(() => {
-      setGenerationProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(progressInterval);
-          return 90;
-        }
-        return prev + 25;
+    try {
+      const styleObj = PRESET_IMAGE_STYLES.find((s) => s.id === selectedStyle) || PRESET_IMAGE_STYLES[0];
+      const arObj = ASPECT_RATIOS.find((a) => a.id === aspectRatio) || ASPECT_RATIOS[0];
+      const width = Math.min(arObj.width, 1536);
+      const height = Math.min(arObj.height, 1536);
+      const qualityModifiers = upscale8K
+        ? "high-resolution, photorealistic, detailed textures, physically plausible lighting, sharp focus"
+        : "high-resolution, photorealistic";
+      setGenerationProgress(20);
+      const result = await generateFounderImage({
+        data: { prompt: `${finalPrompt}, ${styleObj.modifier}, ${qualityModifiers}`, size: `${width}x${height}`, quality: "high" },
       });
-    }, 250);
-
-    throw new Error("NO MOCK CLAIMS: Real image generation API is not connected.");
+      setGenerationProgress(92);
+      const item = mediaStorageVault.addItem({
+        type: "image",
+        title: finalPrompt.slice(0, 90),
+        prompt: finalPrompt,
+        url: result.mediaUrl,
+        sizeBytes: result.sizeBytes,
+        mimeType: result.mimeType || "image/png",
+        aspectRatio,
+        style: selectedStyle,
+      });
+      setGeneratedItem(item);
+      setVaultItems(mediaStorageVault.getItems());
+      setGenerationProgress(100);
+      toast.success(`Real OpenAI image generated with ${result.model}.`);
+    } catch (error: any) {
+      setGenerationProgress(0);
+      toast.error(error?.message || "Real image generation failed.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleGenerateVideo = () => {
