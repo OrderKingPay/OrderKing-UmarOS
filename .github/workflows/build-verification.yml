@@ -36,6 +36,9 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Regenerate HDmaster route tree
+        run: pnpm --dir HDmaster run build
+
       - name: Typecheck all apps
         run: |
           pnpm --dir HDmaster run typecheck
@@ -44,9 +47,8 @@ jobs:
           pnpm --dir orderking-riders run typecheck
           pnpm --dir Apps-integration- run typecheck
 
-      - name: Build all apps
+      - name: Build remaining apps
         run: |
-          pnpm --dir HDmaster run build
           pnpm --dir orderking-customers run build
           pnpm --dir orderking-partners run build
           pnpm --dir orderking-riders run build
