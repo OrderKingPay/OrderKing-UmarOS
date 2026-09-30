@@ -1,6 +1,5 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
 import { getKingpayBalance, listKingpayTransactions, addKingpayMoney, deductKingpayMoney } from "@/lib/server/kingpay.server";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
@@ -27,7 +26,10 @@ export function useRealKingPayWallet() {
 
   const addMoney = useMutation({
     mutationFn: (args: { amount: number; description: string }) => addKingpayMoney({ data: args }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["kingpay_transactions", user?.id] });
+    },
   });
 
   const deductMoney = useMutation({
@@ -35,7 +37,7 @@ export function useRealKingPayWallet() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
   });
 
-  // Mock setWalletBalance to emulate the useState tuple structure for easy patching
+  // Compatibility setter: applies only real server-ledger deltas.
   const setWalletBalance = (action: any) => {
     let amount = 0;
     if (typeof action === 'function') {
@@ -52,7 +54,8 @@ export function useRealKingPayWallet() {
     }
   };
 
-  const setKingCoins = () => { /* read only for now, mutations can be added */ };
+  // Coins are server-authoritative until a verified reward mutation is connected.
+  const setKingCoins = (..._args: unknown[]) => {};
 
   return { walletBalance, setWalletBalance, kingCoins, setKingCoins, transactions };
 }
