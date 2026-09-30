@@ -727,7 +727,10 @@ export async function executeFounderAiChat(
   // 4. External Cloud Provider Execution
   if (activeRecord.provider !== "Local Sovereign") {
     const providerKey = activeRecord.provider.toLowerCase();
-    const apiKey = request.apiKeys?.[providerKey] || getProviderApiKey(providerKey);
+    if (request.apiKeys && Object.keys(request.apiKeys).length > 0) {
+      throw new Error("Provider API keys must be configured server-side; browser-supplied keys are rejected.");
+    }
+    const apiKey = getProviderApiKey(providerKey);
 
     if (apiKey) {
       try {
@@ -827,35 +830,28 @@ export async function executeFounderAiChat(
           latencyMs: Date.now() - startTime,
         };
       } catch (err) {
-        console.warn(`[ai-chat] Provider ${activeRecord.provider} failed, falling back to Local Sovereign Core:`, err);
+        console.warn(`[ai-chat] Provider ${activeRecord.provider} failed; no simulated fallback is permitted:`, err);
         onStreamEvent?.({
-          type: "step",
+          type: "error",
           data: {
-            stepNumber: 3,
-            totalSteps: 4,
-            label: "Local Core Fallback",
-            status: "COMPLETED",
-            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). Seamlessly routing to Local Sovereign Core.`,
+            message: `${activeRecord.provider} failed. No simulated or local synthetic response is enabled.`,
           },
         });
+        return {
+          text: `${activeRecord.provider} failed. No simulated or local synthetic response is enabled.`,
+          modelUsed: "none",
+          provider: activeRecord.provider,
+          executionSteps: [],
+          latencyMs: Date.now() - startTime,
+        };
       }
     }
   }
 
-  // 5. No external provider available — honest fallback
-  const localRes = executeLocalSovereignCognitivePass(currentQuery, request.messages, request.founderUpiVpa);
-  onStreamEvent?.({ type: "delta", data: localRes.text });
-  onStreamEvent?.({
-    type: "done",
-    data: {
-      text: localRes.text,
-      executionSteps: [],
-      modelUsed: "none",
-    },
-  });
-
+  const blockedText = "No real AI provider is configured for this deployment. Add a verified provider key and model configuration; no simulated fallback response is permitted.";
+  onStreamEvent?.({ type: "error", data: { message: blockedText } });
   return {
-    text: localRes.text,
+    text: blockedText,
     modelUsed: "none",
     provider: "None Connected",
     executionSteps: [],
