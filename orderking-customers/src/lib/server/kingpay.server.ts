@@ -43,21 +43,7 @@ export const addKingpayMoney = createServerFn({ method: "POST" })
   });
 
 export const deductKingpayMoney = createServerFn({ method: "POST" })
-  .// @ts-ignore
-  validator((d: { amount: number; description: string }) => d)
-  .handler(async ({ data }: any) => {
-    const user = await getSessionUser();
-    if (!user) throw new Error("Unauthorized");
-    const sql = await getSql();
-    const amountPaise = Math.round(data.amount * 100);
-    
-    await sql.transaction(async (tx) => {
-      const rows = await tx<{ balance_paise: number }>`SELECT balance_paise FROM kingpay_wallets WHERE user_id = ${user.id} FOR UPDATE`;
-      if (rows.length === 0 || rows[0].balance_paise < amountPaise) {
-        throw new Error("Insufficient Balance");
-      }
-      await tx`UPDATE kingpay_wallets SET balance_paise = balance_paise - ${amountPaise}, updated_at = NOW() WHERE user_id = ${user.id}`;
-      await tx`INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description) VALUES (${randomUUID()}, ${user.id}, ${amountPaise}, 'DEBIT', ${data.description})`;
-    });
-    return { success: true };
+  .validator((data: { amount: number; description: string }) => data)
+  .handler(async () => {
+    throw new Error("DIRECT_WALLET_DEBIT_DISABLED: Wallet debits must be executed by a verified transaction flow.");
   });
