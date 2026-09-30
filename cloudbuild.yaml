@@ -1,7 +1,6 @@
 substitutions:
   _REGION: asia-south1
   _REPOSITORY: orderking
-  _TAG: "$BUILD_ID"
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -16,7 +15,7 @@ steps:
       - --build-arg
       - APP_DIR=HDmaster
       - -t
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${BUILD_ID}
       - .
 
   - id: push-hdmaster
@@ -24,7 +23,7 @@ steps:
     waitFor: [build-hdmaster]
     args:
       - push
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${BUILD_ID}
 
   - id: build-customers
     name: gcr.io/cloud-builders/docker
@@ -34,7 +33,7 @@ steps:
       - --build-arg
       - APP_DIR=orderking-customers
       - -t
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${BUILD_ID}
       - .
 
   - id: push-customers
@@ -42,7 +41,7 @@ steps:
     waitFor: [build-customers]
     args:
       - push
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${BUILD_ID}
 
   - id: build-partners
     name: gcr.io/cloud-builders/docker
@@ -52,7 +51,7 @@ steps:
       - --build-arg
       - APP_DIR=orderking-partners
       - -t
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${BUILD_ID}
       - .
 
   - id: push-partners
@@ -60,7 +59,7 @@ steps:
     waitFor: [build-partners]
     args:
       - push
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${BUILD_ID}
 
   - id: build-riders
     name: gcr.io/cloud-builders/docker
@@ -70,7 +69,7 @@ steps:
       - --build-arg
       - APP_DIR=orderking-riders
       - -t
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${BUILD_ID}
       - .
 
   - id: push-riders
@@ -78,7 +77,7 @@ steps:
     waitFor: [build-riders]
     args:
       - push
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${BUILD_ID}
 
   - id: build-integration
     name: gcr.io/cloud-builders/docker
@@ -88,7 +87,7 @@ steps:
       - --build-arg
       - APP_DIR=Apps-integration-
       - -t
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${BUILD_ID}
       - .
 
   - id: push-integration
@@ -96,7 +95,7 @@ steps:
     waitFor: [build-integration]
     args:
       - push
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${BUILD_ID}
 
   # Deploy all five Cloud Run services. The same image tag is used for every
   # service so the release is traceable to one Cloud Build execution.
@@ -109,7 +108,7 @@ steps:
       - deploy
       - hdmaster
       - --image
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${BUILD_ID}
       - --region
       - ${_REGION}
       - --platform
@@ -137,7 +136,7 @@ steps:
       - deploy
       - orderking-customers
       - --image
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${BUILD_ID}
       - --region
       - ${_REGION}
       - --platform
@@ -165,7 +164,7 @@ steps:
       - deploy
       - orderking-partners
       - --image
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${BUILD_ID}
       - --region
       - ${_REGION}
       - --platform
@@ -193,7 +192,7 @@ steps:
       - deploy
       - orderking-riders
       - --image
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${BUILD_ID}
       - --region
       - ${_REGION}
       - --platform
@@ -221,7 +220,7 @@ steps:
       - deploy
       - apps-integration
       - --image
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${_TAG}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${BUILD_ID}
       - --region
       - ${_REGION}
       - --platform
@@ -247,7 +246,7 @@ steps:
     args:
       - -ceu
       - |
-        echo "=== OrderKing Cloud Run release ${_TAG} ==="
+        echo "=== OrderKing Cloud Run release ${BUILD_ID} ==="
         for service in hdmaster orderking-customers orderking-partners orderking-riders apps-integration; do
           gcloud run services describe "$service" \
             --region="${_REGION}" \
@@ -255,8 +254,8 @@ steps:
         done
 
 images:
-  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${_TAG}
-  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${_TAG}
-  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${_TAG}
-  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${_TAG}
-  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${_TAG}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${BUILD_ID}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${BUILD_ID}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${BUILD_ID}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${BUILD_ID}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${BUILD_ID}
