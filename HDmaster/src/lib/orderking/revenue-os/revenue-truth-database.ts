@@ -43,7 +43,7 @@ export class RevenueTruthDatabase {
   private lastHash: string = "GENESIS_HASH_0000000000000000000000000000000000000000000000000000000000000000";
 
   constructor() {
-    this.seedVerifiedHistoricalRecords();
+    // Production truth starts empty; only runtime/provider-backed events may be recorded.
   }
 
   private calculateHash(event: Omit<FinancialEvent, "eventHash">): string {
@@ -62,54 +62,7 @@ export class RevenueTruthDatabase {
     return createHash("sha256").update(payload).digest("hex");
   }
 
-  private seedVerifiedHistoricalRecords() {
-    // Verified transaction 1
-    this.recordFinancialEvent({
-      type: "invoice_created",
-      amount: 74999,
-      currency: "INR",
-      provider: "KING_PAY_UPI",
-      providerEventId: "INV-8801",
-      verified: true,
-      evidence: ["Invoice document INV-8801 generated for Royal Darbar Palace"],
-      metadata: { client: "Royal Darbar Palace", milestone: "50% Advance" },
-    });
 
-    this.recordFinancialEvent({
-      type: "payment_confirmed",
-      amount: 74999,
-      currency: "INR",
-      provider: "KING_PAY_UPI",
-      providerEventId: "UPI-UTR-908234710293",
-      verified: true,
-      evidence: ["Bank settlement UTR 908234710293 confirmed at HDFC Bank"],
-      metadata: { client: "Royal Darbar Palace", vpa: "orderking@okhdfcbank" },
-    });
-
-    // Verified transaction 2
-    this.recordFinancialEvent({
-      type: "payment_confirmed",
-      amount: 50000,
-      currency: "INR",
-      provider: "RAZORPAY",
-      providerEventId: "pay_OpL92810Xkz9",
-      verified: true,
-      evidence: ["Razorpay webhook payment.captured event pay_OpL92810Xkz9"],
-      metadata: { client: "Sylhet Heritage Sweets", feeInr: 1000 },
-    });
-
-    // Pending invoice 3
-    this.recordFinancialEvent({
-      type: "payment_pending",
-      amount: 149999,
-      currency: "INR",
-      provider: "KING_PAY_UPI",
-      providerEventId: "INV-8802",
-      verified: true,
-      evidence: ["Invoice INV-8802 issued to Assam Valley Organic Tea"],
-      metadata: { client: "Assam Valley Organic Tea", milestone: "50% Advance" },
-    });
-  }
 
   recordFinancialEvent(params: {
     type: FinancialEventType;
