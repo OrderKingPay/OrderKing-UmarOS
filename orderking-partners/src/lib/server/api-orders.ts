@@ -15,7 +15,7 @@ function mapOrder(row: OrderRow, lines: OrderLineView[], events: OrderEventView[
   return { id: row.id, orderNumber: row.order_number, restaurantId: row.restaurant_id, outletId: row.outlet_id, state: row.state, placedAt: asIso(row.placed_at), customerArea: row.customer_area, paymentMethod: row.payment_method, isCod: row.is_cod === true || (row.is_cod as unknown) === "t", specialInstructions: row.special_instructions, prepMinutes: asInt(row.prep_minutes), rejectReason: row.reject_reason, dataLabel: row.data_label, prices: { foodValuePaise: asInt(row.food_value_paise), packingPaise: asInt(row.packing_paise), restaurantDiscountPaise: asInt(row.restaurant_discount_paise), platformFundedDiscountPaise: asInt(row.platform_funded_discount_paise), taxPaise: asInt(row.tax_paise), platformFeePaise: asInt(row.platform_fee_paise), commissionBps: asInt(row.commission_bps), commissionPaise: asInt(row.commission_paise), otherDeductionsPaise: asInt(row.other_deductions_paise), otherDeductionsCode: row.other_deductions_code, refundAdjustmentPaise: asInt(row.refund_adjustment_paise), restaurantPayablePaise: asInt(row.restaurant_payable_paise), customerTotalPaise: asInt(row.customer_total_paise) }, lines, events };
 }
 
-export const listOrders = createServerFn({ method: "GET" }).middleware([authMiddleware]).validator((d: { restaurantId?: string; scope?: "live" | "history" | "all" }) => d).handler(async ({ context, data }) => {
+export const listOrders = createServerFn({ method: "GET" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string; scope?: "live" | "history" | "all" }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
     const scope = data.scope ?? "live";
     const res = await fetch(`${coreUrl()}/v1/admin/restaurants/${ctx.restaurantId}/partner-orders?scope=${scope}`, {
@@ -32,7 +32,7 @@ export const listOrders = createServerFn({ method: "GET" }).middleware([authMidd
   });
 });
 
-export const advanceSimulatedRider = createServerFn({ method: "POST" }).middleware([authMiddleware]).validator((d: { restaurantId?: string; orderId: string; idempotencyKey: string }) => d).handler(async ({ context, data }) => {
+export const advanceSimulatedRider = createServerFn({ method: "POST" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string; orderId: string; idempotencyKey: string }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
     if (ctx.dataLabel !== "SIMULATED") throw new Error("Rider simulation is only available on labelled SIMULATED kitchens.");
     const prior = await sql<{ response_json: string }>`select response_json from idempotency_keys where restaurant_id = ${ctx.restaurantId} and action = 'sim_rider' and key = ${data.idempotencyKey} limit 1`;
@@ -52,7 +52,7 @@ export const advanceSimulatedRider = createServerFn({ method: "POST" }).middlewa
   });
 });
 
-export const getDashboard = createServerFn({ method: "GET" }).middleware([authMiddleware]).validator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
+export const getDashboard = createServerFn({ method: "GET" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "dashboard.view", async (sql, ctx) => {
     const res = await fetch(`${coreUrl()}/v1/admin/restaurants/${ctx.restaurantId}/partner-dashboard`, {
       headers: { authorization: `Bearer ${serviceToken()}` }
@@ -82,7 +82,7 @@ export const getDashboard = createServerFn({ method: "GET" }).middleware([authMi
   });
 });
 
-export const getOperatingSnapshot = createServerFn({ method: "GET" }).middleware([authMiddleware]).validator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
+export const getOperatingSnapshot = createServerFn({ method: "GET" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "hours.edit", async (sql, ctx) => {
     const hours = await sql<{ id: string; weekday: number; open_minutes: number; close_minutes: number }>`select id, weekday, open_minutes, close_minutes from restaurant_hours where restaurant_id = ${ctx.restaurantId} order by weekday, open_minutes`;
     const rest = await sql<{ emergency_closed: boolean; vacation_mode: boolean; weekly_holidays: string; prep_minutes: number; peak_prep_minutes: number }>`select emergency_closed, vacation_mode, weekly_holidays, prep_minutes, peak_prep_minutes from restaurants where id = ${ctx.restaurantId}`;
@@ -90,7 +90,7 @@ export const getOperatingSnapshot = createServerFn({ method: "GET" }).middleware
   });
 });
 
-export const saveHours = createServerFn({ method: "POST" }).middleware([authMiddleware]).validator((d: { restaurantId?: string; emergencyClosed?: boolean; vacationMode?: boolean; weeklyHolidays?: string; prepMinutes?: number; peakPrepMinutes?: number; shifts: { weekday: number; openMinutes: number; closeMinutes: number }[] }) => d).handler(async ({ context, data }) => {
+export const saveHours = createServerFn({ method: "POST" }).middleware([authMiddleware]).inputValidator((d: { restaurantId?: string; emergencyClosed?: boolean; vacationMode?: boolean; weeklyHolidays?: string; prepMinutes?: number; peakPrepMinutes?: number; shifts: { weekday: number; openMinutes: number; closeMinutes: number }[] }) => d).handler(async ({ context, data }) => {
   return withVendor(context.userId, data.restaurantId, "hours.edit", async (sql, ctx) => {
     await sql`delete from restaurant_hours where restaurant_id = ${ctx.restaurantId}`;
     for (const s of data.shifts) { if (s.weekday < 0 || s.weekday > 6) continue; await sql`insert into restaurant_hours (id, restaurant_id, weekday, open_minutes, close_minutes) values (${newId("hrs")}, ${ctx.restaurantId}, ${s.weekday}, ${s.openMinutes}, ${s.closeMinutes})`; }
@@ -101,7 +101,7 @@ export const saveHours = createServerFn({ method: "POST" }).middleware([authMidd
 
 export const quickThrottleKitchen = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; mode: "NORMAL" | "RUSH" | "PAUSE" | "RESUME" }) => d)
+  .inputValidator((d: { restaurantId?: string; mode: "NORMAL" | "RUSH" | "PAUSE" | "RESUME" }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "hours.edit", async (sql, ctx) => {
       if (data.mode === "RUSH") {
