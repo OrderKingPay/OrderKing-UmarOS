@@ -1,0 +1,55 @@
+substitutions:
+  _REGION: asia-south1
+  _REPOSITORY: orderking
+  _SERVICE: orderking-customers
+  _APP_DIR: orderking-customers
+
+steps:
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg
+      - APP_DIR=${_APP_DIR}
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${SHORT_SHA}
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${SHORT_SHA}
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${SHORT_SHA}
+      - --region
+      - ${_REGION}
+      - --platform
+      - managed
+      - --execution-environment
+      - gen2
+      - --port
+      - "8080"
+      - --cpu
+      - "1"
+      - --memory
+      - 1Gi
+      - --min-instances
+      - "0"
+      - --max-instances
+      - "20"
+      - --allow-unauthenticated
+
+images:
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${SHORT_SHA}
+
+options:
+  logging: CLOUD_LOGGING_ONLY
