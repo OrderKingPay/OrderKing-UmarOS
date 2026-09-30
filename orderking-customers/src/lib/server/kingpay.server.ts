@@ -23,6 +23,19 @@ export const getKingpayBalance = createServerFn({ method: "GET" }).handler(async
   }
 });
 
+export const listKingpayTransactions = createServerFn({ method: "GET" }).handler(async () => {
+  const user = await getSessionUser();
+  if (!user) return [];
+  const sql = await getSql();
+  return await sql<{ id: string; amount_paise: number; type: string; description: string; created_at: string }>`
+    SELECT id, amount_paise, type, description, created_at::text AS created_at
+    FROM kingpay_transactions
+    WHERE user_id = ${user.id}
+    ORDER BY created_at DESC
+    LIMIT 100
+  `;
+});
+
 export const addKingpayMoney = createServerFn({ method: "POST" })
   .// @ts-ignore
   validator((d: { amount: number; description: string }) => d)
