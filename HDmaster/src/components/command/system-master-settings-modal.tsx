@@ -1,36 +1,5 @@
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import {
-  Settings,
-  RefreshCw,
-  Power,
-  Trash2,
-  Sparkles,
-  ShieldCheck,
-  CheckCircle2,
-  Volume2,
-  Cpu,
-  Zap,
-  HardDrive,
-  X,
-  AlertTriangle,
-  RotateCcw,
-  Sliders,
-  Check,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  systemMasterController,
-  DuplicateScanReport,
-  SystemRefreshResult,
-  SystemRestartResult,
-} from "@/lib/orderking/ai/system-master-controller";
 import {
   getVerifiedModelRegistry,
-  testModelConnectivity,
-  setProviderApiKey,
-  getProviderApiKey,
   type VerifiedModelRecord,
   type ModelConnectionTestResult,
 } from "@/lib/orderking/ai/real-model-registry";
@@ -66,10 +35,10 @@ export function SystemMasterSettingsModal({
   const [testingModelId, setTestingModelId] = useState<string | null>(null);
   const [testResults, setTestResults] = useState<Record<string, ModelConnectionTestResult>>({});
 
-  const [geminiKeyInput, setGeminiKeyInput] = useState(getProviderApiKey("gemini") || "");
-  const [openaiKeyInput, setOpenaiKeyInput] = useState(getProviderApiKey("openai") || "");
-  const [anthropicKeyInput, setAnthropicKeyInput] = useState(getProviderApiKey("anthropic") || "");
-  const [xaiKeyInput, setXaiKeyInput] = useState(getProviderApiKey("xai") || "");
+  const [geminiKeyInput] = useState("");
+  const [openaiKeyInput] = useState("");
+  const [anthropicKeyInput] = useState("");
+  const [xaiKeyInput] = useState("");
 
   // Chat Behavior Settings
   const [chatMode, setChatMode] = useState<"auto" | "fast" | "deep">(() => {
@@ -112,72 +81,33 @@ export function SystemMasterSettingsModal({
     setIsCheckingUpdates(true);
     setUpdateResults(null);
     const results: typeof updateResults = [];
-
-    // Check each provider for latest available models
-    const providers = [
-      { name: "Google Gemini", key: "gemini", endpoint: "https://generativelanguage.googleapis.com/v1beta/models", current: "gemini-2.0-flash" },
-      { name: "OpenAI", key: "openai", endpoint: "https://api.openai.com/v1/models", current: "gpt-4o" },
-      { name: "Anthropic", key: "anthropic", endpoint: "https://api.anthropic.com/v1/models", current: "claude-3-7-sonnet-20250219" },
-      { name: "xAI Grok", key: "xai", endpoint: "https://api.x.ai/v1/models", current: "grok-2" },
-    ];
+    const providers = modelsList.filter((m) =>
+      m.provider === "Google" ||
+      m.provider === "OpenAI" ||
+      m.provider === "Anthropic" ||
+      m.provider === "xAI"
+    );
 
     for (const p of providers) {
-      const apiKey = getProviderApiKey(p.key);
-      if (!apiKey) {
-        results.push({
-          provider: p.name,
-          currentModel: p.current,
-          latestModel: "N/A",
-          status: "error",
-          message: `No API key configured for ${p.name}`,
-        });
-        continue;
-      }
-
       try {
-        const headers: Record<string, string> = {};
-        let url = p.endpoint;
-        if (p.key === "gemini") {
-          url = `${p.endpoint}?key=${apiKey}`;
-        } else if (p.key === "anthropic") {
-          headers["x-api-key"] = apiKey;
-          headers["anthropic-version"] = "2023-06-01";
-        } else {
-          headers["Authorization"] = `Bearer ${apiKey}`;
-        }
-
-        const res = await fetch(url, { method: "GET", headers });
-        if (res.ok) {
-          const data = await res.json();
-          let modelNames: string[] = [];
-          if (p.key === "gemini" && data.models) {
-            modelNames = data.models.map((m: any) => m.name?.replace("models/", "") || "").filter(Boolean);
-          } else if (data.data) {
-            modelNames = data.data.map((m: any) => m.id || "").filter(Boolean);
-          }
-
-          const latestRelevant = modelNames.slice(0, 5).join(", ") || p.current;
-          results.push({
-            provider: p.name,
-            currentModel: p.current,
-            latestModel: latestRelevant,
-            status: "up-to-date",
-            capabilities: ["text", "streaming", "tools"],
-            message: `Connected. ${modelNames.length} models available.`,
-          });
-        } else {
-          results.push({
-            provider: p.name,
-            currentModel: p.current,
-            latestModel: "N/A",
-            status: "error",
-            message: `API returned HTTP ${res.status}`,
-          });
-        }
+        const res = await fetch("/api/v1/admin/ai-provider-test", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ modelId: p.id }),
+        });
+        const result = await res.json();
+        results.push({
+          provider: p.displayName,
+          currentModel: p.realApiId,
+          latestModel: result.realModelUsed || "N/A",
+          status: result.success ? "up-to-date" : "error",
+          capabilities: result.success ? ["server-authenticated", "provider-model-list"] : undefined,
+          message: result.message || "Provider verification returned no message.",
+        });
       } catch (err) {
         results.push({
-          provider: p.name,
-          currentModel: p.current,
+          provider: p.displayName,
+          currentModel: p.realApiId,
           latestModel: "N/A",
           status: "error",
           message: err instanceof Error ? err.message : String(err),
@@ -187,26 +117,26 @@ export function SystemMasterSettingsModal({
 
     setUpdateResults(results);
     setIsCheckingUpdates(false);
-    const connected = results.filter(r => r.status !== "error").length;
+    const connected = results.filter((r) => r.status !== "error").length;
     toast.success(`Model check complete: ${connected}/${providers.length} providers connected.`);
   };
 
-  const handleSaveApiKey = (provider: string, keyVal: string) => {
-    setProviderApiKey(provider, keyVal);
-    toast.success(`Saved API key for ${provider.toUpperCase()}`);
-    setModelsList(getVerifiedModelRegistry());
+  const handleSaveApiKey = (_provider: string, _keyVal: string) => {
+    toast.info("Provider credentials are server-managed and are never stored in this browser.");
   };
 
   const handleTestModel = async (modelId: string) => {
     setTestingModelId(modelId);
     try {
-      const res = await testModelConnectivity(modelId);
+      const response = await fetch("/api/v1/admin/ai-provider-test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ modelId }),
+      });
+      const res = await response.json() as ModelConnectionTestResult;
       setTestResults((prev) => ({ ...prev, [modelId]: res }));
-      if (res.success) {
-        toast.success(`✅ ${res.message}`);
-      } else {
-        toast.warning(res.message);
-      }
+      if (res.success) toast.success(`✅ ${res.message}`);
+      else toast.warning(res.message);
     } catch (e) {
       toast.error(`Test failed: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
