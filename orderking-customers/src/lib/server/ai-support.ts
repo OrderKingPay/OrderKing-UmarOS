@@ -17,7 +17,7 @@ export type ResolutionResult = {
   ok: boolean;
   orderId: string;
   issueType: SupportIssueType;
-  actionTaken: "STATUS_REPORT" | "AUTO_CANCELLED" | "COMPENSATION_GRANTED" | "ESCALATED_TO_PRIORITY";
+  actionTaken: "STATUS_REPORT" | "AUTO_CANCELLED" | "COMPENSATION_PENDING" | "ESCALATED_TO_PRIORITY";
   title: string;
   explanation: string;
   compensationPaise?: number;
@@ -69,25 +69,9 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
         explanation = `Order status is currently ${order.status}.`;
       }
 
-      // If delayed over 35 minutes and not delivered, give instant compensation
       if (minutesSincePlaced > 35 && !["DELIVERED", "CANCELLED"].includes(order.status)) {
-        actionTaken = "COMPENSATION_GRANTED";
-        compensationPaise = 5000; // ₹50 delay apology credit
-        explanation += ` Since your order is running behind our 30-minute target SLA, we have credited ₹50 to your loyalty rewards as an apology!`;
-
-        // Credit points to loyalty account
-        const points = 50;
-        await sql`
-          insert into loyalty_accounts (user_id, points, lifetime_points, tier)
-          values (${context.userId}, ${points}, ${points}, 'starter')
-          on conflict (user_id) do update set
-            points = loyalty_accounts.points + ${points},
-            updated_at = now()
-        `;
-        await sql`
-          insert into loyalty_transactions (id, user_id, order_id, delta, reason)
-          values (${newId("loy")}, ${context.userId}, ${order.id}, ${points}, 'delay_compensation')
-        `;
+        actionTaken = "COMPENSATION_PENDING";
+        explanation += " The order is running behind the current SLA. A compensation request has been recorded for policy/provider verification; no wallet or cash credit is claimed yet.";
       }
 
       return {
@@ -110,31 +94,18 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
         await sql`update orders set status = 'CANCELLED', updated_at = now() where id = ${order.id} and user_id = ${context.userId}`;
         await sql`insert into order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note) values (${newId("oev")}, ${order.id}, ${order.status}, 'CANCELLED', ${context.userId}, 'customer', ${isExcessiveDelay ? 'Cancelled due to severe kitchen delay (>35 mins) with 100% refund' : 'Instant cancellation within 3 minutes'})`;
 
-        let explanation = `Your order #${order.public_id} was successfully cancelled. Full refund has been initiated to your original payment method.`;
+        let explanation = `Your order #${order.public_id} was cancelled in the order system. Refund processing depends on the payment provider and has not been claimed as completed by this support action.`;
         let compensationPaise: number | undefined;
 
         if (isExcessiveDelay) {
-          explanation += ` Additionally, ₹50 apology credit has been added to your loyalty wallet for the inconvenience.`;
-          compensationPaise = 5000;
-          const points = 50;
-          await sql`
-            insert into loyalty_accounts (user_id, points, lifetime_points, tier)
-            values (${context.userId}, ${points}, ${points}, 'starter')
-            on conflict (user_id) do update set
-              points = loyalty_accounts.points + ${points},
-              updated_at = now()
-          `;
-          await sql`
-            insert into loyalty_transactions (id, user_id, order_id, delta, reason)
-            values (${newId("loy")}, ${context.userId}, ${order.id}, ${points}, 'delay_cancellation_apology')
-          `;
+          explanation += " A delay-compensation request is recorded for policy/provider verification.";
         }
 
         return {
           ok: true,
           orderId: order.id,
           issueType: data.issueType,
-          actionTaken: "AUTO_CANCELLED",
+          actionTaken: isExcessiveDelay ? "COMPENSATION_PENDING" : "AUTO_CANCELLED",
           title: "Order Cancelled & 100% Refunded",
           explanation,
           compensationPaise,
@@ -152,7 +123,7 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
     }
 
     if (data.issueType === "missing_item" || data.issueType === "food_spilled") {
-      // Create priority ticket & issue instant credit adjustment
+      // Create a support ticket. Compensation is not claimed until policy/payment verification completes.
       const ticketId = newId("tkt");
       const title = data.issueType === "missing_item" ? "Missing item claim" : "Spilled / Damaged item claim";
       const compensationPaise = Math.min(order.total_paise, 10000); // Up to ₹100 instant relief credit
@@ -264,7 +235,7 @@ INSTRUCTION:
 1. You must respond flawlessly in the EXACT NATIVE LANGUAGE the customer used (e.g., if they speak Bengali, respond in perfect Bengali; if Hindi, respond in perfect Hindi). 
 2. Be 100x more accurate and helpful than Zomato. 
 3. Keep it to max 3 sentences. Tone is elite, polite OrderKing Support. 
-4. If the order is >35 mins late, automatically mention instant ₹50 wallet compensation.`;
+4. If the order is >35 mins late, explain that compensation eligibility is being verified; do not claim that a credit has already been issued.`;
         
         const res = await gemini.generateStructuredOutput<any>({ prompt, schema });
         
@@ -281,7 +252,7 @@ INSTRUCTION:
     // 1. Check if user is asking about an order
     if (q.includes("where") || q.includes("delay") || q.includes("late") || q.includes("status") || q.includes("track")) {
       return {
-        reply: `Our standard delivery time across Karimganj and Silchar is 25–35 minutes. ${orderInfo} If any order exceeds 35 minutes, our system automatically disburses a ₹50 late compensation credit directly to your loyalty wallet. You can click the button below to claim it immediately if eligible.`,
+        reply: `Our delivery estimate depends on the live order state. ${orderInfo} If the order is materially delayed, our support workflow can record a compensation review, but it will not claim a credit until the applicable policy and payment/loyalty ledger are verified.`,
         actionChip: { label: "⚡ Run Live Delivery Diagnostics", issueType: "where_order" },
       };
     }
