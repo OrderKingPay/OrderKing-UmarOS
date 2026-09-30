@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { mediaStorageVault, VaultMediaItem } from "@/lib/orderking/ai/media-storage-vault";
-import { generateFounderImage } from "@/lib/orderking/ai/founder-media.server";
+import { generateFounderImageRpc } from "@/lib/orderking/ai/founder-media-rpc";
 
 interface AiMediaStudioModalProps {
   isOpen: boolean;
@@ -150,7 +150,7 @@ export function AiMediaStudioModal({
         ? "high-resolution, photorealistic, detailed textures, physically plausible lighting, sharp focus"
         : "high-resolution, photorealistic";
       setGenerationProgress(20);
-      const result = await generateFounderImage({
+      const result = await generateFounderImageRpc({
         data: { prompt: `${finalPrompt}, ${styleObj.modifier}, ${qualityModifiers}`, size: `${width}x${height}`, quality: "high" },
       });
       setGenerationProgress(92);
