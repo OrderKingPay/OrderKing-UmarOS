@@ -1,8 +1,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { getKingpayBalance, addKingpayMoney, deductKingpayMoney } from "@/lib/server/kingpay.server";
-import { supabase } from "@/lib/db-cloud";
+import { getKingpayBalance, listKingpayTransactions, addKingpayMoney, deductKingpayMoney } from "@/lib/server/kingpay.server";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 export function useRealKingPayWallet() {
@@ -13,30 +12,15 @@ export function useRealKingPayWallet() {
     queryKey: ["kingpay_balance", user?.id],
     queryFn: () => getKingpayBalance(),
     enabled: !!user,
+    refetchInterval: 10_000,
   });
 
-  useEffect(() => {
-    if (!user) return;
-    const channel = supabase
-      .channel('kingpay_wallets_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'kingpay_wallets',
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          queryClient.setQueryData(["kingpay_balance", user.id], {
-            balance: payload.new.balance_paise / 100,
-            coins: payload.new.king_coins,
-          });
-        }
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [user, queryClient]);
+  const { data: transactions = [] } = useQuery({
+    queryKey: ["kingpay_transactions", user?.id],
+    queryFn: () => listKingpayTransactions(),
+    enabled: !!user,
+    refetchInterval: 10_000,
+  });
 
   const walletBalance = data?.balance ?? 0;
   const kingCoins = data?.coins ?? 0;
@@ -70,5 +54,5 @@ export function useRealKingPayWallet() {
 
   const setKingCoins = () => { /* read only for now, mutations can be added */ };
 
-  return { walletBalance, setWalletBalance, kingCoins, setKingCoins };
+  return { walletBalance, setWalletBalance, kingCoins, setKingCoins, transactions };
 }
