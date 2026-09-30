@@ -87,9 +87,25 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
 
         const sql = await getSql();
 
-        // OPEN STRICT ACID TRANSACTION
         await sql.transaction(async (tx: Sql) => {
-          // 1. Lock the order row to prevent race conditions
+          // Record the event first. Duplicate delivery events stop here without changing money state.
+          const eventInsert = await tx<{ id: string }>`
+            INSERT INTO payment_webhook_events (
+              id, gateway, gateway_event_id, event_type, payload_json, signature
+            )
+            VALUES (
+              ${crypto.randomUUID()}, 'RAZORPAY', ${paymentData.id}, ${event.event}, ${rawBody}, ${receivedSignature}
+            )
+            ON CONFLICT (gateway, gateway_event_id) DO NOTHING
+            RETURNING id
+          `;
+
+          if (eventInsert.length === 0) {
+            return;
+          }
+
+          // Lock the order until this transaction completes. Do not SKIP LOCKED:
+          // a valid payment must never be acknowledged while waiting for another transaction.
           const orderRows = await tx<{
             org_id: string;
             restaurant_id: string;
@@ -99,77 +115,80 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
             delivery_fee_paise: number;
             payment_status: string;
           }>`
-            SELECT org_id, restaurant_id, rider_id, total_paise, commission_paise, delivery_fee_paise, payment_status 
-            FROM orders 
-            WHERE id = ${internalOrderId} 
-            FOR UPDATE SKIP LOCKED
+            SELECT org_id, restaurant_id, rider_id, total_paise, commission_paise, delivery_fee_paise, payment_status
+            FROM orders
+            WHERE id = ${internalOrderId}
+            FOR UPDATE
           `;
 
           if (orderRows.length === 0) {
-            console.error(`[FATAL] Order ${internalOrderId} not found or locked.`);
-            return; 
+            throw new Error(`Order ${internalOrderId} not found.`);
           }
 
           const order = orderRows[0];
 
-          // 2. Idempotency Check (Don't double-credit)
-          if (order.payment_status === 'PAID') {
-            console.log(`[IDEMPOTENT] Order ${internalOrderId} is already paid.`);
+          if (paymentData.currency !== "INR") {
+            throw new Error(`Unsupported payment currency: ${paymentData.currency}`);
+          }
+
+          if (Number(paymentData.amount) !== Number(order.total_paise)) {
+            throw new Error(
+              `Payment amount mismatch: provider=${paymentData.amount}, order=${order.total_paise}`
+            );
+          }
+
+          if (order.payment_status === "PAID") {
             return;
           }
 
-          // 3. Update Order Payment Status
           await tx`
-            UPDATE orders 
-            SET payment_status = 'PAID', 
-                status = 'ACCEPTED', -- Auto-accept the order in the kitchen queue
-                updated_at = NOW() 
+            UPDATE orders
+            SET payment_status = 'PAID',
+                status = 'ACCEPTED',
+                updated_at = NOW()
             WHERE id = ${internalOrderId}
           `;
 
-          // 4. Distribute the Genuine Money into Ledgers (The Revenue Split)
-          const founderRevenue = order.commission_paise; // e.g. 20% commission
+          const founderRevenue = order.commission_paise;
           const riderPayout = order.delivery_fee_paise;
           const restaurantPayout = order.total_paise - founderRevenue - riderPayout;
 
-          // Credit Restaurant
+          if (restaurantPayout < 0 || founderRevenue < 0 || riderPayout < 0) {
+            throw new Error("Invalid negative revenue split detected.");
+          }
+
           await tx`
             INSERT INTO ledger_entries (id, org_id, order_id, restaurant_id, party, kind, source, rule_key, amount_paise, note)
             VALUES (
-              ${crypto.randomUUID()}, ${order.org_id}, ${internalOrderId}, ${order.restaurant_id}, 
+              ${crypto.randomUUID()}, ${order.org_id}, ${internalOrderId}, ${order.restaurant_id},
               'RESTAURANT', 'CREDIT', 'ORDER_PAYMENT', 'AUTO_SPLIT', ${restaurantPayout}, 'Restaurant payout for order'
             )
           `;
 
-          // Credit Founder (OrderKing Platform)
           await tx`
             INSERT INTO ledger_entries (id, org_id, order_id, party, kind, source, rule_key, amount_paise, note)
             VALUES (
-              ${crypto.randomUUID()}, ${order.org_id}, ${internalOrderId}, 
+              ${crypto.randomUUID()}, ${order.org_id}, ${internalOrderId},
               'PLATFORM', 'CREDIT', 'ORDER_COMMISSION', 'AUTO_SPLIT', ${founderRevenue}, 'Platform commission'
             )
           `;
 
-          // Credit Rider (if assigned, otherwise hold in escrow)
           if (order.rider_id) {
             await tx`
               INSERT INTO ledger_entries (id, org_id, order_id, rider_id, party, kind, source, rule_key, amount_paise, note)
               VALUES (
-                ${crypto.randomUUID()}, ${order.org_id}, ${internalOrderId}, ${order.rider_id}, 
+                ${crypto.randomUUID()}, ${order.org_id}, ${internalOrderId}, ${order.rider_id},
                 'RIDER', 'CREDIT', 'DELIVERY_FEE', 'AUTO_SPLIT', ${riderPayout}, 'Rider delivery fee'
               )
             `;
           }
 
-          // 5. Store the raw Razorpay webhook for audit trail
           await tx`
-            INSERT INTO payment_webhook_events (id, gateway, gateway_event_id, event_type, payload_json, signature)
-            VALUES (
-              ${crypto.randomUUID()}, 'RAZORPAY', ${paymentData.id}, ${event.event}, ${rawBody}, ${receivedSignature}
-            ) ON CONFLICT DO NOTHING
+            UPDATE payment_webhook_events
+            SET processed_at = NOW(), processing_error = NULL
+            WHERE gateway = 'RAZORPAY' AND gateway_event_id = ${paymentData.id}
           `;
         });
-
         console.info(`[REVENUE SECURED] Order ${internalOrderId} paid successfully. Money split injected into ledgers.`);
         return new Response(JSON.stringify({ success: true, message: 'Payment secured' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
       }
