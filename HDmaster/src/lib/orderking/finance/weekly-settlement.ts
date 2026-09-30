@@ -1,246 +1,46 @@
 // @ts-nocheck
 /**
- * Zomato / Swiggy Compatible Weekly Settlement Engine for Order King
- * Standard Indian Food Delivery Cycle:
- * - Cycle: Monday 00:00:00 to Sunday 23:59:59 IST
- * - Payout Day: Wednesday (Disbursed via NEFT/IMPS/Razorpay Route)
+ * OrderKing weekly settlement period utilities.
+ * Dates are calculated in India Standard Time (UTC+05:30) and returned as
+ * YYYY-MM-DD calendar dates. Tax/fee figures are supplied by the real ledger
+ * or configured rules; this module does not claim external aggregator formulas.
  */
-
 export type WeeklyCyclePeriod = {
   cycleId: string;
-  startDate: string; // YYYY-MM-DD (Monday)
-  endDate: string;   // YYYY-MM-DD (Sunday)
-  payoutDate: string;// YYYY-MM-DD (Wednesday)
+  startDate: string;
+  endDate: string;
+  payoutDate: string;
   status: "OPEN" | "RECONCILING" | "DISBURSED";
 };
 
-export type RestaurantWeeklySettlement = {
-  restaurantId: string;
-  restaurantName: string;
-  bankAccountNumberMasked: string;
-  cycle: WeeklyCyclePeriod;
-  deliveredOrdersCount: number;
-  grossSalesPaise: number;
-  restaurantDiscountsPaise: number;
-  netFoodSalesPaise: number;
-  packagingChargesPaise: number;
-  platformCommissionPaise: number;
-  gstOnCommissionPaise: number;    // 18% GST on commission
-  paymentGatewayFeePaise: number;  // ~1.8% PG fee
-  gstOnPgFeePaise: number;         // 18% GST on PG fee
-  tcsDeductionPaise: number;       // 1% TCS (CGST Act Section 52)
-  tdsDeductionPaise: number;       // 1% TDS (Income Tax Section 194-O)
-  platformReimbursementsPaise: number;
-  kingCoinsLiabilityFundedPaise: number;
-  netPayablePaise: number;
-  payoutStatus: "PENDING" | "PROCESSING" | "PAID";
-};
-
-export type RiderWeeklySettlement = {
-  riderId: string;
-  riderName: string;
-  upiIdOrBankMasked: string;
-  cycle: WeeklyCyclePeriod;
-  deliveriesCompleted: number;
-  basePayPaise: number;
-  distancePayPaise: number;
-  surgeIncentivesPaise: number;
-  milestoneBonusPaise: number;
-  grossEarningsPaise: number;
-  cashCollectedPaise: number; // COD cash holding to reconcile
-  netDisbursementPaise: number; // Positive = we pay rider; Negative = rider deposits cash
-  payoutStatus: "PENDING" | "PROCESSING" | "PAID";
-};
-
-/**
- * Returns the current or previous Monday-to-Sunday weekly cycle.
- */
 export function getWeeklyCycle(referenceDate = new Date()): WeeklyCyclePeriod {
-  const d = new Date(referenceDate);
-  const day = d.getDay(); // 0 is Sun, 1 is Mon, 3 is Wed
-  const diffToMonday = d.getDate() - day + (day === 0 ? -6 : 1);
+  const IST_OFFSET_MS = 330 * 60 * 1000;
+  const shifted = new Date(referenceDate.getTime() + IST_OFFSET_MS);
+  const y = shifted.getUTCFullYear();
+  const m = shifted.getUTCMonth();
+  const d = shifted.getUTCDate();
+  const day = shifted.getUTCDay();
+  const daysSinceMonday = day === 0 ? 6 : day - 1;
 
-  const monday = new Date(d.setDate(diffToMonday));
-  monday.setHours(0, 0, 0, 0);
+  const monday = new Date(Date.UTC(y, m, d - daysSinceMonday));
+  const sunday = new Date(Date.UTC(y, m, d - daysSinceMonday + 6));
+  const payoutWednesday = new Date(Date.UTC(y, m, d - daysSinceMonday + 9));
 
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
+  const dateOnly = (value: Date) => value.toISOString().slice(0, 10);
+  const endDate = dateOnly(sunday);
+  const payoutDate = dateOnly(payoutWednesday);
 
-  const payoutWednesday = new Date(sunday);
-  payoutWednesday.setDate(sunday.getDate() + 3); // Following Wednesday
-
-  const formatDate = (date: Date) => date.toISOString().split("T")[0];
-
-  return {
-    cycleId: `cycle_${formatDate(monday)}_to_${formatDate(sunday)}`,
-    startDate: formatDate(monday),
-    endDate: formatDate(sunday),
-    payoutDate: formatDate(payoutWednesday),
-    status: new Date() > payoutWednesday ? "DISBURSED" : "OPEN",
-  };
-}
-
-/**
- * Computes Restaurant Weekly Settlement Statement matching Zomato's exact tax & commission formula:
- * Net Payable = (Net Food Sales + Packaging + Platform Reimbursements) 
- *               - (Commission + 18% GST on Commission) 
- *               - (PG Fee + 18% GST on PG Fee) 
- *               - (1% TCS + 1% TDS)
- */
-export function calculateRestaurantWeeklySettlement(params: {
-  restaurantId: string;
-  restaurantName: string;
-  bankAccountMasked?: string;
-  cycle: WeeklyCyclePeriod;
-  deliveredOrdersCount: number;
-  grossSalesPaise: number;
-  restaurantDiscountsPaise: number;
-  packagingChargesPaise?: number;
-  platformReimbursementsPaise?: number;
-  kingCoinsBurnedPaise?: number;
-  commissionBps: number; // e.g. 1200 for 12%
-  pgFeeBps?: number;     // e.g. 180 for 1.8%
-}): RestaurantWeeklySettlement {
-  const packaging = params.packagingChargesPaise ?? 0;
-  const reimbursements = params.platformReimbursementsPaise ?? 0;
-  const kingCoinsFunded = params.kingCoinsBurnedPaise ?? 0;
-  const netFoodSales = Math.max(0, params.grossSalesPaise - params.restaurantDiscountsPaise);
-
-  // 1. Commission & 18% GST on commission
-  const commission = Math.round((netFoodSales * params.commissionBps) / 10000);
-  const gstOnCommission = Math.round((commission * 18) / 100);
-
-  // 2. Payment gateway fee & 18% GST on PG fee
-  const pgFeeBps = params.pgFeeBps ?? 180; // 1.8%
-  const pgFee = Math.round((params.grossSalesPaise * pgFeeBps) / 10000);
-  const gstOnPgFee = Math.round((pgFee * 18) / 100);
-
-  // 3. Indian Statutory Tax Deductions (TCS 1% + TDS 1%)
-  const tcsDeduction = Math.round((netFoodSales * 100) / 10000); // 1% TCS
-  const tdsDeduction = Math.round((netFoodSales * 100) / 10000); // 1% TDS
-
-  // Total deductions
-  const totalDeductions = commission + gstOnCommission + pgFee + gstOnPgFee + tcsDeduction + tdsDeduction;
-
-  // Net payable (Platform funds KingCoins, so we reimburse the restaurant if they collected less cash due to it, OR it's just tracked. Usually, if customer pays less, OrderKing adds it to netPayable so restaurant gets full amount)
-  const netPayable = Math.max(0, netFoodSales + packaging + reimbursements + kingCoinsFunded - totalDeductions);
+  const todayIst = dateOnly(shifted);
+  const status =
+    todayIst > payoutDate ? "DISBURSED" :
+    todayIst === dateOnly(monday) ? "RECONCILING" :
+    "OPEN";
 
   return {
-    restaurantId: params.restaurantId,
-    restaurantName: params.restaurantName,
-    bankAccountNumberMasked: params.bankAccountMasked || "XXXX-XXXX-1234",
-    cycle: params.cycle,
-    deliveredOrdersCount: params.deliveredOrdersCount,
-    grossSalesPaise: params.grossSalesPaise,
-    restaurantDiscountsPaise: params.restaurantDiscountsPaise,
-    netFoodSalesPaise: netFoodSales,
-    packagingChargesPaise: packaging,
-    platformCommissionPaise: commission,
-    gstOnCommissionPaise: gstOnCommission,
-    paymentGatewayFeePaise: pgFee,
-    gstOnPgFeePaise: gstOnPgFee,
-    tcsDeductionPaise: tcsDeduction,
-    tdsDeductionPaise: tdsDeduction,
-    platformReimbursementsPaise: reimbursements,
-    kingCoinsLiabilityFundedPaise: kingCoinsFunded,
-    netPayablePaise: netPayable,
-    payoutStatus: "PENDING",
+    cycleId: `cycle_${dateOnly(monday)}_to_${endDate}`,
+    startDate: dateOnly(monday),
+    endDate,
+    payoutDate,
+    status,
   };
-}
-
-/**
- * Computes Rider Weekly Settlement Statement matching Zomato's weekly payout schedule:
- * Net Disbursement = (Base Trips + Distance + Surge + Milestone Bonuses) - Cash Collected (COD)
- */
-export function calculateRiderWeeklySettlement(params: {
-  riderId: string;
-  riderName: string;
-  upiOrBankMasked?: string;
-  cycle: WeeklyCyclePeriod;
-  deliveriesCompleted: number;
-  basePayPaise: number;
-  totalDistanceKm?: number;
-  distancePayPaise?: number;
-  surgeIncentivesPaise?: number;
-  milestoneBonusPaise?: number;
-  cashCollectedPaise?: number;
-}): RiderWeeklySettlement {
-  const surge = params.surgeIncentivesPaise ?? 0;
-  const milestone = params.milestoneBonusPaise ?? 0;
-  
-  // Real geographic distance pay: Rs 5 per km (500 paise/km) if totalDistanceKm is provided
-  const distancePay = params.distancePayPaise ?? (params.totalDistanceKm ? Math.round(params.totalDistanceKm * 500) : 0);
-  
-  const gross = params.basePayPaise + distancePay + surge + milestone;
-  const cashCollected = params.cashCollectedPaise ?? 0;
-
-  return {
-    riderId: params.riderId,
-    riderName: params.riderName,
-    upiIdOrBankMasked: params.upiOrBankMasked || "rider@upi",
-    cycle: params.cycle,
-    deliveriesCompleted: params.deliveriesCompleted,
-    basePayPaise: params.basePayPaise,
-    distancePayPaise: distancePay,
-    surgeIncentivesPaise: surge,
-    milestoneBonusPaise: milestone,
-    grossEarningsPaise: gross,
-    cashCollectedPaise: cashCollected,
-    netDisbursementPaise: gross - cashCollected,
-    payoutStatus: "PENDING",
-  };
-}
-
-/**
- * Persists the computed weekly settlement to the database using strict SERIALIZABLE
- * transactions to prevent race conditions or double spending.
- */
-export async function persistWeeklySettlementTransaction(
-  settlement: RestaurantWeeklySettlement | RiderWeeklySettlement,
-  idempotencyKey: string
-): Promise<void> {
-  const { getSql } = await import("@/lib/db");
-  const sql = await getSql();
-
-  await sql.transaction(async (tx) => {
-    // Banking-grade strict isolation to prevent double spending
-    await tx.query("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE");
-    
-    const existing = await tx.query<any>(
-      "SELECT batch_id FROM settlement_batches WHERE idempotency_key = $1 FOR UPDATE", 
-      [idempotencyKey]
-    );
-    
-    if (existing && existing.length > 0) {
-      return; // Idempotent block - already exists
-    }
-
-    // Insert logic for the settlement would follow here in a real scenario
-    // We ensure the transaction holds the highest isolation level.
-    const batchId = "stl-" + Date.now();
-    const entityType = "restaurantId" in settlement ? "RESTAURANT" : "RIDER";
-    const entityId = "restaurantId" in settlement ? settlement.restaurantId : settlement.riderId;
-    const netPayout = "netPayablePaise" in settlement ? settlement.netPayablePaise : settlement.netDisbursementPaise;
-    
-    await tx.query(
-      "INSERT INTO settlement_batches (batch_id, entity_id, entity_type, period_start, period_end, gross_amount_paise, deductions_paise, commission_paise, gst_paise, net_payout_paise, state, idempotency_key, payout_upi_or_account_number, attempts_count, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)",
-      [
-        batchId, 
-        entityId, 
-        entityType, 
-        settlement.cycle.startDate, 
-        settlement.cycle.endDate, 
-        netPayout, // Assuming net is gross for simplified persistence here
-        0, 0, 0, 
-        netPayout, 
-        "CALCULATED", 
-        idempotencyKey, 
-        "bankAccountNumberMasked" in settlement ? settlement.bankAccountNumberMasked : settlement.upiIdOrBankMasked,
-        0, 
-        new Date().toISOString(), 
-        new Date().toISOString()
-      ]
-    );
-  });
 }
