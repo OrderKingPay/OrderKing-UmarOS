@@ -5,6 +5,8 @@
 
 export interface VerifiedModelRecord {
   id: string;
+  /** Stable non-secret identifier used by UI lists. */
+  key: string;
   displayName: string;
   provider: "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus";
   realApiId: string;
@@ -98,6 +100,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
   const now = new Date().toISOString();
   const result: VerifiedModelRecord[] = providers.map((p) => ({
     id: p.id,
+    key: p.id,
     displayName: p.displayName,
     provider: p.provider,
     realApiId:
@@ -128,6 +131,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
   result.push(
     {
       id: "auto-supreme-orchestrator",
+      key: "auto-supreme-orchestrator",
       displayName: "Auto-Select Best Configured Provider",
       provider: "Orchestrator",
       realApiId: "dynamic-router-v1",
@@ -151,6 +155,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     },
     {
       id: "ensemble-consensus",
+      key: "ensemble-consensus",
       displayName: "Multi-Provider Consensus (real providers only)",
       provider: "Consensus",
       realApiId: "multi-provider-consensus-v1",
