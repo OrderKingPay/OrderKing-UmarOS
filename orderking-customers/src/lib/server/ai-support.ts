@@ -106,7 +106,7 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
           orderId: order.id,
           issueType: data.issueType,
           actionTaken: isExcessiveDelay ? "COMPENSATION_PENDING" : "AUTO_CANCELLED",
-          title: "Order Cancelled & 100% Refunded",
+          title: "Order Cancelled — Refund Processing",
           explanation,
           compensationPaise,
         };
@@ -126,7 +126,7 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
       // Create a support ticket. Compensation is not claimed until policy/payment verification completes.
       const ticketId = newId("tkt");
       const title = data.issueType === "missing_item" ? "Missing item claim" : "Spilled / Damaged item claim";
-      const compensationPaise = Math.min(order.total_paise, 10000); // Up to ₹100 instant relief credit
+      const compensationPaise: number | undefined = undefined; // No credit is claimed until policy/provider verification completes.
 
       await sql`
         insert into support_tickets (id, user_id, order_id, topic, message, status)
