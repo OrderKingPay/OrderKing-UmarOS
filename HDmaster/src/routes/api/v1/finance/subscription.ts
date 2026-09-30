@@ -1,11 +1,10 @@
-import { Request, Response } from "express";
+import { createFileRoute } from "@tanstack/react-router";
 
-/**
- * King Pass subscription contract.
- * The SQL migration is retained for the eventual live database migration.
- * Activation is intentionally blocked until the real database + payment
- * entitlement flow is connected and verified.
- */
+const PLANS = {
+  KING_PASS_MONTHLY: { pricePaise: 19900, durationMonths: 1 },
+  KING_PASS_YEARLY: { pricePaise: 199900, durationMonths: 12 },
+} as const;
+
 export const subscriptionMigrationQuery = `
   CREATE TABLE IF NOT EXISTS customer_subscriptions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -17,31 +16,34 @@ export const subscriptionMigrationQuery = `
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
   );
-
   CREATE INDEX IF NOT EXISTS idx_cust_subs_customer_id ON customer_subscriptions(customer_id);
   CREATE INDEX IF NOT EXISTS idx_cust_subs_status_valid ON customer_subscriptions(status, valid_until);
 `;
 
-const PLANS = {
-  KING_PASS_MONTHLY: { pricePaise: 19900, durationMonths: 1 },
-  KING_PASS_YEARLY: { pricePaise: 199900, durationMonths: 12 },
-} as const;
-
-export class SubscriptionController {
-  public static async subscribe(_req: Request, res: Response) {
-    return res.status(503).json({
+export const SubscriptionController = {
+  async subscribe() {
+    return {
       success: false,
       status: "PROVIDER_REQUIRED",
       message: "King Pass activation is blocked until the live database entitlement writer and verified payment/webhook flow are connected.",
       availablePlans: Object.keys(PLANS),
-    });
-  }
-
-  public static async getSubscription(_req: Request, res: Response) {
-    return res.status(503).json({
+    };
+  },
+  async getSubscription() {
+    return {
       success: false,
       status: "DATABASE_REQUIRED",
       message: "Subscription status is not reported until the live database entitlement reader is connected.",
-    });
-  }
-}
+    };
+  },
+};
+
+export const Route = createFileRoute("/api/v1/finance/subscription")({
+  // @ts-expect-error
+  server: {
+    handlers: {
+      POST: async () => Response.json(await SubscriptionController.subscribe(), { status: 503 }),
+      GET: async () => Response.json(await SubscriptionController.getSubscription(), { status: 503 }),
+    },
+  },
+});
