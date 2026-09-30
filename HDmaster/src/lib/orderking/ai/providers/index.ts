@@ -49,30 +49,30 @@ export class ModelRouterService {
     return [
       {
         id: "gemini",
-        name: "Google Gemini 2.0 / 2.5",
+        name: "Google Gemini",
         isConfigured: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
-        supportedModels: ["gemini-2.0-flash", "gemini-2.5-pro"],
+        supportedModels: process.env.GEMINI_MODEL?.trim() ? [process.env.GEMINI_MODEL.trim()] : [],
         requiredEnvVar: "GEMINI_API_KEY",
       },
       {
         id: "anthropic",
-        name: "Anthropic Claude 3.7",
+        name: "Anthropic Claude",
         isConfigured: Boolean(process.env.ANTHROPIC_API_KEY),
-        supportedModels: ["claude-3-7-sonnet", "claude-3-5-sonnet"],
+        supportedModels: process.env.ANTHROPIC_MODEL?.trim() ? [process.env.ANTHROPIC_MODEL.trim()] : [],
         requiredEnvVar: "ANTHROPIC_API_KEY",
       },
       {
         id: "openai",
-        name: "OpenAI GPT-6.1",
+        name: "OpenAI",
         isConfigured: Boolean(process.env.OPENAI_API_KEY),
-        supportedModels: ["gpt-6.1-sol", "gpt-6-astra", "gpt-6-sol", "gpt-6-luna"],
+        supportedModels: process.env.OPENAI_MODEL?.trim() ? [process.env.OPENAI_MODEL.trim()] : [],
         requiredEnvVar: "OPENAI_API_KEY",
       },
       {
         id: "xai",
-        name: "xAI Grok 3 / 2",
+        name: "xAI Grok",
         isConfigured: Boolean(process.env.XAI_API_KEY),
-        supportedModels: ["grok-3", "grok-2"],
+        supportedModels: process.env.XAI_MODEL?.trim() ? [process.env.XAI_MODEL.trim()] : [],
         requiredEnvVar: "XAI_API_KEY",
       }
     ];
