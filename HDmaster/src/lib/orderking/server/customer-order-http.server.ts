@@ -108,7 +108,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
           `;
           await tx`
             INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
-            VALUES (${walletTransactionId}, ${input.customerRef}, ${input.totalPaise}, "DEBIT", ${"Order payment " + orderId})
+            VALUES (${walletTransactionId}, ${input.customerRef}, ${input.totalPaise}, 'DEBIT', ${"Order payment " + orderId})
           `;
         }
       }
@@ -121,9 +121,9 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
           delivery_address_json, delivery_lat, delivery_lng, delivery_otp
         ) VALUES (
           ${orderId}, ${ws.ctx.orgId}, ${input.cityId}, ${input.zoneId}, ${input.restaurantId}, ${customerId},
-          "PENDING", ${paymentStatus}, ${input.paymentMethod}, ${input.foodPaise}, ${input.restaurantDiscountPaise},
+          'PENDING', ${paymentStatus}, ${input.paymentMethod}, ${input.foodPaise}, ${input.restaurantDiscountPaise},
           ${input.platformDiscountPaise}, ${input.deliveryFeePaise}, ${input.serviceFeePaise}, ${input.taxPaise},
-          ${input.totalPaise}, ${input.commissionPaise}, now()+interval "45 minutes", now(), ${ws.dataMode},
+          ${input.totalPaise}, ${input.commissionPaise}, now()+interval '45 minutes', now(), ${ws.dataMode},
           ${JSON.stringify(input.address)}, ${input.address.lat ?? null}, ${input.address.lng ?? null}, ${randomInt(1000, 10000).toString()}
         )
       `;
@@ -133,7 +133,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
       `;
       await tx`
         INSERT INTO order_events (id, org_id, order_id, actor_employee_id, from_status, to_status, action, note)
-        VALUES (${nid("ev")}, ${ws.ctx.orgId}, ${orderId}, ${ws.ctx.employeeId}, null, "PENDING", "customer.order_created",
+        VALUES (${nid("ev")}, ${ws.ctx.orgId}, ${orderId}, ${ws.ctx.employeeId}, null, 'PENDING', 'customer.order_created',
           ${JSON.stringify({ customerRef: input.customerRef, address: input.address, notes: input.notes ?? null })})
       `;
       const paymentProvider = input.paymentMethod === "COD" ? "COD" : "KING_PAY";
@@ -141,7 +141,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
       await tx`
         INSERT INTO payments (id, order_id, provider, status, amount_paise, currency, idempotency_key, raw_payload)
         VALUES (${nid("pay")}, ${orderId}, ${paymentProvider}, ${input.paymentMethod === "COD" ? "pending" : "wallet_paid"},
-          ${input.totalPaise}, "INR", ${idempotencyKey + ":pay"}, ${paymentRawPayload})
+          ${input.totalPaise}, 'INR', ${idempotencyKey + ":pay"}, ${paymentRawPayload})
       `;
       if (built.promo) await tx`
         INSERT INTO promotion_redemptions (id, promotion_id, user_id, order_id)
@@ -150,13 +150,13 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
       const points = Math.floor(built.result.quote.foodSubtotalPaise / 10000);
       await tx`
         INSERT INTO loyalty_accounts (user_id, points, lifetime_points, tier)
-        VALUES (${context.userId}, ${points}, ${points}, "starter")
+        VALUES (${context.userId}, ${points}, ${points}, 'starter')
         ON CONFLICT (user_id) DO UPDATE SET points = loyalty_accounts.points + ${points},
           lifetime_points = loyalty_accounts.lifetime_points + ${points}, updated_at = now()
       `;
       await tx`
         INSERT INTO loyalty_transactions (id, user_id, order_id, delta, reason)
-        VALUES (${newId("loy")}, ${context.userId}, ${orderId}, ${points}, "order_placed")
+        VALUES (${newId("loy")}, ${context.userId}, ${orderId}, ${points}, 'order_placed')
       `;
       return { orderId, status: "PENDING", paymentStatus, totalPaise: input.totalPaise, dataMode: ws.dataMode };
     });
