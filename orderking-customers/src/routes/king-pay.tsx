@@ -22,7 +22,17 @@ import { PaidRestaurantAdZone } from "@/components/market/paid-restaurant-ad-zon
 import { KingPayFinanceSearch } from "@/components/fintech/kingpay-finance-search";
 import { isDeliveryActiveInLocation, getCityWaitlistInfo } from "@/lib/geo/geofence-guard";
 
-export const Route = createFileRoute('/king-pay')({ component: KingPayPage, head: () => ({ meta: [{ property: 'og:title', content: '👑 King Pay - Zero Credit Score, 100% Approval. Earn 7.5% Interest.' }, { property: 'og:description', content: 'The #1 FinTech App in India. Send money, pay bills, and get instant loans.' }, { name: 'twitter:title', content: '👑 King Pay - Zero Credit Score, 100% Approval.' }, { name: 'twitter:description', content: 'The #1 FinTech App in India.' }] }) });
+export const Route = createFileRoute("/king-pay")({
+  component: KingPayPage,
+  head: () => ({
+    meta: [
+      { property: "og:title", content: "👑 King Pay - Payments & Everyday Services" },
+      { property: "og:description", content: "King Pay wallet, payments and partner services with verified provider status." },
+      { name: "twitter:title", content: "👑 King Pay - Payments & Everyday Services" },
+      { name: "twitter:description", content: "Provider-verified payment and service status." },
+    ],
+  }),
+});
 
 type UtilityService = {
   id: string;
@@ -43,9 +53,9 @@ const UTILITY_SERVICES: UtilityService[] = [
     category: "fuel",
     icon: "⛽",
     description: "Hindustan Petroleum (HPCL) digital fuel voucher for petrol & diesel",
-    badge: "2% Cashback",
+    badge: "Provider rewards",
     affiliateUrl: "https://www.hindustanpetroleum.com/hppay?utm_source=orderking_affiliate",
-    cashbackText: "Earn 2% King Coins + 1% fuel surcharge waiver",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "iocl_fuel_voucher",
@@ -55,7 +65,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "Instant QR/barcode redeemable at all IndianOil (IOCL) petrol pumps",
     badge: "Instant QR",
     affiliateUrl: "https://www.iocl.com/indianoil-one?utm_source=orderking_affiliate",
-    cashbackText: "Flat 2% instant discount voucher + XTRAREWARDS",
+    cashbackText: "Provider-defined voucher/rewards",
   },
   {
     id: "bpcl_fuel_voucher",
@@ -65,7 +75,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "Bharat Petroleum digital fuel credits with zero transaction fee",
     badge: "Zero Fee",
     affiliateUrl: "https://www.bharatpetroleum.in/smartdrive?utm_source=orderking_affiliate",
-    cashbackText: "Up to ₹100 cashback on min ₹1,000 fuel refill",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "fastag_fuel_pay",
@@ -75,7 +85,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "Contactless fuel payment via NETC FASTag at partner HPCL & IOCL highway pumps",
     badge: "Contactless",
     affiliateUrl: "https://paytm.com/fastag-recharge?utm_source=orderking_affiliate",
-    cashbackText: "1% highway fuel cashback credited to wallet",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "mob_recharge",
@@ -83,9 +93,9 @@ const UTILITY_SERVICES: UtilityService[] = [
     category: "recharge",
     icon: "📱",
     description: "Jio, Airtel, Vi & BSNL instant prepaid recharge",
-    badge: "2% Cashback",
+    badge: "Provider rewards",
     affiliateUrl: "https://paytm.com/recharge?utm_source=orderking_affiliate",
-    cashbackText: "Earn up to ₹25 King Coins on every recharge",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "dth_recharge",
@@ -95,7 +105,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "Tata Play, Airtel DTH, Dish TV & Sun Direct",
     badge: "Instant Top-up",
     affiliateUrl: "https://paytm.com/dth-recharge?utm_source=orderking_affiliate",
-    cashbackText: "Flat ₹20 bonus King Coins",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "lpg_cylinder",
@@ -105,7 +115,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "Book Indane (IndianOil), HP Gas & Bharat Gas cylinder",
     badge: "Top Utility",
     affiliateUrl: "https://iocl.com/pages/indane-gas-online-booking?utm_source=orderking_affiliate",
-    cashbackText: "Guaranteed ₹50 HP/IndianOil fuel cashback voucher",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "electricity_bill",
@@ -115,7 +125,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "APDCL (Assam Power) & state electricity boards",
     badge: "BBPS Verified",
     affiliateUrl: "https://www.apdcl.org?utm_source=orderking_affiliate",
-    cashbackText: "Earn 100 King Coins on timely bill payment",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "train_tickets",
@@ -123,9 +133,9 @@ const UTILITY_SERVICES: UtilityService[] = [
     category: "travel",
     icon: "🚆",
     description: "ConfirmTkt & IRCTC authorized train seat booking",
-    badge: "Zero PG Fee",
+    badge: "Provider-defined fees",
     affiliateUrl: "https://www.confirmtkt.com?utm_source=orderking_affiliate",
-    cashbackText: "Zero payment gateway charges via KingPay",
+    cashbackText: "Provider-defined payment fees",
   },
   {
     id: "bus_tickets",
@@ -133,7 +143,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     category: "travel",
     icon: "🚌",
     description: "Intercity AC & sleeper bus booking across Assam & NE",
-    badge: "Up to ₹150 OFF",
+    badge: "Provider-defined offer",
     affiliateUrl: "https://www.redbus.in?utm_source=orderking_affiliate",
     cashbackText: "Flat 10% instant discount with code REDKING",
   },
@@ -143,9 +153,9 @@ const UTILITY_SERVICES: UtilityService[] = [
     category: "travel",
     icon: "✈️",
     description: "Domestic flights from Silchar, Guwahati & Kolkata",
-    badge: "MakeMyTrip Partner",
+    badge: "External partner link",
     affiliateUrl: "https://www.makemytrip.com/flights?utm_source=orderking_affiliate",
-    cashbackText: "Earn up to ₹500 flight cashback",
+    cashbackText: "Provider-defined travel rewards",
   },
   {
     id: "fastag_recharge",
@@ -1479,7 +1489,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {showAddMoney && (
           <form onSubmit={handleAddMoney} className="rounded-xl border border-primary/30 bg-surface/90 p-3 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-semibold text-fg">Enter amount to add via UPI (Zero PG Fee):</p>
+              <p className="text-xs font-semibold text-fg">Enter amount to add via UPI (Provider-defined fees):</p>
               <button
                 type="button"
                 onClick={() => setShowAddMoney(false)}
