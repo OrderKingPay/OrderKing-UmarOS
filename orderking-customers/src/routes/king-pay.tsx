@@ -2477,28 +2477,28 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           </div>
 
           <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {[
-              { bank: "State Bank of India", acct: "****3912", bal: "₹34,200.00", icon: "🏛️" },
-              { bank: "HDFC Bank", acct: "****7741", bal: "₹52,450.00", icon: "🏢" },
-              { bank: "Assam Gramin Vikash", acct: "****8820", bal: "₹18,900.00", icon: "🌾" },
-            ].map((b) => (
-              <div key={b.acct} className="rounded-lg border border-border bg-surface-2/40 p-2.5 flex items-center justify-between">
+            {linkedBanks.length === 0 ? (
+              <div className="rounded-lg border border-border bg-surface-2/40 p-3 text-xs text-muted">
+                No bank account is linked in this deployment. Connect a verified bank/UPI provider to display live accounts and balances.
+              </div>
+            ) : linkedBanks.map((b) => (
+              <div key={b.id} className="rounded-lg border border-border bg-surface-2/40 p-2.5 flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-1.5">
                     <span>{b.icon}</span>
-                    <span className="text-xs font-bold text-fg">{b.bank}</span>
+                    <span className="text-xs font-bold text-fg">{b.bankName}</span>
                   </div>
-                  <p className="text-[11px] text-muted font-mono">{b.acct}</p>
+                  <p className="text-[11px] text-muted font-mono">{b.accountNumberMasked}</p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => toast.info(`${b.bank} (${b.acct}) Balance: ${b.bal}`)}
+                  onClick={() => { setSelectedBankForBalance(b); setShowCheckBalanceModal(true); }}
                   className="rounded border border-border bg-surface px-2 py-1 text-[10px] font-bold text-primary hover:bg-surface-2 transition"
                 >
                   Check Bal
                 </button>
               </div>
-            ))}
+            ))
           </div>
         </div>
 
