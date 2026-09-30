@@ -1,3 +1,4 @@
+
 export function assertAppDataServerOnly(
   context = "app-data/client.server",
 ): void {

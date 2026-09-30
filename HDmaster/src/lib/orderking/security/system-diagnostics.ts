@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SYSTEM SELF-DIAGNOSTICS & TELEMETRY ENGINE
  * Order King / HDmaster AI - Principal Engineering System

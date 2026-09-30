@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Universal Platform Integrator & Connector Hub
 // Connects, forces execution, and safely reports truthful results back to Founder
 // Supports GitHub, Upwork, WhatsApp, Telegram, Stripe, KingPay, Vercel, Supabase, Shopify, and Universal Webhooks

@@ -62,9 +62,8 @@ export async function handleAuthPopupRequest(request: Request): Promise<Response
   // Stay first-party for the callback so the session cookie lands in THIS popup.
   const back = `${url.origin}/auth/popup?done=1`;
   try {
-    const apiRes = await auth.api.signInWithOAuth2({
-      body: {
-        providerId,
+    const apiRes = await auth.api.signInSocial({
+      body: { provider: providerId,
         callbackURL: back,
         errorCallbackURL: `${back}&error=1`,
       },

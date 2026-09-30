@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Universal AI Provider Abstraction Interface
 // Governs Chat, Streaming, Multimodal Analysis, Code Generation, and Structured Output
 

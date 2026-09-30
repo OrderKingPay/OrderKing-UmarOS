@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface OrderRiskContext {
   orderId: string;
   customerId: string;

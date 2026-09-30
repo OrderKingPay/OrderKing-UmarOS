@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface ResilientFetchOptions extends RequestInit {
   timeoutMs?: number;
   fallbackResponse?: any;

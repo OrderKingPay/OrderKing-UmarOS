@@ -53,7 +53,7 @@ function RiskPage() {
           </tr>
         </thead>
         <tbody>
-          {(q.data?.rows ?? []).map((r) => (
+          {(q.data?.rows ?? []).map((r: any) => (
             <tr key={String(r.id)}>
               <Td>{String(r.signal_type)}</Td>
               <Td className="tabular-nums">{String(r.score)}</Td>

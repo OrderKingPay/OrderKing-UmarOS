@@ -30,7 +30,7 @@ function AnalyticsPage() {
       </select>
       <p className="mb-3 text-xs text-subtle">{q.data?.period} · SIMULATED DATA</p>
       <div className="mb-6 grid gap-3 sm:grid-cols-3">
-        {(q.data?.customers ?? []).map((c) => (
+        {(q.data?.customers ?? []).map((c: any) => (
           <Kpi key={c.status} label={`Customers ${c.status}`} value={String(c.n)} />
         ))}
       </div>
@@ -44,7 +44,7 @@ function AnalyticsPage() {
           </tr>
         </thead>
         <tbody>
-          {(q.data?.restaurants ?? []).map((r) => (
+          {(q.data?.restaurants ?? []).map((r: any) => (
             <tr key={r.id}>
               <Td>{r.name}</Td>
               <Td>{r.orders}</Td>

@@ -1,3 +1,4 @@
+
 /**
  * HDmaster Founder AI — Continuous Dependency Inspector & Discovery (§27, §30)
  *

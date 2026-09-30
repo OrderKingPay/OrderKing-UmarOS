@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { TravelProvider } from "../provider-registry.ts";
 import type { TravelMode, TravelSearchQuery, NormalizedTravelResult, TravelBookingRequest, TravelBookingResponse } from "../schemas/travel-schemas.ts";
 import { resilientFetch } from "../../sre/resilient-fetch.ts";

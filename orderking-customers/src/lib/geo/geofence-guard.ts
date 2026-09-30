@@ -1,3 +1,4 @@
+
 // 1,000x Strict Geofencing & Sovereign Territory Guard for Order King & King Pay
 // Enforces mandatory rule: Order King FOODS only appears where delivery is strictly active.
 // Everywhere else across India, users ONLY see and experience King Pay.

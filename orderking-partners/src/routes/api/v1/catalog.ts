@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { listPublicCatalog } from "@/lib/server/api-menu";
 

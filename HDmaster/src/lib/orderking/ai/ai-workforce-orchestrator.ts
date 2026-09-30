@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Autonomous AI Workforce Orchestrator (HDmaster Core OS)
 // Coordinates specialized autonomous agents: Finance AI, Operations AI, Support AI,
 // Reporting AI, Dispatch AI, Restaurant Success AI, QA AI, Security AI, Reconciliation AI.

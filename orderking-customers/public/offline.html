@@ -1,28 +1,55 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Offline</title>
-    <style>
-      body {
-        margin: 0;
-        min-height: 100dvh;
-        display: grid;
-        place-items: center;
-        font-family: system-ui, sans-serif;
-        background: #f4f1ea;
-        color: #171614;
-        padding: 24px;
-      }
-      main { max-width: 22rem; text-align: center; }
-      p { line-height: 1.5; color: #6b6560; }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1>You're offline</h1>
-      <p>Reconnect to browse kitchens and place an order. Saved cart items stay on this device.</p>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrderKing - Offline</title>
+  <style>
+    body {
+      background-color: #07130F;
+      color: #F8FAFC;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      padding: 20px;
+    }
+    .icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    .title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #F59E0B; /* Amber 500 */
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #94A3B8;
+      max-width: 300px;
+    }
+    .btn {
+      margin-top: 24px;
+      background-color: #F59E0B;
+      color: #000;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn:active { background-color: #D97706; }
+  </style>
+</head>
+<body>
+  <div class="icon">🛰️</div>
+  <div class="title">You are offline.</div>
+  <div class="subtitle">Don't worry! OrderKing's Starlink engine has saved your app data. We will automatically reconnect you soon.</div>
+  <button class="btn" onclick="window.location.reload()">Retry Connection</button>
+</body>
 </html>

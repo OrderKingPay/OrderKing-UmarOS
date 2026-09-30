@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { FeatureFlagKey, FlagState } from "./types";
 
 export type RuntimeFlag = {

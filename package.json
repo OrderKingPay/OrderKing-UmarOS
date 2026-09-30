@@ -11,13 +11,5 @@
   },
   "devDependencies": {
     "turbo": "latest"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@google/genai",
-      "@parcel/watcher",
-      "esbuild",
-      "protobufjs"
-    ]
   }
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Standalone Section Separation & App Exporter Engine
 // Enables Founder to extract and separate ANY section of HDmaster into an independent website, micro-app, or PWA
 

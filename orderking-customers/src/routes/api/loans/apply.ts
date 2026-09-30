@@ -1,10 +1,12 @@
+
+// @ts-ignore
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 
 
 
 // Mock NBFC API endpoint (e.g. FlexiLoans, Navi, Paisabazaar underwriting)
 export const APIRoute = createAPIFileRoute('/api/loans/apply')({
-  POST: async () => {
+  POST: async ({ request }: any) => {
   try {
     const body = await request.json();
     const { panNumber, requestedAmount, income } = body;

@@ -1,3 +1,4 @@
+
 /**
  * Self-hosted Better Auth for THIS app (server-only).
  *

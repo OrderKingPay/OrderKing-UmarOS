@@ -1,3 +1,4 @@
+
 // HDmaster Founder AI — Opportunity Hunter & Prioritization Engine
 // Implements Directive §3 (Opportunity Hunter), §4 (Prioritization), & §29 (Minimum-Friction Revenue Path)
 

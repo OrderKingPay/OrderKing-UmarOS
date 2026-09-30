@@ -1,3 +1,4 @@
+
 // High-Precision Automatic Indian Language Detector & Unreadable Input Handler
 
 export function detectLanguage(text: string, defaultCode: string = "en"): string {

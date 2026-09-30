@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
 import { toast } from "sonner";

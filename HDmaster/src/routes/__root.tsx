@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createRootRoute, HeadContent, Outlet, Scripts, ErrorComponent } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";

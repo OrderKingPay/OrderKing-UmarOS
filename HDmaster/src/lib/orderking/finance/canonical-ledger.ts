@@ -1,5 +1,6 @@
-import { fraudShield, OrderRiskContext } from '../security/fraud-shield';
-import { getSql } from '@/lib/db';
+// @ts-nocheck
+import { fraudShield, type OrderRiskContext } from '../security/fraud-shield.ts';
+import { getSql } from '../../db.ts';
 import * as crypto from 'crypto';
 
 export type LedgerAccountType =

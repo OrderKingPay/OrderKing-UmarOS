@@ -1,3 +1,4 @@
+
 import { Link } from "@tanstack/react-router";
 import { Clock3, Leaf } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

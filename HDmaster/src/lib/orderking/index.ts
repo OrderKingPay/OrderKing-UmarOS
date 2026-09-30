@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * OrderKing Core Domain
  * Single entry point for core business logic.

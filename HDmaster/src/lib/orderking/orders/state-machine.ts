@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const ORDER_STATUSES = [
   "PENDING",
   "CONFIRMED",

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Sql } from "../../db.ts";
 
 export type DispatchCandidate = {

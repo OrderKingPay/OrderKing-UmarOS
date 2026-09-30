@@ -19,7 +19,7 @@ function Page() {
   const load = useCallback(() => {
     void getDeliveryFn({ data: { deliveryId: id } })
       .then(setPack)
-      .catch((e) => setError(errorMessage(e, t("forbidden"))));
+      .catch((e: any) => setError(errorMessage(e, t("forbidden"))));
   }, [id, t]);
 
   useEffect(() => {

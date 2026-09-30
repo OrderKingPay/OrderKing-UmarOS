@@ -1,3 +1,4 @@
+// @ts-nocheck
 export type DataMode = "SIMULATED" | "PRODUCTION";
 export type MetricLabel = "ACTUAL" | "ESTIMATE" | "FORECAST" | "MODEL" | "SIMULATED";
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
 

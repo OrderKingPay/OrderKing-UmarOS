@@ -1,3 +1,4 @@
+
 import { getSql } from "@/lib/db";
 import { newId } from "@/lib/ids";
 import { loadConfig } from "@/lib/server/load-config";

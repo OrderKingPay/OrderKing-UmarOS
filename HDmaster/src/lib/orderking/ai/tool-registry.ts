@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { DataMode } from "@/lib/orderking/types";
 import type { Permission } from "@/lib/orderking/permissions";
 

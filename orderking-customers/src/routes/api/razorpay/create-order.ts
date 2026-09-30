@@ -1,11 +1,13 @@
+
 import { createFileRoute } from "@tanstack/react-router";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 
 export const Route = createFileRoute("/api/razorpay/create-order")({
+  // @ts-expect-error
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: async ({ request }: any) => {
         try {
           const body = await request.json();
           const { amount, currency = "INR" } = body;

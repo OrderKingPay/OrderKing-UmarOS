@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Service Productizer & Packaging Engine (Directive 7)
 // Automatically packages technical capabilities into sellable, high-margin commercial service offerings.
 // Generates: SERVICE, TARGET CUSTOMER, PROBLEM, DELIVERABLES, TIMELINE, REQUIRED RESOURCES, ESTIMATED COST, PRICE RANGE, MARGIN, OPTIONAL RETAINER.

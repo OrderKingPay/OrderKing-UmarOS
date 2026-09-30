@@ -1,3 +1,4 @@
+
 import { createFileRoute } from "@tanstack/react-router";
 import { LiveTrackingMap } from "@/components/tracking/live-tracking-map";
 import { ArrowLeft } from "lucide-react";

@@ -1,3 +1,4 @@
+
 // Umar OS: Autonomous Frontier Model Updater & Registry Engine
 // Tracks, verifies, and manages frontier AI model releases (GPT-4o, Claude 3.7 Sonnet, Grok 2, Gemini 2.0 Flash)
 // Guarantees Umar OS always routes to the highest capability verified models.

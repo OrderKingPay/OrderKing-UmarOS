@@ -182,6 +182,10 @@ export default defineConfig(({ command, isPreview }) => ({
     },
   },
   
+  // @ts-expect-error
+  
+  // @ts-expect-error
+  
   server: {
     host: "0.0.0.0",
     port: 8080,

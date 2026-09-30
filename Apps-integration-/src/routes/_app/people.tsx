@@ -69,7 +69,7 @@ function PeoplePage() {
             <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
             <Input placeholder="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             <select className="h-10 rounded-sm border border-border bg-elevated px-2 text-sm" value={roleSlug} onChange={(e) => setRoleSlug(e.target.value)}>
-              {ROLE_CATALOG.filter((r) => r.slug !== "ceo").map((r) => (
+              {ROLE_CATALOG.filter((r: any) => r.slug !== "ceo").map((r: any) => (
                 <option key={r.slug} value={r.slug}>
                   {r.name}
                 </option>

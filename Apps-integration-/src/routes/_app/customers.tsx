@@ -59,7 +59,7 @@ function CustomersPage() {
           </tr>
         </thead>
         <tbody>
-          {(list.data?.rows ?? []).map((c) => (
+          {(list.data?.rows ?? []).map((c: any) => (
             <tr key={String(c.id)}>
               <Td>
                 {String(c.display_name)}

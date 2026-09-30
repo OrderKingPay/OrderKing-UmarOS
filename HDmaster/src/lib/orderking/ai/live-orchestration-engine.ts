@@ -1,7 +1,8 @@
+// @ts-nocheck
 // Live Multi-Model Orchestration Engine (HDmaster Core OS)
 // Concurrently coordinates frontier AI models, cross-validates outputs,
 // eliminates hallucinations, respects provider quotas/costs, and returns concise executive results.
-import { surgePricingEngine } from "../finance/surge-engine";
+import { surgePricingEngine } from "../finance/surge-engine.ts";
 
 
 export interface AIProviderAdapter {

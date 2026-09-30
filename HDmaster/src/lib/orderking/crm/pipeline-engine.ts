@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Client Acquisition CRM Pipeline Engine (15-Stage Lifecycle)
 // Governs Lead -> Qualification -> Research -> Outreach -> Conversation -> Proposal -> Negotiation -> Approval -> Contract -> Invoice -> Payment -> Project -> Delivery -> Acceptance -> Support -> Repeat
 

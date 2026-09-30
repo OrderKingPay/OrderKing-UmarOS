@@ -1,3 +1,4 @@
+
 /**
  * HDmaster Founder AI — Business Intelligence Engine (§15)
  *

@@ -1,3 +1,4 @@
+
 export type DataLabel = "SIMULATED" | "VERIFIED" | "REAL";
 
 export type BrandConfig = {

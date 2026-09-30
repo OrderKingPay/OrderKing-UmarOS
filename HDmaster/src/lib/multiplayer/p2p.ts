@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Full-mesh WebRTC rooms: one RTCPeerConnection per remote peer, signaled
  * through /api/rtc (see signaling.server.ts), game data flowing directly

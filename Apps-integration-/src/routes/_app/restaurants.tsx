@@ -59,7 +59,7 @@ function RestaurantsPage() {
           </tr>
         </thead>
         <tbody>
-          {(list.data?.rows ?? []).map((r) => (
+          {(list.data?.rows ?? []).map((r: any) => (
             <tr key={String(r.id)}>
               <Td>
                 <div className="font-medium">{String(r.name)}</div>

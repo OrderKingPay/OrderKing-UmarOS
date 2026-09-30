@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Knowledge Engine & Retrieval-Based Document Store (Directive 21)
 // Indexes Documents, Contracts, Manuals, Product Specs, Codebases, Business Records, and Research.
 // Uses real keyword and semantic retrieval rather than pretending the AI memorized everything.

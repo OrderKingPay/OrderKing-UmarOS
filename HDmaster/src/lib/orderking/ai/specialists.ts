@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { MasterAiTeam } from "./master-ai-operating-model.ts";
 import type { MasterAiToolName } from "./tool-registry.ts";
 

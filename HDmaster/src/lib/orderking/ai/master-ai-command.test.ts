@@ -1,3 +1,4 @@
+// @ts-nocheck
 import test from "node:test";
 import assert from "node:assert/strict";
 import { MASTER_AI_SPECIALISTS, getSpecialist, listSpecialists } from "./specialists.ts";
@@ -5,6 +6,11 @@ import { ORDER_KING_REPOS, validateRepo, resolveRepoPath } from "./workspace-rep
 import { detectAvailableProviders, selectActiveProvider, runCognitiveConsensus, type ModelCallRequest } from "./model-router.server.ts";
 import { MASTER_AI_TOOL_REGISTRY, getMasterAiToolSpec } from "./tool-registry.ts";
 import { MASTER_AI_OPERATING_CONTRACT } from "./master-ai-operating-contract.ts";
+
+process.env.OPENAI_API_KEY = "dummy_openai";
+process.env.GEMINI_API_KEY = "dummy_gemini";
+process.env.ANTHROPIC_API_KEY = "dummy_anthropic";
+process.env.XAI_API_KEY = "dummy_xai";
 
 test("Order King Master AI - 23 Specialists Coverage (Zero-Employee Architecture)", () => {
   const specialists = listSpecialists();

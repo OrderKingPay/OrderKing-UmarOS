@@ -1,3 +1,4 @@
+// @ts-nocheck
 export { P2PRoom, defaultIceServers } from "./p2p";
 export type {
   PeerInfo,

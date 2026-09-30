@@ -1,4 +1,6 @@
-﻿// @ts-nocheck
+// @ts-nocheck
+
+﻿
 // Umar Supreme Founder AI Executive Intelligence & Core Dispatcher (Umar OS)
 // Governs Multi-Model Ensemble Consensus, 1-Command Live Deploy, 500+ Platforms & Zero Identity Leakage
 
@@ -873,20 +875,20 @@ export function parseFounderQuery(query: string, founderUpiVpa: string = "orderk
     
     // Simulate resolving a dispute
     const disputeResolution = operationsEngine.resolveDispute("USER_456", 85, "LATE_DELIVERY", 800, 60);
-    const disputeId = disputeResolution.disputeId;
+    const disputeId = disputeResolution!.disputeId;
     
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Scanning Merchant Ledger & SLAs", status: "COMPLETED", detail: "Checking compliance across all Zomato/OrderKing SLA thresholds." },
-      { stepNumber: 2, totalSteps: 4, label: "Diagnosing Payout & Taxation", status: "COMPLETED", detail: `Calculated GST/TDS offsets. Next Cycle: ₹${analysis.netSettlementInr}` },
-      { stepNumber: 3, totalSteps: 4, label: "Evaluating Open Disputes", status: "COMPLETED", detail: `Resolved internal dispute ${disputeId} with ${disputeResolution.action}` },
+      { stepNumber: 2, totalSteps: 4, label: "Diagnosing Payout & Taxation", status: "COMPLETED", detail: `Calculated GST/TDS offsets. Next Cycle: ₹${analysis!.netSettlementInr}` },
+      { stepNumber: 3, totalSteps: 4, label: "Evaluating Open Disputes", status: "COMPLETED", detail: `Resolved internal dispute ${disputeId} with ${disputeResolution!.action}` },
       { stepNumber: 4, totalSteps: 4, label: "Generating Final Executive Report", status: "COMPLETED", detail: "10x deeper than standard Zomato Partner portals." },
     ];
     
     const responseMarkdown = `### 🏢 Autonomous Operations Diagnostics (Zomato-Level Ops)
-- **Target Merchant**: ${analysis.merchantId}
+- **Target Merchant**: ${analysis!.merchantId}
 - **Status**: ✅ Compliant
-- **Upcoming Payout**: **₹${analysis.netSettlementInr}** (Gross: ₹${analysis.grossSalesInr})
-- **Dispute Auto-Resolution**: ${disputeResolution.action} (Penalty: ₹${disputeResolution.compensationAmountInr})
+- **Upcoming Payout**: **₹${analysis!.netSettlementInr}** (Gross: ₹${analysis!.grossSalesInr})
+- **Dispute Auto-Resolution**: ${disputeResolution!.action} (Penalty: ₹${disputeResolution!.compensationAmountInr})
 
 > [!IMPORTANT]
 > **🤖 Supreme AI Operator Executed**: Your autonomous AI support fleet has audited this merchant's metrics and processed dispute logic with 100% human replacement accuracy. Founder liability remains 0%.
@@ -935,16 +937,16 @@ Use this engine for real-time compliance checks without needing human operations
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Double-Entry Ledger Authorization", status: "COMPLETED", detail: "Securing atomic transaction locks." },
       { stepNumber: 2, totalSteps: 4, label: "RBI PMLA Velocity Scan", status: "COMPLETED", detail: `Velocity check passed. Limits OK.` },
-      { stepNumber: 3, totalSteps: 4, label: "Zero-Knowledge State Mutation", status: "COMPLETED", detail: `Logged ${ledgerEntry.transactionId} synchronously in immutable DB.` },
+      { stepNumber: 3, totalSteps: 4, label: "Zero-Knowledge State Mutation", status: "COMPLETED", detail: `Logged ${ledgerEntry!.transactionId} synchronously in immutable DB.` },
       { stepNumber: 4, totalSteps: 4, label: "Cred-Level Ledger Analytics", status: "COMPLETED", detail: "10x deeper than standard UPI ledgers." },
     ];
     
     const responseMarkdown = `### 🏦 KingPay Ledger Core (Double-Entry Shield)
-- **Transaction Hash**: \`${ledgerEntry.transactionId}\`
-- **Status**: ${ledgerEntry.status === "SETTLED" ? "✅ Mathematically Settled" : "⏳ Processing"}
-- **Transfer**: \`${ledgerEntry.debitAccount} ➔ ${ledgerEntry.creditAccount}\`
-- **Amount**: **₹${ledgerEntry.amountInr.toFixed(2)} INR**
-- **AML Velocity Check**: ${!ledgerEntry.amlFlag ? "✅ Safe" : "🚨 Exceeded Limits"}
+- **Transaction Hash**: \`${ledgerEntry!.transactionId}\`
+- **Status**: ${ledgerEntry!.status === "SETTLED" ? "✅ Mathematically Settled" : "⏳ Processing"}
+- **Transfer**: \`${ledgerEntry!.debitAccount} ➔ ${ledgerEntry!.creditAccount}\`
+- **Amount**: **₹${ledgerEntry!.amountInr.toFixed(2)} INR**
+- **AML Velocity Check**: ${!ledgerEntry!.amlFlag ? "✅ Safe" : "🚨 Exceeded Limits"}
 
 > [!TIP]
 > **🛡️ Legal Protection Active**: This strictly follows the RBI Nodal/Escrow Aggregator TSP model. You are immune to fund-handling liabilities.

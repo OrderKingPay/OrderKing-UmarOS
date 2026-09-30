@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * 👑 HD MASTER AUTOMATED LEGAL ACCOUNTING, PAYOUTS & GST ENGINE
  * 

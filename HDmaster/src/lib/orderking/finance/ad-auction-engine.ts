@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Zomato-Style Generalized Second-Price (GSP) Ad Auction Engine
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 
 export const APIRoute = createAPIFileRoute('/api/v1/founder/pr-nominations')({

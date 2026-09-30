@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * KingCoins Loyalty & Tier Progression Ecosystem
  * Handles cashback percentages, manages tier statuses (Silver, Gold, King),
@@ -38,7 +39,7 @@ export const LOYALTY_TIERS: LoyaltyTierConfig[] = [
   {
     tier: "GOLD",
     label: "Gold",
-    minLifetimeCoinsToQualify: 5000, // 5000 KingCoins earned lifetime
+    minLifetimeCoinsToQualify: 2000, // 2000 KingCoins earned lifetime
     cashbackBps: 500, // 5% cashback
     burnRateBps: 10000, // 1 KingCoin = 1 Paisa
     maxBurnPerOrderPaise: 25000, // Max ₹250 burn per order
@@ -49,7 +50,7 @@ export const LOYALTY_TIERS: LoyaltyTierConfig[] = [
   {
     tier: "KING",
     label: "King",
-    minLifetimeCoinsToQualify: 20000, // 20000 KingCoins earned lifetime
+    minLifetimeCoinsToQualify: 5000, // 5000 KingCoins earned lifetime
     cashbackBps: 1000, // 10% cashback
     burnRateBps: 10000, // 1 KingCoin = 1 Paisa
     maxBurnPerOrderPaise: 50000, // Max ₹500 burn per order

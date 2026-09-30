@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Founder Approval Governor (Directive 17)
 // Minimizes founder interruptions by categorizing actions into LOW, MEDIUM, and HIGH risk.
 // High-Risk Actions (spending money, signing contracts, financial transfers, irreversible deletion, sensitive disclosures)

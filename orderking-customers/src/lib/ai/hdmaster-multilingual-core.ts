@@ -1,3 +1,4 @@
+
 /**
  * HDmaster AI - Multilingual & Localization Core.
  *

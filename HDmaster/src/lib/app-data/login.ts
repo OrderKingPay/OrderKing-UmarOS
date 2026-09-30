@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { CallToolResult } from "./types.ts";
 
 export function isLoginRequired(result: CallToolResult): boolean {

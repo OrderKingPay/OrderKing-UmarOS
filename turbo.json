@@ -5,6 +5,12 @@
       "dependsOn": ["^build"],
       "outputs": [".vercel/**", "dist/**"]
     },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

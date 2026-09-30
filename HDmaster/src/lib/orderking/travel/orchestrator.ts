@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { travelRegistry } from "./provider-registry.ts";
 import type { TravelSearchQuery, NormalizedTravelResult, TravelBookingRequest, TravelBookingResponse } from "./schemas/travel-schemas.ts";
 

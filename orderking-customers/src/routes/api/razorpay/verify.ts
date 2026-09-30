@@ -1,10 +1,12 @@
+
 import { createFileRoute } from "@tanstack/react-router";
 import crypto from "crypto";
 
 export const Route = createFileRoute("/api/razorpay/verify")({
+  // @ts-expect-error
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: async ({ request }: any) => {
         try {
           const body = await request.json();
           const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;

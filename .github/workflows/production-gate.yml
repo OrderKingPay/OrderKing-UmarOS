@@ -1,31 +1,36 @@
-name: OrderKing production gate
+name: Production Gate
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  build-matrix:
+  verify-and-build:
+    name: Verify 5-App Architecture
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        app:
-          - HDmaster
-          - orderking-customers
-          - orderking-partners
-    defaults:
-      run:
-        working-directory: ${{ matrix.app }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
         with:
-          node-version: 24
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: Typecheck
-        run: npm run typecheck
-      - name: Build
-        run: npm run build
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Typecheck across 5 apps
+        run: pnpm run typecheck
+
+      - name: Build all 5 apps
+        run: pnpm run build

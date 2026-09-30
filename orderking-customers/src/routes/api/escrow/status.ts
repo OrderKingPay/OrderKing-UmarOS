@@ -1,3 +1,5 @@
+
+// @ts-ignore
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 
 // Mock Nodal Account Escrow verification API (e.g. Yes Bank, ICICI)

@@ -1,3 +1,4 @@
+
 /**
  * HDmaster Founder AI — Capability Benchmarking Suite (§26)
  *

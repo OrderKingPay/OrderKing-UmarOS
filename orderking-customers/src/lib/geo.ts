@@ -1,3 +1,4 @@
+
 /** Haversine distance in kilometres. Coordinates are WGS84. */
 
 const EARTH_KM = 6371;

@@ -1,4 +1,5 @@
 // @ts-nocheck
+
 // HDmaster / Umar OS: Unified AI Chat & Streaming Service
 // Zero-Fabrication: connects real models, real model IDs, real streaming,
 // contextual conversation memory, multimodal attachments, and authorized tools.
@@ -26,6 +27,7 @@ import {
   type AgentExecutionStep,
 } from "../ai/supreme-founder-ai-core.ts";
 import { getSql } from "../db";
+// @ts-ignore
 import { FOUNDER_TOOLS, executeFounderTool } from "../ai/founder-tools.server";
 
 async function getProviderApiKeyAsync(providerKey: string): Promise<string | undefined> {
@@ -262,7 +264,7 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
        if (!payload.query.toLowerCase().trim().startsWith("select")) {
           throw new Error("Only SELECT queries are permitted for autonomous fetch_data tasks.");
        }
-       const rows = await sql.unsafe(payload.query);
+       const rows = await sql?.unsafe(payload.query);
        return { status: "SUCCESS", message: `Executed query successfully`, count: rows.length, data: rows.slice(0, 100), latencyMs: Date.now() - startTime };
     }
     

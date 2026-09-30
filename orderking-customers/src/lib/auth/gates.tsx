@@ -1,3 +1,4 @@
+
 import { useState, type ReactNode } from "react";
 import { Navigate } from "@tanstack/react-router";
 import { authEnabled, signOut } from "./client";

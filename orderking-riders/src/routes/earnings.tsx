@@ -40,12 +40,12 @@ function Page() {
   useEffect(() => {
     void getEarningsFn({ data: { preset } })
       .then(setData)
-      .catch((e) => setError(errorMessage(e, t("connectionLostBody"))));
+      .catch((e: any) => setError(errorMessage(e, t("connectionLostBody"))));
     void getSettlementsFn().then(setSettlements).catch(() => undefined);
   }, [preset, t]);
 
   const completedTrips =
-    data?.lines.filter((l) => (l.kind as string) === "DELIVERY_PAYOUT" || (l.kind as string) === "DELIVERY" || Boolean(l.orderCode)).length ?? 0;
+    data?.lines.filter((l: any) => (l.kind as string) === "DELIVERY_PAYOUT" || (l.kind as string) === "DELIVERY" || Boolean(l.orderCode)).length ?? 0;
   const currentMilestoneIndex = MILESTONES.findIndex((m) => completedTrips < m.orders);
   const nextMilestone = currentMilestoneIndex === -1 ? null : MILESTONES[currentMilestoneIndex];
 
@@ -278,7 +278,7 @@ function Page() {
         <Card>
           <CardTitle>{t("statement")}</CardTitle>
           <ul className="mt-3 space-y-2">
-            {data?.lines.map((l) => (
+            {data?.lines.map((l: any) => (
               <li key={l.id} className="flex items-center justify-between text-sm">
                 <span>
                   {l.orderCode ?? l.kind} · {l.note}

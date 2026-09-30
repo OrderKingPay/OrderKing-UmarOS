@@ -1,3 +1,4 @@
+
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { HomeFeed } from "@/components/market/home-feed";

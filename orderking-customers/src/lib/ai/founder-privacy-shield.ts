@@ -1,3 +1,4 @@
+
 // Umar OS: Cryptographic Founder Privacy Shield
 // Strictly guarantees that the founder's personal identity is NEVER visible to any customer, restaurant, or rider.
 // Enforces sovereign corporate entity personas for all external communications.

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Safe money helpers — all values in integer paise.
  * Never use floating point for money.

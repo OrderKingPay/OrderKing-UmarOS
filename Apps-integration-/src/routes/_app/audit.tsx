@@ -35,7 +35,7 @@ function AuditPage() {
           </tr>
         </thead>
         <tbody>
-          {(list.data?.rows ?? []).map((a) => (
+          {(list.data?.rows ?? []).map((a: any) => (
             <tr key={String(a.id)}>
               <Td className="text-xs text-muted">{String(a.created_at).slice(0, 19)}</Td>
               <Td>{String(a.employee_name ?? "—")}</Td>

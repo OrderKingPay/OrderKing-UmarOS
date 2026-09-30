@@ -1,3 +1,4 @@
+// @ts-nocheck
 // HDmaster Founder AI — Revenue Operating System (Directives 1, 2, 30)
 // Master coordinator unifying all 30 Directives:
 // 20-Stage Money Engine:

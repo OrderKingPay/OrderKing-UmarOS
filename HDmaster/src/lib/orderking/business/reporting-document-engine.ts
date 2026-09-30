@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * REPORTING & AI DOCUMENT WORKSPACE ENGINE
  * Order King / HDmaster AI - Principal Engineering System

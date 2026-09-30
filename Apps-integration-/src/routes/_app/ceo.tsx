@@ -137,7 +137,7 @@ function TodayPane({ data }: { data?: {
         <Card>
           <CardTitle className="mb-3 text-base">Growing restaurants</CardTitle>
           <ul className="space-y-2 text-sm">
-            {data.top.map((r) => (
+            {data.top.map((r: any) => (
               <li key={r.id} className="flex justify-between">
                 <span>{r.name}</span>
                 <span className="tabular-nums text-muted">{formatINR(r.gmv)} · {r.orders} orders</span>
@@ -148,7 +148,7 @@ function TodayPane({ data }: { data?: {
         <Card>
           <CardTitle className="mb-3 text-base">Needs attention</CardTitle>
           <ul className="space-y-2 text-sm">
-            {data.weak.map((r) => (
+            {data.weak.map((r: any) => (
               <li key={r.id} className="flex justify-between">
                 <span>{r.name}</span>
                 <span className="tabular-nums text-muted">{formatINR(r.gmv)}</span>
@@ -271,7 +271,7 @@ function Simulator() {
       <Card>
         <CardTitle className="mb-3 text-base">If commission changes</CardTitle>
         <ul className="space-y-2 text-sm">
-          {scenarios.map((s) => (
+          {scenarios.map((s: any) => (
             <li key={s.bps} className="flex justify-between">
               <span>{(s.bps / 100).toFixed(2)}%</span>
               <span className="tabular-nums">{formatINR(s.r.contributionPaise)} contribution</span>
@@ -404,7 +404,7 @@ function CeoAi() {
       <div>
         <span className="text-xs font-semibold text-muted">1-Command Executive Actions:</span>
         <div className="mt-1.5 flex flex-wrap gap-2">
-          {QUICK_COMMANDS.map((c) => (
+          {QUICK_COMMANDS.map((c: any) => (
             <Button
               key={c.label}
               variant="outline"
@@ -616,7 +616,7 @@ function ReportPane() {
         <div className="space-y-2 text-sm">
           <p className="text-xs text-warn">SIMULATED DATA · {d.period}</p>
           <p>Orders {d.orders} · GMV {formatINR(d.gmvPaise)} · Contribution {formatINR(d.contributionPaise)}</p>
-          <p>Top restaurants: {d.topRestaurants.map((r) => r.name).join(", ") || "—"}</p>
+          <p>Top restaurants: {d.topRestaurants.map((r: any) => r.name).join(", ") || "—"}</p>
           <p>Risks: {d.alerts.join("; ") || "none open"}</p>
           <ul className="list-disc pl-5">
             {d.recommended.map((x) => (

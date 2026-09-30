@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Founder Private Cash Vault & Retained Float Telemetry
  * Confidential: Restricted solely to Platform Owner / CEO

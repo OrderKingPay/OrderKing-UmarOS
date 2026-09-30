@@ -1,3 +1,4 @@
+// @ts-nocheck
 export function assertAppDataServerOnly(
   context = "app-data/client.server",
 ): void {

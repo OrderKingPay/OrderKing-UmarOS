@@ -115,7 +115,7 @@ function CommercePage() {
       ) : null}
       {tab === "loyalty" ? (
         <div className="mt-4 grid gap-3">
-          {(q.data?.loyalty ?? []).map((r) => (
+          {(q.data?.loyalty ?? []).map((r: any) => (
             <Card key={String(r.id)}>
               <CardTitle className="text-base">{String(r.name)}</CardTitle>
               <p className="mt-2 text-sm text-muted">
@@ -138,7 +138,7 @@ function CommercePage() {
             </tr>
           </thead>
           <tbody>
-            {(q.data?.campaigns ?? []).map((c) => (
+            {(q.data?.campaigns ?? []).map((c: any) => (
               <tr key={String(c.id)}>
                 <Td>{String(c.name)}</Td>
                 <Td>{String(c.channel)}</Td>

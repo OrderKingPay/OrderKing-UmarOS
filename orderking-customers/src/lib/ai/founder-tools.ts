@@ -1,3 +1,4 @@
+
 // HDmaster Founder AI — Tool Architecture & Permission Gateway
 // Implements Directive §7 (Agent/Tool System) & §14 (Founder Approval System)
 

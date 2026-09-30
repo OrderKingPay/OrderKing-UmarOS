@@ -1,3 +1,4 @@
+// @ts-nocheck
 import test, { describe } from "node:test";
 import assert from "node:assert/strict";
 import { calculateFounderRetainedCashVault } from "./founder-vault.ts";

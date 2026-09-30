@@ -1,3 +1,4 @@
+
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
@@ -226,7 +227,7 @@ export const getOpsHome = createServerFn({ method: "GET" })
 
 export const getCeoDashboard = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { range?: DateRangeKey; from?: string; to?: string }) => input)
+  .inputValidator((input: { range?: DateRangeKey; from?: string; to?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_executive");
@@ -281,7 +282,7 @@ export const getCeoDashboard = createServerFn({ method: "GET" })
 
 export const getOrders = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { q?: string; status?: string; page?: number }) => input)
+  .inputValidator((input: { q?: string; status?: string; page?: number }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_orders");
@@ -332,7 +333,7 @@ export const getOrders = createServerFn({ method: "GET" })
 
 export const getOrder = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { id: string }) => input)
+  .inputValidator((input: { id: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_orders");
@@ -360,7 +361,7 @@ export const getOrder = createServerFn({ method: "GET" })
 
 export const mutateOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: {
+  .inputValidator((input: {
     id: string;
     version: number;
     action: "transition" | "refund" | "reassign" | "cancel";
@@ -502,7 +503,7 @@ export const mutateOrder = createServerFn({ method: "POST" })
 
 export const getRestaurants = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { q?: string; status?: string }) => input)
+  .inputValidator((input: { q?: string; status?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_restaurants");
@@ -527,7 +528,7 @@ export const getRestaurants = createServerFn({ method: "GET" })
 
 export const mutateRestaurant = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: string; version: number; action: "status" | "approve" | "reject" | "commission"; status?: string; commissionBps?: number; reason: string }) => input)
+  .inputValidator((input: { id: string; version: number; action: "status" | "approve" | "reject" | "commission"; status?: string; commissionBps?: number; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId);
@@ -566,7 +567,7 @@ export const mutateRestaurant = createServerFn({ method: "POST" })
 
 export const getRiders = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { q?: string; status?: string }) => input)
+  .inputValidator((input: { q?: string; status?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_riders");
@@ -588,7 +589,7 @@ export const getRiders = createServerFn({ method: "GET" })
 
 export const mutateRider = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: string; version: number; status: string; reason: string }) => input)
+  .inputValidator((input: { id: string; version: number; status: string; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_riders");
@@ -606,7 +607,7 @@ export const mutateRider = createServerFn({ method: "POST" })
 
 export const getCustomers = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { q?: string }) => input)
+  .inputValidator((input: { q?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_customers");
@@ -628,7 +629,7 @@ export const getCustomers = createServerFn({ method: "GET" })
 
 export const mutateCustomer = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: string; status: string; reason: string }) => input)
+  .inputValidator((input: { id: string; status: string; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_customers");
@@ -706,7 +707,7 @@ export const getSupport = createServerFn({ method: "GET" })
 
 export const mutateTicket = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: string; action: "assign" | "status"; status?: string; reason?: string }) => input)
+  .inputValidator((input: { id: string; action: "assign" | "status"; status?: string; reason?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_support");
@@ -738,7 +739,7 @@ export const getTasks = createServerFn({ method: "GET" })
 
 export const mutateTask = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: string; status: string }) => input)
+  .inputValidator((input: { id: string; status: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId);
@@ -752,7 +753,7 @@ export const mutateTask = createServerFn({ method: "POST" })
 
 export const getFinance = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { range?: DateRangeKey }) => input)
+  .inputValidator((input: { range?: DateRangeKey }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_finance");
@@ -774,7 +775,7 @@ export const getFinance = createServerFn({ method: "GET" })
 
 export const mutateSettlement = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: string; version: number; action: "flag" | "approve"; reason: string }) => input)
+  .inputValidator((input: { id: string; version: number; action: "flag" | "approve"; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_settlements");
@@ -810,7 +811,7 @@ export const getCommerce = createServerFn({ method: "GET" })
 
 export const mutatePromotion = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id?: string; name: string; promoType: string; funding: string; budgetPaise: number; discountBps?: number; discountPaise?: number; minOrderPaise: number; status: string; reason: string }) => input)
+  .inputValidator((input: { id?: string; name: string; promoType: string; funding: string; budgetPaise: number; discountBps?: number; discountPaise?: number; minOrderPaise: number; status: string; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_promotions");
@@ -837,7 +838,7 @@ export const mutatePromotion = createServerFn({ method: "POST" })
 
 export const mutateCampaign = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: string; status: string; reason: string }) => input)
+  .inputValidator((input: { id: string; status: string; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_campaigns");
@@ -863,7 +864,7 @@ export const getKyc = createServerFn({ method: "GET" })
 
 export const mutateKyc = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: string; status: string; reason: string }) => input)
+  .inputValidator((input: { id: string; status: string; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_kyc");
@@ -890,7 +891,7 @@ export const getRisk = createServerFn({ method: "GET" })
 
 export const mutateRisk = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: string; decision: string; reason: string }) => input)
+  .inputValidator((input: { id: string; decision: string; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_fraud");
@@ -931,7 +932,7 @@ export const getPeople = createServerFn({ method: "GET" })
 
 export const inviteEmployee = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { email: string; name: string; roleSlug: string; teamId?: string }) => input)
+  .inputValidator((input: { email: string; name: string; roleSlug: string; teamId?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_users");
@@ -960,7 +961,7 @@ export const inviteEmployee = createServerFn({ method: "POST" })
 
 export const mutateEmployee = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: string; version: number; action: "status" | "role"; status?: string; roleSlug?: string; reason: string }) => input)
+  .inputValidator((input: { id: string; version: number; action: "status" | "role"; status?: string; roleSlug?: string; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_users");
@@ -990,7 +991,7 @@ export const mutateEmployee = createServerFn({ method: "POST" })
 
 export const mutateRolePerms = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { roleId: string; permissions: string[]; reason: string }) => input)
+  .inputValidator((input: { roleId: string; permissions: string[]; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "manage_roles");
@@ -1012,7 +1013,7 @@ export const mutateRolePerms = createServerFn({ method: "POST" })
 
 export const getAudit = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { q?: string }) => input)
+  .inputValidator((input: { q?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_audit_logs");
@@ -1034,7 +1035,7 @@ export const getAudit = createServerFn({ method: "GET" })
 
 export const getAnalytics = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { range?: DateRangeKey }) => input)
+  .inputValidator((input: { range?: DateRangeKey }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_analytics");
@@ -1129,7 +1130,7 @@ export const getSystem = createServerFn({ method: "GET" })
 
 export const saveSystem = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { kind: "branding" | "flags" | "settings"; value: unknown; reason: string }) => input)
+  .inputValidator((input: { kind: "branding" | "flags" | "settings"; value: unknown; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const perm: PermissionKey =
@@ -1152,7 +1153,7 @@ export const saveSystem = createServerFn({ method: "POST" })
 
 export const getSearch = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { q: string }) => input)
+  .inputValidator((input: { q: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_dashboard");
@@ -1223,7 +1224,7 @@ async function snapshotForAi(actor: AuthedEmployee) {
 
 export const runNlQuery = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { q: string }) => input)
+  .inputValidator((input: { q: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const { sql, actor } = await requireEmployee(context.userId, "view_ai");
@@ -1282,7 +1283,7 @@ export const runNlQuery = createServerFn({ method: "POST" })
 
 export const askAssistant = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { prompt: string; mode: "ceo" | "ops" }) => input)
+  .inputValidator((input: { prompt: string; mode: "ceo" | "ops" }) => input)
   .handler(async ({ context, data }) => {
     try {
       const perm: PermissionKey = data.mode === "ceo" ? "view_executive" : "view_ai";

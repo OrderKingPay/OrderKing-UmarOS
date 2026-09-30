@@ -1,3 +1,4 @@
+
 import { getSql } from "@/lib/db";
 import { mergeConfig } from "@/lib/config/defaults";
 import type { PublicAppConfig } from "@/lib/config/types";

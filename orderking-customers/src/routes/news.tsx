@@ -1,3 +1,4 @@
+
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, Landmark, FileText, CheckCircle2, ChevronRight, Coins, ShieldCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";

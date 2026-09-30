@@ -1,3 +1,4 @@
+
 import { Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -312,7 +313,7 @@ export function HomeFeed({
         <div className="flex gap-3 overflow-x-auto pb-1">
           {cats.isPending
             ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 w-24 shrink-0 rounded-[var(--radius-2xl)] bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 animate-pulse shadow-sm" />)
-            : (cats.data?.categories ?? []).map((c) => (
+            : (cats.data?.categories ?? []).map((c: any) => (
                 <Link
                   key={c.id}
                   to="/search"

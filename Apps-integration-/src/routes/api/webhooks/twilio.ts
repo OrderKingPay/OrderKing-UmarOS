@@ -1,11 +1,15 @@
-// @ts-nocheck
-import { createFileRoute } from "@tanstack/react-router";
+import { createAPIFileRoute } from '@/lib/createAPIFileRoute';
 import { WebhookGateway } from "../../../lib/integration/webhook-gateway";
+import { getSql } from "../../../lib/db";
 
-export const Route = createFileRoute("/api/webhooks/twilio")({
+// Simple nid generator if not imported
+const generateId = (prefix: string) => `${prefix}_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`;
+
+export const Route = createAPIFileRoute("/api/webhooks/twilio")({
+  
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: async ({ request }: any) => {
         const signature = request.headers.get("x-twilio-signature");
         if (!signature) {
           return new Response("Missing signature", { status: 400 });
@@ -17,9 +21,6 @@ export const Route = createFileRoute("/api/webhooks/twilio")({
           return new Response("Configuration error", { status: 500 });
         }
 
-        // Reconstruct the full URL
-        // `request.url` should be the full request URL but we might need to handle proxy headers
-        // if deployed behind a reverse proxy (like Nginx/Vercel). We'll assume `request.url` is correct.
         const url = request.url;
         
         const bodyText = await request.text();
@@ -36,12 +37,46 @@ export const Route = createFileRoute("/api/webhooks/twilio")({
           return new Response("Invalid signature", { status: 400 });
         }
 
-        console.log("Verified Twilio Webhook Payload:", paramsObj);
+        const eventId = paramsObj.MessageSid || signature;
 
-        // TODO: Handle SMS/WhatsApp status callbacks or incoming messages
-        const messageStatus = paramsObj.MessageStatus;
-        if (messageStatus) {
-          console.log(`Message ${paramsObj.MessageSid} status is now: ${messageStatus}`);
+        try {
+          const sql = await getSql();
+          const inserted = await sql.query<{ id: string }>(
+            `insert into payment_webhook_events (id, gateway, gateway_event_id, event_type, payload_json, signature)
+             values ($1, 'TWILIO', $2, $3, $4, $5)
+             on conflict (gateway, gateway_event_id) do nothing returning id`,
+            [generateId("pwe"), eventId, paramsObj.MessageStatus || "incoming", bodyText, signature]
+          );
+
+          if (!inserted[0]) {
+            console.log(`Duplicate Twilio webhook event skipped: ${eventId}`);
+            return new Response('<?xml version="1.0" encoding="UTF-8"?><Response></Response>', {
+              status: 200,
+              headers: { "Content-Type": "text/xml" },
+            });
+          }
+
+          console.log("Verified Twilio Webhook Payload:", paramsObj);
+
+          // Handle SMS/WhatsApp status callbacks or incoming messages
+          const messageStatus = paramsObj.MessageStatus;
+          if (messageStatus) {
+            console.log(`Message ${paramsObj.MessageSid} status is now: ${messageStatus}`);
+            let mappedStatus = 'SENT';
+            if (messageStatus === 'delivered') mappedStatus = 'DELIVERED';
+            else if (messageStatus === 'failed' || messageStatus === 'undelivered') mappedStatus = 'FAILED';
+            
+            await sql.query(
+              `update notifications set status=$1, provider_confirmed=1, delivered_at=case when $1='DELIVERED' then now() else delivered_at end where provider_message_id=$2`,
+              [mappedStatus, eventId]
+            );
+          }
+          
+          await sql.query(`update payment_webhook_events set processed_at=now(), processing_error=null where gateway='TWILIO' and gateway_event_id=$1`, [eventId]);
+        } catch (error) {
+          const sql = await getSql();
+          await sql.query(`update payment_webhook_events set processing_error=$1 where gateway='TWILIO' and gateway_event_id=$2`, [error instanceof Error ? error.message : String(error), eventId]);
+          return new Response("Error processing webhook", { status: 500 });
         }
 
         // Return an empty TwiML response

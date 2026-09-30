@@ -1,3 +1,4 @@
+
 import { createServerFn } from "@tanstack/react-start";
 import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
@@ -8,6 +9,7 @@ import { DEFAULT_CONFIG } from "@/lib/config/defaults";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { OfflineDetector } from "@/components/offline-detector";
 import appCss from "../styles.css?url";
+import { NextGenSeo } from "@/components/seo/NextGenSeo";
 
 const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
   try {
@@ -57,7 +59,7 @@ export const Route = createRootRoute({
         { name: "description", content: config.brand.seoDescription },
         { name: "theme-color", content: config.brand.primaryColor },
 
-          { property: "og:title", content: config.brand.seoTitle },
+
           { property: "og:description", content: config.brand.seoDescription },
           { property: "og:image", content: config.brand.ogImageUrl },
           { property: "og:type", content: "website" },
@@ -93,6 +95,7 @@ function Root() {
     <html lang="en" className="antialiased" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <NextGenSeo config={config} />
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </head>
       <body>

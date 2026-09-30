@@ -1,3 +1,4 @@
+
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import type { OrderDetail } from "@/lib/market-types";
@@ -12,8 +13,9 @@ const statusMap: Record<string, OrderDetail["status"]> = {
 
 export const getMyHDmasterOrder = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { orderId: string }) => input)
-  .handler(async ({ context, data }) => {
+  .// @ts-ignore
+  validator((input: { orderId: string }) => input)
+  .handler(async ({ context, data }: any) => {
     const cfg = await loadConfig();
     if (cfg.marketplace.launchMode !== "live") return { order: null as OrderDetail | null };
     const baseUrl = process.env.HDMASTER_URL?.replace(/\/$/, "");

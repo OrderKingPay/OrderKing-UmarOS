@@ -1,3 +1,4 @@
+
 /** Opening hours helpers. Weekday 0 = Sunday, minutes from local midnight. */
 
 export type HourWindow = { weekday: number; openMinute: number; closeMinute: number };

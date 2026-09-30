@@ -1,3 +1,4 @@
+
 /**
  * HDmaster Founder AI — Searchable Knowledge Engine & Layered Memory (§20, §21)
  *

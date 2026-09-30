@@ -47,7 +47,7 @@ function MapPage() {
               </span>
             );
           })}
-          {restaurants.map((r) =>
+          {restaurants.map((r: any) =>
             r.lat != null && r.lng != null ? (
               <span
                 key={r.id}
@@ -57,7 +57,7 @@ function MapPage() {
               />
             ) : null,
           )}
-          {riders.map((r) =>
+          {riders.map((r: any) =>
             r.lat != null && r.lng != null ? (
               <span
                 key={r.id}
@@ -76,14 +76,14 @@ function MapPage() {
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {ZONES.map((z) => {
-          const rests = restaurants.filter((r) => r.zone_code === z.code);
-          const zoneRiders = riders.filter((r) => r.zone_code === z.code);
+          const rests = restaurants.filter((r: any) => r.zone_code === z.code);
+          const zoneRiders = riders.filter((r: any) => r.zone_code === z.code);
           return (
             <div key={z.code} className="min-h-40 rounded-xl border border-border bg-surface p-4">
               <p className="font-medium">{z.name}</p>
               <p className="mt-2 text-xs text-subtle">Restaurants</p>
               <ul className="mt-1 space-y-1 text-sm">
-                {rests.map((r) => (
+                {rests.map((r: any) => (
                   <li key={r.id} className="flex items-center justify-between gap-2">
                     <span className="truncate">{r.name}</span>
                     <Badge tone={statusTone(r.status)}>{r.status}</Badge>
@@ -92,7 +92,7 @@ function MapPage() {
               </ul>
               <p className="mt-3 text-xs text-subtle">Riders</p>
               <ul className="mt-1 space-y-1 text-sm">
-                {zoneRiders.map((r) => (
+                {zoneRiders.map((r: any) => (
                   <li key={r.id} className="flex items-center justify-between gap-2">
                     <span className="truncate">{r.name}</span>
                     <Badge tone={statusTone(r.status)}>{r.status}</Badge>

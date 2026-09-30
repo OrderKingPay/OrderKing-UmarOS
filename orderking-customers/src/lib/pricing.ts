@@ -1,3 +1,4 @@
+
 import { applyBps } from "./money.ts";
 
 export type FundedBy = "RESTAURANT" | "PLATFORM" | "SHARED" | "CUSTOMER";

@@ -1,3 +1,5 @@
+
+// @ts-ignore
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 
 
@@ -5,7 +7,7 @@ import { createAPIFileRoute } from '@tanstack/react-start/api';
 // Mock BBPS Fetch Bill Endpoint
 // In production, this would call Setu/Decentro BBPS APIs.
 export const APIRoute = createAPIFileRoute('/api/bbps/fetch-bill')({
-  POST: async () => {
+  POST: async ({ request }: any) => {
   try {
     const body = await request.json();
     const { billerId, consumerNumber } = body;

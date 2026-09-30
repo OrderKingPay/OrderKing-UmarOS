@@ -1,4 +1,5 @@
 // @ts-nocheck
+
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -1870,7 +1871,7 @@ You can ask me anything across software engineering, architecture, business anal
       };
 
       setMessages((prev) => prev.map((m) => (m.id === aiMsgId ? aiMsg : m)));
-      supremeAudioDsp.playTone("error");
+      supremeAudioDsp.playTone(("error" as any));
       toast.error("Fail-Closed Protection Triggered: AI response aborted.");
     }
   };

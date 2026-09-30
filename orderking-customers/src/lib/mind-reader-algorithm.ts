@@ -1,3 +1,4 @@
+
 /**
  * 10,000x Mind-Reader Neural Craving Engine
  * Predicts customer cravings with 99%+ accuracy using hyper-contextual signals:

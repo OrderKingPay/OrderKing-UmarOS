@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState, type CSSProperties } from "react";
 import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

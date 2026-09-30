@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
@@ -305,73 +305,73 @@ describe("HDmaster Founder AI — Supreme Capabilities Suite", () => {
   describe("12. Supreme Founder AI Chat Core & Async Query Engine", () => {
     it("should resolve client sales intent and return qualified lead pitch card", async () => {
       const res = await parseFounderQuery("find clients to sell our food delivery software", "orderking@okhdfcbank");
-      assert.strictEqual(res.intent, "client_sales");
-      assert.ok(res.actionCard);
-      assert.strictEqual(res.actionCard.type, "lead_pitch");
-      assert.ok(res.actionCard.data.lead.projectBudget >= 140000);
-      assert.ok(res.actionCard.data.lead.suggestedSolution.length > 10);
-      assert.ok(res.voiceSpokenText.length > 20);
-      assert.ok(res.executionSteps && res.executionSteps.length >= 3);
+      assert.strictEqual(res!.intent, "client_sales");
+      assert.ok(res!.actionCard);
+      assert.strictEqual(res!.actionCard.type, "lead_pitch");
+      assert.ok(res!.actionCard.data.lead.projectBudget >= 140000);
+      assert.ok(res!.actionCard.data.lead.suggestedSolution.length > 10);
+      assert.ok(res!.voiceSpokenText.length > 20);
+      assert.ok(res!.executionSteps && res!.executionSteps.length >= 3);
     });
 
     it("should resolve high-paid remote jobs and return contract gig proposal card", async () => {
       const res = await parseFounderQuery("find high paid remote contracts and freelance jobs", "orderking@okhdfcbank");
-      assert.strictEqual(res.intent, "remote_jobs");
-      assert.ok(res.actionCard);
-      assert.strictEqual(res.actionCard.type, "remote_gig_bid");
-      assert.ok(res.actionCard.data.hourlyRateUsd >= 80);
-      assert.ok(res.actionCard.data.proposalTemplate.includes("Hi Hiring Team"));
-      assert.ok(res.voiceSpokenText.length > 20);
+      assert.strictEqual(res!.intent, "remote_jobs");
+      assert.ok(res!.actionCard);
+      assert.strictEqual(res!.actionCard.type, "remote_gig_bid");
+      assert.ok(res!.actionCard.data.hourlyRateUsd >= 80);
+      assert.ok(res!.actionCard.data.proposalTemplate.includes("Hi Hiring Team"));
+      assert.ok(res!.voiceSpokenText.length > 20);
     });
 
     it("should execute capability benchmark suite and return verified report card", async () => {
       const res = await parseFounderQuery("run capability benchmark suite", "orderking@okhdfcbank");
-      assert.strictEqual(res.intent, "capability_benchmarks");
-      assert.ok(res.actionCard);
-      assert.strictEqual(res.actionCard.type, "benchmark_results");
-      assert.strictEqual(res.actionCard.data.totalTests, 11);
-      assert.ok(res.actionCard.data.averageScore >= 50);
-      assert.ok(res.responseMarkdown.includes("Verified Capability Benchmark Report"));
+      assert.strictEqual(res!.intent, "capability_benchmarks");
+      assert.ok(res!.actionCard);
+      assert.strictEqual(res!.actionCard.type, "benchmark_results");
+      assert.strictEqual(res!.actionCard.data.totalTests, 11);
+      assert.ok(res!.actionCard.data.averageScore >= 50);
+      assert.ok(res!.responseMarkdown.includes("Verified Capability Benchmark Report"));
     });
 
     it("should scaffold heavy enterprise application and return multi-file blueprint", async () => {
       const res = await parseFounderQuery("scaffold heavy enterprise hospital erp web app", "orderking@okhdfcbank");
-      assert.strictEqual(res.intent, "enterprise_blueprint");
-      assert.ok(res.actionCard);
-      assert.strictEqual(res.actionCard.type, "enterprise_blueprint");
-      assert.ok(res.actionCard.data.files.length >= 2);
-      assert.ok(res.actionCard.data.files.some((f: any) => f.filename.endsWith(".tsx")));
-      assert.ok(res.actionCard.data.commercialValueInr > 0);
-      assert.ok(res.actionCard.data.handoffCredentials.databaseUrl.includes("postgresql"));
+      assert.strictEqual(res!.intent, "enterprise_blueprint");
+      assert.ok(res!.actionCard);
+      assert.strictEqual(res!.actionCard.type, "enterprise_blueprint");
+      assert.ok(res!.actionCard.data.files.length >= 2);
+      assert.ok(res!.actionCard.data.files.some((f: any) => f.filename.endsWith(".tsx")));
+      assert.ok(res!.actionCard.data.commercialValueInr > 0);
+      assert.ok(res!.actionCard.data.handoffCredentials.databaseUrl.includes("postgresql"));
     });
 
     it("should generate 0% fee direct KingPay UPI invoice card", async () => {
       const res = await parseFounderQuery("generate invoice for client ₹250000", "orderking@okhdfcbank");
-      assert.strictEqual(res.intent, "invoice_pay");
-      assert.ok(res.actionCard);
-      assert.strictEqual(res.actionCard.type, "invoice_pay");
-      assert.strictEqual(res.actionCard.data.amountInr, 250000);
-      assert.ok(res.actionCard.data.upiPaymentLink.includes("upi://pay"));
-      assert.ok(res.actionCard.data.upiPaymentLink.includes("pa=orderking%40okhdfcbank"));
+      assert.strictEqual(res!.intent, "invoice_pay");
+      assert.ok(res!.actionCard);
+      assert.strictEqual(res!.actionCard.type, "invoice_pay");
+      assert.strictEqual(res!.actionCard.data.amountInr, 250000);
+      assert.ok(res!.actionCard.data.upiPaymentLink.includes("upi://pay"));
+      assert.ok(res!.actionCard.data.upiPaymentLink.includes("pa=orderking%40okhdfcbank"));
     });
 
     it("should decompose founder goals into 14-stage delivery graph", async () => {
       const res = await parseFounderQuery("create delivery graph for marketplace business", "orderking@okhdfcbank");
-      assert.strictEqual(res.intent, "delivery_graph");
-      assert.ok(res.actionCard);
-      assert.strictEqual(res.actionCard.type, "delivery_graph");
-      assert.strictEqual(res.actionCard.data.totalStages, 14);
-      assert.ok(res.actionCard.data.stages.length === 14);
+      assert.strictEqual(res!.intent, "delivery_graph");
+      assert.ok(res!.actionCard);
+      assert.strictEqual(res!.actionCard.type, "delivery_graph");
+      assert.strictEqual(res!.actionCard.data.totalStages, 14);
+      assert.ok(res!.actionCard.data.stages.length === 14);
     });
 
     it("should generate authentic Bengali / Sylheti voice responses when queried in Bengali", async () => {
       const res = await parseFounderQuery("apnar sathe client dhundte chai", "orderking@okhdfcbank");
-      assert.strictEqual(res.detectedLanguage, "bn-IN");
+      assert.strictEqual(res!.detectedLanguage, "bn-IN");
       assert.ok(
-        res.voiceSpokenText.includes("Ami") ||
-        res.voiceSpokenText.includes("kora") ||
-        res.voiceSpokenText.includes("Nomoshkar") ||
-        res.voiceSpokenText.includes("taka")
+        res!.voiceSpokenText.includes("Ami") ||
+        res!.voiceSpokenText.includes("kora") ||
+        res!.voiceSpokenText.includes("Nomoshkar") ||
+        res!.voiceSpokenText.includes("taka")
       );
     });
   });

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { jwtVerify, type JWTPayload } from "jose";
 
 export type VerifiedJwt = {

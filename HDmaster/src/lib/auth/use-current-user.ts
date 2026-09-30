@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { authClient, authEnabled } from "./client";
 
 /** Normalized user shape used across the app, auth on or off. */

@@ -1,3 +1,4 @@
+
 // HDmaster Founder AI — Universal Capability Registry & Plugin Architecture
 // Implements Directive §1 (Universal Capability Layer) & §18 (Plugin Architecture)
 

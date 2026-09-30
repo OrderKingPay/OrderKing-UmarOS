@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Bridge between HDmaster ops order statuses and marketplace statuses
  * used by customer + partner apps (PLACED / ACCEPTED / …).

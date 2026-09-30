@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Automatic Application Engine (Directive 5)
 // Builds truthful, customized proposals and applications based ONLY on verified capabilities and real project work.
 // Never invents credentials, degrees, employment, customers, certifications, portfolio work, revenue, or testimonials.

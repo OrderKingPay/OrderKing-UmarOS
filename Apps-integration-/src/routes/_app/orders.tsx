@@ -36,7 +36,7 @@ function OrdersPage() {
         <Input placeholder="Order, customer, restaurant, rider" value={q} onChange={(e) => setQ(e.target.value)} className="max-w-sm" />
         <select className="h-10 rounded-sm border border-border bg-elevated px-2 text-sm" value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">All statuses</option>
-          {ORDER_STATUSES.map((s) => (
+          {ORDER_STATUSES.map((s: any) => (
             <option key={s}>{s}</option>
           ))}
         </select>
@@ -53,7 +53,7 @@ function OrdersPage() {
           </tr>
         </thead>
         <tbody>
-          {(list.data?.rows ?? []).map((row) => (
+          {(list.data?.rows ?? []).map((row: any) => (
             <tr key={row.id} className="cursor-pointer hover:bg-elevated/50" onClick={() => setOpenId(row.id)}>
               <Td className="font-mono text-xs">{row.id}</Td>
               <Td>{row.customer_name}</Td>
@@ -128,7 +128,7 @@ function OrderDetail({ id, onClose }: { id: string; onClose: () => void }) {
       </dl>
       <h3 className="mt-4 text-xs uppercase tracking-wider text-subtle">Timeline</h3>
       <ul className="mt-2 space-y-1 text-sm">
-        {(q.data?.events ?? []).map((ev) => (
+        {(q.data?.events ?? []).map((ev: any) => (
           <li key={ev.id} className="text-muted">
             {String(ev.at).slice(11, 19)} · {ev.actor_type} · {ev.from_status ?? "—"} → {ev.to_status} {ev.reason ? `· ${ev.reason}` : ""}
           </li>

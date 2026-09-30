@@ -1,3 +1,4 @@
+
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Heart, Leaf } from "lucide-react";
@@ -248,14 +249,14 @@ function RestaurantPage() {
             </div>
           </div>
           <nav className="flex gap-2 overflow-x-auto border-y border-border bg-bg px-4 py-2">
-            {restaurant.categories.map((c) => (
+            {restaurant.categories.map((c: any) => (
               <a key={c.id} href={`#${c.id}`} className="shrink-0 rounded-full bg-surface px-3 py-2 text-sm text-fg no-underline">
                 {c.name}
               </a>
             ))}
           </nav>
-          {restaurant.categories.map((c) => {
-            const filteredItems = c.items.filter((it) => {
+          {restaurant.categories.map((c: any) => {
+            const filteredItems = c.items.filter((it: any) => {
               if (menuQ && !it.name.toLowerCase().includes(menuQ.toLowerCase())) return false;
               if (dietFilter === "VEG" && !it.veg) return false;
               if (dietFilter === "NON_VEG" && it.veg) return false;
@@ -267,7 +268,7 @@ function RestaurantPage() {
               <section key={c.id} id={c.id} className="px-4 py-5">
                 <h2 className="mb-3 font-display text-xl">{c.name} ({filteredItems.length})</h2>
                 <ul className="space-y-3">
-                  {filteredItems.map((it) => (
+                  {filteredItems.map((it: any) => (
                     <li key={it.id} className="flex gap-3 rounded-[var(--radius-lg)] bg-surface p-3">
                       {it.imageUrl ? (
                         <img loading="lazy" src={it.imageUrl} alt="" className="size-20 rounded-[var(--radius-sm)] object-cover" />

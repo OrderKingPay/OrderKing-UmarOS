@@ -1,3 +1,4 @@
+
 /**
  * Mount once in `__root.tsx` so the Grok preview chrome can drive navigation
  * (and later receive registered routes). Noops when the app is not embedded.

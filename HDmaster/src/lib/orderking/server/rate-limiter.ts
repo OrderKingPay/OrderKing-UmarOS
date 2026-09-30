@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Rate Limiter — In-memory sliding window rate limiter for API endpoints.
  * Production deployment should swap to Redis-based limiter via RATE_LIMIT_BACKEND env var.

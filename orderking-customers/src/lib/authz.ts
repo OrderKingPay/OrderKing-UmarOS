@@ -1,3 +1,4 @@
+
 /** Fail closed: never leak whether another customer's row exists. */
 export function assertOwned<T extends { user_id: string }>(row: T | null | undefined, userId: string): T {
   if (!row || row.user_id !== userId) {

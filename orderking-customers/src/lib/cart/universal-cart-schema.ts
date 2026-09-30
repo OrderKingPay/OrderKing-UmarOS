@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const CartItemTypeEnum = z.enum(["FOOD", "FLIGHT", "TRAIN", "BUS", "CAB"]);

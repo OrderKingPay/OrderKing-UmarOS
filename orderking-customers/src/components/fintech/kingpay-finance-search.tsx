@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import { Search, X, Mic, Zap, CreditCard, Gift, ShieldCheck, ArrowRight, Sparkles, RefreshCw, Smartphone, Landmark, QrCode } from "lucide-react";
 import { toast } from "sonner";

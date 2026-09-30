@@ -1,3 +1,4 @@
+
 export type FestiveContext = {
   id: string;
   festivalName: string;

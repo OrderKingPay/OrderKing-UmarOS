@@ -1,3 +1,4 @@
+
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -739,7 +740,7 @@ function OrderDetailPage() {
         {order.summary.dataLabel === "REAL" ? <p className="mt-4 text-sm text-muted">Live status is synchronized from OrderKing Command.</p> : null}
         <div className="mt-6 rounded-[var(--radius-xl)] bg-surface p-4">
           <h2 className="mb-3 font-medium">{t("orders.invoice")}</h2>
-          <ul className="mb-3 space-y-1 text-sm">{order.items.map((it) => <li key={it.name} className="flex justify-between gap-3"><span>{it.quantity} × {it.name}</span><span className="tabular-nums">{formatPaise(it.lineTotalPaise, { locale })}</span></li>)}</ul>
+          <ul className="mb-3 space-y-1 text-sm">{order.items.map((it: any) => <li key={it.name} className="flex justify-between gap-3"><span>{it.quantity} × {it.name}</span><span className="tabular-nums">{formatPaise(it.lineTotalPaise, { locale })}</span></li>)}</ul>
           <QuoteLines lines={order.lines} locale={locale} />
         </div>
         {order.restaurantSimulated && !["DELIVERED", "CANCELLED", "REJECTED"].includes(order.status) ? <div className="mt-4 rounded-[var(--radius-lg)] border border-border p-3"><p className="text-sm text-muted">{t("orders.simulateHint")}</p><Button className="mt-2" variant="outline" disabled={advance.isPending} onClick={() => advance.mutate()}>{t("orders.simulate")}</Button></div> : null}

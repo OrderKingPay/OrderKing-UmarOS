@@ -50,7 +50,7 @@ function HomePage() {
       <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-subtle">{tr("home.wrong")}</h2>
       <div className="mb-8 space-y-2">
         {(q.data?.alerts ?? []).length === 0 && !q.isPending ? <p className="text-sm text-muted">No open alerts.</p> : null}
-        {(q.data?.alerts ?? []).map((a) => (
+        {(q.data?.alerts ?? []).map((a: any) => (
           <div key={a.id} className="flex items-start justify-between gap-3 rounded-md border border-border bg-surface px-3 py-2">
             <p className="text-sm">{a.message}</p>
             <Badge tone={statusTone(a.severity)}>{a.severity}</Badge>
@@ -59,12 +59,12 @@ function HomePage() {
       </div>
       <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-subtle">{tr("home.action")}</h2>
       <div className="mb-8 grid gap-4 lg:grid-cols-2">
-        <QueueCard title="Support" to="/support" rows={(q.data?.queue.tickets ?? []).map((r) => ({ id: r.id, label: r.subject, meta: r.priority }))} />
-        <QueueCard title="Restaurant onboarding" to="/restaurants" rows={(q.data?.queue.onboarding ?? []).map((r) => ({ id: r.id, label: r.name, meta: r.status }))} />
-        <QueueCard title="KYC" to="/kyc" rows={(q.data?.queue.kyc ?? []).map((r) => ({ id: r.id, label: `${r.subject_type} ${r.subject_id}`, meta: r.status }))} />
-        <QueueCard title="Settlements" to="/finance" rows={(q.data?.queue.settlements ?? []).map((r) => ({ id: r.id, label: `${r.party_type} ${r.party_id}`, meta: r.status }))} />
-        <QueueCard title="Risk" to="/risk" rows={(q.data?.queue.risk ?? []).map((r) => ({ id: r.id, label: r.signal_type, meta: String(r.score) }))} />
-        <QueueCard title="Dispatch" to="/dispatch" rows={(q.data?.queue.dispatch ?? []).map((r) => ({ id: r.id, label: r.id, meta: r.status }))} />
+        <QueueCard title="Support" to="/support" rows={(q.data?.queue.tickets ?? []).map((r: any) => ({ id: r.id, label: r.subject, meta: r.priority }))} />
+        <QueueCard title="Restaurant onboarding" to="/restaurants" rows={(q.data?.queue.onboarding ?? []).map((r: any) => ({ id: r.id, label: r.name, meta: r.status }))} />
+        <QueueCard title="KYC" to="/kyc" rows={(q.data?.queue.kyc ?? []).map((r: any) => ({ id: r.id, label: `${r.subject_type} ${r.subject_id}`, meta: r.status }))} />
+        <QueueCard title="Settlements" to="/finance" rows={(q.data?.queue.settlements ?? []).map((r: any) => ({ id: r.id, label: `${r.party_type} ${r.party_id}`, meta: r.status }))} />
+        <QueueCard title="Risk" to="/risk" rows={(q.data?.queue.risk ?? []).map((r: any) => ({ id: r.id, label: r.signal_type, meta: String(r.score) }))} />
+        <QueueCard title="Dispatch" to="/dispatch" rows={(q.data?.queue.dispatch ?? []).map((r: any) => ({ id: r.id, label: r.id, meta: r.status }))} />
       </div>
       {showFinance ? (
         <>
@@ -92,7 +92,7 @@ function QueueCard({ title, to, rows }: { title: string; to: string; rows: { id:
       </div>
       {rows.length === 0 ? <p className="text-sm text-muted">Queue is clear.</p> : null}
       <ul className="space-y-2">
-        {rows.map((r) => (
+        {rows.map((r: any) => (
           <li key={r.id} className="flex items-center justify-between gap-2 text-sm">
             <span className="truncate">{r.label}</span>
             <Badge>{r.meta}</Badge>

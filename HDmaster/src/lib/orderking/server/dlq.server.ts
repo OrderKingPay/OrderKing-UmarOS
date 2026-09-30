@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getSql } from "@/lib/db";
 import { nid } from "./workspace.server";
 

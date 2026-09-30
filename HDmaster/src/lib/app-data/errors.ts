@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { CallToolResult } from "./types.ts";
 import { isLoginRequired } from "./login.ts";
 

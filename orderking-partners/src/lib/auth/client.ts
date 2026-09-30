@@ -152,8 +152,7 @@ export async function signIn(
     return;
   }
 
-  const { data, error } = await authClient.signIn.oauth2({
-    providerId,
+  const { data, error } = await authClient.signIn.social({ provider: providerId,
     callbackURL,
     errorCallbackURL,
   });

@@ -60,7 +60,7 @@ function DispatchPage() {
           Rider
           <select className="mt-1 h-10 w-full rounded-sm border border-border bg-elevated px-2 text-sm" value={riderId} onChange={(e) => setRiderId(e.target.value)}>
             <option value="">Select available rider</option>
-            {(q.data?.available ?? []).map((r) => (
+            {(q.data?.available ?? []).map((r: any) => (
               <option key={String(r.id)} value={String(r.id)}>
                 {String(r.name)} · {String(r.zone_code)}
               </option>

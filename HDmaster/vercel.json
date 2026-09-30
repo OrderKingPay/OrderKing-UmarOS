@@ -2,6 +2,16 @@
   "regions": [
     "sin1"
   ],
+  "crons": [
+    {
+      "path": "/api/finance/cron/run-settlement",
+      "schedule": "0 2 * * 1"
+    },
+    {
+      "path": "/api/dispatch/cron/run-auto-dispatch",
+      "schedule": "* * * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

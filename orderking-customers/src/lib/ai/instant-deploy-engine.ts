@@ -1,3 +1,4 @@
+
 // Umar OS: 1-Command Instant Live Deployment Engine
 // Autonomously scaffolds and bundles any website, web app, business portal, or product page in 1 command.
 // Produces interactive in-browser sandboxes (data URI), standalone HTML5/PWA codebases, and production Vercel/Cloudflare CLI deploy scripts.

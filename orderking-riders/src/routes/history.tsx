@@ -21,7 +21,7 @@ function Page() {
   useEffect(() => {
     void getHistoryFn({ data: { preset } })
       .then(setRows)
-      .catch((e) => setError(errorMessage(e, t("connectionLostBody"))));
+      .catch((e: any) => setError(errorMessage(e, t("connectionLostBody"))));
     void getPerformanceFn().then(setPerf).catch(() => undefined);
   }, [preset, t]);
 
@@ -47,7 +47,7 @@ function Page() {
         {error ? <p className="text-sm text-offline">{error}</p> : null}
         {rows.length === 0 ? <p className="text-sm text-muted-foreground">{t("noHistory")}</p> : null}
         <ul className="space-y-2">
-          {rows.map((r) => (
+          {rows.map((r: any) => (
             <li key={r.delivery.id}>
               <Link to="/delivery/$id" params={{ id: r.delivery.id }}>
                 <Card className="flex items-center justify-between">

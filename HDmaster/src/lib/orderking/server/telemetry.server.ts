@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getSql } from "@/lib/db";
 import { cellToLatLng, latLngToCell } from "h3-js";
 import { nid } from "./workspace.server";

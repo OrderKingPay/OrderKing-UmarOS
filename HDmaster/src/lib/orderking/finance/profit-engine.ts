@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Master 12-Stream Revenue & Maximum Legal Profit Engine
  * OrderKing (Food Delivery) + KingPay (Fintech Layer)

@@ -37,6 +37,7 @@ export interface Sql {
     text: string,
     params?: unknown[],
   ): Promise<T[]>;
+  transaction<T>(callback: (tx: Sql) => Promise<T>): Promise<T>;
 }
 
 /**
@@ -84,7 +85,8 @@ function toSql(run: Run): Sql {
   }) as unknown as Sql;
   sql.query = <T = Record<string, unknown>>(text: string, params: unknown[] = []) =>
     run<T>(text, params);
-  return sql;
+  sql.transaction = async <T>(callback: (tx: Sql) => Promise<T>): Promise<T> => callback(sql);
+    return sql;
 }
 
 function createNeonSql(): Promise<Sql> {

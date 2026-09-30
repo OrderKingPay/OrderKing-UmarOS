@@ -44,7 +44,7 @@ function FinancePage() {
   function exportCsv() {
     const rows = q.data?.settlements ?? [];
     const header = "id,party,status,gmv,commission,payout";
-    const body = rows.map((s) => [s.id, s.party_name, s.status, s.gmv_paise, s.commission_paise, s.payout_paise].join(",")).join("\n");
+    const body = rows.map((s: any) => [s.id, s.party_name, s.status, s.gmv_paise, s.commission_paise, s.payout_paise].join(",")).join("\n");
     const blob = new Blob([`${header}\n${body}`], { type: "text/csv" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -88,7 +88,7 @@ function FinancePage() {
           </tr>
         </thead>
         <tbody>
-          {(q.data?.settlements ?? []).map((s) => (
+          {(q.data?.settlements ?? []).map((s: any) => (
             <tr key={String(s.id)}>
               <Td>{String(s.party_name)}</Td>
               <Td>{String(s.party_type)}</Td>

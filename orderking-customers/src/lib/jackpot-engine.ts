@@ -1,3 +1,4 @@
+
 /**
  * King Jackpot & Scratch Card Reward Engine
  * 100% Legal Trade Promotion & Customer Gamification under Indian Law

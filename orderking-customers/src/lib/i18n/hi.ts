@@ -1,3 +1,4 @@
+
 import type { MessageTree } from "./en";
 
 export const hi: MessageTree = {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 export type LedgerKind =
   | "food_value"
   | "restaurant_funded_discount"

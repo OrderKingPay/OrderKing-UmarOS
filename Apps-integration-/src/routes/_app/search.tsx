@@ -31,7 +31,7 @@ function SearchPage() {
       <PageHeader title="Search" description="Authorized entities only. Results respect your role." />
       <Input className="mb-4 max-w-lg" placeholder="Order, restaurant, rider, customer, employee" value={q} onChange={(e) => setQ(e.target.value)} autoFocus />
       <ul className="divide-y divide-border rounded-xl border border-border">
-        {(list.data?.groups ?? []).map((g) => (
+        {(list.data?.groups ?? []).map((g: any) => (
           <li key={`${g.type}-${g.id}`}>
             <Link to={(PATHS[g.type] ?? "/") as "/"} className="flex items-center justify-between px-4 py-3 text-sm hover:bg-elevated/60">
               <span>

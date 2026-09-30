@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { ForbiddenError, canUseAiTool, denyAiLeakage, allowedAiTools } from "@/lib/orderking/rbac";

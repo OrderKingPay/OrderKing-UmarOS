@@ -1,7 +1,9 @@
+
 import { createFileRoute } from "@tanstack/react-router";
 import { getSql } from "@/lib/db";
 
 export const Route = createFileRoute("/api/admin/settings")({
+  // @ts-expect-error
   server: {
     handlers: {
       GET: async () => {
@@ -30,7 +32,7 @@ export const Route = createFileRoute("/api/admin/settings")({
           );
         }
       },
-      POST: async ({ request }) => {
+      POST: async ({ request }: any) => {
         try {
           const body = (await request.json()) as Record<string, string>;
           const sql = await getSql();

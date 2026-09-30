@@ -1,3 +1,4 @@
+
 import type { PublicAppConfig } from "./types";
 
 /** Fallback when the database has no row yet. Visible brand strings read from here or `app_config`. */

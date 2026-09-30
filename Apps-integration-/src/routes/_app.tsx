@@ -20,7 +20,7 @@ function AppLayout() {
     if (!user) return;
     let cancelled = false;
     void getBootstrap()
-      .then((r) => {
+      .then((r: any) => {
         if (cancelled) return;
         if (!r.ok) setErr({ code: r.code, error: r.error });
         else {

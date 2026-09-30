@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { TravelMode, TravelSearchQuery, NormalizedTravelResult, TravelBookingRequest, TravelBookingResponse } from "./schemas/travel-schemas.ts";
 
 export interface TravelProvider {

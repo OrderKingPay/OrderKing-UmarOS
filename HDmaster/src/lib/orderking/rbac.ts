@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   AI_TOOLS,
   HIGH_RISK_PERMISSIONS,

@@ -1,3 +1,4 @@
+
 /**
  * HDmaster Founder AI — Revenue Growth & Repeat-Business Engine (§13, §14)
  *

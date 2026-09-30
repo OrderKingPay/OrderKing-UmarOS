@@ -1,3 +1,4 @@
+
 import type { Lang } from "./i18n";
 
 export function localeFor(lang: Lang): string {

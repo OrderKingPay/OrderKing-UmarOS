@@ -1,3 +1,4 @@
+
 /**
  * HDmaster Founder AI — Cost Control & Expense Optimization Engine (§24)
  *

@@ -1,3 +1,4 @@
+
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -75,7 +76,7 @@ function CartPage() {
             <p className="mt-1 text-sm text-muted">{t("cart.from", { name: restaurantName })}</p>
             <ul className="mt-4 space-y-3">
               {items.map((item) => {
-                const priced = quote.data?.pricedLines.find((p) => p.key === item.key);
+                const priced = quote.data?.pricedLines.find((p: any) => p.key === item.key);
                 return (
                   <li key={item.key} className="rounded-[var(--radius-lg)] bg-surface p-3">
                     <div className="flex items-start justify-between gap-3">

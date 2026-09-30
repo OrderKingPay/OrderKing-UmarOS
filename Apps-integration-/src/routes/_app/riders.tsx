@@ -55,7 +55,7 @@ function RidersPage() {
           </tr>
         </thead>
         <tbody>
-          {(list.data?.rows ?? []).map((r) => (
+          {(list.data?.rows ?? []).map((r: any) => (
             <tr key={String(r.id)}>
               <Td>
                 {String(r.name)}

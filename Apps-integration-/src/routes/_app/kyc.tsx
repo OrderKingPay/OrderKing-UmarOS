@@ -52,7 +52,7 @@ function KycPage() {
           </tr>
         </thead>
         <tbody>
-          {(q.data?.rows ?? []).map((c) => (
+          {(q.data?.rows ?? []).map((c: any) => (
             <tr key={String(c.id)}>
               <Td className="font-mono text-xs">{String(c.id)}</Td>
               <Td>

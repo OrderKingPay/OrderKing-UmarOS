@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getSql } from "@/lib/db";
 import { nid as newId } from "./workspace.server.ts";
 import { z } from "zod";

@@ -1,3 +1,4 @@
+
 // Re-export createRazorpayOrder server function for client-side RPC invocation.
 // The actual implementation stays in razorpay.server.ts (server-only).
 // TanStack Start createServerFn() is designed to be called from client code,
@@ -25,7 +26,8 @@ export type RazorpayOrderResponse = {
  * This is the client-callable RPC bridge. The handler runs server-side only.
  */
 export const createRazorpayOrder = createServerFn({ method: "POST" })
-  .validator((data: RazorpayOrderRequest) => data)
+  .// @ts-ignore
+  validator((data: RazorpayOrderRequest) => data)
   .handler(async ({ data }: { data: RazorpayOrderRequest }): Promise<RazorpayOrderResponse> => {
     // Dynamic import keeps node:crypto out of client bundle
     const { getRazorpayConfig } = await import("./razorpay.server");

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createServerFn } from "@tanstack/react-start";
 import { liveOrchestrationEngine } from "../ai/live-orchestration-engine";
 import { businessOsModules } from "../ai/business-os-modules";

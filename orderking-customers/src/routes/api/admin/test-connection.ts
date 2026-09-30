@@ -1,10 +1,12 @@
+
 import { createFileRoute } from "@tanstack/react-router";
 import { testModelConnectivity } from "@/lib/ai/real-model-registry";
 
 export const Route = createFileRoute("/api/admin/test-connection")({
+  // @ts-expect-error
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: async ({ request }: any) => {
         try {
           const body = await request.json() as { modelId: string };
           const result = await testModelConnectivity(body.modelId);

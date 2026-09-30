@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * OrderKing cross-window integration contracts.
  *

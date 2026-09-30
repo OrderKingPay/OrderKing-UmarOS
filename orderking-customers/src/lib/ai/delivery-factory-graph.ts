@@ -1,3 +1,4 @@
+
 // HDmaster Founder AI — Multi-Agent Delivery Task Graph & Self-QA Suite
 // Implements Directive §8 (Automatic Delivery Factory) & §9 (Self-QA Before Delivery)
 

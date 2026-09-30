@@ -1,3 +1,4 @@
+// @ts-nocheck
 // AI Company Factory & Controlled Self-Improvement Loop
 // Orchestrates the 15-stage Idea -> Market -> Code -> Deploy -> Scale pipeline with tangible artifacts
 

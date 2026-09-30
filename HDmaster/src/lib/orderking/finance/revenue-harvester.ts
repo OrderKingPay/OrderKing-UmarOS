@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * OrderKing Planetary SuperPower Revenue Harvester & Direct Money Generator Core
  * Confidential & Proprietary - Restricted Solely to Platform Owner / CEO

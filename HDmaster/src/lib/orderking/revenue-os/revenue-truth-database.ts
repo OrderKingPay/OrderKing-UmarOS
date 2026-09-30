@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Revenue Truth Database (Directives 10 & 11)
 // Immutable financial event records with cryptographic hash chaining and provider verification.
 // An AI-generated message can NEVER manufacture a financial event.

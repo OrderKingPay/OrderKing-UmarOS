@@ -1,3 +1,4 @@
+
 export function isGrokEmbedderOrigin(origin: string): boolean {
   try {
     const url = new URL(origin);
