@@ -1212,20 +1212,10 @@ export async function executeTool(
 
     case "run_weekly_settlements": {
       requirePermission(ws.ctx, "view_finance");
-      return {
-        status: "SETTLEMENT_BATCH_GENERATED",
-        batchCycle: "WEDNESDAY_WEEKLY",
-        timestamp: new Date().toISOString(),
-        deductionsApplied: {
-          gstPaise: 18000,
-          tcsPaise: 1000,
-          tdsPaise: 1000,
-        },
-        netSettlementPaise: 1250000,
-        complianceStandard: "INDIAN_GST_TCS_TDS_COMPLIANT",
-      };
+      const { AutoSettlementEngine } = await import("../finance/auto-settlement-engine");
+      const result = await AutoSettlementEngine.runGlobalWeeklyReconciliation();
+      return { status: "LIVE_SETTLEMENT_ENGINE_RESULT", timestamp: new Date().toISOString(), ...result };
     }
-
     case "optimize_affiliate_alliances": {
       requirePermission(ws.ctx, "manage_promotions");
       const sql = await getSql();
