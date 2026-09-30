@@ -6,7 +6,8 @@ import { enforceRateLimit } from "@/lib/orderking/security/rate-limiter";
 import { testModelConnectivity } from "@/lib/orderking/ai/real-model-registry";
 
 export const Route = createFileRoute("/api/v1/admin/ai-provider-test")({
-  POST: async ({ request }: any) => {
+    handlers: {
+      POST: async ({ request }: any) => {
     try {
       const userId = await requireUserId();
       const workspace = await ensureWorkspace(userId);
