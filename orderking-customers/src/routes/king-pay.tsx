@@ -1294,16 +1294,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const togglePayLater = () => {
-    const next = !payLaterActive;
-    setPayLaterActive(next);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_later_active", String(next));
-    }
-    if (next) {
-      toast.success("⚡ KingPay Later Activated! ₹2,500 credit limit ready at 0% interest.");
-    } else {
-      toast.info("KingPay Later deactivated.");
-    }
+    toast.info("KingPay Later requires a verified lender/NBFC partner and an approved provider callback. No credit line was activated.");
   };
 
   const claimStreak = () => {
@@ -2513,13 +2504,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 <div className="flex items-center gap-2">
                   <h3 className="font-display text-sm font-bold text-fg">KingPay Later</h3>
                   <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                    0% Interest for 15 Days
+                    Provider-defined terms
                   </span>
                 </div>
                 <p className="text-xs text-muted">
                   {payLaterActive
                     ? `Approved Credit Limit: ₹${payLaterLimit.toLocaleString("en-IN")}.00 | 1-Tap Ready`
-                    : "Instant ₹2,500 credit limit. No bank documents. Zero interest."}
+                    : "Eligibility and credit terms are determined by the connected lender/provider."}
                 </p>
               </div>
             </div>
