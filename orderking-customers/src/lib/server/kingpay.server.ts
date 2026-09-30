@@ -37,13 +37,13 @@ export const listKingpayTransactions = createServerFn({ method: "GET" }).handler
 });
 
 export const addKingpayMoney = createServerFn({ method: "POST" })
-  .validator((data: { amount: number; description: string }) => data)
+  .inputValidator((data: { amount: number; description: string }) => data)
   .handler(async () => {
     throw new Error("DIRECT_WALLET_CREDIT_DISABLED: Wallet credits must come from a verified payment or rewards provider callback.");
   });
 
 export const deductKingpayMoney = createServerFn({ method: "POST" })
-  .validator((data: { amount: number; description: string }) => data)
+  .inputValidator((data: { amount: number; description: string }) => data)
   .handler(async () => {
     throw new Error("DIRECT_WALLET_DEBIT_DISABLED: Wallet debits must be executed by a verified transaction flow.");
   });
