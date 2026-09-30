@@ -31,22 +31,22 @@ export type AiModelId =
  */
 export function resolveAutoModel(query: string): { model: AiModelId; reason: string } {
   const q = query.toLowerCase();
-  if (q.includes("ensemble") || q.includes("all model") || q.includes("consensus") || q.includes("run all") || q.includes("together")) {
-    return { model: "ensemble-consensus", reason: "Auto-routed to Ensemble Multi-Model Consensus: Running all strongest models simultaneously." };
-  }
-  if (q.includes("code") || q.includes("schema") || q.includes("api") || q.includes("scaffold") || q.includes("react") || q.includes("sql") || q.includes("git")) {
-    return { model: "codex-supreme", reason: "Auto-routed to Codex Supreme Architect for maximum precision code synthesis." };
-  }
-  if (q.includes("live") || q.includes("score") || q.includes("news") || q.includes("trending") || q.includes("cricket") || q.includes("match")) {
-    return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 SuperGrok Ultra for real-time live telemetric intelligence." };
-  }
-  if (q.includes("video") || q.includes("image") || q.includes("render") || q.includes("4k") || q.includes("reel")) {
-    return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra for photorealistic multimodal & 4K video generation." };
-  }
-  if (q.includes("invoice") || q.includes("client") || q.includes("contract") || q.includes("legal") || q.includes("upwork") || q.includes("pitch")) {
-    return { model: "claude-4-6-opus", reason: "Auto-routed to Claude 4.6 Opus for enterprise contractual & high-ticket negotiation excellence." };
-  }
-  return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra flagship executive reasoning engine." };
+  const domain =
+    q.includes("code") || q.includes("schema") || q.includes("api") || q.includes("sql") || q.includes("git")
+      ? "engineering"
+      : q.includes("live") || q.includes("news") || q.includes("trending") || q.includes("match")
+        ? "real-time-information"
+        : q.includes("image") || q.includes("video") || q.includes("render")
+          ? "media-generation"
+          : q.includes("invoice") || q.includes("contract") || q.includes("legal") || q.includes("client")
+            ? "business"
+            : "general";
+
+  return {
+    model: "auto-supreme-orchestrator",
+    reason: `Routing domain "${domain}" through configured real providers. The actual provider/model is selected and verified at runtime; no unavailable model name is claimed.`,
+  };
+}
 }
 
 export interface ChatAttachment { content?: string;
