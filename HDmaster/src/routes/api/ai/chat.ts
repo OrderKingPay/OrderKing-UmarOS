@@ -3,6 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { executeFounderAiChat, type AiChatRequest } from "@/lib/orderking/server/ai-chat-service.server";
 import { createSseStream } from "@/lib/orderking/infrastructure/sse-hub";
 import { enforceRateLimit } from "@/lib/orderking/security/rate-limiter";
+import { requireUserId } from "@/lib/auth/verify.server";
+import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
 
 export const Route = createFileRoute("/api/ai/chat")({
   // @ts-expect-error
@@ -10,13 +12,34 @@ export const Route = createFileRoute("/api/ai/chat")({
     handlers: {
       POST: async ({ request }: any) => {
         try {
-          const rateLimitResponse = await enforceRateLimit(request, "ai-chat", {
+          const userId = await requireUserId();
+          const workspace = await ensureWorkspace(userId);
+          if (!workspace.ctx.permissions.includes("access_AI")) {
+            return new Response(JSON.stringify({ error: "AI access permission required" }), {
+              status: 403,
+              headers: { "content-type": "application/json", "cache-control": "no-store" },
+            });
+          }
+
+          const rateLimitResponse = await enforceRateLimit(request, `ai-chat:${userId}`, {
             windowMs: 60_000,
             maxRequests: 20,
           });
           if (rateLimitResponse) return rateLimitResponse;
 
           const body = (await request.json()) as AiChatRequest;
+          if (body.apiKeys && Object.keys(body.apiKeys).length > 0) {
+            return new Response(JSON.stringify({ error: "Provider API keys must never be sent from the browser." }), {
+              status: 400,
+              headers: { "content-type": "application/json", "cache-control": "no-store" },
+            });
+          }
+          if (body.messages.length > 32 || body.messages.some((m) => typeof m.content !== "string" || m.content.length > 8000)) {
+            return new Response(JSON.stringify({ error: "Chat payload exceeds allowed limits." }), {
+              status: 413,
+              headers: { "content-type": "application/json", "cache-control": "no-store" },
+            });
+          }
           const acceptHeader = request.headers.get("accept") || "";
           const prefersStream = acceptHeader.includes("text/event-stream");
 
