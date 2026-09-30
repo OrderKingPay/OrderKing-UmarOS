@@ -1,35 +1,115 @@
 substitutions:
   _REGION: asia-south1
   _REPOSITORY: orderking
-  _SERVICE: orderking-customers
-  _APP_DIR: orderking-customers
+  _TAG: "$BUILD_ID"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
 
 steps:
-  - id: build
+  # Build + push each service sequentially. The Docker daemon/cache is shared
+  # across build steps, so the common pnpm install layer can be reused.
+  - id: build-hdmaster
     name: gcr.io/cloud-builders/docker
     args:
       - build
       - --build-arg
-      - APP_DIR=${_APP_DIR}
+      - APP_DIR=HDmaster
       - -t
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${SHORT_SHA}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${_TAG}
       - .
 
-  - id: push
+  - id: push-hdmaster
     name: gcr.io/cloud-builders/docker
+    waitFor: [build-hdmaster]
     args:
       - push
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${SHORT_SHA}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${_TAG}
 
-  - id: deploy
+  - id: build-customers
+    name: gcr.io/cloud-builders/docker
+    waitFor: [push-hdmaster]
+    args:
+      - build
+      - --build-arg
+      - APP_DIR=orderking-customers
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${_TAG}
+      - .
+
+  - id: push-customers
+    name: gcr.io/cloud-builders/docker
+    waitFor: [build-customers]
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${_TAG}
+
+  - id: build-partners
+    name: gcr.io/cloud-builders/docker
+    waitFor: [push-customers]
+    args:
+      - build
+      - --build-arg
+      - APP_DIR=orderking-partners
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${_TAG}
+      - .
+
+  - id: push-partners
+    name: gcr.io/cloud-builders/docker
+    waitFor: [build-partners]
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${_TAG}
+
+  - id: build-riders
+    name: gcr.io/cloud-builders/docker
+    waitFor: [push-partners]
+    args:
+      - build
+      - --build-arg
+      - APP_DIR=orderking-riders
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${_TAG}
+      - .
+
+  - id: push-riders
+    name: gcr.io/cloud-builders/docker
+    waitFor: [build-riders]
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${_TAG}
+
+  - id: build-integration
+    name: gcr.io/cloud-builders/docker
+    waitFor: [push-riders]
+    args:
+      - build
+      - --build-arg
+      - APP_DIR=Apps-integration-
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${_TAG}
+      - .
+
+  - id: push-integration
+    name: gcr.io/cloud-builders/docker
+    waitFor: [build-integration]
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${_TAG}
+
+  # Deploy all five Cloud Run services. The same image tag is used for every
+  # service so the release is traceable to one Cloud Build execution.
+  - id: deploy-hdmaster
     name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [push-integration]
     entrypoint: gcloud
     args:
       - run
       - deploy
-      - ${_SERVICE}
+      - hdmaster
       - --image
-      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${SHORT_SHA}
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${_TAG}
       - --region
       - ${_REGION}
       - --platform
@@ -48,8 +128,135 @@ steps:
       - "20"
       - --allow-unauthenticated
 
-images:
-  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${SHORT_SHA}
+  - id: deploy-customers
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [deploy-hdmaster]
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - orderking-customers
+      - --image
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${_TAG}
+      - --region
+      - ${_REGION}
+      - --platform
+      - managed
+      - --execution-environment
+      - gen2
+      - --port
+      - "8080"
+      - --cpu
+      - "1"
+      - --memory
+      - 1Gi
+      - --min-instances
+      - "0"
+      - --max-instances
+      - "20"
+      - --allow-unauthenticated
 
-options:
-  logging: CLOUD_LOGGING_ONLY
+  - id: deploy-partners
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [deploy-customers]
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - orderking-partners
+      - --image
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${_TAG}
+      - --region
+      - ${_REGION}
+      - --platform
+      - managed
+      - --execution-environment
+      - gen2
+      - --port
+      - "8080"
+      - --cpu
+      - "1"
+      - --memory
+      - 1Gi
+      - --min-instances
+      - "0"
+      - --max-instances
+      - "20"
+      - --allow-unauthenticated
+
+  - id: deploy-riders
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [deploy-partners]
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - orderking-riders
+      - --image
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${_TAG}
+      - --region
+      - ${_REGION}
+      - --platform
+      - managed
+      - --execution-environment
+      - gen2
+      - --port
+      - "8080"
+      - --cpu
+      - "1"
+      - --memory
+      - 1Gi
+      - --min-instances
+      - "0"
+      - --max-instances
+      - "20"
+      - --allow-unauthenticated
+
+  - id: deploy-integration
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [deploy-riders]
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - apps-integration
+      - --image
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${_TAG}
+      - --region
+      - ${_REGION}
+      - --platform
+      - managed
+      - --execution-environment
+      - gen2
+      - --port
+      - "8080"
+      - --cpu
+      - "1"
+      - --memory
+      - 1Gi
+      - --min-instances
+      - "0"
+      - --max-instances
+      - "20"
+      - --allow-unauthenticated
+
+  - id: report-services
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [deploy-integration]
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        echo "=== OrderKing Cloud Run release ${_TAG} ==="
+        for service in hdmaster orderking-customers orderking-partners orderking-riders apps-integration; do
+          gcloud run services describe "$service" \
+            --region="${_REGION}" \
+            --format="value(metadata.name,status.url)"
+        done
+
+images:
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/hdmaster:${_TAG}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-customers:${_TAG}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-partners:${_TAG}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/orderking-riders:${_TAG}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/apps-integration:${_TAG}
