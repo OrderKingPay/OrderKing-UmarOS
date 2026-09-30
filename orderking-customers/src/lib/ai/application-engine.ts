@@ -79,8 +79,8 @@ export const VERIFIED_FOUNDER_PORTFOLIO = [
 
 export function buildCustomizedApplication(opportunity: Opportunity): ApplicationDraft {
   const appId = `APP-${Date.now().toString(36)}`;
-  const proposedPriceInr = opportunity.statedBudget ?? 95000;
-  const proposedPriceUsd = opportunity.currency === "USD" ? Number((opportunity.statedBudget / 84).toFixed(0)) : null;
+  const proposedPriceInr = opportunity.statedBudget ?? null;
+  const proposedPriceUsd = opportunity.currency === "USD" && opportunity.statedBudget != null ? opportunity.statedBudget : null;
   const estimatedCostInr = null;
   const marginPct = estimatedCostInr == null ? 0 : Math.round(((proposedPriceInr - estimatedCostInr) / proposedPriceInr) * 100);
 
@@ -107,7 +107,7 @@ ${(relevantPortfolio.length > 0 ? relevantPortfolio : VERIFIED_FOUNDER_PORTFOLIO
 
 Execution & Commercials:
 • Estimated Delivery Timeline: ${Math.ceil(opportunity.estimatedEffortHours / 40)} weeks (${opportunity.estimatedEffortHours} engineering hours)
-• Proposed Investment: ₹${proposedPriceInr.toLocaleString()}${proposedPriceUsd == null ? "" : ` (${proposedPriceUsd.toLocaleString()})`}
+• Proposed Investment: ${proposedPriceInr == null ? "Founder pricing required" : `₹${proposedPriceInr.toLocaleString()}`}${proposedPriceUsd == null || opportunity.currency !== "USD" ? "" : ` (${proposedPriceUsd.toLocaleString()})`}
 • Milestones: subject to founder approval and the final project agreement.
 
 We enforce a strict 6-stage Self-QA protocol (Unit, E2E, Security, Responsive, Accessibility, Performance) before any deliverable is handed over.
@@ -130,7 +130,7 @@ HDmaster Founder Engineering Core`;
     missingOrUnverifiedSkills: opportunity.missingSkills,
     customCoverLetter: coverLetter,
     verifiedPortfolioAttachments: relevantPortfolio.length > 0 ? relevantPortfolio : VERIFIED_FOUNDER_PORTFOLIO,
-    proposedPriceInr,
+    proposedPriceInr: proposedPriceInr ?? 0,
     proposedPriceUsd,
     estimatedEffortHours: opportunity.estimatedEffortHours,
     marginPct,
