@@ -1179,18 +1179,23 @@ export async function executeTool(
 
     case "reconcile_wallet_ledger": {
       requirePermission(ws.ctx, "view_finance");
+      const sql = await getSql();
+      const [wallets,txs,splits] = await Promise.all([
+        sql`SELECT COUNT(*)::int AS users, COALESCE(SUM(balance_paise),0)::bigint AS liability FROM kingpay_wallets`,
+        sql`SELECT COALESCE(SUM(CASE WHEN type='CREDIT' THEN amount_paise ELSE 0 END),0)::bigint AS credits, COALESCE(SUM(CASE WHEN type='DEBIT' THEN amount_paise ELSE 0 END),0)::bigint AS debits FROM kingpay_transactions`,
+        sql`SELECT party, COALESCE(SUM(CASE WHEN kind='CREDIT' THEN amount_paise ELSE -amount_paise END),0)::bigint AS net_amount FROM ledger_entries GROUP BY party`,
+      ]);
       return {
-        status: "RECONCILED",
-        auditTimestamp: new Date().toISOString(),
-        escrowFloatPaise: 25000000,
-        userWalletLiabilitiesPaise: 25000000,
-        discrepancyPaise: 0,
-        doubleEntryInvariant: "BALANCED",
-        verifiedAccounts: ["USER_WALLETS", "ESCROW_NODAL", "MERCHANT_FLOAT", "RIDER_FLOAT"],
-        auditNote: "1:1 Double-entry invariant fully satisfied. Escrow reserves match customer liabilities exactly.",
+        status: "LIVE_MEASURED",
+        timestamp: new Date().toISOString(),
+        walletUsers: Number(wallets[0]?.users || 0),
+        walletLiabilitiesPaise: Number(wallets[0]?.liability || 0),
+        walletCreditsPaise: Number(txs[0]?.credits || 0),
+        walletDebitsPaise: Number(txs[0]?.debits || 0),
+        ledgerSplits: splits,
+        doubleEntryInvariant: "NOT_ASSERTED_WITHOUT_COMPLETE_ACCOUNT_MAP",
       };
     }
-
     case "analyze_fintech_risk": {
       requirePermission(ws.ctx, "view_risk");
       return {
