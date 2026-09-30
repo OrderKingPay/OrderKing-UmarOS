@@ -1,0 +1,71 @@
+name: OrderKing Five-App Truth Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "HDmaster/**"
+      - "orderking-customers/**"
+      - "orderking-partners/**"
+      - "orderking-riders/**"
+      - "Apps-integration-/**"
+      - ".github/workflows/orderking-five-app-truth-gate.yml"
+  pull_request:
+    paths:
+      - "HDmaster/**"
+      - "orderking-customers/**"
+      - "orderking-partners/**"
+      - "orderking-riders/**"
+      - "Apps-integration-/**"
+      - ".github/workflows/orderking-five-app-truth-gate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: HDmaster
+            path: HDmaster
+            build: "node scripts/with-app-env.mjs vite build"
+          - app: CustomerApp
+            path: orderking-customers
+            build: "node scripts/with-app-env.mjs vite build"
+          - app: PartnerApp
+            path: orderking-partners
+            build: "node scripts/with-app-env.mjs vite build"
+          - app: RiderApp
+            path: orderking-riders
+            build: "node scripts/with-app-env.mjs vite build"
+          - app: IntegrationApp
+            path: Apps-integration-
+            build: "node scripts/with-app-env.mjs vite build"
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.path }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ matrix.path }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: ${{ matrix.build }}
