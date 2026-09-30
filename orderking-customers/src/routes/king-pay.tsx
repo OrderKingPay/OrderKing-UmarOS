@@ -269,14 +269,14 @@ const LOAN_PRODUCTS: LoanProduct[] = [
     name: "HDFC Bank Millennia Credit Card",
     category: "card",
     partnerNbfc: "HDFC Bank Limited (Scheduled Commercial Bank)",
-    maxLimit: "₹1,50,000 Instant Limit",
-    interestRate: "45 Days 0% Interest",
+    maxLimit: "₹1,50,000 Indicative limit",
+    interestRate: "Issuer-defined terms",
     tenureRange: "Revolving Credit Line",
     speedText: "⚡ Instant Virtual Card Generated",
     tag: "Best for Food & Shopping",
     ownerCommission: "Flat ₹2,000 CPA per Activated Card",
     benefit: "5% Cashback on Amazon, Flipkart, Swiggy & Zomato + Flat ₹1,500 Amazon voucher on activation.",
-    whatsappMessage: "Hi, I want to apply for the pre-approved HDFC Millennia Credit Card via KingPay.",
+    whatsappMessage: "Hi, I want to apply for the HDFC Millennia Credit Card application via KingPay.",
     partnerUrl: "https://www.hdfcbank.com?utm_source=orderking_affiliate",
   },
   {
@@ -296,13 +296,13 @@ const LOAN_PRODUCTS: LoanProduct[] = [
   },
   {
     id: "idfc_wow",
-    name: "IDFC FIRST WOW Credit Card (FD Backed - 100% Approval)",
+    name: "IDFC FIRST WOW Credit Card (FD Backed - Issuer eligibility required)",
     category: "card",
     partnerNbfc: "IDFC FIRST Bank Ltd (Scheduled Commercial Bank)",
     maxLimit: "₹2,00,000 Instant Limit",
-    interestRate: "48 Days 0% Interest",
+    interestRate: "Issuer-defined terms",
     tenureRange: "Revolving Credit Line",
-    speedText: "⚡ 100% Guaranteed Approval (0 CIBIL)",
+    speedText: "⚡ Issuer eligibility required (0 CIBIL)",
     tag: "Guaranteed 100% Approval",
     ownerCommission: "Flat ₹1,500 CPA per Activated Card",
     benefit: "Zero credit score required! 100% approval backed by instant FD earning 7.5% interest + 0 forex markup.",
@@ -316,9 +316,9 @@ const LOAN_PRODUCTS: LoanProduct[] = [
     category: "card",
     partnerNbfc: "Axis Bank Ltd (Scheduled Commercial Bank)",
     maxLimit: "₹2,50,000 Instant Limit",
-    interestRate: "50 Days 0% Interest",
+    interestRate: "Issuer-defined terms",
     tenureRange: "Revolving Credit Line",
-    speedText: "⚡ Instant Digital Approval",
+    speedText: "⚡ Issuer decision required",
     tag: "4% IndianOil Fuel Back",
     ownerCommission: "Flat ₹2,200 CPA per Activated Card",
     benefit: "4% value back (20 reward points / ₹100) at IndianOil pumps + 1% fuel surcharge waiver + ₹250 welcome cashback.",
@@ -383,7 +383,7 @@ const LOAN_PRODUCTS: LoanProduct[] = [
     tag: "0% No-Cost EMI",
     ownerCommission: "Flat ₹500 CPA per Card Activation",
     benefit: "Pre-approved ₹2,00,000 limit across 1.5 Lakh partner stores and e-commerce. Zero paperwork and 0 down payment.",
-    whatsappMessage: "Hi, I want to activate my pre-approved Bajaj Finserv Insta EMI Card with ₹2,00,000 limit.",
+    whatsappMessage: "Hi, I want to activate my eligible application Bajaj Finserv Insta EMI Card with ₹2,00,000 limit.",
     partnerUrl: "https://www.bajajfinserv.in/insta-emi-card?utm_source=orderking_affiliate",
   },
   {
@@ -467,7 +467,7 @@ const BAJAJ_TOP_20_OFFERS: BajajOffer[] = [
     badge: "No Cost EMI",
     limitText: "Up to ₹1,50,000",
     tenure: "3 - 12 Months",
-    customerBenefit: "Zero down payment, 0% interest on Apple iPhone, Samsung, OnePlus & Xiaomi.",
+    customerBenefit: "Zero down payment, provider-defined interest/terms on Apple iPhone, Samsung, OnePlus & Xiaomi.",
     ownerCommission: "2.5% of Device GMV (₹1,000 - ₹3,750)",
     instantApplyUrl: "https://www.bajajfinserv.in/mobile-phones-on-emi?utm_source=orderking_affiliate",
   },
@@ -2461,10 +2461,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               </span>
               <div>
                 <h3 className="font-display text-sm font-bold text-fg">Linked Bank Accounts</h3>
-                <p className="text-xs text-muted">NPCI UPI Interoperable · Direct Bank-to-Bank Transfer</p>
+                <p className="text-xs text-muted">Bank/UPI provider connection required</p>
               </div>
             </div>
-            <span className="text-[10px] font-bold text-primary bg-primary/10 rounded-full px-2 py-0.5">3 Accounts Active</span>
+            <span className="text-[10px] font-bold text-primary bg-primary/10 rounded-full px-2 py-0.5">Provider-linked accounts only</span>
           </div>
 
           <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -3608,7 +3608,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                         disabled={isFetchingBill}
                         className="w-full font-bold text-xs py-2.5 bg-primary text-white shadow mt-3"
                       >
-                        {isFetchingBill ? "Processing..." : `⚡ Pay ₹${fetchedBill.billAmount.toLocaleString("en-IN")} Bill (0% Fee)`}
+                        {isFetchingBill ? "Processing..." : `⚡ Pay ₹${fetchedBill.billAmount.toLocaleString("en-IN")} Bill (Provider fee)`}
                       </Button>
                     </div>
                   )}
