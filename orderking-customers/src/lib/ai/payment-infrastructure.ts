@@ -57,65 +57,7 @@ export interface PaymentWebhookPayload {
   timestamp: string;
 }
 
-export const INITIAL_CLIENT_INVOICES: ClientInvoiceRecord[] = [
-  {
-    id: "INV-2026-001",
-    clientName: "Royal Feast Cloud Kitchen",
-    clientEmail: "accounts@royalfeast.in",
-    projectName: "Sovereign POS & QR Billing Engine",
-    items: [
-      {
-        id: "ITEM-1",
-        description: "Turnkey POS & Kitchen Display System License",
-        quantity: 1,
-        unitPriceInr: 95000,
-        totalInr: 95000,
-      },
-      {
-        id: "ITEM-2",
-        description: "Cloud Kitchen WhatsApp Automated Alerts Integration",
-        quantity: 1,
-        unitPriceInr: 15000,
-        totalInr: 15000,
-      },
-    ],
-    subtotalInr: 110000,
-    taxInr: 0,
-    totalInr: 110000,
-    paymentMethod: "UPI_DIRECT",
-    status: "RECEIVED",
-    paymentLink: "upi://pay?pa=orderking@okhdfcbank&pn=OrderKing&am=110000&cu=INR&tn=INV-2026-001",
-    qrPayload: "upi://pay?pa=orderking@okhdfcbank&pn=OrderKing&am=110000&cu=INR",
-    issuedAt: new Date(Date.now() - 72 * 3600 * 1000).toISOString(),
-    paidAt: new Date(Date.now() - 48 * 3600 * 1000).toISOString(),
-    providerEventId: "UTR-HDFC-98214812",
-    reconciled: true,
-  },
-  {
-    id: "INV-2026-002",
-    clientName: "Bengaluru Logistics Tenders",
-    clientEmail: "ops@bengalurulogistics.com",
-    projectName: "Hyperlocal Geodesic Clustering Algorithm",
-    items: [
-      {
-        id: "ITEM-1",
-        description: "50% Advance Milestone: Geodesic Dispatch Architecture",
-        quantity: 1,
-        unitPriceInr: 74500,
-        totalInr: 74500,
-      },
-    ],
-    subtotalInr: 74500,
-    taxInr: 0,
-    totalInr: 74500,
-    paymentMethod: "UPI_DIRECT",
-    status: "ESCROW_LOCKED",
-    paymentLink: "upi://pay?pa=orderking@okhdfcbank&pn=OrderKing&am=74500&cu=INR&tn=INV-2026-002",
-    qrPayload: "upi://pay?pa=orderking@okhdfcbank&pn=OrderKing&am=74500&cu=INR",
-    issuedAt: new Date(Date.now() - 12 * 3600 * 1000).toISOString(),
-    reconciled: false,
-  },
-];
+export const INITIAL_CLIENT_INVOICES: ClientInvoiceRecord[] = [];
 
 export function verifyAndProcessWebhook(
   payload: PaymentWebhookPayload,
@@ -125,9 +67,37 @@ export function verifyAndProcessWebhook(
   invoice?: ClientInvoiceRecord;
   error?: string;
 } {
-  // Enforce signature check
+  // Enforce provider-specific HMAC verification. The webhook payload passed to this
+  // function must be the canonical body fields used by the integration layer.
   if (!payload.signature || payload.signature.length < 8) {
     return { success: false, error: "CRYPTOGRAPHIC_SIGNATURE_INVALID: Missing or malformed provider signature" };
+  }
+
+  const secretEnv =
+    payload.provider === "RAZORPAY" ? "RAZORPAY_WEBHOOK_SECRET" :
+    payload.provider === "STRIPE" ? "STRIPE_WEBHOOK_SECRET" :
+    "UPI_BANK_WEBHOOK_SECRET";
+  const secret = process.env[secretEnv]?.trim();
+  if (!secret) {
+    return { success: false, error: `PROVIDER_CONFIGURATION_REQUIRED: ${secretEnv} is missing` };
+  }
+
+  const crypto = require("node:crypto");
+  const canonical = JSON.stringify({
+    eventId: payload.eventId,
+    provider: payload.provider,
+    eventType: payload.eventType,
+    amount: payload.amount,
+    currency: payload.currency,
+    invoiceId: payload.invoiceId,
+    timestamp: payload.timestamp,
+  });
+  const expected = crypto.createHmac("sha256", secret).update(canonical).digest("hex");
+  const given = payload.signature.trim().toLowerCase();
+  const valid = given.length === expected.length &&
+    crypto.timingSafeEqual(Buffer.from(given), Buffer.from(expected));
+  if (!valid) {
+    return { success: false, error: "CRYPTOGRAPHIC_SIGNATURE_INVALID: Provider signature verification failed" };
   }
 
   const invoice = invoices.find((inv) => inv.id === payload.invoiceId);
