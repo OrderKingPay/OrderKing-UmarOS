@@ -1,44 +1,46 @@
 // @ts-nocheck
-import { createAPIFileRoute } from "@tanstack/react-start/api";
-import { requireUserId } from "@/lib/auth/verify.server";
-import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
-import { enforceRateLimit } from "@/lib/orderking/security/rate-limiter";
-import { testModelConnectivity } from "@/lib/orderking/ai/real-model-registry";
+import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 
-export const Route = createAPIFileRoute("/api/v1/admin/ai-provider-test")({
+const verifyAiProvider = createServerFn({ method: "POST" })
+  .validator((data: { modelId: string }) => {
+    if (!data.modelId?.trim()) throw new Error("modelId is required");
+    return { modelId: data.modelId.trim() };
+  })
+  .handler(async ({ data }) => {
+    const { requireUserId } = await import("@/lib/auth/verify.server");
+    const { ensureWorkspace } = await import("@/lib/orderking/server/workspace.server");
+    const { enforceRateLimit } = await import("@/lib/orderking/security/rate-limiter");
+    const { testModelConnectivity } = await import("@/lib/orderking/ai/real-model-registry");
+
+    const userId = await requireUserId();
+    const workspace = await ensureWorkspace(userId);
+    if (!workspace.ctx.permissions.includes("access_AI")) throw new Error("AI_PERMISSION_REQUIRED");
+
+    const request = new Request("https://internal.local/ai-test", { headers: { "x-forwarded-for": userId } });
+    const limited = await enforceRateLimit(request, `hdmaster:ai-provider-test:${userId}`, {
+      windowMs: 60_000,
+      maxRequests: 20,
+    });
+    if (limited) throw new Error("RATE_LIMITED");
+
+    return await testModelConnectivity(data.modelId);
+  });
+
+export const Route = createFileRoute("/api/v1/admin/ai-provider-test")({
+  // @ts-expect-error
   server: {
     handlers: {
       POST: async ({ request }: any) => {
         try {
-          const userId = await requireUserId();
-          const workspace = await ensureWorkspace(userId);
-          if (!workspace.ctx.permissions.includes("access_AI")) {
-            return Response.json({ error: "FORBIDDEN", code: "AI_PERMISSION_REQUIRED" }, { status: 403 });
-          }
-
-          const rateLimitResponse = await enforceRateLimit(request, "hdmaster:ai-provider-test", {
-            windowMs: 60_000,
-            maxRequests: 20,
-          });
-          if (rateLimitResponse) return rateLimitResponse;
-
           const body = await request.json();
-          const modelId = typeof body?.modelId === "string" ? body.modelId.trim() : "";
-          if (!modelId) return Response.json({ error: "modelId is required" }, { status: 400 });
-
-          const result = await testModelConnectivity(modelId);
-          return Response.json(result);
+          return Response.json(await verifyAiProvider({ data: body }));
         } catch (error: any) {
-          console.error("[ai-provider-test] failed:", error);
-          return Response.json(
-            {
-              success: false,
-              status: "ERROR",
-              message: "Provider verification failed.",
-              error: error?.message || "Unknown error",
-            },
-            { status: 500 },
-          );
+          const message = error?.message || "Provider verification failed";
+          const status =
+            message === "AI_PERMISSION_REQUIRED" ? 403 :
+            message === "RATE_LIMITED" ? 429 : 500;
+          return Response.json({ success: false, status: "ERROR", message }, { status });
         }
       },
     },
