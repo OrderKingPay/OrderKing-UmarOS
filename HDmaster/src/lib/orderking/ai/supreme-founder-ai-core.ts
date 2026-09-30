@@ -13,18 +13,10 @@ import { ACTIVE_DELIVERY_ZONES, isDeliveryActiveInLocation } from "../geo/geofen
 export type AiModelId =
   | "auto-supreme-orchestrator"
   | "ensemble-consensus"
-  | "sovereign-ultra"
-  | "claude-4-6-opus"
-  | "gpt-5-6-omni"
-  | "grok-4-6-super"
-  | "spacex-orbital"
-  | "codex-supreme"
-  | "gemini-3-8-ultra"
-  | "deepseek-r1-sovereign"
-  | "claude-3-7-sonnet"
-  | "gpt-4o"
-  | "gemini-2-5-pro"
-  | "grok-3";
+  | "openai-runtime"
+  | "gemini-runtime"
+  | "anthropic-runtime"
+  | "xai-runtime";
 
 /**
  * Autonomously selects the best AI model engine based on prompt domain, complexity, and latency requirements.
@@ -46,7 +38,6 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
     model: "auto-supreme-orchestrator",
     reason: `Routing domain "${domain}" through configured real providers. The actual provider/model is selected and verified at runtime; no unavailable model name is claimed.`,
   };
-}
 }
 
 export interface ChatAttachment { content?: string;
