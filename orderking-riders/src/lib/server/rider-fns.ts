@@ -490,7 +490,7 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-6-luna",
+        model: process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-6-astra",
         temperature: 0.2,
         messages: [
           {
