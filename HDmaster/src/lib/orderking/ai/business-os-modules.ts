@@ -97,7 +97,8 @@ export class BusinessOsModules {
   // 2. Sales & Lawful Opportunity Discovery Module
   // Discovers genuine local restaurants paying extortionate commissions without fake promises
   public discoverLawfulOpportunities(_region = "Sribhumi / Barak Valley"): LawfulSalesLead[] {
-    return [];
+    if (process.env.NODE_ENV === "production") return [];
+    const developmentFixtures = [
       {
         id: "lead-01",
         businessName: "Royal Darbar Biryani House",
@@ -143,6 +144,7 @@ export class BusinessOsModules {
         status: "PITCH_COMPILED",
       },
     ];
+    return developmentFixtures;
   }
 
   // 3. Marketing & Growth Module
@@ -170,7 +172,8 @@ export class BusinessOsModules {
 
   // 5. Restaurant Operations Monitor Module
   public auditKitchenSlas(): KitchenSlaReport[] {
-    return [];
+    if (process.env.NODE_ENV === "production") return [];
+    const developmentFixtures = [
       {
         restaurantId: "rest-01",
         restaurantName: "Royal Darbar Biryani House",
@@ -202,11 +205,13 @@ export class BusinessOsModules {
         correctiveAction: "Eligible for Super-Partner Golden Badge.",
       },
     ];
+    return developmentFixtures;
   }
 
   // 6. Procurement & Inventory Forecaster
   public inspectInventoryAlerts(): InventoryItemAlert[] {
-    return [];
+    if (process.env.NODE_ENV === "production") return [];
+    const developmentFixtures = [
       {
         itemId: "inv-rice-01",
         itemName: "Aged Basmati Rice (Daawat Gold 25kg)",
@@ -232,11 +237,13 @@ export class BusinessOsModules {
         preferredSupplier: "EcoPack Assam Industries",
       },
     ];
+    return developmentFixtures;
   }
 
   // 7. Deployment & SRE Watchdog
   public inspectSreHealth(): SreHealthStatus[] {
-    return [];
+    if (process.env.NODE_ENV === "production") return [];
+    const developmentFixtures = [
       {
         service: "OrderKing Customer Web & PWA",
         status: "HEALTHY",
@@ -265,6 +272,7 @@ export class BusinessOsModules {
         autoRollbackArmed: true,
       },
     ];
+    return developmentFixtures;
   }
 
   // 8. Predictive Demand Forecasting Module
