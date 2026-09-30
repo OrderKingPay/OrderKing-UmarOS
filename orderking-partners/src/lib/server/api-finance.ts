@@ -126,7 +126,7 @@ export const getPromotions = createServerFn({ method: "GET" })
         order by created_at desc
       `;
       const aov = await sql<{ aov: number }>`
-        select coalesce(avg(customer_total_paise) filter (where state = 'DELIVERED'), 35000)::int as aov
+        select coalesce(avg(customer_total_paise) filter (where state = 'DELIVERED'), 0)::int as aov
         from orders where restaurant_id = ${ctx.restaurantId}
       `;
       return {
@@ -138,8 +138,8 @@ export const getPromotions = createServerFn({ method: "GET" })
             funder: p.funder as PromotionFunder,
             percentOff: p.percent_off ?? 0,
             amountPaise: asInt(p.amount_paise ?? 0),
-            assumedOrdersPerDay: asInt(p.assumed_orders_per_day, 10),
-            assumedAovPaise: asInt(aov[0]?.aov, 35000),
+            assumedOrdersPerDay: asInt(p.assumed_orders_per_day, 0),
+            assumedAovPaise: asInt(aov[0]?.aov, 0),
             maxDiscountPaise: p.max_discount_paise,
           });
           return {
@@ -220,13 +220,13 @@ export const getAdCampaign = createServerFn({ method: "GET" })
         is_active: boolean;
       }>`select id, name, amount_paise as daily_budget_paise, is_active from promotions where restaurant_id = ${ctx.restaurantId} and kind = 'item' and name = 'SPONSORED_BOOST' limit 1`;
       const c = rows[0];
-      const budget = c ? asInt(c.daily_budget_paise, 25000) : 25000;
+      const budget = c ? asInt(c.daily_budget_paise, 0) : 0;
       return {
         hasCampaign: Boolean(c),
         isActive: c ? (c.is_active === true || (c.is_active as unknown) === "t") : false,
         dailyBudgetPaise: budget,
-        estimatedImpressions: Math.round((budget / 100) * 12),
-        estimatedClicks: Math.round((budget / 100) * 1.5),
+        estimatedImpressions: null,
+        estimatedClicks: null,
       };
     });
   });
