@@ -7,7 +7,8 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "deploy:cloudrun": "powershell -ExecutionPolicy Bypass -File scripts/deploy-cloudrun.ps1"
   },
   "devDependencies": {
     "turbo": "latest"
