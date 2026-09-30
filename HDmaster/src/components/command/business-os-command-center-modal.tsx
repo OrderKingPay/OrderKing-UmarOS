@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   Briefcase,
@@ -23,9 +23,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { liveOrchestrationEngine } from "@/lib/orderking/ai/live-orchestration-engine";
-import { businessOsModules } from "@/lib/orderking/ai/business-os-modules";
 import { founderApprovalGates, PendingApprovalRequest } from "@/lib/orderking/ai/founder-approval-gates";
 import { autonomousCommandOrchestrator, AutonomousCommandResult } from "@/lib/orderking/ai/autonomous-command-orchestrator";
+import { getLiveBusinessSnapshotRpc } from "@/lib/orderking/business-os-live-rpc";
 
 interface BusinessOsCommandCenterModalProps {
   isOpen: boolean;
@@ -47,14 +47,54 @@ export function BusinessOsCommandCenterModal({
     founderApprovalGates.listPendingRequests()
   );
 
-  const budgetStatus = liveOrchestrationEngine.getBudgetStatus();
+  const [liveSnapshot, setLiveSnapshot] = useState<any>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let active = true;
+    void getLiveBusinessSnapshotRpc()
+      .then((snapshot) => { if (active) setLiveSnapshot(snapshot); })
+      .catch((error) => {
+        console.error("[business-os-live]", error);
+        if (active) setLiveSnapshot(null);
+      });
+    return () => { active = false; };
+  }, [isOpen]);
+
+  const budgetStatus = { accumulatedSpendInr: 0, monthlyBudgetCapInr: 0 };
   const adapters = liveOrchestrationEngine.listRegisteredAdapters();
-  const pnl = businessOsModules.calculateFinancialPnL();
-  const leads = businessOsModules.discoverLawfulOpportunities();
-  const slas = businessOsModules.auditKitchenSlas();
-  const inventory = businessOsModules.inspectInventoryAlerts();
-  const sre = businessOsModules.inspectSreHealth();
-  const roster = businessOsModules.getMinimalStaffRoster();
+  const financial = liveSnapshot?.financial;
+  const pnl = {
+    grossMerchandiseValueInr: financial?.grossMerchandiseValueInr ?? 0,
+    netRevenueInr: financial?.verifiedPlatformRevenueInr ?? 0,
+    aggregatorSavingsInr: 0,
+    operatingExpensesInr: financial?.operatingExpensesInr ?? 0,
+    gstInputTaxCreditInr: 0,
+    netFounderProfitInr: financial?.netFounderProfitInr ?? 0,
+    cashRunwayMonths: 0,
+    retainedCapitalVaultInr: 0,
+  };
+  const leads = (liveSnapshot?.leads ?? []).map((lead: any) => ({
+    id: lead.id,
+    businessName: lead.businessName,
+    locality: lead.location ?? "Not recorded",
+    category: lead.category ?? "Not recorded",
+    projectBudgetInr: lead.projectBudgetInr,
+    currentCommissionRatePct: 0,
+    estimatedMonthlyOrders: 0,
+    annualAggregatorLossInr: 0,
+    recommendedOrderKingTier: "Custom Fleet",
+    verifiedContactChannel: "Not stored",
+    status: lead.status ?? "RECORDED",
+  }));
+  const slas: any[] = [];
+  const inventory: any[] = [];
+  const sre: any[] = [];
+  const roster = {
+    totalHumanStaff: liveSnapshot?.workforce?.humanStaffCount ?? 0,
+    automatedSubsystemsCount: 0,
+    monthlyPayrollSavingsInr: 0,
+  };
   const auditChain = founderApprovalGates.getAuditChain();
 
   if (!isOpen) return null;
@@ -329,10 +369,10 @@ export function BusinessOsCommandCenterModal({
                     <span>Sales Pipeline</span>
                   </span>
                   <div className="text-lg font-black text-white font-mono">
-                    {leads.length} Real Outlets
+                    {leads.length} DB Leads
                   </div>
                   <span className="text-[11px] text-slate-400 block">
-                    ₹{(leads.reduce((s, l) => s + l.annualAggregatorLossInr, 0) / 100000).toFixed(1)}L Annual Losses
+                    Live lead records; savings not measured
                   </span>
                 </div>
 
@@ -342,10 +382,10 @@ export function BusinessOsCommandCenterModal({
                     <span>Minimal Staff &amp; Ops</span>
                   </span>
                   <div className="text-lg font-black text-white font-mono">
-                    {roster.totalHumanStaff} Staff · {roster.automatedSubsystemsCount} Bots
+                    {roster.totalHumanStaff} Human Staff · {liveSnapshot?.workforce?.aiRunningTaskCount ?? 0} AI Tasks Running
                   </div>
                   <span className="text-[11px] text-slate-400 block">
-                    ₹{(roster.monthlyPayrollSavingsInr / 1000).toFixed(0)}k/mo Headcount Saved
+                    Payroll savings require measured cost data
                   </span>
                 </div>
               </div>
@@ -362,7 +402,7 @@ export function BusinessOsCommandCenterModal({
                     <DollarSign className="size-4 text-emerald-400" />
                     <span>Finance &amp; Cash Flow Intelligence</span>
                   </span>
-                  <Badge className="bg-emerald-500/20 text-emerald-300 text-[9px] font-mono">LIVE P&amp;L</Badge>
+                  <Badge className="bg-emerald-500/20 text-emerald-300 text-[9px] font-mono">{liveSnapshot?.status === "LIVE" ? "LIVE DB" : "DATA UNAVAILABLE"}</Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-2 rounded-lg bg-black/30">
@@ -371,15 +411,15 @@ export function BusinessOsCommandCenterModal({
                   </div>
                   <div className="p-2 rounded-lg bg-black/30">
                     <span className="text-[10px] text-slate-400 block">Aggregator Savings:</span>
-                    <span className="font-mono font-bold text-emerald-400">₹{pnl.aggregatorSavingsInr.toLocaleString("en-IN")}</span>
+                    <span className="font-mono font-bold text-emerald-400">{pnl.aggregatorSavingsInr ? `₹${pnl.aggregatorSavingsInr.toLocaleString("en-IN")}` : "Not measured"}</span>
                   </div>
                   <div className="p-2 rounded-lg bg-black/30">
-                    <span className="text-[10px] text-slate-400 block">GST ITC Arbitrage:</span>
-                    <span className="font-mono font-bold text-cyan-400">₹{pnl.gstInputTaxCreditInr.toLocaleString("en-IN")}</span>
+                    <span className="text-[10px] text-slate-400 block">GST ITC:</span>
+                    <span className="font-mono font-bold text-cyan-400">{pnl.gstInputTaxCreditInr ? `₹${pnl.gstInputTaxCreditInr.toLocaleString("en-IN")}` : "Not measured"}</span>
                   </div>
                   <div className="p-2 rounded-lg bg-black/30">
                     <span className="text-[10px] text-slate-400 block">Retained Vault:</span>
-                    <span className="font-mono font-bold text-amber-400">₹{pnl.retainedCapitalVaultInr.toLocaleString("en-IN")}</span>
+                    <span className="font-mono font-bold text-amber-400">{pnl.retainedCapitalVaultInr ? `₹${pnl.retainedCapitalVaultInr.toLocaleString("en-IN")}` : "Not measured"}</span>
                   </div>
                 </div>
               </div>
@@ -391,17 +431,17 @@ export function BusinessOsCommandCenterModal({
                     <TrendingUp className="size-4 text-amber-400" />
                     <span>Lawful Opportunity Discovery ({leads.length})</span>
                   </span>
-                  <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">0% FAKE</Badge>
+                  <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">DB RECORDED</Badge>
                 </div>
                 <div className="space-y-1.5 max-h-48 overflow-y-auto">
                   {leads.map((l) => (
                     <div key={l.id} className="p-2 rounded-lg bg-black/30 flex items-center justify-between text-xs">
                       <div>
                         <span className="font-bold text-white block">{l.businessName}</span>
-                        <span className="text-[10px] text-slate-400">{l.locality} · {l.currentCommissionRatePct}% Comm.</span>
+                        <span className="text-[10px] text-slate-400">{l.category} · {l.locality} · Budget: {l.projectBudgetInr == null ? "not recorded" : `₹${l.projectBudgetInr.toLocaleString("en-IN")}`}</span>
                       </div>
                       <Badge className="bg-emerald-500/10 text-emerald-400 text-[9px] font-mono">
-                        Save ₹{(l.annualAggregatorLossInr / 1000).toFixed(0)}k/yr
+                        Savings not measured
                       </Badge>
                     </div>
                   ))}
@@ -439,7 +479,7 @@ export function BusinessOsCommandCenterModal({
                     <ShieldCheck className="size-4 text-cyan-400" />
                     <span>SRE &amp; Production Deploy Watchdog</span>
                   </span>
-                  <Badge className="bg-cyan-500/20 text-cyan-300 text-[9px] font-mono">ALL GREEN</Badge>
+                  <Badge className="bg-cyan-500/20 text-cyan-300 text-[9px] font-mono">{sre.length ? "MEASURED" : "EXTERNAL HEALTH REQUIRED"}</Badge>
                 </div>
                 <div className="space-y-1.5">
                   {sre.map((item) => (
