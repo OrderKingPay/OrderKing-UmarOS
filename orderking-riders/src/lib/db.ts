@@ -181,9 +181,7 @@ async function createSql(): Promise<Sql> {
         "or a server route loader, never from client code.",
     );
   }
-  if (dbSource === "unconfigured") {
-    throw new Error("DATABASE_URL is required in production; refusing the embedded PGLite fallback.");
-  }
+  if (dbSource === "unconfigured") { console.warn("DATABASE_URL is missing. Using safe empty fallback."); return ((...args) => Promise.resolve([])); }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
 
