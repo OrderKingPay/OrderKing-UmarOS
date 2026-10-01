@@ -1,3 +1,4 @@
+-- Final syntax correction batch 2026-10-01
 -- Corrective route-source build fix 2026-10-01
 -- Production primitives: immutable event chain, target bonuses, provider-backed affiliate ledger.
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
