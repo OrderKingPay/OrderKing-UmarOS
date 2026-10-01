@@ -175,7 +175,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
           ${JSON.stringify({ orderId, customerRef: input.customerRef, paymentMethod: input.paymentMethod, totalPaise: input.totalPaise })}::jsonb
         )
       `;
-      await appendImmutableEvent({ orgId: ws.ctx.orgId, actorUserId: context.userId, actorEmployeeId: ws.ctx.employeeId, sourceTable: "orders", sourceId: orderId, eventType: "ORDER_CREATED", payload: { paymentMethod: input.paymentMethod, totalPaise: input.totalPaise, restaurantId: input.restaurantId } }, tx);
+      await appendImmutableEvent({ orgId: ws.ctx.orgId, actorUserId: input.customerRef, actorEmployeeId: ws.ctx.employeeId, sourceTable: "orders", sourceId: orderId, eventType: "ORDER_CREATED", payload: { paymentMethod: input.paymentMethod, totalPaise: input.totalPaise, restaurantId: input.restaurantId } }, tx);
       const paymentProvider =
         input.paymentMethod === "COD"
           ? "COD"
@@ -210,7 +210,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
       `;
       return { orderId, status: "PENDING", paymentStatus, totalPaise: input.totalPaise, dataMode: ws.dataMode };
     });
-    await writeEvent(orderId, null, "PLACED", context.userId, "customer", "Order placed");
+    await writeEvent(orderId, null, "PLACED", input.customerRef, "customer", "Order placed");
     await sql`
       INSERT INTO notifications (id, user_id, title, body, kind, entity_id)
       VALUES (${newId("ntf")}, ${input.customerRef}, "Order confirmed",
