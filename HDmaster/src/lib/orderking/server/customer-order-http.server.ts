@@ -5,6 +5,7 @@ import { appendAudit, ensureWorkspace, nid } from "@/lib/orderking/server/worksp
 import { getSql } from "@/lib/db";
 import { z } from "zod";
 import { appendImmutableEvent } from "../audit/immutable-event.server";
+import { fetchRazorpayPayment, verifyCheckoutSignature } from "../payments/razorpay.server";
 
 function json(body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } }); }
 function serviceUserId(request: Request): string { const authorization = request.headers.get("authorization")?.trim(); const token = process.env.ORDERKING_SERVICE_TOKEN?.trim(); const userId = process.env.ORDERKING_SERVICE_USER_ID?.trim(); if (!token || !userId || authorization !== `Bearer ${token}`) throw new Error("Unauthorized"); return userId; }
@@ -73,6 +74,22 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     }
     
     if (input.totalPaise < 0 || input.foodPaise < 0 || input.lines.some((line) => line.qty <= 0 || line.unitPaise < 0)) return json({ error: "Invalid monetary or quantity values", code: "INVALID_AMOUNT" }, 400);
+    if (input.paymentMethod === "RAZORPAY_ONLINE") {
+      if (!input.razorpayOrderId || !input.razorpayPaymentId || !input.razorpaySignature) {
+        return json({ error: "Razorpay verification fields are required", code: "RAZORPAY_VERIFICATION_REQUIRED" }, 400);
+      }
+      if (!verifyCheckoutSignature({
+        orderId: input.razorpayOrderId,
+        paymentId: input.razorpayPaymentId,
+        signature: input.razorpaySignature,
+      })) {
+        return json({ error: "Invalid Razorpay checkout signature", code: "RAZORPAY_SIGNATURE_INVALID" }, 400);
+      }
+      const payment = await fetchRazorpayPayment(input.razorpayPaymentId);
+      if (payment.order_id !== input.razorpayOrderId || payment.status !== "captured" || payment.currency !== "INR" || Number(payment.amount) !== Number(input.totalPaise)) {
+        return json({ error: "Razorpay payment verification mismatch", code: "RAZORPAY_PAYMENT_MISMATCH" }, 409);
+      }
+    }
     const sql = await getSql();
     const duplicate = await sql<{ response_json: string }>`select response_json from idempotency_keys where key=${idempotencyKey} and org_id=${ws.ctx.orgId} limit 1`;
     if (duplicate[0]) return json({ data: JSON.parse(duplicate[0].response_json) });
