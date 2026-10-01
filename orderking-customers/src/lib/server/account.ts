@@ -208,9 +208,10 @@ export const listVerifiedAffiliatePartners = createServerFn({ method: "GET" })
       category: string;
       tracking_base_url: string;
       commission_type: string;
+      commission_value: number | null;
       terms_version: string | null;
     }>`
-      SELECT id, name, category, tracking_base_url, commission_type, terms_version
+      SELECT id, name, category, tracking_base_url, commission_type, commission_value, terms_version
       FROM affiliate_partners
       WHERE active = true
         AND tracking_base_url IS NOT NULL
@@ -225,6 +226,7 @@ export const listVerifiedAffiliatePartners = createServerFn({ method: "GET" })
         brand: r.name,
         category: r.category,
         commissionType: r.commission_type,
+        commissionValue: r.commission_value,
         termsVersion: r.terms_version,
       })),
     };
