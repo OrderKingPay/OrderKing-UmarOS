@@ -80,16 +80,16 @@ function PromotionsPage() {
           <div className="rounded-lg border border-border bg-surface p-3">
             <span className="text-xs text-muted">Daily Budget</span>
             <p className="text-lg font-bold">
-              <MoneyText paise={adQuery.data?.dailyBudgetPaise ?? 25000} />
+              <MoneyText paise={adQuery.data?.dailyBudgetPaise ?? 0} />
             </p>
           </div>
           <div className="rounded-lg border border-border bg-surface p-3">
             <span className="text-xs text-muted">Est. Impressions</span>
-            <p className="text-lg font-bold text-fg">~{adQuery.data?.estimatedImpressions ?? 3000} views/day</p>
+            <p className="text-lg font-bold text-fg">{adQuery.data?.estimatedImpressions != null ? `~${adQuery.data.estimatedImpressions}` : "Provider telemetry required"} views/day</p>
           </div>
           <div className="rounded-lg border border-border bg-surface p-3">
             <span className="text-xs text-muted">Est. Extra Orders</span>
-            <p className="text-lg font-bold text-primary">~{adQuery.data?.estimatedClicks ?? 35} clicks</p>
+            <p className="text-lg font-bold text-primary">{adQuery.data?.estimatedClicks != null ? `~${adQuery.data.estimatedClicks}` : "Provider telemetry required"} clicks</p>
           </div>
         </div>
 
