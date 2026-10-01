@@ -17,7 +17,7 @@ export const Route = createFileRoute("/api/affiliates/offers")({
             SELECT id, provider_name, category, payout_bps, fixed_payout_paise, click_url, disclosure_label
             FROM affiliate_partner_offers
             WHERE status='ACTIVE'
-              AND (${category IS NULL OR category=${category)
+              AND (${category} IS NULL OR category=${category})
             ORDER BY payout_bps DESC, fixed_payout_paise DESC
           `;
 
@@ -44,9 +44,9 @@ export const Route = createFileRoute("/api/affiliates/offers")({
           const sql = await getSql();
           const rows = await sql`
             INSERT INTO affiliate_click_ledger(offer_id,user_id,click_id,dedupe_key,status)
-            SELECT id,${user.id,${clickId,${dedupeKey,'CLICKED'
+            SELECT id,${user.id},${clickId},${dedupeKey},'CLICKED'
             FROM affiliate_partner_offers
-            WHERE id=${offerId AND status='ACTIVE'
+            WHERE id=${offerId} AND status='ACTIVE'
             ON CONFLICT (offer_id,dedupe_key) DO NOTHING
             RETURNING id,click_id
           `;
