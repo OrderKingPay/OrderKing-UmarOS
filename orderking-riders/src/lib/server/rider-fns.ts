@@ -359,7 +359,8 @@ export const getSettlementsFn = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     try {
       const e = await engine();
-      return await e.settlements(context.userId);
+      const rows = await e.settlements(context.userId);
+      return rows.filter((row: any) => row?.status !== "PAYABLE" || row?.periodStart !== row?.periodEnd);
     } catch (err) {
       fail(err);
     }
