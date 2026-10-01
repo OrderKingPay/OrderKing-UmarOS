@@ -507,7 +507,8 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
   .inputValidator((input: { message: string; locale?: LocaleCode; deliveryId?: string | null }) => input)
   .handler(async ({ context, data }) => {
     const apiKey = process.env.OPENAI_API_KEY?.trim();
-    if (!apiKey) throw new RiderError("AI_UNAVAILABLE", "OpenAI support is not configured on the rider server.", 503);
+    const model = process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim();
+    if (!apiKey || !model) throw new RiderError("AI_UNAVAILABLE", "OpenAI support is not fully configured on the rider server.", 503);
     const message = data.message.trim();
     if (!message) throw new RiderError("INVALID", "Describe the issue first.", 400);
 
@@ -515,7 +516,7 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-6-astra",
+        model,
         temperature: 0.2,
         messages: [
           {
@@ -543,6 +544,6 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
     const body = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
     const text = body.choices?.[0]?.message?.content?.trim();
     if (!text) throw new RiderError("AI_UNAVAILABLE", "OpenAI returned no support response.", 503);
-    return { provider: "openai", model: process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-6-astra", text };
+    return { provider: "openai", model, text };
   });
 
