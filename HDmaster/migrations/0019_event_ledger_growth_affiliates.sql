@@ -72,3 +72,10 @@ ALTER TABLE affiliate_attribution_ledger ENABLE ROW LEVEL SECURITY;
 REVOKE UPDATE, DELETE ON affiliate_attribution_ledger FROM PUBLIC;
 REVOKE UPDATE, DELETE ON affiliate_attribution_ledger FROM anon;
 REVOKE UPDATE, DELETE ON affiliate_attribution_ledger FROM authenticated;
+
+CREATE TABLE IF NOT EXISTS referral_codes (
+  user_id text PRIMARY KEY,
+  referral_code text NOT NULL UNIQUE,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_referral_codes_code ON referral_codes(referral_code);
