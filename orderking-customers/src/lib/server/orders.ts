@@ -13,7 +13,7 @@ function rateLimit(key: string, n: number, windowMs: number): boolean { const no
 async function isFirstOrder(userId: string): Promise<boolean> { const sql = await getSql(); const rows = await sql<{ c: number }>`select count(*)::int as c from orders where user_id = ${userId} and status not in ('FAILED_PAYMENT','CANCELLED')`; return (rows[0]?.c ?? 0) === 0; }
 async function writeEvent(orderId: string, fromStatus: string | null, toStatus: string, actorUserId: string, actorRole: string, note?: string) { const sql = await getSql(); await sql`insert into order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note) values (${newId("oev")}, ${orderId}, ${fromStatus}, ${toStatus}, ${actorUserId}, ${actorRole}, ${note ?? null})`; }
 export const placeOrder = createServerFn({ method: "POST" }).middleware([authMiddleware]).// @ts-ignore
-  inputValidator((input: { restaurantId: string; zoneId: string; lat: number; lng: number; coupon?: string | null; tipPaise?: number; lines: CartLineInput[]; address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string }; paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY"; notes?: string; idempotencyKey: string }) => input).handler(async ({ context, data }: any) => {
+  inputValidator((input: { restaurantId: string; zoneId: string; lat: number; lng: number; coupon?: string | null; tipPaise?: number; lines: CartLineInput[]; address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string }; paymentMethod: "COD" | "KING_PAY"; notes?: string; idempotencyKey: string }) => input).handler(async ({ context, data }: any) => {
   if (!rateLimit(`order:${context.userId}`, 5, 60_000)) throw new Error("Too many order attempts. Wait a minute.");
   if (!data.address.line1.trim()) throw new Error("Delivery address is required.");
   if (data.lines.length === 0) throw new Error("Cart is empty.");
@@ -22,7 +22,7 @@ export const placeOrder = createServerFn({ method: "POST" }).middleware([authMid
   if (production && cfg.marketplace.launchMode !== "live") {
     throw new Error("Order placement is unavailable until HDmaster live mode is connected.");
   }
-  if (production && data.paymentMethod === "UPI_SANDBOX") {
+  if (production && data.paymentMethod === "KING_PAY") {
     throw new Error("Sandbox UPI is not available in production.");
   }
   const sql = await getSql();
