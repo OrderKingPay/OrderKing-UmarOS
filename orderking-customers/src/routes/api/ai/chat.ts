@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { executeFounderAiChat, type AiChatRequest, type StreamEvent } from "@/lib/server/ai-chat-service.server";
 import { getSessionUser } from "@/lib/auth/verify.server";
 import { enforceRateLimit } from "@/lib/security/rate-limiter";
+import { emitImmutableEvent } from "@/lib/security/immutable-events.server";
 
 const MAX_MESSAGES = 32;
 const MAX_MESSAGE_CHARS = 8000;
@@ -58,7 +59,7 @@ export const Route = createFileRoute("/api/ai/chat")({
           });
           if (rateLimitResponse) return rateLimitResponse;
 
-          const body = (await request.json()) as AiChatRequest;
+          const body = (await request.json()) as AiChatRequest & { locale?: string };
           validateChatRequest(body);
 
           const acceptHeader = request.headers.get("accept") || "";
@@ -69,7 +70,7 @@ export const Route = createFileRoute("/api/ai/chat")({
             const stream = new ReadableStream({
               async start(controller) {
                 try {
-                  await executeFounderAiChat({ ...body, apiKeys: undefined, userId: user.id }, (event: StreamEvent) => {
+                  await executeFounderAiChat({ ...body, apiKeys: undefined, userId: user.id, locale: body.locale }, (event: StreamEvent) => {
                     controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
                   });
                   controller.close();
@@ -95,7 +96,15 @@ export const Route = createFileRoute("/api/ai/chat")({
             });
           }
 
-          const result = await executeFounderAiChat({ ...body, apiKeys: undefined, userId: user.id });
+          const result = await executeFounderAiChat({ ...body, apiKeys: undefined, userId: user.id, locale: body.locale });
+          await emitImmutableEvent({
+            scope: user.id,
+            eventType: "customer_ai_request",
+            sourceTable: "ai_requests",
+            sourceId: crypto.randomUUID(),
+            actorUserId: user.id,
+            payload: { locale: body.locale ?? null, mode: body.mode ?? "auto", messageCount: body.messages.length },
+          });
           return new Response(JSON.stringify(result), {
             status: 200,
             headers: {
