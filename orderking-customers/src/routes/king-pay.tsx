@@ -1044,10 +1044,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   // VIP Milestone Club Tiers
   const getVipTier = (coins: number) => {
-    if (coins >= 15000) return { name: "King's Circle Elite", icon: "👑", multiplier: "5x", perk: "Priority Delivery & 0 Surge Fees", color: "text-amber-600 bg-amber-500/15 border-amber-500/30" };
-    if (coins >= 5000) return { name: "Gold VIP", icon: "🥇", multiplier: "2.5x", perk: "Free Delivery over ₹149", color: "text-yellow-600 bg-yellow-500/15 border-yellow-500/30" };
-    if (coins >= 1000) return { name: "Silver Club", icon: "🥈", multiplier: "1.5x", perk: "Monthly ₹20 Food Voucher", color: "text-slate-600 bg-slate-500/15 border-slate-500/30" };
-    return { name: "Bronze Member", icon: "🥉", multiplier: "1x", perk: "Earn 1 Coin per ₹10 spent", color: "text-orange-700 bg-orange-700/15 border-orange-700/30" };
+    if (coins >= 15000) return { name: "King's Circle Elite", icon: "👑", multiplier: "5x", perk: "Provider-defined delivery benefits", color: "text-amber-600 bg-amber-500/15 border-amber-500/30" };
+    if (coins >= 5000) return { name: "Gold VIP", icon: "🥇", multiplier: "2.5x", perk: "Provider-defined delivery benefits", color: "text-yellow-600 bg-yellow-500/15 border-yellow-500/30" };
+    if (coins >= 1000) return { name: "Silver Club", icon: "🥈", multiplier: "1.5x", perk: "Provider-defined rewards", color: "text-slate-600 bg-slate-500/15 border-slate-500/30" };
+    return { name: "Bronze Member", icon: "🥉", multiplier: "1x", perk: "Rewards follow the active campaign rules", color: "text-orange-700 bg-orange-700/15 border-orange-700/30" };
   };
 
   const handleSpinWheel = () => {
@@ -1450,12 +1450,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 disabled={hasVotedCity}
                 className="self-start sm:self-auto px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-xs font-black shadow-md active:scale-95 transition flex items-center gap-1.5 cursor-pointer"
               >
-                <span>{hasVotedCity ? "✓ Voted! +₹50 Added" : "🗳️ Vote for City (+₹50 Bonus)"}</span>
+                <span>{hasVotedCity ? "✓ Vote recorded" : "🗳️ Vote for City"}</span>
               </button>
             </div>
             <div className="flex items-center justify-between text-[10px] text-slate-400 border-t border-white/5 pt-1.5">
-              <span>🛡️ Geofence Guard: You are on King Pay (100% Free UPI Across India)</span>
-              <span className="font-mono text-emerald-400 font-bold">0% Intermediary Fee</span>
+              <span>🛡️ Location routing and provider availability</span>
+              <span className="font-mono text-emerald-400 font-bold">Provider-defined payment fees</span>
             </div>
           </div>
         )}
