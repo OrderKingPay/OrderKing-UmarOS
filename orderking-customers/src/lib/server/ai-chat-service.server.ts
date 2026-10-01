@@ -339,7 +339,7 @@ export async function executeFounderAiChat(
 
     if (geminiKey) activeProvidersList.push({ name: "Google Gemini", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: process.env.GEMINI_MODEL?.trim() || "" });
     if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: process.env.ANTHROPIC_MODEL?.trim() || "" });
-    if (openaiKey) activeProvidersList.push({ name: "OpenAI", id: "openai", provider: new OpenAIProvider(openaiKey), model: process.env.OPENAI_MODEL?.trim() || "gpt-5.6-sol" });
+    if (openaiKey) activeProvidersList.push({ name: "OpenAI", id: "openai", provider: new OpenAIProvider(openaiKey), model: process.env.OPENAI_MODEL?.trim() || "gpt-6-astra" });
     if (xaiKey) activeProvidersList.push({ name: "xAI Grok", id: "xai", provider: new XAIProvider(xaiKey), model: process.env.XAI_MODEL?.trim() || "" });
 
     if (activeProvidersList.length >= 2) {
