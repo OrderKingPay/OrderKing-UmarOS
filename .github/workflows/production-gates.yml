@@ -30,17 +30,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Enable pnpm 12.8.1
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.8.1
+
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
-
-      - name: Enable pnpm 12.8.1
-        uses: pnpm/action-setup@v4
-        with:
-          version: 12.8.1
 
       - name: Install workspace dependencies
         run: pnpm install --no-frozen-lockfile
