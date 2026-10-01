@@ -1,3 +1,4 @@
+-- Production primitives: immutable event chain, target bonuses, provider-backed affiliate ledger.
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS public.security_event_ledger (
