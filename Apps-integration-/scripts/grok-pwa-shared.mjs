@@ -3,8 +3,9 @@
  * shared by the Vite plugin and Nitro middleware. Plain ESM so `node --test`
  * and the Nitro bundler can both consume it.
  */
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+// Removed static fs and path imports to prevent Cloudflare Worker crashes.
+// import { existsSync, readFileSync } from "node:fs";
+// import { join } from "node:path";
 
 export const DEFAULT_APP_NAME = "Grok App";
 export const OG_SERVICE_URL_DEFAULT = "https://og.grok.me";
@@ -242,48 +243,34 @@ export function grokExtensionsHeadTags(projectId = readGrokProjectId()) {
   return tags;
 }
 
-export function readOgSite(cwd = process.cwd()) {
+export function readOgSite(cwd = "") {
   try {
-    const raw = readFileSync(join(cwd, OG_SITE_REL_PATH), "utf8");
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    // fs is not available in Cloudflare Workers.
+    return {};
   } catch {
     return {};
   }
 }
 
 /** Public path of an on-disk share card, or "" if neither file exists. */
-export function ogCardPublicPath(cwd = process.cwd()) {
-  if (existsSync(join(cwd, "public/og.jpg"))) return "/og.jpg";
-  if (existsSync(join(cwd, "public/og.png"))) return "/og.png";
+export function ogCardPublicPath(cwd = "") {
+  // fs is not available in Cloudflare Workers.
   return "";
 }
 
-function detectCustomOgCard(cwd = process.cwd(), site = {}) {
+function detectCustomOgCard(cwd = (typeof process !== "undefined" && process.cwd ? process.cwd() : ""), site = {}) {
   if (ogCardPublicPath(cwd)) return true;
   // Vercel runtime has no public/: trust a bake that already saw the file.
   return siteHasCustomCard(site) || Boolean(String(site.image ?? "").trim());
 }
 
 /** Snapshot for Vite/Nitro to bake into the server bundle (Vercel has no workspace FS). */
-export function snapshotOgIdentity(cwd = process.cwd()) {
+export function snapshotOgIdentity(cwd = "") {
   const site = { ...readOgSite(cwd) };
-  const disk = ogCardPublicPath(cwd);
-  if (disk) {
-    site.card = "custom";
-    site.image = disk;
-  } else {
-    // site.json `card=custom` without a file must not bake a 404 /og.jpg URL.
-    if (siteHasCustomCard(site)) delete site.card;
-    if (site.image) delete site.image;
-  }
-  if (existsSync(join(cwd, "public/x-banner.jpg"))) {
-    site.banner = site.banner || "/x-banner.jpg";
-  }
   return { site };
 }
 
-export function customOgAssetPath(cwd = process.cwd()) {
+export function customOgAssetPath(cwd = (typeof process !== "undefined" && process.cwd ? process.cwd() : "")) {
   return ogCardPublicPath(cwd) || "/og.jpg";
 }
 
@@ -322,7 +309,7 @@ export function siteHasCustomCard(site = {}) {
  * Vercel: the bake (`card=custom` / `image`) because the function cannot stat public/.
  * Otherwise empty — caller emits the og.grok.me placeholder.
  */
-export function resolveOgCardAsset(site = {}, cwd = process.cwd()) {
+export function resolveOgCardAsset(site = {}, cwd = (typeof process !== "undefined" && process.cwd ? process.cwd() : "")) {
   return ogCardPublicPath(cwd) || (detectCustomOgCard(cwd, site) ? String(site.image ?? "").trim() || "/og.jpg" : "");
 }
 
@@ -338,7 +325,7 @@ export function grokOgHeadTags({
   appName = DEFAULT_APP_NAME,
   site = {},
   documentTitle = "",
-  cwd = process.cwd(),
+  cwd = (typeof process !== "undefined" && process.cwd ? process.cwd() : ""),
 } = {}) {
   const title = resolveOgTitle(site, appName, host, documentTitle);
   const publicHost = resolvePublicHost(host);
@@ -401,7 +388,7 @@ function insertBeforeHeadClose(html, snippet) {
 }
 
 export function normalizeHeadContext(ctx = {}) {
-  const cwd = ctx.cwd ?? process.cwd();
+  const cwd = ctx.cwd ?? (typeof process !== "undefined" && process.cwd ? process.cwd() : "");
   // Middleware passes a baked `site`. Still consult the workspace so a
   // public/og.jpg generated after that snapshot (or missed by a wrong cwd)
   // wins over the og.grok.me placeholder. Vercel has no public/ to read, so
@@ -525,3 +512,4 @@ export function createHeadInjector(ctx = {}) {
     },
   };
 }
+
