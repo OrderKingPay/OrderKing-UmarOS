@@ -96,6 +96,7 @@ import {
 import { useEmployee } from "./shell";
 import { GrowthVaultView } from "./growth-vault";
 import { FounderSovereignDeck } from "./founder-sovereign-deck";
+import { UmarOSMasterDashboard, type UmarOSMasterDashboardEngine, type StrategicBusinessProposal } from "@/components/dashboard/UmarOS_Master_Dashboard";
 
 
 function useInvalidate() {
@@ -173,9 +174,11 @@ export function DashboardPage() {
           <Button variant="secondary" size="sm" onClick={() => { void q.refetch(); void zq.refetch(); inv(); }}>
             Refresh
           </Button>
-          <Button size="sm" onClick={() => tick.mutate()} disabled={tick.isPending}>
-            Advance simulation
-          </Button>
+          {data?.dataMode === "SIMULATED" && (
+            <Button size="sm" onClick={() => tick.mutate()} disabled={tick.isPending}>
+              Advance simulation
+            </Button>
+          )}
         </div>
       </header>
       {!data ? (
@@ -204,7 +207,7 @@ export function DashboardPage() {
             <MetricCard label="Online riders" value={formatNumber(t!.onlineRiders.value)} source={t!.onlineRiders.label} />
             <MetricCard label="Active deliveries" value={formatNumber(t!.activeDeliveries.value)} source={t!.activeDeliveries.label} />
             <MetricCard label="Support load" value={formatNumber(t!.supportLoad.value)} source={t!.supportLoad.label} />
-            <MetricCard label="Delayed now" value={formatNumber(data.live.delayedOrders)} tone="danger" source="SIMULATED" />
+            <MetricCard label="Delayed now" value={formatNumber(data.live.delayedOrders)} tone="danger" source="ACTUAL" />
             <MetricCard label="Unassigned" value={formatNumber(data.live.unassignedOrders)} tone="warning" source="SIMULATED" />
           </div>
 
@@ -262,8 +265,109 @@ export function DashboardPage() {
 }
 
 function CeoPage() {
+  const engine = useMemo<UmarOSMasterDashboardEngine>(() => ({
+    async getMarginSnapshot() {
+      const [settingsResult, promosResult] = await Promise.all([loadSettings(), loadPromos()]);
+      if (!settingsResult.ok) throw new Error(settingsResult.error);
+      const settings = settingsResult.data as PlatformSettings;
+      const loyaltyRows = promosResult.ok ? (promosResult.data.loyalty ?? []) : [];
+      const configuredLoyaltyShare = loyaltyRows
+        .map((row: any) => row?.rules?.marginShareBps)
+        .find((value: unknown) => Number.isFinite(Number(value)));
+      return {
+        baseMarginBps: Number(settings.commissionBps),
+        distantMarginBps: Number(settings.longDistanceCommissionBps),
+        loyaltyShareBps: configuredLoyaltyShare == null ? null : Number(configuredLoyaltyShare),
+        verifiedBaseSalesPaise: null,
+        verifiedDistantSalesPaise: null,
+        periodLabel: "Current platform policy",
+        updatedAt: new Date().toISOString(),
+      };
+    },
+    async updateMargins({ baseMarginBps, distantMarginBps }) {
+      const settingsResult = await loadSettings();
+      if (!settingsResult.ok) throw new Error(settingsResult.error);
+      const settings = settingsResult.data as PlatformSettings;
+      const next = {
+        ...settings,
+        commissionBps: baseMarginBps,
+        townCommissionBps: baseMarginBps,
+        longDistanceCommissionBps: distantMarginBps,
+      };
+      const saved = await saveSettingsFn({
+        settings: next,
+        reason: "Founder updated margin policy from Umar OS Master Dashboard",
+      });
+      if (!saved.ok) throw new Error(saved.error);
+      return this.getMarginSnapshot();
+    },
+    async listStrategicProposals() {
+      const result = await loadPendingApprovalsFn();
+      if (!result.ok) throw new Error(result.error);
+      return result.data.map((item: any): StrategicBusinessProposal => {
+        let details: Record<string, unknown> = {};
+        try { details = JSON.parse(item.detailsJson || "{}"); } catch {}
+        return {
+          id: item.id,
+          title: item.action,
+          problem: String(details.problem ?? details.why ?? details.description ?? "Founder approval requested by the AI workforce."),
+          solution: String(details.solution ?? details.expectedResult ?? item.notes ?? item.action),
+          scopeLabel: String(item.module || "Founder approval"),
+          source: String(item.requestedBy || "Founder Approval Engine"),
+          risk: Number(item.amountPaise ?? 0) > 0 ? "HIGH" : "MEDIUM",
+          status: "PENDING",
+          estimatedImpactPaise: item.amountPaise ?? null,
+          createdAt: item.requestedAt,
+          evidence: [
+            "Persisted founder_approvals record",
+            item.module,
+            item.requestedBy,
+          ].filter(Boolean),
+        };
+      });
+    },
+    async executeStrategicProposal(proposalId: string) {
+      const result = await resolveFounderApprovalFn({ id: proposalId, decision: "APPROVED" });
+      if (!result.ok) throw new Error(result.error);
+      const proposals = await this.listStrategicProposals();
+      const matched = proposals.find((proposal) => proposal.id === proposalId);
+      return matched
+        ? { ...matched, status: "APPROVED" as const }
+        : {
+            id: proposalId,
+            title: "Founder approval",
+            problem: "Approval record resolved.",
+            solution: "The approval state was recorded; downstream execution remains governed by the underlying tool.",
+            scopeLabel: "Founder approval",
+            source: "Founder Approval Engine",
+            risk: "MEDIUM" as const,
+            status: "APPROVED" as const,
+            createdAt: new Date().toISOString(),
+            evidence: ["Approval state persisted"],
+          };
+    },
+    async getBroadcastStatus() {
+      return {
+        enabled: false,
+        providerReady: false,
+        providerName: null,
+        complianceStatus: "UNKNOWN" as const,
+        reachableDevices: null,
+        subscribedRecipients: null,
+        lastBroadcastAt: null,
+        state: "IDLE" as const,
+        deliveryCostPaise: null,
+        channels: [],
+      };
+    },
+    async executeGlobalBroadcast() {
+      throw new Error("GLOBAL_BROADCAST_PROVIDER_NOT_CONNECTED");
+    },
+  }), []);
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <UmarOSMasterDashboard engine={engine} />
       {/* UMAR OS: SOVEREIGN FOUNDER CONTROL DECK */}
       <FounderSovereignDeck />
     </div>
