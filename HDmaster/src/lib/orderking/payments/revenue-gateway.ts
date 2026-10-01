@@ -40,8 +40,12 @@ export class RevenueGatewayService {
     const confirmed = this.transactions.filter((t) => t.status === "CONFIRMED");
     const totalGross = confirmed.reduce((acc, t) => acc + t.amountInr, 0);
     const netFounder = confirmed.reduce((acc, t) => acc + t.netFounderDepositInr, 0);
-    // Calculate what would have been lost if standard 2.5% card/gateway fees applied
-    const savedFees = confirmed.reduce((acc, t) => (t.channel === "KING_PAY_UPI" ? acc + Math.round(t.amountInr * 0.025) : acc), 0);
+    // Do not invent a comparison fee. A "saved fees" number exists only when a
+    // real comparison rate is configured by the founder.
+    const comparisonBps = Number(process.env.GATEWAY_COMPARISON_FEE_BPS || 0);
+    const savedFees = comparisonBps > 0
+      ? confirmed.reduce((acc, t) => acc + Math.round(t.amountInr * comparisonBps / 10000), 0)
+      : 0;
 
     return {
       totalGrossInr: totalGross,
@@ -61,7 +65,8 @@ export class RevenueGatewayService {
     description: string;
     founderVpa?: string;
   }): { upiLink: string; qrPayload: string; transactionId: string } {
-    const vpa = params.founderVpa || "orderking@okhdfcbank";
+    const vpa = params.founderVpa?.trim() || process.env.KINGPAY_FOUNDER_VPA?.trim();
+    if (!vpa) throw new Error("KINGPAY_FOUNDER_VPA is not configured; refusing to generate a payment link.");
     const txnId = `TXN-${Date.now().toString().slice(-4)}`;
     const upiLink = `upi://pay?pa=${vpa}&pn=OrderKing&am=${params.amountInr}&cu=INR&tn=${encodeURIComponent(
       params.description
