@@ -11,6 +11,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { OfflineDetector } from "@/components/offline-detector";
 import appCss from "../styles.css?url";
 import { NextGenSeo } from "@/components/seo/NextGenSeo";
+import { resilientFetch } from "@/lib/engine/starlink-net";
 
 const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
   try {
@@ -101,6 +102,33 @@ function Root() {
     };
     window.addEventListener("vite:preloadError", recover);
     return () => window.removeEventListener("vite:preloadError", recover);
+  }, []);
+  useEffect(() => {
+    let cancelled = false;
+    const reportDeviceRisk = async () => {
+      try {
+        if (cancelled) return;
+        let deviceId = localStorage.getItem("ok_device_instance_id");
+        if (!deviceId) {
+          deviceId = crypto.randomUUID();
+          localStorage.setItem("ok_device_instance_id", deviceId);
+        }
+        await resilientFetch("/api/security/device-integrity", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": "device-" + deviceId,
+            "x-orderking-device-id": deviceId,
+          },
+          body: JSON.stringify({ deviceId }),
+          retryPolicy: { retries: 1, timeoutMs: 6000 },
+        }).catch(() => undefined);
+      } catch {
+        // Silent degraded mode: device checks never interrupt normal customers.
+      }
+    };
+    void reportDeviceRisk();
+    return () => { cancelled = true; };
   }, []);
   return (
     <html lang="en" className="antialiased" suppressHydrationWarning>
