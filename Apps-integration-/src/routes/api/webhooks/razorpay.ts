@@ -86,6 +86,8 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
         }
 
         const sql = await getSql();
+        let anomalyOrgId: string | null = null;
+        let anomalyMessage: string | null = null;
 
         await sql.transaction(async (tx: Sql) => {
           // Record the event first. Duplicate delivery events stop here without changing money state.
@@ -126,15 +128,16 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
           }
 
           const order = orderRows[0];
+          anomalyOrgId = order.org_id;
 
           if (paymentData.currency !== "INR") {
-            throw new Error(`Unsupported payment currency: ${paymentData.currency}`);
+            anomalyMessage = `Unsupported payment currency for order ${internalOrderId}: ${paymentData.currency}`;
+            throw new Error(anomalyMessage);
           }
 
           if (Number(paymentData.amount) !== Number(order.total_paise)) {
-            throw new Error(
-              `Payment amount mismatch: provider=${paymentData.amount}, order=${order.total_paise}`
-            );
+            anomalyMessage = `Payment amount mismatch for order ${internalOrderId}: provider=${paymentData.amount}, order=${order.total_paise}`;
+            throw new Error(anomalyMessage);
           }
 
           if (order.payment_status === "PAID") {
@@ -154,7 +157,8 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
           const restaurantPayout = order.total_paise - founderRevenue - riderPayout;
 
           if (restaurantPayout < 0 || founderRevenue < 0 || riderPayout < 0) {
-            throw new Error("Invalid negative revenue split detected.");
+            anomalyMessage = `Invalid revenue split for order ${internalOrderId}: restaurant=${restaurantPayout}, founder=${founderRevenue}, rider=${riderPayout}`;
+            throw new Error(anomalyMessage);
           }
 
           await tx`
@@ -201,6 +205,28 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
         return new Response(JSON.stringify({ success: false, message: 'Invalid payload format', details: error.issues }), { status: 400, headers: { 'Content-Type': 'application/json' } });
       }
       console.error('[FATAL] Webhook processing error:', error);
+
+      if (anomalyMessage && anomalyOrgId) {
+        try {
+          const alertSql = await getSql();
+          await alertSql`
+            INSERT INTO alerts (id, org_id, severity, kind, title, body, status, created_at)
+            VALUES (
+              ${`pay_anom_${crypto.randomUUID()}`},
+              ${anomalyOrgId},
+              'CRITICAL',
+              'PAYMENT_ANOMALY',
+              'Razorpay payment anomaly detected',
+              ${anomalyMessage},
+              'OPEN',
+              NOW()
+            )
+          `;
+        } catch (alertError) {
+          console.error('[ALERTING] Failed to persist payment anomaly alert:', alertError);
+        }
+      }
+
       return new Response(JSON.stringify({ success: false, message: 'Internal Server Error' }), { status: 500 });
     }
       }
