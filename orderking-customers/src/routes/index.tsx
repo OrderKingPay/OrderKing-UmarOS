@@ -17,6 +17,20 @@ function Home() {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => { setHydrated(true); }, []);
 
+  useEffect(() => {
+    if (!hydrated) return;
+    void trackAnalytics({
+      data: {
+        name: "app_open",
+        payload: {
+          cityId: location.cityId,
+          cityName: location.cityName,
+          isDeliveryActive,
+        },
+      },
+    });
+  }, [hydrated, location.cityId, location.cityName, isDeliveryActive]);
+
   if (!hydrated) {
     return (
       <CustomerShell onSearch={() => void navigate({ to: "/search" })}>
@@ -31,19 +45,6 @@ function Home() {
       </CustomerShell>
     );
   }
-
-  useEffect(() => {
-    void trackAnalytics({
-      data: {
-        name: "app_open",
-        payload: {
-          cityId: location.cityId,
-          cityName: location.cityName,
-          isDeliveryActive,
-        },
-      },
-    });
-  }, [location.cityId, location.cityName, isDeliveryActive]);
 
   // 1,000x Strict Geofencing:
   // In locations where Order King is NOT active, users must ONLY see and use King Pay.
