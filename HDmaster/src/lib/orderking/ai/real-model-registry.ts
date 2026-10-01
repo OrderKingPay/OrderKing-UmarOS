@@ -8,7 +8,7 @@ export interface VerifiedModelRecord {
   /** Stable non-secret identifier used by UI lists. */
   key: string;
   displayName: string;
-  provider: "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus";
+  provider: "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus" | "Local Sovereign";
   realApiId: string;
   connectionStatus: "CONNECTED" | "CONFIGURATION_REQUIRED" | "UNAVAILABLE";
   authStatus: "VERIFIED" | "MISSING_KEY";
