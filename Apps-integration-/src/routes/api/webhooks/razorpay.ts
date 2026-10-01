@@ -152,6 +152,23 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
             WHERE id = ${internalOrderId}
           `;
 
+          await tx`
+            INSERT INTO immutable_event_ledger (
+              event_id, org_id, actor_user_id, actor_employee_id,
+              source_table, source_id, event_type, payload
+            )
+            VALUES (
+              ${crypto.randomUUID()}, ${order.org_id}, NULL, NULL,
+              'payments', ${paymentData.id}, 'PAYMENT_CONFIRMED',
+              ${JSON.stringify({
+                orderId: internalOrderId,
+                provider: "RAZORPAY",
+                amountPaise: paymentData.amount,
+                currency: paymentData.currency,
+                paymentId: paymentData.id,
+              })}
+            )
+          `;
           const founderRevenue = order.commission_paise;
           const riderPayout = order.delivery_fee_paise;
           const restaurantPayout = order.total_paise - founderRevenue - riderPayout;
