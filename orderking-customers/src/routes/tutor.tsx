@@ -31,12 +31,9 @@ For homework, guide the student and explain the method rather than simply claimi
       content: String(m.content ?? ""),
     }));
 
-    const candidates = Array.from(new Set([
-      process.env.OPENAI_TUTOR_MODEL?.trim() || process.env.OPENAI_MODEL?.trim(),
-      "gpt-6-astra",
-      "gpt-6-astra",
-      "gpt-5.6-luna",
-    ].filter(Boolean)));
+    const model = process.env.OPENAI_TUTOR_MODEL?.trim() || process.env.OPENAI_MODEL?.trim();
+    if (!model) throw new Error("TUTOR_AI_MODEL_NOT_CONFIGURED");
+    const candidates = [model];
 
     let lastError = "TUTOR_AI_REQUEST_FAILED";
     for (const model of candidates) {
@@ -50,7 +47,7 @@ For homework, guide the student and explain the method rather than simply claimi
           model,
           instructions: systemPrompt,
           input: [...history, { role: "user", content: data.message }],
-          reasoning: { effort: model === "gpt-6-astra" ? "high" : "medium" },
+          reasoning: { effort: process.env.OPENAI_TUTOR_REASONING_EFFORT?.trim() || "medium" },
         }),
       });
 
