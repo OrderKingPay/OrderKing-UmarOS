@@ -504,7 +504,16 @@ export async function executeFounderAiChat(
              mappedMessages.push({ role: "assistant", content: finalFullText });
              
              for (const tc of toolCallsToExecute) {
-                onStreamEvent?.({ type: "step", data: { stepNumber: 1, totalSteps: 1, label: `Executing ${tc.name}`, status: "RUNNING", detail: "Running tool..." } });
+                 onStreamEvent?.({
+                   type: "step",
+                   data: {
+                     stepNumber: 1,
+                     totalSteps: 1,
+                     label: "Executing tool",
+                     status: "RUNNING",
+                     detail: "Running tool...",
+                   },
+                 });
                 let result = "";
                 if (tc.name === "customer_support_lookup") {
                    try {
