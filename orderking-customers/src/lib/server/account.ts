@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
@@ -270,6 +271,23 @@ export const createTicket = createServerFn({ method: "POST" })
     await sql`
       insert into support_tickets (id, user_id, order_id, topic, message, status)
       values (${id}, ${context.userId}, ${data.orderId ?? null}, ${data.topic}, ${message.slice(0, 2000)}, ${"open"})
+    `;
+    await sql`
+      SELECT public.orderking_emit_immutable_event(
+        ${newId("iev")},
+        NULL,
+        ${context.userId},
+        NULL,
+        'support_tickets',
+        ${id},
+        'CUSTOMER_SUPPORT_TICKET_CREATED',
+        NOW(),
+        ${JSON.stringify({
+          orderId: data.orderId ?? null,
+          topic: data.topic,
+          messageHash: createHash("sha256").update(message.slice(0, 2000)).digest("hex"),
+        })}::jsonb
+      )
     `;
     return { id };
   });
