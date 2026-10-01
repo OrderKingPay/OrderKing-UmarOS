@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import { assertSameOrigin, requestRiskFingerprint } from "@/lib/security/request-integrity";
 
 export const Route = createFileRoute("/api/razorpay/create-order")({
   // @ts-expect-error
@@ -8,6 +9,7 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
     handlers: {
       POST: async ({ request }: any) => {
         try {
+          assertSameOrigin(request);
           const { getSessionUser } = await import("@/lib/auth/verify.server");
           const user = await getSessionUser();
           if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -33,6 +35,7 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
             notes: {
               orderking_user_id: user.id,
               purpose: "KINGPAY_WALLET_TOPUP",
+              security_fingerprint: requestRiskFingerprint(request, user.id),
             },
           };
 
