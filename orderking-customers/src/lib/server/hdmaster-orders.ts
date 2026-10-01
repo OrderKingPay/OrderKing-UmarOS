@@ -19,7 +19,7 @@ export const placeOrderViaHDmaster = createServerFn({ method: "POST" })
   inputValidator((input: {
     restaurantId: string; zoneId: string; lat: number; lng: number; coupon?: string | null; tipPaise?: number; lines: CartLineInput[];
     address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string };
-    paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY"; notes?: string; idempotencyKey: string;
+    paymentMethod: "COD" | "KING_PAY"; notes?: string; idempotencyKey: string;
   }) => input)
   .handler(async ({ context, data }: any) => {
     if (!data.address.line1.trim()) throw new Error("Delivery address is required.");
