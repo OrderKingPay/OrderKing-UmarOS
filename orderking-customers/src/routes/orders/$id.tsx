@@ -10,14 +10,17 @@ import { Button } from "@/components/ui/button";
 import { useT } from "@/components/providers";
 import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { advanceSimulatedOrder, cancelMyOrder, getMyOrder, reorderItems } from "@/lib/server/orders";
+import { cancelMyOrder, getMyOrder, reorderItems } from "@/lib/server/orders";
 import { getMyHDmasterOrder } from "@/lib/server/hdmaster-order-read";
+import { createTicket } from "@/lib/server/account";
+import { getReferralStatsFn } from "@/lib/server/referrals";
 import { submitOrderReview, getOrderReview } from "@/lib/server/reviews";
 import { loadConfig } from "@/lib/server/load-config";
 import { CUSTOMER_TRACK_STEPS } from "@/lib/orders/state";
 import { formatPaise } from "@/lib/money";
 import { useOrderSSE } from "@/lib/hooks/use-order-sse";
 import { useCartStore } from "@/lib/stores/cart";
+import { buildShareIntent } from "@/lib/engine/viral-loop";
 
 export const Route = createFileRoute("/orders/$id")({ component: OrderDetailPage });
 
@@ -65,27 +68,48 @@ function OrderDetailPage() {
     reader.readAsDataURL(file);
   };
 
+  const complaint = useMutation({
+    mutationFn: () =>
+      createTicket({
+        data: {
+          orderId: id,
+          topic: complaintCategory,
+          message: [
+            `Requested resolution: ${preferredResolution}`,
+            complaintText.trim() ? `Customer note: ${complaintText.trim()}` : "",
+            complaintImage ? "Photo proof attached in this session." : "",
+          ].filter(Boolean).join("\n"),
+        },
+      }),
+    onSuccess: (result) => {
+      setSubmittedComplaint({
+        ticketId: result.id,
+        category: complaintCategory,
+        resolution:
+          preferredResolution === "REFUND"
+            ? "Refund review requested"
+            : preferredResolution === "REDELIVERY"
+              ? "Redelivery review requested"
+              : "Escalated to HDmaster Founder Operations",
+        status: "OPEN",
+        createdAt: new Date().toISOString(),
+      });
+      setComplaintOpen(false);
+      toast.success(`Complaint registered. Ticket #${result.id}`);
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : "Could not register complaint.");
+    },
+  });
+
   const handleComplaintSubmit = () => {
     if (!complaintText.trim() && !complaintImage) {
       toast.error("Please provide a description or attach photo proof of the issue.");
       return;
     }
-    const ticketNum = Math.floor(100000 + Math.random() * 900000);
-    const newComplaint = {
-      ticketId: `HD-COMPLAINT-${ticketNum}`,
-      category: complaintCategory,
-      resolution:
-        preferredResolution === "REFUND"
-          ? "Instant 100% Wallet Refund"
-          : preferredResolution === "REDELIVERY"
-            ? "Free Express Redelivery"
-            : "Escalated to HDmaster Founder Operations",
-      status: "UNDER_REVIEW",
-      createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-    setSubmittedComplaint(newComplaint);
-    toast.success(`Complaint registered! Ticket #${newComplaint.ticketId} escalated.`);
+    complaint.mutate();
   };
+
   const detail = useQuery({
     queryKey: ["order", id],
     queryFn: async () => {
@@ -109,8 +133,6 @@ function OrderDetailPage() {
   });
 
   const cancel = useMutation({ mutationFn: () => cancelMyOrder({ data: { orderId: id } }), onSuccess: () => void detail.refetch() });
-  const advance = useMutation({ mutationFn: () => advanceSimulatedOrder({ data: { orderId: id } }), onSuccess: () => void detail.refetch() });
-
   const reviewQuery = useQuery({
     queryKey: ["order-review", id],
     queryFn: () => getOrderReview({ data: { orderId: id } }),
@@ -126,6 +148,12 @@ function OrderDetailPage() {
     onError: (err) => {
       toast.error(err instanceof Error ? err.message : "Failed to submit review.");
     },
+  });
+
+  const referral = useQuery({
+    queryKey: ["order-referral", user?.id],
+    queryFn: () => getReferralStatsFn(),
+    enabled: Boolean(user && order?.status === "DELIVERED"),
   });
 
   if (isPending) return <CustomerShell><div className="p-6">{t("common.loading")}</div></CustomerShell>;
@@ -224,76 +252,47 @@ function OrderDetailPage() {
           etaOverride={lastEvent?.eta}
         />
 
-        {/* Google Pay / CRED-Style Mystery Scratch Card on Delivery */}
-        {order.status === "DELIVERED" && (
-          <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-surface to-amber-500/5 p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-lg">
-                  🎁
-                </span>
-                <div>
-                  <h3 className="font-display font-bold text-fg">Delivery Mystery Scratch Card</h3>
-                  <p className="text-xs text-muted">You unlocked secret rewards on this order!</p>
-                </div>
+        {/* Verified Referral Growth Target — server-authorized campaign */}
+        {order.status === "DELIVERED" && referral.data?.status === "ACTIVE" && (
+          <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-surface to-primary/5 p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="font-display font-bold text-fg">Invite &amp; Earn</h3>
+                <p className="text-xs text-muted">Rewards are issued only after a referred customer completes a verified qualifying order.</p>
               </div>
-              <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-800 dark:text-amber-200">
-                King Club
-              </span>
+              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">Verified target</span>
             </div>
-
-            <div className="mt-3">
-              {!scratched ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setScratched(true);
-                    toast.success("🎉 Mystery Reward Unlocked!");
-                  }}
-                  className="group flex h-24 w-full items-center justify-center rounded-xl border border-dashed border-amber-500/60 bg-gradient-to-r from-amber-500/10 via-primary/10 to-amber-500/10 text-center transition hover:border-amber-500 cursor-pointer"
-                >
-                  <div>
-                    <span className="text-2xl transition-transform group-hover:scale-125 inline-block">✨</span>
-                    <p className="font-bold text-sm text-fg">Tap to Scratch Your Reward</p>
-                    <p className="text-[11px] text-muted">Win King Coins, Fuel Vouchers & Brand Deals</p>
-                  </div>
-                </button>
-              ) : (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-center">
-                  <span className="text-2xl">🎉</span>
-                  <p className="font-bold text-sm text-emerald-800 dark:text-emerald-200">
-                    You won 2,500 King Coins + ₹50 HP Fuel Voucher!
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted">
-                    Code: <span className="font-mono font-bold text-fg">HPFUEL50</span> (HP Pay / IndianOil ONE)
-                  </p>
-                  <div className="mt-2.5 flex flex-wrap justify-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        void navigator.clipboard?.writeText("HPFUEL50");
-                        toast.success("Voucher code copied!");
-                      }}
-                    >
-                      Copy Code
-                    </Button>
-                    <a
-                      href="https://hppay.in?ref=orderking"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
-                    >
-                      <span>Redeem on HP Pay</span>
-                      <span>↗</span>
-                    </a>
-                    <Button size="sm" variant="ghost" asChild>
-                      <Link to="/king-pay">KingPay Hub →</Link>
-                    </Button>
-                  </div>
-                </div>
-              )}
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div className="rounded-lg border border-border bg-surface p-2.5">
+                <span className="text-muted">Target progress</span>
+                <p className="mt-0.5 font-bold text-fg">{referral.data.targetProgress} / {referral.data.targetQualifications}</p>
+              </div>
+              <div className="rounded-lg border border-border bg-surface p-2.5">
+                <span className="text-muted">Reward</span>
+                <p className="mt-0.5 font-bold text-fg">₹{(referral.data.rewardPerFriendPaise / 100).toFixed(2)} after qualification</p>
+              </div>
             </div>
+            <Button
+              className="mt-3 w-full"
+              size="sm"
+              variant="primary"
+              onClick={async () => {
+                const share = buildShareIntent(referral.data!.referralCode, "order-complete");
+                try {
+                  if (share.navigatorShare) {
+                    await navigator.share(share.navigatorShare);
+                  } else {
+                    await navigator.clipboard?.writeText(share.text);
+                    toast.success("Verified referral link copied.");
+                  }
+                } catch (error) {
+                  if (error instanceof DOMException && error.name === "AbortError") return;
+                  toast.error("Could not open sharing on this device.");
+                }
+              }}
+            >
+              Share your verified referral link
+            </Button>
           </div>
         )}
 
@@ -743,7 +742,7 @@ function OrderDetailPage() {
           <ul className="mb-3 space-y-1 text-sm">{order.items.map((it: any) => <li key={it.name} className="flex justify-between gap-3"><span>{it.quantity} × {it.name}</span><span className="tabular-nums">{formatPaise(it.lineTotalPaise, { locale })}</span></li>)}</ul>
           <QuoteLines lines={order.lines} locale={locale} />
         </div>
-        {order.restaurantSimulated && !["DELIVERED", "CANCELLED", "REJECTED"].includes(order.status) ? <div className="mt-4 rounded-[var(--radius-lg)] border border-border p-3"><p className="text-sm text-muted">{t("orders.simulateHint")}</p><Button className="mt-2" variant="outline" disabled={advance.isPending} onClick={() => advance.mutate()}>{t("orders.simulate")}</Button></div> : null}
+
         <div className="mt-4 flex flex-wrap gap-2">
           {order.canCancel ? <Button variant="danger" disabled={cancel.isPending} onClick={() => cancel.mutate()}>{t("orders.cancelOrder")}</Button> : null}
           <Button
