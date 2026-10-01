@@ -1,110 +1,88 @@
 -- 0019_immutable_event_ledger.sql
+-- Ensures the existing OrderKing immutable ledger contract exists in a fresh environment.
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS public.immutable_event_ledger (
-  sequence_id BIGSERIAL PRIMARY KEY,
+  event_seq BIGSERIAL PRIMARY KEY,
   event_id TEXT NOT NULL UNIQUE,
-  org_id TEXT NOT NULL,
-  stream_key TEXT NOT NULL,
-  actor_type TEXT NOT NULL,
-  actor_id TEXT NOT NULL,
-  entity_type TEXT NOT NULL,
-  entity_id TEXT NOT NULL,
+  org_id TEXT,
+  actor_user_id TEXT,
+  actor_employee_id TEXT,
+  source_table TEXT NOT NULL,
+  source_id TEXT NOT NULL,
   event_type TEXT NOT NULL,
   occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   payload JSONB NOT NULL DEFAULT '{}'::jsonb,
-  prev_hash TEXT,
-  event_hash TEXT NOT NULL UNIQUE,
+  prev_hash CHAR(64),
+  event_hash CHAR(64) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_immutable_event_stream
-  ON public.immutable_event_ledger (org_id, stream_key, sequence_id DESC);
-CREATE INDEX IF NOT EXISTS idx_immutable_event_entity
-  ON public.immutable_event_ledger (entity_type, entity_id, sequence_id DESC);
+CREATE INDEX IF NOT EXISTS idx_immutable_event_org_seq
+  ON public.immutable_event_ledger (org_id, event_seq DESC);
+CREATE INDEX IF NOT EXISTS idx_immutable_event_source
+  ON public.immutable_event_ledger (source_table, source_id, event_seq DESC);
 CREATE INDEX IF NOT EXISTS idx_immutable_event_actor
-  ON public.immutable_event_ledger (actor_type, actor_id, sequence_id DESC);
+  ON public.immutable_event_ledger (actor_user_id, event_seq DESC);
 
-CREATE OR REPLACE FUNCTION public.immutable_event_ledger_guard()
+CREATE OR REPLACE FUNCTION public.orderking_immutable_block_mutation()
 RETURNS trigger
 LANGUAGE plpgsql
 SET search_path = public, pg_catalog
 AS $$
 BEGIN
-  RAISE EXCEPTION 'IMMUTABLE_EVENT_LEDGER: UPDATE and DELETE are forbidden';
+  RAISE EXCEPTION 'IMMUTABLE_EVENT_LEDGER: UPDATE/DELETE is forbidden';
 END;
 $$;
 
-DROP TRIGGER IF EXISTS immutable_event_no_mutation ON public.immutable_event_ledger;
-CREATE TRIGGER immutable_event_no_mutation
-BEFORE UPDATE OR DELETE ON public.immutable_event_ledger
-FOR EACH ROW EXECUTE FUNCTION public.immutable_event_ledger_guard();
+DROP TRIGGER IF EXISTS immutable_event_block_mutation ON public.immutable_event_ledger;
+CREATE TRIGGER immutable_event_block_mutation
+BEFORE DELETE OR UPDATE ON public.immutable_event_ledger
+FOR EACH ROW EXECUTE FUNCTION public.orderking_immutable_block_mutation();
 
-CREATE OR REPLACE FUNCTION public.append_immutable_event(
-  p_org_id TEXT,
-  p_stream_key TEXT,
-  p_actor_type TEXT,
-  p_actor_id TEXT,
-  p_entity_type TEXT,
-  p_entity_id TEXT,
-  p_event_type TEXT,
-  p_payload JSONB DEFAULT '{}'::jsonb,
-  p_occurred_at TIMESTAMPTZ DEFAULT NOW()
-)
-RETURNS TABLE(event_id TEXT, event_hash TEXT)
+CREATE OR REPLACE FUNCTION public.orderking_immutable_hash_chain()
+RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public, pg_catalog
 AS $$
 DECLARE
-  v_event_id TEXT := gen_random_uuid()::text;
-  v_prev_hash TEXT;
-  v_canonical TEXT;
-  v_event_hash TEXT;
+  prior_hash CHAR(64);
+  canonical TEXT;
 BEGIN
-  PERFORM pg_advisory_xact_lock(hashtext(p_org_id), hashtext(p_stream_key));
+  PERFORM pg_advisory_xact_lock(hashtextextended(COALESCE(NEW.org_id, ''), 0));
 
-  SELECT i.event_hash
-  INTO v_prev_hash
-  FROM public.immutable_event_ledger i
-  WHERE i.org_id = p_org_id
-    AND i.stream_key = p_stream_key
-  ORDER BY i.sequence_id DESC
+  SELECT event_hash
+    INTO prior_hash
+  FROM public.immutable_event_ledger
+  WHERE org_id IS NOT DISTINCT FROM NEW.org_id
+  ORDER BY event_seq DESC
   LIMIT 1;
 
-  v_canonical :=
-      COALESCE(v_prev_hash, 'GENESIS')
-      || '|' || v_event_id
-      || '|' || p_org_id
-      || '|' || p_stream_key
-      || '|' || p_actor_type
-      || '|' || p_actor_id
-      || '|' || p_entity_type
-      || '|' || p_entity_id
-      || '|' || p_event_type
-      || '|' || COALESCE(p_occurred_at::text, '')
-      || '|' || COALESCE(p_payload::text, '{}');
-
-  v_event_hash := encode(digest(v_canonical, 'sha256'), 'hex');
-
-  INSERT INTO public.immutable_event_ledger (
-    event_id, org_id, stream_key, actor_type, actor_id,
-    entity_type, entity_id, event_type, occurred_at, payload,
-    prev_hash, event_hash
-  ) VALUES (
-    v_event_id, p_org_id, p_stream_key, p_actor_type, p_actor_id,
-    p_entity_type, p_entity_id, p_event_type, p_occurred_at, COALESCE(p_payload, '{}'::jsonb),
-    v_prev_hash, v_event_hash
+  NEW.prev_hash := prior_hash;
+  canonical := concat_ws('|',
+    COALESCE(NEW.event_id, ''),
+    COALESCE(NEW.org_id, ''),
+    COALESCE(NEW.actor_user_id, ''),
+    COALESCE(NEW.actor_employee_id, ''),
+    COALESCE(NEW.source_table, ''),
+    COALESCE(NEW.source_id, ''),
+    COALESCE(NEW.event_type, ''),
+    COALESCE(to_char(NEW.occurred_at, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'), ''),
+    COALESCE(NEW.payload::text, '{}'),
+    COALESCE(NEW.prev_hash, '')
   );
 
-  RETURN QUERY SELECT v_event_id, v_event_hash;
+  NEW.event_hash := encode(digest(canonical, 'sha256'), 'hex');
+  RETURN NEW;
 END;
 $$;
+
+DROP TRIGGER IF EXISTS immutable_event_hash_chain ON public.immutable_event_ledger;
+CREATE TRIGGER immutable_event_hash_chain
+BEFORE INSERT ON public.immutable_event_ledger
+FOR EACH ROW EXECUTE FUNCTION public.orderking_immutable_hash_chain();
 
 REVOKE UPDATE, DELETE ON public.immutable_event_ledger FROM PUBLIC;
 REVOKE UPDATE, DELETE ON public.immutable_event_ledger FROM anon;
 REVOKE UPDATE, DELETE ON public.immutable_event_ledger FROM authenticated;
-
-REVOKE EXECUTE ON FUNCTION public.append_immutable_event(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,JSONB,TIMESTAMPTZ) FROM PUBLIC;
-REVOKE EXECUTE ON FUNCTION public.append_immutable_event(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,JSONB,TIMESTAMPTZ) FROM anon;
-REVOKE EXECUTE ON FUNCTION public.append_immutable_event(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,JSONB,TIMESTAMPTZ) FROM authenticated;
