@@ -93,11 +93,13 @@ export const askAssistant = createServerFn({ method: "POST" })
 
       await sql`insert into assistant_messages (id, restaurant_id, user_id, role, content) values (${newId("aim")}, ${ctx.restaurantId}, ${context.userId}, 'user', ${question})`;
 
+      const model = process.env.OPENAI_PARTNER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim();
+      if (!model) return { ok: false as const, error: "OPENAI_MODEL_NOT_CONFIGURED", text: "Restaurant AI model is not configured." };
       const response = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({
-          model: process.env.OPENAI_PARTNER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "gpt-6-astra",
+          model: process.env.OPENAI_PARTNER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim() || "",
           input: [
             {
               role: "system",
