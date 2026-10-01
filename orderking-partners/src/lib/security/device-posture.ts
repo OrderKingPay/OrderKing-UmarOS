@@ -18,15 +18,7 @@ export function collectDevicePosture() {
     cookieEnabled: navigator.cookieEnabled === true,
     storageAvailable,
     cryptoAvailable: Boolean(globalThis.crypto?.subtle),
-    online: navigator.onLine === true,
-    platformFamily:
-      /Android/i.test(navigator.userAgent) ? "ANDROID" :
-      /iPhone|iPad|iPod/i.test(navigator.userAgent) ? "IOS" :
-      /Windows/i.test(navigator.userAgent) ? "WINDOWS" :
-      /Mac OS/i.test(navigator.userAgent) ? "MACOS" : "OTHER",
-    language: navigator.language || "",
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
-    hardwareClass: Math.max(1, Math.min(16, Number(navigator.hardwareConcurrency || 1))),
+    online: navigator.onLine === true
   };
 }
 
