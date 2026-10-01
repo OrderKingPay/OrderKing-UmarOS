@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
 const verifyAiProvider = createServerFn({ method: "POST" })
-  .validator((data: { modelId: string }) => {
+  .inputValidator((data: { modelId: string }) => {
     if (!data.modelId?.trim()) throw new Error("modelId is required");
     return { modelId: data.modelId.trim() };
   })
