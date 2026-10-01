@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import crypto from "node:crypto";
 import Razorpay from "razorpay";
+import { assertSameOrigin } from "@/lib/security/request-integrity";
 
 export const Route = createFileRoute("/api/razorpay/verify")({
   // @ts-expect-error
@@ -8,6 +9,7 @@ export const Route = createFileRoute("/api/razorpay/verify")({
     handlers: {
       POST: async ({ request }: any) => {
         try {
+          assertSameOrigin(request);
           const { getSessionUser } = await import("@/lib/auth/verify.server");
           const { getSql } = await import("@/lib/db");
           const user = await getSessionUser();
@@ -54,6 +56,19 @@ export const Route = createFileRoute("/api/razorpay/verify")({
             await tx`
               INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
               VALUES (${txId}, ${user.id}, ${order.amount}, 'CREDIT', ${"Razorpay wallet top-up " + razorpay_payment_id})
+            `;
+            await tx`
+              SELECT public.orderking_emit_immutable_event(
+                ${txId},
+                ${user.id},
+                ${user.id},
+                NULL,
+                'kingpay',
+                ${txId},
+                'WALLET_TOPUP_VERIFIED',
+                NOW(),
+                ${JSON.stringify({ paymentId: razorpay_payment_id, orderId: razorpay_order_id, amountPaise: Number(order.amount) })}::jsonb
+              )
             `;
           });
 
