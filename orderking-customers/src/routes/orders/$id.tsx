@@ -452,7 +452,7 @@ function OrderDetailPage() {
                       "Polite & helpful rider 🛵",
                       "Leak-proof packaging 📦",
                       "Authentic royal taste 🍗",
-                      "0% menu markup savings 💰",
+                      "Verified OrderKing pricing 💰",
                     ].map((tag) => {
                       const isSelected = selectedTags.includes(tag);
                       return (
@@ -723,16 +723,17 @@ function OrderDetailPage() {
             variant="secondary"
             className="w-full text-xs font-medium"
             onClick={() => {
-              const text = `Hey! Here's your ₹${((order.summary.totalPaise / splitCount) / 100).toFixed(2)} share for our food order from ${order.summary.restaurantName}: upi://pay?pa=orderking@icici&pn=OrderKing&am=${((order.summary.totalPaise / splitCount) / 100).toFixed(2)}&cu=INR&tn=Bill Split for ${order.summary.publicId}`;
+              const splitAmount = ((order.summary.totalPaise / splitCount) / 100).toFixed(2);
+              const text = `OrderKing bill split: ₹${splitAmount} each for ${order.summary.restaurantName} (order ${order.summary.publicId}). Open your preferred verified UPI/bank app to pay your share.`;
               if (typeof navigator !== "undefined" && navigator.share) {
                 void navigator.share({ title: "Split Bill on OrderKing", text });
               } else if (typeof navigator !== "undefined") {
                 void navigator.clipboard?.writeText(text);
-                toast.success("UPI split payment link copied to clipboard!");
+                toast.success("Bill-split details copied to clipboard.");
               }
             }}
           >
-            📲 Share UPI Split Link (WhatsApp / SMS)
+            📲 Share Bill Split Details (WhatsApp / SMS)
           </Button>
         </div>
 
