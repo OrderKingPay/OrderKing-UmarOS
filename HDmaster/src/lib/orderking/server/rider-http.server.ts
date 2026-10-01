@@ -43,6 +43,16 @@ export async function handleRiderOrderTransition(request: Request, input: { orde
     
     if (input.to === "DELIVERED") {
       try {
+        const { recordActiveTargetQualification } = await import("../growth/target-bonus.server");
+        await Promise.allSettled([
+          recordActiveTargetQualification({ participantType: "RIDER", participantId: riderId }),
+          recordActiveTargetQualification({ participantType: "PARTNER", participantId: String(order.restaurant_id) }),
+        ]);
+      } catch (targetError) {
+        console.error("[growth] target qualification failed after delivery:", targetError);
+      }
+
+      try {
         const { qualifyReferralOrder } = await import("@/lib/orderking/server/growth-qualification.server");
         const qualified = await qualifyReferralOrder(order.customer_id, input.orderId);
         if (qualified.qualified) {
