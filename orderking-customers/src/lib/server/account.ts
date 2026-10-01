@@ -198,6 +198,37 @@ export const listPromos = createServerFn({ method: "GET" }).handler(async () => 
   }
 });
 
+export const listVerifiedAffiliatePartners = createServerFn({ method: "GET" })
+  .handler(async () => {
+    const sql = await getSql();
+    const rows = await sql<{
+      id: string;
+      name: string;
+      category: string;
+      tracking_base_url: string;
+      commission_type: string;
+      terms_version: string | null;
+    }>`
+      SELECT id, name, category, tracking_base_url, commission_type, terms_version
+      FROM affiliate_partners
+      WHERE active = true
+        AND tracking_base_url IS NOT NULL
+        AND tracking_base_url <> ''
+        AND terms_version IS NOT NULL
+        AND terms_version <> ''
+      ORDER BY name ASC
+    `;
+    return {
+      partners: rows.map((r) => ({
+        id: r.id,
+        brand: r.name,
+        category: r.category,
+        commissionType: r.commission_type,
+        termsVersion: r.terms_version,
+      })),
+    };
+  });
+
 export const getLoyalty = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
