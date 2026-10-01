@@ -27,7 +27,8 @@ import { OfflineBanner } from "./offline-banner";
 import { OrderKingMark } from "./mark";
 import { useT } from "./use-t";
 import { useVendor } from "./use-vendor";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { startSilentDevicePostureReporting } from "@/lib/security/device-posture";
 import { OrderKingSparkModal } from "./ai/order-king-spark-modal";
 import type { AppLanguage } from "@/lib/platform-config";
 export const PRIMARY_NAV = [
@@ -74,6 +75,8 @@ export function VendorShell({
   const mobilePrimary = (primary.length >= 4 ? primary : [...primary, ...more]).slice(0, 4);
 
   const [sparkOpen, setSparkOpen] = useState(false);
+
+  useEffect(() => startSilentDevicePostureReporting(), []);
 
   if (isPending) {
     return (
