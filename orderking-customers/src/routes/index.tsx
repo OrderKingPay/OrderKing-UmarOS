@@ -1,6 +1,6 @@
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { HomeFeed } from "@/components/market/home-feed";
 import { CustomerShell } from "@/components/market/shell";
 import { trackAnalytics } from "@/lib/server/quote";
@@ -14,6 +14,23 @@ function Home() {
   const navigate = useNavigate();
   const location = useLocationStore((s) => s.location);
   const isDeliveryActive = isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => { setHydrated(true); }, []);
+
+  if (!hydrated) {
+    return (
+      <CustomerShell onSearch={() => void navigate({ to: "/search" })}>
+        <div className="min-h-[60vh] px-3 py-4 space-y-4" aria-busy="true">
+          <div className="h-10 w-2/3 rounded-2xl bg-surface animate-pulse" />
+          <div className="grid gap-4 md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-56 rounded-[var(--radius-3xl)] border border-border bg-surface animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </CustomerShell>
+    );
+  }
 
   useEffect(() => {
     void trackAnalytics({
