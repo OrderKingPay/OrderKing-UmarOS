@@ -147,7 +147,7 @@ function AccountPage() {
                   {loyalty.data?.loyalty.points ?? 0} <span className="text-xs font-semibold">pts</span>
                 </p>
                 <p className="text-[11px] font-medium text-muted">
-                  ≈ ₹{Math.round((loyalty.data?.loyalty.points ?? 0) * 0.3)} Wallet Credit
+                  Rewards value shown only from active reward rules
                 </p>
               </div>
             </div>
@@ -156,32 +156,32 @@ function AccountPage() {
             <div className="mt-4 grid grid-cols-3 gap-2 border-t border-amber-500/20 pt-3 text-center">
               <div className="rounded-lg bg-surface/70 p-2">
                 <span className="text-base">🚀</span>
-                <p className="mt-0.5 text-[11px] font-bold">Free Delivery</p>
-                <p className="text-[10px] text-muted">Orders &gt; ₹299</p>
+                <p className="mt-0.5 text-[11px] font-bold">Provider-defined delivery benefits</p>
+                <p className="text-[10px] text-muted">Eligibility depends on the active campaign</p>
               </div>
               <div className="rounded-lg bg-surface/70 p-2">
                 <span className="text-base">💎</span>
-                <p className="mt-0.5 text-[11px] font-bold">Up to 5% Back</p>
-                <p className="text-[10px] text-muted">On every order</p>
+                <p className="mt-0.5 text-[11px] font-bold">Provider-defined rewards</p>
+                <p className="text-[10px] text-muted">Only on eligible orders/campaigns</p>
               </div>
               <div className="rounded-lg bg-surface/70 p-2">
                 <span className="text-base">⚡</span>
-                <p className="mt-0.5 text-[11px] font-bold">Priority Bot</p>
-                <p className="text-[10px] text-muted">Instant refund</p>
+                <p className="mt-0.5 text-[11px] font-bold">Priority AI Support</p>
+                <p className="text-[10px] text-muted">Refund timing follows provider verification</p>
               </div>
             </div>
 
             {/* Next Tier Progress Bar */}
             <div className="mt-4">
               <div className="flex justify-between text-[11px] text-muted">
-                <span>Current Tier: Gold</span>
-                <span>Next Tier: Diamond (15,000 pts)</span>
+                <span>Current Tier: {loyalty.data?.loyalty.tier ?? "starter"}</span>
+                <span>Next tier is determined by the active rewards configuration</span>
               </div>
               <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-surface-2">
                 <div
                   className="h-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-500"
                   style={{
-                    width: `${Math.min(100, Math.max(10, ((loyalty.data?.loyalty.points ?? 0) / 15000) * 100))}%`,
+                    width: `${Math.min(100, Math.max(10, Math.min(100, (loyalty.data?.loyalty.points ?? 0) / 150)))}%`,
                   }}
                 />
               </div>
