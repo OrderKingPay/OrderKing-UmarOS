@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
 const executeOpenAi = createServerFn({ method: "POST" })
-  .validator((data: { prompt: string }) => {
+  .inputValidator((data: { prompt: string }) => {
     if (!data.prompt?.trim()) throw new Error("prompt is required");
     if (data.prompt.length > 12000) throw new Error("prompt too long");
     return { prompt: data.prompt.trim() };
