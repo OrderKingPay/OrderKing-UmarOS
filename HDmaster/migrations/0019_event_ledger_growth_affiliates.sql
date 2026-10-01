@@ -1,30 +1,9 @@
--- OrderKing/Umar OS: governed growth rewards + affiliate attribution.
--- The immutable_event_ledger already exists in the production schema with a
--- cryptographic hash-chain and mutation-blocking triggers. This migration
--- intentionally preserves that implementation and adds only new growth tables.
+-- OrderKing/Umar OS: governed growth events/rewards + affiliate attribution ledgers.
+-- Existing immutable_event_ledger, growth_campaigns and affiliate_offers schemas are preserved.
 
-CREATE TABLE IF NOT EXISTS growth_campaigns (
-  campaign_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  campaign_key text NOT NULL UNIQUE,
-  title text NOT NULL,
-  goal_metric text NOT NULL,
-  target_count bigint NOT NULL CHECK (target_count > 0),
-  reward_paise bigint NOT NULL DEFAULT 0 CHECK (reward_paise >= 0),
-  reward_coins bigint NOT NULL DEFAULT 0 CHECK (reward_coins >= 0),
-  max_budget_paise bigint NULL CHECK (max_budget_paise IS NULL OR max_budget_paise >= 0),
-  starts_at timestamptz NOT NULL,
-  ends_at timestamptz NULL,
-  status text NOT NULL DEFAULT 'DRAFT' CHECK (status IN ('DRAFT','ACTIVE','PAUSED','CLOSED')),
-  fraud_policy jsonb NOT NULL DEFAULT '{}'::jsonb,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-
-CREATE INDEX IF NOT EXISTS idx_growth_campaigns_status
-  ON growth_campaigns (status, starts_at, ends_at);
-
-CREATE TABLE IF NOT EXISTS growth_events (
+CREATE TABLE IF NOT EXISTS growth_event_ledger (
   growth_event_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  campaign_id uuid NOT NULL REFERENCES growth_campaigns(campaign_id),
+  campaign_id text NOT NULL,
   user_id uuid NULL,
   actor_type text NOT NULL,
   actor_id text NULL,
@@ -37,14 +16,14 @@ CREATE TABLE IF NOT EXISTS growth_events (
   metadata jsonb NOT NULL DEFAULT '{}'::jsonb
 );
 
-CREATE INDEX IF NOT EXISTS idx_growth_events_campaign_user
-  ON growth_events (campaign_id, user_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_growth_event_campaign_user
+  ON growth_event_ledger (campaign_id, user_id, occurred_at DESC);
 
-CREATE TABLE IF NOT EXISTS growth_reward_ledger (
+CREATE TABLE IF NOT EXISTS growth_reward_ledger_v2 (
   reward_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  campaign_id uuid NOT NULL REFERENCES growth_campaigns(campaign_id),
+  campaign_id text NOT NULL,
   user_id uuid NOT NULL,
-  source_growth_event_id uuid NOT NULL REFERENCES growth_events(growth_event_id),
+  source_growth_event_id uuid NOT NULL REFERENCES growth_event_ledger(growth_event_id),
   reward_paise bigint NOT NULL DEFAULT 0 CHECK (reward_paise >= 0),
   reward_coins bigint NOT NULL DEFAULT 0 CHECK (reward_coins >= 0),
   status text NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING','APPROVED','PAID','REVERSED')),
@@ -53,36 +32,22 @@ CREATE TABLE IF NOT EXISTS growth_reward_ledger (
   UNIQUE (source_growth_event_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_growth_reward_user
-  ON growth_reward_ledger (user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_growth_reward_v2_user
+  ON growth_reward_ledger_v2 (user_id, created_at DESC);
 
-ALTER TABLE growth_events ENABLE ROW LEVEL SECURITY;
-ALTER TABLE growth_reward_ledger ENABLE ROW LEVEL SECURITY;
+ALTER TABLE growth_event_ledger ENABLE ROW LEVEL SECURITY;
+ALTER TABLE growth_reward_ledger_v2 ENABLE ROW LEVEL SECURITY;
 
-CREATE TABLE IF NOT EXISTS affiliate_offers (
-  offer_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  provider_name text NOT NULL,
-  category text NOT NULL,
-  offer_key text NOT NULL UNIQUE,
-  landing_url text NOT NULL,
-  tracking_template text NULL,
-  commission_model text NOT NULL,
-  commission_bps integer NULL CHECK (commission_bps IS NULL OR commission_bps >= 0),
-  fixed_commission_paise bigint NULL CHECK (fixed_commission_paise IS NULL OR fixed_commission_paise >= 0),
-  terms_url text NULL,
-  disclosure_text text NOT NULL,
-  status text NOT NULL DEFAULT 'DRAFT' CHECK (status IN ('DRAFT','ACTIVE','PAUSED','CLOSED')),
-  starts_at timestamptz NOT NULL DEFAULT now(),
-  ends_at timestamptz NULL,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
+REVOKE UPDATE, DELETE ON growth_event_ledger FROM PUBLIC;
+REVOKE UPDATE, DELETE ON growth_reward_ledger_v2 FROM PUBLIC;
+REVOKE UPDATE, DELETE ON growth_event_ledger FROM anon;
+REVOKE UPDATE, DELETE ON growth_reward_ledger_v2 FROM anon;
+REVOKE UPDATE, DELETE ON growth_event_ledger FROM authenticated;
+REVOKE UPDATE, DELETE ON growth_reward_ledger_v2 FROM authenticated;
 
-CREATE INDEX IF NOT EXISTS idx_affiliate_offers_active
-  ON affiliate_offers (status, category, starts_at, ends_at);
-
-CREATE TABLE IF NOT EXISTS affiliate_attributions (
+CREATE TABLE IF NOT EXISTS affiliate_attribution_ledger (
   attribution_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  offer_id uuid NOT NULL REFERENCES affiliate_offers(offer_id),
+  offer_id text NOT NULL,
   user_id uuid NULL,
   click_id text NOT NULL UNIQUE,
   source text NOT NULL,
@@ -97,17 +62,13 @@ CREATE TABLE IF NOT EXISTS affiliate_attributions (
   provider_payload jsonb NOT NULL DEFAULT '{}'::jsonb
 );
 
-CREATE INDEX IF NOT EXISTS idx_affiliate_attr_user
-  ON affiliate_attributions (user_id, clicked_at DESC);
-CREATE INDEX IF NOT EXISTS idx_affiliate_attr_offer
-  ON affiliate_attributions (offer_id, clicked_at DESC);
+CREATE INDEX IF NOT EXISTS idx_affiliate_attr_v2_user
+  ON affiliate_attribution_ledger (user_id, clicked_at DESC);
 
-ALTER TABLE affiliate_offers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE affiliate_attributions ENABLE ROW LEVEL SECURITY;
+CREATE INDEX IF NOT EXISTS idx_affiliate_attr_v2_offer
+  ON affiliate_attribution_ledger (offer_id, clicked_at DESC);
 
-REVOKE UPDATE, DELETE ON growth_reward_ledger FROM PUBLIC;
-REVOKE UPDATE, DELETE ON affiliate_attributions FROM PUBLIC;
-REVOKE UPDATE, DELETE ON growth_reward_ledger FROM anon;
-REVOKE UPDATE, DELETE ON affiliate_attributions FROM anon;
-REVOKE UPDATE, DELETE ON growth_reward_ledger FROM authenticated;
-REVOKE UPDATE, DELETE ON affiliate_attributions FROM authenticated;
+ALTER TABLE affiliate_attribution_ledger ENABLE ROW LEVEL SECURITY;
+REVOKE UPDATE, DELETE ON affiliate_attribution_ledger FROM PUBLIC;
+REVOKE UPDATE, DELETE ON affiliate_attribution_ledger FROM anon;
+REVOKE UPDATE, DELETE ON affiliate_attribution_ledger FROM authenticated;
