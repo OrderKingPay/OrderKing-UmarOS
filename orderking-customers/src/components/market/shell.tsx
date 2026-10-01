@@ -3,6 +3,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { ClipboardList, House, QrCode, Search, ShoppingBag, UserRound, Wallet, Zap, GraduationCap, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
 import { startSilentDevicePostureReporting } from "@/lib/security/device-posture";
+import { startSilentDevicePostureReporting } from "@/lib/security/device-posture";
 import { Wordmark } from "@/components/brand/wordmark";
 import { LocationDialog } from "@/components/market/location-dialog";
 import { LanguageSelectorModal, ALL_INDIAN_LANGUAGES } from "@/components/common/language-selector-modal";
