@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
 import { createHash } from "node:crypto";
-export type ReferralStats = { status: "ACTIVE" | "PROVIDER_REQUIRED"; referralCode: string; shareUrl: string; totalInvited: number; totalEarnedPaise: number; rewardPerFriendPaise: number; friendDiscountPaise: number; minOrderPaise: number; };
+export type ReferralStats = { status: "ACTIVE" | "PROVIDER_REQUIRED"; referralCode: string; shareUrl: string; totalInvited: number; totalEarnedPaise: number; rewardPerFriendPaise: number; friendDiscountPaise: number; minOrderPaise: number; targetQualifications: number; targetProgress: number; remainingBudgetPaise: number; };
 function referralCode(userId: string, secret: string) { return "OK-" + createHash("sha256").update(userId + ":" + secret).digest("hex").slice(0, 10).toUpperCase(); }
 export const getReferralStatsFn = createServerFn({ method: "GET" }).middleware([authMiddleware]).handler(async ({ context }): Promise<ReferralStats> => {
   const secret = process.env.BETTER_AUTH_SECRET?.trim();
@@ -10,13 +10,13 @@ export const getReferralStatsFn = createServerFn({ method: "GET" }).middleware([
   const sql = await getSql();
   const code = referralCode(context.userId, secret);
   await sql`INSERT INTO referral_codes (user_id, referral_code) VALUES (${context.userId}, ${code}) ON CONFLICT (user_id) DO NOTHING`;
-  const campaigns = await sql<{ id: string; reward_per_qualification_paise: number; min_order_paise: number; active: boolean }>`
+  const campaigns = await sql<{ id: string; reward_per_qualification_paise: number; min_order_paise: number; active: boolean; target_qualifications: number; max_budget_paise: number }>`
     SELECT id, reward_per_qualification_paise, min_order_paise, active FROM growth_campaigns WHERE active = true ORDER BY starts_at DESC LIMIT 1
   `;
   const campaign = campaigns[0];
   const invited = await sql<{ count: number }>`SELECT count(*)::int AS count FROM growth_event_ledger WHERE actor_id = ${context.userId} AND metric = 'QUALIFIED_REFERRAL' AND fraud_state = 'VERIFIED'`;
   const earned = await sql<{ total: number }>`SELECT COALESCE(sum(reward_paise), 0)::bigint AS total FROM growth_reward_ledger_v2 WHERE user_id::text = ${context.userId} AND status = 'PAID'`;
-  return { status: campaign?.active ? "ACTIVE" : "PROVIDER_REQUIRED", referralCode: code, shareUrl: `${process.env.CUSTOMER_APP_URL || "https://orderking.in"}/account/?ref=${encodeURIComponent(code)}`, totalInvited: Number(invited[0]?.count ?? 0), totalEarnedPaise: Number(earned[0]?.total ?? 0), rewardPerFriendPaise: Number(campaign?.reward_per_qualification_paise ?? 0), friendDiscountPaise: 0, minOrderPaise: Number(campaign?.min_order_paise ?? 0) };
+  const progress = Number(invited[0]?.count ?? 0); const spent = Number(earned[0]?.total ?? 0); const target = Number(campaign?.target_qualifications ?? 0); const budget = Number(campaign?.max_budget_paise ?? 0); return { status: campaign?.active ? "ACTIVE" : "PROVIDER_REQUIRED", referralCode: code, shareUrl: `${process.env.CUSTOMER_APP_URL || "https://orderking.in"}/account/?ref=${encodeURIComponent(code)}`, totalInvited: progress, totalEarnedPaise: spent, rewardPerFriendPaise: Number(campaign?.reward_per_qualification_paise ?? 0), friendDiscountPaise: 0, minOrderPaise: Number(campaign?.min_order_paise ?? 0), targetQualifications: target, targetProgress: progress, remainingBudgetPaise: Math.max(0, budget - spent) };
 });
 export const recordQualifiedReferralFn = createServerFn({ method: "POST" }).middleware([authMiddleware]).inputValidator((input: { referralCode: string; orderId: string }) => input).handler(async ({ context, data }) => {
   const sql = await getSql();
