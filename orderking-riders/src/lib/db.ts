@@ -115,7 +115,7 @@ async function createPgliteSql(): Promise<Sql> {
   // One in-memory instance per process, shared across HMR module instances, so
   // data survives source edits (it resets on dev-server restart).
   globalRef.__pgliteInstance__ ??= (async () => {
-    const { PGlite } = await import("@electric-sql/pglite");
+    throw new Error("PGLite removed");
     const pg = new PGlite({
       parsers: {
         [OID_INT8]: Number,
@@ -207,15 +207,7 @@ export function getSql(): Promise<Sql> {
  * Lets Better Auth persist to the SAME embedded DB as app data in preview (via a
  * Kysely dialect). Throws when `DATABASE_URL` is set (that path uses Neon).
  */
-export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite> {
-  if (dbSource !== "pglite") {
-    throw new Error("getPglite() is only available on the PGLite fallback (no DATABASE_URL)");
-  }
-  await getSql();
-  const pg = await globalRef.__pgliteInstance__;
-  if (!pg) throw new Error("PGLite instance failed to initialize");
-  return pg;
-}
+export async function getPglite(): Promise<any> { throw new Error("PGLite is intentionally removed."); }
 
 /**
  * Finish DB bootstrap before the server handles traffic.
@@ -243,4 +235,8 @@ if (typeof window === "undefined" && dbSource === "pglite") {
     console.error("[db] PGLite bootstrap failed:", err);
   });
 }
+
+
+
+
 

@@ -1,6 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import crypto from "node:crypto";
-import Razorpay from "razorpay";
 import { assertSameOrigin } from "@/lib/security/request-integrity";
 
 export const Route = createFileRoute("/api/razorpay/verify")({
@@ -25,17 +23,17 @@ export const Route = createFileRoute("/api/razorpay/verify")({
           const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
           if (!keyId || !keySecret) return Response.json({ error: "Payment provider not configured" }, { status: 503 });
 
-          const generated = crypto
+          $crypto = await import("node:crypto"); const generated = $crypto
             .createHmac("sha256", keySecret)
             .update(`${razorpay_order_id}|${razorpay_payment_id}`)
             .digest("hex");
           const given = String(razorpay_signature).trim();
           if (given.length !== generated.length ||
-              !crypto.timingSafeEqual(Buffer.from(given), Buffer.from(generated))) {
+              !$crypto.timingSafeEqual(Buffer.from(given), Buffer.from(generated))) {
             return Response.json({ error: "Invalid signature" }, { status: 400 });
           }
 
-          const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+          const razorpay = new ((await import("razorpay")).default)({ key_id: keyId, key_secret: keySecret });
           const order = await razorpay.orders.fetch(razorpay_order_id);
           const notes = (order.notes || {}) as Record<string, string>;
           if (notes.orderking_user_id !== user.id || notes.purpose !== "KINGPAY_WALLET_TOPUP") {
@@ -86,3 +84,4 @@ export const Route = createFileRoute("/api/razorpay/verify")({
     },
   },
 });
+

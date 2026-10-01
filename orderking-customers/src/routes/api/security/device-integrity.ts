@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createHash } from "node:crypto";
 
 export const Route = createFileRoute("/api/security/device-integrity")({
   // @ts-expect-error
@@ -32,7 +31,7 @@ export const Route = createFileRoute("/api/security/device-integrity")({
               risk,
               automationSignal,
               crossSite,
-              userAgentHash: createHash("sha256").update(ua).digest("hex"),
+              userAgentHash: (await import("node:crypto")).createHash("sha256").update(ua).digest("hex"),
             },
           });
 
@@ -44,3 +43,4 @@ export const Route = createFileRoute("/api/security/device-integrity")({
     },
   },
 });
+

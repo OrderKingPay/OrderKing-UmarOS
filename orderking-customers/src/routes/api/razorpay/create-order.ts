@@ -1,6 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Razorpay from "razorpay";
-import crypto from "crypto";
 import { assertSameOrigin, requestRiskFingerprint } from "@/lib/security/request-integrity";
 
 export const Route = createFileRoute("/api/razorpay/create-order")({
@@ -27,11 +25,11 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
             return Response.json({ error: "Razorpay keys not configured" }, { status: 503 });
           }
 
-          const instance = new Razorpay({ key_id: keyId, key_secret: keySecret });
+          $Razorpay = (await import("razorpay")).default; const instance = new $Razorpay({ key_id: keyId, key_secret: keySecret });
           const options = {
             amount: Math.round(amount * 100),
             currency,
-            receipt: `rcpt_${crypto.randomBytes(8).toString("hex")}`,
+            receipt: `rcpt_${(await import("node:crypto")).randomBytes(8).toString("hex")}`,
             notes: {
               orderking_user_id: user.id,
               purpose: "KINGPAY_WALLET_TOPUP",
@@ -54,3 +52,4 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
     },
   },
 });
+
