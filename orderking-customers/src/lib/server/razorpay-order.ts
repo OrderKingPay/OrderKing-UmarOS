@@ -11,6 +11,8 @@ export type RazorpayOrderRequest = {
   currency?: string;
   receipt: string;
   notes?: Record<string, string>;
+  purpose?: "KINGPAY_WALLET_TOPUP" | "FOOD_ORDER";
+  userId?: string;
 };
 
 export type RazorpayOrderResponse = {
@@ -49,7 +51,11 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
         amount: data.amountPaise,
         currency: data.currency || "INR",
         receipt: data.receipt,
-        notes: data.notes || {},
+        notes: {
+          ...(data.notes || {}),
+          ...(data.purpose ? { purpose: data.purpose } : {}),
+          ...(data.userId ? { orderking_user_id: data.userId } : {}),
+        },
       }),
     });
 
@@ -65,5 +71,62 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
       currency: resData.currency,
       keyId: config.keyId,
       isSandbox: false,
+    };
+  });
+
+
+export type RazorpayFoodVerification = {
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  amountPaise: number;
+  currency: string;
+};
+
+export const verifyRazorpayFoodPayment = createServerFn({ method: "POST" })
+  .// @ts-ignore
+  inputValidator((data: {
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
+  }) => data)
+  .handler(async ({ data, context }: any): Promise<RazorpayFoodVerification> => {
+    const { getRazorpayConfig } = await import("./razorpay.server");
+    const config = getRazorpayConfig();
+    if (!config.hasCredentials || !config.keySecret) {
+      throw new Error("Razorpay credentials missing. Verification blocked.");
+    }
+
+    const crypto = await import("node:crypto");
+    const generated = crypto
+      .createHmac("sha256", config.keySecret)
+      .update(`${data.razorpayOrderId}|${data.razorpayPaymentId}`)
+      .digest("hex");
+    const given = String(data.razorpaySignature).trim();
+    if (given.length !== generated.length ||
+        !crypto.timingSafeEqual(Buffer.from(given), Buffer.from(generated))) {
+      throw new Error("Invalid Razorpay signature.");
+    }
+
+    const response = await fetch(`https://api.razorpay.com/v1/orders/${encodeURIComponent(data.razorpayOrderId)}`, {
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${config.keyId}:${config.keySecret}`).toString("base64")}`,
+      },
+    });
+    if (!response.ok) throw new Error("Razorpay order verification failed.");
+
+    const order = (await response.json()) as {
+      id: string;
+      amount: number;
+      currency: string;
+      notes?: Record<string, string>;
+    };
+    if (order.notes?.purpose !== "FOOD_ORDER") throw new Error("Razorpay order purpose mismatch.");
+    if (order.notes?.orderking_user_id !== context.userId) throw new Error("Razorpay order ownership mismatch.");
+
+    return {
+      razorpayOrderId: order.id,
+      razorpayPaymentId: data.razorpayPaymentId,
+      amountPaise: Number(order.amount),
+      currency: order.currency,
     };
   });
