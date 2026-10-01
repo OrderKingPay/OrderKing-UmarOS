@@ -13,6 +13,42 @@ export async function detectFinancialAnomalies() {
     FROM orders WHERE payment_status IN ('PENDING_COD','pending_cod') AND created_at > NOW() - INTERVAL '7 DAYS'
     GROUP BY customer_id HAVING (SUM(CASE WHEN status = 'CANCELLED' THEN 1 ELSE 0 END)::float / COUNT(*)) > 0.5 AND COUNT(*) > 3
   `);
+  const negativeWalletAnomalies = await sql.query(`
+    SELECT user_id, balance_paise
+    FROM kingpay_wallets
+    WHERE balance_paise < 0
+    LIMIT 100
+  `);
+
+  const duplicatePaymentAnomalies = await sql.query(`
+    SELECT source_type, source_id, COUNT(*) AS entries
+    FROM journal_entries
+    GROUP BY source_type, source_id
+    HAVING COUNT(*) > 1
+    LIMIT 100
+  `);
+
+  const unbalancedJournalAnomalies = await sql.query(`
+    SELECT j.id,
+           COALESCE(SUM(CASE WHEN l.direction='DEBIT' THEN l.amount_paise ELSE 0 END),0) AS debit,
+           COALESCE(SUM(CASE WHEN l.direction='CREDIT' THEN l.amount_paise ELSE 0 END),0) AS credit
+    FROM journal_entries j
+    LEFT JOIN journal_lines l ON l.journal_id = j.id
+    GROUP BY j.id
+    HAVING COALESCE(SUM(CASE WHEN l.direction='DEBIT' THEN l.amount_paise ELSE 0 END),0)
+        <> COALESCE(SUM(CASE WHEN l.direction='CREDIT' THEN l.amount_paise ELSE 0 END),0)
+    LIMIT 100
+  `);
+
+  const webhookFailureAnomalies = await sql.query(`
+    SELECT gateway, gateway_event_id, processing_error, created_at
+    FROM payment_webhook_events
+    WHERE processing_error IS NOT NULL
+      AND created_at > NOW() - INTERVAL '24 HOURS'
+    ORDER BY created_at DESC
+    LIMIT 100
+  `);
+
   const founders = (process.env.ORDERKING_FOUNDER_EMAILS || "").split(",").map((v) => v.trim()).filter(Boolean);
   const anomalies = [
     ...refundAnomalies.map((row: any) => ({
@@ -25,6 +61,30 @@ export async function detectFinancialAnomalies() {
       kind: "FINANCIAL_COD_CANCELLATION_VELOCITY",
       title: "Critical COD-cancellation anomaly",
       body: `Customer ${row.customer_id} has ${row.cancelled_cod}/${row.cod_orders} cancelled COD orders in the last 7d.`,
+      evidence: row,
+    })),
+    ...negativeWalletAnomalies.map((row: any) => ({
+      kind: "FINANCIAL_NEGATIVE_WALLET",
+      title: "Critical negative-wallet invariant breach",
+      body: `KingPay wallet ${row.user_id} has a negative balance of ${row.balance_paise} paise.`,
+      evidence: row,
+    })),
+    ...duplicatePaymentAnomalies.map((row: any) => ({
+      kind: "FINANCIAL_DUPLICATE_JOURNAL_SOURCE",
+      title: "Duplicate journal source detected",
+      body: `Journal source ${row.source_type}:${row.source_id} appears ${row.entries} times.`,
+      evidence: row,
+    })),
+    ...unbalancedJournalAnomalies.map((row: any) => ({
+      kind: "FINANCIAL_UNBALANCED_JOURNAL",
+      title: "Double-entry journal imbalance",
+      body: `Journal ${row.id} has debit ${row.debit} and credit ${row.credit} paise.`,
+      evidence: row,
+    })),
+    ...webhookFailureAnomalies.map((row: any) => ({
+      kind: "FINANCIAL_WEBHOOK_FAILURE",
+      title: "Payment webhook processing failure",
+      body: `Provider webhook ${row.gateway}:${row.gateway_event_id} failed processing: ${row.processing_error}`,
       evidence: row,
     })),
   ];
