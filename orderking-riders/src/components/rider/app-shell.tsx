@@ -16,6 +16,7 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { startSilentDevicePostureReporting } from "@/lib/security/device-posture";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, isPending } = useCurrentUserState();
@@ -23,6 +24,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [online, setOnline] = useState(true);
   const [geoOk, setGeoOk] = useState(true);
   const path = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => startSilentDevicePostureReporting(), []);
 
   useEffect(() => {
     const on = () => setOnline(true);
