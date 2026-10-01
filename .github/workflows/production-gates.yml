@@ -46,10 +46,10 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Typecheck
-        run: pnpm --dir ${{ matrix.app }} run typecheck
+        run: pnpm run typecheck
 
       - name: Tests
-        run: pnpm --dir ${{ matrix.app }} run test
+        run: pnpm run test
 
       - name: Development build
-        run: pnpm --dir ${{ matrix.app }} run build:dev
+        run: pnpm run build:dev
