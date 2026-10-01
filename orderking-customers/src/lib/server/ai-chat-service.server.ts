@@ -74,6 +74,7 @@ export interface AiChatRequest {
   mode?: "fast" | "deep" | "auto";
   founderUpiVpa?: string;
   apiKeys?: Record<string, string>;
+  userId?: string;
   userContext?: {
     userId?: string;
     role?: string;
