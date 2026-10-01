@@ -1,5 +1,5 @@
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect } from "react";
 import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider } from "@/lib/auth/provider";
@@ -51,19 +51,8 @@ export const Route = createRootRoute({
       ],
     };
   },
-  ssr: false,
-  shellComponent: RootShell,
   component: Root,
 });
-
-function RootShell({ children }: { children: ReactNode }) {
-  return (
-    <html lang="en" className="antialiased" suppressHydrationWarning>
-      <head><HeadContent /></head>
-      <body className="bg-bg text-fg">{children}<Scripts /></body>
-    </html>
-  );
-}
 
 function Root() {
   const config = DEFAULT_CONFIG;
@@ -107,30 +96,39 @@ function Root() {
     return () => { cancelled = true; };
   }, []);
   return (
-    <>
-      <NextGenSeo config={config} />
-      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-      <PreviewHostBridge />
-      <OfflineDetector />
-      <AuthProvider>
-        <AppProviders config={config}>
-          <ErrorBoundary>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0, scale: 0.98, filter: "blur(5px)" }}
-                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 1.02, filter: "blur(5px)" }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-              >
-                <Outlet />
-              </motion.div>
-            </AnimatePresence>
-          </ErrorBoundary>
-        </AppProviders>
-      </AuthProvider>
-      <script dangerouslySetInnerHTML={{ __html: "if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}" }} />
-    </>
+    <html lang="en" className="antialiased" suppressHydrationWarning>
+      <head>
+        <HeadContent />
+        <NextGenSeo config={config} />
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      </head>
+      <body>
+        <PreviewHostBridge />
+        <OfflineDetector />
+        <AuthProvider>
+          <AppProviders config={config}>
+            <ErrorBoundary>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={location.pathname}
+                  initial={{ opacity: 0, scale: 0.98, filter: "blur(5px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 1.02, filter: "blur(5px)" }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+                >
+                  <Outlet />
+                </motion.div>
+              </AnimatePresence>
+            </ErrorBoundary>
+          </AppProviders>
+        </AuthProvider>
+        <Scripts />
+        <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}` }} />
+
+      </body>
+    </html>
   );
 }
+
+
