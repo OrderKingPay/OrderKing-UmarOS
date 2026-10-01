@@ -1,4 +1,3 @@
-import { createHash, randomBytes } from "node:crypto";
 export type ViralShareIntent = {
   link: string; text: string;
   navigatorShare: { title: string; text: string; url: string } | null;
@@ -9,11 +8,15 @@ function publicOrigin() {
   if (typeof process !== "undefined" && process.env.CUSTOMER_APP_URL) return process.env.CUSTOMER_APP_URL;
   return "https://orderking.in";
 }
-export function referralCodeForUser(userId: string, secret: string) {
+export async function referralCodeForUser(userId: string, secret: string) {
   if (!userId || !secret) throw new Error("REFERRAL_CONFIGURATION_REQUIRED");
-  const digest = createHash("sha256").update(`${userId}:${secret}`).digest("hex").toUpperCase();
-  return `OK-${digest.slice(0, 8)}`;
+  const input = new TextEncoder().encode(`${userId}:${secret}`);
+  const digest = await crypto.subtle.digest("SHA-256", input);
+  const bytes = new Uint8Array(digest);
+  const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+  return `OK-${hex.slice(0, 8)}`;
 }
+
 export function createReferralLink(code: string, campaign = "organic") {
   const url = new URL("/r/" + encodeURIComponent(code), publicOrigin());
   url.searchParams.set("utm_source", "orderking");
@@ -31,5 +34,13 @@ export function buildShareIntent(code: string, campaign = "organic"): ViralShare
     telegram: `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent("Join OrderKing")}`,
   };
 }
-export function generateDedupeKey(parts: string[]) { return createHash("sha256").update(parts.join("|")).digest("hex"); }
-export function generateClickId() { return randomBytes(12).toString("base64url"); }
+export async function generateDedupeKey(parts: string[]) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(parts.join("|")));
+  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+export function generateClickId() {
+  if (typeof crypto?.randomUUID === "function") return crypto.randomUUID();
+  const bytes = new Uint8Array(12);
+  crypto.getRandomValues(bytes);
+  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
