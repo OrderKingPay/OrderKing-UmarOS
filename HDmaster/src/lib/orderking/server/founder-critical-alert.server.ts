@@ -6,13 +6,13 @@ export async function sendFounderCriticalAlert(input:{subject:string;body:string
   if(!apiKey||!from||!to) return {sent:false,reason:"RESEND_NOT_CONFIGURED"};
   const response=await fetch("https://api.resend.com/emails",{
     method:"POST",
-    headers:{"Content-Type":"application/json",Authorization:\`Bearer \${apiKey}\`},
+    headers:{"Content-Type":"application/json",Authorization:`Bearer \${apiKey}`},
     body:JSON.stringify({
       from,to,
-      subject:\`[ORDERKING CRITICAL] \${input.subject}\`,
-      text:\`\${input.body}\\n\\nEvidence:\\n\${JSON.stringify(input.evidence??{},null,2)}\`,
+      subject:`[ORDERKING CRITICAL] \${input.subject}`,
+      text:`\${input.body}\\n\\nEvidence:\\n\${JSON.stringify(input.evidence??{},null,2)}`,
     }),
   });
-  if(!response.ok) return {sent:false,reason:\`RESEND_HTTP_\${response.status}\`};
+  if(!response.ok) return {sent:false,reason:`RESEND_HTTP_\${response.status}`};
   return {sent:true};
 }

@@ -18,10 +18,10 @@ export async function appendImmutableEvent(input: {
   const sql = await getSql();
   const secret = process.env.ORDERKING_EVENT_LEDGER_KEY?.trim();
   const ipHash = input.ipAddress && secret
-    ? createHash("sha256").update(\`\${secret}|\${input.ipAddress}\`).digest("hex")
+    ? createHash("sha256").update(`\${secret}|\${input.ipAddress}`).digest("hex")
     : null;
 
-  const rows = await sql<{ id:string; sequence_no:number; event_hash:string; occurred_at:string }>\`
+  const rows = await sql<{ id:string; sequence_no:number; event_hash:string; occurred_at:string }>`
     INSERT INTO security_event_ledger (
       stream_key, actor_id, actor_type, event_type, subject_type, subject_id,
       request_id, device_id, ip_hash, payload
@@ -39,6 +39,6 @@ export async function appendImmutableEvent(input: {
       \${JSON.stringify(input.payload ?? {})}
     )
     RETURNING id, sequence_no, event_hash, occurred_at::text AS occurred_at
-  \`;
+  `;
   return rows[0];
 }

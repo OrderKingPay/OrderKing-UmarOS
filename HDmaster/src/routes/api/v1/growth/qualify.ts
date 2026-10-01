@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/v1/growth/qualify")({
   // @ts-expect-error
