@@ -33,9 +33,9 @@ For homework, guide the student and explain the method rather than simply claimi
 
     const candidates = Array.from(new Set([
       process.env.OPENAI_TUTOR_MODEL?.trim() || process.env.OPENAI_MODEL?.trim(),
-      "gpt-6-astra",
-      "gpt-6.1-sol",
-      "gpt-6-luna",
+      "gpt-5.6-sol",
+      "gpt-5.6-sol",
+      "gpt-5.6-luna",
     ].filter(Boolean)));
 
     let lastError = "TUTOR_AI_REQUEST_FAILED";
@@ -50,7 +50,7 @@ For homework, guide the student and explain the method rather than simply claimi
           model,
           instructions: systemPrompt,
           input: [...history, { role: "user", content: data.message }],
-          reasoning: { effort: model === "gpt-6-astra" ? "high" : "medium" },
+          reasoning: { effort: model === "gpt-5.6-sol" ? "high" : "medium" },
         }),
       });
 
