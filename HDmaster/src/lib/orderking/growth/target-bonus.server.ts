@@ -20,13 +20,13 @@ export async function recordTargetQualification(input: QualificationRequest) {
     const verifiedAlready = Number(existing[0]?.count ?? 0);
     let proofCount = 0;
     if (input.participantType === "PARTNER" && metric === "DELIVERED_ORDER") {
-      const rows = await tx<{count:number}[]>`SELECT COUNT(*)::int AS count FROM orders WHERE restaurant_id=${input.participantId} AND status='DELIVERED' AND payment_status NOT IN ('REFUNDED','CANCELLED') AND total_paise>=${campaign.min_order_paise} AND placed_at>=${start} AND placed_at<${end}`;
+      const rows = await tx<{count:number}>`SELECT COUNT(*)::int AS count FROM orders WHERE restaurant_id=${input.participantId} AND status='DELIVERED' AND payment_status NOT IN ('REFUNDED','CANCELLED') AND total_paise>=${campaign.min_order_paise} AND placed_at>=${start} AND placed_at<${end}`;
       proofCount = Number(rows[0]?.count ?? 0);
     } else if (input.participantType === "RIDER" && metric === "DELIVERED_ORDER") {
-      const rows = await tx<{count:number}[]>`SELECT COUNT(*)::int AS count FROM orders WHERE rider_id=${input.participantId} AND status='DELIVERED' AND payment_status NOT IN ('REFUNDED','CANCELLED') AND placed_at>=${start} AND placed_at<${end}`;
+      const rows = await tx<{count:number}>`SELECT COUNT(*)::int AS count FROM orders WHERE rider_id=${input.participantId} AND status='DELIVERED' AND payment_status NOT IN ('REFUNDED','CANCELLED') AND placed_at>=${start} AND placed_at<${end}`;
       proofCount = Number(rows[0]?.count ?? 0);
     } else if (input.participantType === "CUSTOMER" && metric === "QUALIFIED_REFERRAL") {
-      const rows = await tx<{count:number}[]>`SELECT COUNT(*)::int AS count FROM growth_event_ledger WHERE actor_id=${input.participantId} AND metric='QUALIFIED_REFERRAL' AND fraud_state='VERIFIED' AND occurred_at>=${start} AND occurred_at<${end}`;
+      const rows = await tx<{count:number}>`SELECT COUNT(*)::int AS count FROM growth_event_ledger WHERE actor_id=${input.participantId} AND metric='QUALIFIED_REFERRAL' AND fraud_state='VERIFIED' AND occurred_at>=${start} AND occurred_at<${end}`;
       proofCount = Number(rows[0]?.count ?? 0);
     } else {
       throw new Error("GROWTH_METRIC_NOT_IMPLEMENTED");
