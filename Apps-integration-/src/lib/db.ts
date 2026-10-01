@@ -108,7 +108,6 @@ function createNeonSql(): Promise<Sql> {
 
     const pool = new Pool({ connectionString: databaseUrl });
     pool.on('error', (err) => console.error('pg pool error:', err.message));
-    pool.on('error', (err) => console.error('pg pool error:', err.message));
 
     const makeClientSql = (client: import("pg").PoolClient) =>
       toSql(async <T>(text: string, params: unknown[]) => {

@@ -20,6 +20,7 @@ function Login() {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   if (user) return <Navigate to="/dashboard" />;
 
@@ -112,7 +113,25 @@ function Login() {
               <p className="mt-1 text-xs text-faint">{t("auth.passwordHint")}</p>
             </div>
             {error ? <p className="text-sm text-danger">{error}</p> : null}
-            <Button type="submit" className="w-full" size="lg" disabled={working}>
+            
+            <div className="flex items-start gap-2 py-2">
+              <input 
+                type="checkbox" 
+                id="merchant-terms" 
+                className="mt-1"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                required
+              />
+              <label htmlFor="merchant-terms" className="text-xs text-faint leading-relaxed">
+                I explicitly acknowledge and agree to the{" "}
+                <a href="https://orderking.in/legal/terms" className="underline font-medium text-fg" target="_blank" rel="noreferrer">Merchant Agreement</a>
+                {" "}and{" "}
+                <a href="https://orderking.in/legal/privacy" className="underline font-medium text-fg" target="_blank" rel="noreferrer">Privacy Policy</a>.
+              </label>
+            </div>
+
+            <Button type="submit" className="w-full" size="lg" disabled={working || !acceptedTerms}>
               {working ? t("auth.working") : mode === "in" ? t("auth.signIn") : t("auth.signUp")}
             </Button>
           </form>
@@ -124,13 +143,6 @@ function Login() {
           >
             {mode === "in" ? t("auth.noAccount") : t("auth.haveAccount")}
           </button>
-          
-          <p className="mt-8 text-center text-xs text-faint">
-            By continuing, you agree to our{" "}
-            <a href="https://orderking.in/legal/terms" className="underline" target="_blank" rel="noreferrer">Merchant Agreement</a>
-            {" "}and{" "}
-            <a href="https://orderking.in/legal/privacy" className="underline" target="_blank" rel="noreferrer">Privacy Policy</a>.
-          </p>
         </div>
       </div>
     </main>

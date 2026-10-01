@@ -1,25 +1,7 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 
-async function amadeusToken() {
-  const clientId = process.env.AMADEUS_CLIENT_ID?.trim();
-  const clientSecret = process.env.AMADEUS_CLIENT_SECRET?.trim();
-  if (!clientId || !clientSecret) throw new Error("AMADEUS_NOT_CONFIGURED");
-
-  const body = new URLSearchParams({
-    grant_type: "client_credentials",
-    client_id: clientId,
-    client_secret: clientSecret,
-  });
-  const response = await fetch("https://test.api.amadeus.com/v1/security/oauth2/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body,
-  });
-  if (!response.ok) throw new Error(`AMADEUS_TOKEN_HTTP_${response.status}`);
-  return (await response.json()).access_token as string;
-}
-
+// Travelpayouts Affiliate Implementation
+// Replaces Amadeus to remove production compliance blockers and test API limitations.
 export const Route = createFileRoute("/api/v1/integrations/travel")({
   // @ts-expect-error
   server: {
@@ -39,27 +21,22 @@ export const Route = createFileRoute("/api/v1/integrations/travel")({
           }
 
           if (type === "FLIGHT") {
-            const token = await amadeusToken();
-            const url = new URL("https://test.api.amadeus.com/v2/shopping/flight-offers");
-            url.searchParams.set("originLocationCode", origin);
-            url.searchParams.set("destinationLocationCode", destination);
-            url.searchParams.set("departureDate", date);
-            url.searchParams.set("adults", String(Math.max(1, Number(body?.adults || 1))));
-            if (body?.returnDate) url.searchParams.set("returnDate", String(body.returnDate));
-
-            const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-            const payload = await response.json();
-            if (!response.ok) {
-              return Response.json({ success: false, status: "TRAVEL_PROVIDER_ERROR", provider: "AMADEUS", details: payload }, { status: 502 });
-            }
-            return Response.json({ success: true, provider: "AMADEUS", data: payload });
+            // Provide a Travelpayouts affiliate URL for flight search
+            const affiliateMarker = process.env.TRAVELPAYOUTS_MARKER || "orderking_default";
+            const tpUrl = `https://search.travelpayouts.com/flights/?origin=${origin}&destination=${destination}&depart_date=${date}&adults=${Math.max(1, Number(body?.adults || 1))}&children=0&infants=0&trip_class=0&marker=${affiliateMarker}`;
+            
+            return Response.json({ 
+              success: true, 
+              provider: "TRAVELPAYOUTS", 
+              redirectUrl: tpUrl,
+              data: {
+                message: "Flight searches are processed via our partner Travelpayouts."
+              }
+            });
           }
 
           if (type === "TRAIN") {
-            if (!process.env.IRCTC_B2B_PARTNER_KEY || !process.env.IRCTC_B2B_API_URL) {
-              return Response.json({ success: false, status: "PROVIDER_REQUIRED", provider: "IRCTC_B2B", message: "Licensed train-booking provider credentials are not configured." }, { status: 503 });
-            }
-            return Response.json({ success: false, status: "PROVIDER_ADAPTER_REQUIRED", message: "The configured IRCTC B2B adapter has not been verified for this deployment." }, { status: 503 });
+            return Response.json({ success: false, status: "PROVIDER_ADAPTER_REQUIRED", message: "IRCTC B2B adapter requires compliance verification." }, { status: 503 });
           }
 
           return Response.json({ success: false, status: "INVALID_TRAVEL_TYPE" }, { status: 400 });
@@ -71,3 +48,4 @@ export const Route = createFileRoute("/api/v1/integrations/travel")({
     },
   },
 });
+

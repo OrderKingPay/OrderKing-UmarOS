@@ -1,15 +1,27 @@
 
 import { createServerFn } from '@tanstack/react-start';
 import type { MarginDashboardSnapshot, StrategicBusinessProposal, BroadcastNetworkStatus, BroadcastExecutionReceipt } from './UmarOS_Master_Dashboard';
+import { getSql } from "@/lib/db";
 
 export const getMarginSnapshotFn = createServerFn({ method: 'GET' })
   .handler(async () => {
+    let baseSales = 0;
+    let distSales = 0;
+    try {
+      const sql = await getSql();
+      const res = await sql`SELECT SUM(total_paise) as total FROM orders WHERE status = 'delivered'`;
+      if (res && res[0] && res[0].total) {
+        baseSales = Number(res[0].total);
+      }
+    } catch (e) {
+      // Safe fallback if table doesn't exist yet
+    }
     return {
       baseMarginBps: 1200,
       distantMarginBps: 1500,
       loyaltyShareBps: 100,
-      verifiedBaseSalesPaise: 4500000,
-      verifiedDistantSalesPaise: 1200000,
+      verifiedBaseSalesPaise: baseSales,
+      verifiedDistantSalesPaise: distSales,
       periodLabel: 'Today',
       updatedAt: new Date().toISOString()
     } as MarginDashboardSnapshot;
@@ -22,8 +34,8 @@ export const updateMarginsFn = createServerFn({ method: 'POST' })
       baseMarginBps: data.baseMarginBps,
       distantMarginBps: data.distantMarginBps,
       loyaltyShareBps: 100,
-      verifiedBaseSalesPaise: 4500000,
-      verifiedDistantSalesPaise: 1200000,
+      verifiedBaseSalesPaise: 0,
+      verifiedDistantSalesPaise: 0,
       periodLabel: 'Today',
       updatedAt: new Date().toISOString()
     } as MarginDashboardSnapshot;
@@ -31,24 +43,40 @@ export const updateMarginsFn = createServerFn({ method: 'POST' })
 
 export const listStrategicProposalsFn = createServerFn({ method: 'GET' })
   .handler(async () => {
-    return [
-      { id: 'prop-1', title: 'Weekend Push', problem: 'Low volume', solution: '20% off all orders', scopeLabel: 'Global', source: 'AI', risk: 'LOW', confidencePct: 92, estimatedImpactPaise: 15000000, status: 'PENDING', createdAt: new Date().toISOString(), evidence: [] },
-    ] as StrategicBusinessProposal[];
+    return [] as StrategicBusinessProposal[]; // REALITY: No AI proposals exist yet in DB
   });
 
 export const executeStrategicProposalFn = createServerFn({ method: 'POST' })
   .inputValidator((id: string) => id)
   .handler(async ({ data }) => {
-    return { id: data, title: 'Executed', problem: '', solution: '', scopeLabel: 'Global', source: 'AI', risk: 'LOW', confidencePct: 100, estimatedImpactPaise: 0, status: 'EXECUTED', createdAt: new Date().toISOString(), evidence: [] } as StrategicBusinessProposal;
+    throw new Error("Cannot execute non-existent proposal.");
   });
 
 export const getBroadcastStatusFn = createServerFn({ method: 'GET' })
   .handler(async () => {
-    return { enabled: true, providerReady: true, providerName: 'FCM', complianceStatus: 'COMPLIANT', reachableDevices: 4500, subscribedRecipients: 4500, lastBroadcastAt: new Date().toISOString(), state: 'IDLE', deliveryCostPaise: 25000, channels: ['WEB_PUSH'] } as BroadcastNetworkStatus;
+    let subs = 0;
+    try {
+      const sql = await getSql();
+      const res = await sql`SELECT COUNT(*) as c FROM push_subscriptions`;
+      if (res && res[0] && res[0].c) subs = Number(res[0].c);
+    } catch (e) {}
+    
+    return { 
+      enabled: false, 
+      providerReady: false, 
+      providerName: 'FCM', 
+      complianceStatus: 'PENDING', 
+      reachableDevices: subs, 
+      subscribedRecipients: subs, 
+      lastBroadcastAt: new Date().toISOString(), 
+      state: 'IDLE', 
+      deliveryCostPaise: 0, 
+      channels: ['WEB_PUSH'] 
+    } as BroadcastNetworkStatus;
   });
 
 export const executeGlobalBroadcastFn = createServerFn({ method: 'POST' })
   .handler(async () => {
-    return { id: 'broadcast-1', acceptedAt: new Date().toISOString(), queuedRecipients: 4500, provider: 'FCM', status: 'QUEUED' } as BroadcastExecutionReceipt;
+    throw new Error("FCM/Broadcast provider not configured yet.");
   });
 
