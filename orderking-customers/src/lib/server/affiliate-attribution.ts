@@ -1,5 +1,5 @@
 import { createHash, createHmac } from "node:crypto";
-import { getSql } from "./db";
+import { getSql } from "../db";
 
 function trackingSecret(): string {
   return process.env.AFFILIATE_TRACKING_SECRET?.trim()
