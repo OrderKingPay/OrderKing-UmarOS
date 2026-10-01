@@ -4,6 +4,7 @@ import { requirePermission } from "@/lib/orderking/rbac";
 import { appendAudit, ensureWorkspace, nid } from "@/lib/orderking/server/workspace.server";
 import { getSql } from "@/lib/db";
 import { z } from "zod";
+import { appendImmutableEvent } from "../audit/immutable-event.server";
 
 function json(body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } }); }
 function serviceUserId(request: Request): string { const authorization = request.headers.get("authorization")?.trim(); const token = process.env.ORDERKING_SERVICE_TOKEN?.trim(); const userId = process.env.ORDERKING_SERVICE_USER_ID?.trim(); if (!token || !userId || authorization !== `Bearer ${token}`) throw new Error("Unauthorized"); return userId; }
@@ -136,6 +137,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
         VALUES (${nid("ev")}, ${ws.ctx.orgId}, ${orderId}, ${ws.ctx.employeeId}, null, 'PENDING', 'customer.order_created',
           ${JSON.stringify({ customerRef: input.customerRef, address: input.address, notes: input.notes ?? null })})
       `;
+      await appendImmutableEvent({ orgId: ws.ctx.orgId, actorUserId: context.userId, actorEmployeeId: ws.ctx.employeeId, sourceTable: "orders", sourceId: orderId, eventType: "ORDER_CREATED", payload: { paymentMethod: input.paymentMethod, totalPaise: input.totalPaise, restaurantId: input.restaurantId } }, tx);
       const paymentProvider = input.paymentMethod === "COD" ? "COD" : "KING_PAY";
       const paymentRawPayload = input.paymentMethod === "KING_PAY" ? JSON.stringify({ kingPay: true, walletTransactionId }) : null;
       await tx`
@@ -269,6 +271,7 @@ export async function handleCustomerOrderCancelHttp(request: Request, orderId: s
           VALUES (${nid("ev")},${ws.ctx.orgId},${order.id},${ws.ctx.employeeId},${order.status},'CANCELLED','customer.order_cancelled',${JSON.stringify({ customerRef: body.customerRef, reason: body.reason ?? null, refundedPaise })})
         `;
       }
+      await appendImmutableEvent({ orgId: ws.ctx.orgId, actorUserId: ws.ctx.userId, actorEmployeeId: ws.ctx.employeeId, sourceTable: "orders", sourceId: order.id, eventType: "ORDER_CANCELLED", payload: { reason: body.reason ?? null, refundedPaise } }, tx);
       return { orderId: order.id, status: "CANCELLED", authoritative: "HDmaster" as const, refundedPaise };
     });
     await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.customer_cancelled", targetType: "order", targetId: order.id, next: { status: "CANCELLED", refundedPaise: result.refundedPaise }, reason: body.reason ?? "Customer cancellation" });
