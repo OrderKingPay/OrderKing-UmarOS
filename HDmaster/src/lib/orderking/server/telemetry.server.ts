@@ -2,6 +2,7 @@
 import { getSql } from "@/lib/db";
 import { cellToLatLng, latLngToCell } from "h3-js";
 import { nid } from "./workspace.server";
+import { appendImmutableEvent } from "../audit/immutable-event.server";
 
 // We use resolution 9 which represents an area of ~0.1 km^2, perfect for hyper-local tracking
 const H3_RESOLUTION = 9;
@@ -44,6 +45,16 @@ export async function logGeospatialTelemetry(payload: TelemetryPayload) {
         payload.accuracy ?? null,
       ]
     );
+
+    await appendImmutableEvent({
+      orgId: payload.orgId,
+      actorUserId: null,
+      actorEmployeeId: payload.entityType === "RIDER" ? payload.entityId : null,
+      sourceTable: "geospatial_telemetry_100x",
+      sourceId: payload.entityId,
+      eventType: "GPS_PING",
+      payload: { lat: payload.lat, lng: payload.lng, h3Index, speed: payload.speed ?? null, heading: payload.heading ?? null, accuracy: payload.accuracy ?? null },
+    }, sql);
 
     // If rider, also update their latest active coordinates in the orders table for live tracking
     if (payload.entityType === "RIDER") {
