@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { getSql } from "@/lib/db";
 import { newId } from "@/lib/ids";
+import { sendFounderCriticalAlert } from "@/lib/orderking/server/founder-critical-alert.server";
 export async function detectFinancialAnomalies() {
   const sql = await getSql();
   const refundAnomalies = await sql.query(`
@@ -143,8 +144,13 @@ export async function detectFinancialAnomalies() {
     if (recent.length) continue;
     const alertId = newId("alert");
     await sql`INSERT INTO alerts (id,org_id,severity,kind,title,body,status) VALUES (${alertId},'org_orderking','CRITICAL',${anomaly.kind},${anomaly.title},${anomaly.body},'OPEN')`;
+    const alertDelivery = await sendFounderCriticalAlert({
+      subject: anomaly.title,
+      body: anomaly.body,
+      evidence: anomaly.evidence,
+    });
     const outboxId = newId("nbox");
-    await sql`INSERT INTO notification_outbox (id,channel,status,payload) VALUES (${outboxId},'email','deferred',${JSON.stringify({priority:"CRITICAL",subject:anomaly.title,body:anomaly.body,evidence:anomaly.evidence,founders,reason:"Founder escalation queued; delivery is only claimed after a real provider processes the outbox."})})`;
+    await sql`INSERT INTO notification_outbox (id,channel,status,payload) VALUES (${outboxId},'email',${alertDelivery.sent ? 'sent' : 'pending'},${JSON.stringify({priority:"CRITICAL",subject:anomaly.title,body:anomaly.body,evidence:anomaly.evidence,founders,delivery:alertDelivery,reason:"Critical founder escalation"})})`;
   }
   return { timestamp:new Date().toISOString(), status: anomalies.length ? "ANOMALY_DETECTED" : "CLEAN", escalatedCount: anomalies.length, refundAnomalies, codAnomalies, founderEscalation: anomalies.length ? "QUEUED_CRITICAL" : "NONE" };
 }
