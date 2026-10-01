@@ -1,46 +1,28 @@
 -- 0019: target-based growth incentives and immutable-ledger hardening.
--- The immutable event ledger itself is already provisioned by the production
--- schema. This migration does not create a duplicate ledger or duplicate
--- source triggers.
+-- The immutable event ledger already exists in production and is protected by
+-- append-only triggers. This migration adds growth campaigns/progress/rewards.
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-DO $$
-BEGIN
+DO $$ BEGIN
   IF to_regclass('public.immutable_event_ledger') IS NULL THEN
-    RAISE EXCEPTION 'immutable_event_ledger must exist before migration 0019';
+    RAISE EXCEPTION 'immutable_event_ledger must exist before growth migration';
   END IF;
-END
-$$;
+END $$;
 
 REVOKE UPDATE, DELETE, TRUNCATE ON public.immutable_event_ledger FROM PUBLIC;
 REVOKE UPDATE, DELETE, TRUNCATE ON public.immutable_event_ledger FROM anon;
 REVOKE UPDATE, DELETE, TRUNCATE ON public.immutable_event_ledger FROM authenticated;
 
-CREATE TABLE IF NOT EXISTS growth_campaigns (
-  id TEXT PRIMARY KEY,
-  org_id TEXT NOT NULL,
-  name TEXT NOT NULL,
-  participant_type TEXT NOT NULL CHECK (participant_type IN ('CUSTOMER','RESTAURANT','RIDER','MERCHANT')),
-  target_metric TEXT NOT NULL CHECK (target_metric IN ('QUALIFIED_REFERRALS','FIRST_ORDERS','SHARES','DELIVERED_ORDERS')),
-  target_value BIGINT NOT NULL CHECK (target_value > 0),
-  reward_paise BIGINT NOT NULL DEFAULT 0 CHECK (reward_paise >= 0),
-  reward_coins BIGINT NOT NULL DEFAULT 0 CHECK (reward_coins >= 0),
-  budget_paise BIGINT NOT NULL DEFAULT 0 CHECK (budget_paise >= 0),
-  period_start TIMESTAMPTZ NOT NULL,
-  period_end TIMESTAMPTZ NOT NULL,
-  status TEXT NOT NULL DEFAULT 'DRAFT' CHECK (status IN ('DRAFT','ACTIVE','PAUSED','COMPLETED')),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  CHECK (period_end > period_start)
-);
+ALTER TABLE public.growth_campaigns
+  ADD COLUMN IF NOT EXISTS org_id TEXT,
+  ADD COLUMN IF NOT EXISTS participant_type TEXT NOT NULL DEFAULT 'CUSTOMER',
+  ADD COLUMN IF NOT EXISTS target_metric TEXT NOT NULL DEFAULT 'QUALIFIED_REFERRALS',
+  ADD COLUMN IF NOT EXISTS reward_coins BIGINT NOT NULL DEFAULT 0;
 
-CREATE INDEX IF NOT EXISTS growth_campaign_org_status_idx
-  ON growth_campaigns(org_id, status, period_end);
-
-CREATE TABLE IF NOT EXISTS growth_attributions (
+CREATE TABLE IF NOT EXISTS public.growth_attributions (
   id TEXT PRIMARY KEY,
-  org_id TEXT NOT NULL,
-  campaign_id TEXT REFERENCES growth_campaigns(id),
+  campaign_id TEXT REFERENCES public.growth_campaigns(id),
   referral_code TEXT NOT NULL,
   referrer_type TEXT NOT NULL CHECK (referrer_type IN ('CUSTOMER','RESTAURANT','RIDER','MERCHANT')),
   referrer_id TEXT NOT NULL,
@@ -54,12 +36,27 @@ CREATE TABLE IF NOT EXISTS growth_attributions (
 );
 
 CREATE INDEX IF NOT EXISTS growth_attribution_referrer_idx
-  ON growth_attributions(referrer_type, referrer_id, created_at DESC);
+ON public.growth_attributions(referrer_type, referrer_id, created_at DESC);
 
-CREATE TABLE IF NOT EXISTS growth_reward_events (
+CREATE TABLE IF NOT EXISTS public.growth_target_progress (
   id TEXT PRIMARY KEY,
-  org_id TEXT NOT NULL,
-  campaign_id TEXT NOT NULL REFERENCES growth_campaigns(id),
+  campaign_id TEXT NOT NULL REFERENCES public.growth_campaigns(id),
+  actor_type TEXT NOT NULL CHECK (actor_type IN ('CUSTOMER','RESTAURANT','RIDER','MERCHANT')),
+  actor_id TEXT NOT NULL,
+  period_start TIMESTAMPTZ NOT NULL,
+  period_end TIMESTAMPTZ NOT NULL,
+  qualifying_count BIGINT NOT NULL DEFAULT 0,
+  qualifying_value_paise BIGINT NOT NULL DEFAULT 0,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (campaign_id, actor_type, actor_id, period_start, period_end)
+);
+
+CREATE INDEX IF NOT EXISTS growth_target_actor_idx
+ON public.growth_target_progress(actor_type, actor_id, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS public.growth_reward_events (
+  id TEXT PRIMARY KEY,
+  campaign_id TEXT NOT NULL REFERENCES public.growth_campaigns(id),
   actor_type TEXT NOT NULL CHECK (actor_type IN ('CUSTOMER','RESTAURANT','RIDER','MERCHANT')),
   actor_id TEXT NOT NULL,
   threshold_value BIGINT NOT NULL,
@@ -73,7 +70,4 @@ CREATE TABLE IF NOT EXISTS growth_reward_events (
 );
 
 CREATE INDEX IF NOT EXISTS growth_reward_actor_idx
-  ON growth_reward_events(actor_type, actor_id, created_at DESC);
-
--- Promotions are never forced or spammed; a real user action is required
--- before a share/attribution event exists.
+ON public.growth_reward_events(actor_type, actor_id, created_at DESC);
