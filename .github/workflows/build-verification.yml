@@ -55,6 +55,9 @@ jobs:
           pnpm --dir orderking-riders run typecheck
           pnpm --dir Apps-integration- run typecheck
 
+      - name: Run Customer engine tests
+        run: pnpm --dir orderking-customers run test
+
       - name: Build remaining apps
         run: |
           pnpm --dir orderking-customers run build
