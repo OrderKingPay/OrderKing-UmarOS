@@ -6,7 +6,7 @@ export type ImmutableEventInput = {
 export async function emitImmutableEvent(input: ImmutableEventInput): Promise<number> {
   const sql = await getSql();
   const eventId = `${input.sourceTable}:${input.sourceId}:${input.eventType}:${input.occurredAt ?? Date.now()}`;
-  const rows = await sql<{ event_seq: number }[]>`
+  const rows = await sql<{ event_seq: number }>`
     SELECT public.orderking_emit_immutable_event(
       ${eventId}, ${input.scope}, ${input.actorUserId ?? null}, ${input.actorEmployeeId ?? null},
       ${input.sourceTable}, ${input.sourceId}, ${input.eventType},
