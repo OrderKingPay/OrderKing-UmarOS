@@ -87,11 +87,18 @@ export async function buildWeeklySettlementReport(referenceDate = new Date(), or
     { grossPaise: 0, feePaise: 0, netPaise: 0, payablePaise: 0 },
   );
 
+  const statusBreakdown = rows.reduce<Record<string, number>>((acc, row) => {
+    const key = String(row.status || "UNKNOWN");
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
   return {
     cycle,
     generatedAt: new Date().toISOString(),
     rows,
     totals,
+    statusBreakdown,
     source: "settlement_batches",
     definition: "PAID requires verified provider confirmation; PENDING_PROVIDER means reconciled but not externally disbursed.",
   };
