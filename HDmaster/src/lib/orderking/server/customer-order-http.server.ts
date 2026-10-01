@@ -91,13 +91,13 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
         if (existingWalletTx.length === 0) {
           await tx`
             INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins)
-            VALUES (${context.userId}, 0, 0)
+            VALUES (${input.customerRef}, 0, 0)
             ON CONFLICT (user_id) DO NOTHING
           `;
           const walletRows = await tx<{ balance_paise: number }>`
             SELECT balance_paise
             FROM kingpay_wallets
-            WHERE user_id = ${context.userId}
+            WHERE user_id = ${input.customerRef}
             FOR UPDATE
           `;
           const balancePaise = Number(walletRows[0]?.balance_paise ?? 0);
@@ -105,11 +105,11 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
           await tx`
             UPDATE kingpay_wallets
             SET balance_paise = balance_paise - ${input.totalPaise}, updated_at = NOW()
-            WHERE user_id = ${context.userId}
+            WHERE user_id = ${input.customerRef}
           `;
           await tx`
             INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
-            VALUES (${walletTransactionId}, ${context.userId}, ${input.totalPaise}, 'DEBIT', ${"Order payment " + orderId})
+            VALUES (${walletTransactionId}, ${input.customerRef}, ${input.totalPaise}, 'DEBIT', ${"Order payment " + orderId})
           `;
         }
       }
