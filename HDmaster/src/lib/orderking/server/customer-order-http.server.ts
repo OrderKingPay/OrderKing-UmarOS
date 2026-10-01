@@ -166,7 +166,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
         SELECT public.orderking_emit_immutable_event(
           ${nid('imev')},
           ${ws.ctx.orgId},
-          ${context.userId},
+          ${input.customerRef},
           ${ws.ctx.employeeId},
           'orders',
           ${orderId},
@@ -195,25 +195,25 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
       `;
       if (built.promo) await tx`
         INSERT INTO promotion_redemptions (id, promotion_id, user_id, order_id)
-        VALUES (${nid("red")}, ${built.promo.id}, ${context.userId}, ${orderId})
+        VALUES (${nid("red")}, ${built.promo.id}, ${input.customerRef}, ${orderId})
       `;
       const points = Math.floor(built.result.quote.foodSubtotalPaise / 10000);
       await tx`
         INSERT INTO loyalty_accounts (user_id, points, lifetime_points, tier)
-        VALUES (${context.userId}, ${points}, ${points}, 'starter')
+        VALUES (${input.customerRef}, ${points}, ${points}, 'starter')
         ON CONFLICT (user_id) DO UPDATE SET points = loyalty_accounts.points + ${points},
           lifetime_points = loyalty_accounts.lifetime_points + ${points}, updated_at = now()
       `;
       await tx`
         INSERT INTO loyalty_transactions (id, user_id, order_id, delta, reason)
-        VALUES (${newId("loy")}, ${context.userId}, ${orderId}, ${points}, 'order_placed')
+        VALUES (${newId("loy")}, ${input.customerRef}, ${orderId}, ${points}, 'order_placed')
       `;
       return { orderId, status: "PENDING", paymentStatus, totalPaise: input.totalPaise, dataMode: ws.dataMode };
     });
     await writeEvent(orderId, null, "PLACED", context.userId, "customer", "Order placed");
     await sql`
       INSERT INTO notifications (id, user_id, title, body, kind, entity_id)
-      VALUES (${newId("ntf")}, ${context.userId}, "Order confirmed",
+      VALUES (${newId("ntf")}, ${input.customerRef}, "Order confirmed",
         ${"Order placed. Payment " + (input.paymentMethod === "COD" ? "is due on delivery." : "was deducted from your King Pay wallet.")},
         "ORDER_PLACED", ${orderId})
     `;
