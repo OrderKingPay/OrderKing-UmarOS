@@ -150,17 +150,17 @@ function OrderDetailPage() {
     },
   });
 
-  const referral = useQuery({
-    queryKey: ["order-referral", user?.id],
-    queryFn: () => getReferralStatsFn(),
-    enabled: Boolean(user && order?.status === "DELIVERED"),
-  });
-
   if (isPending) return <CustomerShell><div className="p-6">{t("common.loading")}</div></CustomerShell>;
   if (!user) return <RedirectToSignIn />;
   const order = detail.data?.order;
   if (detail.isPending) return <CustomerShell><div className="p-6">{t("common.loading")}</div></CustomerShell>;
   if (!order) return <CustomerShell><p className="p-6">{t("common.empty")}</p></CustomerShell>;
+
+  const referral = useQuery({
+    queryKey: ["order-referral", user?.id],
+    queryFn: () => getReferralStatsFn(),
+    enabled: Boolean(user && order?.status === "DELIVERED"),
+  });
 
   const idx = CUSTOMER_TRACK_STEPS.indexOf(order.status as (typeof CUSTOMER_TRACK_STEPS)[number]);
   const labels: Record<string, string> = { PLACED: t("orders.placed"), ACCEPTED: t("orders.accepted"), PREPARING: t("orders.preparing"), READY: t("orders.ready"), RIDER_ASSIGNED: t("orders.riderAssigned"), PICKED_UP: t("orders.pickedUp"), ON_THE_WAY: t("orders.onTheWay"), DELIVERED: t("orders.delivered") };
