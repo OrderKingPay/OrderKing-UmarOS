@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useBrand, useT } from "@/components/providers";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { ensureProfile, getLoyalty, requestDeletion, updateProfile } from "@/lib/server/account";
+import { getReferralStatsFn } from "@/lib/server/referrals";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -27,6 +28,11 @@ function AccountPage() {
   const loyalty = useQuery({
     queryKey: ["loyalty"],
     queryFn: () => getLoyalty(),
+    enabled: Boolean(user),
+  });
+  const referral = useQuery({
+    queryKey: ["referral-stats", user?.id],
+    queryFn: () => getReferralStatsFn(),
     enabled: Boolean(user),
   });
 
@@ -87,11 +93,11 @@ function AccountPage() {
                     King<span className="text-amber-500">Pay</span>
                   </h2>
                   <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300">
-                    NPCI UPI
+                    Provider-linked payments
                   </span>
                 </div>
                 <p className="text-xs text-muted mt-0.5">
-                  Sovereign Wallet, Vehicle Garage &amp; BBPS Utilities
+                  Wallet, Vehicle Services &amp; Verified Partner Utilities
                 </p>
               </div>
             </div>
@@ -109,7 +115,7 @@ function AccountPage() {
             <Link to="/king-pay" className="rounded-xl bg-surface-2/60 p-2 hover:bg-surface-2 transition">
               <span className="text-base block mb-0.5">💳</span>
               <span className="text-[11px] font-bold text-fg block">1-Tap Wallet</span>
-              <span className="text-[9px] text-emerald-600 font-semibold">0% PG Fees</span>
+              <span className="text-[9px] text-emerald-600 font-semibold">Provider-defined fees</span>
             </Link>
             <Link to="/king-pay" className="rounded-xl bg-surface-2/60 p-2 hover:bg-surface-2 transition">
               <span className="text-base block mb-0.5">🚗</span>
@@ -119,7 +125,7 @@ function AccountPage() {
             <Link to="/king-pay" className="rounded-xl bg-surface-2/60 p-2 hover:bg-surface-2 transition">
               <span className="text-base block mb-0.5">⚡</span>
               <span className="text-[11px] font-bold text-fg block">Bill Payments</span>
-              <span className="text-[9px] text-primary font-semibold">BBPS 2% Back</span>
+              <span className="text-[9px] text-primary font-semibold">Provider-defined rewards</span>
             </Link>
           </div>
         </section>
@@ -198,7 +204,7 @@ function AccountPage() {
                 </span>
                 <div>
                   <h3 className="font-display text-lg font-bold text-fg">Refer & Earn Wallet Cash</h3>
-                  <p className="text-xs text-muted">Give ₹40 + Free Delivery, Get ₹25 for every friend who orders (min ₹249)</p>
+                  <p className="text-xs text-muted">Referral rewards are credited only after the referred customer completes a verified qualifying order.</p>
                 </div>
               </div>
             </div>
@@ -206,13 +212,13 @@ function AccountPage() {
             <div className="mt-4 rounded-xl border border-border bg-surface p-3 flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">Your Referral Code</span>
-                <p className="font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">KINGVIP</p>
+                <p className="font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">{referral.data?.referralCode ?? "Loading…"}</p>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  void navigator.clipboard?.writeText("KINGVIP");
-                  toast.success("Referral code copied!");
+                  void navigator.clipboard?.writeText(referral.data?.referralCode ?? "");
+                  toast.success("Referral code copied.");
                 }}
                 className="rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-fg hover:bg-surface-3 transition"
               >
@@ -222,7 +228,7 @@ function AccountPage() {
 
             <div className="mt-3 flex gap-2">
               <a
-                href={`https://wa.me/?text=${encodeURIComponent("Hey! Use my referral code KINGVIP to get ₹40 OFF + Free Delivery on your first delicious food order on OrderKing: https://orderking.in/?ref=KINGVIP")}`}
+                href={`https://wa.me/?text=${encodeURIComponent("Join me on OrderKing: " + (referral.data?.shareUrl ?? "https://orderking.in/"))}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
