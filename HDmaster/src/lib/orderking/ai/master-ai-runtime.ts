@@ -1247,11 +1247,11 @@ export async function executeTool(
     case "audit_customer_grievance_compliance": {
       requirePermission(ws.ctx, "manage_support");
       const sql = await getSql();
-      const [tickets,open,avgSla,comp] = await Promise.all([
+      const [tickets,open,avgSla,refunds] = await Promise.all([
         sql`SELECT COUNT(*)::int AS total FROM support_tickets WHERE created_at >= NOW()-INTERVAL '30 days'`,
         sql`SELECT COUNT(*)::int AS total FROM support_tickets WHERE status IN ('open','OPEN','pending')`,
         sql`SELECT COALESCE(AVG(EXTRACT(EPOCH FROM (updated_at-created_at))/60),0)::numeric AS avg_minutes FROM support_tickets WHERE status IN ('resolved','closed') AND updated_at >= NOW()-INTERVAL '30 days'`,
-        sql`SELECT COUNT(*)::int AS count, COALESCE(SUM(amount_paise),0)::bigint AS paise FROM refunds WHERE created_at >= NOW()-INTERVAL '30 days'`,
+        sql`SELECT COUNT(*)::int AS count, COALESCE(SUM(amount_paise),0)::bigint AS paise FROM payments WHERE status IN ('refunded','REFUNDED') AND created_at >= NOW()-INTERVAL '30 days'`,
       ]);
       const total = Number(tickets[0]?.total||0);
       const openCount = Number(open[0]?.total||0);
@@ -1276,12 +1276,14 @@ export async function executeTool(
       const [rider,merchant] = await Promise.all([
         sql`SELECT COUNT(*)::int AS total,
                     COUNT(*) FILTER (WHERE status IN ('resolved','closed'))::int AS resolved
-             FROM rider_support_tickets
-             WHERE created_at >= NOW()-INTERVAL '30 days'`,
+             FROM support_tickets
+             WHERE created_at >= NOW()-INTERVAL '30 days'
+               AND lower(topic) LIKE '%rider%'`,
         sql`SELECT COUNT(*)::int AS total,
                     COUNT(*) FILTER (WHERE status IN ('resolved','closed'))::int AS resolved
-             FROM restaurant_support_tickets
-             WHERE created_at >= NOW()-INTERVAL '30 days'`,
+             FROM support_tickets
+             WHERE created_at >= NOW()-INTERVAL '30 days'
+               AND (lower(topic) LIKE '%restaurant%' OR lower(topic) LIKE '%merchant%' OR lower(topic) LIKE '%kitchen%')`,
       ]);
       return {
         status: "LIVE_MEASURED",
