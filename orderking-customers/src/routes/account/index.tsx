@@ -10,6 +10,7 @@ import { ensureProfile, getLoyalty, requestDeletion, updateProfile } from "@/lib
 import { getReferralStatsFn } from "@/lib/server/referrals";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { buildShareIntent } from "@/lib/engine/viral-loop";
 
 export const Route = createFileRoute("/account/")({ component: AccountPage });
 
@@ -227,15 +228,27 @@ function AccountPage() {
             </div>
 
             <div className="mt-3 flex gap-2">
-              <a
-                href={`https://wa.me/?text=${encodeURIComponent("Join me on OrderKing: " + (referral.data?.shareUrl ?? "https://orderking.in/"))}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={async () => {
+                  const code = referral.data?.referralCode;
+                  if (!code) return;
+                  const intent = buildShareIntent(code, "account_referral");
+                  try {
+                    if (intent.navigatorShare) {
+                      await navigator.share(intent.navigatorShare);
+                      return;
+                    }
+                    window.open(intent.whatsapp, "_blank", "noopener,noreferrer");
+                  } catch {
+                    // User cancelled or the browser blocked the share surface; no modal is forced.
+                  }
+                }}
                 className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
               >
                 <span>💬</span>
-                <span>Invite via WhatsApp</span>
-              </a>
+                <span>Invite & Share</span>
+              </button>
             </div>
           </section>
         ) : null}
