@@ -70,7 +70,7 @@ export const Route = createFileRoute("/api/ai/chat")({
             const stream = new ReadableStream({
               async start(controller) {
                 try {
-                  await executeFounderAiChat({ ...body, apiKeys: undefined, userId: user.id, locale: body.locale }, (event: StreamEvent) => {
+                  await executeFounderAiChat({ ...body, apiKeys: undefined, userContext: { ...body.userContext, userId: user.id }, locale: body.locale }, (event: StreamEvent) => {
                     controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
                   });
                   controller.close();
