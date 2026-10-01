@@ -145,6 +145,19 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
         VALUES (${nid("ev")}, ${ws.ctx.orgId}, ${orderId}, ${ws.ctx.employeeId}, null, 'PENDING', 'customer.order_created',
           ${JSON.stringify({ customerRef: input.customerRef, address: input.address, notes: input.notes ?? null })})
       `;
+      await tx`
+        SELECT public.orderking_emit_immutable_event(
+          ${nid('imev')},
+          ${ws.ctx.orgId},
+          ${context.userId},
+          ${ws.ctx.employeeId},
+          'orders',
+          ${orderId},
+          'ORDER_CREATED',
+          NOW(),
+          ${JSON.stringify({ orderId, customerRef: input.customerRef, paymentMethod: input.paymentMethod, totalPaise: input.totalPaise })}::jsonb
+        )
+      `;
       await appendImmutableEvent({ orgId: ws.ctx.orgId, actorUserId: context.userId, actorEmployeeId: ws.ctx.employeeId, sourceTable: "orders", sourceId: orderId, eventType: "ORDER_CREATED", payload: { paymentMethod: input.paymentMethod, totalPaise: input.totalPaise, restaurantId: input.restaurantId } }, tx);
       const paymentProvider =
         input.paymentMethod === "COD"
