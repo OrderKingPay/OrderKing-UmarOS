@@ -48,6 +48,38 @@ export async function detectFinancialAnomalies() {
     ORDER BY created_at DESC
     LIMIT 100
   `);
+  const paymentOrderMismatchAnomalies = await sql.query(`
+    SELECT p.id, p.order_id, p.amount_paise AS payment_amount, o.total_paise AS order_amount, p.provider, p.status
+    FROM payments p
+    JOIN orders o ON o.id = p.order_id
+    WHERE p.created_at > NOW() - INTERVAL '24 HOURS'
+      AND p.status IN ('paid','PAID','wallet_paid','PAID_WALLET','PAID_RAZORPAY')
+      AND p.amount_paise <> o.total_paise
+    LIMIT 100
+  `);
+
+  const settlementDeficitAnomalies = await sql.query(`
+    SELECT id, entity_id, net_payout_paise, gross_amount_paise, deductions_paise, commission_paise, state
+    FROM settlement_batches
+    WHERE created_at > NOW() - INTERVAL '7 DAYS'
+      AND (
+        net_payout_paise < 0
+        OR gross_amount_paise < 0
+        OR deductions_paise < 0
+        OR commission_paise < 0
+      )
+    LIMIT 100
+  `);
+
+  const duplicateWalletCreditAnomalies = await sql.query(`
+    SELECT user_id, description, amount_paise, COUNT(*) AS credits
+    FROM kingpay_transactions
+    WHERE created_at > NOW() - INTERVAL '24 HOURS'
+      AND type = 'CREDIT'
+    GROUP BY user_id, description, amount_paise
+    HAVING COUNT(*) > 2
+    LIMIT 100
+  `);
 
   const founders = (process.env.ORDERKING_FOUNDER_EMAILS || "").split(",").map((v) => v.trim()).filter(Boolean);
   const anomalies = [
@@ -85,6 +117,24 @@ export async function detectFinancialAnomalies() {
       kind: "FINANCIAL_WEBHOOK_FAILURE",
       title: "Payment webhook processing failure",
       body: `Provider webhook ${row.gateway}:${row.gateway_event_id} failed processing: ${row.processing_error}`,
+      evidence: row,
+    })),
+    ...paymentOrderMismatchAnomalies.map((row: any) => ({
+      kind: "FINANCIAL_PAYMENT_ORDER_MISMATCH",
+      title: "Payment/order amount mismatch",
+      body: `Payment ${row.id} for order ${row.order_id} has provider amount ${row.payment_amount} paise but order total ${row.order_amount} paise.`,
+      evidence: row,
+    })),
+    ...settlementDeficitAnomalies.map((row: any) => ({
+      kind: "FINANCIAL_SETTLEMENT_DEFICIT",
+      title: "Settlement deficit invariant breach",
+      body: `Settlement ${row.id} entered an invalid negative monetary state and must remain blocked.`,
+      evidence: row,
+    })),
+    ...duplicateWalletCreditAnomalies.map((row: any) => ({
+      kind: "FINANCIAL_DUPLICATE_WALLET_CREDIT",
+      title: "Duplicate wallet credit pattern",
+      body: `Wallet ${row.user_id} has ${row.credits} recent credits with the same description and amount; manual/provider verification required.`,
       evidence: row,
     })),
   ];
