@@ -1,3 +1,4 @@
+// Server-only boundary for customer growth telemetry; keeps database access out of the browser bundle.
 import { createServerFn } from "@tanstack/react-start";
 
 export const getGrowthStatsRpc = createServerFn({ method: "GET" })
