@@ -45,13 +45,15 @@ export async function updateMargins(input: {
   if (!current.ok) throw new Error(current.error);
 
   const saved = await saveSettingsFn({
-    settings: {
+    data: {
+      settings: {
       ...current.data,
       commissionBps: input.baseMarginBps,
       townCommissionBps: input.baseMarginBps,
       longDistanceCommissionBps: input.distantMarginBps,
     },
-    reason: "Founder updated margin policy from Umar OS Master Dashboard",
+      reason: "Founder updated margin policy from Umar OS Master Dashboard",
+    },
   });
 
   if (!saved.ok) throw new Error(saved.error);
@@ -105,8 +107,7 @@ export async function executeStrategicProposal(
   proposalId: string,
 ): Promise<StrategicBusinessProposal> {
   const result = await resolveFounderApprovalFn({
-    id: proposalId,
-    decision: "APPROVED",
+    data: { id: proposalId, decision: "APPROVED" },
   });
   if (!result.ok) throw new Error(result.error);
 
