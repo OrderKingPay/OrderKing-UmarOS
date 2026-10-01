@@ -8,6 +8,10 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     envVars:
+      - key: OPENAI_MODEL
+        value: gpt-6.1-sol
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
       - key: APP_DIR
         value: HDmaster
       - key: NODE_ENV
@@ -24,6 +28,10 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     envVars:
+      - key: OPENAI_MODEL
+        value: gpt-6.1-sol
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
       - key: APP_DIR
         value: orderking-customers
       - key: NODE_ENV
@@ -40,6 +48,10 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     envVars:
+      - key: OPENAI_MODEL
+        value: gpt-6.1-sol
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
       - key: APP_DIR
         value: orderking-partners
       - key: NODE_ENV
@@ -56,6 +68,10 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     envVars:
+      - key: OPENAI_MODEL
+        value: gpt-6.1-sol
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
       - key: APP_DIR
         value: orderking-riders
       - key: NODE_ENV
@@ -72,6 +88,10 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     envVars:
+      - key: OPENAI_MODEL
+        value: gpt-6.1-sol
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
       - key: APP_DIR
         value: Apps-integration-
       - key: NODE_ENV
