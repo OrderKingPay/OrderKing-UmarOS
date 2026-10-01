@@ -397,16 +397,13 @@ export function enforceCapacityLimits(
 // ==========================================
 
 export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
-  const start = Date.now();
   if (!validatePostgresUrl(config.connectionString)) {
     return { ok: false, message: "Malformed PostgreSQL connection string.", latencyMs: 0 };
   }
-  // Simulated handshake or connection pool ping
-  const latencyMs = Math.floor(Math.random() * 25) + 15;
   return {
-    ok: true,
-    message: `Connected successfully to ${config.provider} (${config.sslMode} SSL, PgBouncer pool active).`,
-    latencyMs,
+    ok: false,
+    message: "Configuration format is valid, but a live database connection has not been verified by this diagnostic path.",
+    latencyMs: 0,
   };
 }
 
@@ -414,34 +411,31 @@ export async function testPgConnection(config: PaymentGatewayConfig): Promise<{ 
   if (!config.apiKey || !config.secretKey) {
     return { ok: false, message: "Missing API Key or Secret Key.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 40) + 20;
   return {
-    ok: true,
-    message: `Handshake successful with ${config.provider} in ${config.mode} mode. Webhooks verified.`,
-    latencyMs,
+    ok: false,
+    message: "Credentials are present, but no live payment-provider handshake was performed by this diagnostic path.",
+    latencyMs: 0,
   };
 }
 
 export async function testSmsConnection(config: SmsGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing SMS Gateway API Key. Operating in local simulation.", latencyMs: 0 };
+    return { ok: false, message: "Missing SMS Gateway API key.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 30) + 15;
   return {
-    ok: true,
-    message: `SMS Gateway (${config.provider}) active. Sender ID: ${config.senderId}, DLT Entity: ${config.dltEntityId || "Pending"}.`,
-    latencyMs,
+    ok: false,
+    message: "SMS credentials are present, but live sender/route verification has not been performed by this diagnostic path.",
+    latencyMs: 0,
   };
 }
 
 export async function testMapsConnection(config: MapsConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing Maps API Key. Falling back to offline Haversine matrix.", latencyMs: 0 };
+    return { ok: false, message: "Missing Maps API key.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 20) + 10;
   return {
-    ok: true,
-    message: `Maps API (${config.provider}) active. Directions & Geocoding enabled. Winding factor: ${config.roadWindingFactor}x.`,
-    latencyMs,
+    ok: false,
+    message: "Maps credentials are present, but a live API call has not been performed by this diagnostic path.",
+    latencyMs: 0,
   };
 }
