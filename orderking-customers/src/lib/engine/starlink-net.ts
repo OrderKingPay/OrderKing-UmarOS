@@ -22,6 +22,20 @@ export async function resilientFetch(input: RequestInfo | URL, options: Resilien
   const policy = { ...DEFAULT_POLICY, ...(options.retryPolicy ?? {}) };
   const method = String(options.method ?? "GET").toUpperCase();
   const headers = new Headers(options.headers);
+  // Silent first-party device-instance signal for fraud correlation.
+  // VPN/proxy users remain allowed; this is a risk signal, not an access block.
+  if (typeof window !== "undefined") {
+    try {
+      let deviceId = window.localStorage.getItem("ok_device_instance_id");
+      if (!deviceId) {
+        deviceId = crypto.randomUUID();
+        window.localStorage.setItem("ok_device_instance_id", deviceId);
+      }
+      headers.set("x-orderking-device-id", deviceId);
+    } catch {
+      // Privacy/storage-restricted browsers simply omit the optional signal.
+    }
+  }
   const retrySafe = ["GET", "HEAD", "OPTIONS"].includes(method) || headers.has("Idempotency-Key");
   let lastError: unknown = null;
   for (let attempt = 0; attempt <= policy.retries; attempt += 1) {
