@@ -137,18 +137,24 @@ export function evaluateRiderEligibilityAndScore(input: EligibilityInput): Dispa
     proximityScore = Math.max(0, 100 - Math.pow(km / effectiveMaxRadius, 2) * 100);
   }
 
-  // Simulated IoT Telemetry: Battery & Network Drops
-  const simulatedBattery = Math.random() * 100;
-  const telemetryPenalty = simulatedBattery < 15 ? -50 : 0;
+  // Live battery/network telemetry is not present in this eligibility contract.
+  // Never manufacture telemetry; use a neutral penalty until device telemetry is connected.
+  const telemetryPenalty = 0;
 
   // KYC Level Reliability
   const reliability = input.rider.kycStatus === "VERIFIED" ? 100 : 50;
 
   // Historical Performance (AI Predictive Quality)
-  const acceptance = input.rider.historicalAcceptanceRate ?? 85;
-  const completion = input.rider.historicalCompletionRate ?? 95;
-  const rating = input.rider.averageRating ?? 4.8;
-  const historicalPerformance = (acceptance * 0.3) + (completion * 0.4) + ((rating / 5) * 100 * 0.3);
+  const hasHistoricalPerformance =
+    input.rider.historicalAcceptanceRate != null ||
+    input.rider.historicalCompletionRate != null ||
+    input.rider.averageRating != null;
+  const acceptance = input.rider.historicalAcceptanceRate ?? 0;
+  const completion = input.rider.historicalCompletionRate ?? 0;
+  const rating = input.rider.averageRating ?? 0;
+  const historicalPerformance = hasHistoricalPerformance
+    ? (acceptance * 0.3) + (completion * 0.4) + ((rating / 5) * 100 * 0.3)
+    : 0;
 
   // Weather & Traffic Modifiers
   let weatherModifier = 100;
@@ -159,12 +165,12 @@ export function evaluateRiderEligibilityAndScore(input: EligibilityInput): Dispa
          vehicleSuitability = 30; // Very unsafe/slow for bicycles
          weatherModifier = 50;
       } else if (input.rider.vehicleType === "CAR") {
-         vehicleSuitability = 110; // Better protected
+         vehicleSuitability = 100; // Better protected
       }
     }
     if (input.environment.trafficLevel === "GRIDLOCK") {
       if (input.rider.vehicleType === "MOTORCYCLE") {
-         vehicleSuitability = 120; // Can weave through traffic
+         vehicleSuitability = 100; // Motorcycle is generally more maneuverable, but no extra score is invented
       } else if (input.rider.vehicleType === "CAR") {
          vehicleSuitability = 40; // Will get stuck
       }

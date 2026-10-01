@@ -139,7 +139,7 @@ export class AiWorkforceOrchestrator {
       {
         role: "RESTAURANT_SUCCESS_AI",
         displayName: "Order King Spark Restaurant Advisor",
-        description: "Partners with local restaurants for 0% commission savings, menu optimization, and growth.",
+        description: "Supports restaurant operations, menu optimization, and growth using verified partner data.",
         allowedDomains: ["GROWTH", "OPERATIONS"],
         maxAutonomousFinancialLimitInr: 0,
         assignedTools: ["menu_optimizer", "aggregator_loss_calculator", "pitch_generator"],
@@ -163,7 +163,7 @@ export class AiWorkforceOrchestrator {
       {
         role: "RECONCILIATION_AI",
         displayName: "Bank & Settlement Reconciler AI",
-        description: "Audits bank confirmations, gateway fees, and payout balances for 0% discrepancies.",
+        description: "Audits bank confirmations, gateway fees, and payout balances against provider-backed records.",
         allowedDomains: ["FINANCE"],
         maxAutonomousFinancialLimitInr: 200,
         assignedTools: ["ledger_verifier", "bank_reconciler", "payout_tracer"],
@@ -298,7 +298,7 @@ export class AiWorkforceOrchestrator {
           const forecast = businessOsModules.forecastDemand();
           const pricing = businessOsModules.calculateDynamicPricing(40, 1.5, "CLEAR");
           const fleet = businessOsModules.analyzeFleetDispatch();
-          resultData = { forecast, pricing, fleet, status: "SUCCESS", message: `Executed by ${agent.displayName}` };
+          resultData = { forecast, pricing, fleet, status: "EXECUTED", verification: "DATA_DEPENDENT", message: `Executed by ${agent.displayName}` };
           break;
         }
         case "FINANCE_AI": {
@@ -308,7 +308,7 @@ export class AiWorkforceOrchestrator {
         }
         case "OPERATIONS_AI": {
           const slas = businessOsModules.auditKitchenSlas();
-          resultData = { slas, compliantRatio: "96.4%" };
+          resultData = { slas, complianceRatio: slas.length ? "MEASURED" : "NOT_MEASURED" };
           break;
         }
         case "REPORTING_AI": {
@@ -337,7 +337,7 @@ export class AiWorkforceOrchestrator {
           break;
         }
         default: {
-          resultData = { status: "SUCCESS", message: `Executed by ${agent.displayName}` };
+          resultData = { status: "EXECUTED", verification: "DATA_DEPENDENT", message: `Executed by ${agent.displayName}` };
           break;
         }
       }

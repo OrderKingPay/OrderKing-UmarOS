@@ -676,13 +676,13 @@ export function FoodAiConcierge({
       let replyText = "";
       if (lang.code === "hi") {
         replyText =
-          `हुज़ूर, मैं आपकी परेशानी पूरी तरह समझती हूँ। हमारे 'ऑन-टाइम गारंटी' के तहत यदि आपका आर्डर 10 मिनट से अधिक लेट होता है, तो आपके वॉलेट में तुरंत ₹50 का कम्पेन्सेशन क्रेडिट ट्रांसफर कर दिया जाएगा। मैंने राइडर और किचन हेड शेफ़ को प्रायोरिटी अलर्ट भेज दिया है। टिकट #HD-FOOD-DELAY फ़ाउंडर डेस्क पर दर्ज है! ${selectedPersona.encouragement}`;
+          `हुज़ूर, मैं आपकी परेशानी पूरी तरह समझती हूँ। हमारे 'ऑन-टाइम गारंटी' के तहत यदि आपका आर्डर 10 मिनट से अधिक लेट होता है, तो आपके वॉलेट में तुरंत compensation will be reviewed after policy and payment/ledger verification। मैंने राइडर और किचन हेड शेफ़ को प्रायोरिटी अलर्ट भेज दिया है। टिकट #HD-FOOD-DELAY फ़ाउंडर डेस्क पर दर्ज है! ${selectedPersona.encouragement}`;
       } else if (lang.code === "bn") {
         replyText =
           `মহারাজ, খাবারের দেরির জন্য আমি আন্তরিকভাবে দুঃখিত। আমাদের 'অন-টাইম গ্যারান্টি' অনুযায়ী ১০ মিনিটের বেশি দেরি হলে আপনার ওয়ালেটে অবিলম্বে ₹৫০ ক্ষতিপূরণ ক্রেডিট জমা হবে। আমি রাইডার ও শেফকে জরুরি সতর্কতা পাঠিয়েছি। টিকিট #HD-FOOD-DELAY নথিভুক্ত করা হয়েছে! ${selectedPersona.encouragement}`;
       } else {
         replyText =
-          `I completely understand your hunger and apologize for the wait! Under OrderKing's Sovereign On-Time Guarantee, if your order is delayed by more than 10 minutes past the promised ETA, you will automatically receive an instant ₹50 compensation credit in your wallet. I have sent an urgent priority dispatch ping to your rider and kitchen head chef right now. Ticket #HD-FOOD-DELAY is logged on the Founder Command Desk! ${selectedPersona.encouragement}`;
+          `I completely understand your hunger and apologize for the wait! Under OrderKing's Sovereign On-Time Guarantee, if your order is delayed by more than 10 minutes past the promised ETA, you will automatically receive an instant a compensation review in your wallet. I have sent an urgent priority dispatch ping to your rider and kitchen head chef right now. Ticket #HD-FOOD-DELAY is logged on the Founder Command Desk! ${selectedPersona.encouragement}`;
       }
       return {
         text: replyText,

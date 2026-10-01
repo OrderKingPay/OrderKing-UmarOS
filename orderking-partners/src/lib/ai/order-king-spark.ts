@@ -26,8 +26,8 @@ export interface SparkKitchenAnomaly {
 export interface SparkSettlementSummary {
   period: string;
   grossSalesPaise: number;
-  commissionPaidPaise: number; // 0 paise with OrderKing!
-  swiggyZomatoLossAvoidedPaise: number; // ~24% of gross sales
+  commissionPaidPaise: number | null;
+  swiggyZomatoLossAvoidedPaise: number | null
   netSettlementPaise: number;
   status: "SETTLED" | "PENDING_BANK" | "PROCESSING";
   settlementAccount: string;
@@ -79,8 +79,8 @@ export class OrderKingSpark {
     return {
       period: "Live ledger required",
       grossSalesPaise: 0,
-      commissionPaidPaise: 0,
-      swiggyZomatoLossAvoidedPaise: 0,
+      commissionPaidPaise: null,
+      swiggyZomatoLossAvoidedPaise: null,
       netSettlementPaise: 0,
       status: "PENDING_BANK",
       settlementAccount: "Not exposed in client AI; retrieve from authorized settlement service",
@@ -102,9 +102,9 @@ export class OrderKingSpark {
         sender: "spark",
         text: `### 💰 Settlement & Commission Savings Report
 - **Trailing 7 Days Gross Sales**: **₹${(summary.grossSalesPaise / 100).toLocaleString("en-IN")}**
-- **OrderKing Platform Commission**: **₹0 (0% Commission)**
-- **Aggregator Cut Avoided**: You saved **₹${(summary.swiggyZomatoLossAvoidedPaise / 100).toLocaleString("en-IN")}** compared to Swiggy/Zomato (24% standard rate).
-- **Settlement Account**: **${summary.settlementAccount}** (Status: 🟢 **${summary.status}**)`,
+- **OrderKing Platform Commission**: **${summary.commissionPaidPaise == null ? "Live ledger required" : "₹" + (summary.commissionPaidPaise / 100).toLocaleString("en-IN")}**
+- **Aggregator comparison**: **${summary.swiggyZomatoLossAvoidedPaise == null ? "Not calculated" : "₹" + (summary.swiggyZomatoLossAvoidedPaise / 100).toLocaleString("en-IN")}**
+- **Settlement Account**: **${summary.settlementAccount}** (Status: **${summary.status}**)`,
         timestamp,
         actionCard: {
           type: "settlement_breakdown",

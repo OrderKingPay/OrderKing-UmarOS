@@ -4,7 +4,7 @@
 
 import { mediaStorageVault } from "./media-storage-vault.ts";
 import { UniversalSuperintelligenceEngine } from "./universal-superintelligence-engine.server.ts";
-import { ensembleConsensusEngine } from "./ensemble-consensus-engine.ts";
+import { liveOrchestrationEngine } from "./live-orchestration-engine.ts";
 import { instantDeployEngine } from "./instant-deploy-engine.ts";
 import { founderPrivacyShield } from "./founder-privacy-shield.ts";
 import { autonomousModelUpdater } from "./autonomous-model-updater.ts";
@@ -13,40 +13,31 @@ import { ACTIVE_DELIVERY_ZONES, isDeliveryActiveInLocation } from "../geo/geofen
 export type AiModelId =
   | "auto-supreme-orchestrator"
   | "ensemble-consensus"
-  | "sovereign-ultra"
-  | "claude-4-6-opus"
-  | "gpt-5-6-omni"
-  | "grok-4-6-super"
-  | "spacex-orbital"
-  | "codex-supreme"
-  | "gemini-3-8-ultra"
-  | "deepseek-r1-sovereign"
-  | "claude-3-7-sonnet"
-  | "gpt-4o"
-  | "gemini-2-5-pro"
-  | "grok-3";
+  | "openai-runtime"
+  | "gemini-runtime"
+  | "anthropic-runtime"
+  | "xai-runtime";
 
 /**
  * Autonomously selects the best AI model engine based on prompt domain, complexity, and latency requirements.
  */
 export function resolveAutoModel(query: string): { model: AiModelId; reason: string } {
   const q = query.toLowerCase();
-  if (q.includes("ensemble") || q.includes("all model") || q.includes("consensus") || q.includes("run all") || q.includes("together")) {
-    return { model: "ensemble-consensus", reason: "Auto-routed to Ensemble Multi-Model Consensus: Running all strongest models simultaneously." };
-  }
-  if (q.includes("code") || q.includes("schema") || q.includes("api") || q.includes("scaffold") || q.includes("react") || q.includes("sql") || q.includes("git")) {
-    return { model: "codex-supreme", reason: "Auto-routed to Codex Supreme Architect for maximum precision code synthesis." };
-  }
-  if (q.includes("live") || q.includes("score") || q.includes("news") || q.includes("trending") || q.includes("cricket") || q.includes("match")) {
-    return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 SuperGrok Ultra for real-time live telemetric intelligence." };
-  }
-  if (q.includes("video") || q.includes("image") || q.includes("render") || q.includes("4k") || q.includes("reel")) {
-    return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra for photorealistic multimodal & 4K video generation." };
-  }
-  if (q.includes("invoice") || q.includes("client") || q.includes("contract") || q.includes("legal") || q.includes("upwork") || q.includes("pitch")) {
-    return { model: "claude-4-6-opus", reason: "Auto-routed to Claude 4.6 Opus for enterprise contractual & high-ticket negotiation excellence." };
-  }
-  return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra flagship executive reasoning engine." };
+  const domain =
+    q.includes("code") || q.includes("schema") || q.includes("api") || q.includes("sql") || q.includes("git")
+      ? "engineering"
+      : q.includes("live") || q.includes("news") || q.includes("trending") || q.includes("match")
+        ? "real-time-information"
+        : q.includes("image") || q.includes("video") || q.includes("render")
+          ? "media-generation"
+          : q.includes("invoice") || q.includes("contract") || q.includes("legal") || q.includes("client")
+            ? "business"
+            : "general";
+
+  return {
+    model: "auto-supreme-orchestrator",
+    reason: `Routing domain "${domain}" through configured real providers. The actual provider/model is selected and verified at runtime; no unavailable model name is claimed.`,
+  };
 }
 
 export interface ChatAttachment { content?: string;
@@ -440,7 +431,7 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
     };
   }
 
-  // 2. Unlimited Free AI Image Generation
+  // 2. Real AI image-generation request
   if (
     q.startsWith("/image") ||
     q.includes("generate image") ||
@@ -454,69 +445,48 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       .replace(/generate (an )?image (of )?/i, "")
       .replace(/create (an )?image (of )?/i, "")
       .replace(/make (an )?image (of )?/i, "")
-      .trim() || "Futuristic OrderKing luxury food delivery hub with golden drones and neon lights, 8k octane render";
+      .trim();
 
-    const seed = Math.floor(Math.random() * 999999);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-      rawPrompt + ", 8k resolution, cinematic lighting, photorealistic, commercial grade, award winning"
-    )}?width=1024&height=1024&nologo=true&seed=${seed}`;
-
-    // Auto-save to Media Storage Vault
-    mediaStorageVault.addItem({
-      type: "image",
-      title: rawPrompt.slice(0, 45),
-      prompt: rawPrompt,
-      url: imageUrl,
-      sizeBytes: 2150000,
-      mimeType: "image/jpeg",
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Parsing High-Precision Visual Prompt", status: "COMPLETED", detail: rawPrompt },
-      { stepNumber: 2, totalSteps: 4, label: "Routing to Unlimited Free Neural Engine", status: "COMPLETED", detail: "Zero API charges · 1024x1024 Ultra Resolution" },
-      { stepNumber: 3, totalSteps: 4, label: "Synthesizing Photorealistic Asset", status: "COMPLETED", detail: "Ray-traced lighting and dynamic shaders rendered" },
-      { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent cloud & local storage indexed" },
-    ];
-
-    const responseMarkdown = `### 🎨 Supreme AI Image Generated (100% Free & Unlimited)
-- **Prompt**: *"${rawPrompt}"*
-- **Resolution**: **1024 × 1024 (Ultra HD)** | **Cost**: **$0.00 (Unlimited Forever)**
-- **Vault Status**: Indexed in **HD Master Media Vault** (ready to download, enlarge, or embed in client pitch decks).
-
-![Generated AI Image](${imageUrl})
-
-You can download this image, copy its direct CDN link, or command further edits below!`;
-
-    const voiceSpokenText = isHindi
-      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Yeh 100% free hai aur aapke media vault me save ho gaya hai.`
-      : isBengali
-      ? `Ami apnar jonno high-resolution AI image toiri korechi. Eta 100% free ebong apnar media vault e save hoyeche.`
-      : `I have generated your high-resolution AI image. It is 100% free with unlimited generation capacity and has been saved to your Media Vault.`;
+    if (!rawPrompt) {
+      return {
+        intent: "media_generation",
+        detectedLanguage,
+        responseMarkdown: "### Image generation\nA real image provider is available through the HDmaster media studio. Enter a prompt to generate the asset.",
+        voiceSpokenText: isHindi ? "Image banane ke liye prompt dijiye." : isBengali ? "Image bananor jonno prompt din." : "Enter an image prompt.",
+        executionSteps: [
+          { stepNumber: 1, totalSteps: 1, label: "Prompt Required", status: "PENDING", detail: "No image prompt supplied." },
+        ],
+        actionCard: {
+          type: "media_generator",
+          data: { type: "image", prompt: "", provider: "OpenAI" },
+        },
+      };
+    }
 
     return {
       intent: "media_generation",
       detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      mediaCard: {
-        type: "image",
-        prompt: rawPrompt,
-        url: imageUrl,
-        style: "Photorealistic 8K",
-      },
+      responseMarkdown: `### Real AI Image Generation Ready
+- **Prompt**: *"${rawPrompt}"*
+- **Provider**: OpenAI image-generation adapter
+- **Execution**: Send this request through the HDmaster media studio to obtain the provider-returned artifact. No placeholder URL or synthetic image is claimed.`,
+      voiceSpokenText: isHindi
+        ? "Aapka real image-generation request HDmaster media studio ke liye taiyar hai."
+        : isBengali
+        ? "Apnar real image generation request HDmaster media studio-r jonno ready."
+        : "Your real image-generation request is ready for the HDmaster media studio.",
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 2, label: "Parse Prompt", status: "COMPLETED", detail: rawPrompt },
+        { stepNumber: 2, totalSteps: 2, label: "Provider Execution", status: "PENDING", detail: "Waiting for the real OpenAI image adapter to return an artifact." },
+      ],
       actionCard: {
         type: "media_generator",
-        data: {
-          type: "image",
-          prompt: rawPrompt,
-          url: imageUrl,
-        },
+        data: { type: "image", prompt: rawPrompt, provider: "OpenAI" },
       },
     };
   }
 
-  // 3. Unlimited Free AI Video Generation
+  // 3. Real video-generation request
   if (
     q.startsWith("/video") ||
     q.includes("generate video") ||
@@ -530,58 +500,26 @@ You can download this image, copy its direct CDN link, or command further edits 
       .replace(/generate (a )?video (of )?/i, "")
       .replace(/create (a )?video (of )?/i, "")
       .replace(/make (a )?video (of )?/i, "")
-      .trim() || "Cinematic OrderKing 15-minute drone delivery flight through neon city streets";
-
-    const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
-
-    mediaStorageVault.addItem({
-      type: "video",
-      title: rawPrompt.slice(0, 45),
-      prompt: rawPrompt,
-      url: videoUrl,
-      sizeBytes: 8400000,
-      mimeType: "video/mp4",
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Compiling Kinetic Motion Script", status: "COMPLETED", detail: rawPrompt },
-      { stepNumber: 2, totalSteps: 4, label: "Simulating 60FPS Video Keyframes", status: "COMPLETED", detail: "Motion interpolation and procedural particles generated" },
-      { stepNumber: 3, totalSteps: 4, label: "Encoding MP4 Stream", status: "COMPLETED", detail: "WebCodecs hardware acceleration active · 100% Free" },
-      { stepNumber: 4, totalSteps: 4, label: "Registering in HD Master Media Vault", status: "COMPLETED", detail: "Playback ready with instant download option" },
-    ];
-
-    const responseMarkdown = `### 🎬 Supreme AI Video Generated (100% Free & Unlimited)
-- **Prompt**: *"${rawPrompt}"*
-- **Format**: **MP4 60FPS** | **Cost**: **$0.00 (Unlimited Forever)**
-- **Vault Status**: Indexed in **HD Master Media Vault** (ready to play, download, and showcase to enterprise clients).
-
-The video is ready for playback below with full audio-visual motion capabilities!`;
-
-    const voiceSpokenText = isHindi
-      ? `Maine aapke liye cinematic AI video clip generate kar diya hai. Yeh playback aur download ke liye ready hai.`
-      : isBengali
-      ? `Ami apnar jonno cinematic AI video clip toiri korechi. Eta playback ebong download korar jonno ready.`
-      : `I have generated your cinematic AI video clip. It is ready for playback, download, and commercial deployment.`;
+      .trim();
 
     return {
       intent: "media_generation",
       detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      mediaCard: {
-        type: "video",
-        prompt: rawPrompt,
-        url: videoUrl,
-        style: "Cinematic 60FPS",
-      },
+      responseMarkdown: `### Real AI Video Generation
+- **Prompt**: *"${rawPrompt || "No prompt supplied"}"*
+- **Status**: **Provider adapter required**
+- No stock clip, fake render, placeholder URL, or fabricated completion is returned.`,
+      voiceSpokenText: isHindi
+        ? "Video generation ke liye verified provider adapter abhi required hai."
+        : isBengali
+        ? "Video generation-er jonno verified provider adapter proyojon."
+        : "Video generation requires a verified provider adapter.",
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 1, label: "Provider Gate", status: "PENDING", detail: "No current verified video-generation adapter is configured for this deployment." },
+      ],
       actionCard: {
         type: "media_generator",
-        data: {
-          type: "video",
-          prompt: rawPrompt,
-          url: videoUrl,
-        },
+        data: { type: "video", prompt: rawPrompt, status: "PROVIDER_REQUIRED" },
       },
     };
   }
@@ -1224,19 +1162,22 @@ Select any module below to **preview standalone source code, download full ZIP p
     q.includes("all strongest") ||
     q.includes("together")
   ) {
-    const consensus = ensembleConsensusEngine.executeConsensus(query);
+    const consensus = await liveOrchestrationEngine.executeMultiModelConsensus({
+      prompt: query,
+      systemPrompt: "You are Umar OS founder intelligence. Use only real configured providers. Never claim factual verification unless performed.",
+    });
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Simultaneous Multi-Model Fanout", status: "COMPLETED", detail: "GPT-5.6, Claude 4.6, Grok 4.6, Gemini 3.8, Codex, DeepSeek invoked" },
-      { stepNumber: 2, totalSteps: 4, label: "Cross-Model Critique & Verification", status: "COMPLETED", detail: "Checked 0.00% hallucinations, verified algorithmic correctness" },
-      { stepNumber: 3, totalSteps: 4, label: "Mathematical Consensus Synthesis", status: "COMPLETED", detail: `${consensus.overallConsensusAgreement}% Inter-model agreement reached` },
-      { stepNumber: 4, totalSteps: 4, label: "Single Unified Flawless Deliverable", status: "COMPLETED", detail: "Unified production solution authorized" },
+      { stepNumber: 1, totalSteps: 4, label: "Real Provider Fanout", status: "COMPLETED", detail: `${consensus.verdicts.length} configured providers returned real output.` },
+      { stepNumber: 2, totalSteps: 4, label: "Verification State", status: "COMPLETED", detail: "Provider outputs returned; independent factual verification is not asserted by this pass." },
+      { stepNumber: 3, totalSteps: 4, label: "Synthesis", status: "COMPLETED", detail: consensus.unifiedExecutiveSummary },
+      { stepNumber: 4, totalSteps: 4, label: "Unified Output", status: "COMPLETED", detail: "Real provider output returned without synthetic fallback." },
     ];
 
     return {
       intent: "ensemble_consensus",
       detectedLanguage,
       responseMarkdown: consensus.unifiedSynthesis,
-      voiceSpokenText: `All 6 strongest frontier models have executed together in complete consensus with ${consensus.overallConsensusAgreement} percent agreement. The deliverable is 100% verified with zero hallucinations.`,
+      voiceSpokenText: `Real configured providers returned output. Factual verification is only claimed when independently performed.`,
       executionSteps,
       actionCard: {
         type: "ensemble_consensus",

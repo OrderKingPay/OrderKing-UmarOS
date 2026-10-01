@@ -155,6 +155,19 @@ export default defineConfig(({ command, isPreview }) => ({
       // prevents rolldown from bundling the 750 kB WebAssembly binary.
       external: ["@electric-sql/pglite"],
     },
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          minSize: 20000,
+          groups: [
+            { name: "react-vendor", test: /node_modules[\/]react(?:-dom)?[\/]/, priority: 30 },
+            { name: "tanstack-vendor", test: /node_modules[\/]@tanstack[\/]/, priority: 25 },
+            { name: "ui-vendor", test: /node_modules[\/] (?:@radix-ui|lucide-react|framer-motion|motion)[\/]/, priority: 20 },
+            { name: "vendor", test: /node_modules[\/]/, priority: 10 },
+          ],
+        },
+      },
+    },
   },
   
   

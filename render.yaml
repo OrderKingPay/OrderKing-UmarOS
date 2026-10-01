@@ -1,0 +1,100 @@
+services:
+  - type: web
+    name: orderking-hdmaster
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: cloudrun/production-bootstrap-2026-09-30
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: OPENAI_MODEL
+        value: gpt-6.1-sol
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
+      - key: APP_DIR
+        value: HDmaster
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+
+  - type: web
+    name: orderking-customers
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: cloudrun/production-bootstrap-2026-09-30
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: OPENAI_MODEL
+        value: gpt-6.1-sol
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
+      - key: APP_DIR
+        value: orderking-customers
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+
+  - type: web
+    name: orderking-partners
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: cloudrun/production-bootstrap-2026-09-30
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: OPENAI_MODEL
+        value: gpt-6.1-sol
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
+      - key: APP_DIR
+        value: orderking-partners
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+
+  - type: web
+    name: orderking-riders
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: cloudrun/production-bootstrap-2026-09-30
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: OPENAI_MODEL
+        value: gpt-6.1-sol
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
+      - key: APP_DIR
+        value: orderking-riders
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+
+  - type: web
+    name: orderking-integration
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: cloudrun/production-bootstrap-2026-09-30
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: OPENAI_MODEL
+        value: gpt-6.1-sol
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2.5-sunburst
+      - key: APP_DIR
+        value: Apps-integration-
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"

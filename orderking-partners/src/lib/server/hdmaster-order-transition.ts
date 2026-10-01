@@ -57,7 +57,7 @@ function localStateFor(action: Action): OrderState {
 
 export const transitionOrderViaHDmaster = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: {
+  .inputValidator((d: {
     restaurantId?: string;
     orderId: string;
     action: Action;
@@ -121,6 +121,28 @@ export const transitionOrderViaHDmaster = createServerFn({ method: "POST" })
       await sql`
         insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
         values (${newId("evt")}, ${order.id}, ${ctx.restaurantId}, ${order.state}, ${next}, 'restaurant', ${context.userId}, ${data.reason ?? null})
+      `;
+      await sql`
+        SELECT public.orderking_emit_immutable_event(
+          ${newId("iev")},
+          NULL,
+          ${context.userId},
+          NULL,
+          'partner_orders',
+          ${order.id},
+          'PARTNER_ORDER_TRANSITION',
+          NOW(),
+          ${JSON.stringify({
+            restaurantId: ctx.restaurantId,
+            previousState: order.state,
+            newState: next,
+            canonicalFrom: from,
+            canonicalTo: payload.data.state,
+            action: data.action,
+            correlationId: `partner:${ctx.restaurantId}:${order.id}:${data.action}`,
+            idempotencyKey: data.idempotencyKey,
+          })}::jsonb
+        )
       `;
       await writeAudit(sql, {
         restaurantId: ctx.restaurantId,

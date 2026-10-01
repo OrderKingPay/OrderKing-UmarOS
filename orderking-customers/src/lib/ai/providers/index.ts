@@ -10,7 +10,6 @@ export * from "./gemini-provider.ts";
 export * from "./openai-provider.ts";
 export * from "./anthropic-provider.ts";
 export * from "./xai-provider.ts";
-export * from "./local-deterministic-provider.ts";
 
 export interface ProviderStatus {
   id: string;
@@ -49,39 +48,32 @@ export class ModelRouterService {
     return [
       {
         id: "gemini",
-        name: "Google Gemini 2.0 Flash / Pro",
+        name: "Google Gemini",
         isConfigured: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
-        supportedModels: ["gemini-2.0-flash", "gemini-2.5-pro"],
+        supportedModels: process.env.GEMINI_MODEL?.trim() ? [process.env.GEMINI_MODEL.trim()] : [],
         requiredEnvVar: "GEMINI_API_KEY",
       },
       {
         id: "anthropic",
-        name: "Anthropic Claude 3.7 Sonnet",
+        name: "Anthropic Claude",
         isConfigured: Boolean(process.env.ANTHROPIC_API_KEY),
-        supportedModels: ["claude-3-7-sonnet", "claude-3-5-sonnet"],
+        supportedModels: process.env.ANTHROPIC_MODEL?.trim() ? [process.env.ANTHROPIC_MODEL.trim()] : [],
         requiredEnvVar: "ANTHROPIC_API_KEY",
       },
       {
         id: "openai",
-        name: "OpenAI GPT-5.6 Luna / GPT-5.6 Sol",
+        name: "OpenAI",
         isConfigured: Boolean(process.env.OPENAI_API_KEY),
-        supportedModels: ["gpt-5.6-luna", "gpt-5.6-sol"],
+        supportedModels: process.env.OPENAI_MODEL?.trim() ? [process.env.OPENAI_MODEL.trim()] : [],
         requiredEnvVar: "OPENAI_API_KEY",
       },
       {
         id: "xai",
-        name: "xAI Grok 2",
+        name: "xAI Grok",
         isConfigured: Boolean(process.env.XAI_API_KEY),
-        supportedModels: ["grok-2", "grok-3"],
+        supportedModels: process.env.XAI_MODEL?.trim() ? [process.env.XAI_MODEL.trim()] : [],
         requiredEnvVar: "XAI_API_KEY",
-      },
-      {
-        id: "local_deterministic",
-        name: "Local Sovereign Engine (Zero-Dep)",
-        isConfigured: true,
-        supportedModels: ["sovereign-ultra-deterministic"],
-        requiredEnvVar: "NONE (Always Active)",
-      },
+      }
     ];
   }
 

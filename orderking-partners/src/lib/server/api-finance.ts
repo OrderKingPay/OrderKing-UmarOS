@@ -9,7 +9,7 @@ import type { PromotionFunder, PromotionKind } from "@/lib/contracts";
 
 export const getSettlements = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string }) => d)
+  .inputValidator((d: { restaurantId?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "settlements.view", async (sql, ctx) => {
       const batches = await sql<{
@@ -87,7 +87,7 @@ export const getSettlements = createServerFn({ method: "GET" })
 
 export const exportSettlementJson = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; batchId: string }) => d)
+  .inputValidator((d: { restaurantId?: string; batchId: string }) => d)
   .handler(async ({ context, data }) => {
     const payload = await getSettlements({ data: { restaurantId: data.restaurantId } });
     const batch = payload.batches.find((b) => b.id === data.batchId);
@@ -102,7 +102,7 @@ export const exportSettlementJson = createServerFn({ method: "GET" })
 
 export const getPromotions = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string }) => d)
+  .inputValidator((d: { restaurantId?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "promotions.view", async (sql, ctx) => {
       const rows = await sql<{
@@ -126,7 +126,7 @@ export const getPromotions = createServerFn({ method: "GET" })
         order by created_at desc
       `;
       const aov = await sql<{ aov: number }>`
-        select coalesce(avg(customer_total_paise) filter (where state = 'DELIVERED'), 35000)::int as aov
+        select coalesce(avg(customer_total_paise) filter (where state = 'DELIVERED'), 0)::int as aov
         from orders where restaurant_id = ${ctx.restaurantId}
       `;
       return {
@@ -138,8 +138,8 @@ export const getPromotions = createServerFn({ method: "GET" })
             funder: p.funder as PromotionFunder,
             percentOff: p.percent_off ?? 0,
             amountPaise: asInt(p.amount_paise ?? 0),
-            assumedOrdersPerDay: asInt(p.assumed_orders_per_day, 10),
-            assumedAovPaise: asInt(aov[0]?.aov, 35000),
+            assumedOrdersPerDay: asInt(p.assumed_orders_per_day, 0),
+            assumedAovPaise: asInt(aov[0]?.aov, 0),
             maxDiscountPaise: p.max_discount_paise,
           });
           return {
@@ -157,7 +157,7 @@ export const getPromotions = createServerFn({ method: "GET" })
 
 export const savePromotion = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: {
+  .inputValidator((d: {
     restaurantId?: string;
     id?: string;
     name: string;
@@ -210,7 +210,7 @@ export const savePromotion = createServerFn({ method: "POST" })
 
 export const getAdCampaign = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string }) => d)
+  .inputValidator((d: { restaurantId?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "promotions.view", async (sql, ctx) => {
       const rows = await sql<{
@@ -220,20 +220,20 @@ export const getAdCampaign = createServerFn({ method: "GET" })
         is_active: boolean;
       }>`select id, name, amount_paise as daily_budget_paise, is_active from promotions where restaurant_id = ${ctx.restaurantId} and kind = 'item' and name = 'SPONSORED_BOOST' limit 1`;
       const c = rows[0];
-      const budget = c ? asInt(c.daily_budget_paise, 25000) : 25000;
+      const budget = c ? asInt(c.daily_budget_paise, 0) : 0;
       return {
         hasCampaign: Boolean(c),
         isActive: c ? (c.is_active === true || (c.is_active as unknown) === "t") : false,
         dailyBudgetPaise: budget,
-        estimatedImpressions: Math.round((budget / 100) * 12),
-        estimatedClicks: Math.round((budget / 100) * 1.5),
+        estimatedImpressions: null,
+        estimatedClicks: null,
       };
     });
   });
 
 export const saveAdCampaign = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; isActive: boolean; dailyBudgetPaise: number }) => d)
+  .inputValidator((d: { restaurantId?: string; isActive: boolean; dailyBudgetPaise: number }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "promotions.edit", async (sql, ctx) => {
       const budget = paise(data.dailyBudgetPaise);
@@ -263,7 +263,7 @@ export const saveAdCampaign = createServerFn({ method: "POST" })
 
 export const getAnalytics = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; range?: "day" | "week" | "month" }) => d)
+  .inputValidator((d: { restaurantId?: string; range?: "day" | "week" | "month" }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "analytics.view", async (sql, ctx) => {
       const range = data.range ?? "week";

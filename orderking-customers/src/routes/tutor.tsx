@@ -4,50 +4,67 @@ import { createServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
 import { Send, GraduationCap, Award, BookOpen, BrainCircuit, Loader2, Sparkles } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
+import { authMiddleware } from "@/lib/auth/middleware";
 
 const askTutorFn = createServerFn({ method: "POST" })
-  .// @ts-ignore
-  validator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => data)
+  .middleware([authMiddleware])
+  .inputValidator((data: { message: string; board: string; stdClass: string; language: string; history: any[] }) => {
+    if (!data.message?.trim()) throw new Error("Tutor question is required.");
+    if (data.message.length > 4000) throw new Error("Tutor question is too long.");
+    if (!Array.isArray(data.history) || data.history.length > 8) throw new Error("Tutor history limit exceeded.");
+    return data;
+  })
   .handler(async ({ data }: any) => {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY?.trim();
+    if (!apiKey) throw new Error("TUTOR_AI_NOT_CONFIGURED");
 
-    if (!apiKey) {
-      return { text: "Tutor is currently resting (API Key not found in server)." };
-    }
-    
-    const systemPrompt = `You are the OrderKing Master Tutor, an elite, strict but highly motivating teacher for Indian students. 
-Rules:
-1. **CRITICAL:** Speak EXACTLY in ${data.language}. Your ${data.language} must be grammatically perfect, precise, and highly authentic.
-2. The student is in ${data.stdClass}, studying under the ${data.board} syllabus.
-3. NEVER give direct answers to homework. Guide them step-by-step using exact formulas from their syllabus.
-4. Keep answers short, encouraging, and highly addictive for learning. 
-5. Emphasize textbook methods.
-6. If they ask about non-study topics, strictly guide them back to studies.`;
+    const systemPrompt = `You are the OrderKing Master Tutor.
+Speak exactly in ${data.language}.
+Student level: ${data.stdClass}; board: ${data.board}.
+Teach step-by-step, favor textbook methods, and adapt difficulty.
+Do not pretend to have official syllabus documents unless they were provided or retrieved from a trusted source.
+Do not claim exam scores, rank, placement, certification, or official eligibility.
+For homework, guide the student and explain the method rather than simply claiming completion.`;
 
-    try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const history = data.history.slice(-8).map((m: any) => ({
+      role: m.role === "assistant" ? "assistant" : "user",
+      content: String(m.content ?? ""),
+    }));
+
+    const model = process.env.OPENAI_TUTOR_MODEL?.trim() || process.env.OPENAI_MODEL?.trim();
+    if (!model) throw new Error("TUTOR_AI_MODEL_NOT_CONFIGURED");
+    const candidates = [model];
+
+    let lastError = "TUTOR_AI_REQUEST_FAILED";
+    for (const model of candidates) {
+      const response = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...data.history.map((m: any) => ({ role: m.role, content: m.content })),
-            { role: "user", content: data.message }
-          ],
-          temperature: 0.7,
-          max_tokens: 600,
-        })
+          model,
+          instructions: systemPrompt,
+          input: [...history, { role: "user", content: data.message }],
+          reasoning: { effort: process.env.OPENAI_TUTOR_REASONING_EFFORT?.trim() || "medium" },
+        }),
       });
-      
-      const result = await response.json();
-      return { text: result.choices?.[0]?.message?.content || "Sorry, I couldn't process that. Try again!" };
-    } catch (e) {
-      return { text: "Connection error. Please check your internet." };
+
+      const payload = await response.json().catch(() => ({}));
+      if (response.ok) {
+        return { text: payload.output_text || "I could not produce a tutor response.", model: payload.model || model };
+      }
+
+      const message = String(payload?.error?.message || "");
+      lastError = message || `OpenAI HTTP ${response.status}`;
+      const unavailable =
+        [400, 403, 404].includes(response.status) &&
+        /model|permission|access|not found|unsupported/i.test(lastError);
+      if (!unavailable) break;
     }
+
+    throw new Error(lastError);
   });
 
 export const Route = createFileRoute('/tutor')({
@@ -255,7 +272,7 @@ function TutorPage() {
                     Ayushman Bharat (PMJAY)
                   </h3>
                   <p className="text-xs text-emerald-700 mt-1">Health cover of ₹5 lakhs per family per year for secondary and tertiary care hospitalization across public and private empaneled hospitals.</p>
-                  <button className="mt-3 text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold">Apply & Verify Eligibility</button>
+                  <a href="https://pmjay.gov.in/" target="_blank" rel="noreferrer" className="inline-block mt-3 text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold">Official PM-JAY Portal</a>
                </div>
                
                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
@@ -264,7 +281,7 @@ function TutorPage() {
                     PM Kisan Samman Nidhi
                   </h3>
                   <p className="text-xs text-blue-700 mt-1">Income support of ₹6,000 per year in three equal installments to all land holding eligible farmer families.</p>
-                  <button className="mt-3 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold">Check Status</button>
+                  <a href="https://pmkisan.gov.in/" target="_blank" rel="noreferrer" className="inline-block mt-3 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold">Official PM-Kisan Portal</a>
                </div>
 
                <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
@@ -272,8 +289,8 @@ function TutorPage() {
                     <BookOpen className="size-5" />
                     National Means-cum-Merit Scholarship
                   </h3>
-                  <p className="text-xs text-orange-700 mt-1">₹12,000 per annum for students studying in Class 9 to 12 in State Govt, Govt-aided, and Local body schools.</p>
-                  <button className="mt-3 text-xs bg-orange-600 text-white px-3 py-1.5 rounded-lg font-bold">Apply Now</button>
+                  <p className="text-xs text-orange-700 mt-1">Check the National Scholarship Portal for the current NMMSS eligibility, application window, and verification status.</p>
+                  <a href="https://scholarships.gov.in/All-Scholarships" target="_blank" rel="noreferrer" className="inline-block mt-3 text-xs bg-orange-600 text-white px-3 py-1.5 rounded-lg font-bold">Official Scholarship Portal</a>
                </div>
 
                <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
@@ -282,11 +299,11 @@ function TutorPage() {
                     PM Awas Yojana (PMAY)
                   </h3>
                   <p className="text-xs text-purple-700 mt-1">Credit linked subsidy scheme for Housing for All. Beneficiaries receive direct financial assistance to build pucca houses.</p>
-                  <button className="mt-3 text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg font-bold">Check PMAY List</button>
+                  <a href="https://pmay-urban.gov.in/" target="_blank" rel="noreferrer" className="inline-block mt-3 text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg font-bold">Official PMAY(U) Portal</a>
                </div>
 
                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center text-center mt-6">
-                  <p className="text-xs text-slate-500">Connecting to National Government Services Portal (india.gov.in) to fetch 300+ more verified schemes tailored for your profile...</p>
+                  <p className="text-xs text-slate-500">Open the official government portal before relying on any scheme amount, eligibility, deadline, or application status.</p>
                </div>
             </div>
           )}
@@ -299,7 +316,7 @@ function TutorPage() {
                      <Sparkles className="size-16" />
                   </div>
                   <h2 className="font-black text-xl mb-1 relative z-10">NEET/JEE Mastery</h2>
-                  <p className="text-amber-100 text-xs font-medium mb-4 relative z-10">Guaranteed Placements & Top Rank Materials.</p>
+                  <p className="text-amber-100 text-xs font-medium mb-4 relative z-10">Exam preparation and learning resources; outcomes depend on your study and the provider.</p>
                   <div className="flex gap-2 relative z-10">
                      <span className="bg-white/20 px-2 py-1 rounded text-[10px] font-bold backdrop-blur-sm">PhysicsWallah</span>
                      <span className="bg-white/20 px-2 py-1 rounded text-[10px] font-bold backdrop-blur-sm">Testbook</span>
@@ -311,7 +328,7 @@ function TutorPage() {
                
                <div className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-5 text-white shadow-lg">
                   <h2 className="font-black text-xl mb-1">Global IT Diplomas</h2>
-                  <p className="text-indigo-100 text-xs font-medium mb-4">Learn Coding, AI & Business from Harvard, Google & IBM.</p>
+                  <p className="text-indigo-100 text-xs font-medium mb-4">Explore learning programs from education providers; verify current course and certificate details with the provider.</p>
                   <div className="flex gap-2">
                      <span className="bg-white/20 px-2 py-1 rounded text-[10px] font-bold backdrop-blur-sm">Coursera</span>
                      <span className="bg-white/20 px-2 py-1 rounded text-[10px] font-bold backdrop-blur-sm">Simplilearn</span>

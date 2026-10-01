@@ -1,15 +1,17 @@
 // @ts-nocheck
-import { randomInt } from "node:crypto";
+import { randomInt, createHash } from "node:crypto";
 import { requirePermission } from "@/lib/orderking/rbac";
 import { appendAudit, ensureWorkspace, nid } from "@/lib/orderking/server/workspace.server";
 import { getSql } from "@/lib/db";
 import { z } from "zod";
+import { appendImmutableEvent } from "../audit/immutable-event.server";
+import { fetchRazorpayPayment, verifyCheckoutSignature } from "../payments/razorpay.server";
 
 function json(body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } }); }
 function serviceUserId(request: Request): string { const authorization = request.headers.get("authorization")?.trim(); const token = process.env.ORDERKING_SERVICE_TOKEN?.trim(); const userId = process.env.ORDERKING_SERVICE_USER_ID?.trim(); if (!token || !userId || authorization !== `Bearer ${token}`) throw new Error("Unauthorized"); return userId; }
 
 type CustomerOrderInput = {
-  customerRef: string; restaurantId: string; cityId: string; zoneId: string; paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY";
+  customerRef: string; restaurantId: string; cityId: string; zoneId: string; paymentMethod: "COD" | "KING_PAY";
   foodPaise: number; restaurantDiscountPaise: number; platformDiscountPaise: number; deliveryFeePaise: number; serviceFeePaise: number; taxPaise: number; totalPaise: number; commissionPaise: number;
   address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string; lat?: number; lng?: number }; notes?: string;
   lines: { itemId: string; name: string; qty: number; unitPaise: number }[];
@@ -34,7 +36,10 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
       restaurantId: z.string().min(1),
       cityId: z.string().min(1),
       zoneId: z.string().min(1),
-      paymentMethod: z.enum(["COD", "UPI_SANDBOX", "KING_PAY"]),
+      paymentMethod: z.enum(["COD", "KING_PAY", "RAZORPAY_ONLINE"]),
+      razorpayOrderId: z.string().optional(),
+      razorpayPaymentId: z.string().optional(),
+      razorpaySignature: z.string().optional(),
       foodPaise: z.number().min(0),
       restaurantDiscountPaise: z.number().min(0),
       platformDiscountPaise: z.number().min(0),
@@ -68,8 +73,23 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
       return json({ error: "Invalid request payload", details: e.errors, code: "INVALID_REQUEST" }, 400);
     }
     
-    if (input.paymentMethod === "UPI_SANDBOX" && ws.dataMode === "PRODUCTION") return json({ error: "Sandbox payment is not permitted in PRODUCTION", code: "PAYMENT_MODE_INVALID" }, 409);
     if (input.totalPaise < 0 || input.foodPaise < 0 || input.lines.some((line) => line.qty <= 0 || line.unitPaise < 0)) return json({ error: "Invalid monetary or quantity values", code: "INVALID_AMOUNT" }, 400);
+    if (input.paymentMethod === "RAZORPAY_ONLINE") {
+      if (!input.razorpayOrderId || !input.razorpayPaymentId || !input.razorpaySignature) {
+        return json({ error: "Razorpay verification fields are required", code: "RAZORPAY_VERIFICATION_REQUIRED" }, 400);
+      }
+      if (!verifyCheckoutSignature({
+        orderId: input.razorpayOrderId,
+        paymentId: input.razorpayPaymentId,
+        signature: input.razorpaySignature,
+      })) {
+        return json({ error: "Invalid Razorpay checkout signature", code: "RAZORPAY_SIGNATURE_INVALID" }, 400);
+      }
+      const payment = await fetchRazorpayPayment(input.razorpayPaymentId);
+      if (payment.order_id !== input.razorpayOrderId || payment.status !== "captured" || payment.currency !== "INR" || Number(payment.amount) !== Number(input.totalPaise)) {
+        return json({ error: "Razorpay payment verification mismatch", code: "RAZORPAY_PAYMENT_MISMATCH" }, 409);
+      }
+    }
     const sql = await getSql();
     const duplicate = await sql<{ response_json: string }>`select response_json from idempotency_keys where key=${idempotencyKey} and org_id=${ws.ctx.orgId} limit 1`;
     if (duplicate[0]) return json({ data: JSON.parse(duplicate[0].response_json) });
@@ -84,28 +104,132 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     let customerId = customerRows[0]?.id;
     if (!customerId) { customerId = nid("cus"); await sql`insert into customers (id,org_id,city_id,display_ref,phone_masked,status,data_mode) values (${customerId},${ws.ctx.orgId},${input.cityId},${input.customerRef},'MASKED','ACTIVE',${ws.dataMode})`; }
     const orderId = nid("ord");
+    const walletTransactionId = `kptx_${createHash("sha256").update(idempotencyKey).digest("hex")}`;
+    const result = await sql.transaction(async (tx) => {
       if (input.paymentMethod === "KING_PAY") {
-        const { kingpayLedgerEngine } = await import("@/lib/orderking/finance/kingpay-ledger-engine");
-        const entry = kingpayLedgerEngine.processPayment(
-          idempotencyKey + ":wallet",
-          customerId,
-          input.restaurantId,
-          input.totalPaise / 100,
-          2
-        );
-        if (entry.status === "BLOCKED_AML") return json({ error: "Payment blocked by AML policy", code: "AML_BLOCKED" }, 403);
+        const existingWalletTx = await tx`SELECT id FROM kingpay_transactions WHERE id = ${walletTransactionId} LIMIT 1`;
+        if (existingWalletTx.length === 0) {
+          await tx`
+            INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins)
+            VALUES (${input.customerRef}, 0, 0)
+            ON CONFLICT (user_id) DO NOTHING
+          `;
+          const walletRows = await tx<{ balance_paise: number }>`
+            SELECT balance_paise
+            FROM kingpay_wallets
+            WHERE user_id = ${input.customerRef}
+            FOR UPDATE
+          `;
+          const balancePaise = Number(walletRows[0]?.balance_paise ?? 0);
+          if (balancePaise < input.totalPaise) throw new Error("KINGPAY_INSUFFICIENT_BALANCE");
+          await tx`
+            UPDATE kingpay_wallets
+            SET balance_paise = balance_paise - ${input.totalPaise}, updated_at = NOW()
+            WHERE user_id = ${input.customerRef}
+          `;
+          await tx`
+            INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+            VALUES (${walletTransactionId}, ${input.customerRef}, ${input.totalPaise}, 'DEBIT', ${"Order payment " + orderId})
+          `;
+        }
       }
-    if (process.env.VERCEL_ENV === "production" && input.paymentMethod === "UPI_SANDBOX") {
-      return json({ error: "Sandbox UPI is not available in production.", code: "SANDBOX_PAYMENT_BLOCKED" }, 400);
-    }
-    const paymentStatus = input.paymentMethod === "COD" ? "PENDING" : input.paymentMethod === "KING_PAY" ? "PAID_WALLET" : "AUTHORIZED_SANDBOX";
-    await sql`insert into orders (id,org_id,city_id,zone_id,restaurant_id,customer_id,status,payment_status,payment_method,food_paise,restaurant_discount_paise,platform_discount_paise,delivery_fee_paise,service_fee_paise,tax_paise,total_paise,commission_paise,promised_at,placed_at,data_mode,delivery_address_json,delivery_lat,delivery_lng,delivery_otp) values (${orderId},${ws.ctx.orgId},${input.cityId},${input.zoneId},${input.restaurantId},${customerId},'PENDING',${paymentStatus},${input.paymentMethod},${input.foodPaise},${input.restaurantDiscountPaise},${input.platformDiscountPaise},${input.deliveryFeePaise},${input.serviceFeePaise},${input.taxPaise},${input.totalPaise},${input.commissionPaise},now()+interval '45 minutes',now(),${ws.dataMode},${JSON.stringify(input.address)},${input.address.lat ?? null},${input.address.lng ?? null},${randomInt(1000, 10000).toString()})`;
-    for (const line of input.lines) await sql`insert into order_items (id,org_id,order_id,menu_item_id,name,qty,unit_paise) values (${nid("oit")},${ws.ctx.orgId},${orderId},${line.itemId},${line.name},${line.qty},${line.unitPaise})`;
-    await sql`insert into order_events (id,org_id,order_id,actor_employee_id,from_status,to_status,action,note) values (${nid("ev")},${ws.ctx.orgId},${orderId},${ws.ctx.employeeId},null,'PENDING','customer.order_created',${JSON.stringify({ customerRef: input.customerRef, address: input.address, notes: input.notes ?? null })})`;
-    await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.customer_created", targetType: "order", targetId: orderId, next: { status: "PENDING", customerId, restaurantId: input.restaurantId, dataMode: ws.dataMode }, reason: "Customer application order" });
-    const result = { orderId, status: "PENDING", paymentStatus, totalPaise: input.totalPaise, dataMode: ws.dataMode };
-    await sql`insert into idempotency_keys (key,org_id,employee_id,action,response_json) values (${idempotencyKey},${ws.ctx.orgId},${ws.ctx.employeeId},'order.customer_create',${JSON.stringify(result)}) on conflict (key) do nothing`;
-    return json({ data: result });
+      const paymentStatus =
+        input.paymentMethod === "COD"
+          ? "PENDING"
+          : input.paymentMethod === "KING_PAY"
+            ? "PAID_WALLET"
+            : "PAID_RAZORPAY";
+      await tx`
+        INSERT INTO orders (
+          id, org_id, city_id, zone_id, restaurant_id, customer_id, status, payment_status, payment_method,
+          food_paise, restaurant_discount_paise, platform_discount_paise, delivery_fee_paise, service_fee_paise,
+          tax_paise, total_paise, commission_paise, promised_at, placed_at, data_mode,
+          delivery_address_json, delivery_lat, delivery_lng, delivery_otp
+        ) VALUES (
+          ${orderId}, ${ws.ctx.orgId}, ${input.cityId}, ${input.zoneId}, ${input.restaurantId}, ${customerId},
+          'PENDING', ${paymentStatus}, ${input.paymentMethod}, ${input.foodPaise}, ${input.restaurantDiscountPaise},
+          ${input.platformDiscountPaise}, ${input.deliveryFeePaise}, ${input.serviceFeePaise}, ${input.taxPaise},
+          ${input.totalPaise}, ${input.commissionPaise}, now()+interval '45 minutes', now(), ${ws.dataMode},
+          ${JSON.stringify(input.address)}, ${input.address.lat ?? null}, ${input.address.lng ?? null}, ${randomInt(1000, 10000).toString()}
+        )
+      `;
+      for (const line of input.lines) await tx`
+        INSERT INTO order_items (id, org_id, order_id, menu_item_id, name, qty, unit_paise)
+        VALUES (${nid("oit")}, ${ws.ctx.orgId}, ${orderId}, ${line.itemId}, ${line.name}, ${line.qty}, ${line.unitPaise})
+      `;
+      await tx`
+        INSERT INTO order_events (id, org_id, order_id, actor_employee_id, from_status, to_status, action, note)
+        VALUES (${nid("ev")}, ${ws.ctx.orgId}, ${orderId}, ${ws.ctx.employeeId}, null, 'PENDING', 'customer.order_created',
+          ${JSON.stringify({ customerRef: input.customerRef, address: input.address, notes: input.notes ?? null })})
+      `;
+      await tx`
+        SELECT public.orderking_emit_immutable_event(
+          ${nid('imev')},
+          ${ws.ctx.orgId},
+          ${context.userId},
+          ${ws.ctx.employeeId},
+          'orders',
+          ${orderId},
+          'ORDER_CREATED',
+          NOW(),
+          ${JSON.stringify({ orderId, customerRef: input.customerRef, paymentMethod: input.paymentMethod, totalPaise: input.totalPaise })}::jsonb
+        )
+      `;
+      await appendImmutableEvent({ orgId: ws.ctx.orgId, actorUserId: context.userId, actorEmployeeId: ws.ctx.employeeId, sourceTable: "orders", sourceId: orderId, eventType: "ORDER_CREATED", payload: { paymentMethod: input.paymentMethod, totalPaise: input.totalPaise, restaurantId: input.restaurantId } }, tx);
+      const paymentProvider =
+        input.paymentMethod === "COD"
+          ? "COD"
+          : input.paymentMethod === "KING_PAY"
+            ? "KING_PAY"
+            : "RAZORPAY";
+      const paymentRawPayload =
+        input.paymentMethod === "KING_PAY"
+          ? JSON.stringify({ kingPay: true, walletTransactionId })
+          : input.paymentMethod === "RAZORPAY_ONLINE"
+            ? JSON.stringify({ razorpayOrderId: input.razorpayOrderId, razorpayPaymentId: input.razorpayPaymentId, verifiedBy: "customer_server" })
+            : null;
+      await tx`
+        INSERT INTO payments (id, order_id, provider, status, amount_paise, currency, idempotency_key, raw_payload)
+        VALUES (${nid("pay")}, ${orderId}, ${paymentProvider}, ${input.paymentMethod === "COD" ? "pending" : "wallet_paid"},
+          ${input.totalPaise}, 'INR', ${idempotencyKey + ":pay"}, ${paymentRawPayload})
+      `;
+      if (built.promo) await tx`
+        INSERT INTO promotion_redemptions (id, promotion_id, user_id, order_id)
+        VALUES (${nid("red")}, ${built.promo.id}, ${context.userId}, ${orderId})
+      `;
+      const points = Math.floor(built.result.quote.foodSubtotalPaise / 10000);
+      await tx`
+        INSERT INTO loyalty_accounts (user_id, points, lifetime_points, tier)
+        VALUES (${context.userId}, ${points}, ${points}, 'starter')
+        ON CONFLICT (user_id) DO UPDATE SET points = loyalty_accounts.points + ${points},
+          lifetime_points = loyalty_accounts.lifetime_points + ${points}, updated_at = now()
+      `;
+      await tx`
+        INSERT INTO loyalty_transactions (id, user_id, order_id, delta, reason)
+        VALUES (${newId("loy")}, ${context.userId}, ${orderId}, ${points}, 'order_placed')
+      `;
+      return { orderId, status: "PENDING", paymentStatus, totalPaise: input.totalPaise, dataMode: ws.dataMode };
+    });
+    await writeEvent(orderId, null, "PLACED", context.userId, "customer", "Order placed");
+    await sql`
+      INSERT INTO notifications (id, user_id, title, body, kind, entity_id)
+      VALUES (${newId("ntf")}, ${context.userId}, "Order confirmed",
+        ${"Order placed. Payment " + (input.paymentMethod === "COD" ? "is due on delivery." : "was deducted from your King Pay wallet.")},
+        "ORDER_PLACED", ${orderId})
+    `;
+    await sql`
+      INSERT INTO notification_outbox (id, channel, status, payload)
+      VALUES (${newId("nbox")}, "sms", "pending", ${JSON.stringify({ reason: "provider_not_connected", event: "ORDER_PLACED", orderId })})
+    `;
+    await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey,
+      action: "order.customer_created", targetType: "order", targetId: orderId,
+      next: { status: "PENDING", customerId, restaurantId: input.restaurantId, dataMode: ws.dataMode },
+      reason: "Customer application order" });
+    await sql`
+      INSERT INTO idempotency_keys (key, org_id, employee_id, action, response_json)
+      VALUES (${idempotencyKey}, ${ws.ctx.orgId}, ${ws.ctx.employeeId}, "order.customer_create", ${JSON.stringify(result)})
+      ON CONFLICT (key) DO NOTHING
+    `;
   } catch (err) { 
     const message = err instanceof Error ? err.message : "Unexpected error"; 
     
@@ -158,12 +282,48 @@ export async function handleCustomerOrderCancelHttp(request: Request, orderId: s
     if (!order) return json({ error: "Order not found", code: "ORDER_NOT_FOUND" }, 404);
     if (order.customer_ref !== body.customerRef) return json({ error: "Order does not belong to customer", code: "FORBIDDEN" }, 403);
     if (!["PENDING", "CONFIRMED"].includes(order.status)) return json({ error: "Order can no longer be cancelled", code: "CANCELLATION_NOT_ALLOWED", status: order.status }, 409);
-    await sql`update orders set status='CANCELLED', updated_at=now() where id=${order.id} and org_id=${ws.ctx.orgId} and status=${order.status}`;
-    await sql`insert into order_events (id,org_id,order_id,actor_employee_id,from_status,to_status,action,note) values (${nid("ev")},${ws.ctx.orgId},${order.id},${ws.ctx.employeeId},${order.status},'CANCELLED','customer.order_cancelled',${JSON.stringify({ customerRef: body.customerRef, reason: body.reason ?? null })})`;
-    await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.customer_cancelled", targetType: "order", targetId: order.id, next: { status: "CANCELLED" }, reason: body.reason ?? "Customer cancellation" });
-    const result = { orderId: order.id, status: "CANCELLED", authoritative: "HDmaster" as const };
-    await sql`insert into idempotency_keys (key,org_id,employee_id,action,response_json) values (${idempotencyKey},${ws.ctx.orgId},${ws.ctx.employeeId},'order.customer_cancel',${JSON.stringify(result)}) on conflict (key) do nothing`;
-    return json({ data: result });
+    const result = await sql.transaction(async (tx) => {
+      let refundedPaise = 0;
+      if (order.status !== "CANCELLED") {
+        const full = await tx<{ payment_method: string; payment_status: string; total_paise: number }>`
+          SELECT payment_method, payment_status, total_paise FROM orders WHERE id=${order.id} FOR UPDATE
+        `;
+        const current = full[0];
+        if (current?.payment_method === "KING_PAY" && current.payment_status === "PAID_WALLET") {
+          const refundId = `kp_refund_${order.id}`;
+          const already = await tx`SELECT id FROM kingpay_transactions WHERE id=${refundId} LIMIT 1`;
+          if (already.length === 0) {
+            await tx`
+              INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins)
+              VALUES (${body.customerRef}, 0, 0) ON CONFLICT (user_id) DO NOTHING
+            `;
+            await tx`
+              SELECT balance_paise FROM kingpay_wallets WHERE user_id=${body.customerRef} FOR UPDATE
+            `;
+            await tx`
+              UPDATE kingpay_wallets SET balance_paise = balance_paise + ${current.total_paise}, updated_at=NOW()
+              WHERE user_id=${body.customerRef}
+            `;
+            await tx`
+              INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
+              VALUES (${refundId}, ${body.customerRef}, ${current.total_paise}, 'CREDIT', ${"Order cancellation refund " + order.id})
+            `;
+            refundedPaise = Number(current.total_paise);
+          }
+          await tx`UPDATE orders SET status='CANCELLED', payment_status='REFUNDED', updated_at=NOW() WHERE id=${order.id} AND org_id=${ws.ctx.orgId}`;
+        } else {
+          await tx`UPDATE orders SET status='CANCELLED', updated_at=NOW() WHERE id=${order.id} AND org_id=${ws.ctx.orgId}`;
+        }
+        await tx`
+          INSERT INTO order_events (id,org_id,order_id,actor_employee_id,from_status,to_status,action,note)
+          VALUES (${nid("ev")},${ws.ctx.orgId},${order.id},${ws.ctx.employeeId},${order.status},'CANCELLED','customer.order_cancelled',${JSON.stringify({ customerRef: body.customerRef, reason: body.reason ?? null, refundedPaise })})
+        `;
+      }
+      await appendImmutableEvent({ orgId: ws.ctx.orgId, actorUserId: ws.ctx.userId, actorEmployeeId: ws.ctx.employeeId, sourceTable: "orders", sourceId: order.id, eventType: "ORDER_CANCELLED", payload: { reason: body.reason ?? null, refundedPaise } }, tx);
+      return { orderId: order.id, status: "CANCELLED", authoritative: "HDmaster" as const, refundedPaise };
+    });
+    await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.customer_cancelled", targetType: "order", targetId: order.id, next: { status: "CANCELLED", refundedPaise: result.refundedPaise }, reason: body.reason ?? "Customer cancellation" });
+    await sql`INSERT INTO idempotency_keys (key,org_id,employee_id,action,response_json) VALUES (${idempotencyKey},${ws.ctx.orgId},${ws.ctx.employeeId},'order.customer_cancel',${JSON.stringify(result)}) ON CONFLICT (key) DO NOTHING`;
   } catch (err) { 
     const message = err instanceof Error ? err.message : "Unexpected error"; 
     

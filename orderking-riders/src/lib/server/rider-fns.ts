@@ -17,6 +17,24 @@ async function engine() {
   return new RiderEngine(new PgStore(sql));
 }
 
+async function emitRiderImmutableEvent(userId: string, eventType: string, payload: Record<string, unknown>) {
+  const sql = await getSql();
+  const sourceId = userId + ":" + eventType + ":" + Date.now();
+  await sql`
+    SELECT public.orderking_emit_immutable_event(
+      ${sourceId},
+      ${userId},
+      ${userId},
+      NULL,
+      'rider',
+      ${userId},
+      ${eventType},
+      NOW(),
+      ${JSON.stringify(payload)}::jsonb
+    )
+  `;
+}
+
 function fail(e: unknown): never {
   if (e instanceof RiderError) throw e;
   throw e;
@@ -113,7 +131,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
 
 export const saveProfileFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: Partial<RiderProfile>) => input)
+  .inputValidator((input: Partial<RiderProfile>) => input)
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
@@ -137,7 +155,7 @@ export const submitKycFn = createServerFn({ method: "POST" })
 
 export const setStatusFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { status: AvailabilityStatus; confirmed: boolean }) => input)
+  .inputValidator((input: { status: AvailabilityStatus; confirmed: boolean }) => input)
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
@@ -149,7 +167,7 @@ export const setStatusFn = createServerFn({ method: "POST" })
 
 export const respondOfferFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator(
+  .inputValidator(
     (input: {
       offerId: string;
       decision: "ACCEPT" | "DECLINE";
@@ -182,7 +200,7 @@ export const respondOfferFn = createServerFn({ method: "POST" })
 
 export const deliveryActionFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator(
+  .inputValidator(
     (input: {
       deliveryId: string;
       action:
@@ -285,19 +303,26 @@ export const deliveryActionFn = createServerFn({ method: "POST" })
 
 export const postLocationFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator(
+  .inputValidator(
     (input: { lat: number; lng: number; accuracyM: number | null; deliveryId: string | null }) =>
       input,
   )
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
-      return await e.postLocation(
+      const result = await e.postLocation(
         context.userId,
         { lat: data.lat, lng: data.lng },
         data.accuracyM,
         data.deliveryId,
       );
+      await emitRiderImmutableEvent(context.userId, "rider_location", {
+        lat: data.lat,
+        lng: data.lng,
+        accuracyM: data.accuracyM,
+        deliveryId: data.deliveryId,
+      });
+      return result;
     } catch (err) {
       fail(err);
     }
@@ -305,7 +330,7 @@ export const postLocationFn = createServerFn({ method: "POST" })
 
 export const getEarningsFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { preset: "today" | "yesterday" | "week" | "month"; from?: string; to?: string }) => input)
+  .inputValidator((input: { preset: "today" | "yesterday" | "week" | "month"; from?: string; to?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
@@ -319,7 +344,7 @@ export const getEarningsFn = createServerFn({ method: "GET" })
 
 export const getHistoryFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { preset: "today" | "yesterday" | "week" | "month" }) => input)
+  .inputValidator((input: { preset: "today" | "yesterday" | "week" | "month" }) => input)
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
@@ -334,7 +359,8 @@ export const getSettlementsFn = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     try {
       const e = await engine();
-      return await e.settlements(context.userId);
+      const rows = await e.settlements(context.userId);
+      return rows.filter((row: any) => row?.status !== "PAYABLE" || row?.periodStart !== row?.periodEnd);
     } catch (err) {
       fail(err);
     }
@@ -353,7 +379,7 @@ export const getPerformanceFn = createServerFn({ method: "GET" })
 
 export const createTicketFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator(
+  .inputValidator(
     (input: {
       topic:
         | "ORDER_ISSUE"
@@ -396,7 +422,7 @@ export const listTicketsFn = createServerFn({ method: "GET" })
 
 export const reportSafetyFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator(
+  .inputValidator(
     (input: {
       kind:
         | "EMERGENCY_CALL"
@@ -440,7 +466,7 @@ export const listNotificationsFn = createServerFn({ method: "GET" })
 
 export const setLocaleFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { locale: LocaleCode }) => input)
+  .inputValidator((input: { locale: LocaleCode }) => input)
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
@@ -453,13 +479,12 @@ export const setLocaleFn = createServerFn({ method: "POST" })
 
 export const getDeliveryFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { deliveryId: string }) => input)
+  .inputValidator((input: { deliveryId: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
       const delivery = await e.getDelivery(context.userId, data.deliveryId);
-      const simulatedOtp = await e.otpForSimulation(context.userId, data.deliveryId);
-      return { delivery, simulatedOtp };
+      return { delivery };
     } catch (err) {
       fail(err);
     }
@@ -480,10 +505,11 @@ export const assistantSnapshotFn = createServerFn({ method: "GET" })
 
 export const riderAiSupportFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { message: string; locale?: LocaleCode; deliveryId?: string | null }) => input)
+  .inputValidator((input: { message: string; locale?: LocaleCode; deliveryId?: string | null }) => input)
   .handler(async ({ context, data }) => {
     const apiKey = process.env.OPENAI_API_KEY?.trim();
-    if (!apiKey) throw new RiderError("AI_UNAVAILABLE", "OpenAI support is not configured on the rider server.", 503);
+    const model = process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim();
+    if (!apiKey || !model) throw new RiderError("AI_UNAVAILABLE", "OpenAI support is not fully configured on the rider server.", 503);
     const message = data.message.trim();
     if (!message) throw new RiderError("INVALID", "Describe the issue first.", 400);
 
@@ -491,7 +517,7 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: process.env.OPENAI_RIDER_MODEL?.trim() || "gpt-5.6-luna",
+        model,
         temperature: 0.2,
         messages: [
           {
@@ -519,6 +545,6 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
     const body = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
     const text = body.choices?.[0]?.message?.content?.trim();
     if (!text) throw new RiderError("AI_UNAVAILABLE", "OpenAI returned no support response.", 503);
-    return { provider: "openai", model: process.env.OPENAI_RIDER_MODEL?.trim() || "gpt-5.6-luna", text };
+    return { provider: "openai", model, text };
   });
 

@@ -1,5 +1,5 @@
 
-import { createServerFn } from "@tanstack/react-start";
+import { useEffect } from "react";
 import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider } from "@/lib/auth/provider";
@@ -10,41 +10,9 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { OfflineDetector } from "@/components/offline-detector";
 import appCss from "../styles.css?url";
 import { NextGenSeo } from "@/components/seo/NextGenSeo";
-
-const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
-  try {
-    const { getSessionUser } = await import("@/lib/auth/verify.server");
-    const u = await getSessionUser();
-    return u ? { id: u.id, email: u.email } : null;
-  } catch (err) {
-    console.error("fetchSessionUser error:", err);
-    return null;
-  }
-});
-
-const fetchConfig = createServerFn({ method: "GET" }).handler(async () => {
-  try {
-    const { loadConfig } = await import("@/lib/server/load-config");
-    return await loadConfig();
-  } catch (err) {
-    console.error("fetchConfig error:", err);
-    return null;
-  }
-});
+import { resilientFetch } from "@/lib/engine/starlink-net";
 
 export const Route = createRootRoute({
-  beforeLoad: async () => {
-    let sessionUser = null;
-    let config = null;
-    try {
-      const [su, c] = await Promise.all([fetchSessionUser(), fetchConfig()]);
-      sessionUser = su;
-      config = c;
-    } catch (err) {
-      console.error("beforeLoad Promise.all error:", err);
-    }
-    return { sessionUser, config };
-  },
   errorComponent: ({ error }) => {
     return <div style={{ padding: '2rem', background: '#111', color: 'white', height: '100vh' }}><h2>OrderKing Initialization Error</h2><p>Please check the database connection strings and environment variables.</p><pre style={{ background: '#222', padding: '1rem', color: '#ff7777', whiteSpace: 'pre-wrap' }}>{(error as Error)?.message || String(error)}</pre></div>;
   },
@@ -70,8 +38,7 @@ export const Route = createRootRoute({
         
       ],
       links: [
-        { rel: "preconnect", href: "https://vitals.vercel-insights.com" },
-        { rel: "preconnect", href: "https://xezsqsptomcndbksxrvu.supabase.co" },
+        { rel: "preconnect", href: "https://wziksbrumklcktrlgedb.supabase.co" },
         { rel: "icon", type: "image/jpeg", href: "/logo.jpg" },
         { rel: "stylesheet", href: appCss },
         { rel: "manifest", href: "/manifest.json" },
@@ -88,9 +55,46 @@ export const Route = createRootRoute({
 });
 
 function Root() {
-  const context = Route.useRouteContext();
-  const config = context.config ?? DEFAULT_CONFIG;
+  const config = DEFAULT_CONFIG;
   const location = useRouterState({ select: (s) => s.location });
+
+  useEffect(() => {
+    const recover = () => {
+      const key = "orderking-vite-preload-recovered";
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+      window.location.reload();
+    };
+    window.addEventListener("vite:preloadError", recover);
+    return () => window.removeEventListener("vite:preloadError", recover);
+  }, []);
+  useEffect(() => {
+    let cancelled = false;
+    const reportDeviceRisk = async () => {
+      try {
+        if (cancelled) return;
+        let deviceId = localStorage.getItem("ok_device_instance_id");
+        if (!deviceId) {
+          deviceId = crypto.randomUUID();
+          localStorage.setItem("ok_device_instance_id", deviceId);
+        }
+        await resilientFetch("/api/security/device-integrity", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": "device-" + deviceId,
+            "x-orderking-device-id": deviceId,
+          },
+          body: JSON.stringify({ deviceId }),
+          retryPolicy: { retries: 1, timeoutMs: 6000 },
+        }).catch(() => undefined);
+      } catch {
+        // Silent degraded mode: device checks never interrupt normal customers.
+      }
+    };
+    void reportDeviceRisk();
+    return () => { cancelled = true; };
+  }, []);
   return (
     <html lang="en" className="antialiased" suppressHydrationWarning>
       <head>

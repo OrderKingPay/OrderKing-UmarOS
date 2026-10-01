@@ -28,8 +28,10 @@ export interface BenchmarkScore {
 export interface BenchmarkRun {
   runId: string;
   timestamp: string;
+  status: "NOT_RUN" | "HARNESS_ONLY" | "PRODUCTION_MEASURED";
+  measurementScope: "NONE" | "LOCAL_HARNESS" | "PRODUCTION";
   totalDimensions: number;
-  overallScore: number;
+  overallScore: number | null;
   dimensionScores: BenchmarkScore[];
   measuredImprovementDelta?: string;
 }
@@ -38,7 +40,7 @@ export class CapabilityBenchmarkSuite {
   private benchmarkHistory: BenchmarkRun[] = [];
 
   constructor() {
-    this.seedHistoricalBenchmark();
+    // Historical fixture scores are intentionally not loaded into production state.
   }
 
   private seedHistoricalBenchmark() {
@@ -67,7 +69,20 @@ export class CapabilityBenchmarkSuite {
   }
 
   runFullBenchmark(): BenchmarkRun {
-    const runId = `BM-${Date.now().toString().slice(-4)}`;
+    if (process.env.NODE_ENV === "production") {
+      return {
+        runId: `BM-BLOCKED-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        status: "NOT_RUN",
+        measurementScope: "NONE",
+        totalDimensions: 0,
+        overallScore: null,
+        dimensionScores: [],
+        measuredImprovementDelta: "Production capability benchmark is blocked until real provider/runtime telemetry is collected.",
+      };
+    }
+
+    const runId = `BM-HARNESS-${Date.now().toString().slice(-4)}`;
     const scores: BenchmarkScore[] = [
       { dimension: "Reasoning", measuredScore: 96, latencyMs: 340, successRate: 0.98, notes: "Sub-400ms logic & double-entry constraint check" },
       { dimension: "Coding", measuredScore: 98, latencyMs: 480, successRate: 1.0, notes: "Clean TypeScript compilation with zero lint warnings" },
@@ -87,11 +102,13 @@ export class CapabilityBenchmarkSuite {
 
     const run: BenchmarkRun = {
       runId,
-      timestamp: new Date().toISOString().replace("T", " ").slice(0, 16),
+      timestamp: new Date().toISOString(),
+      status: "HARNESS_ONLY",
+      measurementScope: "LOCAL_HARNESS",
       totalDimensions: scores.length,
       overallScore,
       dimensionScores: scores,
-      measuredImprovementDelta: "+2.1% overall score improvement over prior benchmark run",
+      measuredImprovementDelta: "Local harness result only; not a production capability score.",
     };
 
     this.benchmarkHistory.push(run);
@@ -102,8 +119,8 @@ export class CapabilityBenchmarkSuite {
     return [...this.benchmarkHistory];
   }
 
-  getLatestBenchmark(): BenchmarkRun {
-    return this.benchmarkHistory[this.benchmarkHistory.length - 1];
+  getLatestBenchmark(): BenchmarkRun | null {
+    return this.benchmarkHistory[this.benchmarkHistory.length - 1] ?? null;
   }
 }
 

@@ -4,7 +4,7 @@ import { VendorShell } from "@/components/vendor-shell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/input";
-import { useT } from "@/components/use-t";
+import { useT, useLang } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
 import { askAssistant } from "@/lib/server/api-more";
 
@@ -12,6 +12,7 @@ export const Route = createFileRoute("/assistant")({ component: AssistantPage })
 
 function AssistantPage() {
   const t = useT();
+  const lang = useLang();
   const vendor = useVendor();
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
@@ -24,7 +25,7 @@ function AssistantPage() {
     setBusy(true);
     setLog((l) => [...l, { role: "user", text }]);
     try {
-      const res = await askAssistant({ data: { restaurantId: vendor.restaurantId, question: text } });
+      const res = await askAssistant({ data: { restaurantId: vendor.restaurantId, question: text, locale: lang } });
       const reply = typeof res === "object" && res && "text" in res ? String(res.text) : t("assistant.unavailable");
       setLog((l) => [...l, { role: "assistant", text: reply }]);
     } catch (e) {

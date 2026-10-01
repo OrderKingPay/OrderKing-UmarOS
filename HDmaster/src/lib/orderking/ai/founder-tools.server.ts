@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { getSql } from "@/lib/db";
+import OpenAI from "openai";
 import type { ToolDefinition } from "./providers/provider-interface.ts";
 
 export const FOUNDER_TOOLS: ToolDefinition[] = [
@@ -131,37 +132,86 @@ export async function executeFounderTool(name: string, args: Record<string, any>
 
       case "enhance_media": {
         const { mediaUrl, type } = args;
+        if (!mediaUrl || !["image", "video"].includes(type)) {
+          return { error: "INVALID_REQUEST", detail: "A media URL and media type are required." };
+        }
+
         if (type === "image" && !process.env.OPENAI_API_KEY && !process.env.STABILITY_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Enhancement requires OPENAI_API_KEY or STABILITY_API_KEY in environment to execute genuine 1000x realistic upscaling." };
+          return {
+            error: "CONFIGURATION_REQUIRED",
+            detail: "No real image-enhancement provider is configured. Configure a supported provider before claiming enhancement.",
+          };
         }
+
         if (type === "video" && !process.env.RUNWAY_API_KEY && !process.env.LUMA_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Video enhancement requires RUNWAY_API_KEY or LUMA_API_KEY in environment to execute frame-by-frame super-resolution." };
+          return {
+            error: "CONFIGURATION_REQUIRED",
+            detail: "No real video-enhancement provider is configured. Configure a supported provider before claiming enhancement.",
+          };
         }
-        
-        // Placeholder for genuine API call once keys are provided
+
         return {
-          status: "SUCCESS",
-          action: `Genuine 1000x Enhancement Processed for ${type}`,
-          processedUrl: mediaUrl,
-          message: "Media enhanced realistically. Identity and structural details perfectly preserved."
+          status: "NOT_IMPLEMENTED",
+          error: "PROVIDER_ADAPTER_REQUIRED",
+          message: "Provider credentials exist, but no verified enhancement adapter is implemented in this deployment. The original media will never be returned as a fake processed result.",
         };
       }
 
       case "generate_media": {
-        const { prompt, type } = args;
-        if (type === "image" && !process.env.OPENAI_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Image generation requires OPENAI_API_KEY for DALL-E 3 or Midjourney." };
-        }
-        if (type === "video" && !process.env.RUNWAY_API_KEY && !process.env.SORA_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Realistic video generation requires SORA_API_KEY or RUNWAY_API_KEY." };
+        const { prompt, type, size = "1536x1024", quality = "high" } = args;
+        if (!prompt || !["image", "video"].includes(type)) {
+          return { error: "INVALID_REQUEST", detail: "A generation prompt and media type are required." };
         }
 
-        return {
-          status: "SUCCESS",
-          action: `Genuine Generation Processed for ${type}`,
-          prompt,
-          message: "Media generated realistically at world-class standards."
-        };
+        if (type === "video") {
+          return {
+            error: "PROVIDER_ADAPTER_REQUIRED",
+            status: "NOT_IMPLEMENTED",
+            detail: "No verified video-generation adapter is currently installed. The system will not return a fabricated video result.",
+          };
+        }
+
+        const apiKey = process.env.OPENAI_API_KEY?.trim();
+        if (!apiKey) {
+          return {
+            error: "CONFIGURATION_REQUIRED",
+            detail: "Configure OPENAI_API_KEY in the secure server environment.",
+          };
+        }
+
+        try {
+          const client = new OpenAI({ apiKey });
+          const result = await client.images.generate({
+            model: process.env.OPENAI_IMAGE_MODEL?.trim() || "gpt-image-2",
+            prompt,
+            size,
+            quality,
+          });
+          const imageBase64 = result.data?.[0]?.b64_json;
+          if (!imageBase64) {
+            return {
+              error: "PROVIDER_EMPTY_RESULT",
+              status: "FAILED",
+              message: "The image provider returned no image artifact.",
+            };
+          }
+
+          return {
+            status: "SUCCESS",
+            provider: "OpenAI",
+            model: process.env.OPENAI_IMAGE_MODEL?.trim() || "gpt-image-2",
+            mimeType: "image/png",
+            mediaUrl: `data:image/png;base64,${imageBase64}`,
+            prompt,
+            message: "Real image generation completed by the configured OpenAI image provider.",
+          };
+        } catch (error: any) {
+          return {
+            error: "MEDIA_PROVIDER_FAILED",
+            status: "FAILED",
+            message: error?.message || "Image generation failed.",
+          };
+        }
       }
 
       default:

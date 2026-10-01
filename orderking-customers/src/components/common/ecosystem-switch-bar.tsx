@@ -58,7 +58,7 @@ export function EcosystemSwitchBar({
   const handleShareClick = () => {
     triggerHaptic();
     const shareUrl = typeof window !== "undefined" ? window.location.origin : "https://orderking.in";
-    const shareText = "👑 Experience Order King FOODS (0% markup biryani & feasts) & King Pay (0-fee UPI & lowest flights)! Join now:";
+    const shareText = "👑 Discover OrderKing food and King Pay services. Verified offers appear when active. Join now:";
     
     if (typeof navigator !== "undefined" && navigator.share) {
       navigator

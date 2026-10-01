@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 // @ts-nocheck
 /**
  * Cloud Object Storage Adapter for Order King Partners
@@ -38,7 +39,7 @@ export async function createPresignedUpload(
 ): Promise<PresignedUploadResponse> {
   const config = getStorageConfig();
   const ext = req.fileName.split(".").pop() || "jpg";
-  const uniqueKey = `${req.target}/${req.targetId}/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
+  const uniqueKey = `${req.target}/${req.targetId}/${randomUUID()}.${ext}`;
 
   if (!config.hasCredentials) {
     throw new Error("Storage credentials not configured. Refusing to generate mock upload.");
