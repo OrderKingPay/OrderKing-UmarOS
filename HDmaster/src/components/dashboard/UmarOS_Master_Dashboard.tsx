@@ -45,7 +45,7 @@ export type StrategicBusinessProposal = {
   scopeLabel: string;
   source: string;
   risk: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-  status: "PENDING" | "EXECUTING" | "EXECUTED" | "REJECTED";
+  status: "PENDING" | "EXECUTING" | "EXECUTED" | "APPROVED" | "REJECTED";
   confidencePct?: number | null;
   estimatedImpactPaise?: number | null;
   createdAt: string;
