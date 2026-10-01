@@ -55,7 +55,7 @@ export const CryptoTreasury = {
 
     return await sql.transaction(async (tx: Sql) => {
       // 1. Lock the intent
-      const intent = await tx`
+      const intent = await tx<{ id: string; amount: number; status: string }>`
         SELECT id, amount, status FROM crypto_payment_intents 
         WHERE order_id = ${orderId} FOR UPDATE SKIP LOCKED
       `;
@@ -81,7 +81,7 @@ export const CryptoTreasury = {
         INSERT INTO ledger_entries (id, org_id, order_id, party, kind, source, rule_key, amount_paise, note)
         VALUES (
           gen_random_uuid(), 'ORDERKING_HQ', ${orderId}, 'PLATFORM', 'CREDIT', 
-          'CRYPTO_PREMIUM', 'AUTO_SPLIT', ${Math.round(intent[0].amount * 83.50 * 100 * 0.015)}, 
+          'CRYPTO_PREMIUM', 'AUTO_SPLIT', ${Math.round(Number(intent[0].amount) * 83.50 * 100 * 0.015)}, 
           'Founder 1.5% Crypto FX Premium'
         )
       `;
