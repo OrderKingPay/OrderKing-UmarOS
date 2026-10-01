@@ -173,8 +173,8 @@ function MarginCard({
   title: string;
   value: number | null;
   onChange: (next: number) => void;
-  salesPaise: number | undefined;
-  generatedPaise: number | undefined;
+  salesPaise: number | null | undefined;
+  generatedPaise: number | null | undefined;
   tone: "amber" | "cyan";
 }) {
   const tint =
