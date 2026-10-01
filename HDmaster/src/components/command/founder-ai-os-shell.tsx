@@ -58,7 +58,7 @@ import { revenueGateway } from "@/lib/orderking/payments/revenue-gateway";
 import { durableJobEngine, DurableJob } from "@/lib/orderking/ai/durable-job-engine";
 import { modelRouter } from "@/lib/orderking/ai/providers";
 import { RemoteContractGig } from "@/lib/orderking/ai/supreme-founder-ai-core";
-import { getCuratedRemoteGigsFn } from "@/lib/orderking/actions";
+import { getCuratedRemoteGigsFn, resolveFounderApprovalFn } from "@/lib/orderking/actions";
 import { StoragePurifierView } from "./storage-purifier-modal";
 
 export type OsNavView =
@@ -102,14 +102,32 @@ export function FounderAiOsShell() {
   // Provider Status
   const providerStatuses = modelRouter.listProviderStatuses();
 
-  const handleApproveAction = (req: ApprovalRequest) => {
-    toast.success(`Action "${req.action}" authorized and executed successfully!`);
-    setActiveApproval(null);
+  const handleApproveAction = async (req: ApprovalRequest) => {
+    try {
+      const result = await resolveFounderApprovalFn({ data: { id: req.id, decision: "APPROVED" } });
+      if (!result.ok) {
+        toast.error(`Approval failed: ${result.error}`);
+        return;
+      }
+      toast.success(`Approval recorded for "${req.action}". Downstream execution remains governed by the registered action.`);
+      setActiveApproval(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Approval failed");
+    }
   };
 
-  const handleRejectAction = (req: ApprovalRequest) => {
-    toast.info(`Action "${req.action}" was rejected by founder.`);
-    setActiveApproval(null);
+  const handleRejectAction = async (req: ApprovalRequest) => {
+    try {
+      const result = await resolveFounderApprovalFn({ data: { id: req.id, decision: "REJECTED" } });
+      if (!result.ok) {
+        toast.error(`Rejection failed: ${result.error}`);
+        return;
+      }
+      toast.info(`Approval recorded as rejected for "${req.action}".`);
+      setActiveApproval(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Rejection failed");
+    }
   };
 
   return (
