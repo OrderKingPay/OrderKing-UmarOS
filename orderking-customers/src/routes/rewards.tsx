@@ -326,73 +326,22 @@ function RewardsPage() {
           </Button>
         </div>
 
-        {/* Mystery Scratch Card Section */}
+        {/* Verified Partner Reward Reveal */}
         <div className="rounded-[var(--radius-xl)] border border-primary/20 bg-surface p-4 shadow-xs">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-display text-base font-bold text-fg">
-                ✨ Mystery Scratch Card
-              </h2>
-              <p className="text-xs text-muted">
-                Scratch to reveal surprise affiliate & brand coupons!
-              </p>
+              <h2 className="font-display text-base font-bold text-fg">✨ Verified Partner Rewards</h2>
+              <p className="text-xs text-muted">Rewards appear only from active partner contracts with current terms.</p>
             </div>
             <span className="text-2xl">🎁</span>
           </div>
-
-          <div className="mt-3">
-            {!scratchRevealed ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setScratchRevealed(true);
-                  toast.success("🎉 Mystery Reward Unlocked!");
-                }}
-                className="group relative flex h-28 w-full items-center justify-center overflow-hidden rounded-xl border border-dashed border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-primary/10 to-amber-500/10 p-4 text-center transition hover:border-amber-500 cursor-pointer"
-              >
-                <div className="space-y-1">
-                  <span className="text-3xl transition-transform group-hover:scale-125 inline-block">
-                    🎟️
-                  </span>
-                  <p className="font-bold text-sm text-fg">
-                    Tap to Scratch & Reveal
-                  </p>
-                  <p className="text-[11px] text-muted">
-                    Verified partner rewards appear only after a live offer is active.
-                  </p>
-                </div>
-              </button>
+          <div className="mt-3 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4 text-center">
+            {affiliatePartners.isPending ? (
+              <p className="text-xs text-muted">Loading verified partner offers…</p>
+            ) : affiliatePartners.data?.partners?.length ? (
+              <p className="text-xs text-fg">You have {affiliatePartners.data.partners.length} verified partner offer(s) available below.</p>
             ) : (
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
-                <span className="text-3xl">🎉</span>
-                <h3 className="mt-1 font-bold text-sm text-emerald-800 dark:text-emerald-200">
-                  Congratulations! You Won 2,500 King Coins + ₹50 Fuel Voucher!
-                </h3>
-                <p className="mt-0.5 text-xs text-muted">
-                  Use code <span className="font-mono font-bold text-fg">HPFUEL50</span> on HP Pay.
-                </p>
-                <div className="mt-3 flex justify-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      void navigator.clipboard?.writeText("HPFUEL50");
-                      toast.success("Voucher code copied!");
-                    }}
-                  >
-                    Copy Code
-                  </Button>
-                  <a
-                    href="https://hppay.in?ref=orderking"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
-                  >
-                    <span>Redeem on HP Pay</span>
-                    <span>↗</span>
-                  </a>
-                </div>
-              </div>
+              <p className="text-xs text-muted">No verified partner reward is active right now. The system will surface one automatically when a live offer is configured.</p>
             )}
           </div>
         </div>
