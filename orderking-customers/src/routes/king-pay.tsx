@@ -1314,7 +1314,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     id: tx.id,
     title: tx.description,
     amount: Number(tx.amount_paise) / 100,
-    type: tx.type === "CREDIT" ? "credit" : "debit",
+    type: (tx.type === "CREDIT" ? "credit" : "debit") as "credit" | "debit",
     timestamp: tx.created_at,
     status: "POSTED",
   }));

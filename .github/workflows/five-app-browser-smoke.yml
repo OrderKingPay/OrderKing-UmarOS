@@ -1,0 +1,87 @@
+name: Five-App Browser Smoke
+
+on:
+  pull_request:
+    paths:
+      - "HDmaster/**"
+      - "orderking-customers/**"
+      - "orderking-partners/**"
+      - "orderking-riders/**"
+      - "Apps-integration-/**"
+      - ".github/workflows/five-app-browser-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Browser smoke — ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: HDmaster
+            path: HDmaster
+            smoke_url: http://127.0.0.1:8081/login
+          - app: CustomerApp
+            path: orderking-customers
+            smoke_url: http://127.0.0.1:8081/
+          - app: PartnerApp
+            path: orderking-partners
+            smoke_url: http://127.0.0.1:8081/
+          - app: RiderApp
+            path: orderking-riders
+            smoke_url: http://127.0.0.1:8081/
+          - app: IntegrationApp
+            path: Apps-integration-
+            smoke_url: http://127.0.0.1:8081/
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.path }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Enable pnpm 12.8.1
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.8.1
+
+      - name: Install workspace dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Production build
+        run: pnpm run build
+
+      - name: Start isolated built-output preview
+        run: node scripts/preview.mjs restart
+
+      - name: Browser smoke — desktop and mobile
+        run: node scripts/browser-smoke.mjs "${{ matrix.smoke_url }}" "/workspace/${{ matrix.app }}.png"
+
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-smoke-${{ matrix.app }}
+          path: |
+            /workspace/${{ matrix.app }}.png
+            /workspace/${{ matrix.app }}-mobile.png
+            /workspace/${{ matrix.app }}.json
+          if-no-files-found: warn
+
+      - name: Stop preview
+        if: always()
+        run: node scripts/preview.mjs stop || true

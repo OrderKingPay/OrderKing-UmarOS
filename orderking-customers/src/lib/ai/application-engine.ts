@@ -80,7 +80,7 @@ export const VERIFIED_FOUNDER_PORTFOLIO = [
 export function buildCustomizedApplication(opportunity: Opportunity): ApplicationDraft {
   const appId = `APP-${Date.now().toString(36)}`;
   const proposedPriceInr = opportunity.statedBudget ?? null;
-  const proposedPriceUsd = opportunity.currency === "USD" && opportunity.statedBudget != null ? opportunity.statedBudget : null;
+  const proposedPriceUsd = opportunity.currency === "USD" && opportunity.statedBudget != null ? opportunity.statedBudget : 0;
   const estimatedCostInr = null;
   const marginPct = estimatedCostInr == null ? 0 : Math.round(((proposedPriceInr - estimatedCostInr) / proposedPriceInr) * 100);
 

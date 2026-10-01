@@ -6,6 +6,7 @@ import { getSql } from "@/lib/db";
 import { z } from "zod";
 import { appendImmutableEvent } from "../audit/immutable-event.server";
 import { fetchRazorpayPayment, verifyCheckoutSignature } from "../payments/razorpay.server";
+import { buildQuote } from "./quote";
 
 function json(body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } }); }
 function serviceUserId(request: Request): string { const authorization = request.headers.get("authorization")?.trim(); const token = process.env.ORDERKING_SERVICE_TOKEN?.trim(); const userId = process.env.ORDERKING_SERVICE_USER_ID?.trim(); if (!token || !userId || authorization !== `Bearer ${token}`) throw new Error("Unauthorized"); return userId; }
@@ -97,6 +98,27 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     if (!restaurant[0]) return json({ error: "Restaurant not found", code: "RESTAURANT_NOT_FOUND" }, 404);
     if (restaurant[0].city_id !== input.cityId || restaurant[0].zone_id !== input.zoneId) return json({ error: "Restaurant serviceability mismatch", code: "SERVICEABILITY_MISMATCH" }, 409);
     if (!["ACTIVE", "OPEN"].includes(restaurant[0].status)) return json({ error: "Restaurant is not accepting orders", code: "RESTAURANT_UNAVAILABLE" }, 409);
+    const quoteBuild = await buildQuote(
+      {
+        restaurantId: input.restaurantId,
+        zoneId: input.zoneId,
+        lat: input.address.lat ?? 0,
+        lng: input.address.lng ?? 0,
+        lines: input.lines.map((line) => ({
+          itemId: line.itemId,
+          variantId: null,
+          quantity: line.qty,
+          instructions: "",
+          unitPaise: line.unitPaise,
+          addons: [],
+        })),
+      },
+      false,
+    );
+    if (quoteBuild.result.quote.blockers.length) {
+      return json({ error: "Order blocked", details: quoteBuild.result.quote.blockers, code: "QUOTE_BLOCKED" }, 409);
+    }
+    const built = quoteBuild;
     const menu = await sql<{ id: string; name: string; price_paise: number; available: number }>`select id,name,price_paise,available from menu_items where org_id=${ws.ctx.orgId} and restaurant_id=${input.restaurantId}`;
     const menuById = new Map(menu.map((item) => [item.id, item]));
     for (const line of input.lines) { const item = menuById.get(line.itemId); if (!item || !item.available) return json({ error: `Menu item unavailable: ${line.itemId}`, code: "MENU_ITEM_UNAVAILABLE" }, 409); if (item.price_paise !== line.unitPaise) return json({ error: `Menu price changed for ${item.name}; refresh the menu and retry`, code: "MENU_PRICE_CHANGED" }, 409); }
@@ -166,7 +188,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
         SELECT public.orderking_emit_immutable_event(
           ${nid('imev')},
           ${ws.ctx.orgId},
-          ${context.userId},
+          ${input.customerRef},
           ${ws.ctx.employeeId},
           'orders',
           ${orderId},
@@ -175,7 +197,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
           ${JSON.stringify({ orderId, customerRef: input.customerRef, paymentMethod: input.paymentMethod, totalPaise: input.totalPaise })}::jsonb
         )
       `;
-      await appendImmutableEvent({ orgId: ws.ctx.orgId, actorUserId: context.userId, actorEmployeeId: ws.ctx.employeeId, sourceTable: "orders", sourceId: orderId, eventType: "ORDER_CREATED", payload: { paymentMethod: input.paymentMethod, totalPaise: input.totalPaise, restaurantId: input.restaurantId } }, tx);
+      await appendImmutableEvent({ orgId: ws.ctx.orgId, actorUserId: input.customerRef, actorEmployeeId: ws.ctx.employeeId, sourceTable: "orders", sourceId: orderId, eventType: "ORDER_CREATED", payload: { paymentMethod: input.paymentMethod, totalPaise: input.totalPaise, restaurantId: input.restaurantId } }, tx);
       const paymentProvider =
         input.paymentMethod === "COD"
           ? "COD"
@@ -190,31 +212,31 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
             : null;
       await tx`
         INSERT INTO payments (id, order_id, provider, status, amount_paise, currency, idempotency_key, raw_payload)
-        VALUES (${nid("pay")}, ${orderId}, ${paymentProvider}, ${input.paymentMethod === "COD" ? "pending" : "wallet_paid"},
+        VALUES (${nid("pay")}, ${orderId}, ${paymentProvider}, ${input.paymentMethod === "COD" ? "pending" : "paid"},
           ${input.totalPaise}, 'INR', ${idempotencyKey + ":pay"}, ${paymentRawPayload})
       `;
       if (built.promo) await tx`
         INSERT INTO promotion_redemptions (id, promotion_id, user_id, order_id)
-        VALUES (${nid("red")}, ${built.promo.id}, ${context.userId}, ${orderId})
+        VALUES (${nid("red")}, ${built.promo.id}, ${input.customerRef}, ${orderId})
       `;
       const points = Math.floor(built.result.quote.foodSubtotalPaise / 10000);
       await tx`
         INSERT INTO loyalty_accounts (user_id, points, lifetime_points, tier)
-        VALUES (${context.userId}, ${points}, ${points}, 'starter')
+        VALUES (${input.customerRef}, ${points}, ${points}, 'starter')
         ON CONFLICT (user_id) DO UPDATE SET points = loyalty_accounts.points + ${points},
           lifetime_points = loyalty_accounts.lifetime_points + ${points}, updated_at = now()
       `;
       await tx`
         INSERT INTO loyalty_transactions (id, user_id, order_id, delta, reason)
-        VALUES (${newId("loy")}, ${context.userId}, ${orderId}, ${points}, 'order_placed')
+        VALUES (${newId("loy")}, ${input.customerRef}, ${orderId}, ${points}, 'order_placed')
       `;
       return { orderId, status: "PENDING", paymentStatus, totalPaise: input.totalPaise, dataMode: ws.dataMode };
     });
-    await writeEvent(orderId, null, "PLACED", context.userId, "customer", "Order placed");
+    await writeEvent(orderId, null, "PLACED", input.customerRef, "customer", "Order placed");
     await sql`
       INSERT INTO notifications (id, user_id, title, body, kind, entity_id)
-      VALUES (${newId("ntf")}, ${context.userId}, "Order confirmed",
-        ${"Order placed. Payment " + (input.paymentMethod === "COD" ? "is due on delivery." : "was deducted from your King Pay wallet.")},
+      VALUES (${newId("ntf")}, ${input.customerRef}, "Order confirmed",
+        ${"Order placed. Payment " + (input.paymentMethod === "COD" ? "is due on delivery." : input.paymentMethod === "KING_PAY" ? "was deducted from your King Pay wallet." : "was verified through Razorpay.")},
         "ORDER_PLACED", ${orderId})
     `;
     await sql`

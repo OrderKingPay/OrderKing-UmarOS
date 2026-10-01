@@ -254,12 +254,6 @@ function RewardsPage() {
     affiliateUrl: `/api/affiliate/click?partner=${encodeURIComponent(partner.id)}`,
     supportedCities: ["ALL"],
   }));
-  locationFilteredRewards.sort((a, b) => {
-    const aPartner = affiliatePartners.data?.partners?.find((p) => p.id === a.id);
-    const bPartner = affiliatePartners.data?.partners?.find((p) => p.id === b.id);
-    return Number(bPartner?.commissionValue ?? 0) - Number(aPartner?.commissionValue ?? 0);
-  });
-
   const locationFilteredRewards = liveRewards.filter((reward) => {
     if (reward.supportedCities.includes("ALL")) return true;
     const currentCityId = location.cityId?.toLowerCase() ?? "";
@@ -267,6 +261,12 @@ function RewardsPage() {
     return reward.supportedCities.some(
       (c) => c === currentCityId || currentCityName.includes(c.replace("city_", "")),
     );
+  });
+
+  locationFilteredRewards.sort((a, b) => {
+    const aPartner = affiliatePartners.data?.partners?.find((p) => p.id === a.id);
+    const bPartner = affiliatePartners.data?.partners?.find((p) => p.id === b.id);
+    return Number(bPartner?.commissionValue ?? 0) - Number(aPartner?.commissionValue ?? 0);
   });
 
   const finalRewards = activeTab === "all"

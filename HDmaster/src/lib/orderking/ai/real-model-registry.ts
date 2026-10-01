@@ -8,7 +8,7 @@ export interface VerifiedModelRecord {
   /** Stable non-secret identifier used by UI lists. */
   key: string;
   displayName: string;
-  provider: "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus";
+  provider: "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus" | "Local Sovereign";
   realApiId: string;
   connectionStatus: "CONNECTED" | "CONFIGURATION_REQUIRED" | "UNAVAILABLE";
   authStatus: "VERIFIED" | "MISSING_KEY";
@@ -204,18 +204,6 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
   }
 
   const provider = target.provider;
-  if (provider === "Local Sovereign") {
-    return {
-      modelId: target.id,
-      success: false,
-      status: "CONFIGURATION_REQUIRED",
-      latencyMs: Date.now() - start,
-      realModelUsed: target.realApiId,
-      message: "No embedded local LLM is bundled with this deployment.",
-      timestamp,
-    };
-  }
-
   if (target.id === "auto-supreme-orchestrator" || target.id === "ensemble-consensus") {
     const ready = Boolean(
       process.env.OPENAI_API_KEY?.trim() ||

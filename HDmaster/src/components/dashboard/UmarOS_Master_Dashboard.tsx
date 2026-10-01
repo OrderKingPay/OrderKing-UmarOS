@@ -30,9 +30,9 @@ import {
 export type MarginDashboardSnapshot = {
   baseMarginBps: number;
   distantMarginBps: number;
-  loyaltyShareBps: number;
-  verifiedBaseSalesPaise: number;
-  verifiedDistantSalesPaise: number;
+  loyaltyShareBps: number | null;
+  verifiedBaseSalesPaise: number | null;
+  verifiedDistantSalesPaise: number | null;
   periodLabel: string;
   updatedAt: string;
 };
@@ -45,7 +45,7 @@ export type StrategicBusinessProposal = {
   scopeLabel: string;
   source: string;
   risk: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-  status: "PENDING" | "EXECUTING" | "EXECUTED" | "REJECTED";
+  status: "PENDING" | "EXECUTING" | "EXECUTED" | "APPROVED" | "REJECTED";
   confidencePct?: number | null;
   estimatedImpactPaise?: number | null;
   createdAt: string;
@@ -173,8 +173,8 @@ function MarginCard({
   title: string;
   value: number | null;
   onChange: (next: number) => void;
-  salesPaise: number | undefined;
-  generatedPaise: number | undefined;
+  salesPaise: number | null | undefined;
+  generatedPaise: number | null | undefined;
   tone: "amber" | "cyan";
 }) {
   const tint =
@@ -280,10 +280,19 @@ export function UmarOSMasterDashboard({ engine, className }: Props) {
     };
   }, [refresh]);
 
-  const loyaltySharePct = margin ? pctFromBps(margin.loyaltyShareBps) : null;
+  const loyaltySharePct = margin?.loyaltyShareBps == null ? null : pctFromBps(margin.loyaltyShareBps);
 
   const loyaltyPreview = useMemo(() => {
-    if (!margin || basePct === null || distantPct === null || loyaltySharePct === null) return null;
+    if (
+      !margin ||
+      basePct === null ||
+      distantPct === null ||
+      loyaltySharePct === null ||
+      margin.verifiedBaseSalesPaise == null ||
+      margin.verifiedDistantSalesPaise == null
+    ) {
+      return null;
+    }
     const baseMarginPaise = Math.round(margin.verifiedBaseSalesPaise * (basePct / 100));
     const distantMarginPaise = Math.round(margin.verifiedDistantSalesPaise * (distantPct / 100));
     const baseCoins = Math.round(baseMarginPaise * (loyaltySharePct / 100));
@@ -483,8 +492,8 @@ export function UmarOSMasterDashboard({ engine, className }: Props) {
           <StatCard
             icon={Coins}
             label="Loyalty routing"
-            value={loyaltySharePct === null ? "—" : loyaltySharePct.toFixed(2) + "%"}
-            detail="Share of restaurant margin routed to customer loyalty."
+            value={loyaltySharePct === null ? "Not measured" : loyaltySharePct.toFixed(2) + "%"}
+            detail="Reported by the live loyalty/financial engine; not hard-coded by the UI."
           />
           <StatCard
             icon={Users}
@@ -706,7 +715,7 @@ export function UmarOSMasterDashboard({ engine, className }: Props) {
                           )}
                           <span className="relative inline-flex items-center gap-2">
                             {done ? <Check className="size-4" /> : <Zap className="size-4 text-violet-200" />}
-                            {busy ? "Executing…" : done ? "Executed" : "Approve & Execute Globally"}
+                            {busy ? "Processing…" : proposal.status === "APPROVED" ? "Approved" : proposal.status === "EXECUTED" ? "Executed" : "Approve"}
                             {!done && <ChevronRight className="size-4" />}
                           </span>
                         </button>
@@ -724,10 +733,10 @@ export function UmarOSMasterDashboard({ engine, className }: Props) {
             <div>
               <div className="flex items-center gap-2 text-cyan-200">
                 <Megaphone className="size-5" />
-                <p className="text-sm font-semibold uppercase tracking-[0.16em]">Starlink-Tier Broadcast Switch</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em]">Provider-Backed Broadcast Switch</p>
               </div>
               <h2 className="mt-2 text-3xl font-semibold tracking-tight">
-                Global growth execution with verified provider reach.
+                Global growth execution with measured provider reach.
               </h2>
               <p className="mt-2 max-w-4xl text-sm leading-6 text-white/45">
                 This control never invents audience size or consent. It executes only when the connected marketing engine reports a ready provider and compliant recipients.
@@ -863,7 +872,7 @@ export function UmarOSMasterDashboard({ engine, className }: Props) {
                   <span className="text-xs font-semibold">Founder safety gate</span>
                 </div>
                 <p className="mt-2 text-[11px] leading-5 text-white/45">
-                  The UI does not pretend to have satellite reach, free delivery, or consent that the backend has not verified. Reach, channels, cost, and execution status come from the connected marketing engine.
+                  The UI does not invent reach, cost, consent, provider status, or execution. Those values come from the connected marketing subsystem.
                 </p>
               </div>
             </div>

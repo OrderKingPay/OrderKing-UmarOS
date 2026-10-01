@@ -388,11 +388,7 @@ function CheckoutPage() {
                   <div className="mt-2 grid grid-cols-4 gap-2">
                     <button
                       type="button"
-                      onClick={() => {
-                        const upiUrl = `upi://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("Google Pay selected. Click 'Place Order' below to proceed.");
-                      }}
+                      onClick={() => toast.info("Google Pay selected. Continue with the verified Razorpay checkout below.")}
                       className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
                     >
                       <span className="text-lg">🟢</span>
@@ -400,11 +396,7 @@ function CheckoutPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        const upiUrl = `phonepe://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("PhonePe selected. Click 'Place Order' below to proceed.");
-                      }}
+                      onClick={() => toast.info("PhonePe selected. Continue with the verified Razorpay checkout below.")}
                       className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
                     >
                       <span className="text-lg">🟣</span>
@@ -412,11 +404,7 @@ function CheckoutPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        const upiUrl = `paytmmp://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("Paytm selected. Click 'Place Order' below to proceed.");
-                      }}
+                      onClick={() => toast.info("Paytm selected. Continue with the verified Razorpay checkout below.")}
                       className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
                     >
                       <span className="text-lg">🔵</span>

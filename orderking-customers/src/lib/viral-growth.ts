@@ -15,7 +15,7 @@ export async function generateReferralCode(userId: string): Promise<string> {
     "SHA-256",
     new TextEncoder().encode(userId.trim()),
   );
-  const hex = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).toUpperCase();
+  const hex = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
   return "OK-" + hex.slice(0, 8);
 }
 
