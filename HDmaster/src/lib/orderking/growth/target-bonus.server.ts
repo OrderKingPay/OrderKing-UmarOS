@@ -48,3 +48,22 @@ export async function recordTargetQualification(input: QualificationRequest) {
     return { accepted:true,status:"PENDING_REWARD_APPROVAL",qualified:verifiedAlready+granted,target:Number(campaign.target_qualifications),rewardPaise:Math.max(0,cappedReward),rewardCoins:granted*Number(campaign.reward_coins) };
   });
 }
+export async function recordActiveTargetQualification(input: { participantType: GrowthParticipant; participantId: string }) {
+  const sql = await getSql();
+  const campaigns = await sql<{ id: string }>`
+    SELECT id
+    FROM growth_campaigns
+    WHERE active = true
+      AND participant_type = ${input.participantType}
+      AND target_metric = 'DELIVERED_ORDER'
+    ORDER BY starts_at DESC
+    LIMIT 1
+  `;
+  const campaign = campaigns[0];
+  if (!campaign) return { accepted: false as const, status: "NO_ACTIVE_TARGET_CAMPAIGN" as const };
+  return recordTargetQualification({
+    campaignId: campaign.id,
+    participantType: input.participantType,
+    participantId: input.participantId,
+  });
+}
