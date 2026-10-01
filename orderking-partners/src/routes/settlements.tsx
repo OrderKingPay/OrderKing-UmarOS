@@ -140,12 +140,12 @@ function SettlementsPage() {
           </span>
         </div>
         <p className="text-muted leading-relaxed">
-          OrderKing strictly adheres to transparent merchant accounting under Indian Law. Every single deduction is legally mandated and itemized:
+          OrderKing settlement statements itemize recorded deductions from the configured contract and ledger. Statutory treatment is shown only when the applicable tax configuration is present:
         </p>
         <ul className="list-disc pl-4 space-y-1 text-muted">
-          <li><strong>GST (5%)</strong>: Remitted under Section 9(5) CGST Act (E-Commerce Restaurant Delivery Services).</li>
-          <li><strong>TCS (1%)</strong>: Tax Collected at Source under Section 52 CGST Act.</li>
-          <li><strong>TDS (1%)</strong>: Withholding tax under Section 194-O Income Tax Act (Form 16A issued quarterly).</li>
+          <li><strong>GST</strong>: Remitted under Section 9(5) CGST Act (E-Commerce Restaurant Delivery Services).</li>
+          <li><strong>TCS</strong>: Tax Collected at Source under Section 52 CGST Act.</li>
+          <li><strong>TDS</strong>: Withholding tax under Section 194-O Income Tax Act (Form 16A issued quarterly).</li>
           <li><strong>Intermediary Safe Harbor</strong>: Platform operates as a neutral technology intermediary under Section 79 of the Information Technology Act, 2000.</li>
           <li><strong>Binding Arbitration</strong>: All disputes governed by the Arbitration and Conciliation Act, 1996, with exclusive jurisdiction in local district court.</li>
           <li><strong>Zero Arbitrary Levies</strong>: No unexplained marketing or listing penalties. Every single rupee is mathematically accounted for in integer paise.</li>
@@ -172,7 +172,7 @@ function SettlementsPage() {
               <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">Configured contract</span>
               <span className="text-xs text-muted line-through">External benchmark</span>
             </div>
-            <p className="text-[10px] text-muted mt-1">You save ₹100 on every ₹1,000 food order.</p>
+            <p className="text-[10px] text-muted mt-1">Any savings are calculated from the live contract and settlement ledger.</p>
           </div>
           <div className="rounded-lg border border-line bg-surface/50 p-2.5">
             <p className="text-[11px] text-muted uppercase font-medium">Onboarding &amp; Hidden Levies</p>
@@ -180,7 +180,7 @@ function SettlementsPage() {
               <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">Contract-defined</span>
               <span className="text-xs text-muted line-through">External benchmark</span>
             </div>
-            <p className="text-[10px] text-muted mt-1">Zero forced ad spend or listing penalties.</p>
+            <p className="text-[10px] text-muted mt-1">Charges and promotions are shown from the active contract and ledger.</p>
           </div>
           <div className="rounded-lg border border-line bg-surface/50 p-2.5">
             <p className="text-[11px] text-muted uppercase font-medium">Settlement Certainty</p>
