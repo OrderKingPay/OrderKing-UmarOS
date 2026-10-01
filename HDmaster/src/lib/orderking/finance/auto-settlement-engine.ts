@@ -118,7 +118,25 @@ export const AutoSettlementEngine = {
             payable,
           ],
         );
-        if (inserted.length) out.push(inserted[0]);
+        if (inserted.length) {
+          out.push(inserted[0]);
+          await tx.query(
+            `SELECT public.orderking_emit_immutable_event($1,$2,NULL,NULL,'settlement_batches',$3,$4,NOW(),$5::jsonb)`,
+            [
+              `settlement:${batchId}`,
+              stat.org_id ?? "UNMAPPED",
+              batchId,
+              "SETTLEMENT_BATCH_RECONCILED",
+              JSON.stringify({
+                partyType: "RESTAURANT",
+                partyId: stat.restaurant_id,
+                cycleId: cycle.cycleId,
+                payablePaise: Math.max(0, payable),
+                status,
+              }),
+            ],
+          );
+        }
       }
 
       return out;
