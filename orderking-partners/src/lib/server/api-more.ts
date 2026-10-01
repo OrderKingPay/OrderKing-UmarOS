@@ -57,7 +57,7 @@ export const addStaff = createServerFn({ method: "POST" }).middleware([authMiddl
 
 export const askAssistant = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((d: { restaurantId?: string; question: string }) => d)
+  .inputValidator((d: { restaurantId?: string; question: string; locale?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "assistant.use", async (sql, ctx) => {
       if (!platformConfig.featureFlags.restaurant_ai) {
@@ -65,6 +65,7 @@ export const askAssistant = createServerFn({ method: "POST" })
       }
 
       const question = data.question.trim().slice(0, 1000);
+      const locale = data.locale?.trim() || "en";
       if (!question) throw new Error("Ask a question");
 
       const apiKey = process.env.OPENAI_API_KEY;
@@ -103,11 +104,11 @@ export const askAssistant = createServerFn({ method: "POST" })
           input: [
             {
               role: "system",
-              content: "You are OrderKing Restaurant AI. Answer only from the authorized restaurant snapshot supplied by the server. Never invent metrics, prices, policies, integrations, refunds, payouts, or actions. You may recommend actions, but do not claim an action was executed unless the platform confirms it. Protect other restaurants and customer privacy. Amounts ending in _paise are integer paise; convert to INR only when useful. **CRITICAL:** Output exact, precise, and respectful local languages flawlessly. If the restaurant asks in Hindi, Assamese, or Bengali, reply perfectly and completely in that exact language.",
+              content: "You are OrderKing Restaurant AI. Answer only from the authorized restaurant snapshot supplied by the server. Never invent metrics, prices, policies, integrations, refunds, payouts, or actions. You may recommend actions, but do not claim an action was executed unless the platform confirms it. Protect other restaurants and customer privacy. Amounts ending in _paise are integer paise; convert to INR only when useful. **CRITICAL:** Reply in the requested locale accurately and respectfully; preserve food, money, order, and policy terms exactly and never invent operational facts. Locale: ${locale}.",
             },
             {
               role: "user",
-              content: `Authorized restaurant snapshot:\n${JSON.stringify(snapshot)}\n\nRestaurant question:\n${question}`,
+              content: `Authorized restaurant snapshot:\n${JSON.stringify(snapshot)}\n\nRestaurant locale: ${locale}\n\nRestaurant question:\n${question}`,
             },
           ],
           max_output_tokens: 700,
