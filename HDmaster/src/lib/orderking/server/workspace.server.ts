@@ -63,31 +63,65 @@ export async function appendAudit(input: {
   gpsAccuracy?: number | null;
 }) {
   const sql = await getSql();
-  await sql.query(
-    `insert into audit_logs (
-      id, org_id, employee_id, user_id, role_key, action, target_type, target_id,
-      previous_json, new_json, reason, ip, user_agent, lat, lng, h3_index, gps_accuracy
-    ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
-    [
-      nid("aud"),
-      input.orgId,
-      input.employeeId ?? null,
-      input.userId ?? null,
-      input.roleKey ?? null,
-      input.action,
-      input.targetType ?? null,
-      input.targetId ?? null,
-      input.previous == null ? null : JSON.stringify(input.previous),
-      input.next == null ? null : JSON.stringify(input.next),
-      input.reason ?? null,
-      input.ip ?? null,
-      input.userAgent ?? null,
-      input.lat ?? null,
-      input.lng ?? null,
-      input.h3Index ?? null,
-      input.gpsAccuracy ?? null,
-    ],
-  );
+  const auditId = nid("aud");
+  const payload = {
+    action: input.action,
+    targetType: input.targetType ?? null,
+    targetId: input.targetId ?? null,
+    previous: input.previous ?? null,
+    next: input.next ?? null,
+    reason: input.reason ?? null,
+    ip: input.ip ?? null,
+    userAgent: input.userAgent ?? null,
+    lat: input.lat ?? null,
+    lng: input.lng ?? null,
+    h3Index: input.h3Index ?? null,
+    gpsAccuracy: input.gpsAccuracy ?? null,
+  };
+
+  await sql.transaction(async (tx) => {
+    await tx.query(
+      `insert into audit_logs (
+        id, org_id, employee_id, user_id, role_key, action, target_type, target_id,
+        previous_json, new_json, reason, ip, user_agent, lat, lng, h3_index, gps_accuracy
+      ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
+      [
+        auditId,
+        input.orgId,
+        input.employeeId ?? null,
+        input.userId ?? null,
+        input.roleKey ?? null,
+        input.action,
+        input.targetType ?? null,
+        input.targetId ?? null,
+        input.previous == null ? null : JSON.stringify(input.previous),
+        input.next == null ? null : JSON.stringify(input.next),
+        input.reason ?? null,
+        input.ip ?? null,
+        input.userAgent ?? null,
+        input.lat ?? null,
+        input.lng ?? null,
+        input.h3Index ?? null,
+        input.gpsAccuracy ?? null,
+      ],
+    );
+
+    await tx.query(
+      `insert into immutable_event_ledger (
+        event_id, org_id, actor_user_id, actor_employee_id,
+        source_table, source_id, event_type, occurred_at, payload
+      ) values ($1,$2,$3,$4,'audit_logs',$5,$6,now(),$7)`,
+      [
+        nid("evt"),
+        input.orgId,
+        input.userId ?? null,
+        input.employeeId ?? null,
+        auditId,
+        input.action,
+        JSON.stringify(payload),
+      ],
+    );
+  });
 }
 
 export async function loadSettings(orgId: string): Promise<PlatformSettings> {
