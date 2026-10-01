@@ -16,7 +16,7 @@ export async function recordTargetQualification(input: QualificationRequest) {
     const start = input.periodStart ? new Date(input.periodStart) : new Date(campaign.starts_at);
     const end = input.periodEnd ? new Date(input.periodEnd) : new Date(campaign.ends_at);
     const metric = campaign.target_metric;
-    const existing = await tx<{count:number}[]>`SELECT COUNT(*)::int AS count FROM growth_event_ledger WHERE campaign_id=${campaign.id} AND actor_id=${input.participantId} AND metric=${metric} AND fraud_state='VERIFIED' AND occurred_at>=${start} AND occurred_at<${end}`;
+    const existing = await tx<{count:number}>`SELECT COUNT(*)::int AS count FROM growth_event_ledger WHERE campaign_id=${campaign.id} AND actor_id=${input.participantId} AND metric=${metric} AND fraud_state='VERIFIED' AND occurred_at>=${start} AND occurred_at<${end}`;
     const verifiedAlready = Number(existing[0]?.count ?? 0);
     let proofCount = 0;
     if (input.participantType === "PARTNER" && metric === "DELIVERED_ORDER") {
@@ -35,7 +35,7 @@ export async function recordTargetQualification(input: QualificationRequest) {
     const remainingTarget = Math.max(0, Number(campaign.target_qualifications) - verifiedAlready);
     const countToRecord = Math.min(additional, remainingTarget);
     if (countToRecord <= 0) return { accepted:false,status:"NO_NEW_QUALIFICATIONS",qualified:verifiedAlready,target:Number(campaign.target_qualifications) };
-    const currentBudget = await tx<{spent:number}[]>`SELECT COALESCE(SUM(reward_paise),0)::bigint AS spent FROM growth_reward_ledger_v2 WHERE campaign_id=${campaign.id} AND status IN ('APPROVED','PAID')`;
+    const currentBudget = await tx<{spent:number}>`SELECT COALESCE(SUM(reward_paise),0)::bigint AS spent FROM growth_reward_ledger_v2 WHERE campaign_id=${campaign.id} AND status IN ('APPROVED','PAID')`;
     const remainingBudget = Math.max(0,Number(campaign.max_budget_paise)-Number(currentBudget[0]?.spent ?? 0));
     const rawReward = countToRecord * Number(campaign.reward_per_qualification_paise);
     const cappedReward = Math.min(rawReward,remainingBudget);
