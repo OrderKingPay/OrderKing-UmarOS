@@ -44,3 +44,54 @@ export function getWeeklyCycle(referenceDate = new Date()): WeeklyCyclePeriod {
     status,
   };
 }
+
+
+export async function buildWeeklySettlementReport(referenceDate = new Date()) {
+  const cycle = getWeeklyCycle(referenceDate);
+  const { getSql } = await import("../../db");
+  const sql = await getSql();
+
+  const rows = await sql<{
+    id: string;
+    party_type: string;
+    party_id: string;
+    party_name: string;
+    gross_paise: number;
+    fee_paise: number;
+    net_paise: number;
+    payable_paise: number;
+    status: string;
+    external_reference: string | null;
+    created_at: string;
+    paid_at: string | null;
+  }>`
+    SELECT id, party_type, party_id, party_name,
+           gross_paise, fee_paise, net_paise, payable_paise,
+           status, external_reference,
+           created_at::text AS created_at,
+           paid_at::text AS paid_at
+    FROM settlement_batches
+    WHERE created_at >= ${cycle.startDate}::timestamptz
+      AND created_at < (${cycle.endDate}::date + INTERVAL '1 day')
+    ORDER BY party_name ASC, created_at ASC
+  `;
+
+  const totals = rows.reduce(
+    (acc, row) => ({
+      grossPaise: acc.grossPaise + Number(row.gross_paise || 0),
+      feePaise: acc.feePaise + Number(row.fee_paise || 0),
+      netPaise: acc.netPaise + Number(row.net_paise || 0),
+      payablePaise: acc.payablePaise + Number(row.payable_paise || 0),
+    }),
+    { grossPaise: 0, feePaise: 0, netPaise: 0, payablePaise: 0 },
+  );
+
+  return {
+    cycle,
+    generatedAt: new Date().toISOString(),
+    rows,
+    totals,
+    source: "settlement_batches",
+    definition: "PAID requires verified provider confirmation; PENDING_PROVIDER means reconciled but not externally disbursed.",
+  };
+}
