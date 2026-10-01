@@ -152,24 +152,37 @@ export class RealMoneyOperatingEngine {
 
     // ONLY confirmed payments enter actual revenue
     const confirmedOpps = opps.filter((o) => o.stage === "PAYMENT_CONFIRMED" || o.stage === "REVENUE_RECORDED");
-    const verifiedRevenue = confirmedOpps.reduce((acc, o) => acc + (o.currency === "INR" ? o.economics.expectedGrossRevenue : o.economics.expectedGrossRevenue * 85), 0);
-    const actualContribution = confirmedOpps.reduce((acc, o) => acc + (o.currency === "INR" ? o.economics.estimatedContribution : o.economics.estimatedContribution * 85), 0);
+    const fxUsdInr = Number(process.env.FX_USD_INR_RATE || 0);
+    const toInr = (o: RealMoneyOpportunity) => {
+      if (o.currency === "INR") return o.economics.expectedGrossRevenue;
+      if (fxUsdInr > 0 && o.currency === "USD") return o.economics.expectedGrossRevenue * fxUsdInr;
+      return null;
+    };
+    const contributionToInr = (o: RealMoneyOpportunity) => {
+      if (o.currency === "INR") return o.economics.estimatedContribution;
+      if (fxUsdInr > 0 && o.currency === "USD") return o.economics.estimatedContribution * fxUsdInr;
+      return null;
+    };
+    const verifiedRevenue = confirmedOpps.reduce((acc, o) => acc + (toInr(o) ?? 0), 0);
+    const actualContribution = confirmedOpps.reduce((acc, o) => acc + (contributionToInr(o) ?? 0), 0);
 
     // Projected pipeline includes qualified, contracted, working
     const pipelineOpps = opps.filter((o) => ["QUALIFIED", "APPLIED", "CONTACTED", "NEGOTIATING", "CONTRACTED", "WORKING"].includes(o.stage));
-    const projectedValue = pipelineOpps.reduce((acc, o) => acc + (o.currency === "INR" ? o.economics.expectedGrossRevenue : o.economics.expectedGrossRevenue * 85), 0);
+    const projectedValue = pipelineOpps.reduce((acc, o) => acc + (toInr(o) ?? 0), 0);
 
     // Invoiced pending payment
     const invoicedOpps = opps.filter((o) => o.stage === "INVOICED" || o.stage === "PAYMENT_PENDING");
-    const invoicedValue = invoicedOpps.reduce((acc, o) => acc + (o.currency === "INR" ? o.economics.expectedGrossRevenue : o.economics.expectedGrossRevenue * 85), 0);
+    const invoicedValue = invoicedOpps.reduce((acc, o) => acc + (toInr(o) ?? 0), 0);
 
-    // Saved fees (2% of all King Pay UPI volume)
-    const savedFees = confirmedOpps.reduce((acc, o) => acc + (o.currency === "INR" ? Math.round(o.economics.expectedGrossRevenue * 0.02) : 0), 0);
+    const comparisonBps = Number(process.env.GATEWAY_COMPARISON_FEE_BPS || 0);
+    const savedFees = comparisonBps > 0
+      ? confirmedOpps.reduce((acc, o) => acc + Math.round((toInr(o) ?? 0) * comparisonBps / 10000), 0)
+      : 0;
 
     return {
       totalOpportunitiesDiscovered: opps.length,
       projectedPipelineValue: projectedValue,
-      contractedUninvoicedValue: opps.filter((o) => o.stage === "CONTRACTED").reduce((acc, o) => acc + (o.currency === "INR" ? o.economics.expectedGrossRevenue : o.economics.expectedGrossRevenue * 85), 0),
+      contractedUninvoicedValue: opps.filter((o) => o.stage === "CONTRACTED").reduce((acc, o) => acc + (toInr(o) ?? 0), 0),
       invoicedPendingPaymentValue: invoicedValue,
       verifiedReceivedRevenue: verifiedRevenue,
       actualNetContribution: actualContribution,
