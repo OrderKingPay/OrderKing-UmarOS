@@ -128,8 +128,14 @@ function Login() {
       >
         {mode === "up" ? t("haveAccount") : t("needAccount")}
       </button>
-      <p className="mt-10 text-xs text-muted-foreground">{t("legalNote")}</p>
-      <Link to="/" className="mt-4 inline-block text-sm underline">
+      <p className="mt-8 text-center text-xs text-muted-foreground">
+        By continuing, you agree to our{" "}
+        <a href="https://orderking.in/legal/terms" className="underline" target="_blank" rel="noreferrer">Delivery Partner Agreement</a>
+        {" "}and{" "}
+        <a href="https://orderking.in/legal/privacy" className="underline" target="_blank" rel="noreferrer">Privacy Policy</a>.
+      </p>
+      <p className="mt-4 text-xs text-muted-foreground text-center">{t("legalNote")}</p>
+      <Link to="/" className="mt-4 inline-block text-sm underline text-center">
         {DEFAULT_BRANDING.domain}
       </Link>
     </main>

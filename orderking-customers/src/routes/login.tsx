@@ -109,6 +109,12 @@ function Login() {
             <p className="font-medium text-fg">{t("auth.phoneSoon")}</p>
             <p>{t("auth.phoneSoonHint")}</p>
           </div>
+          <p className="text-center text-xs text-muted">
+            By continuing, you agree to our{" "}
+            <Link to="/legal/terms" className="underline">Terms of Service</Link>{" "}
+            and{" "}
+            <Link to="/legal/privacy" className="underline">Privacy Policy</Link>.
+          </p>
         </div>
       ) : (
         <p className="mt-6 text-sm text-muted">{t("auth.disabled")}</p>

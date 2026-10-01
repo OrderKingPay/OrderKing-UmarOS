@@ -513,13 +513,12 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
     const message = data.message.trim();
     if (!message) throw new RiderError("INVALID", "Describe the issue first.", 400);
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
         model,
-        temperature: 0.2,
-        messages: [
+        input: [
           {
             role: "system",
             content: [
@@ -535,6 +534,7 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
           },
           { role: "user", content: message },
         ],
+        reasoning: { effort: "low" }
       }),
     });
 
@@ -542,8 +542,8 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
       const body = await response.text();
       throw new RiderError("AI_UNAVAILABLE", `OpenAI support request failed (${response.status}). ${body.slice(0, 300)}`, 503);
     }
-    const body = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
-    const text = body.choices?.[0]?.message?.content?.trim();
+    const body = await response.json() as { output_text?: string; output?: { text?: string } };
+    const text = (body.output_text || body.output?.text)?.trim();
     if (!text) throw new RiderError("AI_UNAVAILABLE", "OpenAI returned no support response.", 503);
     return { provider: "openai", model, text };
   });

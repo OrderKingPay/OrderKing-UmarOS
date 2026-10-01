@@ -107,6 +107,8 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
     const pool = new Pool({ connectionString: databaseUrl });
+    pool.on('error', (err) => console.error('pg pool error:', err.message));
+    pool.on('error', (err) => console.error('pg pool error:', err.message));
       pool.on('error', (err) => console.error('pg db pool error:', err.message));
     const run = async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
@@ -290,3 +292,5 @@ if (typeof window === "undefined" && dbSource === "pglite") {
     throw err;
   });
 }
+
+

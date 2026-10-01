@@ -124,6 +124,13 @@ function Login() {
           >
             {mode === "in" ? t("auth.noAccount") : t("auth.haveAccount")}
           </button>
+          
+          <p className="mt-8 text-center text-xs text-faint">
+            By continuing, you agree to our{" "}
+            <a href="https://orderking.in/legal/terms" className="underline" target="_blank" rel="noreferrer">Merchant Agreement</a>
+            {" "}and{" "}
+            <a href="https://orderking.in/legal/privacy" className="underline" target="_blank" rel="noreferrer">Privacy Policy</a>.
+          </p>
         </div>
       </div>
     </main>
