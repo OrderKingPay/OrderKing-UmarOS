@@ -68,7 +68,7 @@ export const loadCeo = createServerFn({ method: "GET" })
 
 export const loadOrders = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { status?: string; delayed?: boolean; q?: string; restaurantId?: string; riderId?: string; payment?: string; cityId?: string; minutes?: number }) => input)
+  .validator((input: { status?: string; delayed?: boolean; q?: string; restaurantId?: string; riderId?: string; payment?: string; cityId?: string; minutes?: number }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -81,7 +81,7 @@ export const loadOrders = createServerFn({ method: "POST" })
 
 export const loadOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((id: string) => id)
+  .validator((id: string) => id)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -94,7 +94,7 @@ export const loadOrder = createServerFn({ method: "POST" })
 
 export const actOnOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: {
+  .validator((input: {
     orderId: string;
     action: "cancel" | "refund" | "assign_rider" | "transition" | "escalate";
     toStatus?: OrderStatus;
@@ -116,7 +116,7 @@ export const actOnOrder = createServerFn({ method: "POST" })
 
 export const loadRestaurants = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { q?: string; status?: string }) => input)
+  .validator((input: { q?: string; status?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -129,7 +129,7 @@ export const loadRestaurants = createServerFn({ method: "POST" })
 
 export const loadRestaurant = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((id: string) => id)
+  .validator((id: string) => id)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -142,7 +142,7 @@ export const loadRestaurant = createServerFn({ method: "POST" })
 
 export const actRestaurant = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id: string; status: string; reason: string }) => input)
+  .validator((input: { id: string; status: string; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -156,7 +156,7 @@ export const actRestaurant = createServerFn({ method: "POST" })
 
 export const loadRiders = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { q?: string }) => input)
+  .validator((input: { q?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -169,7 +169,7 @@ export const loadRiders = createServerFn({ method: "POST" })
 
 export const loadRider = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((id: string) => id)
+  .validator((id: string) => id)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -182,7 +182,7 @@ export const loadRider = createServerFn({ method: "POST" })
 
 export const actRider = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id: string; status: string; reason: string }) => input)
+  .validator((input: { id: string; status: string; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -196,7 +196,7 @@ export const actRider = createServerFn({ method: "POST" })
 
 export const loadCustomers = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { q?: string }) => input)
+  .validator((input: { q?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -209,7 +209,7 @@ export const loadCustomers = createServerFn({ method: "POST" })
 
 export const loadCustomer = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((id: string) => id)
+  .validator((id: string) => id)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -222,7 +222,7 @@ export const loadCustomer = createServerFn({ method: "POST" })
 
 export const loadTickets = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { queue?: string; status?: string }) => input)
+  .validator((input: { queue?: string; status?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -235,7 +235,7 @@ export const loadTickets = createServerFn({ method: "POST" })
 
 export const loadTicket = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((id: string) => id)
+  .validator((id: string) => id)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -248,7 +248,7 @@ export const loadTicket = createServerFn({ method: "POST" })
 
 export const actTicket = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id: string; action: "assign" | "note" | "reply" | "resolve" | "reopen"; body?: string; employeeId?: string; resolutionCode?: string; idempotencyKey?: string }) => input)
+  .validator((input: { id: string; action: "assign" | "note" | "reply" | "resolve" | "reopen"; body?: string; employeeId?: string; resolutionCode?: string; idempotencyKey?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -274,7 +274,7 @@ export const loadFinance = createServerFn({ method: "GET" })
 
 export const loadSettlements = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { party: "RESTAURANT" | "RIDER" }) => input)
+  .validator((input: { party: "RESTAURANT" | "RIDER" }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -288,7 +288,7 @@ export const loadSettlements = createServerFn({ method: "POST" })
 
 export const runEconomics = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { scenarios: ScenarioInputs[]; shockBps?: number }) => input)
+  .validator((input: { scenarios: ScenarioInputs[]; shockBps?: number }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -316,7 +316,7 @@ export const loadEmployees = createServerFn({ method: "GET" })
 
 export const inviteEmployeeFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { email: string; name: string; roleKey: string; department: string; cityId?: string | null; customPermissions?: string[] }) => input)
+  .validator((input: { email: string; name: string; roleKey: string; department: string; cityId?: string | null; customPermissions?: string[] }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -330,7 +330,7 @@ export const inviteEmployeeFn = createServerFn({ method: "POST" })
 
 export const updateEmployeeFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id: string; roleKey?: string; status?: string; cityId?: string | null; department?: string; customPermissions?: string[]; assumedRoleKey?: string | null; mfaReady?: boolean; reason: string }) => input)
+  .validator((input: { id: string; roleKey?: string; status?: string; cityId?: string | null; department?: string; customPermissions?: string[]; assumedRoleKey?: string | null; mfaReady?: boolean; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -344,7 +344,7 @@ export const updateEmployeeFn = createServerFn({ method: "POST" })
 
 export const loadAudit = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { q?: string }) => input)
+  .validator((input: { q?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -369,7 +369,7 @@ export const loadFlags = createServerFn({ method: "GET" })
 
 export const setFlagFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { key: string; state: string; rolloutPct: number; reason: string }) => input)
+  .validator((input: { key: string; state: string; rolloutPct: number; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -395,7 +395,7 @@ export const loadBranding = createServerFn({ method: "GET" })
 
 export const saveBrandingFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { patch: Record<string, string>; reason: string }) => input)
+  .validator((input: { patch: Record<string, string>; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -421,7 +421,7 @@ export const loadSettings = createServerFn({ method: "GET" })
 
 export const saveSettingsFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { settings: PlatformSettings; reason: string }) => input)
+  .validator((input: { settings: PlatformSettings; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -447,7 +447,7 @@ export const loadPromos = createServerFn({ method: "GET" })
 
 export const savePromoFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id?: string; name: string; kind: string; funding: string; percentBps?: number | null; fixedPaise?: number; minOrderPaise: number; maxDiscountPaise?: number | null; firstOrderOnly?: boolean; capCount?: number | null; status: string; zoneId?: string | null; category?: string | null; startsAt?: string | null; endsAt?: string | null }) => input)
+  .validator((input: { id?: string; name: string; kind: string; funding: string; percentBps?: number | null; fixedPaise?: number; minOrderPaise: number; maxDiscountPaise?: number | null; firstOrderOnly?: boolean; capCount?: number | null; status: string; zoneId?: string | null; category?: string | null; startsAt?: string | null; endsAt?: string | null }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -473,7 +473,7 @@ export const loadCms = createServerFn({ method: "GET" })
 
 export const saveCmsFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id?: string; surface: string; slot: string; title: string; body: string; sponsored: boolean }) => input)
+  .validator((input: { id?: string; surface: string; slot: string; title: string; body: string; sponsored: boolean }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -499,7 +499,7 @@ export const loadZones = createServerFn({ method: "GET" })
 
 export const saveZoneFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id?: string; name: string; cityId: string; deliveryFeePaise: number; minOrderPaise: number; maxRadiusKm: number; etaMinutes: number }) => input)
+  .validator((input: { id?: string; name: string; cityId: string; deliveryFeePaise: number; minOrderPaise: number; maxRadiusKm: number; etaMinutes: number }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -525,7 +525,7 @@ export const loadKyc = createServerFn({ method: "GET" })
 
 export const reviewKycFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id: string; status: string; notes: string }) => input)
+  .validator((input: { id: string; status: string; notes: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -624,7 +624,7 @@ export const loadHealth = createServerFn({ method: "GET" })
 
 export const exportCsv = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { kind: "orders" | "restaurants" | "riders" | "finance" }) => input)
+  .validator((input: { kind: "orders" | "restaurants" | "riders" | "finance" }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -700,7 +700,7 @@ async function runAiTools(ws: Awaited<ReturnType<typeof workspace>>, names: stri
 
 export const askAssistant = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: {
+  .validator((input: {
     question: string;
     mode: "ops" | "ceo";
     specialistId?: string;
@@ -812,7 +812,7 @@ export const listSpecialistsFn = createServerFn({ method: "GET" })
 
 export const saveLoyaltyFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id?: string; name: string; kind: string; earnBps: number; capPaise: number; status: string; abuseCapPerDay: number }) => input)
+  .validator((input: { id?: string; name: string; kind: string; earnBps: number; capPaise: number; status: string; abuseCapPerDay: number }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -838,7 +838,7 @@ export const loadCampaigns = createServerFn({ method: "GET" })
 
 export const saveCampaignFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { name: string; channel: string; audience: string; budgetPaise: number; status: string; notes?: string }) => input)
+  .validator((input: { name: string; channel: string; audience: string; budgetPaise: number; status: string; notes?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -864,7 +864,7 @@ export const loadReports = createServerFn({ method: "GET" })
 
 export const approveSettlementFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id: string; decision: "APPROVED" | "REJECTED"; reason: string }) => input)
+  .validator((input: { id: string; decision: "APPROVED" | "REJECTED"; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -878,7 +878,7 @@ export const approveSettlementFn = createServerFn({ method: "POST" })
 
 export const queueNotificationFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { channel: string; templateKey: string; audience: string }) => input)
+  .validator((input: { channel: string; templateKey: string; audience: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -892,7 +892,7 @@ export const queueNotificationFn = createServerFn({ method: "POST" })
 
 export const updateCustomerFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id: string; status?: string; loyaltyTier?: string; reason: string }) => input)
+  .validator((input: { id: string; status?: string; loyaltyTier?: string; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -967,7 +967,7 @@ export const loadGoLiveConfig = createServerFn({ method: "GET" })
 
 export const saveGoLiveConfig = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { config: MasterGoLiveConfig; reason: string }) => input)
+  .validator((input: { config: MasterGoLiveConfig; reason: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -1002,7 +1002,7 @@ export const runGoLiveDiagnosis = createServerFn({ method: "POST" })
 
 export const testGoLiveComponent = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { component: "database" | "paymentGateway" | "smsGateway" | "maps" }) => input)
+  .validator((input: { component: "database" | "paymentGateway" | "smsGateway" | "maps" }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -1056,7 +1056,7 @@ export const loadPendingApprovalsFn = createServerFn({ method: "GET" })
 
 export const resolveFounderApprovalFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { id: string; decision: "APPROVED" | "REJECTED" }) => input)
+  .validator((input: { id: string; decision: "APPROVED" | "REJECTED" }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -1070,7 +1070,7 @@ export const resolveFounderApprovalFn = createServerFn({ method: "POST" })
 
 export const generateGrowthPlanFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { restaurantId: string }) => input)
+  .validator((input: { restaurantId: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -1084,7 +1084,7 @@ export const generateGrowthPlanFn = createServerFn({ method: "POST" })
 
 export const calculatePayoutFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { restaurantId: string; period?: string }) => input)
+  .validator((input: { restaurantId: string; period?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
@@ -1098,7 +1098,7 @@ export const calculatePayoutFn = createServerFn({ method: "POST" })
 
 export const verifySettlementBatchFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { batchId: string }) => input)
+  .validator((input: { batchId: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const ws = await workspace(context.userId);
