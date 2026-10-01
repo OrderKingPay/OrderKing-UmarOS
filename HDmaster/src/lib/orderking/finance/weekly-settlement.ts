@@ -46,7 +46,7 @@ export function getWeeklyCycle(referenceDate = new Date()): WeeklyCyclePeriod {
 }
 
 
-export async function buildWeeklySettlementReport(referenceDate = new Date()) {
+export async function buildWeeklySettlementReport(referenceDate = new Date(), orgId?: string) {
   const cycle = getWeeklyCycle(referenceDate);
   const { getSql } = await import("../../db");
   const sql = await getSql();
@@ -73,6 +73,7 @@ export async function buildWeeklySettlementReport(referenceDate = new Date()) {
     FROM settlement_batches
     WHERE created_at >= ${cycle.startDate}::timestamptz
       AND created_at < (${cycle.endDate}::date + INTERVAL '1 day')
+      AND (${orgId ?? null} IS NULL OR org_id = ${orgId ?? null})
     ORDER BY party_name ASC, created_at ASC
   `;
 
