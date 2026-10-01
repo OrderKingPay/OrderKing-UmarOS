@@ -17,6 +17,24 @@ async function engine() {
   return new RiderEngine(new PgStore(sql));
 }
 
+async function emitRiderImmutableEvent(userId: string, eventType: string, payload: Record<string, unknown>) {
+  const sql = await getSql();
+  const sourceId = userId + ":" + eventType + ":" + Date.now();
+  await sql`
+    SELECT public.orderking_emit_immutable_event(
+      ${sourceId},
+      ${userId},
+      ${userId},
+      NULL,
+      'rider',
+      ${userId},
+      ${eventType},
+      NOW(),
+      ${JSON.stringify(payload)}::jsonb
+    )
+  `;
+}
+
 function fail(e: unknown): never {
   if (e instanceof RiderError) throw e;
   throw e;
@@ -292,12 +310,19 @@ export const postLocationFn = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
-      return await e.postLocation(
+      const result = await e.postLocation(
         context.userId,
         { lat: data.lat, lng: data.lng },
         data.accuracyM,
         data.deliveryId,
       );
+      await emitRiderImmutableEvent(context.userId, "rider_location", {
+        lat: data.lat,
+        lng: data.lng,
+        accuracyM: data.accuracyM,
+        deliveryId: data.deliveryId,
+      });
+      return result;
     } catch (err) {
       fail(err);
     }
