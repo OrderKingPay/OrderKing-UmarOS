@@ -715,7 +715,7 @@ export function UmarOSMasterDashboard({ engine, className }: Props) {
                           )}
                           <span className="relative inline-flex items-center gap-2">
                             {done ? <Check className="size-4" /> : <Zap className="size-4 text-violet-200" />}
-                            {busy ? "Executing…" : done ? "Executed" : "Approve & Execute Globally"}
+                            {busy ? "Processing…" : proposal.status === "APPROVED" ? "Approved" : proposal.status === "EXECUTED" ? "Executed" : "Approve"}
                             {!done && <ChevronRight className="size-4" />}
                           </span>
                         </button>
