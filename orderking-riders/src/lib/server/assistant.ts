@@ -18,37 +18,32 @@ export const askAssistantFn = createServerFn({ method: "POST" })
     const eng = new RiderEngine(new PgStore(sql));
     await eng.ensureRider({ id: context.userId });
     const snapshot = await eng.snapshotForAssistant(context.userId);
-    const apiKey = process.env.XAI_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     const facts = JSON.stringify(snapshot);
     const question = data.question.slice(0, 500);
     if (!apiKey) {
       return { ok: true as const, text: localAnswer(question, snapshot, data.busy) };
     }
     try {
-      const res = await fetch("https://api.x.ai/v1/chat/completions", {
+      const res = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "grok-4.5",
-          max_tokens: data.busy ? 180 : 400,
-          messages: [
+          model: process.env.OPENAI_RIDER_MODEL?.trim() || process.env.OPENAI_MODEL?.trim(),
+          max_output_tokens: data.busy ? 180 : 400,
+          input: [
             { role: "system", content: POLICY },
-            {
-              role: "system",
-              content: `Authorized snapshot for user ${context.userId}: ${facts}`,
-            },
+            { role: "system", content: `Authorized snapshot for user ${context.userId}: ${facts}` },
             { role: "user", content: question },
           ],
         }),
       });
-      if (!res.ok) {
-        return { ok: true as const, text: localAnswer(question, snapshot, data.busy) };
-      }
-      const body = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-      const text = body.choices?.[0]?.message?.content?.trim();
+      if (!res.ok) return { ok: true as const, text: localAnswer(question, snapshot, data.busy) };
+      const body = (await res.json()) as { output_text?: string };
+      const text = body.output_text?.trim();
       return { ok: true as const, text: text || localAnswer(question, snapshot, data.busy) };
     } catch {
       return { ok: true as const, text: localAnswer(question, snapshot, data.busy) };
