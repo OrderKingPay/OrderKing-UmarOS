@@ -30,9 +30,9 @@ import {
 export type MarginDashboardSnapshot = {
   baseMarginBps: number;
   distantMarginBps: number;
-  loyaltyShareBps: number;
-  verifiedBaseSalesPaise: number;
-  verifiedDistantSalesPaise: number;
+  loyaltyShareBps: number | null;
+  verifiedBaseSalesPaise: number | null;
+  verifiedDistantSalesPaise: number | null;
   periodLabel: string;
   updatedAt: string;
 };
@@ -280,10 +280,19 @@ export function UmarOSMasterDashboard({ engine, className }: Props) {
     };
   }, [refresh]);
 
-  const loyaltySharePct = margin ? pctFromBps(margin.loyaltyShareBps) : null;
+  const loyaltySharePct = margin?.loyaltyShareBps == null ? null : pctFromBps(margin.loyaltyShareBps);
 
   const loyaltyPreview = useMemo(() => {
-    if (!margin || basePct === null || distantPct === null || loyaltySharePct === null) return null;
+    if (
+      !margin ||
+      basePct === null ||
+      distantPct === null ||
+      loyaltySharePct === null ||
+      margin.verifiedBaseSalesPaise == null ||
+      margin.verifiedDistantSalesPaise == null
+    ) {
+      return null;
+    }
     const baseMarginPaise = Math.round(margin.verifiedBaseSalesPaise * (basePct / 100));
     const distantMarginPaise = Math.round(margin.verifiedDistantSalesPaise * (distantPct / 100));
     const baseCoins = Math.round(baseMarginPaise * (loyaltySharePct / 100));
@@ -483,8 +492,8 @@ export function UmarOSMasterDashboard({ engine, className }: Props) {
           <StatCard
             icon={Coins}
             label="Loyalty routing"
-            value={loyaltySharePct === null ? "—" : loyaltySharePct.toFixed(2) + "%"}
-            detail="Share of restaurant margin routed to customer loyalty."
+            value={loyaltySharePct === null ? "Not measured" : loyaltySharePct.toFixed(2) + "%"}
+            detail="Reported by the live loyalty/financial engine; not hard-coded by the UI."
           />
           <StatCard
             icon={Users}
@@ -863,7 +872,7 @@ export function UmarOSMasterDashboard({ engine, className }: Props) {
                   <span className="text-xs font-semibold">Founder safety gate</span>
                 </div>
                 <p className="mt-2 text-[11px] leading-5 text-white/45">
-                  The UI does not pretend to have satellite reach, free delivery, or consent that the backend has not verified. Reach, channels, cost, and execution status come from the connected marketing engine.
+                  The UI does not invent reach, cost, consent, provider status, or execution. Those values come from the connected marketing subsystem.
                 </p>
               </div>
             </div>
