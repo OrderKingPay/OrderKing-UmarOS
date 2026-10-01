@@ -202,7 +202,7 @@ export function ReceiveMoneyQrStudio({
     const amtText = amount ? `₹${amount}` : "payment";
     const noteText = note ? `\nPurpose: "${note}"` : "";
     const msg = encodeURIComponent(
-      `Hello! Please pay ${amtText} directly via KingPay or any UPI App (GPay, PhonePe, Paytm): \n${generateUpiUri()}${noteText}\n\n0% convenience fee with KingPay!`
+      `Hello! Please pay ${amtText} directly via KingPay or any UPI App (GPay, PhonePe, Paytm): \n${generateUpiUri()}${noteText}\n\nProvider-defined payment fees apply.`
     );
     window.open(`https://wa.me/?text=${msg}`, "_blank");
   };
