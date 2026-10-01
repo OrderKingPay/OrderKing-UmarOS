@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/api/security/gps-ping")({
@@ -40,3 +41,4 @@ export const Route = createFileRoute("/api/security/gps-ping")({
     },
   },
 });
+

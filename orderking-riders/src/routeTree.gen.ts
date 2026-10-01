@@ -20,6 +20,9 @@ import { Route as EarningsRouteImport } from './routes/earnings'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DeliveryIdRouteImport } from './routes/delivery.$id'
+import { Route as ApiSecurityGpsPingRouteImport } from './routes/api/security/gps-ping'
+import { Route as ApiSecurityDevicePostureRouteImport } from './routes/api/security/device-posture'
+import { Route as ApiSecurityDeviceIntegrityRouteImport } from './routes/api/security/device-integrity'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const SupportRoute = SupportRouteImport.update({
@@ -77,6 +80,23 @@ const DeliveryIdRoute = DeliveryIdRouteImport.update({
   path: '/delivery/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSecurityGpsPingRoute = ApiSecurityGpsPingRouteImport.update({
+  id: '/api/security/gps-ping',
+  path: '/api/security/gps-ping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSecurityDevicePostureRoute =
+  ApiSecurityDevicePostureRouteImport.update({
+    id: '/api/security/device-posture',
+    path: '/api/security/device-posture',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiSecurityDeviceIntegrityRoute =
+  ApiSecurityDeviceIntegrityRouteImport.update({
+    id: '/api/security/device-integrity',
+    path: '/api/security/device-integrity',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -96,6 +116,9 @@ export interface FileRoutesByFullPath {
   '/support': typeof SupportRoute
   '/delivery/$id': typeof DeliveryIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
+  '/api/security/device-posture': typeof ApiSecurityDevicePostureRoute
+  '/api/security/gps-ping': typeof ApiSecurityGpsPingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,6 +133,9 @@ export interface FileRoutesByTo {
   '/support': typeof SupportRoute
   '/delivery/$id': typeof DeliveryIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
+  '/api/security/device-posture': typeof ApiSecurityDevicePostureRoute
+  '/api/security/gps-ping': typeof ApiSecurityGpsPingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +151,9 @@ export interface FileRoutesById {
   '/support': typeof SupportRoute
   '/delivery/$id': typeof DeliveryIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
+  '/api/security/device-posture': typeof ApiSecurityDevicePostureRoute
+  '/api/security/gps-ping': typeof ApiSecurityGpsPingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,6 +170,9 @@ export interface FileRouteTypes {
     | '/support'
     | '/delivery/$id'
     | '/api/auth/$'
+    | '/api/security/device-integrity'
+    | '/api/security/device-posture'
+    | '/api/security/gps-ping'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +187,9 @@ export interface FileRouteTypes {
     | '/support'
     | '/delivery/$id'
     | '/api/auth/$'
+    | '/api/security/device-integrity'
+    | '/api/security/device-posture'
+    | '/api/security/gps-ping'
   id:
     | '__root__'
     | '/'
@@ -169,6 +204,9 @@ export interface FileRouteTypes {
     | '/support'
     | '/delivery/$id'
     | '/api/auth/$'
+    | '/api/security/device-integrity'
+    | '/api/security/device-posture'
+    | '/api/security/gps-ping'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,6 +222,9 @@ export interface RootRouteChildren {
   SupportRoute: typeof SupportRoute
   DeliveryIdRoute: typeof DeliveryIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiSecurityDeviceIntegrityRoute: typeof ApiSecurityDeviceIntegrityRoute
+  ApiSecurityDevicePostureRoute: typeof ApiSecurityDevicePostureRoute
+  ApiSecurityGpsPingRoute: typeof ApiSecurityGpsPingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -265,6 +306,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeliveryIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/security/gps-ping': {
+      id: '/api/security/gps-ping'
+      path: '/api/security/gps-ping'
+      fullPath: '/api/security/gps-ping'
+      preLoaderRoute: typeof ApiSecurityGpsPingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/security/device-posture': {
+      id: '/api/security/device-posture'
+      path: '/api/security/device-posture'
+      fullPath: '/api/security/device-posture'
+      preLoaderRoute: typeof ApiSecurityDevicePostureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/security/device-integrity': {
+      id: '/api/security/device-integrity'
+      path: '/api/security/device-integrity'
+      fullPath: '/api/security/device-integrity'
+      preLoaderRoute: typeof ApiSecurityDeviceIntegrityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -288,6 +350,9 @@ const rootRouteChildren: RootRouteChildren = {
   SupportRoute: SupportRoute,
   DeliveryIdRoute: DeliveryIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiSecurityDeviceIntegrityRoute: ApiSecurityDeviceIntegrityRoute,
+  ApiSecurityDevicePostureRoute: ApiSecurityDevicePostureRoute,
+  ApiSecurityGpsPingRoute: ApiSecurityGpsPingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

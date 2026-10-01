@@ -171,6 +171,11 @@ let database;
 try {
   if (databaseUrl && !databaseUrl.includes("your_supabase_pooler")) {
     database = new Pool({ connectionString: databaseUrl });
+    (database as Pool).on('error', (err) => console.error('pg pool error:', err));
+    (database as Pool).on('error', (err) => console.error('pg pool error:', err));
+    database.on('error', (err) => console.error('pg pool error:', err));
+    database.on('error', (err) => console.error('pg pool error:', err));
+    (database as any).on('error', (err) => console.error('pg auth pool error:', err));
   } else {
     database = { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
   }
@@ -293,5 +298,9 @@ export function readSessionToken(): string | null {
 // Re-exported for convenience; the array lives in the dependency-free
 // `providers.ts` so the client can import it too.
 export { GROK_PROVIDERS } from "./providers";
+
+
+
+
 
 

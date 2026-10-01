@@ -49,8 +49,8 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
     model: "auto-supreme-orchestrator",
     reason: `Routing domain "${domain}" through configured real providers. The actual provider/model is selected and verified at runtime; no unavailable model name is claimed.`,
   };
-}
-}
+
+
 
 export interface ChatAttachment {
   id: string;
@@ -60,7 +60,7 @@ export interface ChatAttachment {
   sizeBytes: number;
   mimeType: string;
   content?: string;
-}
+
 
 export type ClientLead = {
   id: string;
@@ -205,7 +205,7 @@ export interface ConnectedPlatform {
     safetyLevel: "STRICT_SAFE" | "AUTO_ROLLBACK_ENABLED";
     defaultPayload: string;
   }[];
-}
+
 
 export const UNIVERSAL_PLATFORMS: ConnectedPlatform[] = [];
 
@@ -233,7 +233,7 @@ export interface VideoEditorStudioConfig {
   exportFormat: "MP4_H265" | "PRORES_422" | "WEBM_ULTRA";
   renderSpeedMultiplier: string;
   commercialRightsCertified: boolean;
-}
+
 
 export interface SystemSettingsConfig {
   aiModel: AiModelId;
@@ -247,7 +247,7 @@ export interface SystemSettingsConfig {
   hmacSha256Security: boolean;
   maxMemoryCacheMb: number;
   edgeRoutingRegion: "ap-south-1" | "us-east-1" | "eu-west-1" | "global-sovereign";
-}
+
 
 export const DEFAULT_SYSTEM_SETTINGS: SystemSettingsConfig = {
   aiModel: "sovereign-ultra",
@@ -281,7 +281,7 @@ export interface SeparableModule {
     dependencies: Record<string, string>;
   };
   sampleComponentCode: string;
-}
+
 
 export const SEPARABLE_MODULES: SeparableModule[] = [];
 
@@ -796,7 +796,7 @@ export function generateFounderClientInvoice(params: {
     status: "SENT",
     payoutAccount: `Founder Direct Private Escrow (UPI: ${vpa})`,
   };
-}
+
 
 export function parseFounderQuery(query: string, founderUpiVpa: string = "orderking@okhdfcbank"): {
   intent:
@@ -1958,7 +1958,7 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
 
   // Open-world universal cognitive intelligence fallback: Handles medical, coding, math, science, strategy & general Q&A
   return null;
-}
+
 
 /**
  * Synthesizes open-world frontier AI responses with deep cognitive reasoning.
@@ -2421,4 +2421,4 @@ By routing payments via direct King Pay UPI, we bypass the 2.5% payment gateway 
     voiceSpokenText,
     executionSteps,
   };
-}
+

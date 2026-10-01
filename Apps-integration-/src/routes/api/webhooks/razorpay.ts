@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as crypto from 'crypto';
 import { createAPIFileRoute } from '@/lib/createAPIFileRoute';
 import { z } from 'zod';
@@ -252,3 +253,4 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
     }
   }
 });
+

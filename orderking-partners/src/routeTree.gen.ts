@@ -26,6 +26,8 @@ import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiV1CatalogRouteImport } from './routes/api/v1/catalog'
+import { Route as ApiSecurityDevicePostureRouteImport } from './routes/api/security/device-posture'
+import { Route as ApiSecurityDeviceIntegrityRouteImport } from './routes/api/security/device-integrity'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const SettlementsRoute = SettlementsRouteImport.update({
@@ -113,6 +115,18 @@ const ApiV1CatalogRoute = ApiV1CatalogRouteImport.update({
   path: '/api/v1/catalog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSecurityDevicePostureRoute =
+  ApiSecurityDevicePostureRouteImport.update({
+    id: '/api/security/device-posture',
+    path: '/api/security/device-posture',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiSecurityDeviceIntegrityRoute =
+  ApiSecurityDeviceIntegrityRouteImport.update({
+    id: '/api/security/device-integrity',
+    path: '/api/security/device-integrity',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -137,6 +151,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/settlements': typeof SettlementsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
+  '/api/security/device-posture': typeof ApiSecurityDevicePostureRoute
   '/api/v1/catalog': typeof ApiV1CatalogRoute
 }
 export interface FileRoutesByTo {
@@ -157,6 +173,8 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/settlements': typeof SettlementsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
+  '/api/security/device-posture': typeof ApiSecurityDevicePostureRoute
   '/api/v1/catalog': typeof ApiV1CatalogRoute
 }
 export interface FileRoutesById {
@@ -178,6 +196,8 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/settlements': typeof SettlementsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
+  '/api/security/device-posture': typeof ApiSecurityDevicePostureRoute
   '/api/v1/catalog': typeof ApiV1CatalogRoute
 }
 export interface FileRouteTypes {
@@ -200,6 +220,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/settlements'
     | '/api/auth/$'
+    | '/api/security/device-integrity'
+    | '/api/security/device-posture'
     | '/api/v1/catalog'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -220,6 +242,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/settlements'
     | '/api/auth/$'
+    | '/api/security/device-integrity'
+    | '/api/security/device-posture'
     | '/api/v1/catalog'
   id:
     | '__root__'
@@ -240,6 +264,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/settlements'
     | '/api/auth/$'
+    | '/api/security/device-integrity'
+    | '/api/security/device-posture'
     | '/api/v1/catalog'
   fileRoutesById: FileRoutesById
 }
@@ -261,6 +287,8 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SettlementsRoute: typeof SettlementsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiSecurityDeviceIntegrityRoute: typeof ApiSecurityDeviceIntegrityRoute
+  ApiSecurityDevicePostureRoute: typeof ApiSecurityDevicePostureRoute
   ApiV1CatalogRoute: typeof ApiV1CatalogRoute
 }
 
@@ -385,6 +413,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1CatalogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/security/device-posture': {
+      id: '/api/security/device-posture'
+      path: '/api/security/device-posture'
+      fullPath: '/api/security/device-posture'
+      preLoaderRoute: typeof ApiSecurityDevicePostureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/security/device-integrity': {
+      id: '/api/security/device-integrity'
+      path: '/api/security/device-integrity'
+      fullPath: '/api/security/device-integrity'
+      preLoaderRoute: typeof ApiSecurityDeviceIntegrityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -413,6 +455,8 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SettlementsRoute: SettlementsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiSecurityDeviceIntegrityRoute: ApiSecurityDeviceIntegrityRoute,
+  ApiSecurityDevicePostureRoute: ApiSecurityDevicePostureRoute,
   ApiV1CatalogRoute: ApiV1CatalogRoute,
 }
 export const routeTree = rootRouteImport

@@ -32,10 +32,19 @@ import { Route as LegalRefundsRouteImport } from './routes/legal/refunds'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
 import { Route as DevBrandRouteImport } from './routes/dev/brand'
 import { Route as AppFounderCommandRouteImport } from './routes/app/founder-command'
+import { Route as ApiReferralsRouteImport } from './routes/api/referrals'
+import { Route as ApiSecurityDevicePostureRouteImport } from './routes/api/security/device-posture'
+import { Route as ApiSecurityDeviceIntegrityRouteImport } from './routes/api/security/device-integrity'
 import { Route as ApiRazorpayVerifyRouteImport } from './routes/api/razorpay/verify'
 import { Route as ApiRazorpayCreateOrderRouteImport } from './routes/api/razorpay/create-order'
+import { Route as ApiLoansApplyRouteImport } from './routes/api/loans/apply'
+import { Route as ApiEscrowStatusRouteImport } from './routes/api/escrow/status'
+import { Route as ApiBbpsPayBillRouteImport } from './routes/api/bbps/pay-bill'
+import { Route as ApiBbpsFetchBillRouteImport } from './routes/api/bbps/fetch-bill'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
+import { Route as ApiAffiliatesOffersRouteImport } from './routes/api/affiliates/offers'
+import { Route as ApiAffiliateClickRouteImport } from './routes/api/affiliate/click'
 import { Route as ApiAdminTestConnectionRouteImport } from './routes/api/admin/test-connection'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/settings'
 import { Route as ApiOrdersOrderIdStreamRouteImport } from './routes/api/orders/$orderId/stream'
@@ -155,6 +164,23 @@ const AppFounderCommandRoute = AppFounderCommandRouteImport.update({
   path: '/app/founder-command',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiReferralsRoute = ApiReferralsRouteImport.update({
+  id: '/api/referrals',
+  path: '/api/referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSecurityDevicePostureRoute =
+  ApiSecurityDevicePostureRouteImport.update({
+    id: '/api/security/device-posture',
+    path: '/api/security/device-posture',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiSecurityDeviceIntegrityRoute =
+  ApiSecurityDeviceIntegrityRouteImport.update({
+    id: '/api/security/device-integrity',
+    path: '/api/security/device-integrity',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiRazorpayVerifyRoute = ApiRazorpayVerifyRouteImport.update({
   id: '/api/razorpay/verify',
   path: '/api/razorpay/verify',
@@ -165,6 +191,26 @@ const ApiRazorpayCreateOrderRoute = ApiRazorpayCreateOrderRouteImport.update({
   path: '/api/razorpay/create-order',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLoansApplyRoute = ApiLoansApplyRouteImport.update({
+  id: '/api/loans/apply',
+  path: '/api/loans/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEscrowStatusRoute = ApiEscrowStatusRouteImport.update({
+  id: '/api/escrow/status',
+  path: '/api/escrow/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBbpsPayBillRoute = ApiBbpsPayBillRouteImport.update({
+  id: '/api/bbps/pay-bill',
+  path: '/api/bbps/pay-bill',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBbpsFetchBillRoute = ApiBbpsFetchBillRouteImport.update({
+  id: '/api/bbps/fetch-bill',
+  path: '/api/bbps/fetch-bill',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -173,6 +219,16 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 const ApiAiChatRoute = ApiAiChatRouteImport.update({
   id: '/api/ai/chat',
   path: '/api/ai/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAffiliatesOffersRoute = ApiAffiliatesOffersRouteImport.update({
+  id: '/api/affiliates/offers',
+  path: '/api/affiliates/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAffiliateClickRoute = ApiAffiliateClickRouteImport.update({
+  id: '/api/affiliate/click',
+  path: '/api/affiliate/click',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminTestConnectionRoute = ApiAdminTestConnectionRouteImport.update({
@@ -205,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/tutor': typeof TutorRoute
+  '/api/referrals': typeof ApiReferralsRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -217,10 +274,18 @@ export interface FileRoutesByFullPath {
   '/orders/': typeof OrdersIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
+  '/api/affiliate/click': typeof ApiAffiliateClickRoute
+  '/api/affiliates/offers': typeof ApiAffiliatesOffersRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/bbps/fetch-bill': typeof ApiBbpsFetchBillRoute
+  '/api/bbps/pay-bill': typeof ApiBbpsPayBillRoute
+  '/api/escrow/status': typeof ApiEscrowStatusRoute
+  '/api/loans/apply': typeof ApiLoansApplyRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
+  '/api/security/device-posture': typeof ApiSecurityDevicePostureRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
 export interface FileRoutesByTo {
@@ -237,6 +302,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/tutor': typeof TutorRoute
+  '/api/referrals': typeof ApiReferralsRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -249,10 +315,18 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
+  '/api/affiliate/click': typeof ApiAffiliateClickRoute
+  '/api/affiliates/offers': typeof ApiAffiliatesOffersRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/bbps/fetch-bill': typeof ApiBbpsFetchBillRoute
+  '/api/bbps/pay-bill': typeof ApiBbpsPayBillRoute
+  '/api/escrow/status': typeof ApiEscrowStatusRoute
+  '/api/loans/apply': typeof ApiLoansApplyRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
+  '/api/security/device-posture': typeof ApiSecurityDevicePostureRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
 export interface FileRoutesById {
@@ -270,6 +344,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/tutor': typeof TutorRoute
+  '/api/referrals': typeof ApiReferralsRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -282,10 +357,18 @@ export interface FileRoutesById {
   '/orders/': typeof OrdersIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
+  '/api/affiliate/click': typeof ApiAffiliateClickRoute
+  '/api/affiliates/offers': typeof ApiAffiliatesOffersRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/bbps/fetch-bill': typeof ApiBbpsFetchBillRoute
+  '/api/bbps/pay-bill': typeof ApiBbpsPayBillRoute
+  '/api/escrow/status': typeof ApiEscrowStatusRoute
+  '/api/loans/apply': typeof ApiLoansApplyRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
+  '/api/security/device-posture': typeof ApiSecurityDevicePostureRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
 export interface FileRouteTypes {
@@ -304,6 +387,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/tutor'
+    | '/api/referrals'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -316,10 +400,18 @@ export interface FileRouteTypes {
     | '/orders/'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
+    | '/api/affiliate/click'
+    | '/api/affiliates/offers'
     | '/api/ai/chat'
     | '/api/auth/$'
+    | '/api/bbps/fetch-bill'
+    | '/api/bbps/pay-bill'
+    | '/api/escrow/status'
+    | '/api/loans/apply'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/api/security/device-integrity'
+    | '/api/security/device-posture'
     | '/api/orders/$orderId/stream'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -336,6 +428,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/tutor'
+    | '/api/referrals'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -348,10 +441,18 @@ export interface FileRouteTypes {
     | '/orders'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
+    | '/api/affiliate/click'
+    | '/api/affiliates/offers'
     | '/api/ai/chat'
     | '/api/auth/$'
+    | '/api/bbps/fetch-bill'
+    | '/api/bbps/pay-bill'
+    | '/api/escrow/status'
+    | '/api/loans/apply'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/api/security/device-integrity'
+    | '/api/security/device-posture'
     | '/api/orders/$orderId/stream'
   id:
     | '__root__'
@@ -368,6 +469,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/tutor'
+    | '/api/referrals'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -380,10 +482,18 @@ export interface FileRouteTypes {
     | '/orders/'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
+    | '/api/affiliate/click'
+    | '/api/affiliates/offers'
     | '/api/ai/chat'
     | '/api/auth/$'
+    | '/api/bbps/fetch-bill'
+    | '/api/bbps/pay-bill'
+    | '/api/escrow/status'
+    | '/api/loans/apply'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/api/security/device-integrity'
+    | '/api/security/device-posture'
     | '/api/orders/$orderId/stream'
   fileRoutesById: FileRoutesById
 }
@@ -401,6 +511,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
   TutorRoute: typeof TutorRoute
+  ApiReferralsRoute: typeof ApiReferralsRoute
   AppFounderCommandRoute: typeof AppFounderCommandRoute
   DevBrandRoute: typeof DevBrandRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
@@ -413,10 +524,18 @@ export interface RootRouteChildren {
   OrdersIndexRoute: typeof OrdersIndexRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiAdminTestConnectionRoute: typeof ApiAdminTestConnectionRoute
+  ApiAffiliateClickRoute: typeof ApiAffiliateClickRoute
+  ApiAffiliatesOffersRoute: typeof ApiAffiliatesOffersRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiBbpsFetchBillRoute: typeof ApiBbpsFetchBillRoute
+  ApiBbpsPayBillRoute: typeof ApiBbpsPayBillRoute
+  ApiEscrowStatusRoute: typeof ApiEscrowStatusRoute
+  ApiLoansApplyRoute: typeof ApiLoansApplyRoute
   ApiRazorpayCreateOrderRoute: typeof ApiRazorpayCreateOrderRoute
   ApiRazorpayVerifyRoute: typeof ApiRazorpayVerifyRoute
+  ApiSecurityDeviceIntegrityRoute: typeof ApiSecurityDeviceIntegrityRoute
+  ApiSecurityDevicePostureRoute: typeof ApiSecurityDevicePostureRoute
   ApiOrdersOrderIdStreamRoute: typeof ApiOrdersOrderIdStreamRoute
 }
 
@@ -583,6 +702,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFounderCommandRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/referrals': {
+      id: '/api/referrals'
+      path: '/api/referrals'
+      fullPath: '/api/referrals'
+      preLoaderRoute: typeof ApiReferralsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/security/device-posture': {
+      id: '/api/security/device-posture'
+      path: '/api/security/device-posture'
+      fullPath: '/api/security/device-posture'
+      preLoaderRoute: typeof ApiSecurityDevicePostureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/security/device-integrity': {
+      id: '/api/security/device-integrity'
+      path: '/api/security/device-integrity'
+      fullPath: '/api/security/device-integrity'
+      preLoaderRoute: typeof ApiSecurityDeviceIntegrityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/razorpay/verify': {
       id: '/api/razorpay/verify'
       path: '/api/razorpay/verify'
@@ -597,6 +737,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRazorpayCreateOrderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/loans/apply': {
+      id: '/api/loans/apply'
+      path: '/api/loans/apply'
+      fullPath: '/api/loans/apply'
+      preLoaderRoute: typeof ApiLoansApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/escrow/status': {
+      id: '/api/escrow/status'
+      path: '/api/escrow/status'
+      fullPath: '/api/escrow/status'
+      preLoaderRoute: typeof ApiEscrowStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/bbps/pay-bill': {
+      id: '/api/bbps/pay-bill'
+      path: '/api/bbps/pay-bill'
+      fullPath: '/api/bbps/pay-bill'
+      preLoaderRoute: typeof ApiBbpsPayBillRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/bbps/fetch-bill': {
+      id: '/api/bbps/fetch-bill'
+      path: '/api/bbps/fetch-bill'
+      fullPath: '/api/bbps/fetch-bill'
+      preLoaderRoute: typeof ApiBbpsFetchBillRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -609,6 +777,20 @@ declare module '@tanstack/react-router' {
       path: '/api/ai/chat'
       fullPath: '/api/ai/chat'
       preLoaderRoute: typeof ApiAiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/affiliates/offers': {
+      id: '/api/affiliates/offers'
+      path: '/api/affiliates/offers'
+      fullPath: '/api/affiliates/offers'
+      preLoaderRoute: typeof ApiAffiliatesOffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/affiliate/click': {
+      id: '/api/affiliate/click'
+      path: '/api/affiliate/click'
+      fullPath: '/api/affiliate/click'
+      preLoaderRoute: typeof ApiAffiliateClickRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/test-connection': {
@@ -649,6 +831,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
   TutorRoute: TutorRoute,
+  ApiReferralsRoute: ApiReferralsRoute,
   AppFounderCommandRoute: AppFounderCommandRoute,
   DevBrandRoute: DevBrandRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
@@ -661,10 +844,18 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersIndexRoute: OrdersIndexRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiAdminTestConnectionRoute: ApiAdminTestConnectionRoute,
+  ApiAffiliateClickRoute: ApiAffiliateClickRoute,
+  ApiAffiliatesOffersRoute: ApiAffiliatesOffersRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiBbpsFetchBillRoute: ApiBbpsFetchBillRoute,
+  ApiBbpsPayBillRoute: ApiBbpsPayBillRoute,
+  ApiEscrowStatusRoute: ApiEscrowStatusRoute,
+  ApiLoansApplyRoute: ApiLoansApplyRoute,
   ApiRazorpayCreateOrderRoute: ApiRazorpayCreateOrderRoute,
   ApiRazorpayVerifyRoute: ApiRazorpayVerifyRoute,
+  ApiSecurityDeviceIntegrityRoute: ApiSecurityDeviceIntegrityRoute,
+  ApiSecurityDevicePostureRoute: ApiSecurityDevicePostureRoute,
   ApiOrdersOrderIdStreamRoute: ApiOrdersOrderIdStreamRoute,
 }
 export const routeTree = rootRouteImport

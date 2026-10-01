@@ -25,8 +25,10 @@ import { Route as V1AdminRiderOffersRouteImport } from './routes/v1/admin/rider-
 import { Route as V1AdminMasterAiRouteImport } from './routes/v1/admin/master-ai'
 import { Route as V1AdminCustomerOrdersRouteImport } from './routes/v1/admin/customer-orders'
 import { Route as V1AdminCustomerOrderRouteImport } from './routes/v1/admin/customer-order'
+import { Route as V1AdminAffiliatesMetricsRouteImport } from './routes/v1/admin/affiliates-metrics'
 import { Route as V1AdminSplatRouteImport } from './routes/v1/admin/$'
 import { Route as AppModuleIdRouteImport } from './routes/app/$module.$id'
+import { Route as ApiFinanceEscalationsRouteImport } from './routes/api/finance/escalations'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAiTestConnectionRouteImport } from './routes/api/ai/test-connection'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
@@ -37,6 +39,17 @@ import { Route as ApiV1TravelSearchRouteImport } from './routes/api/v1/travel/se
 import { Route as ApiV1TravelBookRouteImport } from './routes/api/v1/travel/book'
 import { Route as ApiV1KingpayTransferRouteImport } from './routes/api/v1/kingpay/transfer'
 import { Route as ApiV1KingpayRazorpayWebhookRouteImport } from './routes/api/v1/kingpay/razorpay-webhook'
+import { Route as ApiV1IntegrationsTravelRouteImport } from './routes/api/v1/integrations/travel'
+import { Route as ApiV1IntegrationsOpenaiRouteImport } from './routes/api/v1/integrations/openai'
+import { Route as ApiV1GrowthQualifyRouteImport } from './routes/api/v1/growth/qualify'
+import { Route as ApiV1FounderSweepRouteImport } from './routes/api/v1/founder/sweep'
+import { Route as ApiV1FounderPrNominationsRouteImport } from './routes/api/v1/founder/pr-nominations'
+import { Route as ApiV1FounderJobsRouteImport } from './routes/api/v1/founder/jobs'
+import { Route as ApiV1FinanceWeeklySettlementReportRouteImport } from './routes/api/v1/finance/weekly-settlement-report'
+import { Route as ApiV1FinanceSubscriptionRouteImport } from './routes/api/v1/finance/subscription'
+import { Route as ApiV1AdminAiProviderTestRouteImport } from './routes/api/v1/admin/ai-provider-test'
+import { Route as ApiFinanceCronRunSettlementRouteImport } from './routes/api/finance/cron/run-settlement'
+import { Route as ApiDispatchCronRunAutoDispatchRouteImport } from './routes/api/dispatch/cron/run-auto-dispatch'
 import { Route as V1AdminOrdersIdRiderTransitionRouteImport } from './routes/v1/admin/orders/$id/rider-transition'
 import { Route as V1AdminCustomerOrdersIdCancelRouteImport } from './routes/v1/admin/customer-orders/$id/cancel'
 
@@ -121,6 +134,12 @@ const V1AdminCustomerOrderRoute = V1AdminCustomerOrderRouteImport.update({
   path: '/v1/admin/customer-order',
   getParentRoute: () => rootRouteImport,
 } as any)
+const V1AdminAffiliatesMetricsRoute =
+  V1AdminAffiliatesMetricsRouteImport.update({
+    id: '/v1/admin/affiliates-metrics',
+    path: '/v1/admin/affiliates-metrics',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const V1AdminSplatRoute = V1AdminSplatRouteImport.update({
   id: '/v1/admin/$',
   path: '/v1/admin/$',
@@ -130,6 +149,11 @@ const AppModuleIdRoute = AppModuleIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AppModuleRoute,
+} as any)
+const ApiFinanceEscalationsRoute = ApiFinanceEscalationsRouteImport.update({
+  id: '/api/finance/escalations',
+  path: '/api/finance/escalations',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -182,6 +206,67 @@ const ApiV1KingpayRazorpayWebhookRoute =
     path: '/api/v1/kingpay/razorpay-webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiV1IntegrationsTravelRoute = ApiV1IntegrationsTravelRouteImport.update({
+  id: '/api/v1/integrations/travel',
+  path: '/api/v1/integrations/travel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1IntegrationsOpenaiRoute = ApiV1IntegrationsOpenaiRouteImport.update({
+  id: '/api/v1/integrations/openai',
+  path: '/api/v1/integrations/openai',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1GrowthQualifyRoute = ApiV1GrowthQualifyRouteImport.update({
+  id: '/api/v1/growth/qualify',
+  path: '/api/v1/growth/qualify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1FounderSweepRoute = ApiV1FounderSweepRouteImport.update({
+  id: '/api/v1/founder/sweep',
+  path: '/api/v1/founder/sweep',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1FounderPrNominationsRoute =
+  ApiV1FounderPrNominationsRouteImport.update({
+    id: '/api/v1/founder/pr-nominations',
+    path: '/api/v1/founder/pr-nominations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1FounderJobsRoute = ApiV1FounderJobsRouteImport.update({
+  id: '/api/v1/founder/jobs',
+  path: '/api/v1/founder/jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1FinanceWeeklySettlementReportRoute =
+  ApiV1FinanceWeeklySettlementReportRouteImport.update({
+    id: '/api/v1/finance/weekly-settlement-report',
+    path: '/api/v1/finance/weekly-settlement-report',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1FinanceSubscriptionRoute =
+  ApiV1FinanceSubscriptionRouteImport.update({
+    id: '/api/v1/finance/subscription',
+    path: '/api/v1/finance/subscription',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1AdminAiProviderTestRoute =
+  ApiV1AdminAiProviderTestRouteImport.update({
+    id: '/api/v1/admin/ai-provider-test',
+    path: '/api/v1/admin/ai-provider-test',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiFinanceCronRunSettlementRoute =
+  ApiFinanceCronRunSettlementRouteImport.update({
+    id: '/api/finance/cron/run-settlement',
+    path: '/api/finance/cron/run-settlement',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiDispatchCronRunAutoDispatchRoute =
+  ApiDispatchCronRunAutoDispatchRouteImport.update({
+    id: '/api/dispatch/cron/run-auto-dispatch',
+    path: '/api/dispatch/cron/run-auto-dispatch',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const V1AdminOrdersIdRiderTransitionRoute =
   V1AdminOrdersIdRiderTransitionRouteImport.update({
     id: '/v1/admin/orders/$id/rider-transition',
@@ -208,8 +293,10 @@ export interface FileRoutesByFullPath {
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/ai/test-connection': typeof ApiAiTestConnectionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/finance/escalations': typeof ApiFinanceEscalationsRoute
   '/app/$module/$id': typeof AppModuleIdRoute
   '/v1/admin/$': typeof V1AdminSplatRoute
+  '/v1/admin/affiliates-metrics': typeof V1AdminAffiliatesMetricsRoute
   '/v1/admin/customer-order': typeof V1AdminCustomerOrderRoute
   '/v1/admin/customer-orders': typeof V1AdminCustomerOrdersRouteWithChildren
   '/v1/admin/master-ai': typeof V1AdminMasterAiRoute
@@ -217,6 +304,17 @@ export interface FileRoutesByFullPath {
   '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
   '/v1/travel/$': typeof V1TravelSplatRoute
+  '/api/dispatch/cron/run-auto-dispatch': typeof ApiDispatchCronRunAutoDispatchRoute
+  '/api/finance/cron/run-settlement': typeof ApiFinanceCronRunSettlementRoute
+  '/api/v1/admin/ai-provider-test': typeof ApiV1AdminAiProviderTestRoute
+  '/api/v1/finance/subscription': typeof ApiV1FinanceSubscriptionRoute
+  '/api/v1/finance/weekly-settlement-report': typeof ApiV1FinanceWeeklySettlementReportRoute
+  '/api/v1/founder/jobs': typeof ApiV1FounderJobsRoute
+  '/api/v1/founder/pr-nominations': typeof ApiV1FounderPrNominationsRoute
+  '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
+  '/api/v1/growth/qualify': typeof ApiV1GrowthQualifyRoute
+  '/api/v1/integrations/openai': typeof ApiV1IntegrationsOpenaiRoute
+  '/api/v1/integrations/travel': typeof ApiV1IntegrationsTravelRoute
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
   '/api/v1/kingpay/transfer': typeof ApiV1KingpayTransferRoute
   '/api/v1/travel/book': typeof ApiV1TravelBookRoute
@@ -239,8 +337,10 @@ export interface FileRoutesByTo {
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/ai/test-connection': typeof ApiAiTestConnectionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/finance/escalations': typeof ApiFinanceEscalationsRoute
   '/app/$module/$id': typeof AppModuleIdRoute
   '/v1/admin/$': typeof V1AdminSplatRoute
+  '/v1/admin/affiliates-metrics': typeof V1AdminAffiliatesMetricsRoute
   '/v1/admin/customer-order': typeof V1AdminCustomerOrderRoute
   '/v1/admin/customer-orders': typeof V1AdminCustomerOrdersRouteWithChildren
   '/v1/admin/master-ai': typeof V1AdminMasterAiRoute
@@ -248,6 +348,17 @@ export interface FileRoutesByTo {
   '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
   '/v1/travel/$': typeof V1TravelSplatRoute
+  '/api/dispatch/cron/run-auto-dispatch': typeof ApiDispatchCronRunAutoDispatchRoute
+  '/api/finance/cron/run-settlement': typeof ApiFinanceCronRunSettlementRoute
+  '/api/v1/admin/ai-provider-test': typeof ApiV1AdminAiProviderTestRoute
+  '/api/v1/finance/subscription': typeof ApiV1FinanceSubscriptionRoute
+  '/api/v1/finance/weekly-settlement-report': typeof ApiV1FinanceWeeklySettlementReportRoute
+  '/api/v1/founder/jobs': typeof ApiV1FounderJobsRoute
+  '/api/v1/founder/pr-nominations': typeof ApiV1FounderPrNominationsRoute
+  '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
+  '/api/v1/growth/qualify': typeof ApiV1GrowthQualifyRoute
+  '/api/v1/integrations/openai': typeof ApiV1IntegrationsOpenaiRoute
+  '/api/v1/integrations/travel': typeof ApiV1IntegrationsTravelRoute
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
   '/api/v1/kingpay/transfer': typeof ApiV1KingpayTransferRoute
   '/api/v1/travel/book': typeof ApiV1TravelBookRoute
@@ -272,8 +383,10 @@ export interface FileRoutesById {
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/ai/test-connection': typeof ApiAiTestConnectionRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/finance/escalations': typeof ApiFinanceEscalationsRoute
   '/app/$module/$id': typeof AppModuleIdRoute
   '/v1/admin/$': typeof V1AdminSplatRoute
+  '/v1/admin/affiliates-metrics': typeof V1AdminAffiliatesMetricsRoute
   '/v1/admin/customer-order': typeof V1AdminCustomerOrderRoute
   '/v1/admin/customer-orders': typeof V1AdminCustomerOrdersRouteWithChildren
   '/v1/admin/master-ai': typeof V1AdminMasterAiRoute
@@ -281,6 +394,17 @@ export interface FileRoutesById {
   '/v1/admin/settlement-escalations': typeof V1AdminSettlementEscalationsRoute
   '/v1/payments/$': typeof V1PaymentsSplatRoute
   '/v1/travel/$': typeof V1TravelSplatRoute
+  '/api/dispatch/cron/run-auto-dispatch': typeof ApiDispatchCronRunAutoDispatchRoute
+  '/api/finance/cron/run-settlement': typeof ApiFinanceCronRunSettlementRoute
+  '/api/v1/admin/ai-provider-test': typeof ApiV1AdminAiProviderTestRoute
+  '/api/v1/finance/subscription': typeof ApiV1FinanceSubscriptionRoute
+  '/api/v1/finance/weekly-settlement-report': typeof ApiV1FinanceWeeklySettlementReportRoute
+  '/api/v1/founder/jobs': typeof ApiV1FounderJobsRoute
+  '/api/v1/founder/pr-nominations': typeof ApiV1FounderPrNominationsRoute
+  '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
+  '/api/v1/growth/qualify': typeof ApiV1GrowthQualifyRoute
+  '/api/v1/integrations/openai': typeof ApiV1IntegrationsOpenaiRoute
+  '/api/v1/integrations/travel': typeof ApiV1IntegrationsTravelRoute
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
   '/api/v1/kingpay/transfer': typeof ApiV1KingpayTransferRoute
   '/api/v1/travel/book': typeof ApiV1TravelBookRoute
@@ -306,8 +430,10 @@ export interface FileRouteTypes {
     | '/api/ai/chat'
     | '/api/ai/test-connection'
     | '/api/auth/$'
+    | '/api/finance/escalations'
     | '/app/$module/$id'
     | '/v1/admin/$'
+    | '/v1/admin/affiliates-metrics'
     | '/v1/admin/customer-order'
     | '/v1/admin/customer-orders'
     | '/v1/admin/master-ai'
@@ -315,6 +441,17 @@ export interface FileRouteTypes {
     | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
     | '/v1/travel/$'
+    | '/api/dispatch/cron/run-auto-dispatch'
+    | '/api/finance/cron/run-settlement'
+    | '/api/v1/admin/ai-provider-test'
+    | '/api/v1/finance/subscription'
+    | '/api/v1/finance/weekly-settlement-report'
+    | '/api/v1/founder/jobs'
+    | '/api/v1/founder/pr-nominations'
+    | '/api/v1/founder/sweep'
+    | '/api/v1/growth/qualify'
+    | '/api/v1/integrations/openai'
+    | '/api/v1/integrations/travel'
     | '/api/v1/kingpay/razorpay-webhook'
     | '/api/v1/kingpay/transfer'
     | '/api/v1/travel/book'
@@ -337,8 +474,10 @@ export interface FileRouteTypes {
     | '/api/ai/chat'
     | '/api/ai/test-connection'
     | '/api/auth/$'
+    | '/api/finance/escalations'
     | '/app/$module/$id'
     | '/v1/admin/$'
+    | '/v1/admin/affiliates-metrics'
     | '/v1/admin/customer-order'
     | '/v1/admin/customer-orders'
     | '/v1/admin/master-ai'
@@ -346,6 +485,17 @@ export interface FileRouteTypes {
     | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
     | '/v1/travel/$'
+    | '/api/dispatch/cron/run-auto-dispatch'
+    | '/api/finance/cron/run-settlement'
+    | '/api/v1/admin/ai-provider-test'
+    | '/api/v1/finance/subscription'
+    | '/api/v1/finance/weekly-settlement-report'
+    | '/api/v1/founder/jobs'
+    | '/api/v1/founder/pr-nominations'
+    | '/api/v1/founder/sweep'
+    | '/api/v1/growth/qualify'
+    | '/api/v1/integrations/openai'
+    | '/api/v1/integrations/travel'
     | '/api/v1/kingpay/razorpay-webhook'
     | '/api/v1/kingpay/transfer'
     | '/api/v1/travel/book'
@@ -369,8 +519,10 @@ export interface FileRouteTypes {
     | '/api/ai/chat'
     | '/api/ai/test-connection'
     | '/api/auth/$'
+    | '/api/finance/escalations'
     | '/app/$module/$id'
     | '/v1/admin/$'
+    | '/v1/admin/affiliates-metrics'
     | '/v1/admin/customer-order'
     | '/v1/admin/customer-orders'
     | '/v1/admin/master-ai'
@@ -378,6 +530,17 @@ export interface FileRouteTypes {
     | '/v1/admin/settlement-escalations'
     | '/v1/payments/$'
     | '/v1/travel/$'
+    | '/api/dispatch/cron/run-auto-dispatch'
+    | '/api/finance/cron/run-settlement'
+    | '/api/v1/admin/ai-provider-test'
+    | '/api/v1/finance/subscription'
+    | '/api/v1/finance/weekly-settlement-report'
+    | '/api/v1/founder/jobs'
+    | '/api/v1/founder/pr-nominations'
+    | '/api/v1/founder/sweep'
+    | '/api/v1/growth/qualify'
+    | '/api/v1/integrations/openai'
+    | '/api/v1/integrations/travel'
     | '/api/v1/kingpay/razorpay-webhook'
     | '/api/v1/kingpay/transfer'
     | '/api/v1/travel/book'
@@ -400,7 +563,9 @@ export interface RootRouteChildren {
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiAiTestConnectionRoute: typeof ApiAiTestConnectionRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiFinanceEscalationsRoute: typeof ApiFinanceEscalationsRoute
   V1AdminSplatRoute: typeof V1AdminSplatRoute
+  V1AdminAffiliatesMetricsRoute: typeof V1AdminAffiliatesMetricsRoute
   V1AdminCustomerOrderRoute: typeof V1AdminCustomerOrderRoute
   V1AdminCustomerOrdersRoute: typeof V1AdminCustomerOrdersRouteWithChildren
   V1AdminMasterAiRoute: typeof V1AdminMasterAiRoute
@@ -408,6 +573,17 @@ export interface RootRouteChildren {
   V1AdminSettlementEscalationsRoute: typeof V1AdminSettlementEscalationsRoute
   V1PaymentsSplatRoute: typeof V1PaymentsSplatRoute
   V1TravelSplatRoute: typeof V1TravelSplatRoute
+  ApiDispatchCronRunAutoDispatchRoute: typeof ApiDispatchCronRunAutoDispatchRoute
+  ApiFinanceCronRunSettlementRoute: typeof ApiFinanceCronRunSettlementRoute
+  ApiV1AdminAiProviderTestRoute: typeof ApiV1AdminAiProviderTestRoute
+  ApiV1FinanceSubscriptionRoute: typeof ApiV1FinanceSubscriptionRoute
+  ApiV1FinanceWeeklySettlementReportRoute: typeof ApiV1FinanceWeeklySettlementReportRoute
+  ApiV1FounderJobsRoute: typeof ApiV1FounderJobsRoute
+  ApiV1FounderPrNominationsRoute: typeof ApiV1FounderPrNominationsRoute
+  ApiV1FounderSweepRoute: typeof ApiV1FounderSweepRoute
+  ApiV1GrowthQualifyRoute: typeof ApiV1GrowthQualifyRoute
+  ApiV1IntegrationsOpenaiRoute: typeof ApiV1IntegrationsOpenaiRoute
+  ApiV1IntegrationsTravelRoute: typeof ApiV1IntegrationsTravelRoute
   ApiV1KingpayRazorpayWebhookRoute: typeof ApiV1KingpayRazorpayWebhookRoute
   ApiV1KingpayTransferRoute: typeof ApiV1KingpayTransferRoute
   ApiV1TravelBookRoute: typeof ApiV1TravelBookRoute
@@ -531,6 +707,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof V1AdminCustomerOrderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/v1/admin/affiliates-metrics': {
+      id: '/v1/admin/affiliates-metrics'
+      path: '/v1/admin/affiliates-metrics'
+      fullPath: '/v1/admin/affiliates-metrics'
+      preLoaderRoute: typeof V1AdminAffiliatesMetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/v1/admin/$': {
       id: '/v1/admin/$'
       path: '/v1/admin/$'
@@ -544,6 +727,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/$module/$id'
       preLoaderRoute: typeof AppModuleIdRouteImport
       parentRoute: typeof AppModuleRoute
+    }
+    '/api/finance/escalations': {
+      id: '/api/finance/escalations'
+      path: '/api/finance/escalations'
+      fullPath: '/api/finance/escalations'
+      preLoaderRoute: typeof ApiFinanceEscalationsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -613,6 +803,83 @@ declare module '@tanstack/react-router' {
       path: '/api/v1/kingpay/razorpay-webhook'
       fullPath: '/api/v1/kingpay/razorpay-webhook'
       preLoaderRoute: typeof ApiV1KingpayRazorpayWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/integrations/travel': {
+      id: '/api/v1/integrations/travel'
+      path: '/api/v1/integrations/travel'
+      fullPath: '/api/v1/integrations/travel'
+      preLoaderRoute: typeof ApiV1IntegrationsTravelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/integrations/openai': {
+      id: '/api/v1/integrations/openai'
+      path: '/api/v1/integrations/openai'
+      fullPath: '/api/v1/integrations/openai'
+      preLoaderRoute: typeof ApiV1IntegrationsOpenaiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/growth/qualify': {
+      id: '/api/v1/growth/qualify'
+      path: '/api/v1/growth/qualify'
+      fullPath: '/api/v1/growth/qualify'
+      preLoaderRoute: typeof ApiV1GrowthQualifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/founder/sweep': {
+      id: '/api/v1/founder/sweep'
+      path: '/api/v1/founder/sweep'
+      fullPath: '/api/v1/founder/sweep'
+      preLoaderRoute: typeof ApiV1FounderSweepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/founder/pr-nominations': {
+      id: '/api/v1/founder/pr-nominations'
+      path: '/api/v1/founder/pr-nominations'
+      fullPath: '/api/v1/founder/pr-nominations'
+      preLoaderRoute: typeof ApiV1FounderPrNominationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/founder/jobs': {
+      id: '/api/v1/founder/jobs'
+      path: '/api/v1/founder/jobs'
+      fullPath: '/api/v1/founder/jobs'
+      preLoaderRoute: typeof ApiV1FounderJobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/finance/weekly-settlement-report': {
+      id: '/api/v1/finance/weekly-settlement-report'
+      path: '/api/v1/finance/weekly-settlement-report'
+      fullPath: '/api/v1/finance/weekly-settlement-report'
+      preLoaderRoute: typeof ApiV1FinanceWeeklySettlementReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/finance/subscription': {
+      id: '/api/v1/finance/subscription'
+      path: '/api/v1/finance/subscription'
+      fullPath: '/api/v1/finance/subscription'
+      preLoaderRoute: typeof ApiV1FinanceSubscriptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/admin/ai-provider-test': {
+      id: '/api/v1/admin/ai-provider-test'
+      path: '/api/v1/admin/ai-provider-test'
+      fullPath: '/api/v1/admin/ai-provider-test'
+      preLoaderRoute: typeof ApiV1AdminAiProviderTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/finance/cron/run-settlement': {
+      id: '/api/finance/cron/run-settlement'
+      path: '/api/finance/cron/run-settlement'
+      fullPath: '/api/finance/cron/run-settlement'
+      preLoaderRoute: typeof ApiFinanceCronRunSettlementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/dispatch/cron/run-auto-dispatch': {
+      id: '/api/dispatch/cron/run-auto-dispatch'
+      path: '/api/dispatch/cron/run-auto-dispatch'
+      fullPath: '/api/dispatch/cron/run-auto-dispatch'
+      preLoaderRoute: typeof ApiDispatchCronRunAutoDispatchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/v1/admin/orders/$id/rider-transition': {
@@ -696,7 +963,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAiChatRoute: ApiAiChatRoute,
   ApiAiTestConnectionRoute: ApiAiTestConnectionRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiFinanceEscalationsRoute: ApiFinanceEscalationsRoute,
   V1AdminSplatRoute: V1AdminSplatRoute,
+  V1AdminAffiliatesMetricsRoute: V1AdminAffiliatesMetricsRoute,
   V1AdminCustomerOrderRoute: V1AdminCustomerOrderRoute,
   V1AdminCustomerOrdersRoute: V1AdminCustomerOrdersRouteWithChildren,
   V1AdminMasterAiRoute: V1AdminMasterAiRoute,
@@ -704,6 +973,18 @@ const rootRouteChildren: RootRouteChildren = {
   V1AdminSettlementEscalationsRoute: V1AdminSettlementEscalationsRoute,
   V1PaymentsSplatRoute: V1PaymentsSplatRoute,
   V1TravelSplatRoute: V1TravelSplatRoute,
+  ApiDispatchCronRunAutoDispatchRoute: ApiDispatchCronRunAutoDispatchRoute,
+  ApiFinanceCronRunSettlementRoute: ApiFinanceCronRunSettlementRoute,
+  ApiV1AdminAiProviderTestRoute: ApiV1AdminAiProviderTestRoute,
+  ApiV1FinanceSubscriptionRoute: ApiV1FinanceSubscriptionRoute,
+  ApiV1FinanceWeeklySettlementReportRoute:
+    ApiV1FinanceWeeklySettlementReportRoute,
+  ApiV1FounderJobsRoute: ApiV1FounderJobsRoute,
+  ApiV1FounderPrNominationsRoute: ApiV1FounderPrNominationsRoute,
+  ApiV1FounderSweepRoute: ApiV1FounderSweepRoute,
+  ApiV1GrowthQualifyRoute: ApiV1GrowthQualifyRoute,
+  ApiV1IntegrationsOpenaiRoute: ApiV1IntegrationsOpenaiRoute,
+  ApiV1IntegrationsTravelRoute: ApiV1IntegrationsTravelRoute,
   ApiV1KingpayRazorpayWebhookRoute: ApiV1KingpayRazorpayWebhookRoute,
   ApiV1KingpayTransferRoute: ApiV1KingpayTransferRoute,
   ApiV1TravelBookRoute: ApiV1TravelBookRoute,

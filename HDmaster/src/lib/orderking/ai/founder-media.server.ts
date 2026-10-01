@@ -5,7 +5,7 @@ import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
 import { executeFounderTool } from "./founder-tools.server";
 
 export const generateFounderImage = createServerFn({ method: "POST" })
-  .validator((data: { prompt: string; size?: string; quality?: string }) => {
+  .inputValidator((data: { prompt: string; size?: string; quality?: string }) => {
     const prompt = typeof data.prompt === "string" ? data.prompt.trim() : "";
     if (!prompt) throw new Error("IMAGE_PROMPT_REQUIRED");
     if (prompt.length > 8000) throw new Error("IMAGE_PROMPT_TOO_LONG");
@@ -39,3 +39,4 @@ export const generateFounderImage = createServerFn({ method: "POST" })
       generatedAt: new Date().toISOString(),
     };
   });
+

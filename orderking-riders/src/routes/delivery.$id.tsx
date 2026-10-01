@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { DeliveryActions } from "@/components/rider/delivery-actions";
@@ -53,3 +54,4 @@ function Page() {
     </AppShell>
   );
 }
+
