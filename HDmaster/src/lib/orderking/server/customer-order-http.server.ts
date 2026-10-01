@@ -6,6 +6,7 @@ import { getSql } from "@/lib/db";
 import { z } from "zod";
 import { appendImmutableEvent } from "../audit/immutable-event.server";
 import { fetchRazorpayPayment, verifyCheckoutSignature } from "../payments/razorpay.server";
+import { buildQuote } from "./quote";
 
 function json(body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } }); }
 function serviceUserId(request: Request): string { const authorization = request.headers.get("authorization")?.trim(); const token = process.env.ORDERKING_SERVICE_TOKEN?.trim(); const userId = process.env.ORDERKING_SERVICE_USER_ID?.trim(); if (!token || !userId || authorization !== `Bearer ${token}`) throw new Error("Unauthorized"); return userId; }
@@ -97,6 +98,27 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     if (!restaurant[0]) return json({ error: "Restaurant not found", code: "RESTAURANT_NOT_FOUND" }, 404);
     if (restaurant[0].city_id !== input.cityId || restaurant[0].zone_id !== input.zoneId) return json({ error: "Restaurant serviceability mismatch", code: "SERVICEABILITY_MISMATCH" }, 409);
     if (!["ACTIVE", "OPEN"].includes(restaurant[0].status)) return json({ error: "Restaurant is not accepting orders", code: "RESTAURANT_UNAVAILABLE" }, 409);
+    const quoteBuild = await buildQuote(
+      {
+        restaurantId: input.restaurantId,
+        zoneId: input.zoneId,
+        lat: input.address.lat ?? 0,
+        lng: input.address.lng ?? 0,
+        lines: input.lines.map((line) => ({
+          itemId: line.itemId,
+          variantId: null,
+          quantity: line.qty,
+          instructions: "",
+          unitPaise: line.unitPaise,
+          addons: [],
+        })),
+      },
+      false,
+    );
+    if (quoteBuild.result.quote.blockers.length) {
+      return json({ error: "Order blocked", details: quoteBuild.result.quote.blockers, code: "QUOTE_BLOCKED" }, 409);
+    }
+    const built = quoteBuild;
     const menu = await sql<{ id: string; name: string; price_paise: number; available: number }>`select id,name,price_paise,available from menu_items where org_id=${ws.ctx.orgId} and restaurant_id=${input.restaurantId}`;
     const menuById = new Map(menu.map((item) => [item.id, item]));
     for (const line of input.lines) { const item = menuById.get(line.itemId); if (!item || !item.available) return json({ error: `Menu item unavailable: ${line.itemId}`, code: "MENU_ITEM_UNAVAILABLE" }, 409); if (item.price_paise !== line.unitPaise) return json({ error: `Menu price changed for ${item.name}; refresh the menu and retry`, code: "MENU_PRICE_CHANGED" }, 409); }
