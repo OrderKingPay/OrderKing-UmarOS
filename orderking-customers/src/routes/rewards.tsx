@@ -318,7 +318,7 @@ function RewardsPage() {
             <span className="text-xl">💳</span>
             <div>
               <p className="font-semibold text-fg">KingPay Fintech Hub</p>
-              <p className="text-muted">Recharges, Bill Pay, Train & Bus Tickets with extra cashback</p>
+              <p className="text-muted">Provider-linked services and verified partner offers</p>
             </div>
           </div>
           <Button size="sm" variant="primary" asChild>
@@ -358,7 +358,7 @@ function RewardsPage() {
                     Tap to Scratch & Reveal
                   </p>
                   <p className="text-[11px] text-muted">
-                    Win up to 5,000 King Coins or Amazon / Fuel Vouchers
+                    Verified partner rewards appear only after a live offer is active.
                   </p>
                 </div>
               </button>
@@ -427,7 +427,7 @@ function RewardsPage() {
         </div>
 
         {/* Alliance Rewards Grid */}
-        <div className="space-y-3">
+        <div id="verified-affiliate-offers" className="space-y-3">
           {!affiliatePartners.isPending && finalRewards.length === 0 && (
             <div className="rounded-[var(--radius-xl)] border border-border bg-surface p-5 text-center shadow-xs">
               <p className="font-semibold text-sm text-fg">No verified affiliate offers are active</p>
