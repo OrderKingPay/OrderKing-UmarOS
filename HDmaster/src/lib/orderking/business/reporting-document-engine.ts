@@ -102,7 +102,7 @@ export class ReportingDocumentEngine {
     switch (reportType) {
       case 'DAILY_FOUNDER_BRIEFING':
         title = `Daily Founder Executive Briefing (${periodEnd})`;
-        summary = `Operational and financial pulse for Order King. Zero-commission marketplace dynamics, ledger status, and active operational alerts.`;
+        summary = `Operational and financial pulse for OrderKing from canonical ledger, order, settlement, and alert sources.`;
         sections = this.buildDailyFounderBriefing(params);
         break;
 
@@ -120,7 +120,7 @@ export class ReportingDocumentEngine {
 
       case 'RESTAURANT_SETTLEMENT_STATEMENT':
         title = `Restaurant Partner Settlement Statement - ${params.restaurantId || 'All Merchants'}`;
-        summary = `Reconciled merchant statement with 0% platform commission audit, packaging charges, GST collected at source, and bank clearing status.`;
+        summary = `Reconciled merchant statement with platform charges, packaging, tax, and provider clearing status from canonical ledger data.`;
         sections = this.buildRestaurantSettlement(params);
         break;
 
@@ -244,44 +244,56 @@ export class ReportingDocumentEngine {
     }];
   }
   private static buildWeeklyFounderExecutive(params: ReportGenerationParams): ReportSection[] {
+    const d = params.customData || {};
+    const metric = (key: string, label: string, category: DataTrustCategory = "FACT", unit?: string): AttributedMetric | null => {
+      const value = d[key];
+      if (typeof value !== "number" && typeof value !== "string") return null;
+      return { key, label, value, category, unit, sourceNote: category === "FACT" ? "Canonical production data supplied to report engine" : "Calculated from supplied production metrics" };
+    };
+
+    const metrics = [
+      metric("weekly_orders", "Total Weekly Orders"),
+      metric("wow_order_growth", "WoW Order Growth Rate", "CALCULATION", "%"),
+      metric("weekly_gmv_paise", "Weekly GMV", "FACT", "paise"),
+      metric("blended_take_rate_bps", "Blended Platform Take Rate", "CALCULATION", "bps"),
+      metric("projected_monthly_gmv_paise", "Projected Monthly GMV Run-rate", "ESTIMATE", "paise"),
+    ].filter(Boolean) as AttributedMetric[];
+
+    const dailyRows = Array.isArray(d.dailyBreakdown)
+      ? d.dailyBreakdown
+          .filter((row: any) => row && typeof row.day === "string")
+          .map((row: any) => [
+            row.day,
+            row.orders ?? "—",
+            row.gmvPaise != null ? Number(row.gmvPaise) : "—",
+            row.platformRevenuePaise != null ? Number(row.platformRevenuePaise) : "—",
+            row.activeFleet ?? "—",
+          ])
+      : [];
+
     return [
       {
-        id: 'weekly_growth',
-        title: 'Weekly Performance & Growth Trajectory',
-        metrics: [
-          { key: 'weekly_orders', label: 'Total Weekly Orders', value: 984, category: 'FACT' },
-          { key: 'wow_order_growth', label: 'WoW Order Growth Rate', value: '+14.8%', category: 'CALCULATION' },
-          { key: 'weekly_gmv', label: 'Weekly GMV', value: '₹3,64,200', category: 'FACT' },
-          { key: 'blended_take_rate', label: 'Blended Platform Take Rate', value: '5.4%', category: 'CALCULATION', sourceNote: 'Sub fees + ad auctions + delivery markup' },
-          { key: 'projected_monthly_runrate', label: 'Projected Monthly GMV Run-rate', value: '₹15,60,000', category: 'ESTIMATE', confidenceScore: 0.88 },
-        ],
-        tables: [
-          {
-            title: 'Daily Breakdown',
-            headers: ['Day', 'Orders', 'GMV', 'Platform Rev', 'Active Fleet'],
-            rows: [
-              ['Mon', '120', '₹44,100', '₹2,400', '15'],
-              ['Tue', '132', '₹48,900', '₹2,640', '16'],
-              ['Wed', '128', '₹47,200', '₹2,560', '16'],
-              ['Thu', '140', '₹51,800', '₹2,800', '17'],
-              ['Fri', '165', '₹61,050', '₹3,300', '20'],
-              ['Sat', '180', '₹66,600', '₹3,600', '22'],
-              ['Sun', '119', '₹44,550', '₹2,380', '18'],
-            ],
-          },
+        id: "weekly_growth",
+        title: "Weekly Performance & Growth Trajectory",
+        description: "Only verified production values or explicitly marked estimates supplied to the report engine are included.",
+        metrics,
+        tables: dailyRows.length
+          ? [{ title: "Daily Breakdown", headers: ["Day", "Orders", "GMV (paise)", "Platform Revenue (paise)", "Active Fleet"], rows: dailyRows }]
+          : [],
+        notes: [
+          dailyRows.length ? "Daily breakdown sourced from supplied production telemetry." : "Daily breakdown: DATA_REQUIRED",
         ],
       },
       {
-        id: 'strategic_insights',
-        title: 'Strategic Unit Economics & AI Insights',
-        recommendations: [
-          'Merchant retention remains at 96.4% due to zero-commission policy.',
-          'Rider hourly earnings averaged ₹142/hr, 18% above regional gig baseline.',
-          'Consider launching King Pay UPI auto-debit for merchant weekly subscription renewals.',
-        ],
+        id: "strategic_insights",
+        title: "Strategic Unit Economics & AI Insights",
+        recommendations: Array.isArray(d.recommendations)
+          ? d.recommendations
+          : ["No unverified strategic recommendation is generated without live evidence."],
       },
     ];
   }
+
 
   private static buildFinancePL(params: ReportGenerationParams): ReportSection[] {
     const d = params.customData || {};
