@@ -22,9 +22,6 @@ export const placeOrder = createServerFn({ method: "POST" }).middleware([authMid
   if (production && cfg.marketplace.launchMode !== "live") {
     throw new Error("Order placement is unavailable until HDmaster live mode is connected.");
   }
-  if (production && data.paymentMethod === "KING_PAY") {
-    throw new Error("Sandbox UPI is not available in production.");
-  }
   const sql = await getSql();
   const existing = await sql<{ id: string; public_id: string }>`select id, public_id from orders where idempotency_key = ${data.idempotencyKey} and user_id = ${context.userId}`; if (existing[0]) return { orderId: existing[0].id, publicId: existing[0].public_id, duplicate: true }; const first = await isFirstOrder(context.userId); const built = await buildQuote({ restaurantId: data.restaurantId, zoneId: data.zoneId, lat: data.lat, lng: data.lng, coupon: data.coupon, lines: data.lines }, first); if (built.result.quote.blockers.length) throw new Error(`Order blocked: ${built.result.quote.blockers.join(", ")}`); if (cfg.marketplace.launchMode === "live") {
       const { hdmasterConfig } = await import("./hdmaster-orders");
