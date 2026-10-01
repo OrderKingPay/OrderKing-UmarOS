@@ -1246,110 +1246,143 @@ export async function executeTool(
     }
     case "audit_customer_grievance_compliance": {
       requirePermission(ws.ctx, "manage_support");
+      const sql = await getSql();
+      const [tickets,open,avgSla,comp] = await Promise.all([
+        sql`SELECT COUNT(*)::int AS total FROM support_tickets WHERE created_at >= NOW()-INTERVAL '30 days'`,
+        sql`SELECT COUNT(*)::int AS total FROM support_tickets WHERE status IN ('open','OPEN','pending')`,
+        sql`SELECT COALESCE(AVG(EXTRACT(EPOCH FROM (updated_at-created_at))/60),0)::numeric AS avg_minutes FROM support_tickets WHERE status IN ('resolved','closed') AND updated_at >= NOW()-INTERVAL '30 days'`,
+        sql`SELECT COUNT(*)::int AS count, COALESCE(SUM(amount_paise),0)::bigint AS paise FROM refunds WHERE created_at >= NOW()-INTERVAL '30 days'`,
+      ]);
+      const total = Number(tickets[0]?.total||0);
+      const openCount = Number(open[0]?.total||0);
+      const avgMinutes = Number(avgSla[0]?.avg_minutes||0);
       return {
-        status: "AUDIT_COMPLIANT",
+        status: "LIVE_MEASURED",
         timestamp: new Date().toISOString(),
-        slaComplianceRate: "99.8%",
-        averageResolutionTimeMinutes: 12.4,
+        totalTickets30d: total,
+        openTickets: openCount,
+        averageResolutionTimeMinutes: Number(avgMinutes.toFixed(2)),
+        refundCount30d: Number(comp[0]?.count||0),
+        refundAmountPaise30d: Number(comp[0]?.paise||0),
         slaThresholdMinutes: 30,
-        autoDisbursedDelayCompensationsCount: 14,
-        totalCompensationPaise: 70000,
-        statutoryEscalations: {
-          nchCount: 0,
-          rbiCmsCount: 0,
-          cyberCrimeCount: 0,
-          fssaiCount: 0,
-        },
-        ombudsmanDirectLinksActive: true,
-        zeroHeadachePosture: "ACTIVE_ZERO_HUMAN_HEADCOUNT",
+        slaComplianceRate: total === 0 ? null : Number(Math.max(0, Math.min(100, ((total-openCount)/total)*100)).toFixed(2)),
+        statutoryEscalations: "NOT_INFERRED",
       };
     }
 
     case "audit_merchant_and_rider_grievance_compliance": {
       requirePermission(ws.ctx, "manage_support");
+      const sql = await getSql();
+      const [rider,merchant] = await Promise.all([
+        sql`SELECT COUNT(*)::int AS total,
+                    COUNT(*) FILTER (WHERE status IN ('resolved','closed'))::int AS resolved
+             FROM rider_support_tickets
+             WHERE created_at >= NOW()-INTERVAL '30 days'`,
+        sql`SELECT COUNT(*)::int AS total,
+                    COUNT(*) FILTER (WHERE status IN ('resolved','closed'))::int AS resolved
+             FROM restaurant_support_tickets
+             WHERE created_at >= NOW()-INTERVAL '30 days'`,
+      ]);
       return {
-        status: "AUDIT_COMPLIANT",
+        status: "LIVE_MEASURED",
         timestamp: new Date().toISOString(),
         riderGrievances: {
-          totalTickets: 24,
-          resolvedByAiCount: 23,
-          waitCompensationDisbursedPaise: 45000,
-          averageResolutionSeconds: 8.2,
-          statutoryEscalations: 0,
-          moleEshramStatus: "COMPLIANT",
+          totalTickets30d: Number(rider[0]?.total||0),
+          resolvedTickets30d: Number(rider[0]?.resolved||0),
         },
         merchantGrievances: {
-          totalTickets: 12,
-          resolvedByAiCount: 12,
-          cancellationReimbursementsPaise: 120000,
-          settlementAuditDisputesCount: 0,
-          msmeSamadhaanStatus: "COMPLIANT",
-          fssaiComplianceStatus: "100_PERCENT_VERIFIED",
+          totalTickets30d: Number(merchant[0]?.total||0),
+          resolvedTickets30d: Number(merchant[0]?.resolved||0),
         },
-        zeroHeadachePosture: "FULL_AUTOMATION_ACTIVE",
+        statutoryComplianceStatus: "NOT_INFERRED",
       };
     }
 
     case "audit_offline_2g_settlement_sync": {
       requirePermission(ws.ctx, "view_finance");
+      const sql = await getSql();
+      const rows = await sql`
+        SELECT
+          COUNT(*) FILTER (WHERE status IN ('pending','queued'))::int AS queued_count,
+          COALESCE(SUM(CASE WHEN status IN ('pending','queued') THEN amount_paise ELSE 0 END),0)::bigint AS queued_paise
+        FROM payment_webhook_events
+        WHERE created_at >= NOW()-INTERVAL '7 days'
+      `;
+      const failed = await sql`
+        SELECT COUNT(*)::int AS count
+        FROM payment_webhook_events
+        WHERE processing_error IS NOT NULL
+          AND created_at >= NOW()-INTERVAL '7 days'
+      `;
       return {
-        status: "SYNC_VERIFIED",
+        status: "LIVE_MEASURED",
         timestamp: new Date().toISOString(),
-        queuedTransactionsCount: 18,
-        totalQueuedPaise: 425000,
-        cryptographicTokenIntegrity: "VERIFIED",
-        doubleSpendCheck: "PASS_ZERO_COLLISIONS",
-        batchSettlementStatus: "CLEARED_TO_ESCROW",
-        ussdFallbackActive: true,
+        queuedTransactionsCount: Number(rows[0]?.queued_count||0),
+        totalQueuedPaise: Number(rows[0]?.queued_paise||0),
+        webhookFailures7d: Number(failed[0]?.count||0),
+        cryptographicTokenIntegrity: "IMMUTABLE_EVENT_LEDGER",
+        doubleSpendCheck: "SEE_PAYMENT_IDEMPOTENCY",
+        batchSettlementStatus: "NOT_ASSERTED",
       };
     }
 
     case "audit_loan_and_card_affiliate_commissions": {
       requirePermission(ws.ctx, "view_finance");
+      const sql = await getSql();
+      const rows = await sql`
+        SELECT
+          p.id,
+          p.name AS partner,
+          p.category,
+          COUNT(DISTINCT c.id)::int AS clicks,
+          COUNT(DISTINCT v.id) FILTER (WHERE v.conversion_status='CONFIRMED')::int AS confirmed_conversions,
+          COALESCE(SUM(v.commission_paise) FILTER (WHERE v.conversion_status='CONFIRMED'),0)::bigint AS commission_paise
+        FROM affiliate_partners p
+        LEFT JOIN affiliate_clicks c ON c.partner_id=p.id
+        LEFT JOIN affiliate_conversions v ON v.partner_id=p.id
+        WHERE p.active=true
+          AND p.category IN ('finance','loan','credit','banking','lending')
+        GROUP BY p.id,p.name,p.category
+        ORDER BY commission_paise DESC, confirmed_conversions DESC, clicks DESC
+      `;
+      const totalCommission = rows.reduce((s:any,r:any)=>s+Number(r.commission_paise||0),0);
       return {
-        status: "COMMISSION_AUDIT_VERIFIED",
+        status: "LIVE_MEASURED",
         timestamp: new Date().toISOString(),
-        totalLeadsGenerated: 148,
-        preApprovedCount: 112,
-        disbursedLoansCount: 38,
-        activatedCreditCardsCount: 29,
-        partnerBreakdown: [
-          { partner: "Navi Finserv (Personal Loan)", leads: 42, disbursed: 14, commissionYieldPaise: 8750000, status: "RECONCILED" },
-          { partner: "Lendingkart (MSME/Kirana)", leads: 26, disbursed: 9, commissionYieldPaise: 18000000, status: "RECONCILED" },
-          { partner: "Hero FinCorp (2-Wheeler/EV)", leads: 31, disbursed: 15, commissionYieldPaise: 3750000, status: "RECONCILED" },
-          { partner: "HDFC Bank (Millennia Card)", cardsIssued: 16, commissionYieldPaise: 3200000, status: "RECONCILED" },
-          { partner: "SBI Cards (SimplyClick)", cardsIssued: 13, commissionYieldPaise: 2340000, status: "RECONCILED" },
-        ],
-        totalAffiliateCommissionPaise: 36040000,
-        leakageCheck: "ZERO_LEAKAGE_CONFIRMED",
-        rbiLspCompliancePosture: "100_PERCENT_LSP_COMPLIANT_ZERO_OWNER_LIABILITY",
-        auditNotes: "All lead IDs matched cryptographic tokens. Zero debt collection liability or credit risk on OrderKing.",
+        partnerBreakdown: rows,
+        totalAffiliateCommissionPaise: totalCommission,
+        leakageCheck: "CALCULATE_FROM_CONFIRMED_CONVERSIONS",
+        compliancePosture: "NOT_INFERRED",
       };
     }
 
     case "audit_bajaj_finance_affiliate_and_emi_leads": {
       requirePermission(ws.ctx, "view_finance");
+      const sql = await getSql();
+      const rows = await sql`
+        SELECT
+          p.id,
+          p.name AS partner,
+          p.category,
+          COUNT(DISTINCT c.id)::int AS clicks,
+          COUNT(DISTINCT v.id) FILTER (WHERE v.conversion_status='CONFIRMED')::int AS confirmed_conversions,
+          COALESCE(SUM(v.commission_paise) FILTER (WHERE v.conversion_status='CONFIRMED'),0)::bigint AS commission_paise
+        FROM affiliate_partners p
+        LEFT JOIN affiliate_clicks c ON c.partner_id=p.id
+        LEFT JOIN affiliate_conversions v ON v.partner_id=p.id
+        WHERE p.active=true
+          AND lower(p.name) LIKE '%bajaj%'
+        GROUP BY p.id,p.name,p.category
+        ORDER BY commission_paise DESC, confirmed_conversions DESC
+      `;
+      const total = rows.reduce((s:any,r:any)=>s+Number(r.commission_paise||0),0);
       return {
-        status: "BAJAJ_FINANCE_AUDIT_VERIFIED",
+        status: "LIVE_MEASURED",
         timestamp: new Date().toISOString(),
-        totalBajajLeadsGenerated: 284,
-        instaEmiCardsActivated: 96,
-        personalLoansDisbursed: 24,
-        commercialKitchenLoansDisbursed: 11,
-        twoWheelerLoansDisbursed: 37,
-        partnerBreakdown: [
-          { offer: "Insta EMI Card (₹2L Pre-Approved)", cardsActivated: 96, cpaRatePaise: 50000, commissionYieldPaise: 4800000, status: "RECONCILED" },
-          { offer: "Bajaj Personal Cash Loan", disbursed: 24, totalVolumePaise: 720000000, commissionYieldPaise: 21600000, status: "RECONCILED" },
-          { offer: "Commercial Kitchen Equipment", disbursed: 11, totalVolumePaise: 880000000, commissionYieldPaise: 30800000, status: "RECONCILED" },
-          { offer: "Two-Wheeler / EV Bike Financing", disbursed: 37, totalVolumePaise: 370000000, commissionYieldPaise: 7400000, status: "RECONCILED" },
-          { offer: "Smartphones & Electronics 0% EMI", devicesFinanced: 68, commissionYieldPaise: 11250000, status: "RECONCILED" },
-          { offer: "Bajaj RBL SuperCards", cardsIssued: 31, cpaRatePaise: 150000, commissionYieldPaise: 4650000, status: "RECONCILED" },
-        ],
-        totalBajajCommissionPaise: 80500000,
-        leakageCheck: "ZERO_LEAKAGE_CONFIRMED",
-        rbiLspCompliancePosture: "100_PERCENT_LSP_COMPLIANT_ZERO_OWNER_LIABILITY",
-        leadTrackingIntegrity: "ALL_OK_BAJAJ_TOKENS_VERIFIED",
-        auditNotes: "All 284 leads verified against Bajaj Finance partner API webhooks. OrderKing bears zero balance sheet risk or debt recovery liability.",
+        partnerBreakdown: rows,
+        totalBajajCommissionPaise: total,
+        leakageCheck: "CALCULATE_FROM_CONFIRMED_CONVERSIONS",
+        compliancePosture: "NOT_INFERRED",
       };
     }
 
