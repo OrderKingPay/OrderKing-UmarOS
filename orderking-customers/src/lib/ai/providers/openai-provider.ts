@@ -15,7 +15,7 @@ import type {
 export class OpenAIProvider implements AIProvider {
   readonly id = "openai";
   readonly name = "OpenAI Omnimodal";
-  readonly supportedModels = ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"];
+  readonly supportedModels = ["gpt-6-astra", "gpt-6.1-sol", "gpt-6-luna"];
 
   private apiKey: string | undefined;
 
@@ -33,7 +33,7 @@ export class OpenAIProvider implements AIProvider {
     }
 
     const start = Date.now();
-    const model = input.model || process.env.OPENAI_MODEL?.trim() || "gpt-5.6-sol";
+    const model = input.model || process.env.OPENAI_MODEL?.trim() || "gpt-6-astra";
     const url = "https://api.openai.com/v1/chat/completions";
 
     const messages: Array<Record<string, unknown>> = [];
