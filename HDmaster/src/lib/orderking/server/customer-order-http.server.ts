@@ -105,7 +105,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
           await tx`
             UPDATE kingpay_wallets
             SET balance_paise = balance_paise - ${input.totalPaise}, updated_at = NOW()
-            WHERE user_id = ${input.customerRef}
+            WHERE user_id = ${context.userId}
           `;
           await tx`
             INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
