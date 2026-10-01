@@ -23,8 +23,10 @@ export const recordQualifiedReferralFn = createServerFn({ method: "POST" }).midd
   const referrer = await sql<{ user_id: string }>`SELECT user_id FROM referral_codes WHERE referral_code = ${data.referralCode} LIMIT 1`;
   if (!referrer[0]) throw new Error("REFERRAL_NOT_FOUND");
   if (referrer[0].user_id === context.userId) throw new Error("SELF_REFERRAL_NOT_ALLOWED");
-  const campaign = await sql<{ id: string; reward_per_qualification_paise: number; min_order_paise: number }>`SELECT id, reward_per_qualification_paise, min_order_paise FROM growth_campaigns WHERE active = true ORDER BY starts_at DESC LIMIT 1`;
+  const campaign = await sql<{ id: string; reward_per_qualification_paise: number; min_order_paise: number; max_budget_paise: number }>`SELECT id, reward_per_qualification_paise, min_order_paise, max_budget_paise FROM growth_campaigns WHERE active = true ORDER BY starts_at DESC LIMIT 1`;
   if (!campaign[0]) throw new Error("REFERRAL_CAMPAIGN_UNAVAILABLE");
+  const spendRows = await sql<{ total: number }>`SELECT COALESCE(sum(reward_paise),0)::bigint AS total FROM growth_reward_ledger_v2 WHERE campaign_id = ${campaign[0].id} AND status <> 'REJECTED'`;
+  if (Number(spendRows[0]?.total ?? 0) + Number(campaign[0].reward_per_qualification_paise) > Number(campaign[0].max_budget_paise)) throw new Error("REFERRAL_CAMPAIGN_BUDGET_EXHAUSTED");
   const order = await sql<{ id: string; customer_id: string; total_paise: number; status: string; payment_status: string }>`SELECT id, customer_id, total_paise, status, payment_status FROM orders WHERE id = ${data.orderId} AND customer_id = ${context.userId} LIMIT 1`;
   const row = order[0];
   if (!row || row.status !== "DELIVERED" || row.payment_status === "REFUNDED" || row.payment_status === "CANCELLED" || Number(row.total_paise) < Number(campaign[0].min_order_paise)) throw new Error("REFERRAL_ORDER_NOT_QUALIFIED");
