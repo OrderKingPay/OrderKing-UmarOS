@@ -186,11 +186,11 @@ export function FounderAiOsShell() {
         <div className="pt-3 border-t border-border/60 text-[10px] space-y-1 text-slate-400 px-2">
           <div className="flex items-center justify-between">
             <span>Core Intelligence:</span>
-            <span className="text-emerald-400 font-bold font-mono">100% ONLINE</span>
+            <span className="text-emerald-400 font-bold font-mono">{providerStatuses.filter((p) => p.isConfigured).length}/{providerStatuses.length} providers ready</span>
           </div>
           <div className="flex items-center justify-between">
             <span>King Pay UPI:</span>
-            <span className="text-emerald-400 font-bold font-mono">0% FEE CUT</span>
+            <span className="text-slate-300 font-bold font-mono">Provider-defined</span>
           </div>
         </div>
       </aside>
