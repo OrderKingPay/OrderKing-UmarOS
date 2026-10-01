@@ -70,7 +70,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Typecheck
-        run: pnpm --dir ${{ matrix.app }} run typecheck
+        run: pnpm run typecheck
 
       - name: Build
-        run: pnpm --dir ${{ matrix.path }} run build
+        run: pnpm run build
