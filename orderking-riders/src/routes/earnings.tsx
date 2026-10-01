@@ -13,13 +13,6 @@ export const Route = createFileRoute("/earnings")({ component: Page });
 
 type Preset = "today" | "yesterday" | "week" | "month";
 
-const MILESTONES = [
-  { orders: 4, bonusPaise: 6000, label: "₹60" },
-  { orders: 8, bonusPaise: 14000, label: "₹140" },
-  { orders: 12, bonusPaise: 25000, label: "₹250" },
-  { orders: 16, bonusPaise: 40000, label: "₹400" },
-];
-
 function Page() {
   const { t } = useI18n();
   const [preset, setPreset] = useState<Preset>("today");
@@ -44,11 +37,10 @@ function Page() {
     void getSettlementsFn().then(setSettlements).catch(() => undefined);
   }, [preset, t]);
 
-  const completedTrips =
-    data?.lines.filter((l: any) => (l.kind as string) === "DELIVERY_PAYOUT" || (l.kind as string) === "DELIVERY" || Boolean(l.orderCode)).length ?? 0;
-  const currentMilestoneIndex = MILESTONES.findIndex((m) => completedTrips < m.orders);
-  const nextMilestone = currentMilestoneIndex === -1 ? null : MILESTONES[currentMilestoneIndex];
-
+  const completedTrips = data?.targetIncentive?.progress ?? 0;
+  const target = data?.targetIncentive?.target ?? 0;
+  const rewardPaise = data?.targetIncentive?.rewardPaise ?? 0;
+  const targetActive = Boolean(data?.targetIncentive?.active);
   return (
     <AppShell>
       <div className="space-y-4">
@@ -71,66 +63,28 @@ function Page() {
           <Badge tone="online">1.3x Boost</Badge>
         </div>
 
-        {/* Daily Incentive Milestones (Zomato Partner Model) */}
-        {preset === "today" ? (
+        {preset === "today" && targetActive ? (
           <Card className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>🎯 Daily Target Incentives</CardTitle>
+                <CardTitle>🎯 Daily Target Incentive</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {nextMilestone
-                    ? `Complete ${nextMilestone.orders - completedTrips} more trip${
-                        nextMilestone.orders - completedTrips > 1 ? "s" : ""
-                      } to unlock ${nextMilestone.label} bonus!`
-                    : "🔥 All daily milestone bonuses unlocked! Total bonus: ₹400"}
+                  {completedTrips >= target
+                    ? `Target reached — ₹${(rewardPaise / 100).toFixed(0)} campaign reward is eligible for provider verification.`
+                    : `Complete ${Math.max(0, target - completedTrips)} more verified deliveries to reach the active campaign target.`}
                 </p>
               </div>
-              <Badge tone="online">
-                {completedTrips} / {MILESTONES[MILESTONES.length - 1]?.orders} Trips
-              </Badge>
+              <Badge tone="online">{completedTrips} / {target}</Badge>
             </div>
-
-            {/* Progress bar */}
             <div className="h-2 w-full overflow-hidden rounded-full bg-surface-2">
               <div
                 className="h-full bg-primary transition-all duration-500"
-                style={{
-                  width: `${Math.min(
-                    100,
-                    Math.round(
-                      (completedTrips / (nextMilestone ? nextMilestone.orders : MILESTONES[MILESTONES.length - 1]?.orders || 16)) *
-                        100,
-                    ),
-                  )}%`,
-                }}
+                style={{ width: `${target ? Math.min(100, Math.round((completedTrips / target) * 100)) : 0}%` }}
               />
             </div>
-
-            {/* Milestone Steps */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-              {MILESTONES.map((m, idx) => {
-                const isCompleted = completedTrips >= m.orders;
-                const isCurrent = nextMilestone?.orders === m.orders;
-                return (
-                  <div
-                    key={m.orders}
-                    className={`rounded-lg border p-2 text-center transition ${
-                      isCompleted
-                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-900 dark:text-emerald-200"
-                        : isCurrent
-                          ? "border-primary bg-primary/10 text-primary font-semibold"
-                          : "border-border bg-surface-2 text-muted-foreground"
-                    }`}
-                  >
-                    <p className="text-xs font-medium">
-                      {isCompleted ? "✓ " : ""}
-                      {m.orders} Trips
-                    </p>
-                    <p className="text-sm font-bold tabular-nums">{m.label}</p>
-                  </div>
-                );
-              })}
-            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Rewards are created from the verified growth ledger and are not claimed as paid until settlement/provider confirmation.
+            </p>
           </Card>
         ) : null}
 
@@ -155,38 +109,20 @@ function Page() {
               <Row k={t("cashCollectedLabel")} v={formatPaise(data.totals.cashCollected)} />
               <Row k={t("cashReconciled")} v={formatPaise(data.totals.cashReconciled)} />
             </dl>
-            <CardMeta className="mt-3">{t("simulatedBanner")}</CardMeta>
+            <CardMeta className="mt-3">{data.dataMode === "LIVE" ? "Live ledger data" : "Provider/data source required"}</CardMeta>
           </Card>
         ) : null}
 
-        {/* 1-Tap Daily Cashout to UPI (₹5 Instant Fee) */}
         {data && data.totals.netPayable > 500 ? (
           <Card className="border border-primary/40 bg-primary/5 p-4 space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⚡</span>
-                  <p className="font-bold text-foreground text-sm">1-Tap Instant Daily UPI Cashout</p>
-                  <Badge tone="online">Instant IMPS/UPI</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Need your earnings today instead of Wednesday payout? Transfer {formatPaise(data.totals.netPayable - 500)} immediately to your linked UPI ID (<span className="font-mono font-semibold">rider@okaxis</span>) for a flat ₹5 instant transfer fee.
-                </p>
-              </div>
-              <Button
-                size="sm"
-                disabled={cashoutBusy}
-                onClick={() => handleInstantCashout()}
-                className="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
-              >
-                {cashoutBusy ? "Sending via UPI..." : `Instant Cashout (${formatPaise(data.totals.netPayable - 500)})`}
-              </Button>
+            <div className="flex items-center gap-2">
+              <span className="text-lg">⚡</span>
+              <p className="font-bold text-foreground text-sm">Instant Cashout</p>
+              <Badge tone="online">Provider Required</Badge>
             </div>
-            {cashoutSuccess && (
-              <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                ✅ UPI Transfer of {formatPaise(data.totals.netPayable - 500)} completed! UTR: 429108492019. Amount deposited to rider@okaxis.
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground">
+              Your verified earnings remain in the normal weekly settlement cycle until a live payout provider is connected. No instant transfer is claimed or simulated.
+            </p>
           </Card>
         ) : null}
 
