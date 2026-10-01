@@ -93,9 +93,9 @@ function CheckoutPage() {
       if (roundupGold && goldRoundupPaise > 0) {
         orderNotes = `[✨ 24K Gold Savings: ₹${(goldRoundupPaise / 100).toFixed(2)}] ${orderNotes}`.trim();
       }
-      const placeFinalOrder = async (finalPaymentMethod: string) => {
+      const placeFinalOrder = async (finalPaymentMethod: "COD" | "KING_PAY" | "RAZORPAY_ONLINE", paymentProof?: { razorpayOrderId: string; razorpayPaymentId: string; razorpaySignature: string }) => {
         const result = cfg.marketplace.launchMode === "live"
-          ? await placeOrderViaHDmaster({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod as any, notes: orderNotes, idempotencyKey } })
+          ? await placeOrderViaHDmaster({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod, razorpayOrderId: paymentProof?.razorpayOrderId, razorpayPaymentId: paymentProof?.razorpayPaymentId, razorpaySignature: paymentProof?.razorpaySignature, notes: orderNotes, idempotencyKey } })
           : await placeOrder({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod as any, notes: orderNotes, idempotencyKey } });
         clear();
         toast.success(t("orders.placed"));
