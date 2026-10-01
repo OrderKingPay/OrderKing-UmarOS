@@ -18,7 +18,7 @@ import { loadConfig } from "@/lib/server/load-config";
 import { useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { newId } from "@/lib/ids";
-import { createRazorpayOrder } from "@/lib/server/razorpay-order";
+import { createRazorpayOrder, verifyRazorpayFoodPayment } from "@/lib/server/razorpay-order";
 
 export const Route = createFileRoute("/checkout")({ component: CheckoutPage });
 
@@ -28,7 +28,7 @@ function CheckoutPage() {
   const { user, isPending } = useCurrentUserState();
   const { restaurantId, items, coupon, clear } = useCartStore();
   const location = useLocationStore((s) => s.location);
-  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY">("KING_PAY");
+  const [method, setMethod] = useState<"COD" | "RAZORPAY_ONLINE" | "KING_PAY">("KING_PAY");
   const [notes, setNotes] = useState("");
   const [forSomeoneElse, setForSomeoneElse] = useState(false);
   const [recipientName, setRecipientName] = useState("");
@@ -93,9 +93,9 @@ function CheckoutPage() {
       if (roundupGold && goldRoundupPaise > 0) {
         orderNotes = `[✨ 24K Gold Savings: ₹${(goldRoundupPaise / 100).toFixed(2)}] ${orderNotes}`.trim();
       }
-      const placeFinalOrder = async (finalPaymentMethod: string) => {
+      const placeFinalOrder = async (finalPaymentMethod: "COD" | "KING_PAY" | "RAZORPAY_ONLINE", paymentProof?: { razorpayOrderId: string; razorpayPaymentId: string; razorpaySignature: string }) => {
         const result = cfg.marketplace.launchMode === "live"
-          ? await placeOrderViaHDmaster({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod as any, notes: orderNotes, idempotencyKey } })
+          ? await placeOrderViaHDmaster({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod, razorpayOrderId: paymentProof?.razorpayOrderId, razorpayPaymentId: paymentProof?.razorpayPaymentId, razorpaySignature: paymentProof?.razorpaySignature, notes: orderNotes, idempotencyKey } })
           : await placeOrder({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod as any, notes: orderNotes, idempotencyKey } });
         clear();
         toast.success(t("orders.placed"));
@@ -103,7 +103,7 @@ function CheckoutPage() {
       };
 
       if (method === "RAZORPAY_ONLINE") {
-        const rzpOrder = await createRazorpayOrder({ data: { amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey } });
+        const rzpOrder = await createRazorpayOrder({ data: { amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey, purpose: "FOOD_ORDER", userId: user.id } });
         const options = {
           key: rzpOrder.keyId,
           amount: rzpOrder.amountPaise,
@@ -113,7 +113,19 @@ function CheckoutPage() {
           image: cfg.brand.logoUrl,
           order_id: rzpOrder.orderId,
           handler: async function (response: any) {
-            await placeFinalOrder("UPI_SANDBOX");
+            const verified = await verifyRazorpayFoodPayment({
+              data: {
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              },
+            });
+            if (verified.amountPaise !== totalPayable || verified.currency !== "INR") throw new Error("Verified Razorpay amount mismatch.");
+            await placeFinalOrder("RAZORPAY_ONLINE", {
+              razorpayOrderId: verified.razorpayOrderId,
+              razorpayPaymentId: verified.razorpayPaymentId,
+              razorpaySignature: response.razorpay_signature,
+            });
           },
           prefill: {
             name: (user as any).name ?? "",
@@ -376,11 +388,7 @@ function CheckoutPage() {
                   <div className="mt-2 grid grid-cols-4 gap-2">
                     <button
                       type="button"
-                      onClick={() => {
-                        const upiUrl = `upi://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("Google Pay selected. Click 'Place Order' below to proceed.");
-                      }}
+                      onClick={() => toast.info("Google Pay selected. Continue with the verified Razorpay checkout below.")}
                       className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
                     >
                       <span className="text-lg">🟢</span>
@@ -388,11 +396,7 @@ function CheckoutPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        const upiUrl = `phonepe://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("PhonePe selected. Click 'Place Order' below to proceed.");
-                      }}
+                      onClick={() => toast.info("PhonePe selected. Continue with the verified Razorpay checkout below.")}
                       className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
                     >
                       <span className="text-lg">🟣</span>
@@ -400,11 +404,7 @@ function CheckoutPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        const upiUrl = `paytmmp://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("Paytm selected. Click 'Place Order' below to proceed.");
-                      }}
+                      onClick={() => toast.info("Paytm selected. Continue with the verified Razorpay checkout below.")}
                       className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
                     >
                       <span className="text-lg">🔵</span>

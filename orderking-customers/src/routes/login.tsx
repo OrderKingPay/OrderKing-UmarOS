@@ -19,6 +19,7 @@ function Login() {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const onEmail = async () => {
     setBusy(true);
@@ -98,7 +99,22 @@ function Login() {
               autoComplete={mode === "up" ? "new-password" : "current-password"}
             />
             {error ? <p className="text-sm text-danger">{error}</p> : null}
-            <Button className="w-full" disabled={busy || password.length < 8} onClick={() => void onEmail()}>
+            <div className="flex items-start gap-2">
+              <input 
+                type="checkbox" 
+                id="terms-checkbox" 
+                className="mt-1"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+              />
+              <label htmlFor="terms-checkbox" className="text-xs text-muted leading-relaxed">
+                I explicitly acknowledge and agree to the{" "}
+                <Link to="/legal/terms" className="underline font-medium text-fg">Terms of Service</Link>{" "}
+                and{" "}
+                <Link to="/legal/privacy" className="underline font-medium text-fg">Privacy Policy</Link>.
+              </label>
+            </div>
+            <Button className="w-full" disabled={busy || password.length < 8 || !acceptedTerms} onClick={() => void onEmail()}>
               {mode === "up" ? t("auth.emailSignUp") : t("auth.emailSignIn")}
             </Button>
             <button type="button" className="w-full text-sm text-primary" onClick={() => setMode(mode === "up" ? "in" : "up")}>

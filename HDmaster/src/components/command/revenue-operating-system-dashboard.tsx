@@ -91,7 +91,7 @@ export function RevenueOperatingSystemDashboard() {
   const handleRunQA = (projectId: string) => {
     const run = supremeRevenueOS.qa.runVerificationSuite(projectId);
     setQaRuns(supremeRevenueOS.qa.getAllRuns());
-    toast.success(`QA Verification Suite complete: 14/14 checks passed.`);
+    toast.info(run.overallStatus === "NOT_RUN" ? "Production QA not run: external verification is required." : `QA status: ${run.overallStatus}.`);
   };
 
   return (
@@ -195,7 +195,7 @@ export function RevenueOperatingSystemDashboard() {
                     Actual Revenue (Verified)
                   </span>
                   <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
-                    Bank UTR Confirmed
+                    Provider events verified
                   </Badge>
                 </div>
                 <div className="mt-3 flex items-baseline gap-2">
@@ -205,7 +205,7 @@ export function RevenueOperatingSystemDashboard() {
                   <span className="text-xs text-slate-400">INR</span>
                 </div>
                 <p className="mt-2 text-xs text-slate-400">
-                  {metrics.paymentsReceivedCount} verified bank deposits. Zero unconfirmed estimations.
+                  {metrics.paymentsReceivedCount} verified bank deposits. Only provider-confirmed events are claimable.
                 </p>
                 <div className="mt-4 flex items-center justify-between text-[11px] text-emerald-400/90 border-t border-emerald-500/20 pt-2">
                   <span>Net Revenue: ₹{metrics.netRevenueInr.toLocaleString()}</span>
@@ -233,8 +233,8 @@ export function RevenueOperatingSystemDashboard() {
                   {metrics.paymentsPendingCount} invoices awaiting client bank settlement via UPI/Razorpay.
                 </p>
                 <div className="mt-4 flex items-center justify-between text-[11px] text-amber-400/90 border-t border-amber-500/20 pt-2">
-                  <span>Due within 48 hours</span>
-                  <span>Direct 0% King Pay UPI</span>
+                  <span>Provider terms govern settlement timing</span>
+                  <span>King Pay provider required</span>
                 </div>
               </div>
 
@@ -284,7 +284,7 @@ export function RevenueOperatingSystemDashboard() {
                 </p>
                 <div className="mt-4 flex items-center justify-between text-[11px] text-purple-400/90 border-t border-purple-500/20 pt-2">
                   <span>Forecast: ₹{metrics.forecastedRevenueInr.toLocaleString()}</span>
-                  <span>65% Conversion</span>
+                  <span>Forecast only</span>
                 </div>
               </div>
             </div>

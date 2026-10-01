@@ -45,15 +45,6 @@ export async function routeModelTurn(request: ChatRequest, preferredProvider?: A
 }
 
 export async function runCognitiveConsensus(request: ChatRequest): Promise<ChatResponse> {
-  if (process.env.OPENAI_API_KEY === "dummy_openai") {
-    return {
-      consensusReached: true,
-      confidenceScore: 0.95,
-      modelsParticipated: ["openai", "gemini", "anthropic"],
-      agreementRatio: "Quorum Agreement (3/3)",
-      synthesizedResponse: { text: "Simulated synthesis" }
-    } as any;
-  }
   const available = detectAvailableProviders().map((a) => a.provider);
   if (available.length === 0) throw new Error("No external AI providers configured. Consensus impossible.");
 
@@ -69,21 +60,21 @@ export async function runCognitiveConsensus(request: ChatRequest): Promise<ChatR
     .filter((r): r is PromiseFulfilledResult<ChatResponse> => r.status === "fulfilled")
     .map((r) => r.value);
 
-  if (successful.length === 0) throw new Error("All configured AI providers failed during cognitive consensus.");
+  if (successful.length === 0) {
+    throw new Error("All configured AI providers failed during cognitive consensus.");
+  }
   if (successful.length === 1) return successful[0];
-
-  const synthesisRequest: ChatRequest = {
-    model: "best-available",
-    systemPrompt: "Synthesize the supplied provider findings into one evidence-grounded conclusion. Do not invent facts or claim capabilities not evidenced by the inputs.",
-    messages: [{
-      role: "user",
-      content: `Synthesize these analytical responses into one coherent truth:\n\n${successful.map((r) => `[${r.provider}]: ${r.text}`).join("\n\n")}`,
-    }],
-  };
 
   const { instance: synthesizer } = selectActiveProvider();
   if (!synthesizer) throw new Error("No configured provider available for consensus synthesis.");
-  return await synthesizer.chat(synthesisRequest);
+
+  return await synthesizer.chat({
+    systemPrompt: "Synthesize the supplied provider findings into one evidence-grounded conclusion. Do not invent facts or claim capabilities not evidenced by the inputs.",
+    messages: [{
+      role: "user",
+      content: `Synthesize these analytical responses into one coherent truth:\n\n${successful.map((r) => `[${r.provider} / ${r.model}]: ${r.text}`).join("\n\n")}`,
+    }],
+  });
 }
 
 export type ModelCallRequest = ChatRequest & { preferredProvider?: string; tools?: ToolDefinition[] };

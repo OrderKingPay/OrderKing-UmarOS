@@ -39,7 +39,7 @@ export interface QaSuiteRun {
   passedCount: number;
   failedCount: number;
   results: QaCheckResult[];
-  overallStatus: "PASSED" | "FAILED" | "HEALED_AND_PASSED";
+  overallStatus: "NOT_RUN" | "HARNESS_ONLY" | "FAILED" | "PASSED" | "HEALED_AND_PASSED";
   timestamp: string;
   canDeliverToClient: boolean;
 }
@@ -48,7 +48,36 @@ export class SelfQaEngine {
   private runs: QaSuiteRun[] = [];
 
   runVerificationSuite(projectId: string, simulateFailureKey?: QaCheckType): QaSuiteRun {
-    const runId = `QA-${Date.now().toString().slice(-4)}`;
+    const runId = `QA-${Date.now()}`;
+
+    if (process.env.NODE_ENV === "production") {
+      const checks: QaCheckResult[] = [
+        "BUILD","UNIT_TESTS","INTEGRATION_TESTS","API_TESTS","E2E_TESTS","RESPONSIVE_CHECKS",
+        "ACCESSIBILITY_CHECKS","SECURITY_CHECKS","LINK_CHECKS","FORM_CHECKS","PAYMENT_FLOW_CHECKS",
+        "AUTHENTICATION_CHECKS","ERROR_STATE_CHECKS","PERFORMANCE_CHECKS",
+      ].map((type) => ({
+        checkType: type as QaCheckType,
+        label: "Production verification required",
+        passed: false,
+        durationMs: 0,
+        diagnosticDetail: "This check was not executed by the in-app harness. External CI/runtime verification is required.",
+        attemptCount: 0,
+      }));
+
+      const run: QaSuiteRun = {
+        runId,
+        projectId,
+        totalChecks: checks.length,
+        passedCount: 0,
+        failedCount: checks.length,
+        results: checks,
+        overallStatus: "NOT_RUN",
+        timestamp: new Date().toISOString(),
+        canDeliverToClient: false,
+      };
+      this.runs.push(run);
+      return run;
+    }
     const results: QaCheckResult[] = [];
 
     const standardChecks: Array<{ type: QaCheckType; label: string }> = [
@@ -89,7 +118,8 @@ export class SelfQaEngine {
           checkType: check.type,
           label: check.label,
           passed: true,
-          durationMs: Math.floor(Math.random() * 180) + 40,
+          durationMs: 1,
+          diagnosticDetail: "Harness-only result; not a production verification claim.",
           attemptCount: 1,
         });
       }

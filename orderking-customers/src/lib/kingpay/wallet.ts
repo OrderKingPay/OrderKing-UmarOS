@@ -3,10 +3,12 @@ import { getSql } from "../db.ts";
 import Razorpay from "razorpay";
 import { z } from "zod";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "test_key",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "test_secret",
-});
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID?.trim();
+const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+if (!razorpayKeyId || !razorpayKeySecret) {
+  throw new Error("Razorpay credentials are required for real wallet top-ups.");
+}
+const razorpay = new Razorpay({ key_id: razorpayKeyId, key_secret: razorpayKeySecret });
 
 export const TopUpSchema = z.object({
   customerId: z.string().uuid(),

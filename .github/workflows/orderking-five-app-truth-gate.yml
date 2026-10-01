@@ -1,0 +1,76 @@
+name: OrderKing Five-App Truth Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "HDmaster/**"
+      - "orderking-customers/**"
+      - "orderking-partners/**"
+      - "orderking-riders/**"
+      - "Apps-integration-/**"
+      - ".github/workflows/orderking-five-app-truth-gate.yml"
+  pull_request:
+    paths:
+      - "HDmaster/**"
+      - "orderking-customers/**"
+      - "orderking-partners/**"
+      - "orderking-riders/**"
+      - "Apps-integration-/**"
+      - ".github/workflows/orderking-five-app-truth-gate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: HDmaster
+            path: HDmaster
+            build: "node scripts/with-app-env.mjs vite build"
+          - app: CustomerApp
+            path: orderking-customers
+            build: "node scripts/with-app-env.mjs vite build"
+          - app: PartnerApp
+            path: orderking-partners
+            build: "node scripts/with-app-env.mjs vite build"
+          - app: RiderApp
+            path: orderking-riders
+            build: "node scripts/with-app-env.mjs vite build"
+          - app: IntegrationApp
+            path: Apps-integration-
+            build: "node scripts/with-app-env.mjs vite build"
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.path }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable pnpm 12.8.1
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.8.1
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install workspace dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Build
+        run: pnpm run build

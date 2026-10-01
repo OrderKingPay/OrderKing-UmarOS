@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
@@ -8,7 +9,7 @@ import type { AddressView, LoyaltyView, PromoView, TicketView } from "@/lib/mark
 export const ensureProfile = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .// @ts-ignore
-  validator((input: { name?: string; language?: string } | undefined) => input ?? {})
+  inputValidator((input: { name?: string; language?: string } | undefined) => input ?? {})
   .handler(async ({ context, data }: any) => {
     const sql = await getSql();
     await sql`
@@ -50,7 +51,7 @@ export const ensureProfile = createServerFn({ method: "POST" })
 export const updateProfile = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .// @ts-ignore
-  validator((input: {
+  inputValidator((input: {
     name?: string;
     phone?: string;
     language?: string;
@@ -115,7 +116,7 @@ export const listAddresses = createServerFn({ method: "GET" })
 export const saveAddress = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .// @ts-ignore
-  validator((input: {
+  inputValidator((input: {
     id?: string;
     label: string;
     line1: string;
@@ -160,7 +161,7 @@ export const saveAddress = createServerFn({ method: "POST" })
 export const toggleFavourite = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .// @ts-ignore
-  validator((input: { restaurantId: string }) => input)
+  inputValidator((input: { restaurantId: string }) => input)
   .handler(async ({ context, data }: any) => {
     const sql = await getSql();
     const existing = await sql<{ restaurant_id: string }>`
@@ -198,6 +199,39 @@ export const listPromos = createServerFn({ method: "GET" }).handler(async () => 
   }
 });
 
+export const listVerifiedAffiliatePartners = createServerFn({ method: "GET" })
+  .handler(async () => {
+    const sql = await getSql();
+    const rows = await sql<{
+      id: string;
+      name: string;
+      category: string;
+      tracking_base_url: string;
+      commission_type: string;
+      commission_value: number | null;
+      terms_version: string | null;
+    }>`
+      SELECT id, name, category, tracking_base_url, commission_type, commission_value, terms_version
+      FROM affiliate_partners
+      WHERE active = true
+        AND tracking_base_url IS NOT NULL
+        AND tracking_base_url <> ''
+        AND terms_version IS NOT NULL
+        AND terms_version <> ''
+      ORDER BY name ASC
+    `;
+    return {
+      partners: rows.map((r) => ({
+        id: r.id,
+        brand: r.name,
+        category: r.category,
+        commissionType: r.commission_type,
+        commissionValue: r.commission_value,
+        termsVersion: r.terms_version,
+      })),
+    };
+  });
+
 export const getLoyalty = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
@@ -230,7 +264,7 @@ export const requestDeletion = createServerFn({ method: "POST" })
 export const createTicket = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .// @ts-ignore
-  validator((input: { topic: string; message: string; orderId?: string }) => input)
+  inputValidator((input: { topic: string; message: string; orderId?: string }) => input)
   .handler(async ({ context, data }: any) => {
     const message = data.message.trim();
     if (message.length < 4) throw new Error("Please describe the issue.");
@@ -239,6 +273,23 @@ export const createTicket = createServerFn({ method: "POST" })
     await sql`
       insert into support_tickets (id, user_id, order_id, topic, message, status)
       values (${id}, ${context.userId}, ${data.orderId ?? null}, ${data.topic}, ${message.slice(0, 2000)}, ${"open"})
+    `;
+    await sql`
+      SELECT public.orderking_emit_immutable_event(
+        ${newId("iev")},
+        NULL,
+        ${context.userId},
+        NULL,
+        'support_tickets',
+        ${id},
+        'CUSTOMER_SUPPORT_TICKET_CREATED',
+        NOW(),
+        ${JSON.stringify({
+          orderId: data.orderId ?? null,
+          topic: data.topic,
+          messageHash: createHash("sha256").update(message.slice(0, 2000)).digest("hex"),
+        })}::jsonb
+      )
     `;
     return { id };
   });

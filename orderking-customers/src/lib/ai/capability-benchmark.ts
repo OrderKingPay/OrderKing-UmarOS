@@ -61,6 +61,8 @@ export interface BenchmarkResult {
 export interface BenchmarkRunReport {
   id: string;
   timestamp: string;
+  status: "NOT_RUN" | "HARNESS_ONLY";
+  measurementScope: "NONE" | "LOCAL_HARNESS";
   totalTests: number;
   passedTests: number;
   averageScore: number;
@@ -353,6 +355,21 @@ export const BENCHMARK_TEST_SUITE: BenchmarkTestCase[] = [
 ];
 
 export async function runFullBenchmarkSuite(): Promise<BenchmarkRunReport> {
+  if (typeof process !== "undefined" && process.env?.NODE_ENV === "production") {
+    return {
+      id: `RUN-BLOCKED-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      status: "NOT_RUN",
+      measurementScope: "NONE",
+      totalTests: 0,
+      passedTests: 0,
+      averageScore: 0,
+      averageLatencyMs: 0,
+      categoryScores: {} as Record<BenchmarkCategory, { score: number; passed: boolean; latencyMs: number }>,
+      results: [],
+    };
+  }
+
   const results: BenchmarkResult[] = [];
   const categoryScores: Record<string, { score: number; passed: boolean; latencyMs: number }> = {};
 
@@ -382,8 +399,10 @@ export async function runFullBenchmarkSuite(): Promise<BenchmarkRunReport> {
   const totalLatency = results.reduce((acc, r) => acc + r.latencyMs, 0);
 
   return {
-    id: `RUN-${Date.now()}`,
+    id: `RUN-HARNESS-${Date.now()}`,
     timestamp: new Date().toISOString(),
+    status: "HARNESS_ONLY",
+    measurementScope: "LOCAL_HARNESS",
     totalTests: results.length,
     passedTests,
     averageScore: Math.round(totalScore / results.length),

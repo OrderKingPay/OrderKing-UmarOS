@@ -2,6 +2,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { OpenAIProvider } from "@/lib/orderking/ai/providers/openai-provider";
 import type { ToolDefinition } from "@/lib/orderking/ai/providers/provider-interface";
+import { requireUserId } from "@/lib/auth/verify.server";
+import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
+import { enforceRateLimit } from "@/lib/orderking/security/rate-limiter";
 
 export const Route = createFileRoute("/api/test-openai")({
   // @ts-expect-error
@@ -9,27 +12,31 @@ export const Route = createFileRoute("/api/test-openai")({
     handlers: {
       GET: async ({ request }: any) => {
         try {
-          const url = new URL(request.url);
-          const isAuthorized = url.searchParams.get("token") === "UMAR_OS_ADMIN";
-          
-          if (!isAuthorized) {
+          const userId = await requireUserId();
+          const workspace = await ensureWorkspace(userId);
+          if (!workspace.ctx.permissions.includes("access_AI")) {
             return new Response(JSON.stringify({
-              status: "UNAUTHORIZED",
-              evidence: "Authorization check failed. You must provide ?token=UMAR_OS_ADMIN in the URL to execute this phase 1 operation."
-            }), { status: 401, headers: { "Content-Type": "application/json" } });
+              status: "FORBIDDEN",
+              evidence: "The authenticated account does not have access_AI permission."
+            }), { status: 403, headers: { "Content-Type": "application/json" } });
           }
 
-          const apiKey = process.env.OPENAI_API_KEY;
+          const rateLimitResponse = await enforceRateLimit(request, "hdmaster:openai-test", {
+            windowMs: 60_000,
+            maxRequests: 10,
+          });
+          if (rateLimitResponse) return rateLimitResponse;
+
+          const apiKey = process.env.OPENAI_API_KEY?.trim();
           if (!apiKey) {
             return new Response(JSON.stringify({
               status: "CONFIGURATION_REQUIRED",
-              evidence: "OPENAI_API_KEY is completely missing from Vercel Server-Side environment variables. No fake simulation permitted. Please add it to your Vercel Project Settings and redeploy.",
-              actionRequired: "Add OPENAI_API_KEY to Vercel and redeploy HDmaster."
-            }), { status: 400, headers: { "Content-Type": "application/json" } });
+              evidence: "OPENAI_API_KEY is missing from the secure server environment.",
+              actionRequired: "Configure OPENAI_API_KEY in the deployment platform secret environment."
+            }), { status: 503, headers: { "Content-Type": "application/json" } });
           }
 
           const provider = new OpenAIProvider(apiKey);
-
           const getServerTimeTool: ToolDefinition = {
             name: "get_server_time",
             description: "Retrieves the exact current server time and timezone.",
@@ -37,50 +44,41 @@ export const Route = createFileRoute("/api/test-openai")({
           };
 
           const startTime = Date.now();
-          
           const response = await provider.chat({
-            model: "gpt-4o-mini",
-            systemPrompt: "You are Umar OS. You must use the get_server_time tool to fetch the time.",
-            messages: [{ role: "user", content: "Establish connection and execute the get_server_time tool." }],
+            model: process.env.OPENAI_MODEL?.trim() || undefined,
+            systemPrompt: "You are OrderKing's OpenAI integration health verifier. Request the get_server_time tool only when useful and never claim it executed unless a tool call is returned.",
+            messages: [{ role: "user", content: "Establish the OpenAI connection and request the server-time tool if appropriate." }],
             tools: [getServerTimeTool]
           });
 
-          let toolExecuted = false;
-          let toolResult = null;
-
-          if (response.toolCalls && response.toolCalls.length > 0) {
-            const toolCall = response.toolCalls[0];
-            if (toolCall.name === "get_server_time") {
-              toolExecuted = true;
-              toolResult = new Date().toISOString(); // REAL EXECUTION
-            }
-          }
-
+          const toolRequested = Boolean(response.toolCalls?.some((tool) => tool.name === "get_server_time"));
+          const toolResult = toolRequested ? new Date().toISOString() : null;
           const latencyMs = Date.now() - startTime;
 
           return new Response(JSON.stringify({
             status: "VERIFIED_REAL",
             evidence: {
-              message: "Umar OS OpenAI integration is genuinely working and executing tools.",
+              model: response.model,
+              provider: response.provider,
               latencyMs,
               modelResponse: response.text,
-              toolExecution: { 
-                wasRequestedByModel: toolExecuted, 
-                rawToolResultGenerated: toolResult 
+              toolExecution: {
+                wasRequestedByModel: toolRequested,
+                rawToolResultGenerated: toolResult,
               }
             },
             auditLog: {
               timestamp: new Date().toISOString(),
-              action: "PHASE_1_OPENAI_CONNECTION_TEST",
-              authorizedUser: "UMAR_OS_ADMIN"
+              action: "OPENAI_CONNECTION_TEST",
+              authorizedUser: workspace.email,
             }
           }), { status: 200, headers: { "Content-Type": "application/json" } });
 
         } catch (e: any) {
           return new Response(JSON.stringify({
             status: "FAILED",
-            evidence: "Real OpenAI API Request Failed. Likely an invalid API key.",
-            error: e.message
+            evidence: "Real OpenAI API request failed.",
+            error: e?.message || "Unknown error"
           }), { status: 500, headers: { "Content-Type": "application/json" } });
         }
       }

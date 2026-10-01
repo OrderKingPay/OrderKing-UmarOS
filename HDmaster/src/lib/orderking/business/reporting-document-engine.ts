@@ -102,7 +102,7 @@ export class ReportingDocumentEngine {
     switch (reportType) {
       case 'DAILY_FOUNDER_BRIEFING':
         title = `Daily Founder Executive Briefing (${periodEnd})`;
-        summary = `Operational and financial pulse for Order King. Zero-commission marketplace dynamics, ledger status, and active operational alerts.`;
+        summary = `Operational and financial pulse for OrderKing from canonical ledger, order, settlement, and alert sources.`;
         sections = this.buildDailyFounderBriefing(params);
         break;
 
@@ -120,7 +120,7 @@ export class ReportingDocumentEngine {
 
       case 'RESTAURANT_SETTLEMENT_STATEMENT':
         title = `Restaurant Partner Settlement Statement - ${params.restaurantId || 'All Merchants'}`;
-        summary = `Reconciled merchant statement with 0% platform commission audit, packaging charges, GST collected at source, and bank clearing status.`;
+        summary = `Reconciled merchant statement with platform charges, packaging, tax, and provider clearing status from canonical ledger data.`;
         sections = this.buildRestaurantSettlement(params);
         break;
 
@@ -215,185 +215,207 @@ export class ReportingDocumentEngine {
   // -------------------------------------------------------------------------
 
   private static buildDailyFounderBriefing(params: ReportGenerationParams): ReportSection[] {
-    const custom = params.customData || {};
-    const ordersToday = custom.ordersToday ?? 142;
-    const gmvToday = custom.gmvToday ?? 52480;
-    const activeRest = custom.activeRestaurants ?? 28;
-    const activeRiders = custom.activeRiders ?? 18;
-    const platformFee = custom.platformFeeRevenue ?? 2840; // ₹20 flat fee or subscription
-    const founderProfit = custom.founderProfit ?? 2350;
-    const competitorSavings = Math.round(gmvToday * 0.22); // 22% typical Zomato/Swiggy commission saved
-
-    return [
-      {
-        id: 'executive_kpis',
-        title: 'Founder Executive KPIs',
-        description: 'Core daily marketplace metrics verified against canonical double-entry ledger.',
-        metrics: [
-          { key: 'orders_today', label: 'Completed Orders', value: ordersToday, category: 'FACT', sourceNote: 'Order State Machine' },
-          { key: 'gmv_today', label: 'Gross Merchandise Value', value: `₹${gmvToday.toLocaleString('en-IN')}`, category: 'FACT', sourceNote: 'Payment Gateway' },
-          { key: 'platform_fee', label: 'Platform Fee Revenue', value: `₹${platformFee.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Canonical Ledger' },
-          { key: 'founder_net', label: 'Founder Net Margin', value: `₹${founderProfit.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Ledger Profit Engine' },
-          { key: 'partner_savings', label: 'Merchant Savings vs Swiggy/Zomato (22%)', value: `₹${competitorSavings.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Zero-Commission Benchmark' },
-          { key: 'active_merchants', label: 'Active Restaurant Partners', value: activeRest, category: 'FACT', sourceNote: 'OrderKing-Partners Heartbeat' },
-          { key: 'active_riders', label: 'Online Delivery Partners', value: activeRiders, category: 'FACT', sourceNote: 'OrderKing-Riders GPS Registry' },
-        ],
-      },
-      {
-        id: 'action_items',
-        title: 'Autonomous AI Recommendations & Pending Gates',
-        description: 'Prioritized founder interventions required for operational continuity.',
-        notes: [
-          'All double-entry ledger balances strictly verified with zero imbalance.',
-          'P99 API latency across customer and partner endpoints is currently 142ms (Target: <300ms).',
-        ],
-        recommendations: [
-          '3 restaurant settlement payouts exceeding ₹10,000 awaiting founder cryptographic signature approval.',
-          'Activate dynamic surge pricing (+₹15) in North Zone due to evening rain forecast.',
-          'Invite 5 newly onboarded cloud kitchens to complete menu photography audit.',
-        ],
-      },
-    ];
+    const d = params.customData || {};
+    const money = (v: unknown) => typeof v === "number"
+      ? "₹" + (v / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : "—";
+    const metrics: AttributedMetric[] = [];
+    if (typeof d.ordersToday === "number") metrics.push({ key: "orders_today", label: "Orders Today", value: d.ordersToday, category: "FACT", sourceNote: "Canonical order state" });
+    if (typeof d.gmvTodayPaise === "number") metrics.push({ key: "gmv_today", label: "GMV Today", value: money(d.gmvTodayPaise), category: "FACT", sourceNote: "Canonical order/payment data" });
+    if (typeof d.platformRevenuePaise === "number") metrics.push({ key: "platform_revenue", label: "Platform Revenue", value: money(d.platformRevenuePaise), category: "FACT", sourceNote: "Canonical ledger" });
+    if (typeof d.founderNetPaise === "number") metrics.push({ key: "founder_net", label: "Founder Net Contribution", value: money(d.founderNetPaise), category: "CALCULATION", sourceNote: "Supplied revenue minus supplied operating costs" });
+    if (typeof d.activeRestaurants === "number") metrics.push({ key: "active_restaurants", label: "Active Restaurants", value: d.activeRestaurants, category: "FACT", sourceNote: "Restaurant status" });
+    if (typeof d.onlineRiders === "number") metrics.push({ key: "online_riders", label: "Online Riders", value: d.onlineRiders, category: "FACT", sourceNote: "Rider online state" });
+    return [{
+      id: "executive_kpis",
+      title: "Founder Executive KPIs",
+      description: "Live operational and financial metrics supplied by canonical production data sources.",
+      metrics,
+      notes: [
+        typeof d.delayedOrders === "number" ? "Delayed orders: " + d.delayedOrders : "Delayed orders: DATA_REQUIRED",
+        typeof d.unassignedOrders === "number" ? "Unassigned orders: " + d.unassignedOrders : "Unassigned orders: DATA_REQUIRED",
+      ],
+    }, {
+      id: "action_items",
+      title: "Live Exceptions & Founder Gates",
+      description: "Only live exceptions or explicitly supplied recommendations are shown.",
+      notes: Array.isArray(d.notes) ? d.notes : ["No additional live notes supplied."],
+      recommendations: Array.isArray(d.recommendations) ? d.recommendations : ["No additional live recommendations supplied."],
+    }];
   }
-
   private static buildWeeklyFounderExecutive(params: ReportGenerationParams): ReportSection[] {
+    const d = params.customData || {};
+    const metric = (key: string, label: string, category: DataTrustCategory = "FACT", unit?: string): AttributedMetric | null => {
+      const value = d[key];
+      if (typeof value !== "number" && typeof value !== "string") return null;
+      return { key, label, value, category, unit, sourceNote: category === "FACT" ? "Canonical production data supplied to report engine" : "Calculated from supplied production metrics" };
+    };
+
+    const metrics = [
+      metric("weekly_orders", "Total Weekly Orders"),
+      metric("wow_order_growth", "WoW Order Growth Rate", "CALCULATION", "%"),
+      metric("weekly_gmv_paise", "Weekly GMV", "FACT", "paise"),
+      metric("blended_take_rate_bps", "Blended Platform Take Rate", "CALCULATION", "bps"),
+      metric("projected_monthly_gmv_paise", "Projected Monthly GMV Run-rate", "ESTIMATE", "paise"),
+    ].filter(Boolean) as AttributedMetric[];
+
+    const dailyRows = Array.isArray(d.dailyBreakdown)
+      ? d.dailyBreakdown
+          .filter((row: any) => row && typeof row.day === "string")
+          .map((row: any) => [
+            row.day,
+            row.orders ?? "—",
+            row.gmvPaise != null ? Number(row.gmvPaise) : "—",
+            row.platformRevenuePaise != null ? Number(row.platformRevenuePaise) : "—",
+            row.activeFleet ?? "—",
+          ])
+      : [];
+
     return [
       {
-        id: 'weekly_growth',
-        title: 'Weekly Performance & Growth Trajectory',
-        metrics: [
-          { key: 'weekly_orders', label: 'Total Weekly Orders', value: 984, category: 'FACT' },
-          { key: 'wow_order_growth', label: 'WoW Order Growth Rate', value: '+14.8%', category: 'CALCULATION' },
-          { key: 'weekly_gmv', label: 'Weekly GMV', value: '₹3,64,200', category: 'FACT' },
-          { key: 'blended_take_rate', label: 'Blended Platform Take Rate', value: '5.4%', category: 'CALCULATION', sourceNote: 'Sub fees + ad auctions + delivery markup' },
-          { key: 'projected_monthly_runrate', label: 'Projected Monthly GMV Run-rate', value: '₹15,60,000', category: 'ESTIMATE', confidenceScore: 0.88 },
-        ],
-        tables: [
-          {
-            title: 'Daily Breakdown',
-            headers: ['Day', 'Orders', 'GMV', 'Platform Rev', 'Active Fleet'],
-            rows: [
-              ['Mon', '120', '₹44,100', '₹2,400', '15'],
-              ['Tue', '132', '₹48,900', '₹2,640', '16'],
-              ['Wed', '128', '₹47,200', '₹2,560', '16'],
-              ['Thu', '140', '₹51,800', '₹2,800', '17'],
-              ['Fri', '165', '₹61,050', '₹3,300', '20'],
-              ['Sat', '180', '₹66,600', '₹3,600', '22'],
-              ['Sun', '119', '₹44,550', '₹2,380', '18'],
-            ],
-          },
+        id: "weekly_growth",
+        title: "Weekly Performance & Growth Trajectory",
+        description: "Only verified production values or explicitly marked estimates supplied to the report engine are included.",
+        metrics,
+        tables: dailyRows.length
+          ? [{ title: "Daily Breakdown", headers: ["Day", "Orders", "GMV (paise)", "Platform Revenue (paise)", "Active Fleet"], rows: dailyRows }]
+          : [],
+        notes: [
+          dailyRows.length ? "Daily breakdown sourced from supplied production telemetry." : "Daily breakdown: DATA_REQUIRED",
         ],
       },
       {
-        id: 'strategic_insights',
-        title: 'Strategic Unit Economics & AI Insights',
-        recommendations: [
-          'Merchant retention remains at 96.4% due to zero-commission policy.',
-          'Rider hourly earnings averaged ₹142/hr, 18% above regional gig baseline.',
-          'Consider launching King Pay UPI auto-debit for merchant weekly subscription renewals.',
-        ],
+        id: "strategic_insights",
+        title: "Strategic Unit Economics & AI Insights",
+        recommendations: Array.isArray(d.recommendations)
+          ? d.recommendations
+          : ["No unverified strategic recommendation is generated without live evidence."],
       },
     ];
   }
+
 
   private static buildFinancePL(params: ReportGenerationParams): ReportSection[] {
-    return [
-      {
-        id: 'revenue_and_gmv',
-        title: 'Gross Merchandise Value & Revenue Summary',
-        metrics: [
-          { key: 'gross_merchandise_value', label: 'Gross Merchandise Value (GMV)', value: '₹5,24,800', category: 'FACT' },
-          { key: 'customer_delivery_fees', label: 'Delivery Fees Collected from Customers', value: '₹42,600', category: 'FACT' },
-          { key: 'platform_service_fees', label: 'Platform Technology Fees (₹5-₹10/order)', value: '₹14,200', category: 'FACT' },
-          { key: 'merchant_subscriptions', label: 'Merchant Premium Subscriptions', value: '₹12,500', category: 'FACT' },
-          { key: 'in_app_ad_revenue', label: 'In-App Featured Search Auction Revenue', value: '₹6,400', category: 'FACT' },
-          { key: 'total_platform_revenue', label: 'Total Platform Gross Revenue', value: '₹75,700', category: 'CALCULATION' },
-        ],
-      },
-      {
-        id: 'operating_costs',
-        title: 'Direct Operating Expenses & Disbursements',
-        metrics: [
-          { key: 'rider_payouts', label: 'Rider Delivery Payouts & Distance Pay', value: '₹40,800', category: 'FACT', sourceNote: 'Disbursed via Canonical Ledger' },
-          { key: 'payment_gateway_fees', label: 'Payment Gateway Processing Charges (1.8% + GST)', value: '₹11,136', category: 'CALCULATION' },
-          { key: 'sms_whatsapp_costs', label: 'SMS & WhatsApp Notification Costs', value: '₹1,420', category: 'CALCULATION' },
-          { key: 'cloud_infra_costs', label: 'Cloud Infrastructure & Server Allocation', value: '₹3,200', category: 'CALCULATION' },
-          { key: 'refunds_and_disputes', label: 'Customer Goodwill Refunds & Spoilage Write-offs', value: '₹1,850', category: 'FACT' },
-          { key: 'total_operating_expenses', label: 'Total Direct Operating Expenses', value: '₹58,406', category: 'CALCULATION' },
-        ],
-      },
-      {
-        id: 'net_income',
-        title: 'Net Marketplace Contribution Margin',
-        metrics: [
-          { key: 'net_contribution_profit', label: 'Net Operating Profit (EBITDA)', value: '₹17,294', category: 'CALCULATION' },
-          { key: 'net_profit_margin_pct', label: 'Net Profit Margin on Platform Revenue', value: '22.8%', category: 'CALCULATION' },
-        ],
-        notes: [
-          'All figures balanced against Double-Entry Ledger account FOUNDER_VAULT and PLATFORM_FEE_REVENUE.',
-          'Statutory GST output tax of 18% is provisioned in GST_OUTPUT_LIABILITY and not counted as revenue.',
-        ],
-      },
-    ];
+    const d = params.customData || {};
+    const money = (v: unknown) => typeof v === "number"
+      ? "₹" + (v / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : "—";
+    const revenue = ["deliveryFeesPaise","platformFeesPaise","merchantSubscriptionsPaise","adRevenuePaise"].every((k) => typeof d[k] === "number")
+      ? Number(d.deliveryFeesPaise) + Number(d.platformFeesPaise) + Number(d.merchantSubscriptionsPaise) + Number(d.adRevenuePaise)
+      : null;
+    const costs = ["riderPayoutsPaise","paymentGatewayFeesPaise","notificationCostsPaise","cloudCostsPaise","refundsPaise"].every((k) => typeof d[k] === "number")
+      ? Number(d.riderPayoutsPaise) + Number(d.paymentGatewayFeesPaise) + Number(d.notificationCostsPaise) + Number(d.cloudCostsPaise) + Number(d.refundsPaise)
+      : null;
+    const profit = revenue != null && costs != null ? revenue - costs : null;
+    return [{
+      id: "revenue_and_gmv",
+      title: "Gross Merchandise Value & Platform Revenue",
+      metrics: [
+        ...(typeof d.gmvPaise === "number" ? [{ key: "gross_merchandise_value", label: "GMV", value: money(d.gmvPaise), category: "FACT", sourceNote: "Canonical orders" }] : []),
+        ...(typeof d.deliveryFeesPaise === "number" ? [{ key: "customer_delivery_fees", label: "Customer Delivery Fees", value: money(d.deliveryFeesPaise), category: "FACT", sourceNote: "Canonical order charges" }] : []),
+        ...(typeof d.platformFeesPaise === "number" ? [{ key: "platform_service_fees", label: "Platform Technology Fees", value: money(d.platformFeesPaise), category: "FACT", sourceNote: "Canonical fee ledger" }] : []),
+        ...(typeof d.merchantSubscriptionsPaise === "number" ? [{ key: "merchant_subscriptions", label: "Merchant Subscriptions", value: money(d.merchantSubscriptionsPaise), category: "FACT", sourceNote: "Subscription ledger" }] : []),
+        ...(typeof d.adRevenuePaise === "number" ? [{ key: "in_app_ad_revenue", label: "Sponsored Placement Revenue", value: money(d.adRevenuePaise), category: "FACT", sourceNote: "Ad/settlement ledger" }] : []),
+        ...(revenue != null ? [{ key: "total_platform_revenue", label: "Total Platform Revenue", value: money(revenue), category: "CALCULATION", sourceNote: "Sum of supplied revenue sources" }] : []),
+      ],
+    }, {
+      id: "operating_costs",
+      title: "Operating Costs & Disbursements",
+      metrics: [
+        ...(typeof d.riderPayoutsPaise === "number" ? [{ key: "rider_payouts", label: "Rider Payouts", value: money(d.riderPayoutsPaise), category: "FACT", sourceNote: "Payout ledger" }] : []),
+        ...(typeof d.paymentGatewayFeesPaise === "number" ? [{ key: "payment_gateway_fees", label: "Payment Gateway Fees", value: money(d.paymentGatewayFeesPaise), category: "FACT", sourceNote: "Provider invoice/ledger" }] : []),
+        ...(typeof d.notificationCostsPaise === "number" ? [{ key: "notification_costs", label: "Notification Costs", value: money(d.notificationCostsPaise), category: "FACT", sourceNote: "Provider spend ledger" }] : []),
+        ...(typeof d.cloudCostsPaise === "number" ? [{ key: "cloud_infra_costs", label: "Cloud Infrastructure", value: money(d.cloudCostsPaise), category: "FACT", sourceNote: "Actual cloud billing input" }] : []),
+        ...(typeof d.refundsPaise === "number" ? [{ key: "refunds_and_disputes", label: "Refunds & Disputes", value: money(d.refundsPaise), category: "FACT", sourceNote: "Refund ledger" }] : []),
+        ...(costs != null ? [{ key: "total_operating_expenses", label: "Total Operating Expenses", value: money(costs), category: "CALCULATION", sourceNote: "Sum of supplied cost sources" }] : []),
+      ],
+    }, {
+      id: "net_income",
+      title: "Net Marketplace Contribution",
+      metrics: profit != null ? [
+        { key: "net_contribution_profit", label: "Net Contribution", value: money(profit), category: "CALCULATION", sourceNote: "Revenue minus supplied operating costs" },
+        { key: "net_profit_margin_pct", label: "Contribution Margin", value: revenue && revenue !== 0 ? ((profit / revenue) * 100).toFixed(2) + "%" : "—", category: "CALCULATION", sourceNote: "Calculated from supplied values" },
+      ] : [],
+      notes: profit == null ? ["DATA_REQUIRED: complete production revenue and cost inputs were not supplied."] : [],
+    }];
   }
-
   private static buildRestaurantSettlement(params: ReportGenerationParams): ReportSection[] {
-    const restaurantName = params.customData?.restaurantName || 'Spice Garden Kitchen';
-    return [
-      {
-        id: 'merchant_overview',
-        title: `Settlement Breakdown - ${restaurantName}`,
-        metrics: [
-          { key: 'orders_fulfilled', label: 'Orders Fulfilled', value: 86, category: 'FACT' },
-          { key: 'food_subtotal', label: 'Food Item Subtotal', value: '₹38,450', category: 'FACT' },
-          { key: 'packaging_charges', label: 'Packaging Charges Collected', value: '₹1,290', category: 'FACT' },
-          { key: 'gross_payable_before_tax', label: 'Gross Merchant Entitlement', value: '₹39,740', category: 'CALCULATION' },
-          { key: 'order_king_commission', label: 'Order King Commission (0%)', value: '₹0.00', category: 'FACT' },
-          { key: 'competitor_commission_saved', label: 'Estimated Commission Saved vs Aggregators', value: '₹8,742', category: 'CALCULATION' },
-        ],
-      },
-      {
-        id: 'statutory_deductions',
-        title: 'Taxes & Statutory Deductions',
-        metrics: [
-          { key: 'tcs_under_gst', label: 'TCS under GST (0.5% CGST + 0.5% SGST = 1%)', value: '₹384.50', category: 'CALCULATION' },
-          { key: 'tds_under_it', label: 'TDS under Section 194-O (1%)', value: '₹384.50', category: 'CALCULATION' },
-          { key: 'total_statutory_withholding', label: 'Total Statutory Withholding', value: '₹769.00', category: 'CALCULATION' },
-          { key: 'net_bank_disbursement', label: 'Net Amount Disbursed to Bank Account', value: '₹38,971.00', category: 'CALCULATION' },
-        ],
-        notes: [
-          'Settlement transition: CALCULATED -> VALIDATED -> APPROVED -> PAID.',
-          'UTR / Bank Reference: CMS904810294812 (HDFC Bank Corporate NetBanking).',
-        ],
-      },
-    ];
+    const d = params.customData || {};
+    const money = (v: unknown) => typeof v === "number"
+      ? "₹" + (v / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : "—";
+    const gross = typeof d.foodSubtotalPaise === "number" && typeof d.packingPaise === "number"
+      ? Number(d.foodSubtotalPaise) + Number(d.packingPaise)
+      : null;
+    const payable = typeof d.restaurantPayablePaise === "number"
+      ? Number(d.restaurantPayablePaise)
+      : gross != null &&
+        typeof d.restaurantDiscountPaise === "number" &&
+        typeof d.commissionPaise === "number" &&
+        typeof d.otherDeductionsPaise === "number" &&
+        typeof d.refundAdjustmentPaise === "number"
+        ? gross - Number(d.restaurantDiscountPaise) - Number(d.commissionPaise) - Number(d.otherDeductionsPaise) + Number(d.refundAdjustmentPaise)
+        : null;
+    return [{
+      id: "merchant_overview",
+      title: "Settlement Breakdown - " + (d.restaurantName || params.restaurantId || "Restaurant"),
+      metrics: [
+        ...(typeof d.ordersFulfilled === "number" ? [{ key: "orders_fulfilled", label: "Orders Fulfilled", value: d.ordersFulfilled, category: "FACT" }] : []),
+        ...(typeof d.foodSubtotalPaise === "number" ? [{ key: "food_subtotal", label: "Food Item Subtotal", value: money(d.foodSubtotalPaise), category: "FACT" }] : []),
+        ...(typeof d.packingPaise === "number" ? [{ key: "packaging_charges", label: "Packaging Charges", value: money(d.packingPaise), category: "FACT" }] : []),
+        ...(gross != null ? [{ key: "gross_entitlement", label: "Gross Merchant Entitlement", value: money(gross), category: "CALCULATION" }] : []),
+        ...(typeof d.restaurantDiscountPaise === "number" ? [{ key: "restaurant_discount", label: "Restaurant-Funded Discount", value: money(d.restaurantDiscountPaise), category: "FACT" }] : []),
+        ...(typeof d.platformFundedDiscountPaise === "number" ? [{ key: "platform_discount", label: "Platform-Funded Discount", value: money(d.platformFundedDiscountPaise), category: "FACT" }] : []),
+        ...(typeof d.commissionPaise === "number" ? [{ key: "order_king_commission", label: "OrderKing Commission", value: money(d.commissionPaise), category: "FACT" }] : []),
+        ...(typeof d.otherDeductionsPaise === "number" ? [{ key: "other_deductions", label: "Other Deductions", value: money(d.otherDeductionsPaise), category: "FACT" }] : []),
+        ...(typeof d.refundAdjustmentPaise === "number" ? [{ key: "refund_adjustments", label: "Refund Adjustments", value: money(d.refundAdjustmentPaise), category: "FACT" }] : []),
+        ...(payable != null ? [{ key: "net_payable", label: "Net Restaurant Payable", value: money(payable), category: "CALCULATION" }] : []),
+      ],
+    }, {
+      id: "settlement_status",
+      title: "Settlement Status & References",
+      metrics: [],
+      notes: [
+        d.status ? "Status: " + d.status : "Status: NOT_SUPPLIED",
+        d.providerReference ? "Provider reference: " + d.providerReference : "Provider reference: NOT_SUPPLIED",
+      ],
+    }];
   }
-
   private static buildRiderPayout(params: ReportGenerationParams): ReportSection[] {
-    return [
-      {
-        id: 'rider_earnings_summary',
-        title: 'Fleet Earnings & Performance Breakdown',
-        metrics: [
-          { key: 'deliveries_completed', label: 'Total Completed Deliveries', value: 34, category: 'FACT' },
-          { key: 'base_distance_pay', label: 'Base Fare & Distance Compensation', value: '₹1,530.00', category: 'FACT' },
-          { key: 'peak_surge_bonus', label: 'Peak Hour & Rain Surge Bonus', value: '₹340.00', category: 'FACT' },
-          { key: 'customer_tips_100pct', label: 'Customer Tips (100% Passthrough)', value: '₹280.00', category: 'FACT' },
-          { key: 'milestone_incentive', label: '30+ Deliveries Daily Incentive', value: '₹150.00', category: 'FACT' },
-          { key: 'gross_rider_earnings', label: 'Total Gross Earnings', value: '₹2,300.00', category: 'CALCULATION' },
-        ],
-      },
-      {
-        id: 'deductions_and_net',
-        title: 'Insurance & Net Disbursed Earnings',
-        metrics: [
-          { key: 'daily_accidental_insurance', label: 'Group Accidental Insurance Deduction', value: '₹12.00', category: 'CALCULATION' },
-          { key: 'net_payout_amount', label: 'Net Payable to UPI VPA', value: '₹2,288.00', category: 'CALCULATION' },
-        ],
-      },
-    ];
+    const d = params.customData || {};
+    const money = (v: unknown) => typeof v === "number"
+      ? "₹" + (v / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : "—";
+    const gross = ["baseDistancePaise","surgePaise","tipsPaise","incentivePaise"].every((k) => typeof d[k] === "number")
+      ? Number(d.baseDistancePaise) + Number(d.surgePaise) + Number(d.tipsPaise) + Number(d.incentivePaise)
+      : null;
+    const net = gross != null && typeof d.deductionsPaise === "number"
+      ? gross - Number(d.deductionsPaise)
+      : typeof d.netPayoutPaise === "number" ? Number(d.netPayoutPaise) : null;
+    return [{
+      id: "rider_earnings_summary",
+      title: "Fleet Earnings & Performance Breakdown",
+      metrics: [
+        ...(typeof d.deliveriesCompleted === "number" ? [{ key: "deliveries_completed", label: "Completed Deliveries", value: d.deliveriesCompleted, category: "FACT" }] : []),
+        ...(typeof d.baseDistancePaise === "number" ? [{ key: "base_distance_pay", label: "Base & Distance Compensation", value: money(d.baseDistancePaise), category: "FACT" }] : []),
+        ...(typeof d.surgePaise === "number" ? [{ key: "peak_surge_bonus", label: "Peak/Surge Bonus", value: money(d.surgePaise), category: "FACT" }] : []),
+        ...(typeof d.tipsPaise === "number" ? [{ key: "customer_tips", label: "Customer Tips", value: money(d.tipsPaise), category: "FACT" }] : []),
+        ...(typeof d.incentivePaise === "number" ? [{ key: "target_incentive", label: "Target Incentive", value: money(d.incentivePaise), category: "FACT" }] : []),
+        ...(gross != null ? [{ key: "gross_rider_earnings", label: "Gross Rider Earnings", value: money(gross), category: "CALCULATION" }] : []),
+      ],
+    }, {
+      id: "deductions_and_net",
+      title: "Deductions & Net Disbursed Earnings",
+      metrics: [
+        ...(typeof d.deductionsPaise === "number" ? [{ key: "rider_deductions", label: "Deductions", value: money(d.deductionsPaise), category: "FACT" }] : []),
+        ...(net != null ? [{ key: "net_payout_amount", label: "Net Payable", value: money(net), category: "CALCULATION" }] : []),
+      ],
+      notes: [
+        d.providerReference ? "Provider reference: " + d.providerReference : "Provider reference: NOT_SUPPLIED",
+        typeof d.disbursedAt === "string" ? "Disbursed at: " + d.disbursedAt : "Disbursement time: NOT_SUPPLIED",
+      ],
+    }];
   }
-
   private static buildOperationsSLA(params: ReportGenerationParams): ReportSection[] {
     return [
       {

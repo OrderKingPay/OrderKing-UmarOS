@@ -13,13 +13,6 @@ export const Route = createFileRoute("/earnings")({ component: Page });
 
 type Preset = "today" | "yesterday" | "week" | "month";
 
-const MILESTONES = [
-  { orders: 4, bonusPaise: 6000, label: "₹60" },
-  { orders: 8, bonusPaise: 14000, label: "₹140" },
-  { orders: 12, bonusPaise: 25000, label: "₹250" },
-  { orders: 16, bonusPaise: 40000, label: "₹400" },
-];
-
 function Page() {
   const { t } = useI18n();
   const [preset, setPreset] = useState<Preset>("today");
@@ -44,11 +37,10 @@ function Page() {
     void getSettlementsFn().then(setSettlements).catch(() => undefined);
   }, [preset, t]);
 
-  const completedTrips =
-    data?.lines.filter((l: any) => (l.kind as string) === "DELIVERY_PAYOUT" || (l.kind as string) === "DELIVERY" || Boolean(l.orderCode)).length ?? 0;
-  const currentMilestoneIndex = MILESTONES.findIndex((m) => completedTrips < m.orders);
-  const nextMilestone = currentMilestoneIndex === -1 ? null : MILESTONES[currentMilestoneIndex];
-
+  const completedTrips = data?.targetIncentive?.progress ?? 0;
+  const target = data?.targetIncentive?.target ?? 0;
+  const rewardPaise = data?.targetIncentive?.rewardPaise ?? 0;
+  const targetActive = Boolean(data?.targetIncentive?.active);
   return (
     <AppShell>
       <div className="space-y-4">
@@ -71,66 +63,28 @@ function Page() {
           <Badge tone="online">1.3x Boost</Badge>
         </div>
 
-        {/* Daily Incentive Milestones (Zomato Partner Model) */}
-        {preset === "today" ? (
+        {preset === "today" && targetActive ? (
           <Card className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>🎯 Daily Target Incentives</CardTitle>
+                <CardTitle>🎯 Daily Target Incentive</CardTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {nextMilestone
-                    ? `Complete ${nextMilestone.orders - completedTrips} more trip${
-                        nextMilestone.orders - completedTrips > 1 ? "s" : ""
-                      } to unlock ${nextMilestone.label} bonus!`
-                    : "🔥 All daily milestone bonuses unlocked! Total bonus: ₹400"}
+                  {completedTrips >= target
+                    ? `Target reached — ₹${(rewardPaise / 100).toFixed(0)} campaign reward is eligible for provider verification.`
+                    : `Complete ${Math.max(0, target - completedTrips)} more verified deliveries to reach the active campaign target.`}
                 </p>
               </div>
-              <Badge tone="online">
-                {completedTrips} / {MILESTONES[MILESTONES.length - 1]?.orders} Trips
-              </Badge>
+              <Badge tone="online">{completedTrips} / {target}</Badge>
             </div>
-
-            {/* Progress bar */}
             <div className="h-2 w-full overflow-hidden rounded-full bg-surface-2">
               <div
                 className="h-full bg-primary transition-all duration-500"
-                style={{
-                  width: `${Math.min(
-                    100,
-                    Math.round(
-                      (completedTrips / (nextMilestone ? nextMilestone.orders : MILESTONES[MILESTONES.length - 1]?.orders || 16)) *
-                        100,
-                    ),
-                  )}%`,
-                }}
+                style={{ width: `${target ? Math.min(100, Math.round((completedTrips / target) * 100)) : 0}%` }}
               />
             </div>
-
-            {/* Milestone Steps */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-              {MILESTONES.map((m, idx) => {
-                const isCompleted = completedTrips >= m.orders;
-                const isCurrent = nextMilestone?.orders === m.orders;
-                return (
-                  <div
-                    key={m.orders}
-                    className={`rounded-lg border p-2 text-center transition ${
-                      isCompleted
-                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-900 dark:text-emerald-200"
-                        : isCurrent
-                          ? "border-primary bg-primary/10 text-primary font-semibold"
-                          : "border-border bg-surface-2 text-muted-foreground"
-                    }`}
-                  >
-                    <p className="text-xs font-medium">
-                      {isCompleted ? "✓ " : ""}
-                      {m.orders} Trips
-                    </p>
-                    <p className="text-sm font-bold tabular-nums">{m.label}</p>
-                  </div>
-                );
-              })}
-            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Rewards are created from the verified growth ledger and are not claimed as paid until settlement/provider confirmation.
+            </p>
           </Card>
         ) : null}
 
@@ -155,38 +109,20 @@ function Page() {
               <Row k={t("cashCollectedLabel")} v={formatPaise(data.totals.cashCollected)} />
               <Row k={t("cashReconciled")} v={formatPaise(data.totals.cashReconciled)} />
             </dl>
-            <CardMeta className="mt-3">{t("simulatedBanner")}</CardMeta>
+            <CardMeta className="mt-3">{data.dataMode === "LIVE" ? "Live ledger data" : "Provider/data source required"}</CardMeta>
           </Card>
         ) : null}
 
-        {/* 1-Tap Daily Cashout to UPI (₹5 Instant Fee) */}
         {data && data.totals.netPayable > 500 ? (
           <Card className="border border-primary/40 bg-primary/5 p-4 space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⚡</span>
-                  <p className="font-bold text-foreground text-sm">1-Tap Instant Daily UPI Cashout</p>
-                  <Badge tone="online">Instant IMPS/UPI</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Need your earnings today instead of Wednesday payout? Transfer {formatPaise(data.totals.netPayable - 500)} immediately to your linked UPI ID (<span className="font-mono font-semibold">rider@okaxis</span>) for a flat ₹5 instant transfer fee.
-                </p>
-              </div>
-              <Button
-                size="sm"
-                disabled={cashoutBusy}
-                onClick={() => handleInstantCashout()}
-                className="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
-              >
-                {cashoutBusy ? "Sending via UPI..." : `Instant Cashout (${formatPaise(data.totals.netPayable - 500)})`}
-              </Button>
+            <div className="flex items-center gap-2">
+              <span className="text-lg">⚡</span>
+              <p className="font-bold text-foreground text-sm">Instant Cashout</p>
+              <Badge tone="online">Provider Required</Badge>
             </div>
-            {cashoutSuccess && (
-              <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                ✅ UPI Transfer of {formatPaise(data.totals.netPayable - 500)} completed! UTR: 429108492019. Amount deposited to rider@okaxis.
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground">
+              Your verified earnings remain in the normal weekly settlement cycle until a live payout provider is connected. No instant transfer is claimed or simulated.
+            </p>
           </Card>
         ) : null}
 
@@ -207,20 +143,20 @@ function Page() {
             </div>
             <div className="text-right font-mono">
               <span className="text-[10px] text-muted-foreground block">Monthly Fuel Saved</span>
-              <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">~₹1,650 / mo</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">Provider-linked benefit</span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
             <div className="rounded-lg bg-surface/80 p-2.5 border border-border space-y-1">
               <p className="font-bold text-foreground flex items-center gap-1">
-                <span>⛽ 2.5% Fuel Cashback</span>
+                <span>⛽ Verified partner reward</span>
               </p>
-              <p className="text-muted-foreground">Direct cashback into HP Pay / IndianOil ONE wallet on every petrol refill.</p>
+              <p className="text-muted-foreground">Partner terms shown only when an active, verified fuel partner contract is available.</p>
             </div>
             <div className="rounded-lg bg-surface/80 p-2.5 border border-border space-y-1">
               <p className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                <span>🛡️ ₹2,00,000 Free Cover</span>
+                <span>🛡️ Verified insurance benefit</span>
               </p>
               <p className="text-muted-foreground">Complimentary Accidental Death &amp; Disability Insurance provided by HPCL/IOCL.</p>
             </div>
@@ -228,7 +164,7 @@ function Page() {
               <p className="font-bold text-foreground flex items-center gap-1">
                 <span>💨 Free Air &amp; Priority Lane</span>
               </p>
-              <p className="text-muted-foreground">Zero waiting at partner stations in Karimganj, Silchar, and Hailakandi.</p>
+              <p className="text-muted-foreground">Availability depends on the active partner contract and station.</p>
             </div>
           </div>
 
@@ -236,16 +172,16 @@ function Page() {
             <div className="flex items-center gap-2">
               <span className="text-base">📱</span>
               <div>
-                <span className="font-mono font-bold text-foreground text-[11px]">FLEET CARD: OK-RIDER-HP-8421</span>
-                <span className="block text-[10px] text-muted-foreground">Show this Fleet ID or QR at partner pump POS for instant discount</span>
+                <span className="font-mono font-bold text-foreground text-[11px]">OrderKing partner identifier</span>
+                <span className="block text-[10px] text-muted-foreground">Show the active provider-linked identifier only when a verified fleet partner is connected.</span>
               </div>
             </div>
             <button
               type="button"
               onClick={() => {
                 if (typeof window !== "undefined") {
-                  void navigator.clipboard?.writeText("OK-RIDER-HP-8421");
-                  alert("Rider Fleet ID copied: OK-RIDER-HP-8421");
+                  void navigator.clipboard?.writeText("Provider-linked rider identifier");
+                  alert("Provider-linked rider identifier copied.");
                 }
               }}
               className="rounded-md bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 text-[10px] font-bold transition"

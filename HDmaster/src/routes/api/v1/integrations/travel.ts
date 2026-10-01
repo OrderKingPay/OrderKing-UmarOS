@@ -1,46 +1,51 @@
-// @ts-nocheck
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createFileRoute } from "@tanstack/react-router";
 
-// TRAVEL API SCAFFOLDING (Amadeus / IRCTC / Skyscanner)
-// Drop your production API keys in Netlify Environment Variables:
-// VITE_TRAVEL_API_KEY, VITE_IRCTC_MERCHANT_KEY
+// Travelpayouts Affiliate Implementation
+// Replaces Amadeus to remove production compliance blockers and test API limitations.
+export const Route = createFileRoute("/api/v1/integrations/travel")({
+  // @ts-expect-error
+  server: {
+    handlers: {
+      POST: async ({ request }: any) => {
+        const { requireUserId } = await import("@/lib/auth/verify.server");
+        try {
+          await requireUserId();
+          const body = await request.json();
+          const type = String(body?.type || "").toUpperCase();
+          const origin = String(body?.origin || "").trim().toUpperCase();
+          const destination = String(body?.destination || "").trim().toUpperCase();
+          const date = String(body?.date || "").trim();
 
-export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
-  POST: async () => {
-  try {
-    const { origin, destination, date, type } = await request.json();
+          if (!origin || !destination || !date) {
+            return Response.json({ success: false, status: "INVALID_REQUEST", message: "origin, destination and date are required." }, { status: 400 });
+          }
 
-    // SCENARIO 1: FLIGHTS (Amadeus or Skyscanner B2B)
-    if (type === "FLIGHT") {
-      const travelApiKey = process.env.VITE_TRAVEL_API_KEY;
-      if (!travelApiKey) {
-        return new Response(JSON.stringify({ error: "Missing VITE_TRAVEL_API_KEY for lowest priced flights." }), { status: 500 });
-      }
-      
-      // Real API Call to Aggregator will go here:
-      // const res = await fetch(`https://api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${date}`, {
-      //   headers: { Authorization: `Bearer ${travelApiKey}` }
-      // });
-      // const data = await res.json();
-      
-      return new Response(JSON.stringify({ success: true, message: "Travel API scaffolding ready. Waiting for keys." }), {
-        headers: { "Content-Type": "application/json" }
-      });
-    }
+          if (type === "FLIGHT") {
+            // Provide a Travelpayouts affiliate URL for flight search
+            const affiliateMarker = process.env.TRAVELPAYOUTS_MARKER || "orderking_default";
+            const tpUrl = `https://search.travelpayouts.com/flights/?origin=${origin}&destination=${destination}&depart_date=${date}&adults=${Math.max(1, Number(body?.adults || 1))}&children=0&infants=0&trip_class=0&marker=${affiliateMarker}`;
+            
+            return Response.json({ 
+              success: true, 
+              provider: "TRAVELPAYOUTS", 
+              redirectUrl: tpUrl,
+              data: {
+                message: "Flight searches are processed via our partner Travelpayouts."
+              }
+            });
+          }
 
-    // SCENARIO 2: IRCTC INDIAN TRAINS
-    if (type === "TRAIN") {
-      const irctcKey = process.env.VITE_IRCTC_MERCHANT_KEY;
-      if (!irctcKey) {
-        return new Response(JSON.stringify({ error: "Missing VITE_IRCTC_MERCHANT_KEY for lowest priced trains." }), { status: 500 });
-      }
-      return new Response(JSON.stringify({ success: true, message: "IRCTC API scaffolding ready." }));
-    }
+          if (type === "TRAIN") {
+            return Response.json({ success: false, status: "PROVIDER_ADAPTER_REQUIRED", message: "IRCTC B2B adapter requires compliance verification." }, { status: 503 });
+          }
 
-    return new Response(JSON.stringify({ error: "Invalid travel type" }), { status: 400 });
-
-  } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: "Internal Server Error" }), { status: 500 });
-  }
-  }
+          return Response.json({ success: false, status: "INVALID_TRAVEL_TYPE" }, { status: 400 });
+        } catch (error: any) {
+          if (error?.message === "Unauthorized") return Response.json({ success: false, error: "Unauthorized" }, { status: 401 });
+          return Response.json({ success: false, error: error?.message || "Travel provider request failed." }, { status: 503 });
+        }
+      },
+    },
+  },
 });
+

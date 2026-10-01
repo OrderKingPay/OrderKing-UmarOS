@@ -506,7 +506,7 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
  * 1. Checks engineering commands -> runs real workspace tools.
  * 2. Checks workforce/approval commands -> runs real DB queries.
  * 3. Checks active provider -> if connected, calls real model API with real streaming.
- * 4. If external provider missing key -> gracefully and truthfully executes via Sovereign Local Core.
+ * 4. If no external provider is configured, the request fails closed without synthetic output.
  */
 export async function executeFounderAiChat(
   request: AiChatRequest,
@@ -639,13 +639,10 @@ export async function executeFounderAiChat(
     const openaiKey = getProviderApiKey("openai");
     const xaiKey = getProviderApiKey("xai");
 
-    if (geminiKey) activeProvidersList.push({ name: "Google Gemini 2.0 Flash", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: "gemini-2.0-flash" });
-    if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude 3.7", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: "claude-3-7-sonnet-20250219" });
-    if (openaiKey) activeProvidersList.push({ name: "OpenAI GPT-4o", id: "openai", provider: new OpenAIProvider(openaiKey), model: "gpt-4o" });
-    if (xaiKey) activeProvidersList.push({ name: "xAI Grok 2", id: "xai", provider: new XAIProvider(xaiKey), model: "grok-2-1212" });
-
-    // Always include Sovereign Local Core
-    const localRes = executeLocalSovereignCognitivePass(currentQuery, request.messages, request.founderUpiVpa);
+    if (geminiKey) activeProvidersList.push({ name: "Google Gemini", id: "gemini", provider: new GoogleGeminiProvider(geminiKey), model: process.env.GEMINI_MODEL?.trim() || "gemini-2.0-flash" });
+    if (anthropicKey) activeProvidersList.push({ name: "Anthropic Claude", id: "anthropic", provider: new AnthropicProvider(anthropicKey), model: process.env.ANTHROPIC_MODEL?.trim() || "claude-3-7-sonnet-20250219" });
+    if (openaiKey) activeProvidersList.push({ name: "OpenAI", id: "openai", provider: new OpenAIProvider(openaiKey), model: process.env.OPENAI_MODEL?.trim() || "gpt-6-astra" });
+    if (xaiKey) activeProvidersList.push({ name: "xAI Grok", id: "xai", provider: new XAIProvider(xaiKey), model: process.env.XAI_MODEL?.trim() || "grok-2-1212" });
 
     if (activeProvidersList.length >= 2) {
       // Double Engine mode
@@ -662,7 +659,7 @@ export async function executeFounderAiChat(
         });
         primaryResponse = res1.text;
       } catch (e) {
-        primaryResponse = localRes.text;
+        throw e;
       }
       onStreamEvent?.({ type: "step", data: { stepNumber: 1, totalSteps: 2, label: `Engine 1 (${engine1.name}) Processing`, status: "COMPLETED", detail: "Primary generation complete." } });
 
@@ -730,7 +727,10 @@ export async function executeFounderAiChat(
   // 4. External Cloud Provider Execution
   if (activeRecord.provider !== "Local Sovereign") {
     const providerKey = activeRecord.provider.toLowerCase();
-    const apiKey = request.apiKeys?.[providerKey] || getProviderApiKey(providerKey);
+    if (request.apiKeys && Object.keys(request.apiKeys).length > 0) {
+      throw new Error("Provider API keys must be configured server-side; browser-supplied keys are rejected.");
+    }
+    const apiKey = getProviderApiKey(providerKey);
 
     if (apiKey) {
       try {
@@ -761,7 +761,7 @@ export async function executeFounderAiChat(
           return { role: m.role, content: m.content };
         });
 
-        const systemPrompt = "You are Supreme HDmaster AI, an autonomous operator. You have access to specialized workforce task types ('approval_center', 'restaurant_growth', 'finance_engine', 'dispatch_routing', 'fraud_analysis', 'customer_support', 'financial_audit'). NEVER hallucinate database queries. Execute only mapped specialized tasks. For high-impact or money-sensitive operations, request founder approvals. Answer naturally, authoritatively, and concisely. DO NOT use markdown headers for greetings.";
+        const systemPrompt = "You are Umar OS Founder AI. Operate the authenticated founder workspace using only verified platform data and explicitly approved tools. Never invent finance, settlement, compliance, provider, deployment, security, or operational results. Never expose or request secrets in chat. Match the founder’s latest language when practical. For high-impact, money-moving, legal, deployment, or destructive actions, use the platform approval gates and never bypass them. When a capability or provider is unavailable, report the exact unavailable state instead of simulating it.";
 
         let finalFullText = "";
         
@@ -830,35 +830,28 @@ export async function executeFounderAiChat(
           latencyMs: Date.now() - startTime,
         };
       } catch (err) {
-        console.warn(`[ai-chat] Provider ${activeRecord.provider} failed, falling back to Local Sovereign Core:`, err);
+        console.warn(`[ai-chat] Provider ${activeRecord.provider} failed; no simulated fallback is permitted:`, err);
         onStreamEvent?.({
-          type: "step",
+          type: "error",
           data: {
-            stepNumber: 3,
-            totalSteps: 4,
-            label: "Local Core Fallback",
-            status: "COMPLETED",
-            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). Seamlessly routing to Local Sovereign Core.`,
+            message: `${activeRecord.provider} failed. No simulated or local synthetic response is enabled.`,
           },
         });
+        return {
+          text: `${activeRecord.provider} failed. No simulated or local synthetic response is enabled.`,
+          modelUsed: "none",
+          provider: activeRecord.provider,
+          executionSteps: [],
+          latencyMs: Date.now() - startTime,
+        };
       }
     }
   }
 
-  // 5. No external provider available — honest fallback
-  const localRes = executeLocalSovereignCognitivePass(currentQuery, request.messages, request.founderUpiVpa);
-  onStreamEvent?.({ type: "delta", data: localRes.text });
-  onStreamEvent?.({
-    type: "done",
-    data: {
-      text: localRes.text,
-      executionSteps: [],
-      modelUsed: "none",
-    },
-  });
-
+  const blockedText = "No real AI provider is configured for this deployment. Add a verified provider key and model configuration; no simulated fallback response is permitted.";
+  onStreamEvent?.({ type: "error", data: { message: blockedText } });
   return {
-    text: localRes.text,
+    text: blockedText,
     modelUsed: "none",
     provider: "None Connected",
     executionSteps: [],

@@ -3230,7 +3230,7 @@ export function SupremeFounderAiChat({
   onSelectAction,
   defaultCallMode = false,
 }: SupremeFounderAiChatProps) {
-  const [selectedModel, setSelectedModel] = useState<AiModelId>("sovereign-ultra");
+  const [selectedModel, setSelectedModel] = useState<AiModelId>("auto-supreme-orchestrator");
   const [inputQuery, setInputQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
@@ -3308,7 +3308,7 @@ export function SupremeFounderAiChat({
       sender: "ai",
       text: `Hello! Ask me anything.`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      modelUsed: "sovereign-ultra",
+      modelUsed: "auto-supreme-orchestrator",
     },
   ]);
 
@@ -3574,13 +3574,6 @@ export function SupremeFounderAiChat({
         })),
       }));
 
-      const apiKeys: Record<string, string> = {
-        gemini: typeof window !== "undefined" ? (window.localStorage.getItem("umar_os_apikey_gemini") || "") : "",
-        openai: typeof window !== "undefined" ? (window.localStorage.getItem("umar_os_apikey_openai") || "") : "",
-        anthropic: typeof window !== "undefined" ? (window.localStorage.getItem("umar_os_apikey_anthropic") || "") : "",
-        xai: typeof window !== "undefined" ? (window.localStorage.getItem("umar_os_apikey_xai") || "") : "",
-      };
-
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {
@@ -3592,7 +3585,6 @@ export function SupremeFounderAiChat({
           modelId: selectedModel,
           mode: isThinkEnabled ? "deep" : "auto",
           founderUpiVpa,
-          apiKeys,
         }),
       });
 
@@ -3702,7 +3694,7 @@ export function SupremeFounderAiChat({
             ? {
                 ...m,
                 text: "I couldn't reach the AI service. Please check your network connection and API key configuration in Settings.",
-                modelUsed: "sovereign-ultra" as any,
+                modelUsed: "auto-supreme-orchestrator" as any,
                 executionSteps: [],
               }
             : m

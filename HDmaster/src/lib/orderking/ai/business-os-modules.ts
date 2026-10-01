@@ -64,36 +64,41 @@ export interface SreHealthStatus {
 export class BusinessOsModules {
   // 1. Finance Intelligence Module
   public calculateFinancialPnL(params?: { gmvInr?: number; orderCount?: number }): FinancialPnLReport {
-    const gmv = params?.gmvInr || 1850000;
-    const orders = params?.orderCount || 4200;
-
-    // Direct 0% commission saves restaurants 22-28% compared to aggregators
-    const aggregatorSavings = Math.round(gmv * 0.24);
-    const platformFeeRevenue = Math.round(orders * 9.5); // ₹9.50 small platform convenience fee
-    const subscriptionRevenue = 38000; // White-label merchant software subscriptions
-    const netRevenue = platformFeeRevenue + subscriptionRevenue;
-
-    const operatingExpenses = Math.round(netRevenue * 0.32); // Cloud, SMS, maps, support
-    const gstInputTaxCredit = Math.round(operatingExpenses * 0.18);
-    const netFounderProfit = netRevenue - operatingExpenses + gstInputTaxCredit;
+    if (params?.gmvInr != null || params?.orderCount != null) {
+      const gmv = Number(params.gmvInr ?? 0);
+      const orders = Number(params.orderCount ?? 0);
+      const netRevenue = 0;
+      return {
+        period: "Caller-supplied scenario",
+        grossMerchandiseValueInr: gmv,
+        netRevenueInr: netRevenue,
+        aggregatorSavingsInr: 0,
+        operatingExpensesInr: 0,
+        gstInputTaxCreditInr: 0,
+        netFounderProfitInr: 0,
+        cashRunwayMonths: 0,
+        retainedCapitalVaultInr: 0,
+      };
+    }
 
     return {
-      period: "Current Trailing 30 Days",
-      grossMerchandiseValueInr: gmv,
-      netRevenueInr: netRevenue,
-      aggregatorSavingsInr: aggregatorSavings,
-      operatingExpensesInr: operatingExpenses,
-      gstInputTaxCreditInr: gstInputTaxCredit,
-      netFounderProfitInr: netFounderProfit,
-      cashRunwayMonths: 36.4,
-      retainedCapitalVaultInr: 1450000 + netFounderProfit,
+      period: "Production data required",
+      grossMerchandiseValueInr: 0,
+      netRevenueInr: 0,
+      aggregatorSavingsInr: 0,
+      operatingExpensesInr: 0,
+      gstInputTaxCreditInr: 0,
+      netFounderProfitInr: 0,
+      cashRunwayMonths: 0,
+      retainedCapitalVaultInr: 0,
     };
   }
 
   // 2. Sales & Lawful Opportunity Discovery Module
   // Discovers genuine local restaurants paying extortionate commissions without fake promises
-  public discoverLawfulOpportunities(region = "Sribhumi / Barak Valley"): LawfulSalesLead[] {
-    return [
+  public discoverLawfulOpportunities(_region = "Sribhumi / Barak Valley"): LawfulSalesLead[] {
+    if (process.env.NODE_ENV === "production") return [];
+    const developmentFixtures = [
       {
         id: "lead-01",
         businessName: "Royal Darbar Biryani House",
@@ -139,6 +144,7 @@ export class BusinessOsModules {
         status: "PITCH_COMPILED",
       },
     ];
+    return developmentFixtures;
   }
 
   // 3. Marketing & Growth Module
@@ -156,20 +162,18 @@ export class BusinessOsModules {
   // 4. HR & Minimal Staff Management Module
   public getMinimalStaffRoster() {
     return {
-      totalHumanStaff: 3,
-      roles: [
-        { title: "Lead Operations Executive", status: "ONLINE", tasksAssigned: 12, complianceChecked: true },
-        { title: "Field Merchant Onboarding Officer", status: "ON_DUTY", tasksAssigned: 4, complianceChecked: true },
-        { title: "Rider Community Manager", status: "ONLINE", tasksAssigned: 8, complianceChecked: true },
-      ],
-      automatedSubsystemsCount: 28, // Autonomous bots replacing 40+ full-time headcount
-      monthlyPayrollSavingsInr: 680000,
+      totalHumanStaff: 0,
+      roles: [],
+      automatedSubsystemsCount: 0,
+      monthlyPayrollSavingsInr: 0,
+      dataStatus: "PRODUCTION_WORKFORCE_DATA_REQUIRED",
     };
   }
 
   // 5. Restaurant Operations Monitor Module
   public auditKitchenSlas(): KitchenSlaReport[] {
-    return [
+    if (process.env.NODE_ENV === "production") return [];
+    const developmentFixtures = [
       {
         restaurantId: "rest-01",
         restaurantName: "Royal Darbar Biryani House",
@@ -201,11 +205,13 @@ export class BusinessOsModules {
         correctiveAction: "Eligible for Super-Partner Golden Badge.",
       },
     ];
+    return developmentFixtures;
   }
 
   // 6. Procurement & Inventory Forecaster
   public inspectInventoryAlerts(): InventoryItemAlert[] {
-    return [
+    if (process.env.NODE_ENV === "production") return [];
+    const developmentFixtures = [
       {
         itemId: "inv-rice-01",
         itemName: "Aged Basmati Rice (Daawat Gold 25kg)",
@@ -231,11 +237,13 @@ export class BusinessOsModules {
         preferredSupplier: "EcoPack Assam Industries",
       },
     ];
+    return developmentFixtures;
   }
 
   // 7. Deployment & SRE Watchdog
   public inspectSreHealth(): SreHealthStatus[] {
-    return [
+    if (process.env.NODE_ENV === "production") return [];
+    const developmentFixtures = [
       {
         service: "OrderKing Customer Web & PWA",
         status: "HEALTHY",
@@ -264,14 +272,15 @@ export class BusinessOsModules {
         autoRollbackArmed: true,
       },
     ];
+    return developmentFixtures;
   }
 
   // 8. Predictive Demand Forecasting Module
-  public forecastDemand(region: string = "Sribhumi"): { predictedOrderVolume: number; peakHours: string[]; requiredFleetSize: number } {
+  public forecastDemand(_region: string = "Sribhumi"): { predictedOrderVolume: number; peakHours: string[]; requiredFleetSize: number } {
     return {
-      predictedOrderVolume: Math.floor(Math.random() * 500) + 1200,
-      peakHours: ["19:00", "20:00", "21:00"],
-      requiredFleetSize: Math.floor(Math.random() * 20) + 40,
+      predictedOrderVolume: 0,
+      peakHours: [],
+      requiredFleetSize: 0,
     };
   }
 
@@ -286,10 +295,10 @@ export class BusinessOsModules {
   // 10. Advanced Fleet Dispatch Insights
   public analyzeFleetDispatch(): { activeRiders: number; averageDeliveryTimeMins: number; idleRidersCount: number; bottleneckZones: string[] } {
     return {
-      activeRiders: 42,
-      averageDeliveryTimeMins: 22.5,
-      idleRidersCount: 4,
-      bottleneckZones: ["Station Road", "Hospital Point"],
+      activeRiders: 0,
+      averageDeliveryTimeMins: 0,
+      idleRidersCount: 0,
+      bottleneckZones: [],
     };
   }
 }

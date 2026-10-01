@@ -7,3 +7,5 @@ const sql = postgres(process.env.DATABASE_URL || "postgres://postgres:postgres@l
 });
 
 export { sql };
+
+

@@ -1,7 +1,9 @@
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
 /** Which database backend is active. */
-export type DbSource = "neon" | "pglite";
+export type DbSource = "neon" | "pglite" | "unconfigured";
+
+const productionRuntime = typeof process !== "undefined" && process.env.NODE_ENV === "production";
 
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
@@ -18,7 +20,7 @@ if (databaseUrl && databaseUrl.includes("your_supabase_pooler")) {
  * the app has a working database even with nothing configured — the live preview
  * included. Swap in Neon later by just setting `DATABASE_URL`; no code changes.
  */
-export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
+export const dbSource: DbSource = databaseUrl ? "neon" : (productionRuntime ? "unconfigured" : "pglite");
 
 /**
  * Minimal shared SQL surface, satisfied by both Neon and PGLite. Both the
@@ -73,35 +75,66 @@ const identity = (v: string) => v;
 type Run = <T>(text: string, params: unknown[]) => Promise<T[]>;
 
 /** Wrap a query runner in the tagged-template + `.query()` `Sql` surface. */
-function toSql(run: Run): Sql {
+function toSql(
+  run: Run,
+  transaction?: <T>(callback: (tx: Sql) => Promise<T>) => Promise<T>,
+): Sql {
   const sql = (async <T = Record<string, unknown>>(
     strings: TemplateStringsArray,
     ...values: unknown[]
   ): Promise<T[]> => {
-    // Rebuild with $1, $2, … placeholders so values stay parameterized.
     let text = strings[0];
     for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
     return run<T>(text, values);
   }) as unknown as Sql;
+
   sql.query = <T = Record<string, unknown>>(text: string, params: unknown[] = []) =>
     run<T>(text, params);
-  sql.transaction = async <T>(callback: (tx: Sql) => Promise<T>): Promise<T> => callback(sql);
-    return sql;
+
+  sql.transaction = async <T>(callback: (tx: Sql) => Promise<T>): Promise<T> => {
+    if (!transaction) throw new Error("Database transactions are unavailable");
+    return transaction(callback);
+  };
+
+  return sql;
 }
 
 function createNeonSql(): Promise<Sql> {
   globalRef.__pgSqlPromise__ ??= (async () => {
-    // Regular Postgres driver: node-postgres (`pg`) — works directly with Neon's
-    // pooled endpoint. One pool per process; warm serverless instances reuse it.
     const { Pool, types } = await import("pg");
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
+
     const pool = new Pool({ connectionString: databaseUrl });
-    return toSql(async <T>(text: string, params: unknown[]) => {
-      const res = await pool.query(text, params);
-      return res.rows as T[];
-    });
+    pool.on('error', (err) => console.error('pg pool error:', err.message));
+
+    const makeClientSql = (client: import("pg").PoolClient) =>
+      toSql(async <T>(text: string, params: unknown[]) => {
+        const res = await client.query(text, params);
+        return res.rows as T[];
+      });
+
+    return toSql(
+      async <T>(text: string, params: unknown[]) => {
+        const res = await pool.query(text, params);
+        return res.rows as T[];
+      },
+      async <T>(callback: (tx: Sql) => Promise<T>) => {
+        const client = await pool.connect();
+        try {
+          await client.query("BEGIN");
+          const result = await callback(makeClientSql(client));
+          await client.query("COMMIT");
+          return result;
+        } catch (error) {
+          try { await client.query("ROLLBACK"); } catch {}
+          throw error;
+        } finally {
+          client.release();
+        }
+      },
+    );
   })().catch((err) => {
     globalRef.__pgSqlPromise__ = undefined;
     throw err;
@@ -165,10 +198,22 @@ async function createPgliteSql(): Promise<Sql> {
   globalRef.__pgliteMigrateChain__ = pass;
   await pass;
 
-  return toSql(async <T>(text: string, params: unknown[]) => {
-    const result = await pg.query<T>(text, params);
-    return result.rows;
-  });
+  return toSql(
+    async <T>(text: string, params: unknown[]) => {
+      const result = await pg.query<T>(text, params);
+      return result.rows;
+    },
+    async <T>(callback: (tx: Sql) => Promise<T>) =>
+      pg.transaction(async (tx) =>
+        callback(
+          toSql(async <R>(text: string, params: unknown[]) => {
+            const result = await tx.query<R>(text, params);
+            return result.rows;
+          }),
+        ),
+      ),
+  );
+
 }
 
 let sqlPromise: Promise<Sql> | null = null;
@@ -179,6 +224,9 @@ async function createSql(): Promise<Sql> {
       "@/lib/db is server-only — call getSql() from a createServerFn handler " +
         "or a server route loader, never from client code.",
     );
+  }
+  if (dbSource === "unconfigured") {
+    throw new Error("DATABASE_URL is required in production; refusing the embedded PGLite fallback.");
   }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
@@ -240,3 +288,4 @@ if (typeof window === "undefined" && dbSource === "pglite") {
     throw err;
   });
 }
+

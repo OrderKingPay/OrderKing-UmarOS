@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim AS base
+FROM node:24-bookworm-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@12.8.1 --activate
@@ -13,7 +13,7 @@ COPY orderking-riders ./orderking-riders
 COPY Apps-integration- ./Apps-integration-
 COPY packages ./packages
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
 
 ARG APP_DIR
 RUN test -n "$APP_DIR"

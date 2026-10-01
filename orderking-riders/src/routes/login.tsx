@@ -19,6 +19,7 @@ function Login() {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   async function onEmail(e: FormEvent) {
     e.preventDefault();
@@ -117,7 +118,25 @@ function Login() {
           <p className="mt-1 text-xs text-muted-foreground">{t("passwordHint")}</p>
         </div>
         {error ? <p className="text-sm text-offline">{error}</p> : null}
-        <Button size="lg" className="w-full" disabled={pending} type="submit">
+        
+        <div className="flex items-start gap-2 py-2">
+          <input 
+            type="checkbox" 
+            id="rider-terms" 
+            className="mt-1"
+            checked={acceptedTerms}
+            onChange={(e) => setAcceptedTerms(e.target.checked)}
+            required
+          />
+          <label htmlFor="rider-terms" className="text-xs text-muted-foreground leading-relaxed">
+            I explicitly acknowledge and agree to the{" "}
+            <a href="https://orderking.in/legal/terms" className="underline font-medium text-foreground" target="_blank" rel="noreferrer">Delivery Partner Agreement</a>
+            {" "}and{" "}
+            <a href="https://orderking.in/legal/privacy" className="underline font-medium text-foreground" target="_blank" rel="noreferrer">Privacy Policy</a>.
+          </label>
+        </div>
+
+        <Button size="lg" className="w-full" disabled={pending || !acceptedTerms} type="submit">
           {mode === "up" ? t("signUp") : t("signIn")}
         </Button>
       </form>
@@ -128,8 +147,8 @@ function Login() {
       >
         {mode === "up" ? t("haveAccount") : t("needAccount")}
       </button>
-      <p className="mt-10 text-xs text-muted-foreground">{t("legalNote")}</p>
-      <Link to="/" className="mt-4 inline-block text-sm underline">
+      <p className="mt-4 text-xs text-muted-foreground text-center">{t("legalNote")}</p>
+      <Link to="/" className="mt-4 inline-block text-sm underline text-center">
         {DEFAULT_BRANDING.domain}
       </Link>
     </main>

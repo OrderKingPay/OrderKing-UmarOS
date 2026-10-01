@@ -9,6 +9,7 @@ import { MicroLoanHub } from "@/components/fintech/micro-loan-hub";
 import { KingPayAccountHub } from "@/components/fintech/kingpay-account-hub";
 import { KingPayPassbook } from "@/components/fintech/kingpay-passbook";
 import { useLocationStore } from "@/lib/stores/location";
+import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 import { Button } from "@/components/ui/button";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -21,7 +22,17 @@ import { PaidRestaurantAdZone } from "@/components/market/paid-restaurant-ad-zon
 import { KingPayFinanceSearch } from "@/components/fintech/kingpay-finance-search";
 import { isDeliveryActiveInLocation, getCityWaitlistInfo } from "@/lib/geo/geofence-guard";
 
-export const Route = createFileRoute('/king-pay')({ component: KingPayPage, head: () => ({ meta: [{ property: 'og:title', content: '👑 King Pay - Zero Credit Score, 100% Approval. Earn 7.5% Interest.' }, { property: 'og:description', content: 'The #1 FinTech App in India. Send money, pay bills, and get instant loans.' }, { name: 'twitter:title', content: '👑 King Pay - Zero Credit Score, 100% Approval.' }, { name: 'twitter:description', content: 'The #1 FinTech App in India.' }] }) });
+export const Route = createFileRoute("/king-pay")({
+  component: KingPayPage,
+  head: () => ({
+    meta: [
+      { property: "og:title", content: "👑 King Pay - Payments & Everyday Services" },
+      { property: "og:description", content: "King Pay wallet, payments and partner services with verified provider status." },
+      { name: "twitter:title", content: "👑 King Pay - Payments & Everyday Services" },
+      { name: "twitter:description", content: "Provider-verified payment and service status." },
+    ],
+  }),
+});
 
 type UtilityService = {
   id: string;
@@ -42,9 +53,9 @@ const UTILITY_SERVICES: UtilityService[] = [
     category: "fuel",
     icon: "⛽",
     description: "Hindustan Petroleum (HPCL) digital fuel voucher for petrol & diesel",
-    badge: "2% Cashback",
+    badge: "Provider rewards",
     affiliateUrl: "https://www.hindustanpetroleum.com/hppay?utm_source=orderking_affiliate",
-    cashbackText: "Earn 2% King Coins + 1% fuel surcharge waiver",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "iocl_fuel_voucher",
@@ -54,7 +65,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "Instant QR/barcode redeemable at all IndianOil (IOCL) petrol pumps",
     badge: "Instant QR",
     affiliateUrl: "https://www.iocl.com/indianoil-one?utm_source=orderking_affiliate",
-    cashbackText: "Flat 2% instant discount voucher + XTRAREWARDS",
+    cashbackText: "Provider-defined voucher/rewards",
   },
   {
     id: "bpcl_fuel_voucher",
@@ -64,7 +75,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "Bharat Petroleum digital fuel credits with zero transaction fee",
     badge: "Zero Fee",
     affiliateUrl: "https://www.bharatpetroleum.in/smartdrive?utm_source=orderking_affiliate",
-    cashbackText: "Up to ₹100 cashback on min ₹1,000 fuel refill",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "fastag_fuel_pay",
@@ -74,7 +85,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "Contactless fuel payment via NETC FASTag at partner HPCL & IOCL highway pumps",
     badge: "Contactless",
     affiliateUrl: "https://paytm.com/fastag-recharge?utm_source=orderking_affiliate",
-    cashbackText: "1% highway fuel cashback credited to wallet",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "mob_recharge",
@@ -82,9 +93,9 @@ const UTILITY_SERVICES: UtilityService[] = [
     category: "recharge",
     icon: "📱",
     description: "Jio, Airtel, Vi & BSNL instant prepaid recharge",
-    badge: "2% Cashback",
+    badge: "Provider rewards",
     affiliateUrl: "https://paytm.com/recharge?utm_source=orderking_affiliate",
-    cashbackText: "Earn up to ₹25 King Coins on every recharge",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "dth_recharge",
@@ -94,7 +105,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "Tata Play, Airtel DTH, Dish TV & Sun Direct",
     badge: "Instant Top-up",
     affiliateUrl: "https://paytm.com/dth-recharge?utm_source=orderking_affiliate",
-    cashbackText: "Flat ₹20 bonus King Coins",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "lpg_cylinder",
@@ -104,7 +115,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "Book Indane (IndianOil), HP Gas & Bharat Gas cylinder",
     badge: "Top Utility",
     affiliateUrl: "https://iocl.com/pages/indane-gas-online-booking?utm_source=orderking_affiliate",
-    cashbackText: "Guaranteed ₹50 HP/IndianOil fuel cashback voucher",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "electricity_bill",
@@ -114,7 +125,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     description: "APDCL (Assam Power) & state electricity boards",
     badge: "BBPS Verified",
     affiliateUrl: "https://www.apdcl.org?utm_source=orderking_affiliate",
-    cashbackText: "Earn 100 King Coins on timely bill payment",
+    cashbackText: "Provider-defined rewards",
   },
   {
     id: "train_tickets",
@@ -122,9 +133,9 @@ const UTILITY_SERVICES: UtilityService[] = [
     category: "travel",
     icon: "🚆",
     description: "ConfirmTkt & IRCTC authorized train seat booking",
-    badge: "Zero PG Fee",
+    badge: "Provider-defined fees",
     affiliateUrl: "https://www.confirmtkt.com?utm_source=orderking_affiliate",
-    cashbackText: "Zero payment gateway charges via KingPay",
+    cashbackText: "Provider-defined payment fees",
   },
   {
     id: "bus_tickets",
@@ -132,7 +143,7 @@ const UTILITY_SERVICES: UtilityService[] = [
     category: "travel",
     icon: "🚌",
     description: "Intercity AC & sleeper bus booking across Assam & NE",
-    badge: "Up to ₹150 OFF",
+    badge: "Provider-defined offer",
     affiliateUrl: "https://www.redbus.in?utm_source=orderking_affiliate",
     cashbackText: "Flat 10% instant discount with code REDKING",
   },
@@ -142,9 +153,9 @@ const UTILITY_SERVICES: UtilityService[] = [
     category: "travel",
     icon: "✈️",
     description: "Domestic flights from Silchar, Guwahati & Kolkata",
-    badge: "MakeMyTrip Partner",
+    badge: "External partner link",
     affiliateUrl: "https://www.makemytrip.com/flights?utm_source=orderking_affiliate",
-    cashbackText: "Earn up to ₹500 flight cashback",
+    cashbackText: "Provider-defined travel rewards",
   },
   {
     id: "fastag_recharge",
@@ -258,14 +269,14 @@ const LOAN_PRODUCTS: LoanProduct[] = [
     name: "HDFC Bank Millennia Credit Card",
     category: "card",
     partnerNbfc: "HDFC Bank Limited (Scheduled Commercial Bank)",
-    maxLimit: "₹1,50,000 Instant Limit",
-    interestRate: "45 Days 0% Interest",
+    maxLimit: "₹1,50,000 Indicative limit",
+    interestRate: "Issuer-defined terms",
     tenureRange: "Revolving Credit Line",
     speedText: "⚡ Instant Virtual Card Generated",
     tag: "Best for Food & Shopping",
     ownerCommission: "Flat ₹2,000 CPA per Activated Card",
     benefit: "5% Cashback on Amazon, Flipkart, Swiggy & Zomato + Flat ₹1,500 Amazon voucher on activation.",
-    whatsappMessage: "Hi, I want to apply for the pre-approved HDFC Millennia Credit Card via KingPay.",
+    whatsappMessage: "Hi, I want to apply for the HDFC Millennia Credit Card application via KingPay.",
     partnerUrl: "https://www.hdfcbank.com?utm_source=orderking_affiliate",
   },
   {
@@ -285,13 +296,13 @@ const LOAN_PRODUCTS: LoanProduct[] = [
   },
   {
     id: "idfc_wow",
-    name: "IDFC FIRST WOW Credit Card (FD Backed - 100% Approval)",
+    name: "IDFC FIRST WOW Credit Card (FD Backed - Issuer eligibility required)",
     category: "card",
     partnerNbfc: "IDFC FIRST Bank Ltd (Scheduled Commercial Bank)",
     maxLimit: "₹2,00,000 Instant Limit",
-    interestRate: "48 Days 0% Interest",
+    interestRate: "Issuer-defined terms",
     tenureRange: "Revolving Credit Line",
-    speedText: "⚡ 100% Guaranteed Approval (0 CIBIL)",
+    speedText: "⚡ Issuer eligibility required (0 CIBIL)",
     tag: "Guaranteed 100% Approval",
     ownerCommission: "Flat ₹1,500 CPA per Activated Card",
     benefit: "Zero credit score required! 100% approval backed by instant FD earning 7.5% interest + 0 forex markup.",
@@ -305,9 +316,9 @@ const LOAN_PRODUCTS: LoanProduct[] = [
     category: "card",
     partnerNbfc: "Axis Bank Ltd (Scheduled Commercial Bank)",
     maxLimit: "₹2,50,000 Instant Limit",
-    interestRate: "50 Days 0% Interest",
+    interestRate: "Issuer-defined terms",
     tenureRange: "Revolving Credit Line",
-    speedText: "⚡ Instant Digital Approval",
+    speedText: "⚡ Issuer decision required",
     tag: "4% IndianOil Fuel Back",
     ownerCommission: "Flat ₹2,200 CPA per Activated Card",
     benefit: "4% value back (20 reward points / ₹100) at IndianOil pumps + 1% fuel surcharge waiver + ₹250 welcome cashback.",
@@ -372,7 +383,7 @@ const LOAN_PRODUCTS: LoanProduct[] = [
     tag: "0% No-Cost EMI",
     ownerCommission: "Flat ₹500 CPA per Card Activation",
     benefit: "Pre-approved ₹2,00,000 limit across 1.5 Lakh partner stores and e-commerce. Zero paperwork and 0 down payment.",
-    whatsappMessage: "Hi, I want to activate my pre-approved Bajaj Finserv Insta EMI Card with ₹2,00,000 limit.",
+    whatsappMessage: "Hi, I want to activate my eligible application Bajaj Finserv Insta EMI Card with ₹2,00,000 limit.",
     partnerUrl: "https://www.bajajfinserv.in/insta-emi-card?utm_source=orderking_affiliate",
   },
   {
@@ -456,7 +467,7 @@ const BAJAJ_TOP_20_OFFERS: BajajOffer[] = [
     badge: "No Cost EMI",
     limitText: "Up to ₹1,50,000",
     tenure: "3 - 12 Months",
-    customerBenefit: "Zero down payment, 0% interest on Apple iPhone, Samsung, OnePlus & Xiaomi.",
+    customerBenefit: "Zero down payment, provider-defined interest/terms on Apple iPhone, Samsung, OnePlus & Xiaomi.",
     ownerCommission: "2.5% of Device GMV (₹1,000 - ₹3,750)",
     instantApplyUrl: "https://www.bajajfinserv.in/mobile-phones-on-emi?utm_source=orderking_affiliate",
   },
@@ -709,32 +720,7 @@ export type BankAccount = {
   icon: string;
 };
 
-const DEFAULT_BANKS: BankAccount[] = [
-  {
-    id: "bank_sbi_1",
-    bankName: "State Bank of India",
-    bankCode: "sbi",
-    accountNumberMasked: "•••• 4821",
-    accountType: "Savings",
-    isPrimary: true,
-    balance: 24850,
-    balanceCheckedAt: "Just now",
-    color: "from-blue-600 to-indigo-800",
-    icon: "🏛️",
-  },
-  {
-    id: "bank_hdfc_1",
-    bankName: "HDFC Bank",
-    bankCode: "hdfc",
-    accountNumberMasked: "•••• 9014",
-    accountType: "Savings",
-    isPrimary: false,
-    balance: 68120,
-    balanceCheckedAt: "Today 11:30 AM",
-    color: "from-blue-800 to-sky-900",
-    icon: "🏦",
-  },
-];
+const DEFAULT_BANKS: BankAccount[] = [];
 
 const POPULAR_BANKS_FOR_ADDING = [
   { name: "State Bank of India (SBI)", code: "sbi", icon: "🏛️", popular: true },
@@ -842,7 +828,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const isDeliveryActive = !isGeofencedFallback && isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
   const waitlistInfo = getCityWaitlistInfo(location.cityName || "Your City");
   const [hasVotedCity, setHasVotedCity] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(750);
+  const {
+    walletBalance,
+    kingCoins,
+    setKingCoins,
+    transactions: ledgerTransactions,
+    refreshWallet,
+  } = useRealKingPayWallet();
   const [activeTab, setActiveTab] = useState<"all" | "fuel" | "recharge" | "bills" | "travel" | "gas">("all");
   const [showAddMoney, setShowAddMoney] = useState(false);
   const [addAmount, setAddAmount] = useState("500");
@@ -852,39 +844,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const handleVoteCity = () => {
     if (hasVotedCity) return;
     setHasVotedCity(true);
-    const bonus = 50;
-    const newBal = walletBalance + bonus;
-    setWalletBalance(newBal);
     if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
       localStorage.setItem(`voted_expansion_${location.cityName}`, "true");
     }
-    playSoundboxChime(bonus);
-    toast.success(`🎉 Vote Registered for ${location.cityName || "your city"}! ₹50 bonus credits added to your King Pay wallet!`);
+    toast.success(`🎉 Vote registered for ${location.cityName || "your city"}. Any promotional reward will be credited only after the partner/ledger rule is active.`);
   };
 
-  // Hydrate client storage safely after SSR mount (prevents React hydration mismatch)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const savedBal = localStorage.getItem("ok_king_pay_wallet_balance");
-      if (savedBal) setWalletBalance(parseInt(savedBal, 10));
-
-      const savedLater = localStorage.getItem("ok_king_pay_later_active");
-      if (savedLater) setPayLaterActive(savedLater === "true");
-
-      const savedGold = localStorage.getItem("ok_king_pay_gold_grams");
-      if (savedGold) setGoldGrams(parseFloat(savedGold));
-
-      const savedBanks = localStorage.getItem("ok_kingpay_linked_banks");
-      if (savedBanks) {
-        const parsed = JSON.parse(savedBanks);
-        if (Array.isArray(parsed) && parsed.length > 0) setLinkedBanks(parsed);
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
+  // Wallet balance and ledger are server-authoritative; browser storage is not used for money.
 
   // Auto-open scanner if navigated with ?scan=true (from bottom nav or quick link)
   useEffect(() => {
@@ -909,24 +875,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     expiry: string;
   } | null>(null);
 
-  const handleBuyFuelVoucher = (brand: "HPCL (HP Pay)" | "IndianOil (IOCL ONE)" | "BPCL (SmartDrive)", amt: number) => {
-    const coinsReward = Math.round(amt * 0.02 * 10); // 2% value in coins (10 coins = ₹1)
-    const randomHex = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const prefix = brand.includes("HPCL") ? "HP" : brand.includes("IndianOil") ? "IOCL" : "BP";
-    const code = `${prefix}-${amt}-${randomHex}`;
-    
-    setGeneratedFuelVoucher({
-      code,
-      brand,
-      amount: amt,
-      coinsReward,
-      expiry: "Valid for 90 days at all retail stations across India",
-    });
-    setKingCoins((c) => c + coinsReward);
-    setShowFuelVoucherModal(true);
-    toast.success(`🎉 ${brand} ₹${amt} fuel voucher generated! +${coinsReward} King Coins credited.`);
+  const handleBuyFuelVoucher = (_brand: "HPCL (HP Pay)" | "IndianOil (IOCL ONE)" | "BPCL (SmartDrive)", _amt: number) => {
+    toast.info("Fuel vouchers require a verified partner API. No voucher code or King Coin credit was created.");
   };
-  
+
+
   // 10x Low-Bandwidth & Offline 2G Mode
   const [isOffline, setIsOffline] = useState(false);
   const [force2GMode, setForce2GMode] = useState(false);
@@ -939,7 +892,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   // CRED-style 7-Day Check-in Streak
   const [streakDay, setStreakDay] = useState(3);
   const [claimedToday, setClaimedToday] = useState(false);
-  const [kingCoins, setKingCoins] = useState(4250);
+
 
   // Interactive Scan & Pay Simulator
   const [showScanner, setShowScanner] = useState(false);
@@ -955,9 +908,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [selectedBankForBalance, setSelectedBankForBalance] = useState<BankAccount | null>(null);
   const [upiPinInput, setUpiPinInput] = useState("");
   const [pinVerifying, setPinVerifying] = useState(false);
-  const [balanceRevealed, setBalanceRevealed] = useState<{ [bankId: string]: number }>({
-    bank_sbi_1: 24850,
-  });
+  const [balanceRevealed, setBalanceRevealed] = useState<{ [bankId: string]: number }>({});
 
   // Add Bank Account Flow State
   const [showAddBankModal, setShowAddBankModal] = useState(false);
@@ -1032,21 +983,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
       
       if (res.ok) {
         const data = await res.json();
-        const newBal = walletBalance - fetchedBill.billAmount;
-        setWalletBalance(newBal);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-        }
-        
-        const title = activeUtilityModal === "gas" ? `Gas Booking: ${utilityInput}` :
-                      activeUtilityModal === "electricity" ? `Electricity Bill: ${utilityInput}` :
-                      `BBPS Payment: ${utilityInput}`;
-                      
-        addTransaction(fetchedBill.billAmount, title, "debit");
-        playSoundboxChime(fetchedBill.billAmount);
-        setKingCoins(c => c + 50);
-        
-        toast.success(`⚡ BBPS Payment Successful! TXN: ${data.transactionId}`);
+        toast.success(data?.message || "Payment submitted to the configured provider.");
+        setActiveUtilityModal(null);
+        setUtilityInput("");
+        setFetchedBill(null);
         setActiveUtilityModal(null);
         setUtilityInput("");
         setFetchedBill(null);
@@ -1061,24 +1001,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
 
-  const handleUtilityPayment = (title: string, amount: number) => {
-    if (amount > walletBalance) {
-      toast.error(`Insufficient KingPay balance (₹${walletBalance}). Please add money.`);
-      return;
-    }
-    const newBal = walletBalance - amount;
-    setWalletBalance(newBal);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-    }
-    addTransaction(amount, title, "debit");
-    playSoundboxChime(amount);
-    const earnedCoins = Math.round(amount * 0.05 * 10);
-    setKingCoins((c) => c + earnedCoins);
-    toast.success(`⚡ ${title} successful! Paid ₹${amount} with 0% fee. +${earnedCoins} King Coins earned!`);
-    setActiveUtilityModal(null);
-    setUtilityInput("");
+  const handleUtilityPayment = (title: string, _amount: number) => {
+    toast.info(`${title} is waiting for a verified utility/payment provider. No wallet debit was made.`);
+    return;
   };
+
 
   // CRED-style Interactive Scratch Card
   const [showScratchCard, setShowScratchCard] = useState(false);
@@ -1117,68 +1044,20 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   // VIP Milestone Club Tiers
   const getVipTier = (coins: number) => {
-    if (coins >= 15000) return { name: "King's Circle Elite", icon: "👑", multiplier: "5x", perk: "Priority Delivery & 0 Surge Fees", color: "text-amber-600 bg-amber-500/15 border-amber-500/30" };
-    if (coins >= 5000) return { name: "Gold VIP", icon: "🥇", multiplier: "2.5x", perk: "Free Delivery over ₹149", color: "text-yellow-600 bg-yellow-500/15 border-yellow-500/30" };
-    if (coins >= 1000) return { name: "Silver Club", icon: "🥈", multiplier: "1.5x", perk: "Monthly ₹20 Food Voucher", color: "text-slate-600 bg-slate-500/15 border-slate-500/30" };
-    return { name: "Bronze Member", icon: "🥉", multiplier: "1x", perk: "Earn 1 Coin per ₹10 spent", color: "text-orange-700 bg-orange-700/15 border-orange-700/30" };
+    if (coins >= 15000) return { name: "King's Circle Elite", icon: "👑", multiplier: "5x", perk: "Provider-defined delivery benefits", color: "text-amber-600 bg-amber-500/15 border-amber-500/30" };
+    if (coins >= 5000) return { name: "Gold VIP", icon: "🥇", multiplier: "2.5x", perk: "Provider-defined delivery benefits", color: "text-yellow-600 bg-yellow-500/15 border-yellow-500/30" };
+    if (coins >= 1000) return { name: "Silver Club", icon: "🥈", multiplier: "1.5x", perk: "Provider-defined rewards", color: "text-slate-600 bg-slate-500/15 border-slate-500/30" };
+    return { name: "Bronze Member", icon: "🥉", multiplier: "1x", perk: "Rewards follow the active campaign rules", color: "text-orange-700 bg-orange-700/15 border-orange-700/30" };
   };
 
   const handleSpinWheel = () => {
-    if (kingCoins < 100 && claimedToday) {
-      toast.error("You need at least 100 King Coins to spin the Lucky Jackpot Wheel!");
-      return;
-    }
-    setSpinning(true);
-    setSpinResult(null);
-
-    const PRIZES = [
-      { prize: "Flat ₹50 Wallet Cashback", sub: "Credited instantly to your KingPay wallet float.", icon: "💰", type: "cash" as const, value: 50 },
-      { prize: "Free Food Delivery Token", sub: "Applied automatically on your next food order.", icon: "🍔", type: "food" as const, value: 35 },
-      { prize: "500 Bonus King Coins", sub: "Boosts your VIP Club tier progress.", icon: "🪙", type: "coins" as const, value: 500 },
-      { prize: "Mystery Scratch Card", sub: "Unlocks an instant surprise reward.", icon: "🎫", type: "scratch" as const, value: 100 },
-      { prize: "Flat 20% Off Meal Voucher", sub: "Valid on all partner restaurants in Karimganj & Silchar.", icon: "🏷️", type: "food" as const, value: 100 },
-      { prize: "King Club 2X Booster", sub: "Double coin earnings on all transactions today.", icon: "👑", type: "coins" as const, value: 200 },
-    ];
-
-    setTimeout(() => {
-      const chosen = PRIZES[Math.floor(Math.random() * PRIZES.length)];
-      setSpinResult(chosen);
-      setSpinning(false);
-
-      if (chosen.type === "cash") {
-        setWalletBalance((prev) => prev + chosen.value);
-      } else if (chosen.type === "coins") {
-        setKingCoins((prev) => prev + chosen.value);
-      } else if (chosen.type === "scratch") {
-        setScratched(false);
-        setScratchReward({
-          title: "🎉 Jackpot Mystery Scratch Card!",
-          desc: "Won from the Lucky Jackpot Spin Wheel.",
-          amount: 30,
-          coins: 250,
-        });
-        setShowScratchCard(true);
-      }
-
-      if (!claimedToday) {
-        setClaimedToday(true);
-      } else {
-        setKingCoins((prev) => Math.max(0, prev - 100));
-      }
-
-      toast.success(`🎰 Jackpot Win: ${chosen.prize}!`);
-    }, 1500);
+    toast.info("Jackpot rewards are awaiting a verified promotion ledger. No cash or coins are minted in the browser.");
   };
 
-  const handleBurnCoinsForFood = (coinsToBurn: number, rupeeDiscount: number) => {
-    if (kingCoins < coinsToBurn) {
-      toast.error(`You need at least ${coinsToBurn} King Coins for a ₹${rupeeDiscount} food discount!`);
-      return;
-    }
-    setKingCoins((prev) => prev - coinsToBurn);
-    setWalletBalance((prev) => prev + rupeeDiscount);
-    toast.success(`🔥 Burned ${coinsToBurn} King Coins for ₹${rupeeDiscount} food credit added to wallet!`);
+  const handleBurnCoinsForFood = (_coinsToBurn: number, _rupeeDiscount: number) => {
+    toast.info("Coin redemption requires a verified rewards ledger. No wallet credit was created.");
   };
+
 
   // Pre-approved Loan / Credit Card Lead Application Modal
   const [selectedLoanProduct, setSelectedLoanProduct] = useState<{
@@ -1210,36 +1089,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     return Math.round(emi);
   };
 
-  const handleBiometricPay = (amount: number, recipient: string) => {
-    setShowBiometricModal(true);
-    setBiometricScanning(true);
+  const handleBiometricPay = (_amount: number, _recipient: string) => {
+    setShowBiometricModal(false);
+    setBiometricScanning(false);
     setBiometricSuccess(false);
-
-    setTimeout(() => {
-      setBiometricScanning(false);
-      setBiometricSuccess(true);
-      playSoundboxChime(amount);
-      if (amount <= walletBalance) {
-        const newBal = walletBalance - amount;
-        setWalletBalance(newBal);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-        }
-        addTransaction(amount, `Biometric Transfer to ${recipient}`, "debit");
-      }
-      setTimeout(() => {
-        setShowBiometricModal(false);
-        toast.success(`⚡ Biometric 1-Tap Verified! ₹${amount} paid to ${recipient}`);
-        setScratched(false);
-        setScratchReward({
-          title: "🎉 1-Tap Biometric Cashback!",
-          desc: "Rewarded for using military-grade WebAuthn 1-tap checkout.",
-          amount: Math.floor(10 + Math.random() * 20),
-          coins: 120,
-        });
-        setShowScratchCard(true);
-      }, 900);
-    }, 1200);
+    setShowScratchCard(false);
+    toast.info("Biometric payment is not activated: a verified UPI/WebAuthn provider and server-side payment confirmation are required.");
   };
 
   // Soundbox Voice Synthesis Chime
@@ -1265,8 +1120,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
       if (!rawQueue) return;
       const queue = JSON.parse(rawQueue) as Array<{ id: string; amount: number; recipient: string; timestamp: string }>;
       if (Array.isArray(queue) && queue.length > 0) {
-        localStorage.removeItem("ok_offline_tx_queue");
-        toast.success(`⚡ Reconnected: Synced ${queue.length} offline KingPay transaction${queue.length > 1 ? "s" : ""} to OrderKing core!`);
+        toast.info(`Found ${queue.length} offline payment request(s). They were not synced because no verified payment provider callback is configured.`);
       }
     } catch {
       // ignore parsing error
@@ -1359,12 +1213,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             });
             
             if (verifyRes.ok) {
-               const newBal = walletBalance + val;
-               setWalletBalance(newBal);
-               if (typeof window !== "undefined") {
-                 localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-               }
-               addTransaction(val, "Added Money via Razorpay", "credit");
+               await refreshWallet();
                setShowAddMoney(false);
                playSoundboxChime(val);
                toast.success(`₹${val} added to KingPay Wallet via Razorpay!`);
@@ -1399,74 +1248,15 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const handleScanPaySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const amt = parseInt(scanAmount, 10);
-    if (isNaN(amt) || amt <= 0) {
+    if (!Number.isFinite(amt) || amt <= 0) {
       toast.error("Please enter a valid amount");
       return;
     }
-    if (amt > walletBalance) {
-      toast.error(`Insufficient wallet balance (₹${walletBalance}). Please add money.`);
-      return;
-    }
-    const newBal = walletBalance - amt;
-    setWalletBalance(newBal);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-    }
-    addTransaction(amt, `Scan & Pay to ${scanRecipient || "Merchant"}`, "debit");
-    if (effective2G) {
-      try {
-          const rawQueue = localStorage.getItem("ok_offline_tx_queue") || "[]";
-          const queue = JSON.parse(rawQueue);
-          queue.push({
-            id: `tx_off_${Date.now()}`,
-            amount: amt,
-            recipient: scanRecipient,
-            token: offlineToken,
-            timestamp: new Date().toISOString(),
-          });
-          localStorage.setItem("ok_offline_tx_queue", JSON.stringify(queue));
-        } catch {
-          // ignore
-        }
-      }
-    setShowScanner(false);
-    playSoundboxChime(amt);
-    if (effective2G) {
-      toast.success(`⚡ Offline Payment Cleared! ₹${amt} paid to ${scanRecipient} (Token: ${offlineToken}). Auto-syncs on reconnect.`);
-    } else {
-      toast.success(`₹${amt} paid to ${scanRecipient} via KingPay!`);
-    }
-
-    // Award scratch card reward
-    setScratched(false);
-    setScratchReward({
-      title: "🎉 Instant Cashback Won!",
-      desc: "Rewarded for scanning & paying via KingPay!",
-      amount: Math.floor(5 + Math.random() * 20),
-      coins: Math.floor(50 + Math.random() * 150),
-    });
-    setShowScratchCard(true);
+    toast.info("Scan & Pay is not activated: a verified UPI/payment-provider adapter and server-side transaction confirmation are required. No wallet debit was made.");
   };
 
-  const handleVerifyUpiPin = (pin: string) => {
-    if (!selectedBankForBalance) return;
-    if (pin.length < 4) {
-      toast.error("Please enter your 4-digit UPI PIN");
-      return;
-    }
-    setPinVerifying(true);
-    setTimeout(() => {
-      setPinVerifying(false);
-      const randomBal = selectedBankForBalance.balance || Math.floor(12000 + Math.random() * 85000);
-      setBalanceRevealed((prev) => ({
-        ...prev,
-        [selectedBankForBalance.id]: randomBal,
-      }));
-      playSoundboxChime(100);
-      toast.success(`✅ ${selectedBankForBalance.bankName} balance verified via NPCI UPI!`);
-      setSelectedBankForBalance(null);
-      setUpiPinInput("");
-    }, 850);
+  const handleVerifyUpiPin = (_pin: string) => {
+    toast.info("Bank balance verification requires a real bank/UPI provider. No random balance is generated.");
   };
 
   const handleStartAddBank = (bankName: string) => {
@@ -1475,87 +1265,23 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleSimVerification = () => {
-    setSimVerifying(true);
-    setTimeout(() => {
-      setSimVerifying(false);
-      const newAccNumber = `•••• ${Math.floor(1000 + Math.random() * 9000)}`;
-      const newBank: BankAccount = {
-        id: `bank_${Date.now()}`,
-        bankName: selectedBankToAdd,
-        bankCode: selectedBankToAdd.toLowerCase().replace(/[^a-z]/g, "").slice(0, 5),
-        accountNumberMasked: newAccNumber,
-        accountType: "Savings",
-        isPrimary: false,
-        balance: Math.floor(15000 + Math.random() * 50000),
-        balanceCheckedAt: "Just now",
-        color: "from-emerald-700 to-teal-900",
-        icon: "🏛️",
-      };
-      const updated = [...linkedBanks, newBank];
-      setLinkedBanks(updated);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("ok_kingpay_linked_banks", JSON.stringify(updated));
-      }
-      setAddBankStep("success");
-      playSoundboxChime(500);
-      toast.success(`🎉 ${selectedBankToAdd} linked successfully to KingPay UPI!`);
-    }, 1200);
+    setSimVerifying(false);
+    toast.info("Bank linking requires a real bank/UPI authentication adapter. No account was linked.");
   };
 
   const handleSelfTransferSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const amt = parseInt(selfTransferAmount, 10);
-    if (isNaN(amt) || amt <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-    if (selfFromBank === selfToBank) {
-      toast.error("Source and destination accounts must be different");
-      return;
-    }
-    const fromName = linkedBanks.find((b) => b.id === selfFromBank)?.bankName || "Primary Account";
-    const toName = linkedBanks.find((b) => b.id === selfToBank)?.bankName || "Secondary Account";
-    playSoundboxChime(amt);
-    toast.success(`⚡ Self-Transfer of ₹${amt} from ${fromName} to ${toName} completed via UPI! (0% Fee)`);
-    setShowSelfTransferModal(false);
+    toast.info("Self-transfer is not activated: a verified UPI/bank transfer provider is required. No transfer was made.");
   };
 
   const handleBuyGold = (e: React.FormEvent) => {
     e.preventDefault();
-    const val = parseInt(goldAmount, 10);
-    if (isNaN(val) || val <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-    if (val > walletBalance) {
-      toast.error(`Insufficient wallet balance. Please add money first.`);
-      return;
-    }
-    const newBal = walletBalance - val;
-    setWalletBalance(newBal);
-    const addedGrams = Number((val / 7420).toFixed(4));
-    const newGold = Number((goldGrams + addedGrams).toFixed(4));
-    setGoldGrams(newGold);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-      localStorage.setItem("ok_king_pay_gold_grams", String(newGold));
-    }
-    setShowGoldModal(false);
-    playSoundboxChime(val);
-    toast.success(`🌟 Bought ${addedGrams}g of 24K 99.9% Pure Gold! Vault balance: ${newGold}g`);
+    toast.info("Digital-gold purchases require a verified partner/vault provider. No wallet debit or gold credit was created.");
   };
 
   const claimScratchReward = () => {
-    const newBal = walletBalance + scratchReward.amount;
-    const newCoins = kingCoins + scratchReward.coins;
-    setWalletBalance(newBal);
-    setKingCoins(newCoins);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-    }
-    addTransaction(scratchReward.amount, scratchReward.title, "credit");
     setShowScratchCard(false);
-    toast.success(`Claimed ₹${scratchReward.amount} cashback & +${scratchReward.coins} King Coins!`);
+    toast.info("Cashback/coin rewards are not credited until a verified promotion/ledger rule executes them.");
   };
 
   const shareSplitOnWhatsApp = () => {
@@ -1568,33 +1294,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const togglePayLater = () => {
-    const next = !payLaterActive;
-    setPayLaterActive(next);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_later_active", String(next));
-    }
-    if (next) {
-      toast.success("⚡ KingPay Later Activated! ₹2,500 credit limit ready at 0% interest.");
-    } else {
-      toast.info("KingPay Later deactivated.");
-    }
+    toast.info("KingPay Later requires a verified lender/NBFC partner and an approved provider callback. No credit line was activated.");
   };
 
   const claimStreak = () => {
-    if (claimedToday) return;
-    const bonus = streakDay * 50;
-    setKingCoins((prev) => prev + bonus);
-    setClaimedToday(true);
-    toast.success(`🎉 Claimed +${bonus} King Coins! Streak: Day ${streakDay}`);
-    setScratched(false);
-    setScratchReward({
-      title: "🎁 Daily Streak Mystery Box!",
-      desc: "Daily habit bonus powered by Brand Alliance partners.",
-      amount: Math.floor(10 + Math.random() * 25),
-      coins: 150,
-    });
-    setShowScratchCard(true);
+    toast.info("Streak rewards require a verified promotion/rewards ledger. No coins or wallet credit were created.");
   };
+
 
   const filteredServices = activeTab === "all"
     ? UTILITY_SERVICES
@@ -1604,33 +1310,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   const [activeSection, setActiveSection] = useState<KingPaySection>("pay");
   const [garageAlertsCount, setGarageAlertsCount] = useState<number>(2);
-  const [transactions, setTransactions] = useState<
-    Array<{
-      id: string;
-      title: string;
-      amount: number;
-      type: "credit" | "debit";
-      timestamp: string;
-      status: string;
-    }>
-  >([]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedTx = localStorage.getItem("ok_kingpay_transactions");
-      if (savedTx) {
-        try {
-          setTransactions(JSON.parse(savedTx));
-        } catch {}
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && transactions.length > 0) {
-      localStorage.setItem("ok_kingpay_transactions", JSON.stringify(transactions));
-    }
-  }, [transactions]);
+  const transactions = ledgerTransactions.map((tx: any) => ({
+    id: tx.id,
+    title: tx.description,
+    amount: Number(tx.amount_paise) / 100,
+    type: (tx.type === "CREDIT" ? "credit" : "debit") as "credit" | "debit",
+    timestamp: tx.created_at,
+    status: "POSTED",
+  }));
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -1649,30 +1336,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     }
   }, []);
 
-  const addTransaction = (amount: number, description: string, type: "credit" | "debit", status: string = "success") => {
-    setTransactions((prev) => [
-      {
-        id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-        title: description,
-        amount: amount,
-        type: type,
-        timestamp: new Date().toLocaleString(),
-        status: status,
-      },
-      ...prev,
-    ]);
-  };
-
-  const handleDeductWallet = (amount: number, description: string): boolean => {
-    if (walletBalance < amount) return false;
-    const newBal = walletBalance - amount;
-    setWalletBalance(newBal);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-    }
-    addTransaction(amount, description, "debit");
-    playSoundboxChime(amount);
-    return true;
+  const handleDeductWallet = (_amount: number, description: string): boolean => {
+    toast.info(`${description} is not activated: a verified payment/provider transaction is required. No wallet debit was made.`);
+    return false;
   };
 
   return (
@@ -1708,14 +1374,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         ) : activeSection === "loan" ? (
           <MicroLoanHub
             walletBalance={walletBalance}
-            onDisburseToWallet={(amount) => {
-              const newBal = walletBalance + amount;
-              setWalletBalance(newBal);
-              if (typeof window !== "undefined") {
-                localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-              }
-              addTransaction(amount, "Loan Disbursement", "credit");
-              playSoundboxChime(amount);
+            onDisburseToWallet={(_amount) => {
+              toast.info("Loan disbursement requires a verified lender/NBFC callback. No wallet credit was created.");
             }}
           />
         ) : activeSection === "passbook" ? (
@@ -1790,12 +1450,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 disabled={hasVotedCity}
                 className="self-start sm:self-auto px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-xs font-black shadow-md active:scale-95 transition flex items-center gap-1.5 cursor-pointer"
               >
-                <span>{hasVotedCity ? "✓ Voted! +₹50 Added" : "🗳️ Vote for City (+₹50 Bonus)"}</span>
+                <span>{hasVotedCity ? "✓ Vote recorded" : "🗳️ Vote for City"}</span>
               </button>
             </div>
             <div className="flex items-center justify-between text-[10px] text-slate-400 border-t border-white/5 pt-1.5">
-              <span>🛡️ Geofence Guard: You are on King Pay (100% Free UPI Across India)</span>
-              <span className="font-mono text-emerald-400 font-bold">0% Intermediary Fee</span>
+              <span>🛡️ Location routing and provider availability</span>
+              <span className="font-mono text-emerald-400 font-bold">Provider-defined payment fees</span>
             </div>
           </div>
         )}
@@ -1820,7 +1480,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {showAddMoney && (
           <form onSubmit={handleAddMoney} className="rounded-xl border border-primary/30 bg-surface/90 p-3 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-semibold text-fg">Enter amount to add via UPI (Zero PG Fee):</p>
+              <p className="text-xs font-semibold text-fg">Enter amount to add via UPI (Provider-defined fees):</p>
               <button
                 type="button"
                 onClick={() => setShowAddMoney(false)}
@@ -2801,35 +2461,35 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               </span>
               <div>
                 <h3 className="font-display text-sm font-bold text-fg">Linked Bank Accounts</h3>
-                <p className="text-xs text-muted">NPCI UPI Interoperable · Direct Bank-to-Bank Transfer</p>
+                <p className="text-xs text-muted">Bank/UPI provider connection required</p>
               </div>
             </div>
-            <span className="text-[10px] font-bold text-primary bg-primary/10 rounded-full px-2 py-0.5">3 Accounts Active</span>
+            <span className="text-[10px] font-bold text-primary bg-primary/10 rounded-full px-2 py-0.5">Provider-linked accounts only</span>
           </div>
 
           <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {[
-              { bank: "State Bank of India", acct: "****3912", bal: "₹34,200.00", icon: "🏛️" },
-              { bank: "HDFC Bank", acct: "****7741", bal: "₹52,450.00", icon: "🏢" },
-              { bank: "Assam Gramin Vikash", acct: "****8820", bal: "₹18,900.00", icon: "🌾" },
-            ].map((b) => (
-              <div key={b.acct} className="rounded-lg border border-border bg-surface-2/40 p-2.5 flex items-center justify-between">
+            {linkedBanks.length === 0 ? (
+              <div className="rounded-lg border border-border bg-surface-2/40 p-3 text-xs text-muted">
+                No bank account is linked in this deployment. Connect a verified bank/UPI provider to display live accounts and balances.
+              </div>
+            ) : linkedBanks.map((b) => (
+              <div key={b.id} className="rounded-lg border border-border bg-surface-2/40 p-2.5 flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-1.5">
                     <span>{b.icon}</span>
-                    <span className="text-xs font-bold text-fg">{b.bank}</span>
+                    <span className="text-xs font-bold text-fg">{b.bankName}</span>
                   </div>
-                  <p className="text-[11px] text-muted font-mono">{b.acct}</p>
+                  <p className="text-[11px] text-muted font-mono">{b.accountNumberMasked}</p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => toast.info(`${b.bank} (${b.acct}) Balance: ${b.bal}`)}
+                  onClick={() => { setSelectedBankForBalance(b); setShowCheckBalanceModal(true); }}
                   className="rounded border border-border bg-surface px-2 py-1 text-[10px] font-bold text-primary hover:bg-surface-2 transition"
                 >
                   Check Bal
                 </button>
               </div>
-            ))}
+              ))}
           </div>
         </div>
 
@@ -2844,13 +2504,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 <div className="flex items-center gap-2">
                   <h3 className="font-display text-sm font-bold text-fg">KingPay Later</h3>
                   <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                    0% Interest for 15 Days
+                    Provider-defined terms
                   </span>
                 </div>
                 <p className="text-xs text-muted">
                   {payLaterActive
                     ? `Approved Credit Limit: ₹${payLaterLimit.toLocaleString("en-IN")}.00 | 1-Tap Ready`
-                    : "Instant ₹2,500 credit limit. No bank documents. Zero interest."}
+                    : "Eligibility and credit terms are determined by the connected lender/provider."}
                 </p>
               </div>
             </div>
@@ -3783,38 +3443,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           onClose={() => setShowScanner(false)}
           onScanSuccess={(res: ParsedUpiResult) => {
             setScanRecipient(res.upiId || res.raw);
-            const amt = res.amount ? parseInt(res.amount, 10) : 250;
-            setScanAmount(String(amt));
+            if (res.amount) setScanAmount(String(parseInt(res.amount, 10)));
             setShowScanner(false);
-
-            if (res.amount) {
-              if (amt > walletBalance) {
-                toast.error(`Scanned ₹${amt} for ${res.payeeName || res.upiId}, but wallet has ₹${walletBalance}. Please add money.`);
-                setShowAddMoney(true);
-                return;
-              }
-              const newBal = walletBalance - amt;
-              setWalletBalance(newBal);
-              if (typeof window !== "undefined") {
-                localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-              }
-              addTransaction(amt, `Paid ${res.payeeName || res.upiId}`, "debit");
-              playSoundboxChime(amt);
-              toast.success(`⚡ Paid ₹${amt} to ${res.payeeName || res.upiId} via KingPay!`);
-
-              setScratched(false);
-              setScratchReward({
-                title: "🎉 Instant Cashback Won!",
-                desc: `Rewarded for paying ${res.payeeName || res.upiId}!`,
-                amount: Math.floor(5 + Math.random() * 20),
-                coins: Math.floor(50 + Math.random() * 150),
-              });
-              setShowScratchCard(true);
-            } else {
-              toast.info(`Scanned ${res.payeeName || res.upiId}. Enter amount to pay.`);
-              setScannerTab("manual");
-              setShowScanner(true);
-            }
+            toast.info(`Scanned ${res.payeeName || res.upiId || "UPI recipient"}. Payment requires a verified UPI provider and server-side confirmation; no wallet debit was made.`);
+            setScannerTab("manual");
           }}
         />
 
@@ -3849,7 +3481,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                       {activeUtilityModal === "contact" && "Pay to Contact"}
                       {activeUtilityModal === "upi" && "Pay to UPI / Bank"}
                     </h3>
-                    <p className="text-[10px] text-muted">Zero Convenience Fee · Instant BBPS Settlement</p>
+                    <p className="text-[10px] text-muted">Verified provider required · no payment is claimed until settlement confirmation</p>
                   </div>
                 </div>
                 <button
@@ -3976,7 +3608,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                         disabled={isFetchingBill}
                         className="w-full font-bold text-xs py-2.5 bg-primary text-white shadow mt-3"
                       >
-                        {isFetchingBill ? "Processing..." : `⚡ Pay ₹${fetchedBill.billAmount.toLocaleString("en-IN")} Bill (0% Fee)`}
+                        {isFetchingBill ? "Processing..." : `⚡ Pay ₹${fetchedBill.billAmount.toLocaleString("en-IN")} Bill (Provider fee)`}
                       </Button>
                     </div>
                   )}

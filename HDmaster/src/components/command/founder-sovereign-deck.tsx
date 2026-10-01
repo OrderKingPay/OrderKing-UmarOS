@@ -75,29 +75,7 @@ export function FounderSovereignDeck() {
 
   const [auditLog, setAuditLog] = useState<
     Array<{ id: string; action: string; timestamp: string; status: "SUCCESS" | "EXECUTING"; detail: string }>
-  >([
-    {
-      id: "ord-901",
-      action: "FOUNDER_SESSION_INIT",
-      timestamp: "Just now",
-      status: "SUCCESS",
-      detail: "Sovereign Executive Command Deck initialized with full root authorization",
-    },
-    {
-      id: "ord-900",
-      action: "MERCHANT_SETTLEMENT_SWEEP",
-      timestamp: "12m ago",
-      status: "SUCCESS",
-      detail: "Batch payout of ₹42,500 settled directly to 14 partner restaurant bank accounts",
-    },
-    {
-      id: "ord-899",
-      action: "SURGE_ALGORITHM_CALIBRATION",
-      timestamp: "1h ago",
-      status: "SUCCESS",
-      detail: "Karimganj Town zone surge locked at 1.0x (0% extra fee guarantee enforced)",
-    },
-  ]);
+  >([]);
 
   // Simulation Mutation
   const advanceSim = useMutation({

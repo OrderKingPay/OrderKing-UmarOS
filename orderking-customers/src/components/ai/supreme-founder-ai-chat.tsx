@@ -2110,15 +2110,9 @@ You can ask me anything across software engineering, architecture, business anal
                 }}
                 className="h-8 rounded-lg bg-zinc-900 border border-zinc-700 px-3 text-xs font-bold text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
               >
-                <option value="auto-supreme-orchestrator">⚡ Auto Supreme Orchestrator (Autonomous Best)</option>
-                <option value="ensemble-consensus">🧠 Multi-Model Consensus (Real Verification)</option>
+                <option value="auto-supreme-orchestrator">⚡ Auto-Select Best Configured Provider</option>
+                <option value="ensemble-consensus">🧠 Multi-Provider Consensus (Configured Providers Only)</option>
                 <option value="gpt-5-6-sol">🔮 OpenAI GPT-5.6 Sol</option>
-                <option value="claude-4-6-opus">⚡ Anthropic Claude 3.7 Sonnet (Hybrid Reasoning)</option>
-                <option value="grok-4-6-super">🚀 xAI Grok 2 (Real-Time Intelligence)</option>
-                <option value="gemini-3-8-ultra">💎 Google Gemini 2.0 Flash (Fast Reasoning)</option>
-                <option value="codex-supreme">💻 Codex Architecture Engine (Local Core)</option>
-                <option value="deepseek-r1-sovereign">🛡️ DeepSeek R1 (Local Reasoning)</option>
-                <option value="sovereign-ultra">👑 Umar Local Sovereign Core</option>
               </select>
 
               {/* Generation Auto-Update Indicator */}

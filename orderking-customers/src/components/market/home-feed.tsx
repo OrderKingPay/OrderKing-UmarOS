@@ -54,7 +54,7 @@ export function HomeFeed({
             lng: pos.coords.longitude,
             line1: `Verified GPS (${pos.coords.latitude.toFixed(3)}, ${pos.coords.longitude.toFixed(3)})`,
           });
-          toast.success("100% Real-Time GPS Active! Verifying restaurants in your vicinity...");
+          toast.success("Live GPS enabled. Refreshing location-aware restaurant results...");
         },
         (err) => {
           setIsRequestingGeo(false);
@@ -70,6 +70,45 @@ export function HomeFeed({
   };
 
   const [networkSpeed, setNetworkSpeed] = useState<NetworkSpeed>("NORMAL");
+  const [growth, setGrowth] = useState<any>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/referrals", { credentials: "include", cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (active) setGrowth(data);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+  useEffect(() => {
+    const referralCode = new URLSearchParams(window.location.search).get("ref")?.trim();
+    if (!referralCode) return;
+    document.cookie = `orderking_ref=${encodeURIComponent(referralCode)}; Max-Age=2592000; Path=/; SameSite=Lax`;
+    void fetch("/api/referrals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ referralCode, type: "VISIT", source: "home_link" }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    const stored = document.cookie.match(/(?:^|; )orderking_ref=([^;]+)/)?.[1];
+    if (!stored || !growth) return;
+    const referralCode = decodeURIComponent(stored);
+    if (referralCode === growth.data.referralCode) return;
+    void fetch("/api/referrals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ referralCode, type: "SIGNUP", source: "post-auth" }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }, [growth.data]);
+
   useEffect(() => {
     setNetworkSpeed(getNetworkSpeed());
     const handleOnline = () => setNetworkSpeed(getNetworkSpeed());
@@ -145,7 +184,7 @@ export function HomeFeed({
           <div className="flex items-center gap-2">
             <span>⚡</span>
             <span className="font-semibold">2G / Low-Network Mode Active</span>
-            <span className="text-[11px] text-muted hidden sm:inline">· Instant 0ms cached browsing &amp; background sync</span>
+            <span className="text-[11px] text-muted hidden sm:inline">· Cached public catalog + background sync</span>
           </div>
           <span className="font-mono text-[10px] uppercase font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">
             {networkSpeed}
@@ -273,15 +312,17 @@ export function HomeFeed({
                 🎁
               </span>
               <div>
-                <h3 className="font-display text-base font-bold text-fg">Give ₹40 + Free Delivery, Get ₹40!</h3>
+                <h3 className="font-display text-base font-bold text-fg">Invite Friends</h3>
                 <p className="text-xs text-muted">
-                  Share OrderKing with friends. They get <span className="font-semibold text-primary">₹40 OFF + Free Delivery</span> (min ₹249) and you get <span className="font-semibold text-primary">₹40 wallet cash</span>!
+                  {growth.data?.campaign
+                    ? `Target: ${growth.data.progress.qualified}/${growth.data.progress.target} verified qualifying orders · reward: ₹${(growth.data.campaign.rewardPerQualifiedOrderPaise / 100).toFixed(0)}`
+                    : "Share OrderKing with friends. Rewards appear only when a verified campaign is active."}
                 </p>
               </div>
             </div>
             <div className="flex w-full sm:w-auto items-center gap-2">
               <a
-                href={`https://wa.me/?text=${encodeURIComponent("Hey! Use my code to get ₹40 OFF + Free Delivery on your first delicious food order on OrderKing: https://orderking.in/?ref=KINGVIP")}`}
+                href={`https://wa.me/?text=${encodeURIComponent(`Join me on OrderKing for food and everyday services: ${growth.data?.shareUrl || "https://orderking.in/"}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700 active:scale-95"
@@ -292,7 +333,7 @@ export function HomeFeed({
               <button
                 type="button"
                 onClick={() => {
-                  void navigator.clipboard?.writeText("https://orderking.in/?ref=KINGVIP");
+                  void navigator.clipboard?.writeText(growth.data?.shareUrl || "https://orderking.in/");
                   toast.success("Referral link copied to clipboard!");
                 }}
                 className="inline-flex items-center justify-center rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-fg shadow-xs transition hover:bg-surface-2"
@@ -453,7 +494,7 @@ export function HomeFeed({
           </div>
           <h3 className="font-display text-lg font-black text-fg">Enable Live GPS Location</h3>
           <p className="text-xs text-muted max-w-sm mx-auto leading-relaxed">
-            To guarantee 25-minute royal delivery, 0% food spoilage, and verified kitchen authenticity, restaurant suggestions strictly appear only when 100% real-time accurate GPS tracking is active.
+            Live GPS can improve location-aware restaurant results and delivery estimates. Availability, ETA and food quality depend on live operational data.
           </p>
           <button
             type="button"

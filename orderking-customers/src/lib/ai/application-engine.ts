@@ -56,33 +56,33 @@ export interface ApplicationDraft {
 export const VERIFIED_FOUNDER_PORTFOLIO = [
   {
     id: "PORT-ORDERKING",
-    title: "OrderKing — 0% Commission Food Delivery & Logistics Platform",
-    description: "Full-stack React, TypeScript, TanStack Router, PGlite SQL, and Vite architecture with King Pay UPI escrow settlement.",
-    liveUrl: "http://localhost:8080/",
-    verifiedMetric: "14 Cloud Kitchens, Geodesic Rider Dispatch, 0% Platform Fee Guarantee",
+    title: "OrderKing / Umar OS production ecosystem",
+    description: "Five-application food-delivery, operations, integration, AI and founder-control platform with live Render deployments.",
+    liveUrl: "https://orderking-customers.onrender.com",
+    verifiedMetric: "Live deployment verified by Render; individual feature claims are presented only when separately evidenced.",
   },
   {
-    id: "PORT-VOICE-AI",
-    title: "HDmaster Supreme Autonomous AI Voice Assistant",
-    description: "Real-time Web Speech bidirectional voice synthesis with natural female timbre and native multilingual conversational support.",
-    liveUrl: "http://localhost:8080/app/founder-command",
-    verifiedMetric: "Sub-100ms voice synthesis latency, 11-discipline benchmark verification",
+    id: "PORT-HDMASTER",
+    title: "Umar OS / HDmaster",
+    description: "Central founder-control and operations platform for the OrderKing ecosystem.",
+    liveUrl: "https://orderking-hdmaster.onrender.com",
+    verifiedMetric: "Live deployment verified by Render; runtime capability status requires live provider/data verification.",
   },
   {
-    id: "PORT-FINTECH-POS",
-    title: "King Pay Sovereign QR & POS Billing Suite",
-    description: "Merchant QR generation, bank-verified UPI settlement, and cryptographic financial event ledger.",
-    liveUrl: "http://localhost:8080/pay",
-    verifiedMetric: "100% IT Act §79 compliant, 0% gateway charges on direct UPI",
+    id: "PORT-KINGPAY",
+    title: "King Pay / payment and financial-services architecture",
+    description: "King Pay customer workflows with payment, ledger and provider-bound financial-service architecture.",
+    liveUrl: "https://orderking-customers.onrender.com",
+    verifiedMetric: "Architecture is present; regulated/payment-provider activation is only claimed after live provider verification.",
   },
 ];
 
 export function buildCustomizedApplication(opportunity: Opportunity): ApplicationDraft {
   const appId = `APP-${Date.now().toString(36)}`;
-  const proposedPriceInr = opportunity.statedBudget ?? 95000;
-  const proposedPriceUsd = Math.round(proposedPriceInr / 83.5);
-  const estimatedCostInr = Math.round(proposedPriceInr * 0.22); // 22% infra/AI cost
-  const marginPct = Math.round(((proposedPriceInr - estimatedCostInr) / proposedPriceInr) * 100);
+  const proposedPriceInr = opportunity.statedBudget ?? null;
+  const proposedPriceUsd = opportunity.currency === "USD" && opportunity.statedBudget != null ? opportunity.statedBudget : 0;
+  const estimatedCostInr = null;
+  const marginPct = estimatedCostInr == null ? 0 : Math.round(((proposedPriceInr - estimatedCostInr) / proposedPriceInr) * 100);
 
   // Match against genuine portfolio
   const relevantPortfolio = VERIFIED_FOUNDER_PORTFOLIO.filter((item) =>
@@ -107,8 +107,8 @@ ${(relevantPortfolio.length > 0 ? relevantPortfolio : VERIFIED_FOUNDER_PORTFOLIO
 
 Execution & Commercials:
 • Estimated Delivery Timeline: ${Math.ceil(opportunity.estimatedEffortHours / 40)} weeks (${opportunity.estimatedEffortHours} engineering hours)
-• Proposed Investment: ₹${proposedPriceInr.toLocaleString()} ($${proposedPriceUsd.toLocaleString()})
-• Milestones: 50% upon architecture sign-off, 50% upon verified Self-QA acceptance.
+• Proposed Investment: ${proposedPriceInr == null ? "Founder pricing required" : `₹${proposedPriceInr.toLocaleString()}`}${proposedPriceUsd == null || opportunity.currency !== "USD" ? "" : ` (${proposedPriceUsd.toLocaleString()})`}
+• Milestones: subject to founder approval and the final project agreement.
 
 We enforce a strict 6-stage Self-QA protocol (Unit, E2E, Security, Responsive, Accessibility, Performance) before any deliverable is handed over.
 
@@ -130,7 +130,7 @@ HDmaster Founder Engineering Core`;
     missingOrUnverifiedSkills: opportunity.missingSkills,
     customCoverLetter: coverLetter,
     verifiedPortfolioAttachments: relevantPortfolio.length > 0 ? relevantPortfolio : VERIFIED_FOUNDER_PORTFOLIO,
-    proposedPriceInr,
+    proposedPriceInr: proposedPriceInr ?? 0,
     proposedPriceUsd,
     estimatedEffortHours: opportunity.estimatedEffortHours,
     marginPct,

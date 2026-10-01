@@ -2198,6 +2198,8 @@ export async function reportsPayload(ctx: AccessContext) {
      group by o.city_id, c.name`,
     ctx.cityId ? [ctx.orgId, ctx.cityId] : [ctx.orgId],
   );
+  const { buildWeeklySettlementReport } = await import("@/lib/orderking/finance/weekly-settlement");
+  const weeklySettlement = await buildWeeklySettlementReport(new Date(), ctx.orgId);
   const byStatus = await sql.query<{ status: string; n: number }>(
     `select status, count(*)::int as n from orders where org_id=$1 ${ctx.cityId ? "and city_id=$2" : ""} group by status`,
     ctx.cityId ? [ctx.orgId, ctx.cityId] : [ctx.orgId],
@@ -2206,6 +2208,7 @@ export async function reportsPayload(ctx: AccessContext) {
     series: series.series,
     byCity: byCity.map((r) => ({ cityId: r.city_id, name: r.name, orders: n(r.orders), gmv: n(r.gmv) })),
     byStatus: byStatus.map((r) => ({ status: r.status, orders: n(r.n) })),
+    weeklySettlement,
     label: "ACTUAL" as const,
     grain: "RAW_AGGREGATED" as const,
   };

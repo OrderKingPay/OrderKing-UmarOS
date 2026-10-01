@@ -6,7 +6,7 @@ import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { useLocationStore } from "@/lib/stores/location";
-import { getLoyalty } from "@/lib/server/account";
+import { getLoyalty, listVerifiedAffiliatePartners } from "@/lib/server/account";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/rewards")({ component: RewardsPage });
@@ -219,28 +219,54 @@ function RewardsPage() {
     enabled: Boolean(user),
   });
 
+  const affiliatePartners = useQuery({
+    queryKey: ["verified-affiliate-partners"],
+    queryFn: () => listVerifiedAffiliatePartners(),
+    staleTime: 60_000,
+    retry: 1,
+  });
+
   const [activeTab, setActiveTab] = useState<"all" | "ecommerce" | "fuel" | "lpg" | "retail" | "fashion" | "edtech" | "health">("all");
   const [unlockedCodes, setUnlockedCodes] = useState<Record<string, boolean>>({});
   const [scratchRevealed, setScratchRevealed] = useState(false);
 
-  // User's King Coins (10 coins per ₹1 spent)
-  const basePoints = loyalty.data?.loyalty.points ?? 1250;
-  const userCoins = basePoints * 10;
+  // Rewards are derived from the real loyalty ledger; no synthetic starting balance.
+  const basePoints = loyalty.data?.loyalty.points ?? 0;
+  const userCoins = basePoints;
 
   // Location-aware filtering algorithm:
   // If an offer is restricted to specific cities, check if user's current city matches.
   // If not supported, seamlessly hide it from the customer view (zero confusing error text).
-  const locationFilteredRewards = ALLIANCE_REWARDS.filter((reward) => {
+  const liveRewards: AllianceReward[] = (affiliatePartners.data?.partners ?? []).map((partner) => ({
+    id: partner.id,
+    category: (["ecommerce","fuel","lpg","retail","edtech","fashion","health"].includes(partner.category)
+      ? partner.category
+      : "all") as AllianceReward["category"],
+    brand: partner.brand,
+    title: `Verified partner offer — ${partner.brand}`,
+    description: `Open the verified ${partner.brand} partner experience through OrderKing.`,
+    code: "",
+    coinsRequired: 0,
+    valueLabel: "Verified partner",
+    badge: "🔗 Verified",
+    icon: "🔗",
+    terms: `Provider terms: ${partner.termsVersion}`,
+    affiliateUrl: `/api/affiliate/click?partner=${encodeURIComponent(partner.id)}`,
+    supportedCities: ["ALL"],
+  }));
+  const locationFilteredRewards = liveRewards.filter((reward) => {
     if (reward.supportedCities.includes("ALL")) return true;
     const currentCityId = location.cityId?.toLowerCase() ?? "";
     const currentCityName = location.cityName?.toLowerCase() ?? "";
     return reward.supportedCities.some(
-      (c) =>
-        currentCityId.includes(c) ||
-        currentCityName.includes("karimganj") ||
-        currentCityName.includes("silchar") ||
-        currentCityName.includes("sribhumi")
+      (c) => c === currentCityId || currentCityName.includes(c.replace("city_", "")),
     );
+  });
+
+  locationFilteredRewards.sort((a, b) => {
+    const aPartner = affiliatePartners.data?.partners?.find((p) => p.id === a.id);
+    const bPartner = affiliatePartners.data?.partners?.find((p) => p.id === b.id);
+    return Number(bPartner?.commissionValue ?? 0) - Number(aPartner?.commissionValue ?? 0);
   });
 
   const finalRewards = activeTab === "all"
@@ -248,13 +274,8 @@ function RewardsPage() {
     : locationFilteredRewards.filter((r) => r.category === activeTab);
 
   const handleUnlock = (reward: AllianceReward) => {
-    if (userCoins < reward.coinsRequired && !unlockedCodes[reward.id]) {
-      toast.error(`You need ${reward.coinsRequired.toLocaleString()} King Coins to claim this perk.`);
-      return;
-    }
-    setUnlockedCodes((prev) => ({ ...prev, [reward.id]: true }));
-    void navigator.clipboard?.writeText(reward.code);
-    toast.success(`Coupon code ${reward.code} copied!`);
+    if (!reward.affiliateUrl) return;
+    window.location.assign(reward.affiliateUrl);
   };
 
   return (
@@ -271,12 +292,12 @@ function RewardsPage() {
                 Your King Coins
               </h1>
               <p className="text-xs text-muted">
-                Earn 10 King Coins for every ₹1 spent on food orders
+                Rewards are based on your verified OrderKing loyalty ledger
               </p>
             </div>
             <div className="text-right">
               <p className="font-mono text-3xl font-black text-amber-600 dark:text-amber-400">
-                {userCoins.toLocaleString()}
+                {loyalty.isPending ? "…" : userCoins.toLocaleString()}
               </p>
               <p className="text-[11px] font-semibold text-muted">
                 Coins Available
@@ -302,7 +323,7 @@ function RewardsPage() {
             <span className="text-xl">💳</span>
             <div>
               <p className="font-semibold text-fg">KingPay Fintech Hub</p>
-              <p className="text-muted">Recharges, Bill Pay, Train & Bus Tickets with extra cashback</p>
+              <p className="text-muted">Provider-linked services and verified partner offers</p>
             </div>
           </div>
           <Button size="sm" variant="primary" asChild>
@@ -310,73 +331,22 @@ function RewardsPage() {
           </Button>
         </div>
 
-        {/* Mystery Scratch Card Section */}
+        {/* Verified Partner Reward Reveal */}
         <div className="rounded-[var(--radius-xl)] border border-primary/20 bg-surface p-4 shadow-xs">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-display text-base font-bold text-fg">
-                ✨ Mystery Scratch Card
-              </h2>
-              <p className="text-xs text-muted">
-                Scratch to reveal surprise affiliate & brand coupons!
-              </p>
+              <h2 className="font-display text-base font-bold text-fg">✨ Verified Partner Rewards</h2>
+              <p className="text-xs text-muted">Rewards appear only from active partner contracts with current terms.</p>
             </div>
             <span className="text-2xl">🎁</span>
           </div>
-
-          <div className="mt-3">
-            {!scratchRevealed ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setScratchRevealed(true);
-                  toast.success("🎉 Mystery Reward Unlocked!");
-                }}
-                className="group relative flex h-28 w-full items-center justify-center overflow-hidden rounded-xl border border-dashed border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-primary/10 to-amber-500/10 p-4 text-center transition hover:border-amber-500 cursor-pointer"
-              >
-                <div className="space-y-1">
-                  <span className="text-3xl transition-transform group-hover:scale-125 inline-block">
-                    🎟️
-                  </span>
-                  <p className="font-bold text-sm text-fg">
-                    Tap to Scratch & Reveal
-                  </p>
-                  <p className="text-[11px] text-muted">
-                    Win up to 5,000 King Coins or Amazon / Fuel Vouchers
-                  </p>
-                </div>
-              </button>
+          <div className="mt-3 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4 text-center">
+            {affiliatePartners.isPending ? (
+              <p className="text-xs text-muted">Loading verified partner offers…</p>
+            ) : affiliatePartners.data?.partners?.length ? (
+              <p className="text-xs text-fg">You have {affiliatePartners.data.partners.length} verified partner offer(s) available below.</p>
             ) : (
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
-                <span className="text-3xl">🎉</span>
-                <h3 className="mt-1 font-bold text-sm text-emerald-800 dark:text-emerald-200">
-                  Congratulations! You Won 2,500 King Coins + ₹50 Fuel Voucher!
-                </h3>
-                <p className="mt-0.5 text-xs text-muted">
-                  Use code <span className="font-mono font-bold text-fg">HPFUEL50</span> on HP Pay.
-                </p>
-                <div className="mt-3 flex justify-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      void navigator.clipboard?.writeText("HPFUEL50");
-                      toast.success("Voucher code copied!");
-                    }}
-                  >
-                    Copy Code
-                  </Button>
-                  <a
-                    href="https://hppay.in?ref=orderking"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
-                  >
-                    <span>Redeem on HP Pay</span>
-                    <span>↗</span>
-                  </a>
-                </div>
-              </div>
+              <p className="text-xs text-muted">No verified partner reward is active right now. The system will surface one automatically when a live offer is configured.</p>
             )}
           </div>
         </div>
@@ -411,7 +381,15 @@ function RewardsPage() {
         </div>
 
         {/* Alliance Rewards Grid */}
-        <div className="space-y-3">
+        <div id="verified-affiliate-offers" className="space-y-3">
+          {!affiliatePartners.isPending && finalRewards.length === 0 && (
+            <div className="rounded-[var(--radius-xl)] border border-border bg-surface p-5 text-center shadow-xs">
+              <p className="font-semibold text-sm text-fg">No verified affiliate offers are active</p>
+              <p className="mt-1 text-xs text-muted">
+                Verified partner offers will appear here automatically when a live partner contract, tracking link, and terms are configured.
+              </p>
+            </div>
+          )}
           {finalRewards.map((reward) => {
             const isUnlocked = unlockedCodes[reward.id];
             return (
@@ -455,30 +433,19 @@ function RewardsPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {isUnlocked ? (
-                      <span className="rounded border border-dashed border-emerald-500 bg-emerald-500/10 px-2 py-1 font-mono text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                        {reward.code}
-                      </span>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="primary"
-                        onClick={() => handleUnlock(reward)}
-                      >
-                        Unlock Code
-                      </Button>
-                    )}
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      onClick={() => handleUnlock(reward)}
+                    >
+                      Open Verified Offer
+                    </Button>
 
                     <a
                       href={reward.affiliateUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => {
-                        toast.success(`Opening ${reward.brand} affiliate portal...`);
-                      }}
                       className="inline-flex items-center gap-1 rounded-lg bg-surface-2 px-2.5 py-1.5 text-xs font-medium text-fg hover:bg-surface-3 transition"
                     >
-                      <span>Shop with Link</span>
+                      <span>Partner Link</span>
                       <span>↗</span>
                     </a>
                   </div>
@@ -490,9 +457,9 @@ function RewardsPage() {
 
         {/* Zero-Loss Guardrail Notice */}
         <div className="rounded-[var(--radius-lg)] border border-border bg-surface-2/40 p-3 text-center text-xs text-muted">
-          <p className="font-semibold text-fg">100% Verified Brand & Affiliate Partnerships</p>
+          <p className="font-semibold text-fg">Verified Affiliate Partners</p>
           <p className="mt-0.5 text-[11px]">
-            OrderKing partners with top national brands & local fuel stations to provide real savings without platform markups or hidden fees.
+            Offers appear only after a live partner tracking link and current terms are configured on the OrderKing server.
           </p>
         </div>
       </div>

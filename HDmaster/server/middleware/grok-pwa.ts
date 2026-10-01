@@ -97,7 +97,23 @@ export default async function grokPwaMiddleware(
     });
   }
 
-  if (!isDocumentPath(path)) return next();
+  if (!isDocumentPath(path)) {
+    const result = await next();
+    if (result instanceof Response) {
+      const headers = new Headers(result.headers);
+      headers.set("X-Content-Type-Options", "nosniff");
+      headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+      headers.set("Permissions-Policy", "geolocation=(self),camera=(self),microphone=(self),payment=(self)");
+      if ((event.req.headers.get("x-forwarded-proto") || event.url.protocol.replace(":", "")) === "https") {
+        headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+      }
+      if (/^\/assets\/.+\.[a-f0-9]{8,}\.(?:js|css|png|jpg|jpeg|webp|svg|woff2?)$/i.test(path)) {
+        headers.set("Cache-Control", "public, max-age=31536000, immutable");
+      }
+      return new Response(result.body, { status: result.status, statusText: result.statusText, headers });
+    }
+    return result;
+  }
 
   const result = await next();
   if (
@@ -107,6 +123,16 @@ export default async function grokPwaMiddleware(
     !result.headers.get("content-encoding")
   ) {
     return injectHeadStreaming(result, requestHost(event));
+  }
+  if (result instanceof Response) {
+    const headers = new Headers(result.headers);
+    headers.set("X-Content-Type-Options", "nosniff");
+    headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+    headers.set("Permissions-Policy", "geolocation=(self),camera=(self),microphone=(self),payment=(self)");
+    if ((event.req.headers.get("x-forwarded-proto") || event.url.protocol.replace(":", "")) === "https") {
+      headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    }
+    return injectHeadStreaming(new Response(result.body, { status: result.status, statusText: result.statusText, headers }), requestHost(event));
   }
   return result;
 }

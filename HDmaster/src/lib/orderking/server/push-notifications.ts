@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 // @ts-nocheck
 /**
  * Push Notification Infrastructure — Multi-channel notification delivery
@@ -192,7 +193,7 @@ export function buildNotification(
   const preferredChannel = template.channel[0] ?? "IN_APP";
 
   return {
-    id: `notif_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    id: `notif_${randomUUID()}`,
     channel: preferredChannel,
     priority: template.priority,
     recipient,
