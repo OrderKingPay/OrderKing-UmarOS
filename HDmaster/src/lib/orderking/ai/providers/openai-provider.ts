@@ -90,8 +90,8 @@ export class OpenAIProvider implements AIProvider {
     const payload = this.constructPayload(input, false);
     const candidates = Array.from(new Set([
       String(payload.model || process.env.OPENAI_MODEL || "").trim(),
-      "gpt-5.6-terra",
-      "gpt-5.6-luna",
+      "gpt-6.1-sol",
+      "gpt-6-luna",
     ].filter(Boolean)));
 
     let response: Response | null = null;
