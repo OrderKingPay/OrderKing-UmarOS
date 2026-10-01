@@ -143,20 +143,20 @@ function Page() {
             </div>
             <div className="text-right font-mono">
               <span className="text-[10px] text-muted-foreground block">Monthly Fuel Saved</span>
-              <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">~₹1,650 / mo</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">Provider-linked benefit</span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
             <div className="rounded-lg bg-surface/80 p-2.5 border border-border space-y-1">
               <p className="font-bold text-foreground flex items-center gap-1">
-                <span>⛽ 2.5% Fuel Cashback</span>
+                <span>⛽ Verified partner reward</span>
               </p>
-              <p className="text-muted-foreground">Direct cashback into HP Pay / IndianOil ONE wallet on every petrol refill.</p>
+              <p className="text-muted-foreground">Partner terms shown only when an active, verified fuel partner contract is available.</p>
             </div>
             <div className="rounded-lg bg-surface/80 p-2.5 border border-border space-y-1">
               <p className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                <span>🛡️ ₹2,00,000 Free Cover</span>
+                <span>🛡️ Verified insurance benefit</span>
               </p>
               <p className="text-muted-foreground">Complimentary Accidental Death &amp; Disability Insurance provided by HPCL/IOCL.</p>
             </div>
@@ -164,7 +164,7 @@ function Page() {
               <p className="font-bold text-foreground flex items-center gap-1">
                 <span>💨 Free Air &amp; Priority Lane</span>
               </p>
-              <p className="text-muted-foreground">Zero waiting at partner stations in Karimganj, Silchar, and Hailakandi.</p>
+              <p className="text-muted-foreground">Availability depends on the active partner contract and station.</p>
             </div>
           </div>
 
@@ -172,16 +172,16 @@ function Page() {
             <div className="flex items-center gap-2">
               <span className="text-base">📱</span>
               <div>
-                <span className="font-mono font-bold text-foreground text-[11px]">FLEET CARD: OK-RIDER-HP-8421</span>
-                <span className="block text-[10px] text-muted-foreground">Show this Fleet ID or QR at partner pump POS for instant discount</span>
+                <span className="font-mono font-bold text-foreground text-[11px]">OrderKing partner identifier</span>
+                <span className="block text-[10px] text-muted-foreground">Show the active provider-linked identifier only when a verified fleet partner is connected.</span>
               </div>
             </div>
             <button
               type="button"
               onClick={() => {
                 if (typeof window !== "undefined") {
-                  void navigator.clipboard?.writeText("OK-RIDER-HP-8421");
-                  alert("Rider Fleet ID copied: OK-RIDER-HP-8421");
+                  void navigator.clipboard?.writeText("Provider-linked rider identifier");
+                  alert("Provider-linked rider identifier copied.");
                 }
               }}
               className="rounded-md bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 text-[10px] font-bold transition"
