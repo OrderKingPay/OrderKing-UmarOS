@@ -541,7 +541,7 @@ export async function executeFounderAiChat(
           latencyMs: Date.now() - startTime,
         };
       } catch (err) {
-        console.warn(`[ai-chat] Provider ${activeRecord.provider} failed; refusing simulated fallback:`, err);
+        console.warn("AI provider request failed:", err);
         onStreamEvent?.({
           type: "step",
           data: {
@@ -549,7 +549,7 @@ export async function executeFounderAiChat(
             totalSteps: 4,
             label: "Provider Failure",
             status: "WAITING",
-            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). No simulated fallback is permitted.`,
+            detail: "AI provider request failed. No alternate response was generated.",
           },
         });
       }
