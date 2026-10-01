@@ -15,16 +15,16 @@ export async function appendPartnerSecurityEvent(input: any) {
       request_id, device_id, ip_hash, payload
     )
     VALUES(
-      ${input.streamKey,
-      ${input.actorId,
+      ${input.streamKey},
+      ${input.actorId},
       'PARTNER',
-      ${input.eventType,
-      ${input.subjectType ?? null,
-      ${input.subjectId ?? null,
-      ${input.requestId ?? null,
-      ${input.deviceId ?? null,
-      ${ipHash,
-      ${JSON.stringify(input.payload ?? {})
+      ${input.eventType},
+      ${input.subjectType ?? null},
+      ${input.subjectId ?? null},
+      ${input.requestId ?? null},
+      ${input.deviceId ?? null},
+      ${ipHash},
+      ${JSON.stringify(input.payload ?? {})}
     )
     RETURNING id, sequence_no, event_hash
   `;
