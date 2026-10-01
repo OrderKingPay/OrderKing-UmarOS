@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { haversineKm } from "./eta.ts";
+import { getSql } from "@/lib/db";
 import { nid, orderCode } from "./ids.ts";
 import { isEligibleRider, evaluateRiderEligibilityAndScore } from "./dispatch.ts";
 import { assertPlausiblePing } from "./gps.ts";
@@ -961,6 +962,51 @@ export class RiderEngine {
       if (c.state === "RECONCILED") reconciled += c.collectedPaise ?? 0;
     }
     const net = lines.reduce((a, e) => a + e.amountPaise, 0);
+
+    let targetIncentive = {
+      active: false,
+      metric: "COMPLETED_DELIVERIES",
+      target: 0,
+      progress: lines.filter((e) => Boolean(e.deliveryId) && e.kind === "DELIVERY_PAYOUT").length,
+      rewardPaise: 0,
+      status: "NO_ACTIVE_CAMPAIGN" as const,
+    };
+    try {
+      const sql = await getSql();
+      const campaigns = await sql<{
+        target_qualifications: number;
+        reward_per_qualification_paise: number;
+        target_metric: string;
+        starts_at: string;
+        ends_at: string;
+      }>`
+        SELECT target_qualifications, reward_per_qualification_paise, target_metric, starts_at::text, ends_at::text
+        FROM growth_campaigns
+        WHERE active = true
+          AND participant_type = 'RIDER'
+          AND (starts_at IS NULL OR starts_at <= NOW())
+          AND (ends_at IS NULL OR ends_at >= NOW())
+        ORDER BY created_at DESC
+        LIMIT 1
+      `;
+      const campaign = campaigns[0];
+      if (campaign && campaign.target_metric === "COMPLETED_DELIVERIES") {
+        const target = Number(campaign.target_qualifications);
+        const progress = lines.filter((e) => Boolean(e.deliveryId) && e.kind === "DELIVERY_PAYOUT").length;
+        targetIncentive = {
+          active: true,
+          metric: campaign.target_metric,
+          target,
+          progress: Math.min(progress, target),
+          rewardPaise: Number(campaign.reward_per_qualification_paise),
+          status: progress >= target ? "TARGET_REACHED" : "IN_PROGRESS",
+        };
+      }
+    } catch {
+      // Incentive display remains explicitly unavailable if the campaign ledger cannot be read.
+      targetIncentive = { ...targetIncentive, status: "PROVIDER_UNAVAILABLE" as const };
+    }
+
     return {
       lines,
       totals: {
@@ -974,6 +1020,7 @@ export class RiderEngine {
         cashReconciled: reconciled,
         netPayable: net,
       },
+      targetIncentive,
       dataMode: (await this.cfg()).dataMode,
     };
   }
