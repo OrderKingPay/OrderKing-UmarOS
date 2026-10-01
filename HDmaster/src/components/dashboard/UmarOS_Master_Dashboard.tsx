@@ -733,10 +733,10 @@ export function UmarOSMasterDashboard({ engine, className }: Props) {
             <div>
               <div className="flex items-center gap-2 text-cyan-200">
                 <Megaphone className="size-5" />
-                <p className="text-sm font-semibold uppercase tracking-[0.16em]">Starlink-Tier Broadcast Switch</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em]">Provider-Backed Broadcast Switch</p>
               </div>
               <h2 className="mt-2 text-3xl font-semibold tracking-tight">
-                Global growth execution with verified provider reach.
+                Global growth execution with measured provider reach.
               </h2>
               <p className="mt-2 max-w-4xl text-sm leading-6 text-white/45">
                 This control never invents audience size or consent. It executes only when the connected marketing engine reports a ready provider and compliant recipients.
