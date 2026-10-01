@@ -3,7 +3,7 @@ import { defineEventHandler, getRequestHeader, setResponseHeader, createError } 
 import { checkRateLimit, getRateLimitHeaders, startCleanup } from "../../src/lib/orderking/server/rate-limiter";
 
 // Initialize rate limiter cleanup for massive scale to prevent memory leaks
-startCleanup();
+// startCleanup();
 
 
 export default defineEventHandler(async (event) => {
