@@ -35,7 +35,10 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
       restaurantId: z.string().min(1),
       cityId: z.string().min(1),
       zoneId: z.string().min(1),
-      paymentMethod: z.enum(["COD", "KING_PAY"]),
+      paymentMethod: z.enum(["COD", "KING_PAY", "RAZORPAY_ONLINE"]),
+      razorpayOrderId: z.string().optional(),
+      razorpayPaymentId: z.string().optional(),
+      razorpaySignature: z.string().optional(),
       foodPaise: z.number().min(0),
       restaurantDiscountPaise: z.number().min(0),
       platformDiscountPaise: z.number().min(0),
@@ -113,7 +116,12 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
           `;
         }
       }
-      const paymentStatus = input.paymentMethod === "COD" ? "PENDING" : "PAID_WALLET";
+      const paymentStatus =
+        input.paymentMethod === "COD"
+          ? "PENDING"
+          : input.paymentMethod === "KING_PAY"
+            ? "PAID_WALLET"
+            : "PAID_RAZORPAY";
       await tx`
         INSERT INTO orders (
           id, org_id, city_id, zone_id, restaurant_id, customer_id, status, payment_status, payment_method,
@@ -138,8 +146,18 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
           ${JSON.stringify({ customerRef: input.customerRef, address: input.address, notes: input.notes ?? null })})
       `;
       await appendImmutableEvent({ orgId: ws.ctx.orgId, actorUserId: context.userId, actorEmployeeId: ws.ctx.employeeId, sourceTable: "orders", sourceId: orderId, eventType: "ORDER_CREATED", payload: { paymentMethod: input.paymentMethod, totalPaise: input.totalPaise, restaurantId: input.restaurantId } }, tx);
-      const paymentProvider = input.paymentMethod === "COD" ? "COD" : "KING_PAY";
-      const paymentRawPayload = input.paymentMethod === "KING_PAY" ? JSON.stringify({ kingPay: true, walletTransactionId }) : null;
+      const paymentProvider =
+        input.paymentMethod === "COD"
+          ? "COD"
+          : input.paymentMethod === "KING_PAY"
+            ? "KING_PAY"
+            : "RAZORPAY";
+      const paymentRawPayload =
+        input.paymentMethod === "KING_PAY"
+          ? JSON.stringify({ kingPay: true, walletTransactionId })
+          : input.paymentMethod === "RAZORPAY_ONLINE"
+            ? JSON.stringify({ razorpayOrderId: input.razorpayOrderId, razorpayPaymentId: input.razorpayPaymentId, verifiedBy: "customer_server" })
+            : null;
       await tx`
         INSERT INTO payments (id, order_id, provider, status, amount_paise, currency, idempotency_key, raw_payload)
         VALUES (${nid("pay")}, ${orderId}, ${paymentProvider}, ${input.paymentMethod === "COD" ? "pending" : "wallet_paid"},
