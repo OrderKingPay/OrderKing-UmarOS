@@ -190,7 +190,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
             : null;
       await tx`
         INSERT INTO payments (id, order_id, provider, status, amount_paise, currency, idempotency_key, raw_payload)
-        VALUES (${nid("pay")}, ${orderId}, ${paymentProvider}, ${input.paymentMethod === "COD" ? "pending" : "wallet_paid"},
+        VALUES (${nid("pay")}, ${orderId}, ${paymentProvider}, ${input.paymentMethod === "COD" ? "pending" : "paid"},
           ${input.totalPaise}, 'INR', ${idempotencyKey + ":pay"}, ${paymentRawPayload})
       `;
       if (built.promo) await tx`
@@ -214,7 +214,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     await sql`
       INSERT INTO notifications (id, user_id, title, body, kind, entity_id)
       VALUES (${newId("ntf")}, ${input.customerRef}, "Order confirmed",
-        ${"Order placed. Payment " + (input.paymentMethod === "COD" ? "is due on delivery." : "was deducted from your King Pay wallet.")},
+        ${"Order placed. Payment " + (input.paymentMethod === "COD" ? "is due on delivery." : input.paymentMethod === "KING_PAY" ? "was deducted from your King Pay wallet." : "was verified through Razorpay.")},
         "ORDER_PLACED", ${orderId})
     `;
     await sql`
