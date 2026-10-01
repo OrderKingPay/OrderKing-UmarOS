@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS growth_event_ledger (
   growth_event_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id text NOT NULL,
-  user_id uuid NULL,
+  user_id text NULL,
   actor_type text NOT NULL,
   actor_id text NULL,
   metric text NOT NULL,
@@ -22,7 +22,7 @@ CREATE INDEX IF NOT EXISTS idx_growth_event_campaign_user
 CREATE TABLE IF NOT EXISTS growth_reward_ledger_v2 (
   reward_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id text NOT NULL,
-  user_id uuid NOT NULL,
+  user_id text NOT NULL,
   source_growth_event_id uuid NOT NULL REFERENCES growth_event_ledger(growth_event_id),
   reward_paise bigint NOT NULL DEFAULT 0 CHECK (reward_paise >= 0),
   reward_coins bigint NOT NULL DEFAULT 0 CHECK (reward_coins >= 0),
@@ -48,7 +48,7 @@ REVOKE UPDATE, DELETE ON growth_reward_ledger_v2 FROM authenticated;
 CREATE TABLE IF NOT EXISTS affiliate_attribution_ledger (
   attribution_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   offer_id text NOT NULL,
-  user_id uuid NULL,
+  user_id text NULL,
   click_id text NOT NULL UNIQUE,
   source text NOT NULL,
   medium text NULL,
