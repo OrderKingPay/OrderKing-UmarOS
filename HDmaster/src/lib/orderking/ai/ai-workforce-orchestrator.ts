@@ -296,9 +296,13 @@ export class AiWorkforceOrchestrator {
       switch (task.assignedRole) {
         case "FOUNDER_AI": {
           const forecast = businessOsModules.forecastDemand();
-          const pricing = businessOsModules.calculateDynamicPricing(40, 1.5, "CLEAR");
           const fleet = businessOsModules.analyzeFleetDispatch();
-          resultData = { forecast, pricing, fleet, status: "SUCCESS", message: `Executed by ${agent.displayName}` };
+          resultData = {
+            forecast,
+            fleet,
+            status: "DATA_REQUIRED_FOR_LIVE_DECISION",
+            message: "No hardcoded pricing, demand, rider count, or delivery forecast is used.",
+          };
           break;
         }
         case "FINANCE_AI": {
@@ -308,7 +312,11 @@ export class AiWorkforceOrchestrator {
         }
         case "OPERATIONS_AI": {
           const slas = businessOsModules.auditKitchenSlas();
-          resultData = { slas, compliantRatio: "96.4%" };
+          resultData = {
+            slas,
+            compliantRatio: null,
+            status: "LIVE_KITCHEN_TELEMETRY_REQUIRED",
+          };
           break;
         }
         case "REPORTING_AI": {
@@ -323,7 +331,11 @@ export class AiWorkforceOrchestrator {
         }
         case "RESTAURANT_SUCCESS_AI": {
           const leads = businessOsModules.discoverLawfulOpportunities();
-          resultData = { leads, pitchReady: true };
+          resultData = {
+            leads,
+            pitchReady: false,
+            status: "VERIFIED_MERCHANT_DATA_REQUIRED",
+          };
           break;
         }
         case "RECONCILIATION_AI": {
@@ -333,7 +345,11 @@ export class AiWorkforceOrchestrator {
         }
         case "QA_AI": {
           const health = businessOsModules.inspectSreHealth();
-          resultData = { health, allHealthy: health.every((h) => h.status === "HEALTHY") };
+          resultData = {
+            health,
+            allHealthy: false,
+            status: health.length ? "MEASURED" : "LIVE_SRE_TELEMETRY_REQUIRED",
+          };
           break;
         }
         default: {
