@@ -163,28 +163,31 @@ test("Capacity & Scaling Switchboard Enforcer", async (t) => {
   });
 });
 
-test("Test Ping Runners (Deterministic Handshakes)", async (t) => {
-  await t.test("executes database connection test", async () => {
+test("Test Ping Runners (Truthful Provider Probes)", async (t) => {
+  await t.test("database probe never reports success from a fake URL", async () => {
     const res = await testDbConnection(VALID_DUMMY_CONFIG.database);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+    assert.equal(res.ok, false);
+    assert.match(res.message, /probe failed|connection string|PostgreSQL/i);
+    assert.ok(res.latencyMs >= 0);
   });
 
-  await t.test("executes payment gateway connection test", async () => {
+  await t.test("payment probe never reports success from fake Razorpay credentials", async () => {
     const res = await testPgConnection(VALID_DUMMY_CONFIG.paymentGateway);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+    assert.equal(res.ok, false);
+    assert.match(res.message, /probe failed/i);
+    assert.ok(res.latencyMs >= 0);
   });
 
-  await t.test("executes SMS gateway connection test", async () => {
+  await t.test("SMS probe never reports simulated success", async () => {
     const res = await testSmsConnection(VALID_DUMMY_CONFIG.smsGateway);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+    assert.equal(res.ok, false);
+    assert.match(res.message, /not implemented|not configured|No simulated success/i);
   });
 
-  await t.test("executes maps connection test", async () => {
+  await t.test("maps probe never reports success from fake credentials", async () => {
     const res = await testMapsConnection(VALID_DUMMY_CONFIG.maps);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+    assert.equal(res.ok, false);
+    assert.match(res.message, /probe failed|not implemented|not configured/i);
+    assert.ok(res.latencyMs >= 0);
   });
 });
