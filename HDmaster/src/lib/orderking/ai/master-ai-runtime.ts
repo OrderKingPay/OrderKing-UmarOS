@@ -1264,28 +1264,17 @@ export async function executeTool(
     case "orchestrate_universal_pos_printer_sync": {
       requirePermission(ws.ctx, "view_restaurants");
       return {
-        status: "UNIVERSAL_POS_ORCHESTRATION_HEALTHY",
+        status: "POS_CONNECTOR_TELEMETRY_REQUIRED",
         timestamp: new Date().toISOString(),
-        totalConnectedKitchens: 48,
-        activePosBreakdown: [
-          { system: "Petpooja POS", activeOutlets: 22, syncStatus: "OPTIMAL_LATENCY_45MS", kotErrors: 0 },
-          { system: "UrbanPiper (Hub/Prime)", activeOutlets: 14, syncStatus: "OPTIMAL_LATENCY_38MS", kotErrors: 0 },
-          { system: "Restroworks (POSist)", activeOutlets: 6, syncStatus: "OPTIMAL_LATENCY_52MS", kotErrors: 0 },
-          { system: "DotPe / TableCheck", activeOutlets: 4, syncStatus: "OPTIMAL_LATENCY_40MS", kotErrors: 0 },
-          { system: "Custom REST Webhook", activeOutlets: 2, syncStatus: "OPTIMAL_LATENCY_65MS", kotErrors: 0 },
-        ],
-        hardwarePrinters: [
-          { interface: "Network / LAN IP (Port 9100)", count: 28, status: "ALL_ONLINE", averagePrintLatencyMs: 120 },
-          { interface: "Bluetooth ESC/POS Thermal", count: 14, status: "ALL_ONLINE", averagePrintLatencyMs: 250 },
-          { interface: "USB Direct Terminal", count: 6, status: "ALL_ONLINE", averagePrintLatencyMs: 80 },
-        ],
-        dualKotRoutingActive: true,
-        autoCutPaperCompliance: "100_PERCENT",
-        autoHealingActions: "0_INTERVENTIONS_NEEDED",
-        auditNotes: "Universal POS gateway operating with 99.99% uptime. KOT dispatches delivered within sub-1-second SLA.",
+        totalConnectedKitchens: null,
+        activePosBreakdown: [],
+        hardwarePrinters: [],
+        dualKotRoutingActive: null,
+        autoCutPaperCompliance: null,
+        autoHealingActions: null,
+        auditNotes: "POS/printer status is only reported after connector heartbeat data is available. No outlet counts, latency, uptime, or error-free claims are inferred.",
       };
     }
-
     case "autonomous_hotpatch_engine": {
       requirePermission(ws.ctx, "access_AI");
       const sql = await getSql();
@@ -1317,36 +1306,45 @@ export async function executeTool(
     }
     case "run_hyper_cognitive_diagnostic_and_healing": {
       requirePermission(ws.ctx, "access_AI");
+      const sql = await getSql();
+      const recent = await sql.query<{ action: string; created_at: string }>(
+        `select action, created_at::text
+         from audit_logs
+         where org_id = $1
+         order by created_at desc
+         limit 100`,
+        [ws.ctx.orgId],
+      );
       return {
-        status: "HYPER_COGNITIVE_AUTONOMOUS_CORE_ACTIVE",
+        status: "DIAGNOSTIC_EVIDENCE_COLLECTED",
         timestamp: new Date().toISOString(),
         quantumParallelEngine: {
-          activeWorkerThreads: 16,
+          activeWorkerThreads: null,
           distributedAgentContexts: ["HDmaster", "CustomerApp", "PartnerApp", "RiderApp", "IntegrationHub"],
-          consensusLatencyMs: 8.4,
+          consensusLatencyMs: null,
         },
         neuralAnomalyTelemetry: {
-          gpsSpoofingRiskScore: "0.01_NEGLIGIBLE",
-          referralLoopAbuse: "0_DETECTED",
-          escrowFloatDoubleSpend: "PASS_ZERO_DRIFT",
-          offline2gCollisions: "0_PASS",
+          gpsSpoofingRiskScore: null,
+          referralLoopAbuse: "NOT_MEASURED",
+          escrowFloatDoubleSpend: "NOT_MEASURED",
+          offline2gCollisions: "NOT_MEASURED",
         },
         selfHealingLoop: {
-          inspectedServices: 36,
-          anomaliesDetected: 1,
-          autoRemediationApplied: "OPTIMIZED_DB_POOL_ACQUISITION_TIMEOUT",
-          remedyVerificationStatus: "VERIFIED_PASSING",
+          inspectedServices: null,
+          anomaliesDetected: null,
+          autoRemediationApplied: null,
+          remedyVerificationStatus: "NOT_MEASURED",
         },
         predictiveLoadBalancing: {
-          peakTrafficForecast: "+18% at 20:00 IST",
-          riderPreAllocationMultiplier: 1.25,
-          cloudKitchenPrepBufferMs: 180000,
+          peakTrafficForecast: null,
+          riderPreAllocationMultiplier: null,
+          cloudKitchenPrepBufferMs: null,
         },
-        autonomousSupervisionLevel: "TIER_1_FULLY_AUTONOMOUS_ZERO_EMPLOYEE_DEPENDENCY",
-        operationalVerdict: "OrderKing Super-App Ecosystem Operating at 100x Peak Stability, Zero Liability & Maximum EBITDA Yield.",
+        auditEvidence: recent,
+        autonomousSupervisionLevel: "NOT_MEASURED",
+        operationalVerdict: "Diagnostic evidence can be collected, but no stability, risk, autonomy, or remediation success percentage is claimed without fresh telemetry and test evidence.",
       };
     }
-
     case "autonomous_workforce_replacement_orchestrator": {
       requirePermission(ws.ctx, "access_AI");
       const sql = await getSql();
@@ -1377,34 +1375,31 @@ export async function executeTool(
     }
     case "autonomous_mind_reader_telemetry": {
       requirePermission(ws.ctx, "view_analytics");
+      const q = await import("../server/queries.server.ts");
+      const analytics = await q.analyticsSeries(ws.ctx);
       return {
-        status: "MIND_READER_TELEMETRY_OPTIMAL",
+        status: "RECOMMENDATION_TELEMETRY_AVAILABLE",
         timestamp: new Date().toISOString(),
-        neuralModelVersion: "v4.2-contextual-craving-transformer",
-        activeSessionsEvaluated: 1420,
+        neuralModelVersion: null,
+        activeSessionsEvaluated: null,
         predictionMetrics: {
-          cravingMatchAccuracy: "99.1%",
-          timeOfDayContextAlignment: "99.8%",
-          weatherMoodCorrelation: "98.7%",
-          quickAddConversionRate: "28.4%",
-          cartDropOffReduction: "41.2%",
-          averageDecisionTimeToOrderSec: 14.2,
+          cravingMatchAccuracy: null,
+          timeOfDayContextAlignment: null,
+          weatherMoodCorrelation: null,
+          quickAddConversionRate: null,
+          cartDropOffReduction: null,
+          averageDecisionTimeToOrderSec: null,
         },
-        currentTopCravingClusters: [
-          { context: "Late Night Munchies (23:00 - 04:00)", topPick: "Spicy Crispy Chicken Wings", matchRate: "98.9%" },
-          { context: "Monsoon / Rainy Craving", topPick: "Steaming Hot Dum Biryani & Masala Chai", matchRate: "99.4%" },
-          { context: "Lunch Fast-Track (12:00 - 15:00)", topPick: "Executive Thali & Quick Bowls", matchRate: "97.8%" },
-          { context: "Evening High-Tea (16:30 - 19:00)", topPick: "Samosa Platter & Cold Coffee", matchRate: "98.2%" },
-        ],
+        currentTopCravingClusters: [],
         feedbackLoop: {
-          continuousSelfTuning: "ENABLED",
-          realTimeWeightsDriftAdjustment: "ACTIVE",
-          userFatigueMitigation: "APPLIED",
+          continuousSelfTuning: "UNVERIFIED",
+          realTimeWeightsDriftAdjustment: "UNVERIFIED",
+          userFatigueMitigation: "UNVERIFIED",
         },
-        verdict: "Mind-Reader engine successfully reading customer cravings with 99%+ accuracy, driving 1-tap instant orders and maximum GMV velocity.",
+        evidence: analytics,
+        verdict: "Recommendation analytics can be measured from canonical events. No mind-reading, accuracy, conversion-lift, or psychological inference claim is published without experiment evidence.",
       };
     }
-
     case "autonomous_planetary_viral_and_spreadable_tech_engine": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
@@ -1553,51 +1548,17 @@ export async function executeTool(
     }
     case "harvest_financial_bonuses": {
       requirePermission(ws.ctx, "view_finance");
-      const bonuses = [
-        {
-          source: "Payment Gateway Volume Tier Rebate",
-          partner: "Razorpay / Cashfree Enterprise Tier",
-          amountPaise: 4250000,
-          description: "0.25% merchant volume rebate for crossing 25,000 successful UPI transactions",
-          status: "CLAIMED_AND_CREDITED",
-        },
-        {
-          source: "Statutory GST Input Tax Credit (ITC)",
-          partner: "Government of India GST Portal",
-          amountPaise: 6820000,
-          description: "Eligible 18% ITC on cloud servers, map APIs, and communication vendor invoices",
-          status: "CLAIMED_AND_CREDITED",
-        },
-        {
-          source: "Merchant Promotional Co-Funding Split",
-          partner: "Top 20 QSR Restaurant Partners",
-          amountPaise: 9480000,
-          description: "50-50 promotional co-funding recovery reconciled from weekly Wednesday settlements",
-          status: "CLAIMED_AND_CREDITED",
-        },
-        {
-          source: "Digital Commerce UPI Inflow Subsidy",
-          partner: "NPCI / MeitY Incentive Scheme",
-          amountPaise: 1500000,
-          description: "Government zero-MDR reimbursement for RuPay debit & P2M UPI transactions",
-          status: "CLAIMED_AND_CREDITED",
-        },
-      ];
-
-      const totalHarvestedPaise = bonuses.reduce((sum, b) => sum + b.amountPaise, 0);
-
       return {
-        status: "CAPITAL_HARVESTED",
+        status: "FINANCIAL_BONUS_RECONCILIATION_REQUIRED",
         timestamp: new Date().toISOString(),
-        totalHarvestedPaise,
-        bonusesFoundCount: bonuses.length,
-        breakdown: bonuses,
-        transferredToOwnerEscrow: true,
-        escrowNodalReference: `ESCROW_CREDIT_${Date.now()}`,
-        auditNote: "All free capital, gateway rebates, and co-funding splits successfully captured and added to platform reserves.",
+        totalHarvestedPaise: null,
+        bonusesFoundCount: 0,
+        breakdown: [],
+        transferredToOwnerEscrow: false,
+        escrowNodalReference: null,
+        auditNote: "Rebates, tax credits, co-funding, or subsidies are not marked CLAIMED_AND_CREDITED without matching provider, bank, government, and ledger receipts.",
       };
     }
-
     case "generate_corporate_alliance": {
       requirePermission(ws.ctx, "manage_promotions");
       const partnerName = String(args.partnerName ?? args.name ?? "").trim();
@@ -1973,39 +1934,17 @@ export async function executeTool(
     case "autonomous_opportunity_radar_and_auto_booking_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "OPPORTUNITY_RADAR_ACTIVE_AUTO_BOOKING_PRIMED",
+        status: "OPPORTUNITY_RESEARCH_ONLY",
         timestamp: new Date().toISOString(),
-        scannedOpportunitiesCount: 25,
-        readyToAutoBookCount: 16,
-        totalPotentialCashGrantsInr: "₹1,88,50,000 Direct Cash",
-        totalCloudCreditsInr: "₹3,74,00,000 Cloud Offsets",
-        topRankedOpportunities: [
-          { name: "Assam Startup MAS Matching Scale Grant", benefit: "₹50,00,000 Cash", prestigeScore: 98, status: "READY_TO_AUTO_BOOK", payout: "Direct RTGS" },
-          { name: "Tata Trusts Rural Livelihoods Grant", benefit: "₹35,00,000 Cash", prestigeScore: 96, status: "READY_TO_AUTO_BOOK", payout: "Direct NEFT/RTGS" },
-          { name: "MeitY TIDE 2.0 Scale Grant", benefit: "₹30,00,000 Cash", prestigeScore: 94, status: "READY_TO_AUTO_BOOK", payout: "MeitY TIDE Transfer" },
-          { name: "HDFC Bank Parivartan SmartUp Grant", benefit: "₹25,00,000 Cash", prestigeScore: 93, status: "READY_TO_AUTO_BOOK", payout: "Direct Bank Credit" },
-          { name: "Startup India Seed Fund Scheme (SISFS)", benefit: "₹20,00,000 Cash", prestigeScore: 95, status: "READY_TO_AUTO_BOOK", payout: "Incubator Escrow" },
-          { name: "Reliance Foundation Digital Grant", benefit: "₹20,00,000 Cash", prestigeScore: 91, status: "READY_TO_AUTO_BOOK", payout: "Direct Corporate Wire" },
-          { name: "MSME Innovative Idea Hackathon", benefit: "₹15,00,000 Cash", prestigeScore: 90, status: "READY_TO_AUTO_BOOK", payout: "PFMS Direct DBT" },
-          { name: "DST NIDHI-PRAYAS Prototype Grant", benefit: "₹10,00,000 Cash", prestigeScore: 92, status: "READY_TO_AUTO_BOOK", payout: "Host TBI Transfer" },
-          { name: "National Startup Awards Cash Prize", benefit: "₹10,00,000 Cash", prestigeScore: 99, status: "READY_TO_AUTO_BOOK", payout: "Govt Direct Wire" },
-          { name: "National MSME Award for Innovation", benefit: "₹3,00,000 Cash", prestigeScore: 97, status: "READY_TO_AUTO_BOOK", payout: "DBT to Founder" },
-        ],
-        autoBookingEngine: {
-          dossierStatus: "GENERATED_AND_AUDITED",
-          applicantEntity: "OrderKing Technologies Private Limited",
-          founderName: "Hasan",
-          statutoryChecksPassed: [
-            "Udyam MSME Certificate Valid",
-            "DPIIT Recognition Number Verified",
-            "Section 194-O & Section 9(5) CGST Compliant",
-            "Bank Account Linked with GSTIN for Direct RTGS Disbursal",
-          ],
-        },
-        verdict: "Opportunity Radar continuously monitors national schemes and auto-reserves application slots. Ready to disburse non-dilutive capital directly to founder bank account.",
+        scannedOpportunitiesCount: null,
+        readyToAutoBookCount: 0,
+        totalPotentialCashGrantsInr: null,
+        totalCloudCreditsInr: null,
+        topRankedOpportunities: [],
+        autoBookingExecuted: false,
+        note: "Funding opportunities require current official eligibility, application windows, evidence, and explicit founder approval. No grant is labeled ready-to-book from a hardcoded catalog.",
       };
     }
-
     case "autonomous_meta_and_google_ad_domination_orchestrator": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
