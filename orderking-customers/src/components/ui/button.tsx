@@ -1,12 +1,11 @@
-
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import React, { type ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
-import { motion, type HTMLMotionProps } from "framer-motion";
+import { motion, type HTMLMotionProps, useReducedMotion } from "framer-motion";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 font-medium transition-[opacity,transform,background-color] duration-[var(--motion-fast,250ms)] ease-[var(--ease-smooth-out,cubic-bezier(0.22,1,0.36,1))] disabled:pointer-events-none disabled:opacity-50 min-h-11 relative overflow-hidden",
+  "inline-flex items-center justify-center gap-2 font-medium transition-[opacity,transform,background-color] duration-[var(--motion-fast,250ms)] ease-[var(--ease-smooth-out,cubic-bezier(0.22,1,0.36,1))] disabled:pointer-events-none disabled:opacity-50 min-h-11 relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
   {
     variants: {
       variant: {
@@ -36,6 +35,8 @@ export interface ButtonProps
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild, ...props }, ref) => {
+    const reducedMotion = useReducedMotion();
+
     if (asChild) {
       return (
         <Slot
@@ -45,15 +46,16 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         />
       );
     }
+
     return (
       <motion.button
         ref={ref}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.97 }}
+        whileHover={reducedMotion ? undefined : { scale: 1.01 }}
+        whileTap={reducedMotion ? undefined : { scale: 0.98 }}
         className={cn(buttonVariants({ variant, size }), className)}
         {...props}
       />
     );
-  }
+  },
 );
 Button.displayName = "Button";
