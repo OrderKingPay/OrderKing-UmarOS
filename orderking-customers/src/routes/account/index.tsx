@@ -87,7 +87,7 @@ function AccountPage() {
                     King<span className="text-amber-500">Pay</span>
                   </h2>
                   <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300">
-                    NPCI UPI
+                    Payment features
                   </span>
                 </div>
                 <p className="text-xs text-muted mt-0.5">
@@ -109,7 +109,7 @@ function AccountPage() {
             <Link to="/king-pay" className="rounded-xl bg-surface-2/60 p-2 hover:bg-surface-2 transition">
               <span className="text-base block mb-0.5">💳</span>
               <span className="text-[11px] font-bold text-fg block">1-Tap Wallet</span>
-              <span className="text-[9px] text-emerald-600 font-semibold">0% PG Fees</span>
+              <span className="text-[9px] text-emerald-600 font-semibold">Provider-dependent</span>
             </Link>
             <Link to="/king-pay" className="rounded-xl bg-surface-2/60 p-2 hover:bg-surface-2 transition">
               <span className="text-base block mb-0.5">🚗</span>
@@ -119,7 +119,7 @@ function AccountPage() {
             <Link to="/king-pay" className="rounded-xl bg-surface-2/60 p-2 hover:bg-surface-2 transition">
               <span className="text-base block mb-0.5">⚡</span>
               <span className="text-[11px] font-bold text-fg block">Bill Payments</span>
-              <span className="text-[9px] text-primary font-semibold">BBPS 2% Back</span>
+              <span className="text-[9px] text-primary font-semibold">Offers when verified</span>
             </Link>
           </div>
         </section>
