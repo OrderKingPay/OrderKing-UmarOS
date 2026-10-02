@@ -901,8 +901,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   // Self Transfer Flow State
   const [showSelfTransferModal, setShowSelfTransferModal] = useState(false);
-  const [selfFromBank, setSelfFromBank] = useState("bank_sbi_1");
-  const [selfToBank, setSelfToBank] = useState("bank_hdfc_1");
+  const [selfFromBank, setSelfFromBank] = useState("");
+  const [selfToBank, setSelfToBank] = useState("");
   const [selfTransferAmount, setSelfTransferAmount] = useState("1000");
 
   // How to Make a Transaction / Payment Guide State
@@ -1364,12 +1364,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 disabled={hasVotedCity}
                 className="self-start sm:self-auto px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-xs font-black shadow-md active:scale-95 transition flex items-center gap-1.5 cursor-pointer"
               >
-                <span>{hasVotedCity ? "✓ Voted! +₹50 Added" : "🗳️ Vote for City (+₹50 Bonus)"}</span>
+                <span>{hasVotedCity ? "✓ Vote recorded" : "🗳️ Vote for City"}</span>
               </button>
             </div>
             <div className="flex items-center justify-between text-[10px] text-slate-400 border-t border-white/5 pt-1.5">
-              <span>🛡️ Geofence Guard: You are on King Pay (100% Free UPI Across India)</span>
-              <span className="font-mono text-emerald-400 font-bold">0% Intermediary Fee</span>
+              <span>🛡️ KingPay availability depends on connected providers</span>
+              <span className="font-mono text-emerald-400 font-bold">Fees shown by the connected provider</span>
             </div>
           </div>
         )}
@@ -1394,7 +1394,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {showAddMoney && (
           <form onSubmit={handleAddMoney} className="rounded-xl border border-primary/30 bg-surface/90 p-3 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-semibold text-fg">Enter amount to add via UPI (Zero PG Fee):</p>
+              <p className="text-xs font-semibold text-fg">Enter amount to add to your KingPay wallet:</p>
               <button
                 type="button"
                 onClick={() => setShowAddMoney(false)}
