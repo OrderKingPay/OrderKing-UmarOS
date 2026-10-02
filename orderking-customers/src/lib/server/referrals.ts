@@ -3,6 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
 import { createHash } from "node:crypto";
+import { ViralGrowthEngine } from "@/lib/viral-growth";
 
 export type ReferralStats = {
   referralCode: string;
@@ -13,6 +14,17 @@ export type ReferralStats = {
   friendDiscountPaise: number;
   minOrderPaise: number;
 };
+
+export const claimReferralCode = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { referralCode: string }) => input)
+  .handler(async ({ context, data }) => {
+    const code = data.referralCode.trim().toUpperCase();
+    if (!code || code.length > 64) throw new Error("Invalid referral code.");
+    const result = await ViralGrowthEngine.processReferralActivation(code, context.userId);
+    if (!result.success) throw new Error(result.message);
+    return result;
+  });
 
 export const getReferralStats = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
