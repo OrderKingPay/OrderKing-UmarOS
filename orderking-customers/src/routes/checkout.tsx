@@ -17,8 +17,8 @@ import { placeOrderViaHDmaster } from "@/lib/server/hdmaster-orders";
 import { loadConfig } from "@/lib/server/load-config";
 import { useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
+import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 import { newId } from "@/lib/ids";
-import { createRazorpayOrder } from "@/lib/server/razorpay-order";
 
 export const Route = createFileRoute("/checkout")({ component: CheckoutPage });
 
@@ -27,14 +27,14 @@ function CheckoutPage() {
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
   const { user, isPending } = useCurrentUserState();
   const { restaurantId, items, coupon, clear } = useCartStore();
+  const { walletBalance } = useRealKingPayWallet();
   const location = useLocationStore((s) => s.location);
-  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY">("KING_PAY");
+  const [method, setMethod] = useState<"COD" | "KING_PAY">("KING_PAY");
   const [notes, setNotes] = useState("");
   const [forSomeoneElse, setForSomeoneElse] = useState(false);
   const [recipientName, setRecipientName] = useState("");
   const [recipientPhone, setRecipientPhone] = useState("");
   const [tipPaise, setTipPaise] = useState<number>(0);
-  const [roundupGold, setRoundupGold] = useState(true);
   const [noCutlery, setNoCutlery] = useState(true);
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
@@ -82,16 +82,12 @@ function CheckoutPage() {
       void trackAnalytics({ data: { name: "checkout_started" } });
       const idempotencyKey = newId("idem");
       const cfg = await loadConfig();
-        // Handle RAZORPAY_ONLINE later
       let orderNotes = notes;
       if (noCutlery) {
         orderNotes = `[🌱 No Cutlery Needed] ${orderNotes}`.trim();
       }
       if (forSomeoneElse && recipientName.trim()) {
         orderNotes = `[Deliver to: ${recipientName.trim()}${recipientPhone.trim() ? ` (${recipientPhone.trim()})` : ""}] ${orderNotes}`.trim();
-      }
-      if (roundupGold && goldRoundupPaise > 0) {
-        orderNotes = `[✨ 24K Gold Savings: ₹${(goldRoundupPaise / 100).toFixed(2)}] ${orderNotes}`.trim();
       }
       const placeFinalOrder = async (finalPaymentMethod: string) => {
         const result = cfg.marketplace.launchMode === "live"
@@ -102,48 +98,14 @@ function CheckoutPage() {
         void navigate({ to: "/orders/$id", params: { id: result.orderId } });
       };
 
-      if (method === "RAZORPAY_ONLINE") {
-        const rzpOrder = await createRazorpayOrder({ data: { amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey } });
-        const options = {
-          key: rzpOrder.keyId,
-          amount: rzpOrder.amountPaise,
-          currency: rzpOrder.currency,
-          name: cfg.brand.appName,
-          description: "OrderKing Food Delivery",
-          image: cfg.brand.logoUrl,
-          order_id: rzpOrder.orderId,
-          handler: async function (response: any) {
-            await placeFinalOrder("UPI_SANDBOX");
-          },
-          prefill: {
-            name: (user as any).name ?? "",
-            email: (user as any).email ?? "",
-            contact: (user as any).phone ?? ""
-          },
-          theme: {
-            color: cfg.brand.primaryColor
-          }
-        };
-        // @ts-ignore
-        const rzp = new window.Razorpay(options);
-        rzp.on("payment.failed", function (response: any) {
-          toast.error("Payment failed. Please try again.");
-          setBusy(false);
-        });
-        rzp.open();
-      } else {
-        await placeFinalOrder(method);
-      }
+      await placeFinalOrder(method);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : t("checkout.failed"));
       setBusy(false);
     }
   };
 
-  const basePayable = (quote.data?.quote.totalPaise ?? 0) + tipPaise;
-  const remainderPaise = basePayable % 1000;
-  const goldRoundupPaise = basePayable > 0 ? (remainderPaise === 0 ? 1000 : 1000 - remainderPaise) : 0;
-  const totalPayable = basePayable + (roundupGold ? goldRoundupPaise : 0);
+  const totalPayable = (quote.data?.quote.totalPaise ?? 0) + tipPaise;
 
   return (
     <CustomerShell>
@@ -279,38 +241,10 @@ function CheckoutPage() {
             )}
           </section>
 
-          {/* Spare Change 24K Gold Roundup (Jar/Cred style) */}
-          <section className="mt-4 rounded-[var(--radius-xl)] border border-amber-500/20 bg-amber-500/5 p-4">
-            <label className="flex cursor-pointer items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="text-xl">✨</span>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="block text-sm font-semibold text-amber-950 dark:text-amber-200">
-                      Save Spare Change in 24K Gold
-                    </span>
-                    <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-300">
-                      99.9% Purity
-                    </span>
-                  </div>
-                  <span className="block text-xs text-muted mt-0.5">
-                    Round up to nearest ₹10 to save {formatPaise(goldRoundupPaise, { locale })} in 24K digital gold. Instant liquidation to KingPay anytime.
-                  </span>
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                className="size-4 rounded border-amber-500 text-amber-600 focus:ring-amber-500"
-                checked={roundupGold}
-                onChange={(e) => setRoundupGold(e.target.checked)}
-              />
-            </label>
-          </section>
-
           <section className="mt-6">
             <h2 className="text-sm font-medium text-muted">{t("checkout.pay")}</h2>
 
-            {/* 1-Tap KingPay (Instant Zero-OTP Wallet) */}
+            {/* KingPay — display only verified wallet state; no client-side payment success claim. */}
             <div className={`mt-2 rounded-[var(--radius-lg)] border-2 transition ${method === "KING_PAY" ? "border-primary bg-primary/5 p-3.5" : "border-border bg-surface p-3"}`}>
               <label className="flex cursor-pointer items-start gap-3">
                 <input
@@ -329,16 +263,16 @@ function CheckoutPage() {
                       </span>
                     </div>
                     <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                      Balance: ₹750.00
+                      {walletBalance > 0 ? `Balance: ₹${walletBalance.toFixed(2)}` : "Balance unavailable"}
                     </span>
                   </div>
-                  <span className="block text-xs text-muted mt-0.5">Direct RBI escrow deduction. Saves 2% gateway surcharge.</span>
+                  <span className="block text-xs text-muted mt-0.5">Uses your current KingPay wallet balance. Payment is confirmed only after the secure server transaction succeeds.</span>
                 </div>
               </label>
 
               {method === "KING_PAY" && (
                 <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs">
-                  <span className="text-muted">Available Escrow Wallet: <strong className="text-foreground">₹750.00</strong></span>
+                  <span className="text-muted">Available KingPay Wallet: <strong className="text-foreground">₹{walletBalance.toFixed(2)}</strong></span>
                   <Link
                     to="/king-pay"
                     className="font-semibold text-primary hover:underline"
@@ -349,78 +283,15 @@ function CheckoutPage() {
               )}
             </div>
             
-            {/* Online UPI & Cards (Zomato-standard) */}
-            <div className={`mt-2 rounded-[var(--radius-lg)] border-2 transition ${method === "RAZORPAY_ONLINE" ? "border-primary bg-primary/5 p-3.5" : "border-border bg-surface p-3"}`}>
-              <label className="flex cursor-pointer items-start gap-3">
-                <input
-                  type="radio"
-                  name="pay"
-                  className="mt-1 size-4 text-primary focus:ring-primary"
-                  checked={method === "RAZORPAY_ONLINE"}
-                  onChange={() => setMethod("RAZORPAY_ONLINE")}
-                />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="block font-semibold text-foreground">UPI / Cards / NetBanking (Instant)</span>
-                    <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                      Fastest & Safe
-                    </span>
-                  </div>
-                  <span className="block text-xs text-muted mt-0.5">Zero convenience fee · Protected by 256-bit encryption</span>
+            {/* Online UPI / Cards — fail closed until the food-order payment verification contract is connected end-to-end. */}
+            <div className="mt-2 rounded-[var(--radius-lg)] border border-border bg-surface p-3">
+              <div className="flex items-start gap-3">
+                <span className="text-lg" aria-hidden="true">💳</span>
+                <div>
+                  <span className="block font-semibold text-foreground">UPI / Cards / NetBanking</span>
+                  <span className="block text-xs text-muted mt-0.5">Online food-order payments are temporarily unavailable in this deployment until payment verification is connected end-to-end. No payment will be accepted or marked successful through a fallback.</span>
                 </div>
-              </label>
-
-              {method === "RAZORPAY_ONLINE" && (
-                <div className="mt-3.5 border-t border-border/60 pt-3">
-                  <p className="text-xs font-medium text-muted">Preferred UPI Payment Apps:</p>
-                  <div className="mt-2 grid grid-cols-4 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const upiUrl = `upi://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("Google Pay selected. Click 'Place Order' below to proceed.");
-                      }}
-                      className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
-                    >
-                      <span className="text-lg">🟢</span>
-                      <span className="mt-1 text-[11px] font-medium">Google Pay</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const upiUrl = `phonepe://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("PhonePe selected. Click 'Place Order' below to proceed.");
-                      }}
-                      className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
-                    >
-                      <span className="text-lg">🟣</span>
-                      <span className="mt-1 text-[11px] font-medium">PhonePe</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const upiUrl = `paytmmp://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("Paytm selected. Click 'Place Order' below to proceed.");
-                      }}
-                      className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
-                    >
-                      <span className="text-lg">🔵</span>
-                      <span className="mt-1 text-[11px] font-medium">Paytm</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => toast.info("Cards / NetBanking selected. Click 'Place Order' below to proceed.")}
-                      className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
-                    >
-                      <span className="text-lg">💳</span>
-                      <span className="mt-1 text-[11px] font-medium">Cards / Net</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
 
             {/* Cash on Delivery (COD) */}
@@ -451,18 +322,12 @@ function CheckoutPage() {
                     <span className="font-medium text-primary">+{formatPaise(tipPaise, { locale })}</span>
                   </div>
                 )}
-                {roundupGold && goldRoundupPaise > 0 && (
-                  <div className="mt-2 flex justify-between border-t border-border pt-2 text-sm">
-                    <span className="font-medium text-amber-600 dark:text-amber-400">✨ 24K Digital Gold Savings</span>
-                    <span className="font-medium text-amber-600 dark:text-amber-400">+{formatPaise(goldRoundupPaise, { locale })}</span>
-                  </div>
-                )}
-              </>
+             </>
             ) : <p>{t("common.loading")}</p>}
           </div>
 
           {quote.data?.quote.blockers.length ? <p className="mt-3 text-sm text-warn">{quote.data.quote.blockers.includes("MIN_ORDER") ? t("cart.minOrder", { amount: formatPaise(quote.data.quote.minOrderPaise, { locale }) }) : t("checkout.blocked")}</p> : null}
-          <Button className="mt-6 w-full" disabled={busy || !quote.data || !quote.data.isDeliverable} onClick={() => void submit()}>{busy ? t("checkout.placing") : t("checkout.place", { amount: formatPaise(totalPayable, { locale }) })}</Button>
+          <Button className="mt-6 w-full" disabled={busy || !quote.data || !quote.data.isDeliverable || (method === "KING_PAY" && walletBalance < totalPayable)} onClick={() => void submit()}>{busy ? t("checkout.placing") : method === "KING_PAY" && walletBalance < totalPayable ? "Insufficient KingPay balance" : t("checkout.place", { amount: formatPaise(totalPayable, { locale }) })}</Button>
         </>}
         <p className="mt-6 text-sm"><Link to="/cart" className="text-muted">← {t("cart.title")}</Link></p>
       </div>
