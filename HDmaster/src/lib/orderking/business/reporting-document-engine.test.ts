@@ -19,78 +19,64 @@ describe("Reporting & AI Document Workspace Engine", () => {
     "AI_AGENT_PERFORMANCE_AUDIT",
   ];
 
-  test("generates all 12 enterprise report types with valid metadata and sections", () => {
+  test("blocks all report types until verified production data is supplied", () => {
     for (const reportType of allReportTypes) {
       const report = ReportingDocumentEngine.generateReport(reportType, {
         restaurantId: "REST-KORAMANGALA-1",
         riderId: "RIDER-102",
       });
 
-      assert.ok(report.id.startsWith(`REP-${reportType}`));
       assert.equal(report.reportType, reportType);
-      assert.ok(report.title.length > 5);
-      assert.ok(report.summary.length > 10);
       assert.ok(report.sections.length >= 1);
-      assert.ok(report.overallAttributionSummary);
+      assert.equal(report.sections[0]?.metrics?.[0]?.value, "LIVE_DATA_REQUIRED");
+      assert.equal(report.overallAttributionSummary.FACT, 0);
+      assert.equal(report.overallAttributionSummary.CALCULATION, 0);
     }
   });
 
-  test("enforces strict data trust categorization on all metrics (FACT, CALCULATION, ESTIMATE, INFERENCE, RECOMMENDATION)", () => {
+  test("emits only explicit data-gate attribution without verified production payload", () => {
     const report = ReportingDocumentEngine.generateReport("FINANCE_PL");
-    const validCategories = new Set(["FACT", "CALCULATION", "ESTIMATE", "INFERENCE", "RECOMMENDATION"]);
-
-    let totalMetricsChecked = 0;
-    for (const section of report.sections) {
-      if (section.metrics) {
-        for (const metric of section.metrics) {
-          assert.ok(validCategories.has(metric.category), `Invalid category ${metric.category} on ${metric.key}`);
-          totalMetricsChecked++;
-        }
-      }
-    }
-
-    assert.ok(totalMetricsChecked >= 8);
-    assert.ok(report.overallAttributionSummary.FACT > 0);
-    assert.ok(report.overallAttributionSummary.CALCULATION > 0);
+    const metric = report.sections[0]?.metrics?.[0];
+    assert.ok(metric);
+    assert.equal(metric.category, "RECOMMENDATION");
+    assert.equal(metric.key, "report_data_status");
   });
 
   test("exports report to clean JSON format", () => {
     const report = ReportingDocumentEngine.generateReport("DAILY_FOUNDER_BRIEFING");
     const jsonStr = ReportingDocumentEngine.exportToJSON(report);
     assert.ok(jsonStr.startsWith("{"));
-
     const parsed = JSON.parse(jsonStr);
     assert.equal(parsed.id, report.id);
     assert.equal(parsed.reportType, "DAILY_FOUNDER_BRIEFING");
+    assert.equal(parsed.sections[0].metrics[0].value, "LIVE_DATA_REQUIRED");
   });
 
-  test("exports report to standard CSV format", () => {
+  test("exports report to standard CSV format without inventing report figures", () => {
     const report = ReportingDocumentEngine.generateReport("RESTAURANT_SETTLEMENT_STATEMENT", {
       restaurantId: "REST-001",
     });
     const csv = ReportingDocumentEngine.exportToCSV(report);
-
     assert.ok(csv.includes('"Report Title"'));
     assert.ok(csv.includes('"Key","Label","Value","Category","Source Note"'));
-    assert.ok(csv.includes("Order King Commission (0%)"));
+    assert.ok(csv.includes("LIVE_DATA_REQUIRED"));
+    assert.ok(!csv.includes("₹39,740"));
   });
 
-  test("exports report to clean printable HTML format", () => {
+  test("exports clean printable HTML with the data gate", () => {
     const report = ReportingDocumentEngine.generateReport("GST_COMPLIANCE_SUMMARY");
     const html = ReportingDocumentEngine.exportToHTML(report);
-
     assert.ok(html.includes("<!DOCTYPE html>"));
     assert.ok(html.includes("<title>"));
     assert.ok(html.includes("Order King • Enterprise Intelligence"));
-    assert.ok(html.includes("Section 9(5)"));
+    assert.ok(html.includes("LIVE_DATA_REQUIRED"));
     assert.ok(html.includes("@media print"));
   });
 
-  test("exports report to clean Markdown format", () => {
+  test("exports clean Markdown with the data gate", () => {
     const report = ReportingDocumentEngine.generateReport("WEEKLY_FOUNDER_EXECUTIVE");
     const md = ReportingDocumentEngine.exportToMarkdown(report);
-
-    assert.ok(md.startsWith("# Weekly Founder Executive"));
+    assert.ok(md.startsWith("# Verified-data required: WEEKLY_FOUNDER_EXECUTIVE"));
     assert.ok(md.includes("### Data Trust Attribution Summary"));
     assert.ok(md.includes("| Metric | Value | Attribution | Source |"));
   });
