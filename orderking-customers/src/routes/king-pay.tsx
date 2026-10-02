@@ -12,6 +12,7 @@ import { useLocationStore } from "@/lib/stores/location";
 import { Button } from "@/components/ui/button";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 import { toast } from "sonner";
 import { CameraScannerModal, type ParsedUpiResult } from "@/components/scanner/camera-scanner-modal";
 import { ReceiveMoneyQrStudio } from "@/components/fintech/receive-money-qr-studio";
@@ -842,7 +843,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const isDeliveryActive = !isGeofencedFallback && isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
   const waitlistInfo = getCityWaitlistInfo(location.cityName || "Your City");
   const [hasVotedCity, setHasVotedCity] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(750);
+  const { walletBalance, kingCoins } = useRealKingPayWallet();
   const [activeTab, setActiveTab] = useState<"all" | "fuel" | "recharge" | "bills" | "travel" | "gas">("all");
   const [showAddMoney, setShowAddMoney] = useState(false);
   const [addAmount, setAddAmount] = useState("500");
@@ -851,40 +852,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   const handleVoteCity = () => {
     if (hasVotedCity) return;
+    toast.info("City expansion voting is informational only; no wallet bonus is credited until a verified rewards program is connected.");
     setHasVotedCity(true);
-    const bonus = 50;
-    const newBal = walletBalance + bonus;
-    setWalletBalance(newBal);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-      localStorage.setItem(`voted_expansion_${location.cityName}`, "true");
-    }
-    playSoundboxChime(bonus);
-    toast.success(`🎉 Vote Registered for ${location.cityName || "your city"}! ₹50 bonus credits added to your King Pay wallet!`);
   };
 
-  // Hydrate client storage safely after SSR mount (prevents React hydration mismatch)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const savedBal = localStorage.getItem("ok_king_pay_wallet_balance");
-      if (savedBal) setWalletBalance(parseInt(savedBal, 10));
-
-      const savedLater = localStorage.getItem("ok_king_pay_later_active");
-      if (savedLater) setPayLaterActive(savedLater === "true");
-
-      const savedGold = localStorage.getItem("ok_king_pay_gold_grams");
-      if (savedGold) setGoldGrams(parseFloat(savedGold));
-
-      const savedBanks = localStorage.getItem("ok_kingpay_linked_banks");
-      if (savedBanks) {
-        const parsed = JSON.parse(savedBanks);
-        if (Array.isArray(parsed) && parsed.length > 0) setLinkedBanks(parsed);
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
+  // Wallet balance and King Coins come only from the authoritative server ledger.
+  // Legacy local wallet storage is intentionally ignored.
 
   // Auto-open scanner if navigated with ?scan=true (from bottom nav or quick link)
   useEffect(() => {
@@ -939,7 +912,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   // CRED-style 7-Day Check-in Streak
   const [streakDay, setStreakDay] = useState(3);
   const [claimedToday, setClaimedToday] = useState(false);
-  const [kingCoins, setKingCoins] = useState(4250);
 
   // Interactive Scan & Pay Simulator
   const [showScanner, setShowScanner] = useState(false);
