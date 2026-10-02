@@ -179,13 +179,13 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
   },
   {
     id: "referral_cash",
-    title: "Refer & Earn ₹40 Cash",
+    title: "Refer friends",
     subtitle: "Earn ₹40 straight into your wallet for every friend who joins",
     category: "rewards",
     icon: "🤝",
     badge: "₹40 Per Friend",
     actionType: "toast",
-    actionPayload: "Referral link copied! Share via WhatsApp to claim ₹40 cash.",
+    actionPayload: "Copy your verified referral link. Any reward is shown only after eligibility is confirmed.",
   },
 
   // Loans & Credit
