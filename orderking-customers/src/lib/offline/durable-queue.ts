@@ -5,7 +5,7 @@ const STORE_NAME = "mutations";
 const DLQ_STORE_NAME = "dead_letters";
 const MAX_RETRIES = 7;
 
-type QueueDatabase = IDBPDatabase<unknown>;
+type QueueDatabase = IDBPDatabase<any>;
 
 export async function initQueueDB() {
   return openDB(DB_NAME, 2, {
