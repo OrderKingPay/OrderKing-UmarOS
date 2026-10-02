@@ -57,7 +57,7 @@ function localStateFor(action: Action): OrderState {
 
 export const transitionOrderViaHDmaster = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: {
+  .inputValidator((d: {
     restaurantId?: string;
     orderId: string;
     action: Action;
