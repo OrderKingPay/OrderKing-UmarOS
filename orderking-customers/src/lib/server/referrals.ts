@@ -33,7 +33,7 @@ export const getReferralStats = createServerFn({ method: "GET" })
     const userId = context.userId;
 
     const existing = await sql<{ referral_code: string | null }>`
-      select referral_code from users where id = ${userId} limit 1
+      select referral_code from "user" where id = ${userId} limit 1
     `;
     if (!existing[0]) throw new Error("Account not found.");
 
@@ -42,32 +42,28 @@ export const getReferralStats = createServerFn({ method: "GET" })
       const stable = createHash("sha256").update(userId).digest("hex").slice(-8).toUpperCase();
       referralCode = `OK-${stable}`;
       const collision = await sql<{ id: string }>`
-        select id from users where referral_code = ${referralCode} and id <> ${userId} limit 1
+        select id from "user" where referral_code = ${referralCode} and id <> ${userId} limit 1
       `;
       if (collision[0]) throw new Error("Referral code allocation is temporarily unavailable.");
       await sql`
-        update users set referral_code = ${referralCode}
+        update "user" set referral_code = ${referralCode}
         where id = ${userId} and (referral_code is null or trim(referral_code) = '')
       `;
     }
 
-    let totalInvited = 0;
-    let totalEarnedPaise = 0;
-    try {
-      const rows = await sql<{ count: number; earned: number }>`
-        select count(*)::int as count,
-               coalesce(sum(case when delta > 0 then delta * 100 else 0 end), 0)::int as earned
-        from loyalty_transactions
-        where user_id = ${userId} and reason like 'referral%'
-      `;
-      if (rows[0]) {
-        totalInvited = rows[0].count;
-        totalEarnedPaise = rows[0].earned;
-      }
-    } catch (err) {
-      console.error("Referral stats read failed:", err);
-    }
-
+    const rows = await sql<{ count: number; earned: number }>`
+      select
+        (select count(*)::int from referrals where referrer_id = ${userId} and status = 'COMPLETED') as count,
+        coalesce((
+          select sum(amount_paise)::bigint
+          from kingpay_transactions
+          where user_id = ${userId}
+            and type = 'CREDIT'
+            and description like 'Verified referral reward:%'
+        ), 0)::bigint as earned
+    `;
+    const totalInvited = rows[0]?.count ?? 0;
+    const totalEarnedPaise = Number(rows[0]?.earned ?? 0);
     const verifiedRewardPaise = 10_000;
     return {
       referralCode,
