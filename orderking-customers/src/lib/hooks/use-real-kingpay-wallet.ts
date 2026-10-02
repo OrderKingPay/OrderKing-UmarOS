@@ -41,5 +41,5 @@ export function useRealKingPayWallet() {
   const walletBalance = data?.balance ?? 0;
   const kingCoins = data?.coins ?? 0;
 
-  const setKingCoins = () => { /* read only until a verified rewards ledger is connected */ };\n\n  return { walletBalance, kingCoins };
+
 }
