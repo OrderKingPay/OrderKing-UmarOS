@@ -1,14 +1,13 @@
-// @ts-nocheck
-// Umar OS: Sovereign Verified Model Registry & Real Provider Connection Engine
-// Enforces Zero-Fabrication: Truthfully reports connection status, real API model IDs,
-// supported modalities, context windows, and real-time latency measurements.
+// Umar OS: verified provider/model registry.
+// Truth rule: a configured credential is never presented as successful model connectivity.
+// API keys are server-only; browser localStorage is deliberately unsupported.
 
 export interface VerifiedModelRecord {
   id: string;
   displayName: string;
   provider: "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus";
   realApiId: string;
-  connectionStatus: "CONNECTED" | "CONFIGURATION_REQUIRED" | "UNAVAILABLE";
+  connectionStatus: "CONNECTED" | "CONFIGURATION_REQUIRED" | "UNAVAILABLE" | "UNVERIFIED";
   authStatus: "VERIFIED" | "MISSING_KEY";
   requiredEnvVar?: string;
   supportedModalities: ("text" | "vision" | "voice" | "code" | "file")[];
@@ -38,7 +37,12 @@ export interface ModelConnectionTestResult {
   timestamp: string;
 }
 
-// Key manager: reads from process.env or browser localStorage
+const OPENAI_MODELS = {
+  sol: { id: "openai-gpt-5.6-sol", apiId: "gpt-5.6-sol", label: "OpenAI GPT-5.6 Sol", fallback: "openai-gpt-5.6-luna" },
+  terra: { id: "openai-gpt-5.6-terra", apiId: "gpt-5.6-terra", label: "OpenAI GPT-5.6 Terra", fallback: "openai-gpt-5.6-luna" },
+  luna: { id: "openai-gpt-5.6-luna", apiId: "gpt-5.6-luna", label: "OpenAI GPT-5.6 Luna", fallback: "openai-gpt-5.6-luna" },
+} as const;
+
 export function getProviderApiKey(provider: string): string | undefined {
   const envMap: Record<string, string | undefined> = {
     openai: typeof process !== "undefined" ? process.env?.OPENAI_API_KEY : undefined,
@@ -51,111 +55,66 @@ export function getProviderApiKey(provider: string): string | undefined {
 }
 
 export function setProviderApiKey(_provider: string, _apiKey: string): void {
-  // Provider secrets must remain server-side. Browser persistence would expose
-  // credentials to every script running in the app origin.
   throw new Error("Provider API keys must be configured server-side; browser key storage is disabled.");
 }
 
-/**
- * Returns the authoritative list of verified models with their exact connectivity status.
- */
+function openAiRecord(model: typeof OPENAI_MODELS[keyof typeof OPENAI_MODELS], keyPresent: boolean, now: string): VerifiedModelRecord {
+  return {
+    id: model.id,
+    displayName: model.label,
+    provider: "OpenAI",
+    realApiId: model.apiId,
+    connectionStatus: keyPresent ? "UNVERIFIED" : "CONFIGURATION_REQUIRED",
+    authStatus: keyPresent ? "VERIFIED" : "MISSING_KEY",
+    requiredEnvVar: "OPENAI_API_KEY",
+    supportedModalities: ["text", "vision", "code", "file"],
+    contextWindow: "1.05M tokens",
+    supportsTools: true,
+    supportsReasoning: true,
+    supportsWebSearch: true,
+    measuredLatencyMs: 0,
+    lastChecked: now,
+    fallbackModelId: model.fallback,
+    description: "Real OpenAI model. This record becomes CONNECTED only after a live provider availability check succeeds.",
+    capabilities: {
+      canStream: true,
+      canProcessImages: true,
+      canProcessFiles: true,
+      canUseTools: true,
+    },
+  };
+}
+
 export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
+  const openaiKey = getProviderApiKey("openai");
   const geminiKey = getProviderApiKey("gemini");
   const anthropicKey = getProviderApiKey("anthropic");
-  const openaiKey = getProviderApiKey("openai");
   const xaiKey = getProviderApiKey("xai");
+  const now = new Date().toISOString();
 
-  const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const providerState = (key: string | undefined) => key ? "UNVERIFIED" as const : "CONFIGURATION_REQUIRED" as const;
 
   return [
+    openAiRecord(OPENAI_MODELS.sol, Boolean(openaiKey), now),
+    openAiRecord(OPENAI_MODELS.terra, Boolean(openaiKey), now),
+    openAiRecord(OPENAI_MODELS.luna, Boolean(openaiKey), now),
     {
-      id: "openai-gpt-5.6-sol",
-      displayName: "OpenAI GPT-5.6 Sol",
-      provider: "OpenAI",
-      realApiId: "gpt-5.6-sol",
-      connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
-      requiredEnvVar: "OPENAI_API_KEY",
-      supportedModalities: ["text", "vision", "code", "file"],
-      contextWindow: "1.05M tokens",
-      supportsTools: true,
-      supportsReasoning: true,
-      supportsWebSearch: true,
-      measuredLatencyMs: 0,
-      lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "Real OpenAI frontier model. Availability is confirmed against the provider at runtime; a configured key alone never counts as a successful connectivity test.",
-      capabilities: {
-        canStream: true,
-        canProcessImages: true,
-        canProcessFiles: true,
-        canUseTools: true,
-      },
-    },
-    {
-      id: "openai-gpt-5.6-terra",
-      displayName: "OpenAI GPT-5.6 Terra",
-      provider: "OpenAI",
-      realApiId: "gpt-5.6-terra",
-      connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
-      requiredEnvVar: "OPENAI_API_KEY",
-      supportedModalities: ["text", "vision", "code", "file"],
-      contextWindow: "1.05M tokens",
-      supportsTools: true,
-      supportsReasoning: true,
-      supportsWebSearch: true,
-      measuredLatencyMs: 0,
-      lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "Real OpenAI balanced model. Availability is confirmed against the provider at runtime.",
-      capabilities: {
-        canStream: true,
-        canProcessImages: true,
-        canProcessFiles: true,
-        canUseTools: true,
-      },
-    },
-    {
-      id: "openai-gpt-5.6-luna",
-      displayName: "OpenAI GPT-5.6 Luna",
-      provider: "OpenAI",
-      realApiId: "gpt-5.6-luna",
-      connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
-      requiredEnvVar: "OPENAI_API_KEY",
-      supportedModalities: ["text", "vision", "code", "file"],
-      contextWindow: "1.05M tokens",
-      supportsTools: true,
-      supportsReasoning: true,
-      supportsWebSearch: true,
-      measuredLatencyMs: 0,
-      lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "Real OpenAI lower-cost, high-volume model. Availability is confirmed against the provider at runtime.",
-      capabilities: {
-        canStream: true,
-        canProcessImages: true,
-        canProcessFiles: true,
-        canUseTools: true,
-      },
-    },
-    {
-      id: "auto-supreme-orchestrator",
-      displayName: "⚡ Auto-Select Best Model (Supreme Orchestrator)",
+      id: "auto-openai-routing",
+      displayName: "OpenAI Auto Routing",
       provider: "Orchestrator",
-      realApiId: "dynamic-router-v1",
-      connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
+      realApiId: "runtime-selected-openai-model",
+      connectionStatus: openaiKey ? "UNVERIFIED" : "CONFIGURATION_REQUIRED",
       authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
-      supportedModalities: ["text", "vision", "voice", "code", "file"],
-      contextWindow: "Dynamic",
+      requiredEnvVar: "OPENAI_API_KEY",
+      supportedModalities: ["text", "vision", "code", "file"],
+      contextWindow: "Depends on selected model",
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
-      measuredLatencyMs: 12,
+      measuredLatencyMs: 0,
       lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "Intelligently routes every query to the fastest and most capable connected model. If external models lack API keys, seamlessly executes via Sovereign Local Core with clear disclosure.",
+      fallbackModelId: OPENAI_MODELS.luna.id,
+      description: "Selects from models actually exposed to this API key; it never assumes access from a configured key.",
       capabilities: {
         canStream: true,
         canProcessImages: true,
@@ -164,45 +123,22 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       },
     },
     {
-      id: "ensemble-consensus",
-      displayName: "🧠 Multi-Model Ensemble Consensus",
-      provider: "Consensus",
-      realApiId: "multi-model-consensus-v1",
-      connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
-      supportedModalities: ["text", "code", "file"],
-      contextWindow: "Aggregated",
-      supportsTools: true,
-      supportsReasoning: true,
-      supportsWebSearch: false,
-      measuredLatencyMs: 22,
-      lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "Runs all currently active connected models simultaneously and cross-verifies output invariants. Never fabricates participation: only genuinely connected models are counted.",
-      capabilities: {
-        canStream: true,
-        canProcessImages: false,
-        canProcessFiles: true,
-        canUseTools: true,
-      },
-    },
-    {
-      id: "gemini-2-5-pro",
-      displayName: "Google Gemini 2.0 / 2.5",
+      id: "google-provider",
+      displayName: "Google provider",
       provider: "Google",
-      realApiId: "gemini-2.0-flash",
-      connectionStatus: geminiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
+      realApiId: "runtime-discovered",
+      connectionStatus: providerState(geminiKey),
       authStatus: geminiKey ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "GEMINI_API_KEY",
       supportedModalities: ["text", "vision", "voice", "file"],
-      contextWindow: "1M tokens",
+      contextWindow: "Provider-discovered",
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
-      measuredLatencyMs: geminiKey ? 140 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "Google frontier multimodal reasoning engine with high-speed tokens and 1M context window. Connect via GEMINI_API_KEY.",
+      fallbackModelId: OPENAI_MODELS.luna.id,
+      description: "Provider configured status only; exact model access must be discovered from the provider at runtime.",
       capabilities: {
         canStream: true,
         canProcessImages: true,
@@ -211,22 +147,22 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       },
     },
     {
-      id: "claude-4-6-opus",
-      displayName: "Anthropic Claude 3.7 Sonnet",
+      id: "anthropic-provider",
+      displayName: "Anthropic provider",
       provider: "Anthropic",
-      realApiId: "claude-3-7-sonnet-20250219",
-      connectionStatus: anthropicKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
+      realApiId: "runtime-discovered",
+      connectionStatus: providerState(anthropicKey),
       authStatus: anthropicKey ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "ANTHROPIC_API_KEY",
       supportedModalities: ["text", "vision", "code", "file"],
-      contextWindow: "200k tokens",
+      contextWindow: "Provider-discovered",
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: false,
-      measuredLatencyMs: anthropicKey ? 190 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "Anthropic state-of-the-art hybrid reasoning model for deep systems architecture and complex coding. Connect via ANTHROPIC_API_KEY.",
+      fallbackModelId: OPENAI_MODELS.luna.id,
+      description: "Provider configured status only; exact model access must be discovered from the provider at runtime.",
       capabilities: {
         canStream: true,
         canProcessImages: true,
@@ -235,126 +171,59 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       },
     },
     {
-      id: "gpt-5-6-sol",
-      displayName: "OpenAI GPT-5.6 Sol / GPT-5.6 Luna",
-      provider: "OpenAI",
-      realApiId: "gpt-5.6-sol",
-      connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
-      requiredEnvVar: "OPENAI_API_KEY",
-      supportedModalities: ["text", "vision", "code", "file"],
-      contextWindow: "1.05M tokens",
-      supportsTools: true,
-      supportsReasoning: true,
-      supportsWebSearch: true,
-      measuredLatencyMs: openaiKey ? 165 : 0,
-      lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "OpenAI GPT-5.6 flagship reasoning model. The provider adapter uses the configured OpenAI API and reports the actual model ID used by the deployment.",
-      capabilities: {
-        canStream: true,
-        canProcessImages: true,
-        canProcessFiles: true,
-        canUseTools: true,
-      },
-    },
-    {
-      id: "grok-4-6-super",
-      displayName: "xAI Grok 2 / 3",
+      id: "xai-provider",
+      displayName: "xAI provider",
       provider: "xAI",
-      realApiId: "grok-2",
-      connectionStatus: xaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
+      realApiId: "runtime-discovered",
+      connectionStatus: providerState(xaiKey),
       authStatus: xaiKey ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "XAI_API_KEY",
       supportedModalities: ["text", "code", "file"],
-      contextWindow: "128k tokens",
+      contextWindow: "Provider-discovered",
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
-      measuredLatencyMs: xaiKey ? 180 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "xAI frontier intelligence with integrated real-time search capabilities. Connect via XAI_API_KEY.",
+      fallbackModelId: OPENAI_MODELS.luna.id,
+      description: "Provider configured status only; exact model access must be discovered from the provider at runtime.",
       capabilities: {
         canStream: true,
         canProcessImages: false,
         canProcessFiles: true,
         canUseTools: true,
-      },
-    },
-    {
-      id: "codex-supreme",
-      displayName: "Codex Supreme Architect (Local Core)",
-      provider: "Local Sovereign",
-      realApiId: "codex-local-v1",
-      connectionStatus: "UNAVAILABLE",
-      authStatus: "LOCAL_CORE",
-      supportedModalities: ["text", "code", "file"],
-      contextWindow: "64k tokens",
-      supportsTools: true,
-      supportsReasoning: true,
-      supportsWebSearch: false,
-      measuredLatencyMs: 6,
-      lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "Deterministic full-stack code generator, TypeScript validator, and database schema synthesizer running locally.",
-      capabilities: {
-        canStream: true,
-        canProcessImages: false,
-        canProcessFiles: true,
-        canUseTools: true,
-      },
-    },
-    {
-      id: "deepseek-r1-sovereign",
-      displayName: "DeepSeek R1 Sovereign (Local Math Core)",
-      provider: "Local Sovereign",
-      realApiId: "deepseek-r1-local",
-      connectionStatus: "UNAVAILABLE",
-      authStatus: "LOCAL_CORE",
-      supportedModalities: ["text", "code", "file"],
-      contextWindow: "64k tokens",
-      supportsTools: false,
-      supportsReasoning: true,
-      supportsWebSearch: false,
-      measuredLatencyMs: 5,
-      lastChecked: now,
-      fallbackModelId: "openai-gpt-5.6-luna",
-      description: "Axiomatic mathematical formalization, proof verification, and exact logic analysis running locally without network overhead.",
-      capabilities: {
-        canStream: true,
-        canProcessImages: false,
-        canProcessFiles: true,
-        canUseTools: false,
       },
     },
   ];
 }
 
-/**
- * Executes a real minimal test request to verify provider connectivity.
- * Zero fabrication: accurately reports failures and measured latency.
- */
+async function listOpenAiModels(apiKey: string): Promise<string[]> {
+  const res = await fetch("https://api.openai.com/v1/models", {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}: OpenAI model listing failed`);
+  const body = await res.json();
+  return Array.isArray(body?.data) ? body.data.map((m: { id?: unknown }) => String(m?.id || "")).filter(Boolean) : [];
+}
+
+export async function selectAvailableOpenAiModel(
+  preferredModelId = OPENAI_MODELS.luna.apiId,
+): Promise<{ modelId: string; candidatesChecked: string[] }> {
+  const apiKey = getProviderApiKey("openai");
+  if (!apiKey) throw new Error("OPENAI_API_KEY is not configured.");
+  const available = new Set(await listOpenAiModels(apiKey));
+  const candidates = [preferredModelId, OPENAI_MODELS.luna.apiId, OPENAI_MODELS.terra.apiId, OPENAI_MODELS.sol.apiId]
+    .filter((id, index, all) => all.indexOf(id) === index);
+  const modelId = candidates.find((id) => available.has(id));
+  if (!modelId) throw new Error("No configured OpenAI high-speed support model is available to this API key.");
+  return { modelId, candidatesChecked: candidates };
+}
+
 export async function testModelConnectivity(modelId: string): Promise<ModelConnectionTestResult> {
   const start = Date.now();
   const timestamp = new Date().toISOString();
-  const registry = getVerifiedModelRegistry();
-  const target = registry.find((m) => m.id === modelId) || registry[0];
-
-    if (target.id === "auto-supreme-orchestrator" || target.id === "ensemble-consensus") {
-    const ready = Boolean(getProviderApiKey("openai"));
-    return {
-      modelId: target.id,
-      success: ready,
-      status: ready ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      latencyMs: Date.now() - start,
-      realModelUsed: target.realApiId,
-      message: ready ? "Verified: at least one real external provider is configured." : "Configuration Required: no real external provider is configured.",
-      timestamp,
-    };
-  }
-
-  const providerKey = target.provider.toLowerCase();
+  const target = getVerifiedModelRegistry().find((m) => m.id === modelId) || getVerifiedModelRegistry()[0];
+  const providerKey = target.provider === "Orchestrator" ? "openai" : target.provider.toLowerCase();
   const apiKey = getProviderApiKey(providerKey);
 
   if (!apiKey) {
@@ -362,72 +231,36 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
       modelId: target.id,
       success: false,
       status: "CONFIGURATION_REQUIRED",
-      latencyMs: 0,
+      latencyMs: Date.now() - start,
       realModelUsed: target.realApiId,
-      message: `Configuration Required: ${target.displayName} requires ${target.requiredEnvVar} in .env or Settings.`,
+      message: `Configuration Required: ${target.requiredEnvVar || "provider credential"} is not configured.`,
       timestamp,
     };
   }
 
   try {
-    // Ping external provider with a minimal test payload
-    let testSuccess = false;
-    let realModelReturned = target.realApiId;
-
-    if (target.provider === "OpenAI") {
-      const res = await fetch("https://api.openai.com/v1/models", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${apiKey}` },
-      });
-      testSuccess = res.ok;
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      const body = await res.json();
-      const available = Array.isArray(body?.data) ? body.data.map((m: { id?: unknown }) => String(m?.id || "")) : [];
-      const requested = target.realApiId;
+    if (target.provider === "OpenAI" || target.provider === "Orchestrator") {
+      const available = await listOpenAiModels(apiKey);
+      const requested = target.provider === "Orchestrator" ? (await selectAvailableOpenAiModel()).modelId : target.realApiId;
       if (!available.includes(requested)) throw new Error(`Model ${requested} is not available to this API key.`);
-      realModelReturned = requested;
-    } else if (target.provider === "Anthropic") {
-      const res = await fetch("https://api.anthropic.com/v1/models", {
-        method: "GET",
-        headers: {
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-        },
-      });
-      testSuccess = res.ok;
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      const body = await res.json();
-      const available = Array.isArray(body?.data) ? body.data.map((m: { id?: unknown }) => String(m?.id || "")) : [];
-      if (!available.includes(target.realApiId)) throw new Error(`Model ${target.realApiId} is not available to this API key.`);
-      realModelReturned = target.realApiId;
-    } else if (target.provider === "Google") {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-      testSuccess = res.ok;
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      const body = await res.json();
-      const available = Array.isArray(body?.models) ? body.models.map((m: { name?: unknown }) => String(m?.name || "").replace(/^models\//, "")) : [];
-      if (!available.includes(target.realApiId)) throw new Error(`Model ${target.realApiId} is not available to this API key.`);
-      realModelReturned = target.realApiId;
-    } else if (target.provider === "xAI") {
-      const res = await fetch("https://api.x.ai/v1/models", {
-        headers: { Authorization: `Bearer ${apiKey}` },
-      });
-      testSuccess = res.ok;
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      const body = await res.json();
-      const available = Array.isArray(body?.data) ? body.data.map((m: { id?: unknown }) => String(m?.id || "")) : [];
-      if (!available.includes(target.realApiId)) throw new Error(`Model ${target.realApiId} is not available to this API key.`);
-      realModelReturned = target.realApiId;
+      return {
+        modelId: target.id,
+        success: true,
+        status: "CONNECTED",
+        latencyMs: Date.now() - start,
+        realModelUsed: requested,
+        message: `Verified OpenAI model availability for ${requested}.`,
+        timestamp,
+      };
     }
 
-    const elapsed = Date.now() - start;
     return {
       modelId: target.id,
-      success: testSuccess,
-      status: testSuccess ? "CONNECTED" : "ERROR",
-      latencyMs: elapsed,
-      realModelUsed: realModelReturned,
-      message: `Successfully verified connection to ${target.provider} API (${elapsed}ms).`,
+      success: false,
+      status: "ERROR",
+      latencyMs: Date.now() - start,
+      realModelUsed: target.realApiId,
+      message: "This provider requires runtime model discovery; no hard-coded model claim is made here.",
       timestamp,
     };
   } catch (err: unknown) {
@@ -438,7 +271,7 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
       status: "ERROR",
       latencyMs: Date.now() - start,
       realModelUsed: target.realApiId,
-      message: `Connection test failed for ${target.displayName}: ${errorMsg.slice(0, 120)}`,
+      message: `Connection test failed: ${errorMsg.slice(0, 160)}`,
       timestamp,
     };
   }
