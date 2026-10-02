@@ -1,10 +1,13 @@
 
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Mic, Share2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import { useLocationStore } from "@/lib/stores/location";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { getReferralStats } from "@/lib/server/referrals";
 
 interface EcosystemSwitchBarProps {
   currentApp: "FOODS" | "KINGPAY";
@@ -31,6 +34,13 @@ export function EcosystemSwitchBar({
   className = "",
 }: EcosystemSwitchBarProps) {
   const location = useLocationStore((s) => s.location);
+  const { user } = useCurrentUserState();
+  const referral = useQuery({
+    queryKey: ["referral-stats", user?.id],
+    queryFn: () => getReferralStats(),
+    enabled: Boolean(user),
+    staleTime: 60_000,
+  });
   const isDeliveryActive = isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
   const isFood = currentApp === "FOODS" && isDeliveryActive;
 
@@ -58,7 +68,7 @@ export function EcosystemSwitchBar({
   const handleShareClick = () => {
     triggerHaptic();
     const shareUrl = typeof window !== "undefined" ? window.location.origin : "https://orderking.in";
-    const shareText = "👑 Experience Order King FOODS (0% markup biryani & feasts) & King Pay (0-fee UPI & lowest flights)! Join now:";
+    const shareText = "Join me on OrderKing. Check the live services and current offers available in your account.";
     
     if (typeof navigator !== "undefined" && navigator.share) {
       navigator
@@ -77,10 +87,10 @@ export function EcosystemSwitchBar({
   };
 
   const copyShareLink = (url: string) => {
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      void navigator.clipboard.writeText(`${url}/?ref=KINGVIP`);
-      toast.success("🎁 Referral link copied! Share with friends to earn ₹40 cash!");
-    }
+    if (typeof navigator === "undefined" || !navigator.clipboard) return;
+    const target = referral.data?.shareUrl ?? url;
+    void navigator.clipboard.writeText(target);
+    toast.success(referral.data?.shareUrl ? "Referral link copied." : "OrderKing link copied.");
   };
 
   return (
@@ -91,7 +101,7 @@ export function EcosystemSwitchBar({
       <button
         type="button"
         onClick={handleShareClick}
-        title="Share & Earn ₹40 Cash"
+        title={referral.data?.shareUrl ? "Share referral link" : "Share OrderKing"}
         aria-label="Share & Earn Rewards"
         className="group relative flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 text-slate-950 font-black shadow-[0_4px_20px_rgba(245,158,11,0.55)] ring-2 ring-amber-300/90 transition-all duration-200 active:scale-95 hover:scale-105 touch-manipulation cursor-pointer"
       >
