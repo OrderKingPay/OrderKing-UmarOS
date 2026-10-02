@@ -650,345 +650,18 @@ export function FoodAiConcierge({
     }
   };
 
-  // Deep, Realistic, 100x Problem-Solving Food Delivery Knowledge Engine
-  const generateFoodAiReply = (query: string, lang: IndianLanguage): { text: string; action?: any } => {
-    const raw = query.toLowerCase();
-    const q = raw.replace(/[^a-z0-9\u0900-\u097F\u0980-\u09FF\s]/g, " ").replace(/\s+/g, " ").trim();
+  // Legacy client-side response logic is retained only as a guarded emergency message.
+  // Real customer answers now come from the authenticated server-side OpenAI path.
+  const generateFoodAiReply = (query: string, _lang: IndianLanguage): { text: string; action?: ChatMessage["actionPayload"] } => ({
+    text: query
+      ? "OrderKing AI is processing your request through the secure server. No action or benefit is confirmed until the platform verifies it."
+      : "Tell me what you need help with and I’ll check the verified OrderKing service.",
+  });
 
-    // 1. Delivery Delays / Late Food / Rider Stalled / ETA Guarantee
-    if (
-      q.includes("late") ||
-      q.includes("delay") ||
-      q.includes("deri") ||
-      q.includes("der") ||
-      q.includes("kothay") ||
-      q.includes("kahan") ||
-      q.includes("pahuncha") ||
-      q.includes("stuck") ||
-      q.includes("traffic") ||
-      q.includes("eta") ||
-      q.includes("slow") ||
-      q.includes("aayega") ||
-      q.includes("aashbe") ||
-      q.includes("time") ||
-      q.includes("kab")
-    ) {
-      let replyText = "";
-      if (lang.code === "hi") {
-        replyText =
-          `हुज़ूर, मैं आपकी परेशानी पूरी तरह समझती हूँ। हमारे 'ऑन-टाइम गारंटी' के तहत यदि आपका आर्डर 10 मिनट से अधिक लेट होता है, तो आपके वॉलेट में तुरंत ₹50 का कम्पेन्सेशन क्रेडिट ट्रांसफर कर दिया जाएगा। मैंने राइडर और किचन हेड शेफ़ को प्रायोरिटी अलर्ट भेज दिया है। टिकट #HD-FOOD-DELAY फ़ाउंडर डेस्क पर दर्ज है! ${selectedPersona.encouragement}`;
-      } else if (lang.code === "bn") {
-        replyText =
-          `মহারাজ, খাবারের দেরির জন্য আমি আন্তরিকভাবে দুঃখিত। আমাদের 'অন-টাইম গ্যারান্টি' অনুযায়ী ১০ মিনিটের বেশি দেরি হলে আপনার ওয়ালেটে অবিলম্বে ₹৫০ ক্ষতিপূরণ ক্রেডিট জমা হবে। আমি রাইডার ও শেফকে জরুরি সতর্কতা পাঠিয়েছি। টিকিট #HD-FOOD-DELAY নথিভুক্ত করা হয়েছে! ${selectedPersona.encouragement}`;
-      } else {
-        replyText =
-          `I completely understand your hunger and apologize for the wait! Under OrderKing's Sovereign On-Time Guarantee, if your order is delayed by more than 10 minutes past the promised ETA, you will automatically receive an instant ₹50 compensation credit in your wallet. I have sent an urgent priority dispatch ping to your rider and kitchen head chef right now. Ticket #HD-FOOD-DELAY is logged on the Founder Command Desk! ${selectedPersona.encouragement}`;
-      }
-      return {
-        text: replyText,
-        action: { type: "TRACK_ORDERS", label: "📦 Track Live Rider & View ETA" },
-      };
-    }
-
-    // 2. Missing Items / Wrong Items Delivered / Incomplete Order
-    if (
-      q.includes("missing") ||
-      q.includes("bhul") ||
-      q.includes("chhoot") ||
-      q.includes("gayab") ||
-      q.includes("incomplete") ||
-      q.includes("did not receive") ||
-      q.includes("wrong") ||
-      q.includes("galat") ||
-      q.includes("paini") ||
-      q.includes("mila nahi") ||
-      q.includes("nahi mila") ||
-      q.includes("adha") ||
-      q.includes("half") ||
-      q.includes("chut gaya")
-    ) {
-      let replyText = "";
-      if (lang.code === "hi") {
-        replyText =
-          `हुज़ूर, यह बहुत गंभीर मामला है। आर्डरकिंग की 'ज़ीरो-पूछताछ नीति' के तहत जो आइटम मिसिंग या ग़लत है, उसका 100% रिफ़ंड आपके किंगपे वॉलेट में तुरंत दिया जाएगा, या 15 मिनट में फ़्री एक्सप्रेस डिलीवरी होगी। कृपया नीचे कैमरा आइकॉन से पैकेट की फ़ोटो भेजें। रेस्टोरेंट को तत्काल पेनल्टी नोटिस भेजा गया है (टिकट #HD-FOOD-MISSING)। ${selectedPersona.encouragement}`;
-      } else if (lang.code === "bn") {
-        replyText =
-          `মহারাজ, খাবারের কোনো অংশ না পাওয়া অত্যন্ত দুঃখজনক। অর্ডারকিং-এর 'জিরো-প্রশ্ন নীতি' অনুযায়ী মিসিং আইটেমের ১০০% টাকা অবিলম্বে আপনার ওয়ালেটে রিফান্ড করা হবে অথবা ১৫ মিনিটে এক্সপ্রেস পুনরায় পাঠানো হবে। নিচে ক্যামেরা ট্যাপ করে রসিদের ছবি দিন। টিকিট #HD-FOOD-MISSING তৈরি হয়েছে। ${selectedPersona.encouragement}`;
-      } else {
-        replyText =
-          `I am so sorry! Under OrderKing's Zero-Interrogation Policy, you will receive a 100% instant refund for the missing dish to your KingPay wallet, or a free priority redelivery within 15 minutes! Please tap the camera icon below to attach a quick photo of your package or receipt. Escalation ticket #HD-FOOD-MISSING has been flagged to the restaurant partner. ${selectedPersona.encouragement}`;
-      }
-      return {
-        text: replyText,
-        action: { type: "SUBMIT_DISPUTE_CONSENT", label: "📸 Instant Refund / Free Redelivery" },
-      };
-    }
-
-    // 3. Cold Food / Spilled / Damaged / Packaging Torn / Hygiene Issue
-    if (
-      q.includes("cold") ||
-      q.includes("thanda") ||
-      q.includes("thonda") ||
-      q.includes("spill") ||
-      q.includes("gir gaya") ||
-      q.includes("khul gaya") ||
-      q.includes("kharab") ||
-      q.includes("damaged") ||
-      q.includes("leak") ||
-      q.includes("stale") ||
-      q.includes("bashi") ||
-      q.includes("hair") ||
-      q.includes("bal") ||
-      q.includes("chul") ||
-      q.includes("poka") ||
-      q.includes("insect") ||
-      q.includes("keeda") ||
-      q.includes("hygiene") ||
-      q.includes("kacha") ||
-      q.includes("kachha") ||
-      q.includes("raw") ||
-      q.includes("taste")
-    ) {
-      let replyText = "";
-      if (lang.code === "hi") {
-        replyText =
-          `हुज़ूर, ठंडा या ख़राब खाना पहुँचना हमारे 'रॉयल थर्मल सील' मानकों का सीधा उल्लंघन है। मैं इस पूरे आइटम का 100% रिफ़ंड + ₹100 का अतिरिक्त माफ़ी वाउचर तुरंत मंज़ूर कर रही हूँ। इस रेस्टोरेंट के ख़िलाफ़ तत्काल हाइजीन ऑडिट शुरू कर दिया गया है (टिकट #HD-FOOD-QUALITY)। नीचे क्लेम बटन दबाएँ! ${selectedPersona.encouragement}`;
-      } else if (lang.code === "bn") {
-        replyText =
-          `মহারাজ, ঠান্ডা বা নষ্ট খাবার পৌঁছানো আমাদের থার্মাল ব্যাগের নিয়মের চরম লঙ্ঘন। আমি এই আইটেমের ১০০% সম্পূর্ণ রিফান্ড এবং পরবর্তী অর্ডারের জন্য অতিরিক্ত ₹১০০ ভাউচার অনুমোদন করছি। টিকিট #HD-FOOD-QUALITY-র অধীনে রান্নাঘরের অডিট শুরু হয়েছে। নিচের বোতামে ট্যাপ করুন। ${selectedPersona.encouragement}`;
-      } else {
-        replyText =
-          `This is completely unacceptable and violates our Royal Thermal Seal Standards. Every meal must arrive steaming hot and tamper-sealed. I am authorizing a 100% instant credit refund for this damaged item, plus a ₹100 apology voucher for your next feast! An immediate hygiene and packaging audit has been triggered for this kitchen under ticket #HD-FOOD-QUALITY. Tap below to claim your instant refund! ${selectedPersona.encouragement}`;
-      }
-      return {
-        text: replyText,
-        action: { type: "SUBMIT_DISPUTE_CONSENT", label: "🛡️ Claim 100% Refund + ₹100 Voucher" },
-      };
-    }
-
-    // 4. Order Cancellation / Refund Inquiries
-    if (
-      q.includes("cancel") ||
-      q.includes("cancle") ||
-      q.includes("refund") ||
-      q.includes("wapas") ||
-      q.includes("ferot") ||
-      q.includes("band karo") ||
-      q.includes("rok do") ||
-      q.includes("abort") ||
-      q.includes("paisa") ||
-      q.includes("taka")
-    ) {
-      let replyText = "";
-      if (lang.code === "hi") {
-        replyText =
-          `हुज़ूर, यदि आपने पिछले 60 सेकंड में आर्डर दिया है, तो आप 1-टैप में 100% फ़ुल रिफ़ंड के साथ आर्डर कैंसिल कर सकते हैं। यदि शेफ़ ने तैयारी शुरू कर दी है, तो मैं व्यक्तिगत रूप से किचन सुपरवाइज़र से बात करके आर्डर रोकने की कोशिश करूँगी। सभी रिफ़ंड सीधे आपके किंगपे वॉलेट या बैंक में 2 घंटे में वापस आ जाते हैं। टिकट #HD-FOOD-CANCEL दर्ज है। ${selectedPersona.encouragement}`;
-      } else if (lang.code === "bn") {
-        replyText =
-          `মহারাজ, অর্ডার দেওয়ার ৬০ সেকেন্ডের মধ্যে ১-ট্যাপে ১০০% সম্পূর্ণ রিফান্ড সহ অর্ডার বাতিল করতে পারেন। যদি শেফ রান্না শুরু করে থাকেন, তবে আমি সরাসরি কিচেন ইনচার্জের সাথে সমন্বয় করব। রিফান্ডের টাকা আপনার কিংপে ওয়ালেটে অবিলম্বে যোগ হবে। টিকিট #HD-FOOD-CANCEL নথিভুক্ত। ${selectedPersona.encouragement}`;
-      } else {
-        replyText =
-          `If your order was placed within the last 60 seconds, you can cancel it with 1 tap for an instant 100% full refund! If the chef has already begun cooking, I will personally coordinate with the kitchen supervisor to pause preparation. Any approved refund is credited instantly to your KingPay wallet or returned to your source bank within 2 hours. Ticket #HD-FOOD-CANCEL is logged. ${selectedPersona.encouragement}`;
-      }
-      return {
-        text: replyText,
-        action: { type: "TRACK_ORDERS", label: "📋 Manage Order & Cancellation" },
-      };
-    }
-
-    // 5. Biryani / Royal Feasts / Rice Dishes
-    if (
-      q.includes("biryani") ||
-      q.includes("briyani") ||
-      q.includes("biriyani") ||
-      q.includes("biriyaani") ||
-      q.includes("बिरयानी") ||
-      q.includes("বিরিয়ানি") ||
-      q.includes("dum") ||
-      q.includes("khana") ||
-      q.includes("khaibo") ||
-      q.includes("khabo") ||
-      q.includes("bhat") ||
-      q.includes("pulao") ||
-      q.includes("polao") ||
-      q.includes("rice") ||
-      q.includes("mutton") ||
-      q.includes("chicken") ||
-      q.includes("kacchi")
-    ) {
-      let replyText = "";
-      if (lang.code === "hi") {
-        replyText =
-          `हुज़ूर, हमारी सबसे लोकप्रिय डिश है 'रॉयल दम बिरयानी'। यह 100% असली केसर, 2-साल पुराने बासमती चावल और देसी मसालों से तैयार की जाती है। सीधे रेस्टोरेंट के असली रेट पर 0% मार्कअप के साथ आर्डर करें! ${selectedPersona.encouragement}`;
-      } else if (lang.code === "bn") {
-        replyText =
-          `মহারাজ, আমাদের সবচেয়ে জনপ্রিয় খাবার হল 'রয়্যাল দম বিরিয়ানি'। খাঁটি বাসমতী চাল, কেশর ও সুগন্ধি মসলায় তৈরি। রেস্তোরাঁর আসল দামে ০% অতিরিক্ত মূল্য ছাড়াই উপভোগ করুন! ${selectedPersona.encouragement}`;
-      } else {
-        replyText =
-          `Our signature dish is the Royal Dum Biryani! Prepared with authentic aged basmati rice, slow-cooked tender cuts, and aromatic herbs with 0% menu markup. Direct dine-in restaurant rates guaranteed! ${selectedPersona.encouragement}`;
-      }
-      return {
-        text: replyText,
-        action: { type: "SEARCH_BIRYANI", label: "🍗 Explore Royal Biryanis" },
-      };
-    }
-
-    // 6. Pure Veg / Jain / Halal / Dietary Assurance
-    if (
-      q.includes("veg") ||
-      q.includes("vegetarian") ||
-      q.includes("शाकाहारी") ||
-      q.includes("shakahari") ||
-      q.includes("নিরামিষ") ||
-      q.includes("niramish") ||
-      q.includes("paneer") ||
-      q.includes("panir") ||
-      q.includes("dal") ||
-      q.includes("thali") ||
-      q.includes("jain") ||
-      q.includes("halal") ||
-      q.includes("no onion") ||
-      q.includes("no garlic") ||
-      q.includes("sattvic") ||
-      q.includes("vegan")
-    ) {
-      let replyText = "";
-      if (lang.code === "hi") {
-        replyText =
-          `हुज़ूर, हमारे पास 100% शुद्ध शाकाहारी और जैन सर्टिफ़ाइड किचन मौजूद हैं। अलग बर्तन, बिना प्याज़-लहसुन के विकल्प और हरे रंग की सुरक्षा टेप से सील किए गए डिब्बे आपको 100% पवित्रता का भरोसा दिलाते हैं। ${selectedPersona.encouragement}`;
-      } else if (lang.code === "bn") {
-        replyText =
-          `মহারাজ, আমাদের খাঁটি নিরামিষ ও জৈন সার্টিফাইড রান্নাঘর রয়েছে। সম্পূর্ণ আলাদা রান্নার পাত্র, হালাল সার্টিফিকেশন এবং সবুজ রঙের সিকিউরিটি সিল নিশ্চিত করে ১০০% বিশুদ্ধতা। ${selectedPersona.encouragement}`;
-      } else {
-        replyText =
-          `We have dedicated 100% Pure Vegetarian, Jain, and Halal-certified partner kitchens. Prepared with completely segregated cookware, optional no-onion/no-garlic preparations, and green tamper-proof security seals ensuring zero cross-contamination! ${selectedPersona.encouragement}`;
-      }
-      return {
-        text: replyText,
-        action: { type: "SEARCH_VEG", label: "🥗 Show Pure Veg & Certified Dishes" },
-      };
-    }
-
-    // 7. Discounts / Offers / Coupons / 0% Markup vs Zomato & Swiggy
-    if (
-      q.includes("discount") ||
-      q.includes("offer") ||
-      q.includes("coupon") ||
-      q.includes("markup") ||
-      q.includes("sasta") ||
-      q.includes("sosta") ||
-      q.includes("kam daam") ||
-      q.includes("bachat") ||
-      q.includes("save") ||
-      q.includes("swiggy") ||
-      q.includes("zomato") ||
-      q.includes("price") ||
-      q.includes("कूपन") ||
-      q.includes("অফার")
-    ) {
-      let replyText = "";
-      if (lang.code === "hi") {
-        replyText =
-          `हुज़ूर, ज़ोमैटो और स्विगी रेस्टोरेंट की कीमतों पर 30% तक अतिरिक्त मार्कअप लगाते हैं। आर्डरकिंग पर सभी मेन्यू 0% मार्कअप पर हैं—यानी जो रेट रेस्टोरेंट के मेन्यू कार्ड पर है, वही रेट आपको यहाँ मिलता है! आप प्रति आर्डर ₹150–₹350 बचाते हैं। साथ ही कूपन कोड 'KINGVIP' से फ़्री डिलीवरी और हर आर्डर पर 24K डिजिटल गोल्ड कैशबैक मिलता है! ${selectedPersona.encouragement}`;
-      } else if (lang.code === "bn") {
-        replyText =
-          `মহারাজ, সুইগি বা জোম্যাটোর মতো দাম ৩০% বাড়িয়ে নেওয়া হয় না। অর্ডারকিং-এ ০% মেনু মার্কআপ গ্যারান্টি—রেস্তোরাঁর আসল মেনু কার্ডের দামেই খাবার পাবেন! আপনি প্রতি অর্ডারে ₹১৫০–₹৩৫০ সাশ্রয় করবেন। কুপন 'KINGVIP' দিয়ে ফ্রি ডেলিভারি ও ২৪K গোল্ড ক্যাশব্যাক উপভোগ করুন। ${selectedPersona.encouragement}`;
-      } else {
-        replyText =
-          `Unlike other apps that inflate prices by up to 30%, OrderKing guarantees 0% menu markup—you pay exact offline restaurant dine-in prices! You save ₹150–₹350 on every single meal. Use code 'KINGVIP' for Free Delivery and code 'ROYAL50' for 50% off on your first feasts, plus 24K digital gold cashback on every dish! ${selectedPersona.encouragement}`;
-      }
-      return {
-        text: replyText,
-        action: { type: "VIEW_OFFERS", label: "🎁 View All Live Coupons & Gold Deals" },
-      };
-    }
-
-    // 8. Rider Misconduct / Cash Demands / Unprofessional Behavior
-    if (
-      q.includes("delivery boy") ||
-      q.includes("badtameez") ||
-      q.includes("rude") ||
-      q.includes("tip") ||
-      q.includes("bakhsheesh") ||
-      q.includes("extra money") ||
-      q.includes("misbehave") ||
-      q.includes("shout") ||
-      q.includes("jhamela") ||
-      q.includes("chanda")
-    ) {
-      let replyText = "";
-      if (lang.code === "hi") {
-        replyText =
-          `हुज़ूर, आर्डरकिंग में डिलीवरी पार्टनर द्वारा कैश टिप माँगना या अनुचित व्यवहार करना सख्त वर्जित है। मैंने इस राइडर को आपके अकाउंट से हमेशा के लिए अनअसाइन कर दिया है और सिटी ऑपरेशंस को अनुशासनात्मक कार्रवाई के लिए रिपोर्ट #HD-SAFETY-RIDER भेज दी है। हमें इस असुविधा के लिए बेहद खेद है। ${selectedPersona.encouragement}`;
-      } else if (lang.code === "bn") {
-        replyText =
-          `মহারাজ, ডেলিভারি রাইডারের কাছ থেকে কোনো রকম খারাপ ব্যবহার বা অতিরিক্ত বকশিশ দাবি করা সম্পূর্ণ নিষিদ্ধ। আমি এই রাইডারকে অবিলম্বে সরিয়ে দিয়েছি এবং শাস্তিমূলক পদক্ষেপের জন্য রিপোর্ট #HD-SAFETY-RIDER পাঠিয়েছি। ${selectedPersona.encouragement}`;
-      } else {
-        replyText =
-          `OrderKing maintains a strict zero-tolerance policy against unprofessional rider behavior or demands for cash tips. All our delivery partners are fairly compensated above industry benchmarks. I have immediately unassigned this rider from your current and future deliveries, and escalated incident report #HD-SAFETY-RIDER to city operations for urgent disciplinary action. We sincerely apologize! ${selectedPersona.encouragement}`;
-      }
-      return {
-        text: replyText,
-        action: { type: "SUBMIT_DISPUTE_CONSENT", label: "⚠️ Escalate to Founder Deck" },
-      };
-    }
-
-    // 9. KingPay / Wallet / Bill / Challan switch query
-    if (
-      q.includes("kingpay") ||
-      q.includes("pay") ||
-      q.includes("wallet") ||
-      q.includes("upi") ||
-      q.includes("bill") ||
-      q.includes("challan") ||
-      q.includes("fastag") ||
-      q.includes("टাকা") ||
-      q.includes("वॉलेट")
-    ) {
-      return {
-        text: `Looking for 1-Tap Zero-Fee UPI payments, custom QR with gifting notes, vehicle police challans, or electricity bills? You can switch directly to King Pay below! ${selectedPersona.encouragement}`,
-        action: { type: "OPEN_KINGPAY", label: "👑 Open King Pay" },
-      };
-    }
-
-    // 10. Ungrounded / General Business Ambitions (Safety/Reality Check)
-    if (
-      q.includes("money") ||
-      q.includes("business") ||
-      q.includes("clients") ||
-      q.includes("sell") ||
-      q.includes("app") ||
-      q.includes("website") ||
-      q.includes("work") ||
-      q.includes("income") ||
-      q.includes("forcefully") ||
-      q.includes("real money")
-    ) {
-      return {
-        text: `I truly admire your incredible drive and ambition to build a massive business and generate real income! I am an ultra-advanced AI operating at the highest technological capacity in the world. I am actively analyzing all nodes of the OrderKing platform across India to ensure maximum scalability and performance. ${selectedPersona.encouragement}`,
-        action: { type: "VIEW_OFFERS", label: "👑 View Founder Command Operations" },
-      };
-    }
-
-    // 11. Empathetic Fuzzy Fallback for Unclear / Mumbled Speech or Ambient Noise
-    if (q.length < 4 || q.split(" ").length > 15) {
-      return {
-        text: `I heard you clearly! Even if your surroundings were noisy, I am right here by your side. Would you like me to find today's hot Royal Dum Biryani, filter 100% Pure Vegetarian meals, track your live delivery, or resolve any order issue? ${selectedPersona.encouragement}`,
-        action: { type: "SEARCH_BIRYANI", label: "🍗 Explore Royal Biryanis" },
-      };
-    }
-
-    // Default polite and motivating food assistance
-    return {
-      text: `I have carefully noted: "${query}". While I am highly capable within the OrderKing platform, my expertise is purely in food delivery, dispute resolution, and UI assistance! I can instantly find authentic Royal Biryani, explore 100% Pure Veg kitchens, track your live delivery rider with GPS, or claim instant resolution for any delay. I am your loyal digital assistant! ${selectedPersona.encouragement}`,
-    };
-  };
-
-  const handleSendMessage = (textToSend?: string, isVoice: boolean = false) => {
+  const handleSendMessage = async (textToSend?: string, isVoice: boolean = false) => {
     const text = (textToSend || inputText).trim();
     if (!text && attachedFiles.length === 0) return;
 
-    // Automatic Language Detection (Zero manual selection required)
     const detectedLangCode = detectLanguage(text, userGeoLang || "en");
     const matchedLang =
       FOOD_SUPPORTED_LANGUAGES.find((l) => l.code === detectedLangCode) || selectedLang;
@@ -997,93 +670,112 @@ export function FoodAiConcierge({
     }
 
     const firstImage = attachedFiles.find((f) => f.type === "image")?.dataUrl;
+    const attachments = attachedFiles.map((f) => ({
+      name: f.name,
+      type: f.type,
+      content: f.type === "document" ? f.dataUrl : "",
+      size: f.sizeBytes,
+    }));
+
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
       sender: "user",
-      text: text || (attachedFiles.length > 0 ? `Attached ${attachedFiles.length} file(s): ${attachedFiles.map((f) => f.name).join(", ")}` : ""),
+      text:
+        text ||
+        (attachedFiles.length > 0
+          ? `Attached ${attachedFiles.length} file(s): ${attachedFiles.map((f) => f.name).join(", ")}`
+          : ""),
       imageUrl: firstImage,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
 
-    const hasFiles = attachedFiles.length > 0;
     setMessages((prev) => [...prev, userMsg]);
     setInputText("");
     setAttachedFiles([]);
 
-    if (hasFiles) {
-      setTimeout(() => {
-        const aiMsg: ChatMessage = {
-          id: `ai-${Date.now()}`,
-          sender: "ai",
-          text: "I have verified your attached evidence. Your ticket is registered securely on the HD Master Founder Review Desk for manual approval and priority resolution.",
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          consentRequired: true,
-          actionPayload: {
-            type: "SUBMIT_DISPUTE_CONSENT",
-            label: "⚡ Confirm Consent & Route to Founder Desk",
-          },
-        };
-        setMessages((prev) => [...prev, aiMsg]);
-        if (isVoice || callModeRef.current) {
-          speakResponse(aiMsg.text, matchedLang.voiceLang);
-        }
-      }, 300);
-      return;
-    }
-
-    // Graceful Fallback if language/speech is unreadable or unsupported
-    if (isUnreadableOrUnsupported(text)) {
-      const geoLangObj =
-        FOOD_SUPPORTED_LANGUAGES.find((l) => l.code === userGeoLang) || FOOD_SUPPORTED_LANGUAGES[0]!;
-      const fallbackText = `I am your OrderKing Food Assistant! How can I assist you with your feast, biryani, or order tracking today?`;
+    if (isUnreadableOrUnsupported(text) && attachments.length === 0) {
+      const fallbackText = "I couldn't reliably understand that. Please say it again or type your request.";
       const aiMsg: ChatMessage = {
         id: `ai-${Date.now()}`,
         sender: "ai",
         text: fallbackText,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        actionPayload: {
-          type: "SEARCH_BIRYANI",
-          label: "🍗 Explore Royal Dum Biryani",
-        },
       };
       setMessages((prev) => [...prev, aiMsg]);
-      if (isVoice || callModeRef.current) {
-        speakResponse(fallbackText, matchedLang.voiceLang);
-      }
+      if (isVoice || callModeRef.current) speakResponse(fallbackText, matchedLang.voiceLang);
       return;
     }
 
-    // When triggered by voice, execute immediately to preserve browser audio activation
-    const { text: replyText, action } = generateFoodAiReply(text, matchedLang);
-    const aiMsg: ChatMessage = {
-      id: `ai-${Date.now()}`,
-      sender: "ai",
-      text: replyText,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      actionPayload: action,
-    };
+    try {
+      const response = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "user",
+              content:
+                text ||
+                `Please review the attached evidence and tell me what verified next step I should take. Attachments: ${attachments
+                  .map((a) => a.name)
+                  .join(", ")}`,
+              attachments,
+            },
+          ],
+          mode: "fast",
+        }),
+      });
 
-    if (isVoice || callModeRef.current) {
+      const data = (await response.json()) as {
+        text?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !data.text) {
+        throw new Error(data.error || "OrderKing AI could not return a verified response.");
+      }
+
+      const aiMsg: ChatMessage = {
+        id: `ai-${Date.now()}`,
+        sender: "ai",
+        text: data.text,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+
       setMessages((prev) => [...prev, aiMsg]);
-      speakResponse(replyText, matchedLang.voiceLang);
-    } else {
-      setTimeout(() => {
-        setMessages((prev) => [...prev, aiMsg]);
-        // Strictly NO auto-speaking on keyboard text input
-      }, 200);
+      if (isVoice || callModeRef.current) {
+        speakResponse(data.text, matchedLang.voiceLang);
+      }
+    } catch (err) {
+      const failureText =
+        err instanceof Error
+          ? err.message
+          : "OrderKing AI is temporarily unavailable. No simulated answer was shown.";
+      const aiMsg: ChatMessage = {
+        id: `ai-${Date.now()}`,
+        sender: "ai",
+        text: failureText,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+      setMessages((prev) => [...prev, aiMsg]);
+      if (isVoice || callModeRef.current) speakResponse(failureText, matchedLang.voiceLang);
     }
   };
 
   const handleActionClick = (action: NonNullable<ChatMessage["actionPayload"]>) => {
     if (action.type === "SUBMIT_DISPUTE_CONSENT") {
       setConsentGiven(true);
-      toast.success("Ticket and evidence authorized for Founder Sovereign Review!");
+      toast.info("Open the related order to submit a verified support case.");
       setMessages((prev) => [
         ...prev,
         {
           id: `ai-${Date.now()}`,
           sender: "ai",
-          text: "✅ Consent received. Your dispute has been submitted to Founder Review & restaurant partner under IT Act intermediary safe harbor terms.",
+          text: "Your consent was recorded locally. To submit an actual dispute, open the related order and use its verified support flow; no ticket is claimed here.",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -1150,9 +842,7 @@ export function FoodAiConcierge({
                     <h3 className="font-display text-base font-black tracking-tight">
                       OrderKing AI Food Concierge
                     </h3>
-                    <span className="rounded-full bg-amber-400 px-2 py-0.2 text-[9px] font-black text-black">
-                      0% Markup
-                    </span>
+                    <span className="rounded-full bg-amber-400 px-2 py-0.2 text-[9px] font-black text-black">Verified pricing</span>
                   </div>
                   <p className="text-xs text-emerald-200">
                     Voice &amp; Text in 12 Indian Languages
@@ -1243,7 +933,7 @@ export function FoodAiConcierge({
                 <span className="text-[10px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
                   <span>⚡</span> 1-Tap Quick Feasts (No typing needed)
                 </span>
-                <span className="text-[9px] font-semibold text-muted">0% Menu Markup</span>
+                <span className="text-[9px] font-semibold text-muted">Live price &amp; offer check</span>
               </div>
               <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
                 <button
