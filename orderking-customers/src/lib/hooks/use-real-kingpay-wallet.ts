@@ -41,5 +41,5 @@ export function useRealKingPayWallet() {
   const walletBalance = data?.balance ?? 0;
   const kingCoins = data?.coins ?? 0;
 
-
+  return { walletBalance, kingCoins };
 }
