@@ -1,6 +1,5 @@
 import { getSql, type Sql } from "./db";
 import { createHash, randomBytes } from "node:crypto";
-import { walletEngine } from "./kingpay/wallet";
 
 /**
  * 👑 ORDERKING ELITE VIRAL GROWTH ENGINE
@@ -100,7 +99,7 @@ export const ViralGrowthEngine = {
       );
 
       if (existingRef.length > 0) {
-        return { success: false, message: "Referral attribution already recorded.", amountCrededited: 0 } as never;
+        return { success: false, message: "Referral attribution already recorded.", amountCredited: 0 };
       }
 
       await tx.query(
