@@ -262,7 +262,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   if (config.smsGateway.apiKey && config.smsGateway.senderId) {
     commScore += 6;
   } else {
-    commWarnings.push("SMS Gateway API key missing. Operating in fallback simulation mode.");
+    commWarnings.push("SMS Gateway API key missing. Real OTP delivery is not configured.");
   }
 
   if (config.smsGateway.dltEntityId && config.smsGateway.dltTemplateIdOtp) {
@@ -275,7 +275,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   if (config.maps.apiKey) {
     commScore += 6;
   } else {
-    commWarnings.push("Google Maps API key missing. Using Haversine 1.35x distance matrix fallback.");
+    commWarnings.push("Maps API key missing. External geocoding/directions telemetry is not configured.");
   }
 
   if (config.maps.roadWindingFactor >= 1.2 && config.maps.roadWindingFactor <= 1.5) {
@@ -401,47 +401,89 @@ export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ o
   if (!validatePostgresUrl(config.connectionString)) {
     return { ok: false, message: "Malformed PostgreSQL connection string.", latencyMs: 0 };
   }
-  // Simulated handshake or connection pool ping
-  const latencyMs = Math.floor(Math.random() * 25) + 15;
-  return {
-    ok: true,
-    message: `Connected successfully to ${config.provider} (${config.sslMode} SSL, PgBouncer pool active).`,
-    latencyMs,
-  };
+  try {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await sql`select 1 as ok`;
+    return {
+      ok: true,
+      message: `Live PostgreSQL query succeeded (${config.provider}, ${config.sslMode} SSL).`,
+      latencyMs: Date.now() - start,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: `Live PostgreSQL probe failed: ${error instanceof Error ? error.message.slice(0, 180) : "unknown error"}`,
+      latencyMs: Date.now() - start,
+    };
+  }
 }
 
 export async function testPgConnection(config: PaymentGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
+  const start = Date.now();
   if (!config.apiKey || !config.secretKey) {
-    return { ok: false, message: "Missing API Key or Secret Key.", latencyMs: 0 };
+    return { ok: false, message: "Payment gateway credentials are not configured.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 40) + 20;
-  return {
-    ok: true,
-    message: `Handshake successful with ${config.provider} in ${config.mode} mode. Webhooks verified.`,
-    latencyMs,
-  };
+  try {
+    const auth = Buffer.from(`${config.apiKey}:${config.secretKey}`).toString("base64");
+    const response = await fetch("https://api.razorpay.com/v1/orders?count=1", {
+      headers: { Authorization: `Basic ${auth}` },
+    });
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: `Payment gateway probe failed (HTTP ${response.status}).`,
+        latencyMs: Date.now() - start,
+      };
+    }
+    return {
+      ok: true,
+      message: `Live Razorpay API probe succeeded in ${config.mode} mode.`,
+      latencyMs: Date.now() - start,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: `Payment gateway probe failed: ${error instanceof Error ? error.message.slice(0, 180) : "unknown error"}`,
+      latencyMs: Date.now() - start,
+    };
+  }
 }
 
 export async function testSmsConnection(config: SmsGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing SMS Gateway API Key. Operating in local simulation.", latencyMs: 0 };
+    return { ok: false, message: "SMS provider API key is not configured.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 30) + 15;
   return {
-    ok: true,
-    message: `SMS Gateway (${config.provider}) active. Sender ID: ${config.senderId}, DLT Entity: ${config.dltEntityId || "Pending"}.`,
-    latencyMs,
+    ok: false,
+    message: `SMS provider ${config.provider} is configured, but no provider-specific health endpoint is implemented in this diagnostic. No simulated success is reported.`,
+    latencyMs: 0,
   };
 }
 
 export async function testMapsConnection(config: MapsConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
+  const start = Date.now();
   if (!config.apiKey) {
-    return { ok: false, message: "Missing Maps API Key. Falling back to offline Haversine matrix.", latencyMs: 0 };
+    return { ok: false, message: "Maps API key is not configured.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 20) + 10;
-  return {
-    ok: true,
-    message: `Maps API (${config.provider}) active. Directions & Geocoding enabled. Winding factor: ${config.roadWindingFactor}x.`,
-    latencyMs,
-  };
+  try {
+    if (config.provider === "MAPBOX") {
+      const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/India.json?limit=1&access_token=${encodeURIComponent(config.apiKey)}`);
+      if (!response.ok) {
+        return { ok: false, message: `Mapbox probe failed (HTTP ${response.status}).`, latencyMs: Date.now() - start };
+      }
+      return { ok: true, message: "Live Mapbox geocoding probe succeeded.", latencyMs: Date.now() - start };
+    }
+    return {
+      ok: false,
+      message: `Maps provider ${config.provider} does not have a probe implemented here. No simulated success is reported.`,
+      latencyMs: Date.now() - start,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: `Maps probe failed: ${error instanceof Error ? error.message.slice(0, 180) : "unknown error"}`,
+      latencyMs: Date.now() - start,
+    };
+  }
 }
