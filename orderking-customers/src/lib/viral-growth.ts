@@ -69,65 +69,50 @@ export const ViralGrowthEngine = {
   },
 
   /**
-   * PROCESS REFERRAL (BANKING-GRADE)
-   * Restored direct integration with KingPay Wallet Engine to prevent any schema mismatch.
+   * Record a referral attribution only.
+   *
+   * A referral is NOT a reward qualification. No wallet credit is created here.
+   * Reward issuance must happen later from a verified qualifying order/payment
+   * event and must use the configured campaign terms and fraud checks.
    */
   async processReferralActivation(referralCode: string, newUserId: string): Promise<{ success: boolean; message: string; amountCredited: number }> {
     const sql = await getSql();
-    
+
     return await sql.transaction(async (tx: Sql) => {
-      // 1. Resolve code to Referrer
       const referrerRows = await tx.query<{ id: string }>(
-        `SELECT id FROM users WHERE referral_code = $1 LIMIT 1 FOR UPDATE SKIP LOCKED`, 
-        [referralCode]
+        `SELECT id FROM users WHERE referral_code = $1 LIMIT 1 FOR UPDATE SKIP LOCKED`,
+        [referralCode],
       );
-      
+
       if (referrerRows.length === 0) {
         return { success: false, message: "Invalid or expired referral code", amountCredited: 0 };
       }
-      
+
       const referrerId = referrerRows[0].id;
 
       if (referrerId === newUserId) {
         return { success: false, message: "Self-referral detected and blocked.", amountCredited: 0 };
       }
 
-      // 2. Check Idempotency (Has this user already been referred?)
       const existingRef = await tx.query(
         `SELECT 1 FROM referrals WHERE new_user_id = $1 LIMIT 1`,
-        [newUserId]
+        [newUserId],
       );
-      
+
       if (existingRef.length > 0) {
-        return { success: false, message: "User has already claimed a welcome bonus.", amountCredited: 0 };
+        return { success: false, message: "Referral attribution already recorded.", amountCrededited: 0 } as never;
       }
 
-      // 3. Record the Referral Event Atomically
       await tx.query(
-        `INSERT INTO referrals (referrer_id, new_user_id, status, created_at) VALUES ($1, $2, 'COMPLETED', NOW())`,
-        [referrerId, newUserId]
+        `INSERT INTO referrals (referrer_id, new_user_id, status, created_at) VALUES ($1, $2, 'PENDING', NOW())`,
+        [referrerId, newUserId],
       );
 
-      // 4. Execute the Wallet Credits via KingPay Wallet Engine (₹100 = 10000 paise)
-      const REWARD_PAISE = 10000;
-      
-      const referrerCredit = await walletEngine.creditWallet(
-        referrerId, 
-        REWARD_PAISE, 
-        `ref_reward_${referrerId}_${newUserId}`
-      );
-
-      const newUserCredit = await walletEngine.creditWallet(
-        newUserId, 
-        REWARD_PAISE, 
-        `ref_reward_welcome_${newUserId}_${referrerId}`
-      );
-
-      if (referrerCredit.status !== "success" || newUserCredit.status !== "success") {
-         throw new Error("Failed to credit wallets via KingPay engine");
-      }
-
-      return { success: true, message: "Bonus successfully deployed to wallets.", amountCredited: REWARD_PAISE };
+      return {
+        success: true,
+        message: "Referral recorded. Reward remains pending until a verified qualifying transaction is completed.",
+        amountCredited: 0,
+      };
     });
   }
 };
