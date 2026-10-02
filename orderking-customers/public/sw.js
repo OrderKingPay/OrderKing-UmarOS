@@ -50,40 +50,27 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-async function networkFirst(request, cacheKey) {
-  try {
-    const response = await fetch(request);
-    if (response.ok && request.method === "GET") {
-      const cache = await caches.open(CACHE_NAME);
-      await cache.put(cacheKey, response.clone());
-    }
-    return response;
-  } catch {
-    const cached = await caches.match(cacheKey);
-    if (cached) return cached;
-    throw new Error("NETWORK_UNAVAILABLE");
-  }
-}
-
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Financial/order mutations MUST reach a real server. Never return a fake
-  // "success" response while offline.
+  // Financial/order/account mutations MUST reach a real server.
+  // No offline response is synthesized for a write operation.
   if (request.method !== "GET" && url.pathname.startsWith("/api/")) {
     return;
   }
 
+  // Authenticated API responses are deliberately not cached by the service worker.
+  // Cache keys cannot safely distinguish logged-in users across sessions on the same device.
   if (url.pathname.startsWith("/api/") && request.method === "GET") {
     event.respondWith(
-      networkFirst(request, "api:" + url.pathname + url.search).catch(
+      fetch(request).catch(
         () =>
           new Response(
             JSON.stringify({
               ok: false,
               code: "NETWORK_UNAVAILABLE",
-              message: "Network unavailable. Showing only previously cached information where available.",
+              message: "Network unavailable. Reconnect to refresh account, order, payment, or delivery data.",
             }),
             {
               status: 503,
