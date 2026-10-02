@@ -16,12 +16,14 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { getPublicConfigFn } from "@/lib/server/rider-fns";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, isPending } = useCurrentUserState();
   const { t } = useI18n();
   const [online, setOnline] = useState(true);
   const [geoOk, setGeoOk] = useState(true);
+  const [dataMode, setDataMode] = useState<"SIMULATED" | "LIVE" | null>(null);
   const path = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
@@ -34,6 +36,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       window.removeEventListener("online", on);
       window.removeEventListener("offline", off);
     };
+  }, []);
+
+  useEffect(() => {
+    void getPublicConfigFn()
+      .then((config) => setDataMode(config.dataMode))
+      .catch(() => setDataMode(null));
   }, []);
 
   useEffect(() => {
@@ -67,9 +75,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-bg text-fg">
-      <div className="bg-sim px-4 py-2 text-center text-xs font-medium tracking-wide text-primary-foreground">
-        {t("simulatedBanner")}
-      </div>
+      {dataMode === "SIMULATED" ? (
+        <div className="bg-sim px-4 py-2 text-center text-xs font-medium tracking-wide text-primary-foreground">
+          {t("simulatedBanner")}
+        </div>
+      ) : null}
       {!online ? (
         <div className="bg-offline px-4 py-2 text-center text-sm text-primary-foreground">
           {t("connectionLost")} — {t("connectionLostBody")}
@@ -89,7 +99,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </Link>
         <div className="flex items-center gap-2">
-          <Badge tone="sim">{t("simulated")}</Badge>
+          {dataMode === "SIMULATED" ? <Badge tone="sim">{t("simulated")}</Badge> : null}
           <Link to="/support" className="grid size-11 place-items-center rounded-md hover:bg-muted" aria-label={t("support")}>
             <CircleHelp className="size-5" />
           </Link>
