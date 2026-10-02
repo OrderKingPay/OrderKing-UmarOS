@@ -3,60 +3,37 @@ import assert from "node:assert/strict";
 import { orderKingSpark } from "./order-king-spark.ts";
 
 describe("Order King Spark - Partner AI Assistant", () => {
-  test("initializes default live menu items and categories", () => {
-    const items = orderKingSpark.getMenuItems();
-    assert.ok(items.length >= 4);
-
-    const categories = items.map((i) => i.category);
-    assert.ok(categories.includes("Biryani & Rice"));
-    assert.ok(categories.includes("Curries"));
-    assert.ok(categories.includes("Breads"));
-    assert.ok(categories.includes("Desserts"));
+  test("starts without fabricated restaurant data", () => {
+    assert.deepEqual(orderKingSpark.getMenuItems(), []);
+    assert.deepEqual(orderKingSpark.getActiveAnomalies(), []);
   });
 
-  test("toggles item availability instantly for stockout management", () => {
-    // dessert starts as unavailable (false)
-    const initial = orderKingSpark.getMenuItems().find((i) => i.id === "item-dessert-04");
-    assert.equal(initial?.isAvailable, false);
-
-    // Toggle to available
-    const res1 = orderKingSpark.toggleItemAvailability("item-dessert-04");
-    assert.equal(res1.success, true);
-    assert.equal(res1.item?.isAvailable, true);
-
-    // Toggle back to unavailable
-    const res2 = orderKingSpark.toggleItemAvailability("item-dessert-04");
-    assert.equal(res2.success, true);
-    assert.equal(res2.item?.isAvailable, false);
+  test("does not claim client-only menu mutations are persisted", () => {
+    assert.equal(orderKingSpark.toggleItemAvailability("item-1").success, false);
+    assert.equal(orderKingSpark.updateItemPrice("item-1", 7000).success, false);
   });
 
-  test("updates menu item pricing with positive amounts", () => {
-    const res = orderKingSpark.updateItemPrice("item-roti-03", 6500); // ₹65
-    assert.equal(res.success, true);
-    assert.equal(res.item?.pricePaise, 6500);
-
-    // Invalid negative price rejected
-    const invalid = orderKingSpark.updateItemPrice("item-roti-03", -100);
-    assert.equal(invalid.success, false);
+  test("accepts explicitly authorized menu and anomaly snapshots", () => {
+    orderKingSpark.loadAuthorizedData({
+      menuItems: [{
+        id: "real-1",
+        name: "Verified item",
+        category: "Verified category",
+        pricePaise: 6500,
+        isAvailable: true,
+        preparationMinutes: 15,
+        totalOrdersToday: 0,
+      }],
+      activeAnomalies: [],
+    });
+    assert.equal(orderKingSpark.getMenuItems()[0]?.name, "Verified item");
   });
 
-  test("retrieves proactive kitchen anomaly signals", () => {
-    const anomalies = orderKingSpark.getActiveAnomalies();
-    assert.ok(anomalies.length >= 2);
-
-    const types = anomalies.map((a) => a.type);
-    assert.ok(types.includes("PREP_DELAY"));
-    assert.ok(types.includes("SALES_DECLINE"));
-  });
-
-  test("calculates 0% platform commission settlement with Swiggy/Zomato avoided loss", () => {
+  test("does not fabricate settlement figures", () => {
     const summary = orderKingSpark.getSettlementSummary();
-
-    assert.equal(summary.commissionPaidPaise, 0); // 0% commission!
-    assert.ok(summary.grossSalesPaise > 0);
-    assert.equal(summary.netSettlementPaise, summary.grossSalesPaise);
-    assert.equal(summary.swiggyZomatoLossAvoidedPaise, Math.round(summary.grossSalesPaise * 0.24));
-    assert.equal(summary.status, "SETTLED");
+    assert.equal(summary.status, "PENDING_BANK");
+    assert.equal(summary.grossSalesPaise, 0);
+    assert.equal(summary.netSettlementPaise, 0);
   });
 
   test("handles natural language queries with context-aware action cards", () => {
