@@ -3,7 +3,7 @@
  *
  * Safe offline-first behavior:
  * - Cache the application shell/static assets for fast repeat loads.
- * - Cache successful GET API responses for read-only degraded viewing.
+ * - Keep authenticated API responses network-only to prevent cross-account cache leakage.
  * - Never manufacture an accepted/paid/placed response for an offline mutation.
  *
  * A food order, payment, refund, wallet transfer, or other financial mutation
