@@ -10,7 +10,6 @@ import { useBrand, useT } from "@/components/providers";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
-  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const { t } = useT();
   const { brand } = useBrand();
   const [mode, setMode] = useState<"in" | "up">("in");
@@ -43,7 +42,7 @@ function Login() {
       <Wordmark />
       <h1 className="mt-8 font-display text-3xl">{t("auth.title", { name: brand.appName })}</h1>
       <p className="mt-2 text-sm text-muted">{t("auth.subtitle")}</p>
-      {authEnabled && !isVercel ? (
+      {authEnabled ? (
         <div className="mt-6 space-y-3">
           {/* Viral Growth Hooks: WhatsApp OTP & Truecaller One-Tap */}
           <div className="space-y-3 pb-3">
@@ -105,9 +104,9 @@ function Login() {
               {mode === "up" ? t("auth.switchToSignIn") : t("auth.switchToSignUp")}
             </button>
           </div>
-          <div className="rounded-[var(--radius-lg)] bg-surface p-3 text-sm text-muted">
-            <p className="font-medium text-fg">{t("auth.phoneSoon")}</p>
-            <p>{t("auth.phoneSoonHint")}</p>
+          <div className="rounded-[var(--radius-lg)] border border-border bg-surface p-3 text-sm text-muted">
+            <p className="font-medium text-fg">Secure account access</p>
+            <p className="mt-1">Use the verified email flow above. WhatsApp OTP, Truecaller and passkeys will only appear after their real provider/server integration is configured and tested.</p>
           </div>
         </div>
       ) : (
