@@ -117,7 +117,7 @@ export function BusinessOsCommandCenterModal({
                 </h3>
               </div>
               <p className="text-xs text-slate-400">
-                Live multi-model orchestration · Lawful revenue discovery · Strict approval gates · Zero fabrication
+                OpenAI-controlled execution · Verified telemetry · Strict approval gates · No fabricated production data
               </p>
             </div>
           </div>
@@ -125,7 +125,7 @@ export function BusinessOsCommandCenterModal({
           <div className="flex items-center gap-2">
             <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px] font-mono hidden sm:flex items-center gap-1">
               <ShieldCheck className="size-3.5" />
-              <span>Budget: ₹{budgetStatus.accumulatedSpendInr} / ₹{budgetStatus.monthlyBudgetCapInr}</span>
+              <span>{budgetStatus.costStatus === "UNVERIFIED_UNTIL_PROVIDER_PRICING_IS_CONFIGURED" ? "AI cost: unverified" : `Budget: ₹${budgetStatus.accumulatedSpendInr} / ₹${budgetStatus.monthlyBudgetCapInr}`}</span>
             </Badge>
             <Button
               variant="ghost"
@@ -316,10 +316,10 @@ export function BusinessOsCommandCenterModal({
                     <span>Finance Intelligence</span>
                   </span>
                   <div className="text-lg font-black text-white font-mono">
-                    ₹{pnl.netFounderProfitInr.toLocaleString("en-IN")}
+                    {pnl.dataStatus === "MEASURED" ? `₹${pnl.netFounderProfitInr.toLocaleString("en-IN")}` : "Not measured"}
                   </div>
                   <span className="text-[11px] text-slate-400 block">
-                    Net Founder Profit · {pnl.cashRunwayMonths}m Runway
+                    {pnl.dataStatus === "MEASURED" ? `Net Founder Profit · ${pnl.cashRunwayMonths ?? "—"}m Runway` : "Canonical finance telemetry required"}
                   </span>
                 </div>
 
@@ -329,10 +329,12 @@ export function BusinessOsCommandCenterModal({
                     <span>Sales Pipeline</span>
                   </span>
                   <div className="text-lg font-black text-white font-mono">
-                    {leads.length} Real Outlets
+                    {leads.length ? `${leads.length} Verified Leads` : "No verified leads"}
                   </div>
                   <span className="text-[11px] text-slate-400 block">
-                    ₹{(leads.reduce((s, l) => s + l.annualAggregatorLossInr, 0) / 100000).toFixed(1)}L Annual Losses
+                    {leads.length
+                      ? `Verified current data only; no savings estimate without contract evidence.`
+                      : "Load verified merchant CRM/provider data to activate this module."}
                   </span>
                 </div>
 
@@ -342,10 +344,10 @@ export function BusinessOsCommandCenterModal({
                     <span>Minimal Staff &amp; Ops</span>
                   </span>
                   <div className="text-lg font-black text-white font-mono">
-                    {roster.totalHumanStaff} Staff · {roster.automatedSubsystemsCount} Bots
+                    {roster.dataStatus === "MEASURED" ? `${roster.totalHumanStaff} Staff · ${roster.automatedSubsystemsCount} Bots` : "Not measured"}
                   </div>
                   <span className="text-[11px] text-slate-400 block">
-                    ₹{(roster.monthlyPayrollSavingsInr / 1000).toFixed(0)}k/mo Headcount Saved
+                    {roster.dataStatus === "MEASURED" ? `Verified payroll telemetry` : "Employee records and payroll telemetry required"}
                   </span>
                 </div>
               </div>
@@ -362,7 +364,9 @@ export function BusinessOsCommandCenterModal({
                     <DollarSign className="size-4 text-emerald-400" />
                     <span>Finance &amp; Cash Flow Intelligence</span>
                   </span>
-                  <Badge className="bg-emerald-500/20 text-emerald-300 text-[9px] font-mono">LIVE P&amp;L</Badge>
+                  <Badge className={pnl.dataStatus === "MEASURED" ? "bg-emerald-500/20 text-emerald-300 text-[9px] font-mono" : "bg-amber-500/20 text-amber-300 text-[9px] font-mono"}>
+                    {pnl.dataStatus === "MEASURED" ? "LIVE P&L" : "DATA REQUIRED"}
+                  </Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-2 rounded-lg bg-black/30">
