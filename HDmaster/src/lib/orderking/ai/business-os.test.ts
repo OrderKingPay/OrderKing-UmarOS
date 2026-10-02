@@ -107,51 +107,36 @@ test('Business OS - Founder Approval Gates & Audit Chain', async () => {
   }
 });
 
-test('Business OS - Domain Business Intelligence Modules', async () => {
-  // 1. Finance Module
+test('Business OS - Domain Business Intelligence Modules are evidence-gated', async () => {
   const pnl = businessOsModules.calculateFinancialPnL();
-  assert.ok(pnl.grossMerchandiseValueInr > 0, 'GMV must be positive');
-  assert.ok(pnl.netRevenueInr > 0, 'Platform revenue must be positive');
-  assert.ok(pnl.netFounderProfitInr > 0, 'Founder profit must be positive');
-  assert.ok(pnl.aggregatorSavingsInr > 0, 'Aggregator savings must be positive');
-  assert.ok(pnl.retainedCapitalVaultInr > 0, 'Founder retained vault allocation must be positive');
+  assert.equal(pnl.dataStatus, "LIVE_DATA_REQUIRED");
+  assert.equal(pnl.netFounderProfitInr, 0);
+  assert.equal(pnl.cashRunwayMonths, null);
 
-  // 2. Sales & Lawful Opportunity Discovery Module
   const leads = businessOsModules.discoverLawfulOpportunities();
-  assert.ok(leads.length >= 3, 'Should identify real restaurant candidates');
-  const firstLead = leads[0];
-  assert.ok(firstLead.annualAggregatorLossInr > 0, 'Loss calculation must be positive');
-  assert.ok(firstLead.businessName.length > 0, 'Business name must not be empty');
+  assert.deepEqual(leads, []);
 
-  // 3. Marketing Module
-  const campaign = businessOsModules.generateGrowthCampaign(firstLead);
-  assert.ok(campaign.campaignTitle.includes(firstLead.businessName), 'Campaign title must mention business');
-  assert.ok(campaign.pitchScript.includes('OrderKing'), 'Pitch script must reference OrderKing');
-  assert.ok(campaign.pitchScript.includes('0% commission'), 'Pitch must highlight 0% commission');
+  const campaign = businessOsModules.generateGrowthCampaign();
+  assert.equal(campaign.dataStatus, "LIVE_DATA_REQUIRED");
+  assert.equal(campaign.roiEstimateRatio, null);
 
-  // 4. HR & Minimal Human Staff Topology
   const hrTopology = businessOsModules.getMinimalStaffRoster();
-  assert.equal(hrTopology.totalHumanStaff, 3, 'Must maintain minimal 3 human staff');
-  assert.ok(hrTopology.automatedSubsystemsCount >= 20, 'Must have 20+ automated bots');
-  assert.ok(hrTopology.monthlyPayrollSavingsInr > 500000, 'Must save significant payroll');
+  assert.equal(hrTopology.dataStatus, "LIVE_DATA_REQUIRED");
+  assert.equal(hrTopology.totalHumanStaff, 0);
 
-  // 5. Operations Module (Kitchen SLAs)
-  const opsAudit = businessOsModules.auditKitchenSlas();
-  assert.ok(opsAudit.length >= 1, 'Should audit kitchen SLAs');
-  assert.ok(opsAudit.every((o) => o.avgPrepMinutes > 0), 'Prep minutes must be positive');
-  assert.ok(opsAudit.every((o) => o.cancellationRatePct <= 5), 'Cancellation rate must be low');
+  assert.deepEqual(businessOsModules.auditKitchenSlas(), []);
+  assert.deepEqual(businessOsModules.inspectInventoryAlerts(), []);
+  assert.deepEqual(businessOsModules.inspectSreHealth(), []);
 
-  // 6. Procurement & Inventory Module
-  const inventory = businessOsModules.inspectInventoryAlerts();
-  assert.ok(inventory.length >= 2, 'Must have inventory items monitored');
-  assert.ok(inventory.every((i) => i.currentStock >= 0), 'Stock must be non-negative');
+  const forecast = businessOsModules.forecastDemand();
+  assert.equal(forecast.dataStatus, "LIVE_DATA_REQUIRED");
+  assert.deepEqual(forecast.peakHours, []);
 
-  // 7. Deployment & SRE Module
-  const sreHealth = businessOsModules.inspectSreHealth();
-  assert.ok(sreHealth.length >= 3, 'Must monitor at least 3 core services');
-  assert.ok(sreHealth.every((s) => s.status === 'HEALTHY'), 'All services must be healthy');
-  assert.ok(sreHealth.every((s) => s.autoRollbackArmed === true), 'Auto rollback must be armed');
+  const fleet = businessOsModules.analyzeFleetDispatch();
+  assert.equal(fleet.dataStatus, "LIVE_DATA_REQUIRED");
+  assert.equal(fleet.activeRiders, 0);
 });
+
 
 test('Business OS - Autonomous Command Orchestrator (5-Stage Pipeline)', async () => {
   // Execute a single command through the complete 5-stage pipeline
