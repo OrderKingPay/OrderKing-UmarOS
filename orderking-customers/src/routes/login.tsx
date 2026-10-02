@@ -74,7 +74,7 @@ function Login() {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={() => void signIn(p.providerId, { callbackURL: "/" })}
+              onClick={() => void signIn(p.providerId, { callbackURL: "/" }).catch((e) => setError(e instanceof Error ? e.message : t("auth.error")))}
             >
               {p.idp === "google" ? t("auth.google") : t("auth.x")}
             </Button>
