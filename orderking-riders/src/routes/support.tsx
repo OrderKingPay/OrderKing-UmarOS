@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { useCurrentRider } from "@/components/rider/use-current-rider";
 import { createTicketFn, listTicketsFn, riderAiSupportFn } from "@/lib/server/rider-fns";
 import type { TicketTopic } from "@/lib/rider/types";
 import { useEffect, useState, type FormEvent } from "react";
@@ -36,7 +35,6 @@ function Page() {
   const [aiResolution, setAiResolution] = useState<string>("");
   const [aiMessage, setAiMessage] = useState("");
   const [aiPending, setAiPending] = useState(false);
-  const rider = useCurrentRider();
 
   async function load() {
     try {
@@ -208,7 +206,7 @@ function Page() {
                 Share OrderKing with people you choose. Zone, referral, and campaign attribution remain platform-controlled.
               </p>
             </div>
-            <Badge tone="muted">{rider?.profile?.preferredZones?.[0] ?? "Your area"}</Badge>
+            <Badge tone="muted">Your area</Badge>
           </div>
 
           <div className="grid gap-2 sm:grid-cols-2">
