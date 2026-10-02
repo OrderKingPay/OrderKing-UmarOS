@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LanguageSelectorModal, ALL_INDIAN_LANGUAGES, type IndianLanguageOption } from "@/components/common/language-selector-modal";
 import { useT } from "@/components/providers";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 interface KingPayAccountHubProps {
   walletBalance: number;
@@ -34,23 +35,21 @@ interface KingPayAccountHubProps {
 }
 
 export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccountHubProps) {
-  const [displayName, setDisplayName] = useState("Sovereign Patron");
-  const [phone, setPhone] = useState("+91 98765 43210");
-  const [email, setEmail] = useState("patron@orderking.in");
+  const { user } = useCurrentUserState();
+  const [displayName, setDisplayName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [biometricsEnabled, setBiometricsEnabled] = useState(true);
-  const [dailyLimit, setDailyLimit] = useState<number>(50000);
+  const [biometricsEnabled] = useState(false);
+  const [dailyLimit] = useState<number>(50000);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const { lang, setLang } = useT();
   const selectedLanguage = ALL_INDIAN_LANGUAGES.find(l => l.code === lang) || ALL_INDIAN_LANGUAGES[0];
-  const [escrowStatus, setEscrowStatus] = useState<any>(null);
 
   useEffect(() => {
-    fetch("/api/escrow/status")
-      .then(r => r.json())
-      .then(data => setEscrowStatus(data))
-      .catch(() => {});
-  }, []);
+    setDisplayName(user?.displayName ?? "");
+    setEmail(user?.primaryEmail ?? "");
+  }, [user]);
 
   const upiId = "patron@kingpay";
 
@@ -96,10 +95,10 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
                 <h2 className="text-lg font-black text-fg">{displayName}</h2>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold text-emerald-600 dark:text-emerald-300 border border-emerald-500/40">
                   <CheckCircle2 className="size-3" />
-                  Verified Sovereign KYC
+                  {user?.isDevFallback ? "Development fallback account" : "Signed-in account"}
                 </span>
               </div>
-              <p className="text-xs text-muted mt-0.5">{phone} · {email}</p>
+              <p className="text-xs text-muted mt-0.5">{phone ? phone + " · " : ""}{email || "Email not available"}</p>
               <div className="flex items-center gap-2 mt-1.5">
                 <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/30">
                   {upiId}
@@ -177,7 +176,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
           <p className="text-xl font-black text-fg mt-1 font-mono">
             ₹{walletBalance.toLocaleString("en-IN")}.00
           </p>
-          <span className="text-[10px] text-emerald-600 font-bold">● RBI Escrow Protected</span>
+          <span className="text-[10px] text-muted">Source: current account state; escrow protection is not verified here.</span>
         </div>
 
         <div className="rounded-xl border border-border bg-surface p-3.5 shadow-xs">
@@ -186,9 +185,9 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
             <Crown className="size-4 text-amber-500" />
           </div>
           <p className="text-xl font-black text-amber-600 dark:text-amber-400 mt-1 font-mono">
-            4,850 <span className="text-xs font-normal">pts</span>
+            Unavailable
           </p>
-          <span className="text-[10px] text-muted">≈ ₹1,455 Wallet Credit</span>
+          <span className="text-[10px] text-muted">No verified loyalty ledger connected.</span>
         </div>
 
         <div className="col-span-2 sm:col-span-1 rounded-xl border border-border bg-surface p-3.5 shadow-xs">
@@ -203,68 +202,17 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
         </div>
       </div>
 
-      {/* LINKED BANK ACCOUNTS */}
+      {/* VERIFIED BANK CONNECTION STATE */}
       <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Banknote className="size-5 text-primary" />
-            <h3 className="text-sm font-black text-fg">Linked Bank Accounts &amp; UPI</h3>
-          </div>
-          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-            3 Accounts Active
-          </span>
+        <div className="flex items-center gap-2">
+          <Banknote className="size-5 text-primary" />
+          <h3 className="text-sm font-black text-fg">Linked Bank Accounts &amp; UPI</h3>
         </div>
-
-        <div className="space-y-2">
-          {/* Bank 1: HDFC Bank */}
-          <div className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-surface-2/50">
-            <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-blue-600 text-white font-black text-xs">
-                HDFC
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-fg">HDFC Bank ··· 4821</span>
-                  <span className="rounded bg-primary/20 text-primary text-[9px] font-black px-1.5 py-0.2">
-                    Primary
-                  </span>
-                </div>
-                <p className="text-[10px] text-muted">Savings · IFSC: HDFC0001248 · UPI Active</p>
-              </div>
-            </div>
-            <span className="text-xs font-bold text-muted font-mono">₹84,200.00</span>
-          </div>
-
-          {/* Bank 2: State Bank of India */}
-          <div className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-surface-2/50">
-            <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-sky-700 text-white font-black text-xs">
-                SBI
-              </div>
-              <div>
-                <span className="text-xs font-bold text-fg">State Bank of India ··· 9912</span>
-                <p className="text-[10px] text-muted">Savings · IFSC: SBIN0004521 · UPI Active</p>
-              </div>
-            </div>
-            <span className="text-xs font-bold text-muted font-mono">₹21,450.00</span>
-          </div>
-
-          {/* Bank 3: ICICI Bank */}
-          <div className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-surface-2/50">
-            <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-amber-700 text-white font-black text-xs">
-                ICICI
-              </div>
-              <div>
-                <span className="text-xs font-bold text-fg">ICICI Bank ··· 3302</span>
-                <p className="text-[10px] text-muted">Current Account · IFSC: ICIC0000841</p>
-              </div>
-            </div>
-            <span className="text-xs font-bold text-muted font-mono">₹1,12,000.00</span>
-          </div>
+        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-xs text-muted">
+          <p className="font-bold text-fg">No verified bank-account data is connected to this screen.</p>
+          <p className="mt-1">Bank names, masked account numbers and balances are not invented. A regulated account-information or UPI provider integration is required before live account data can be shown.</p>
         </div>
       </div>
-
       {/* SECURITY & BIOMETRICS */}
       <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
         <div className="flex items-center gap-2">
@@ -279,24 +227,10 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
               <Fingerprint className="size-5 text-primary" />
               <div>
                 <span className="text-xs font-bold text-fg block">Biometric Authentication</span>
-                <span className="text-[11px] text-muted">
-                  Use Face ID or Fingerprint for instant payments under ₹2,000
-                </span>
+                <span className="text-[11px] text-muted">Unavailable until a real device credential/payment authentication provider is connected.</span>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={handleToggleBiometrics}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                biometricsEnabled ? "bg-primary" : "bg-muted/40"
-              }`}
-            >
-              <span
-                className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                  biometricsEnabled ? "translate-x-5" : "translate-x-0"
-                }`}
-              />
-            </button>
+            <span className="rounded-full bg-amber-500/10 px-2 py-1 text-[10px] font-bold text-amber-700 dark:text-amber-300">Not connected</span>
           </div>
 
           {/* Daily UPI Limit */}
@@ -347,48 +281,23 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
         </div>
       </div>
 
-      {/* STATUTORY LEGAL & RBI COMPLIANCE */}
+      {/* LEGAL / COMPLIANCE STATUS */}
       <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
         <div className="flex items-center gap-2">
           <Lock className="size-5 text-muted" />
-          <h3 className="text-sm font-black text-fg">Statutory Legal &amp; Compliance Hub</h3>
+          <h3 className="text-sm font-black text-fg">Legal &amp; Compliance Status</h3>
         </div>
-
         <div className="space-y-2 text-xs text-muted">
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-2/40 border border-border/60">
-            <div>
-              <span className="font-bold text-fg block">RBI Escrow Compliance</span>
-              <span className="text-[10px]">
-                {escrowStatus ? `Nodal Account: ${escrowStatus.bank} (${escrowStatus.accountNumber})` : "Checking escrow status..."}
-              </span>
-            </div>
-            <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded ${escrowStatus?.verified ? "text-emerald-600 bg-emerald-500/10" : "text-amber-600 bg-amber-500/10"}`}>
-              {escrowStatus ? escrowStatus.complianceStatus : "Verifying..."}
-            </span>
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
+            <span className="font-bold text-fg block">Escrow / regulated payment status</span>
+            <span className="text-[10px]">Not verified in this account screen. Live regulatory status will appear only after the actual provider integration returns it.</span>
           </div>
-
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-2/40 border border-border/60">
-            <div>
-              <span className="font-bold text-fg block">IT Act Section 79 Protection</span>
-              <span className="text-[10px]">Third-Party Intermediary Safe Harbor Active</span>
-            </div>
-            <span className="text-[10px] text-primary font-extrabold bg-primary/10 px-2 py-0.5 rounded">
-              Statutory Shield
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-2/40 border border-border/60">
-            <div>
-              <span className="font-bold text-fg block">NPCI UPI Guidelines</span>
-              <span className="text-[10px]">256-Bit TLS Encryption &amp; Tokenization</span>
-            </div>
-            <span className="text-[10px] text-amber-600 font-extrabold bg-amber-500/10 px-2 py-0.5 rounded">
-              Secured
-            </span>
+          <div className="rounded-xl border border-border/60 bg-surface-2/40 p-3">
+            <span className="font-bold text-fg block">OrderKing legal documents</span>
+            <span className="text-[10px]">Use the current OrderKing Terms, Privacy and Refund policies for OrderKing-specific obligations. OrderKing is not a government authority.</span>
           </div>
         </div>
       </div>
-
       {/* CLEAN LANGUAGE SELECTOR MODAL */}
       <LanguageSelectorModal
         isOpen={showLanguageModal}

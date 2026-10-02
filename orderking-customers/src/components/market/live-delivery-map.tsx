@@ -1,5 +1,3 @@
-
-import { useState, useEffect } from "react";
 import { formatPaise } from "@/lib/money";
 
 export type LiveDeliveryMapProps = {
@@ -20,76 +18,102 @@ export type LiveDeliveryMapProps = {
 export function LiveDeliveryMap({
   status,
   restaurantName,
+  restaurantLat,
+  restaurantLng,
+  deliveryLat,
+  deliveryLng,
   riderName = "Delivery Partner",
   riderVehicle = "Motorcycle",
-  deliveryAddress = "Customer Location",
   riderProgressOverride,
   etaOverride,
 }: LiveDeliveryMapProps) {
-  const [riderProgress, setRiderProgress] = useState(0.35);
-
   const isActiveDelivery = ["RIDER_ASSIGNED", "PICKED_UP", "ON_THE_WAY"].includes(status);
   const isDelivered = status === "DELIVERED";
 
-  // Simulate smooth GPS heartbeat movement along route
-  useEffect(() => {
-    if (!isActiveDelivery || riderProgressOverride !== undefined) return;
-    const interval = setInterval(() => {
-      setRiderProgress((prev) => (prev >= 0.95 ? 0.95 : prev + 0.05));
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [isActiveDelivery, riderProgressOverride]);
+  const hasVerifiedCoordinates =
+    typeof restaurantLat === "number" &&
+    typeof restaurantLng === "number" &&
+    typeof deliveryLat === "number" &&
+    typeof deliveryLng === "number";
 
-  const currentProgress = riderProgressOverride !== undefined ? Math.min(0.95, riderProgressOverride) : riderProgress;
+  const hasVerifiedProgress = typeof riderProgressOverride === "number";
+  const currentProgress = hasVerifiedProgress
+    ? Math.min(0.95, Math.max(0, riderProgressOverride))
+    : null;
 
   if (!isActiveDelivery && !isDelivered) {
     return null;
   }
 
-  // Estimated arrival based on status & progress
-  const etaMinutes = isDelivered ? 0 : (etaOverride ?? Math.max(2, Math.round((1 - currentProgress) * 22)));
+  const etaMinutes = isDelivered ? 0 : etaOverride ?? null;
+  const showLivePosition = !isDelivered && hasVerifiedCoordinates && currentProgress !== null;
 
   return (
     <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border border-primary/20 bg-surface shadow-sm">
-      {/* Live Map Header */}
       <div className="flex items-center justify-between border-b border-border bg-primary/5 px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="relative flex h-3 w-3">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75"></span>
-            <span className="relative inline-flex h-3 w-3 rounded-full bg-success"></span>
+          <span
+            className={
+              "relative flex h-3 w-3 " +
+              (hasVerifiedCoordinates ? "" : "opacity-50")
+            }
+            aria-hidden="true"
+          >
+            <span
+              className={
+                "relative inline-flex h-3 w-3 rounded-full " +
+                (hasVerifiedCoordinates ? "bg-success" : "bg-muted")
+              }
+            />
           </span>
-          <span className="text-sm font-semibold text-fg">Live GPS Tracking</span>
+          <span className="text-sm font-semibold text-fg">
+            {hasVerifiedCoordinates ? "Live GPS Tracking" : "Live location unavailable"}
+          </span>
         </div>
         <span className="text-xs font-medium text-muted">
-          {isDelivered ? "Delivered" : `ETA: ~${etaMinutes} mins`}
+          {isDelivered
+            ? "Delivered"
+            : etaMinutes !== null
+              ? "ETA: ~" + etaMinutes + " mins"
+              : "Waiting for verified ETA"}
         </span>
       </div>
 
-      {/* Vector Live Route Simulation */}
-      <div className="relative h-44 w-full bg-zinc-900/95 p-4 text-white">
-        {/* Road Track Line */}
+      <div
+        className="relative h-44 w-full bg-zinc-900/95 p-4 text-white"
+        aria-label={
+          hasVerifiedCoordinates
+            ? "Verified delivery tracking"
+            : "Delivery tracking waiting for verified location data"
+        }
+      >
         <div className="absolute left-8 right-8 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-zinc-700">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-primary to-success transition-all duration-1000 ease-out"
-            style={{ width: `${isDelivered ? 100 : currentProgress * 100}%` }}
+            className="h-full rounded-full bg-gradient-to-r from-primary to-success transition-all duration-700 ease-out"
+            style={{
+              width:
+                (isDelivered
+                  ? 100
+                  : currentProgress !== null
+                    ? currentProgress * 100
+                    : 0) + "%",
+            }}
           />
         </div>
 
-        {/* Restaurant Pin */}
         <div className="absolute left-6 top-1/2 -translate-y-1/2 text-center">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md">
             🍳
           </div>
-          <span className="mt-1 block max-w-[70px] truncate text-[10px] text-zinc-300 font-medium">
+          <span className="mt-1 block max-w-[70px] truncate text-[10px] font-medium text-zinc-300">
             {restaurantName}
           </span>
         </div>
 
-        {/* Rider Live Moving Marker */}
-        {!isDelivered && (
+        {showLivePosition ? (
           <div
-            className="absolute top-1/2 -translate-y-1/2 transition-all duration-1000 ease-out"
-            style={{ left: `calc(2rem + ${currentProgress * 75}%)` }}
+            className="absolute top-1/2 -translate-y-1/2 transition-all duration-700 ease-out"
+            style={{ left: "calc(2rem + " + currentProgress * 75 + "%)" }}
           >
             <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-success text-white shadow-lg">
               🛵
@@ -98,20 +122,30 @@ export function LiveDeliveryMap({
               Rider
             </span>
           </div>
-        )}
+        ) : null}
 
-        {/* Destination Customer Pin */}
         <div className="absolute right-6 top-1/2 -translate-y-1/2 text-center">
-          <div className={`flex h-8 w-8 items-center justify-center rounded-full text-white shadow-md ${isDelivered ? "bg-success" : "bg-zinc-600"}`}>
+          <div
+            className={
+              "flex h-8 w-8 items-center justify-center rounded-full text-white shadow-md " +
+              (isDelivered ? "bg-success" : "bg-zinc-600")
+            }
+          >
             📍
           </div>
-          <span className="mt-1 block max-w-[70px] truncate text-[10px] text-zinc-300 font-medium">
+          <span className="mt-1 block max-w-[70px] truncate text-[10px] font-medium text-zinc-300">
             You
           </span>
         </div>
       </div>
 
-      {/* Rider Partner Contact Card */}
+      {!isDelivered && !hasVerifiedCoordinates ? (
+        <div className="border-t border-border bg-amber-500/5 px-4 py-3 text-xs text-muted">
+          Rider location will appear here after verified tracking data is received.
+          No simulated movement is shown.
+        </div>
+      ) : null}
+
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted/20 text-lg">
@@ -124,22 +158,33 @@ export function LiveDeliveryMap({
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20"
-            title="Call Partner"
-            onClick={() => alert(`Calling rider: ${riderName}`)}
-          >
-            📞
-          </button>
-          <button
-            type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20"
-            title="Safety Emergency SOS"
-            onClick={() => alert("Emergency SOS triggered. OrderKing support dispatched.")}
+          {riderPhone ? (
+            <a
+              href={"tel:" + riderPhone}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20"
+              title="Call Partner"
+              aria-label="Call delivery partner"
+            >
+              📞
+            </a>
+          ) : (
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-muted/10 text-muted"
+              title="Partner phone unavailable"
+              aria-label="Partner phone unavailable"
+            >
+              📞
+            </span>
+          )}
+
+          <a
+            href="tel:112"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20"
+            title="Emergency services"
+            aria-label="Call emergency services"
           >
             🛡️
-          </button>
+          </a>
         </div>
       </div>
     </div>
