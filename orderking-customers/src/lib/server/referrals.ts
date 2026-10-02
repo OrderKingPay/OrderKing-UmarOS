@@ -11,7 +11,7 @@ export type ReferralStats = {
   totalInvited: number;
   totalEarnedPaise: number;
   rewardPerFriendPaise: number;
-  friendDiscountPaise: number;
+  friendWelcomeCreditPaise: number;
   minOrderPaise: number;
 };
 
@@ -71,7 +71,7 @@ export const getReferralStats = createServerFn({ method: "GET" })
       totalInvited,
       totalEarnedPaise,
       rewardPerFriendPaise: verifiedRewardPaise,
-      friendDiscountPaise: verifiedRewardPaise,
+      friendWelcomeCreditPaise: verifiedRewardPaise,
       minOrderPaise: 0,
     };
   });
