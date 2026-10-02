@@ -1215,52 +1215,37 @@ export async function executeTool(
     case "audit_loan_and_card_affiliate_commissions": {
       requirePermission(ws.ctx, "view_finance");
       return {
-        status: "COMMISSION_AUDIT_VERIFIED",
+        status: "AFFILIATE_LEDGER_TELEMETRY_REQUIRED",
         timestamp: new Date().toISOString(),
-        totalLeadsGenerated: 148,
-        preApprovedCount: 112,
-        disbursedLoansCount: 38,
-        activatedCreditCardsCount: 29,
-        partnerBreakdown: [
-          { partner: "Navi Finserv (Personal Loan)", leads: 42, disbursed: 14, commissionYieldPaise: 8750000, status: "RECONCILED" },
-          { partner: "Lendingkart (MSME/Kirana)", leads: 26, disbursed: 9, commissionYieldPaise: 18000000, status: "RECONCILED" },
-          { partner: "Hero FinCorp (2-Wheeler/EV)", leads: 31, disbursed: 15, commissionYieldPaise: 3750000, status: "RECONCILED" },
-          { partner: "HDFC Bank (Millennia Card)", cardsIssued: 16, commissionYieldPaise: 3200000, status: "RECONCILED" },
-          { partner: "SBI Cards (SimplyClick)", cardsIssued: 13, commissionYieldPaise: 2340000, status: "RECONCILED" },
-        ],
-        totalAffiliateCommissionPaise: 36040000,
-        leakageCheck: "ZERO_LEAKAGE_CONFIRMED",
-        rbiLspCompliancePosture: "100_PERCENT_LSP_COMPLIANT_ZERO_OWNER_LIABILITY",
-        auditNotes: "All lead IDs matched cryptographic tokens. Zero debt collection liability or credit risk on OrderKing.",
+        totalLeadsGenerated: null,
+        preApprovedCount: null,
+        disbursedLoansCount: null,
+        activatedCreditCardsCount: null,
+        partnerBreakdown: [],
+        totalAffiliateCommissionPaise: null,
+        leakageCheck: "UNVERIFIED",
+        rbiLspCompliancePosture: "NOT_VERIFIED_BY_THIS_TOOL",
+        auditNotes: "Affiliate conversions and commissions require current partner API/webhook records and canonical payment/ledger reconciliation. No partner-specific volumes or compliance result is hardcoded.",
       };
     }
-
     case "audit_bajaj_finance_affiliate_and_emi_leads": {
       requirePermission(ws.ctx, "view_finance");
       return {
-        status: "BAJAJ_FINANCE_AUDIT_VERIFIED",
+        status: "BAJAJ_PARTNER_TELEMETRY_REQUIRED",
         timestamp: new Date().toISOString(),
-        totalBajajLeadsGenerated: 284,
-        instaEmiCardsActivated: 96,
-        personalLoansDisbursed: 24,
-        commercialKitchenLoansDisbursed: 11,
-        twoWheelerLoansDisbursed: 37,
-        partnerBreakdown: [
-          { offer: "Insta EMI Card (₹2L Pre-Approved)", cardsActivated: 96, cpaRatePaise: 50000, commissionYieldPaise: 4800000, status: "RECONCILED" },
-          { offer: "Bajaj Personal Cash Loan", disbursed: 24, totalVolumePaise: 720000000, commissionYieldPaise: 21600000, status: "RECONCILED" },
-          { offer: "Commercial Kitchen Equipment", disbursed: 11, totalVolumePaise: 880000000, commissionYieldPaise: 30800000, status: "RECONCILED" },
-          { offer: "Two-Wheeler / EV Bike Financing", disbursed: 37, totalVolumePaise: 370000000, commissionYieldPaise: 7400000, status: "RECONCILED" },
-          { offer: "Smartphones & Electronics 0% EMI", devicesFinanced: 68, commissionYieldPaise: 11250000, status: "RECONCILED" },
-          { offer: "Bajaj RBL SuperCards", cardsIssued: 31, cpaRatePaise: 150000, commissionYieldPaise: 4650000, status: "RECONCILED" },
-        ],
-        totalBajajCommissionPaise: 80500000,
-        leakageCheck: "ZERO_LEAKAGE_CONFIRMED",
-        rbiLspCompliancePosture: "100_PERCENT_LSP_COMPLIANT_ZERO_OWNER_LIABILITY",
-        leadTrackingIntegrity: "ALL_OK_BAJAJ_TOKENS_VERIFIED",
-        auditNotes: "All 284 leads verified against Bajaj Finance partner API webhooks. OrderKing bears zero balance sheet risk or debt recovery liability.",
+        totalBajajLeadsGenerated: null,
+        instaEmiCardsActivated: null,
+        personalLoansDisbursed: null,
+        commercialKitchenLoansDisbursed: null,
+        twoWheelerLoansDisbursed: null,
+        partnerBreakdown: [],
+        totalBajajCommissionPaise: null,
+        leakageCheck: "UNVERIFIED",
+        rbiLspCompliancePosture: "NOT_VERIFIED_BY_THIS_TOOL",
+        leadTrackingIntegrity: "UNVERIFIED",
+        auditNotes: "Bajaj Finance/Finserv conversions and commissions require a live partner contract, webhook or API evidence, and canonical ledger reconciliation. No lead count or compliance claim is invented.",
       };
     }
-
     case "orchestrate_universal_pos_printer_sync": {
       requirePermission(ws.ctx, "view_restaurants");
       return {
