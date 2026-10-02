@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useBrand, useT } from "@/components/providers";
 import { listCategories, listRestaurants } from "@/lib/server/catalog";
 import { listMyOrders, reorderItems } from "@/lib/server/orders";
-import { getReferralStats } from "@/lib/server/referrals";
+import { claimReferralCode, getReferralStats } from "@/lib/server/referrals";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { formatPaise } from "@/lib/money";
 import { useLocationStore } from "@/lib/stores/location";
@@ -91,6 +91,43 @@ export function HomeFeed({
     enabled: Boolean(user),
     staleTime: 60_000,
   });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const code = new URLSearchParams(window.location.search).get("ref")?.trim().toUpperCase();
+    if (!code || code.length > 64) return;
+    try {
+      window.sessionStorage.setItem("orderking.pendingReferralCode", code);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("ref");
+      window.history.replaceState({}, "", url.pathname + url.search + url.hash);
+    } catch {
+      // Storage/history may be unavailable in restricted browsers.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!user || typeof window === "undefined") return;
+    let code: string | null = null;
+    try {
+      code = window.sessionStorage.getItem("orderking.pendingReferralCode");
+    } catch {
+      return;
+    }
+    if (!code) return;
+    void claimReferralCode({ data: { referralCode: code } })
+      .then(() => {
+        try { window.sessionStorage.removeItem("orderking.pendingReferralCode"); } catch {}
+        void referral.refetch();
+        toast.success("Referral activation verified.");
+      })
+      .catch((err) => {
+        const message = err instanceof Error ? err.message : "";
+        if (/invalid|expired|self-referral|already claimed/i.test(message)) {
+          try { window.sessionStorage.removeItem("orderking.pendingReferralCode"); } catch {}
+        }
+      });
+  }, [user, referral.refetch]);
 
   const pastOrders = useQuery({
     queryKey: ["pastOrders"],
