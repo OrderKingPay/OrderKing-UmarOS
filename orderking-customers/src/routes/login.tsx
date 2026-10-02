@@ -10,7 +10,6 @@ import { useBrand, useT } from "@/components/providers";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
-  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const { t } = useT();
   const { brand } = useBrand();
   const [mode, setMode] = useState<"in" | "up">("in");
@@ -43,26 +42,13 @@ function Login() {
       <Wordmark />
       <h1 className="mt-8 font-display text-3xl">{t("auth.title", { name: brand.appName })}</h1>
       <p className="mt-2 text-sm text-muted">{t("auth.subtitle")}</p>
-      {authEnabled && !isVercel ? (
+      {authEnabled ? (
         <div className="mt-6 space-y-3">
-          {/* Viral Growth Hooks: WhatsApp OTP & Truecaller One-Tap */}
-          <div className="space-y-3 pb-3">
-            <Button
-              type="button"
-              className="w-full bg-[#25D366] text-white hover:bg-[#128C7E]"
-              onClick={() => console.log('Initiate WhatsApp OTP flow')}
-            >
-              Sign in with WhatsApp OTP
-            </Button>
-            <Button
-              type="button"
-              className="w-full bg-[#0052FF] text-white hover:bg-[#0038FF]"
-              onClick={() => console.log('Initiate Truecaller One-Tap flow')}
-            >
-              Truecaller 1-Tap Login
-            </Button>
+          <div className="rounded-xl border border-border bg-surface p-3 text-xs text-muted">
+            <p className="font-semibold text-fg">More sign-in methods</p>
+            <p className="mt-1">WhatsApp OTP and Truecaller sign-in are not connected to a verified provider yet, so they are not presented as working login methods.</p>
           </div>
-          
+
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-muted/30" /></div>
             <div className="relative flex justify-center text-xs uppercase"><span className="bg-bg px-2 text-muted">Or continue with email</span></div>

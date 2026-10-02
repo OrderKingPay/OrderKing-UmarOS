@@ -69,26 +69,9 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
         explanation = `Order status is currently ${order.status}.`;
       }
 
-      // If delayed over 35 minutes and not delivered, give instant compensation
-      if (minutesSincePlaced > 35 && !["DELIVERED", "CANCELLED"].includes(order.status)) {
-        actionTaken = "COMPENSATION_GRANTED";
-        compensationPaise = 5000; // ₹50 delay apology credit
-        explanation += ` Since your order is running behind our 30-minute target SLA, we have credited ₹50 to your loyalty rewards as an apology!`;
-
-        // Credit points to loyalty account
-        const points = 50;
-        await sql`
-          insert into loyalty_accounts (user_id, points, lifetime_points, tier)
-          values (${context.userId}, ${points}, ${points}, 'starter')
-          on conflict (user_id) do update set
-            points = loyalty_accounts.points + ${points},
-            updated_at = now()
-        `;
-        await sql`
-          insert into loyalty_transactions (id, user_id, order_id, delta, reason)
-          values (${newId("loy")}, ${context.userId}, ${order.id}, ${points}, 'delay_compensation')
-        `;
-      }
+      // Delays are diagnosed from the real order state. No financial credit is
+      // created here because compensation must be backed by a configured policy
+      // and a real wallet/payment ledger operation.
 
       return {
         ok: true,
@@ -108,36 +91,17 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
       if (isEarlyCancel || isExcessiveDelay) {
         // Instant cancellation allowed
         await sql`update orders set status = 'CANCELLED', updated_at = now() where id = ${order.id} and user_id = ${context.userId}`;
-        await sql`insert into order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note) values (${newId("oev")}, ${order.id}, ${order.status}, 'CANCELLED', ${context.userId}, 'customer', ${isExcessiveDelay ? 'Cancelled due to severe kitchen delay (>35 mins) with 100% refund' : 'Instant cancellation within 3 minutes'})`;
+        await sql`insert into order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note) values (${newId("oev")}, ${order.id}, ${order.status}, 'CANCELLED', ${context.userId}, 'customer', ${isExcessiveDelay ? 'Cancelled due to severe kitchen delay (>35 mins)' : 'Instant cancellation within 3 minutes'})`;
 
-        let explanation = `Your order #${order.public_id} was successfully cancelled. Full refund has been initiated to your original payment method.`;
-        let compensationPaise: number | undefined;
-
-        if (isExcessiveDelay) {
-          explanation += ` Additionally, ₹50 apology credit has been added to your loyalty wallet for the inconvenience.`;
-          compensationPaise = 5000;
-          const points = 50;
-          await sql`
-            insert into loyalty_accounts (user_id, points, lifetime_points, tier)
-            values (${context.userId}, ${points}, ${points}, 'starter')
-            on conflict (user_id) do update set
-              points = loyalty_accounts.points + ${points},
-              updated_at = now()
-          `;
-          await sql`
-            insert into loyalty_transactions (id, user_id, order_id, delta, reason)
-            values (${newId("loy")}, ${context.userId}, ${order.id}, ${points}, 'delay_cancellation_apology')
-          `;
-        }
+        const explanation = `Your order #${order.public_id} was cancelled in OrderKing's order system. Any refund is handled only through the verified payment/refund provider and is not marked as initiated by this support action.`;
 
         return {
           ok: true,
           orderId: order.id,
           issueType: data.issueType,
           actionTaken: "AUTO_CANCELLED",
-          title: "Order Cancelled & 100% Refunded",
+          title: "Order Cancelled",
           explanation,
-          compensationPaise,
         };
       } else {
         return {
@@ -152,10 +116,10 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
     }
 
     if (data.issueType === "missing_item" || data.issueType === "food_spilled") {
-      // Create priority ticket & issue instant credit adjustment
+      // Record the incident and escalate. Do not mark the ticket resolved and
+      // do not create a financial credit without a real authorized ledger operation.
       const ticketId = newId("tkt");
       const title = data.issueType === "missing_item" ? "Missing item claim" : "Spilled / Damaged item claim";
-      const compensationPaise = Math.min(order.total_paise, 10000); // Up to ₹100 instant relief credit
 
       await sql`
         insert into support_tickets (id, user_id, order_id, topic, message, status)
@@ -164,33 +128,18 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
           ${context.userId},
           ${order.id},
           ${data.issueType},
-          ${`Automated claim: ${title}. Customer note: ${data.details ?? "None provided"}`},
-          'resolved'
+          ${`Customer claim: ${title}. Customer note: ${data.details ?? "None provided"}`},
+          'open'
         )
-      `;
-
-      // Credit wallet points
-      const points = Math.round(compensationPaise / 100);
-      await sql`
-        insert into loyalty_accounts (user_id, points, lifetime_points, tier)
-        values (${context.userId}, ${points}, ${points}, 'starter')
-        on conflict (user_id) do update set
-          points = loyalty_accounts.points + ${points},
-          updated_at = now()
-      `;
-      await sql`
-        insert into loyalty_transactions (id, user_id, order_id, delta, reason)
-        values (${newId("loy")}, ${context.userId}, ${order.id}, ${points}, 'incident_resolution_credit')
       `;
 
       return {
         ok: true,
         orderId: order.id,
         issueType: data.issueType,
-        actionTaken: "COMPENSATION_GRANTED",
-        title: "Instant Resolution & Compensation",
-        explanation: `We deeply apologize for the issue with order #${order.public_id}. We have issued an instant ₹${points} credit directly to your account. Your ticket #${ticketId} is logged for kitchen quality review.`,
-        compensationPaise,
+        actionTaken: "ESCALATED_TO_PRIORITY",
+        title: "Issue Logged for Review",
+        explanation: `Your issue for order #${order.public_id} is logged under ticket #${ticketId}. No refund or credit has been claimed as completed; any financial adjustment will be recorded only after the authorized payment/ledger workflow succeeds.`,
         ticketId,
       };
     }
@@ -208,7 +157,7 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
       issueType: data.issueType,
       actionTaken: "ESCALATED_TO_PRIORITY",
       title: "Support Ticket Logged",
-      explanation: `Your inquiry has been escalated to our Karimganj local operations team under ticket #${ticketId}. We typically respond within 10 minutes.`,
+      explanation: `Your support request is recorded under ticket #${ticketId}. The current system does not claim a human response or SLA until an actual support workflow acknowledges it.`,
       ticketId,
     };
   });
@@ -264,7 +213,7 @@ INSTRUCTION:
 1. You must respond flawlessly in the EXACT NATIVE LANGUAGE the customer used (e.g., if they speak Bengali, respond in perfect Bengali; if Hindi, respond in perfect Hindi). 
 2. Be 100x more accurate and helpful than Zomato. 
 3. Keep it to max 3 sentences. Tone is elite, polite OrderKing Support. 
-4. If the order is >35 mins late, automatically mention instant ₹50 wallet compensation.`;
+4. Never promise a refund, wallet credit, compensation, payment, or escalation as completed unless the underlying verified system operation has actually succeeded.`;
         
         const res = await gemini.generateStructuredOutput<any>({ prompt, schema });
         
@@ -278,18 +227,20 @@ INSTRUCTION:
       console.error("AI Support failed, using heuristic fallback", e);
     }
 
-    // 1. Check if user is asking about an order
+    // Safe fallback: the assistant may be unavailable, so expose only real
+    // diagnostic actions and never fabricate financial outcomes.
     if (q.includes("where") || q.includes("delay") || q.includes("late") || q.includes("status") || q.includes("track")) {
       return {
-        reply: `Our standard delivery time across Karimganj and Silchar is 25–35 minutes. ${orderInfo} If any order exceeds 35 minutes, our system automatically disburses a ₹50 late compensation credit directly to your loyalty wallet. You can click the button below to claim it immediately if eligible.`,
-        actionChip: { label: "⚡ Run Live Delivery Diagnostics", issueType: "where_order" },
+        reply: orderInfo
+          ? `I can see the current order record. ${orderInfo} Live AI is temporarily unavailable; use the diagnostic action below for the authoritative order state.`
+          : "Live AI is temporarily unavailable. Open your order to run an authoritative status check.",
+        actionChip: { label: "Run Live Delivery Diagnostics", issueType: "where_order" },
       };
     }
 
-    // 2. Check if asking about KingPay or KingPay Later
     if (q.includes("kingpay") || q.includes("king pay") || q.includes("wallet") || q.includes("pay later") || q.includes("credit") || q.includes("interest")) {
       return {
-        reply: `KingPay is our dedicated fintech wallet providing 1-Tap checkout with zero OTP delays, saving 2% in payment gateway surcharges. KingPay Later offers eligible customers an instant ₹2,500 credit limit at 0% interest for 15 days, auto-repaid on the 1st and 16th of each month. All wallet balances are 100% safeguarded under RBI-compliant escrow invariant accounts.`,
+        reply: "KingPay financial features are provider-dependent. I will not invent balances, credit limits, interest rates, escrow protection, or payment outcomes. Open the KingPay hub to see only currently connected services.",
         links: [
           { title: "Open KingPay Hub", url: "/king-pay", badge: "Fintech Hub" },
           { title: "RBI Banking Ombudsman (CMS)", url: "https://cms.rbi.org.in", badge: "Govt Portal" },
