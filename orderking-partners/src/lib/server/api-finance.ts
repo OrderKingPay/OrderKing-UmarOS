@@ -225,8 +225,9 @@ export const getAdCampaign = createServerFn({ method: "GET" })
         hasCampaign: Boolean(c),
         isActive: c ? (c.is_active === true || (c.is_active as unknown) === "t") : false,
         dailyBudgetPaise: budget,
-        estimatedImpressions: Math.round((budget / 100) * 12),
-        estimatedClicks: Math.round((budget / 100) * 1.5),
+        estimatedImpressions: null,
+        estimatedClicks: null,
+        telemetryStatus: "NOT_MEASURED" as const,
       };
     });
   });
@@ -251,7 +252,7 @@ export const saveAdCampaign = createServerFn({ method: "POST" })
         const id = newId("pro");
         await sql`
           insert into promotions (
-            id, restaurant_id, name, funder, kind, amount_paise, is_active, min_order_paise, assumed_orders_per_day
+            id, restaurant_id, name, funder, kind, amount_paise, is_active, min_order_paise
           ) values (
             ${id}, ${ctx.restaurantId}, 'SPONSORED_BOOST', 'RESTAURANT', 'item', ${budget}, ${data.isActive}, 0, 10
           )
