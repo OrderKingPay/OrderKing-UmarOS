@@ -19,9 +19,17 @@ export const getReferralStats = createServerFn({ method: "GET" })
     const sql = await getSql();
     const userId = context.userId;
 
-    // Derive deterministic, user-friendly referral code
-    const shortHash = userId.replace(/[^a-zA-Z0-9]/g, "").slice(-5).toUpperCase() || "VIP26";
-    const referralCode = `KING${shortHash}`;
+    // Use the server-side referral code that is actually stored for this user.
+    // Never display a client-derived code that the referral attribution table cannot resolve.
+    let referralCode = "";
+    try {
+      const rows = await sql<{ referral_code: string | null }>`
+        select referral_code from users where id = ${userId} limit 1
+      `;
+      referralCode = rows[0]?.referral_code ?? "";
+    } catch {
+      referralCode = "";
+    }
 
     // Query referral redemption stats from DB if available
     let totalInvited = 0;
@@ -45,8 +53,10 @@ export const getReferralStats = createServerFn({ method: "GET" })
       shareUrl: `https://orderking.in/?ref=${referralCode}`,
       totalInvited,
       totalEarnedPaise,
-      rewardPerFriendPaise: 2_500, // ₹25 wallet credit for referrer (drives repeat order)
-      friendDiscountPaise: 4_000, // ₹40 OFF for friend (completely covered by commission)
-      minOrderPaise: 24_900, // ₹249 min order (guarantees positive platform profit on every order)
+      // No reward amount is promised until a live campaign is configured and its
+      // qualifying order/payment rules are verified.
+      rewardPerFriendPaise: 0,
+      friendDiscountPaise: 0,
+      minOrderPaise: 0,
     };
   });
