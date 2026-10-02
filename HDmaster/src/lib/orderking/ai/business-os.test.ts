@@ -17,57 +17,30 @@ import {
 } from './autonomous-command-orchestrator.ts';
 
 test('Business OS - Live Multi-Model Orchestration Engine', async () => {
-  // 1. Model & Adapter Discovery
   const adapters = liveOrchestrationEngine.listRegisteredAdapters();
-  assert.ok(adapters.length >= 5, 'Should discover at least 5 frontier provider adapters');
-  assert.ok(adapters.some((a) => a.vendor === 'Google'), 'Should have Google Gemini adapter');
-  assert.ok(adapters.some((a) => a.vendor === 'Anthropic'), 'Should have Anthropic Claude adapter');
-  assert.ok(adapters.some((a) => a.vendor === 'OpenAI'), 'Should have OpenAI adapter');
-  assert.ok(adapters.some((a) => a.vendor === 'xAI'), 'Should have xAI Grok adapter');
-  assert.ok(adapters.some((a) => a.vendor === 'Sovereign'), 'Should have Sovereign Deterministic adapter');
+  assert.equal(adapters.length, 1, "Umar OS automatic orchestration must expose only its mandatory OpenAI adapter");
+  assert.equal(adapters[0]?.vendor, "OpenAI");
+  assert.equal(adapters[0]?.id, "openai");
 
-  // 2. Dynamic Adapter Registration
-  const customAdapter: AIProviderAdapter = {
-    id: 'test_sovereign_v2',
-    name: 'Test Sovereign Model V2',
-    vendor: 'Sovereign',
-    isConfigured: true,
-    activeModels: ['test-sovereign-v2'],
-    costPer1kTokensUsd: { input: 0, output: 0 },
-    maxContextTokens: 256000,
-    async executePrompt({ model, prompt }) {
-      return {
-        text: `[Test Sovereign ${model}] Verified: ${prompt.slice(0, 50)}`,
-        tokensUsed: { prompt: 40, completion: 20, total: 60 },
-        latencyMs: 8,
-        model,
-      };
-    },
-  };
-  liveOrchestrationEngine.registerProviderAdapter(customAdapter);
-
-  const updatedAdapters = liveOrchestrationEngine.listRegisteredAdapters();
-  assert.ok(updatedAdapters.some((a) => a.id === 'test_sovereign_v2'), 'Custom adapter must be registered');
-
-  // 3. Concurrent Multi-Model Execution & Consensus
-  const consensus = await liveOrchestrationEngine.executeMultiModelConsensus({
-    prompt: 'Evaluate restaurant expansion into Sector 5 salt lake with minimal capex.',
-    preferredProviders: ['sovereign_local', 'test_sovereign_v2'],
-  });
-
-  assert.ok(consensus.consensusId.startsWith('cons-'), 'Consensus ID must have prefix cons-');
-  assert.ok(consensus.verdicts.length >= 1, 'At least one model verdict must be present');
-  assert.ok(consensus.consensusAgreementScore >= 90, 'Agreement score should be high');
-  assert.ok(consensus.unifiedExecutiveSummary.length > 0, 'Unified executive summary must not be empty');
-  assert.equal(consensus.hallucinationFreeVerified, true, 'Hallucination free verification must be true');
-  assert.ok(consensus.auditSignature.startsWith('SIG_'), 'Audit signature must have SIG_ prefix');
-
-  // 4. Monthly Budget Tracking
   const budget = liveOrchestrationEngine.getBudgetStatus();
-  assert.equal(budget.monthlyBudgetCapInr, 50000, 'Monthly budget cap must be ₹50,000');
-  assert.ok(budget.accumulatedSpendInr >= 0, 'Accumulated spend must be non-negative');
-  assert.ok(budget.remainingBudgetInr <= 50000, 'Remaining budget must be <= ₹50,000');
-  assert.equal(budget.isBudgetExhausted, false, 'Budget must not be exhausted in normal test');
+  assert.equal(budget.monthlyBudgetCapInr, 50000);
+  assert.equal(budget.costStatus, "UNVERIFIED_UNTIL_PROVIDER_PRICING_IS_CONFIGURED");
+
+  const originalKey = process.env.OPENAI_API_KEY;
+  delete process.env.OPENAI_API_KEY;
+  try {
+    await assert.rejects(
+      () =>
+        liveOrchestrationEngine.executeMultiModelConsensus({
+          prompt: "Evaluate a restaurant expansion without inventing facts.",
+        }),
+      /OPENAI_API_KEY is not configured/,
+      "Live orchestration must fail closed when OpenAI is unavailable",
+    );
+  } finally {
+    if (originalKey === undefined) delete process.env.OPENAI_API_KEY;
+    else process.env.OPENAI_API_KEY = originalKey;
+  }
 });
 
 test('Business OS - Founder Approval Gates & Audit Chain', async () => {
