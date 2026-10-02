@@ -86,7 +86,7 @@ function Page() {
           <h1 className="font-display text-3xl">{t("support")}</h1>
           <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>24x7 AI Copilot Active</span>
+            <span>OpenAI Rider Spark · verified per request</span>
           </div>
         </div>
 
