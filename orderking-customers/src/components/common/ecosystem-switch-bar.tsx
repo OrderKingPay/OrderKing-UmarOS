@@ -79,7 +79,7 @@ export function EcosystemSwitchBar({
   const copyShareLink = (url: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       void navigator.clipboard.writeText(`${url}/?ref=KINGVIP`);
-      toast.success("🎁 Referral link copied! Share with friends to earn ₹40 cash!");
+      toast.success("Referral link copied. Any reward will appear only after verified eligibility.");
     }
   };
 
