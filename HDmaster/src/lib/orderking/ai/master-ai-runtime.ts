@@ -1947,57 +1947,61 @@ export async function executeTool(
     }
     case "autonomous_meta_and_google_ad_domination_orchestrator": {
       requirePermission(ws.ctx, "manage_promotions");
+      const requestedPostalCodes = Array.isArray(args.postalCodes)
+        ? args.postalCodes.filter((v): v is string => typeof v === "string").slice(0, 50)
+        : [];
+      const budgetPaise = typeof args.dailyBudgetPaise === "number" && args.dailyBudgetPaise > 0
+        ? Math.floor(args.dailyBudgetPaise)
+        : null;
       return {
-        status: "META_AND_GOOGLE_AD_DOMINATION_DEPLOYED",
+        status: "GEO_CAMPAIGN_PLAN_READY",
         timestamp: new Date().toISOString(),
-        metaMarketingApiPayload: {
-          apiVersion: "v21.0",
-          campaignName: "OrderKing_Dominance_Karimganj_Meta_V21",
-          dailyBudgetInr: 150,
-          targetPostalCodes: ["788710", "788711", "788712", "788701"],
-          targetRadiusKm: 5.0,
-          estimatedDailyReach: "3,200 active local mobile users",
-          placements: ["instagram_reels", "instagram_feed", "facebook_feed", "facebook_stories"],
-          adCreativeHeadline: "Karimganj's Own Food App: 0% Markup + 24K Gold 👑",
+        providers: {
+          meta: {
+            connected: Boolean(process.env.META_ACCESS_TOKEN),
+            campaignCreated: false,
+            providerReceipt: null,
+          },
+          google: {
+            connected: Boolean(process.env.GOOGLE_ADS_DEVELOPER_TOKEN),
+            campaignCreated: false,
+            providerReceipt: null,
+          },
         },
-        googleAdsPMaxPayload: {
-          advertisingChannelType: "PERFORMANCE_MAX",
-          campaignName: "OrderKing_Karimganj_Google_PMax_Domination",
-          dailyBudgetInr: 200,
-          geoTargeting: ["Karimganj", "Barak Valley", "Assam"],
-          searchThemes: ["food delivery near me", "best biryani in town", "online food ordering"],
-          headlinesCount: 5,
+        targetGeo: {
+          postalCodes: requestedPostalCodes,
+          radiusKm: typeof args.radiusKm === "number" ? args.radiusKm : null,
         },
+        dailyBudgetPaise: budgetPaise,
+        estimatedDailyReach: null,
         viralSocialDistribution: {
-          whatsappStatusLoop: "1-Tap 'Share Scratch Card on Status -> Unlock ₹25' generates 50,000 daily local impressions at ₹0 ad spend",
-          viralReelsScriptsCount: 3,
-          influencerBarterPitch: "Ready for local Instagram creators with ₹750 free food barter",
-          googleLocalSeoSchema: "FoodDeliveryService JSON-LD schema deployed for #1 Google Search & Maps ranking",
+          whatsappStatusLoop: "NOT_AUTOMATED",
+          influencerOutreach: "DRAFT_ONLY",
+          shareAssets: ["STORE_QR", "REFERRAL_LINK", "LOCAL_SOCIAL_COPY"],
         },
-        verdict: "100,000x force advertising engine primed. Dominates mobile screens across Facebook, Instagram, Google Maps, Search, and WhatsApp Status with sub-₹150 daily budget.",
+        nextStep: "Connect the approved advertising provider and obtain its creation receipt before reporting a campaign as live.",
+        verdict: "No reach, dominance, ranking, impressions, or spend outcome is claimed from a plan-only operation.",
       };
     }
-
     case "autonomous_strategic_nearest_rider_and_fleet_orchestrator": {
       requirePermission(ws.ctx, "modify_orders");
       const sql = await getSql();
       const { auditZoneSupplyDemand } = await import("./autonomous-ops.ts");
       const zones = await auditZoneSupplyDemand(sql);
       return {
-        status: "STRATEGIC_NEAREST_RIDER_ORCHESTRATOR_EXECUTED",
+        status: "FLEET_TELEMETRY_AUDITED",
         timestamp: new Date().toISOString(),
         zonesAudited: zones.length,
         zoneMetrics: zones,
         nearestRiderMatrix: {
-          strategy: "Strict Euclidean Proximity + Sequential Cascading",
-          bountyEscalation: "₹10 (1000 paise) on 1st decline -> ₹20 on 2nd -> ₹30 on 3rd",
-          dispatchRadiusKm: 8.0,
-          offerTimeoutSeconds: 30,
+          strategy: "Configured dispatch policy",
+          bountyEscalation: null,
+          dispatchRadiusKm: ws.settings?.maxDeliveryRadiusKm ?? null,
+          offerTimeoutSeconds: null,
         },
-        verdict: "Strategic nearest-rider GPS proximity engine armed. Sequential cascading with dynamic bounty surge active across all zones.",
+        verdict: "Zone supply/demand telemetry was read. Dispatch policy values are not invented here; live rider assignment receipts must confirm each operational action.",
       };
     }
-
     case "autonomous_off_peak_demand_stimulator_and_revenue_multiplier": {
       requirePermission(ws.ctx, "manage_promotions");
       const q = await import("../server/queries.server.ts");
