@@ -55,6 +55,117 @@ export const addStaff = createServerFn({ method: "POST" }).middleware([authMiddl
   });
 });
 
+export const createSparkEscalation = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: {
+    restaurantId?: string;
+    category: string;
+    severity?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+    subject: string;
+    details: string;
+  }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "assistant.use", async (sql, ctx) => {
+      const category = data.category.trim().slice(0, 80);
+      const severity = data.severity ?? "MEDIUM";
+      const subject = data.subject.trim().slice(0, 180);
+      const details = data.details.trim().slice(0, 6000);
+      if (!category || !subject || !details) throw new Error("Category, subject, and details are required.");
+
+      const restaurants = await sql<{
+        name: string;
+        address: string;
+        service_area: string;
+        lat: number | null;
+        lng: number | null;
+      }>`select name, address, service_area, lat, lng from restaurants where id = ${ctx.restaurantId} limit 1`;
+      const restaurant = restaurants[0];
+      if (!restaurant) throw new Error("Restaurant not found.");
+
+      const escalationId = newId("esc");
+      const geographicContext = JSON.stringify({
+        serviceArea: restaurant.service_area || null,
+        address: restaurant.address || null,
+        lat: restaurant.lat,
+        lng: restaurant.lng,
+      });
+
+      await sql`insert into support_escalations
+        (id, restaurant_id, created_by_user_id, category, severity, subject, details, geographic_context, status, target_queue, data_mode)
+        values (${escalationId}, ${ctx.restaurantId}, ${context.userId}, ${category}, ${severity}, ${subject}, ${details}, ${geographicContext}, 'OPEN', 'UMAR_OS_RESTAURANT_SUPPORT', 'ACTUAL')`;
+
+      await writeAudit(sql, {
+        restaurantId: ctx.restaurantId,
+        actorUserId: context.userId,
+        action: "spark_escalation_created",
+        entityType: "support_escalation",
+        entityId: escalationId,
+        detail: `${category}:${severity}`,
+      });
+
+      const baseUrl = process.env.UMAR_OS_BASE_URL?.trim().replace(/\/+$/, "");
+      const secret = process.env.UMAR_OS_ESCALATION_SECRET?.trim();
+      if (!baseUrl || !secret) {
+        return {
+          ok: true as const,
+          escalationId,
+          deliveredToUmarOS: false,
+          status: "OPEN" as const,
+          message: "Escalation recorded in the restaurant support queue. UmarOS connector is not configured on this deployment, so it was not claimed as delivered.",
+        };
+      }
+
+      try {
+        const response = await fetch(`${baseUrl}/api/internal/partner-escalations`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            authorization: `Bearer ${secret}`,
+          },
+          body: JSON.stringify({
+            escalationId,
+            restaurantId: ctx.restaurantId,
+            category,
+            severity,
+            subject,
+            details,
+            geographicContext,
+            createdByUserId: context.userId,
+          }),
+        });
+
+        if (!response.ok) {
+          await sql`update support_escalations set status = 'CONNECTOR_FAILED', updated_at = now() where id = ${escalationId}`;
+          return {
+            ok: true as const,
+            escalationId,
+            deliveredToUmarOS: false,
+            status: "CONNECTOR_FAILED" as const,
+            message: `Escalation was recorded, but UmarOS did not acknowledge it (HTTP ${response.status}).`,
+          };
+        }
+
+        await sql`update support_escalations set status = 'ESCALATED', updated_at = now() where id = ${escalationId}`;
+        return {
+          ok: true as const,
+          escalationId,
+          deliveredToUmarOS: true,
+          status: "ESCALATED" as const,
+          message: "Escalation recorded and acknowledged by UmarOS.",
+        };
+      } catch (error) {
+        await sql`update support_escalations set status = 'CONNECTOR_FAILED', updated_at = now() where id = ${escalationId}`;
+        return {
+          ok: true as const,
+          escalationId,
+          deliveredToUmarOS: false,
+          status: "CONNECTOR_FAILED" as const,
+          message: `Escalation was recorded, but the UmarOS connector failed: ${error instanceof Error ? error.message : "unknown error"}`,
+        };
+      }
+    });
+  });
+
 export const askAssistant = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((d: { restaurantId?: string; question: string }) => d)
@@ -97,7 +208,7 @@ export const askAssistant = createServerFn({ method: "POST" })
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({
-          model: "gpt-5.6",
+          model: process.env.OPENAI_MODEL?.trim() || "gpt-6-luna",
           input: [
             {
               role: "system",

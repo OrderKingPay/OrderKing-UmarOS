@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Sparkles, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { askAssistant } from "@/lib/server/api-more";
+import { askAssistant, createSparkEscalation } from "@/lib/server/api-more";
 import { useVendor } from "@/components/use-vendor";
 
 interface OrderKingSparkModalProps {
@@ -31,6 +31,46 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
   const [sending, setSending] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleEscalate = async () => {
+    const latestUser = [...messages].reverse().find((message) => message.sender === "user");
+    const details = latestUser?.text?.trim();
+    if (!details || sending) return;
+
+    setSending(true);
+    try {
+      const result = await createSparkEscalation({
+        data: {
+          restaurantId,
+          category: "SPARK_SUPPORT",
+          severity: "MEDIUM",
+          subject: "Partner requested UmarOS support via Spark",
+          details,
+        },
+      });
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `escalation-${Date.now()}`,
+          sender: "spark",
+          text: result.message,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        },
+      ]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `escalation-error-${Date.now()}`,
+          sender: "spark",
+          text: `Escalation request failed: ${error instanceof Error ? error.message : "Unknown error"}. No delivery to UmarOS is claimed.`,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        },
+      ]);
+    } finally {
+      setSending(false);
+    }
+  };
 
   const handleSend = async (text: string) => {
     const question = text.trim();
@@ -97,6 +137,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
 
         <div className="flex items-center gap-2 overflow-x-auto border-b border-zinc-800/80 bg-zinc-900/60 px-4 py-2">
           {[
+            ["Escalate to UmarOS", "Escalate my latest issue to UmarOS"],
             ["Settlement & Earnings", "Show my verified settlement and earnings data"],
             ["Menu Availability", "Show my current menu availability"],
             ["Kitchen SLA", "Check verified kitchen prep SLA and delays"],
@@ -105,7 +146,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
             <button
               key={label}
               type="button"
-              onClick={() => handleSend(query)}
+              onClick={() => (label === "Escalate to UmarOS" ? void handleEscalate() : void handleSend(query))}
               disabled={sending}
               className="whitespace-nowrap rounded-full border border-zinc-700 bg-zinc-800 px-3 py-1 text-[11px] font-semibold text-zinc-300 transition hover:bg-zinc-700 hover:text-white disabled:opacity-50"
             >
