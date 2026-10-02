@@ -124,3 +124,48 @@ export const askAssistant = createServerFn({ method: "POST" })
       return { ok: true as const, text, snapshot };
     });
   });
+
+
+export const createUmarOsEscalation = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: {
+    restaurantId?: string;
+    category: string;
+    severity?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+    subject: string;
+    details: string;
+    geographicContext?: string;
+  }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "assistant.use", async (sql, ctx) => {
+      const subject = data.subject.trim().slice(0, 180);
+      const details = data.details.trim().slice(0, 6000);
+      if (!subject || !details) throw new Error("Escalation subject and details are required.");
+
+      const severity = data.severity ?? "MEDIUM";
+      const allowed = new Set(["LOW", "MEDIUM", "HIGH", "CRITICAL"]);
+      if (!allowed.has(severity)) throw new Error("Invalid escalation severity.");
+
+      const id = newId("esc");
+      await sql`insert into support_escalations
+        (id, restaurant_id, created_by_user_id, category, severity, subject, details, geographic_context)
+        values (${id}, ${ctx.restaurantId}, ${context.userId}, ${data.category.trim().slice(0, 80)}, ${severity}, ${subject}, ${details}, ${data.geographicContext?.trim().slice(0, 300) || null})`;
+
+      await writeAudit(sql, {
+        restaurantId: ctx.restaurantId,
+        actorUserId: context.userId,
+        action: "support_escalation_create",
+        entityType: "support_escalation",
+        entityId: id,
+        detail: `${severity}: ${subject}`,
+      });
+
+      return {
+        ok: true as const,
+        escalationId: id,
+        status: "OPEN" as const,
+        targetQueue: "UMAR_OS_RESTAURANT_SUPPORT" as const,
+        dataMode: "ACTUAL" as const,
+      };
+    });
+  });
