@@ -87,28 +87,38 @@ export class AutonomousCommandOrchestrator {
         const pnl = businessOsModules.calculateFinancialPnL();
         businessData = { pnl };
         if (q.includes("transfer") || q.includes("disburse") || q.includes("payout")) {
-          highRiskActionQueued = {
-            domain: "FINANCIAL",
-            title: "Disburse Partner & Rider Earnings",
-            description: "Authorize batch transfer of ₹75,000 to merchant bank accounts.",
-            targetEntity: "Merchant Bank Ledger",
-            amountInr: 75000,
-            payload: { gmvPaise: 7500000, recipientCount: 14 },
-          };
+          const amountMatch = q.match(/(?:₹|inr|rs\.?)[\s]*([\d,]+(?:\.\d+)?)/i);
+          const requestedAmountInr = amountMatch ? Number(String(amountMatch[1]).replace(/,/g, "")) : null;
+          businessData.financialActionStatus = requestedAmountInr && requestedAmountInr > 0
+            ? "FOUNDER_APPROVAL_REQUIRED_WITH_EXPLICIT_AMOUNT"
+            : "AMOUNT_AND_RECIPIENTS_REQUIRED";
+          if (requestedAmountInr && requestedAmountInr > 0) {
+            highRiskActionQueued = {
+              domain: "FINANCIAL",
+              title: "Authorize requested financial transfer",
+              description: `Approve the explicitly requested financial operation of ₹${requestedAmountInr.toLocaleString("en-IN")}; actual recipients must be loaded from the canonical ledger before execution.`,
+              targetEntity: "Canonical payment ledger",
+              amountInr: requestedAmountInr,
+              payload: { requestedAmountInr, recipients: "LOAD_FROM_CANONICAL_LEDGER" },
+            };
+          }
         }
         break;
       }
       case "sales": {
         const leads = businessOsModules.discoverLawfulOpportunities();
-        businessData = { leads, totalAnnualAggregatorLossInr: leads.reduce((s, l) => s + l.annualAggregatorLossInr, 0) };
-        if (q.includes("send pitch") || q.includes("contact") || q.includes("blast")) {
+        const totalAnnualAggregatorLossInr = leads.reduce((s, l) => s + (l.annualAggregatorLossInr ?? 0), 0);
+        businessData = { leads, totalAnnualAggregatorLossInr };
+        if ((q.includes("send pitch") || q.includes("contact") || q.includes("blast")) && leads.length > 0) {
           highRiskActionQueued = {
             domain: "EXTERNAL",
-            title: "Broadcast Direct Outreach to 4 Curated Prospects",
-            description: "Deliver personalized WhatsApp pitches to 4 restaurants.",
-            targetEntity: "WhatsApp Business API",
+            title: "Send approved merchant outreach",
+            description: "Explicit outreach was requested; only verified lead records may be contacted.",
+            targetEntity: "Approved outreach provider",
             payload: { recipientLeads: leads.map((l) => l.id) },
           };
+        } else if (q.includes("send pitch") || q.includes("contact") || q.includes("blast")) {
+          businessData.externalActionStatus = "VERIFIED_LEADS_REQUIRED";
         }
         break;
       }
@@ -119,7 +129,7 @@ export class AutonomousCommandOrchestrator {
       }
       case "marketing": {
         const leads = businessOsModules.discoverLawfulOpportunities();
-        const campaign = businessOsModules.generateGrowthCampaign(leads[0]!);
+        const campaign = businessOsModules.generateGrowthCampaign(leads[0] ?? null);
         businessData = { campaign };
         break;
       }
@@ -132,14 +142,19 @@ export class AutonomousCommandOrchestrator {
         const inventoryAlerts = businessOsModules.inspectInventoryAlerts();
         businessData = { inventoryAlerts };
         if (q.includes("order") || q.includes("buy") || q.includes("reorder")) {
-          highRiskActionQueued = {
-            domain: "FINANCIAL",
-            title: "Auto-Reorder Depleted Stock",
-            description: "Purchase Basmati Rice (15 bags) & Paper Containers (1000 units).",
-            targetEntity: "Wholesale Suppliers",
-            amountInr: 38250,
-            payload: { items: inventoryAlerts.map((i) => ({ id: i.itemId, qty: i.recommendedOrderQty })) },
-          };
+          if (inventoryAlerts.length > 0) {
+            const totalEstimatedCostInr = inventoryAlerts.reduce((sum, item) => sum + (item.estimatedCostInr ?? 0), 0);
+            highRiskActionQueued = {
+              domain: "FINANCIAL",
+              title: "Approve reorder from verified inventory alerts",
+              description: `Approve the reorder generated from live inventory telemetry (estimated cost ₹${totalEstimatedCostInr.toLocaleString("en-IN")}).`,
+              targetEntity: "Approved procurement provider",
+              amountInr: totalEstimatedCostInr,
+              payload: { items: inventoryAlerts },
+            };
+          } else {
+            businessData.procurementActionStatus = "LIVE_INVENTORY_TELEMETRY_REQUIRED";
+          }
         }
         break;
       }
@@ -147,12 +162,13 @@ export class AutonomousCommandOrchestrator {
         const health = businessOsModules.inspectSreHealth();
         businessData = { health };
         if (q.includes("deploy") || q.includes("promote") || q.includes("release")) {
+          businessData.productionActionStatus = "LIVE_DEPLOYMENT_RECEIPT_REQUIRED";
           highRiskActionQueued = {
             domain: "PRODUCTION",
-            title: "Promote Canary Deployment to Production",
-            description: "Promote verified build to 100% production traffic.",
-            targetEntity: "Edge Cluster ap-south-1",
-            payload: { commit: "commit-6a1f2b", trafficPct: 100 },
+            title: "Approve requested production change",
+            description: "A production change was requested, but the target commit and deployment receipt must be loaded from the deployment control plane before approval.",
+            targetEntity: "Deployment control plane",
+            payload: { targetCommit: "LOAD_FROM_DEPLOYMENT_CONTROL_PLANE", trafficPct: null },
           };
         }
         break;
@@ -160,10 +176,10 @@ export class AutonomousCommandOrchestrator {
       default: {
         businessData = {
           quickStats: {
-            activeOrders: 14,
-            availableRiders: 22,
-            todayGmvInr: 68400,
-            systemHealth: "100% Optimal",
+            activeOrders: null,
+            availableRiders: null,
+            todayGmvInr: null,
+            systemHealth: "NOT_MEASURED",
           },
         };
         break;
@@ -192,7 +208,7 @@ export class AutonomousCommandOrchestrator {
       stage: "MULTI_MODEL_VERIFY",
       label: `Live Multi-Model Cross-Validation`,
       status: "COMPLETED",
-      detail: `Consensus agreement score: ${consensus.consensusAgreementScore}% across ${consensus.verdicts.length} frontier models. Verified hallucination-free.`,
+      detail: `Real provider response received from ${consensus.verdicts.length} configured model path(s). Independent factual consensus is not claimed.`,
       durationMs: Math.round(performance.now() - verifyStart),
     });
 
@@ -229,21 +245,31 @@ export class AutonomousCommandOrchestrator {
     let conciseSummary = "";
     if (primaryDomain === "finance") {
       const pnl = (businessData.pnl as any) || {};
-      conciseSummary = `📊 **Finance Intelligence**: Trailing GMV: **₹${(pnl.grossMerchandiseValueInr || 0).toLocaleString("en-IN")}** · Net Profit: **₹${(pnl.netFounderProfitInr || 0).toLocaleString("en-IN")}** · Cash Runway: **${pnl.cashRunwayMonths || 36} months** · Retained Vault: **₹${(pnl.retainedCapitalVaultInr || 0).toLocaleString("en-IN")}**.`;
+      conciseSummary = pnl.dataStatus === "LIVE_DATA_REQUIRED"
+        ? "Finance telemetry is required; no GMV, profit, runway, or retained-cash figure was invented."
+        : `Finance telemetry received for ${pnl.period ?? "the verified period"}.`;
     } else if (primaryDomain === "sales") {
       const leads = (businessData.leads as any[]) || [];
-      conciseSummary = `🎯 **Sales & Opportunity**: Discovered **${leads.length} high-margin restaurant prospects** losing **₹${((businessData.totalAnnualAggregatorLossInr as number) || 0).toLocaleString("en-IN")}/year** to 25%+ commissions. Tailored 0% pitches ready.`;
+      conciseSummary = leads.length
+        ? `Verified merchant opportunities available: ${leads.length}.`
+        : "No verified merchant leads are loaded. No prospect count or savings estimate is claimed.";
     } else if (primaryDomain === "ops") {
       const slas = (businessData.kitchenSlas as any[]) || [];
-      const delayed = slas.filter((s) => s.complianceStatus !== "OPTIMAL");
-      conciseSummary = `🍳 **Kitchen & Delivery SLA**: Audited **${slas.length} partner outlets**. ${delayed.length > 0 ? `⚠️ **${delayed.length} outlet** requires attention (${delayed[0]?.restaurantName} avg prep: ${delayed[0]?.avgPrepMinutes}m).` : "All kitchens operating at peak velocity."}`;
+      conciseSummary = slas.length
+        ? `Verified kitchen SLA telemetry loaded for ${slas.length} outlet(s).`
+        : "Live kitchen telemetry is required; no outlet performance is claimed.";
     } else if (primaryDomain === "procurement") {
       const alerts = (businessData.inventoryAlerts as any[]) || [];
-      conciseSummary = `📦 **Inventory & Procurement**: **${alerts.length} items** reached reorder threshold (Total reorder value: **₹${alerts.reduce((s, a) => s + a.estimatedCostInr, 0).toLocaleString("en-IN")}**).`;
+      conciseSummary = alerts.length
+        ? `Verified inventory alerts loaded for ${alerts.length} item(s).`
+        : "Live inventory telemetry is required; no reorder quantity or spend is claimed.";
     } else if (primaryDomain === "sre") {
-      conciseSummary = `🛡️ **SRE & Production Health**: All **3 core services healthy** (P99 latency: **18–42ms**, uptime: **99.98%**). Automated canary and rollback circuits armed.`;
+      const health = (businessData.health as any[]) || [];
+      conciseSummary = health.length
+        ? `Verified SRE telemetry loaded for ${health.length} service(s).`
+        : "Live deployment and health telemetry is required; no uptime, latency, or deployment claim is made.";
     } else {
-      conciseSummary = `✅ **Autonomous Execution Complete**: Processed command across OrderKing systems with **${consensus.consensusAgreementScore}% multi-model consensus agreement**. Zero errors detected.`;
+      conciseSummary = "Command planning completed. Provider verification and canonical telemetry are required before operational facts are asserted.";
     }
 
     if (pendingApproval) {
