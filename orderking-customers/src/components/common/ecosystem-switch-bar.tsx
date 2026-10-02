@@ -58,7 +58,7 @@ export function EcosystemSwitchBar({
   const handleShareClick = () => {
     triggerHaptic();
     const shareUrl = typeof window !== "undefined" ? window.location.origin : "https://orderking.in";
-    const shareText = "👑 Experience Order King FOODS (0% markup biryani & feasts) & King Pay (0-fee UPI & lowest flights)! Join now:";
+    const shareText = "👑 Try OrderKing. Use my referral link to see current eligible offers and ordering options. Rewards apply only when the published qualifying conditions are met:";
     
     if (typeof navigator !== "undefined" && navigator.share) {
       navigator
@@ -79,7 +79,7 @@ export function EcosystemSwitchBar({
   const copyShareLink = (url: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       void navigator.clipboard.writeText(`${url}/?ref=KINGVIP`);
-      toast.success("🎁 Referral link copied! Share with friends to earn ₹40 cash!");
+      toast.success("Referral link copied. Any reward is issued only after the qualifying transaction is verified.");
     }
   };
 
@@ -91,8 +91,8 @@ export function EcosystemSwitchBar({
       <button
         type="button"
         onClick={handleShareClick}
-        title="Share & Earn ₹40 Cash"
-        aria-label="Share & Earn Rewards"
+        title="Share & Earn Eligible Referral Rewards"
+        aria-label="Share & Earn Eligible Referral Rewards"
         className="group relative flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 text-slate-950 font-black shadow-[0_4px_20px_rgba(245,158,11,0.55)] ring-2 ring-amber-300/90 transition-all duration-200 active:scale-95 hover:scale-105 touch-manipulation cursor-pointer"
       >
         <span className="text-xl sm:text-2xl leading-none animate-bounce">🎁</span>
