@@ -320,114 +320,32 @@ export async function executeTool(
 
     case "onboard_restaurant": {
       requirePermission(ws.ctx, "approve_restaurants");
-      const restaurantName = String(args.name || args.query || "New Partner Kitchen");
-      const cuisine = String(args.cuisine || "North Indian & Biryani");
-      const phone = String(args.phone || "9876543210");
-      const hours = String(args.hours || "10:00 - 23:00 (All Days)");
-      const commissionBps = typeof args.commissionBps === "number" ? args.commissionBps : 1000;
-      const zone = String(args.zone || "Karimganj Central / NE Hub");
-      const address = String(args.address || "Main Road, Karimganj, Assam");
-      const coverImage = String(
-        args.coverImage ||
-        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80"
-      );
-      const newRestId = `rst_${Date.now()}`;
-      const withImages = args.withImages !== false;
-
-      // 1-Command Full Menu Generator (Auto-attached on onboarding)
-      const autoDishes = [
-        {
-          name: "Signature Chicken Dum Biryani",
-          category: "Biryani & Rice",
-          diet: "NONVEG" as const,
-          pricePaise: 24000,
-          prepMinutes: 20,
-          description: "Slow-cooked aromatic basmati rice layered with spiced tender chicken, saffron, and crispy onions.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Paneer Butter Masala",
-          category: "Main Course",
-          diet: "VEG" as const,
-          pricePaise: 18000,
-          prepMinutes: 15,
-          description: "Fresh cottage cheese cubes in a rich, buttery tomato cream gravy with fragrant kasuri methi.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Butter Naan (2 pcs)",
-          category: "Breads",
-          diet: "VEG" as const,
-          pricePaise: 6000,
-          prepMinutes: 8,
-          description: "Traditional tandoor-baked leavened flatbread brushed with golden farm butter.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: false,
-          bestSeller: true,
-        },
-        {
-          name: "Tandoori Chicken Full",
-          category: "Starters & Tandoor",
-          diet: "NONVEG" as const,
-          pricePaise: 38000,
-          prepMinutes: 25,
-          description: "Whole chicken marinated overnight in Greek yogurt, Kashmiri chili, and roasted garam masala.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: false,
-        },
-        {
-          name: "Crispy Chicken Steamed Momos (6 pcs)",
-          category: "Starters & Snacks",
-          diet: "NONVEG" as const,
-          pricePaise: 12000,
-          prepMinutes: 12,
-          description: "Delicate dumplings stuffed with seasoned minced chicken, served with spicy red chutney.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Gulab Jamun (2 pcs)",
-          category: "Desserts",
-          diet: "VEG" as const,
-          pricePaise: 5000,
-          prepMinutes: 5,
-          description: "Warm golden milk-solid dumplings soaked in green cardamom and rose water sugar syrup.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1589119908995-c6837fa14d48?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: false,
-          bestSeller: false,
-        },
-      ];
+      const name = String(args.name ?? "").trim();
+      const cuisine = String(args.cuisine ?? "").trim();
+      const phone = String(args.phone ?? "").trim();
+      const hours = String(args.hours ?? "").trim();
+      const address = String(args.address ?? "").trim();
+      const zone = String(args.zone ?? "").trim();
+      if (!name || !cuisine || !phone || !hours || !address || !zone) {
+        return {
+          status: "ONBOARDING_INPUT_REQUIRED",
+          dataMode: "PRODUCTION",
+          created: false,
+          requiredFields: ["name", "cuisine", "phone", "hours", "address", "zone"],
+          menuPublished: false,
+          note: "Umar OS will not invent restaurant identity, contact, location, hours, pricing, menu items, or photography. Verified onboarding data must be supplied before a real record can be created.",
+        };
+      }
 
       return {
-        restaurantId: newRestId,
-        name: restaurantName,
-        cuisine,
-        phone,
-        status: "ACTIVE",
-        onboardedAt: new Date().toISOString(),
-        commissionBps,
-        operatingHours: hours,
-        zone,
-        address,
-        coverImage,
-        payoutSchedule: "WEEKLY_WEDNESDAY",
-        menuStatus: "PUBLISHED_LIVE",
-        initialMenu: {
-          categoriesCount: 5,
-          dishesCount: autoDishes.length,
-          dishes: autoDishes,
-          hasRealisticImages: withImages,
-        },
-        note: "Successfully onboarded in 1 command via Master AI: full kitchen profile active, operating hours set, and live menu with authentic dish photography published.",
+        status: "ONBOARDING_READY_FOR_VERIFIED_WRITE",
+        dataMode: "PRODUCTION",
+        created: false,
+        restaurant: { name, cuisine, phone, hours, address, zone },
+        menuPublished: false,
+        note: "Verified restaurant information is present. The real onboarding write must use the authorized restaurant onboarding service and return its receipt before the restaurant is reported ACTIVE.",
       };
     }
-
     case "generate_menu": {
       requirePermission(ws.ctx, "manage_cms");
       const withImages = args.withImages !== false;
