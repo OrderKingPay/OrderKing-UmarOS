@@ -1414,50 +1414,32 @@ export async function executeTool(
 
     case "autonomous_workforce_replacement_orchestrator": {
       requirePermission(ws.ctx, "access_AI");
+      const sql = await getSql();
+      const rows = await sql.query<{ department: string; status: string; count: number }>(
+        `select department, status, count(*)::int as count
+         from employees
+         where org_id = $1
+         group by department, status
+         order by department, status`,
+        [ws.ctx.orgId],
+      );
       return {
-        status: "WORKFORCE_REPLACEMENT_ORCHESTRATION_ACTIVE",
+        status: "WORKFORCE_TELEMETRY_AVAILABLE",
         timestamp: new Date().toISOString(),
-        autonomousDepartments: [
-          {
-            department: "Autonomous CFO & Treasury",
-            humanStaffReplaced: 8,
-            status: "100_PERCENT_AUTONOMOUS",
-            currentOperations: "Automated double-entry reconciliation, payout velocity controls, liquid fund yield arbitrage, and GST ITC filing with zero drift.",
-          },
-          {
-            department: "Autonomous COO & Dispatch Fleet",
-            humanStaffReplaced: 18,
-            status: "100_PERCENT_AUTONOMOUS",
-            currentOperations: "Sub-second batching, predictive pre-dispatch, geo-polygon auto-balancing, and rider earnings optimization.",
-          },
-          {
-            department: "Autonomous 24/7 Customer Support & Ombudsman",
-            humanStaffReplaced: 35,
-            status: "100_PERCENT_AUTONOMOUS",
-            currentOperations: "Instant multi-lingual AI complaint resolution, RBI/Consumer Affairs escalation handling, and automated refund settlement within policy limits.",
-          },
-          {
-            department: "Autonomous Merchant & Kitchen Director",
-            humanStaffReplaced: 12,
-            status: "100_PERCENT_AUTONOMOUS",
-            currentOperations: "Universal POS/printer bridge synchronization, automated menu engineering, dynamic pricing, and inventory stock-out prevention.",
-          },
-          {
-            department: "Autonomous Growth, Marketing & Alliances",
-            humanStaffReplaced: 14,
-            status: "100_PERCENT_AUTONOMOUS",
-            currentOperations: "Bajaj Finserv affiliate tracking, corporate B2B meal agreements, dynamic King Coins rewards, and hyper-personalized notifications.",
-          },
-        ],
-        totalHumanStaffReplaced: 87,
-        monthlyPayrollSavedPaise: 435000000,
-        systemReliabilityRate: "99.998%",
-        humanInterventionRequirement: "ZERO_ROUTINE_STAFF_REQUIRED",
-        founderDirectAccess: "DIRECT_EXECUTIVE_TELEMETRY_VIA_HDMASTER",
-        verdict: "Complete workforce autonomy verified. Zero salary burn, zero human latency, 100% auditable deterministic execution.",
+        dataMode: "PRODUCTION",
+        departments: rows.map((r) => ({
+          department: r.department || "UNSPECIFIED",
+          employeeCount: Number(r.count || 0),
+          status: r.status || "UNKNOWN",
+        })),
+        humanStaffReplaced: null,
+        totalHumanStaffReplaced: null,
+        monthlyPayrollSavedPaise: null,
+        systemReliabilityRate: null,
+        humanInterventionRequirement: "NOT_MEASURED",
+        verdict: "Live employee records were read from the canonical database. Workforce replacement, payroll savings, autonomy percentage, and reliability claims are not inferred from employee counts and remain UNVERIFIED until separately measured.",
       };
     }
-
     case "autonomous_mind_reader_telemetry": {
       requirePermission(ws.ctx, "view_analytics");
       return {
@@ -1541,61 +1523,45 @@ export async function executeTool(
 
     case "autonomous_customer_addiction_and_gamification_director": {
       requirePermission(ws.ctx, "manage_promotions");
+      const q = await import("../server/queries.server.ts");
+      const analytics = await q.analyticsSeries(ws.ctx);
       return {
-        status: "GAMIFICATION_RETENTION_OPTIMAL",
+        status: "RETENTION_ANALYTICS_AVAILABLE",
         timestamp: new Date().toISOString(),
         gamificationMetrics: {
-          dailyStreakActiveUsers: 3840,
-          luckyJackpotDailySpins: 2150,
-          kingCoinsCirculation: 4280000,
-          kingCoinsBurnRateFoodCheckout: "24.6%",
-          vipClubMembersBreakdown: {
-            bronze: 2450,
-            silver: 1120,
-            gold: 380,
-            kingsCircleElite: 95,
-          },
-          repeatOrderFrequencyLift: "+46.8%",
-          customer7DayRetentionRate: "88.4%",
+          dailyStreakActiveUsers: null,
+          luckyJackpotDailySpins: null,
+          kingCoinsCirculation: null,
+          kingCoinsBurnRateFoodCheckout: null,
+          vipClubMembersBreakdown: null,
+          repeatOrderFrequencyLift: null,
+          customer7DayRetentionRate: null,
         },
-        dopamineMechanismsActive: [
-          "LUCKY_JACKPOT_SPIN_WHEEL",
-          "MYSTERY_SCRATCH_CARDS",
-          "7_DAY_STREAK_BONUSES",
-          "KING_COINS_FOOD_DISCOUNT_BURN",
-          "VIP_CLUB_TIER_MULTIPLIERS",
-        ],
-        verdict: "Customer habit and retention loops operating at maximum addiction elasticity with healthy unit economics.",
+        retentionDesign: {
+          status: "AVAILABLE_FOR_POLICY_REVIEW",
+          mechanisms: [
+            "STREAKS",
+            "LOYALTY_REWARDS",
+            "PERSONALIZED_OFFERS",
+            "REFERRAL_REWARDS",
+          ],
+        },
+        evidence: analytics,
+        verdict: "Retention and loyalty features can be operated, but adoption, retention lift, and coin economics are only reported after measurement from canonical customer/ledger data.",
       };
     }
-
     case "autonomous_universal_hardware_and_pos_director": {
       requirePermission(ws.ctx, "view_restaurants");
       return {
-        status: "UNIVERSAL_HARDWARE_AND_POS_HEALTHY",
+        status: "INTEGRATION_HEALTH_NOT_MEASURED",
         timestamp: new Date().toISOString(),
-        monitoredKitchensCount: 48,
-        hardwareInterfaceSummary: {
-          networkLanIpPrinters: { total: 28, online: 28, avgLatencyMs: 115 },
-          bluetoothThermalPrinters: { total: 14, online: 14, avgLatencyMs: 240 },
-          usbDirectTerminals: { total: 6, online: 6, avgLatencyMs: 75 },
-        },
-        posBridgeSyncSummary: {
-          petpooja: { outlets: 22, status: "ALL_HEALTHY", avgSyncMs: 42 },
-          urbanpiper: { outlets: 14, status: "ALL_HEALTHY", avgSyncMs: 38 },
-          posist: { outlets: 6, status: "ALL_HEALTHY", avgSyncMs: 48 },
-          dotpeAndTablecheck: { outlets: 4, status: "ALL_HEALTHY", avgSyncMs: 39 },
-          customWebhooks: { outlets: 2, status: "ALL_HEALTHY", avgSyncMs: 55 },
-        },
-        selfHealingInterventions: {
-          autoReconnectedSockets: 2,
-          bufferedKotsDuringPaperOut: 0,
-          droppedOrdersCount: 0,
-        },
-        verdict: "Universal restaurant hardware and POS bridges functioning with 99.99% uptime and zero dropped orders.",
+        monitoredKitchensCount: null,
+        hardwareInterfaceSummary: null,
+        posBridgeSyncSummary: null,
+        selfHealingInterventions: null,
+        verdict: "POS, printer, and hardware health requires real connector heartbeat telemetry. No device counts, latency, uptime, or dropped-order figures are fabricated.",
       };
     }
-
     case "founder_private_cash_vault_telemetry": {
       requirePermission(ws.ctx, "view_finance");
       const vaultSummary = calculateFounderRetainedCashVault({
@@ -1984,80 +1950,75 @@ export async function executeTool(
 
     case "market_competitive_radar": {
       requirePermission(ws.ctx, "view_analytics");
+      const q = await import("../server/queries.server.ts");
+      const analytics = await q.analyticsSeries(ws.ctx);
       return {
-        status: "COMPETITIVE_RADAR_ACTIVE",
+        status: "INTERNAL_ANALYTICS_AVAILABLE",
         timestamp: new Date().toISOString(),
-        radarMetrics: {
-          competitorDeliverySpeed: {
-            zomatoAvgMinutes: 28.4,
-            swiggyAvgMinutes: 29.1,
-            zeptoCafeAvgMinutes: 22.0,
-            orderKingAvgMinutes: 18.8,
-            speedAdvantageMinutes: 9.6,
-          },
-          priceElasticityIndex: 1.24,
-          takeRateComparison: {
-            zomatoSwiggyTakeRatePercent: "24% - 28%",
-            orderKingTakeRatePercent: "12% - 15%",
-            merchantMarginAdvantagePercent: "+12% higher profit for partners",
-          },
-          microZoneIntelligence: [
-            { zone: "Koramangala", orderKingMarketShare: "38.2%", zomatoShare: "34.1%", trend: "GAINING" },
-            { zone: "Indiranagar", orderKingMarketShare: "35.6%", zomatoShare: "36.2%", trend: "PARITY" },
-            { zone: "HSR Layout", orderKingMarketShare: "41.0%", zomatoShare: "31.5%", trend: "DOMINANT" },
-            { zone: "Whitefield", orderKingMarketShare: "29.4%", zomatoShare: "38.0%", trend: "EXPANDING" },
-          ],
-          frontierRecommendation: "Deploy KingClub zero-delivery-fee bundling in Whitefield to capture remaining 8.6% market share from competitors.",
+        orderKing: analytics,
+        competitorBenchmarks: {
+          status: "NOT_CONFIGURED",
+          source: null,
+          zomatoAvgMinutes: null,
+          swiggyAvgMinutes: null,
+          zeptoCafeAvgMinutes: null,
+          marketShareByZone: null,
+          takeRateComparison: null,
         },
+        frontierRecommendation: "Use verified internal OrderKing telemetry first. External competitor benchmarks require an approved, current data source and are not fabricated.",
       };
     }
-
     case "predictive_pre_dispatch": {
       requirePermission(ws.ctx, "modify_orders");
+      const q = await import("../server/queries.server.ts");
+      const analytics = await q.analyticsSeries(ws.ctx);
       return {
-        status: "PREDICTIVE_PRE_DISPATCH_OPTIMIZED",
+        status: "PREDICTIVE_ENGINE_STATUS_UNVERIFIED",
         timestamp: new Date().toISOString(),
         dispatchMetrics: {
-          activePreDispatchedBatches: 28,
-          averageRiderWaitTimeMinutes: 1.8,
-          industryStandardWaitMinutes: 8.5,
-          deliveryTimeSlashedMinutes: 6.4,
-          sub20MinDeliverySuccessRate: "94.6%",
-          mlKitchenPrepModel: "Gradient-Boosted Prep Regressor v4.2",
-          prepVarianceDeltaSeconds: 84,
+          activePreDispatchedBatches: null,
+          averageRiderWaitTimeMinutes: null,
+          industryStandardWaitMinutes: null,
+          deliveryTimeSlashedMinutes: null,
+          sub20MinDeliverySuccessRate: null,
+          mlKitchenPrepModel: "NOT_VERIFIED",
+          prepVarianceDeltaSeconds: null,
         },
-        autonomousActions: [
-          "Pre-allocated nearest available rider 4.2 minutes prior to kitchen dish completion",
-          "Synchronized kitchen KDS timer with rider GPS telemetry for zero-idle handoff",
-          "Dynamic cluster batching for adjacent apartment towers with sub-3 minute delta",
-        ],
-        result: "Deliveries executing at 18.8 minutes average, surpassing industry benchmark of 28.4 minutes.",
+        evidence: {
+          source: "HDmaster analyticsSeries",
+          data: analytics,
+          status: "REAL_SOURCE_AVAILABLE_BUT_PREDICTIVE_METRICS_NOT_DERIVED_HERE",
+        },
+        autonomousActions: [],
+        result: "No dispatch performance number is claimed until it is measured from order/rider event telemetry.",
       };
     }
-
     case "optimize_treasury_yield": {
       requirePermission(ws.ctx, "view_finance");
+      const q = await import("../server/queries.server.ts");
+      const finance = await q.financeSummary(ws.ctx);
       return {
-        status: "TREASURY_YIELD_OPTIMIZED",
+        status: "TREASURY_TELEMETRY_AVAILABLE",
         timestamp: new Date().toISOString(),
+        finance,
         floatAccounting: {
-          totalEscrowFloatPaise: 1485000000,
-          instantLiquidityReservePaise: 371250000,
-          deployableTreasuryFloatPaise: 1113750000,
-          yieldVehicle: "RBI-Regulated Tri-party Repo (TREPS) & Sovereign Liquid Funds",
-          annualizedYieldPercent: 6.75,
-          projectedAnnualYieldPaise: 75178125,
-          projectedDailyYieldPaise: 205967,
+          totalEscrowFloatPaise: null,
+          instantLiquidityReservePaise: null,
+          deployableTreasuryFloatPaise: null,
+          yieldVehicle: "NOT_CONFIGURED",
+          annualizedYieldPercent: null,
+          projectedAnnualYieldPaise: null,
+          projectedDailyYieldPaise: null,
         },
         regulatoryCompliance: {
-          rbiEscrowSection47A: "COMPLIANT",
-          doubleEntryLedgerInvariant: "PRESERVED",
-          principalRisk: "ZERO (100% Sovereign Collateralized)",
+          status: "NOT_VERIFIED_BY_THIS_TOOL",
+          rbiEscrowSection47A: null,
+          doubleEntryLedgerInvariant: null,
+          principalRisk: null,
         },
-        result: "Escrow float automatically sweeps to overnight TREPS yielding 6.75% annualized with instant liquidity backstop.",
+        result: "Canonical finance telemetry is available. Treasury investments, yields, escrow treatment, and legal compliance are not inferred and remain UNVERIFIED until the licensed finance/treasury providers and ledgers are queried.",
       };
     }
-
     case "neural_fraud_sentinel": {
       requirePermission(ws.ctx, "view_risk");
       return {
