@@ -1531,47 +1531,26 @@ export async function executeTool(
     }
     case "maximize_profit_margins": {
       requirePermission(ws.ctx, "manage_promotions");
-      const fin = await q.financeSummary(ws.ctx);
-      const gmv = typeof fin.gmv === "number" && fin.gmv > 0 ? fin.gmv : 15_000_000;
-      const currentTakeRateBps = ws.settings?.commissionBps ?? 1200;
-      const optimizedTakeRateBps = Math.min(2200, currentTakeRateBps + 350);
-      const currentGrossMarginPaise = Math.round((gmv * currentTakeRateBps) / 10000);
-      const optimizedGrossMarginPaise = Math.round((gmv * optimizedTakeRateBps) / 10000);
-      const monthlyEbitdaUpliftPaise = (optimizedGrossMarginPaise - currentGrossMarginPaise) * 30;
-
+      const q = await import("../server/queries.server.ts");
+      const finance = await q.financeSummary(ws.ctx);
       return {
-        status: "PROFIT_OPTIMIZED",
+        status: "PROFIT_OPTIMIZATION_PROPOSAL_ONLY",
         timestamp: new Date().toISOString(),
-        dailyGmvPaise: gmv,
-        currentTakeRateBps,
-        optimizedTakeRateBps,
-        currentDailyMarginPaise: currentGrossMarginPaise,
-        optimizedDailyMarginPaise: optimizedGrossMarginPaise,
-        projectedMonthlyEbitdaUpliftPaise: monthlyEbitdaUpliftPaise,
+        currentFinance: finance,
+        currentTakeRateBps: ws.settings?.commissionBps ?? null,
+        optimizedTakeRateBps: null,
+        currentDailyMarginPaise: null,
+        optimizedDailyMarginPaise: null,
+        projectedMonthlyEbitdaUpliftPaise: null,
         marginDefenseActions: [
-          {
-            area: "Dynamic Delivery Surge",
-            action: "Apply dynamic +₹5 fee buffer during lunch peak (12:30–14:30) in high-demand zones",
-            projectedDailyUpliftPaise: 350000,
-            risk: "LOW",
-          },
-          {
-            area: "Commission Realignment",
-            action: "Graduate 0% trial merchants to standard 14% take-rate after 30 days",
-            projectedDailyUpliftPaise: 820000,
-            risk: "LOW",
-          },
-          {
-            area: "Eco-Packaging Standard",
-            action: "Mandate uniform packaging charge of ₹15 on baskets exceeding ₹300",
-            projectedDailyUpliftPaise: 280000,
-            risk: "LOW",
-          },
+          "Measure delivery-fee elasticity before changing customer pricing",
+          "Measure restaurant contribution margin before changing commission",
+          "Use verified ad-attribution telemetry before increasing merchant ad budgets",
         ],
-        ownerTakeHomeGrowth: "+24.8% net EBITDA expansion",
+        ownerTakeHomeGrowth: null,
+        note: "No projected uplift is claimed from a hardcoded GMV fallback or assumed conversion rate.",
       };
     }
-
     case "harvest_financial_bonuses": {
       requirePermission(ws.ctx, "view_finance");
       const bonuses = [
