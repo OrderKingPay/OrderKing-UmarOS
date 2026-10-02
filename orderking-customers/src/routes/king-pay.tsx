@@ -3459,35 +3459,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             const amt = res.amount ? parseInt(res.amount, 10) : 250;
             setScanAmount(String(amt));
             setShowScanner(false);
-
-            if (res.amount) {
-              if (amt > walletBalance) {
-                toast.error(`Scanned ₹${amt} for ${res.payeeName || res.upiId}, but wallet has ₹${walletBalance}. Please add money.`);
-                setShowAddMoney(true);
-                return;
-              }
-              const newBal = walletBalance - amt;
-              setWalletBalance(newBal);
-              if (typeof window !== "undefined") {
-                localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-              }
-              addTransaction(amt, `Paid ${res.payeeName || res.upiId}`, "debit");
-              playSoundboxChime(amt);
-              toast.success(`⚡ Paid ₹${amt} to ${res.payeeName || res.upiId} via KingPay!`);
-
-              setScratched(false);
-              setScratchReward({
-                title: "🎉 Instant Cashback Won!",
-                desc: `Rewarded for paying ${res.payeeName || res.upiId}!`,
-                amount: Math.floor(5 + Math.random() * 20),
-                coins: Math.floor(50 + Math.random() * 150),
-              });
-              setShowScratchCard(true);
-            } else {
-              toast.info(`Scanned ${res.payeeName || res.upiId}. Enter amount to pay.`);
-              setScannerTab("manual");
-              setShowScanner(true);
-            }
+            toast.info(
+              res.amount
+                ? "Scanned payment details captured. Payment is unavailable until a verified UPI rail is connected."
+                : `Scanned ${res.payeeName || res.upiId || "merchant"}. Enter an amount when a verified payment rail is connected.`
+            );
+            setScannerTab("manual");
+            setShowScanner(true);
+          }}
           }}
         />
 
