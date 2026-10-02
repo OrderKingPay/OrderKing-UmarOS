@@ -92,7 +92,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     apiGatewayUrl: process.env.API_GATEWAY_URL ?? "",
     sslEnforced: true,
     customDomainVerified: false,
-    dnsCnameTarget: process.env.VERCEL_DNS_CNAME_TARGET ?? "",
+    dnsCnameTarget: process.env.CF_PAGES_URL ?? "",
   },
   paymentGateway: {
     provider: "RAZORPAY",
