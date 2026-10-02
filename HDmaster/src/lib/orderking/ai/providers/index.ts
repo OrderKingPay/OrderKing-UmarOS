@@ -35,8 +35,9 @@ export class ModelRouterService {
       if (p.isConfigured) return p;
     }
 
-    // Auto-fallback hierarchy
-    const priority = ["gemini", "anthropic", "openai", "xai"];
+    // OpenAI is the mandatory primary AI provider for the OrderKing/Umar OS runtime.
+    // Other providers remain explicitly selectable, but the automatic path never hides an absent OpenAI credential.
+    const priority = ["openai", "gemini", "anthropic", "xai"];
     for (const id of priority) {
       const p = this.providers.get(id);
       if (p && p.isConfigured) return p;
@@ -49,30 +50,30 @@ export class ModelRouterService {
     return [
       {
         id: "gemini",
-        name: "Google Gemini 2.0 / 2.5",
+        name: "Google Gemini",
         isConfigured: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
-        supportedModels: ["gemini-2.0-flash", "gemini-2.5-pro"],
+        supportedModels: ["runtime-discovered"],
         requiredEnvVar: "GEMINI_API_KEY",
       },
       {
         id: "anthropic",
-        name: "Anthropic Claude 3.7",
+        name: "Anthropic Claude",
         isConfigured: Boolean(process.env.ANTHROPIC_API_KEY),
-        supportedModels: ["claude-3-7-sonnet", "claude-3-5-sonnet"],
+        supportedModels: ["runtime-discovered"],
         requiredEnvVar: "ANTHROPIC_API_KEY",
       },
       {
         id: "openai",
-        name: "OpenAI GPT-4o / o3-mini",
+        name: "OpenAI GPT-5.6 Sol / GPT-5.6 Luna",
         isConfigured: Boolean(process.env.OPENAI_API_KEY),
-        supportedModels: ["gpt-4o", "o3-mini"],
+        supportedModels: ["gpt-5.6-sol", "gpt-5.6-luna"],
         requiredEnvVar: "OPENAI_API_KEY",
       },
       {
         id: "xai",
-        name: "xAI Grok 3 / 2",
+        name: "xAI Grok",
         isConfigured: Boolean(process.env.XAI_API_KEY),
-        supportedModels: ["grok-3", "grok-2"],
+        supportedModels: ["runtime-discovered"],
         requiredEnvVar: "XAI_API_KEY",
       }
     ];
