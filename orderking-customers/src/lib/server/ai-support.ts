@@ -100,7 +100,7 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
           orderId: order.id,
           issueType: data.issueType,
           actionTaken: "AUTO_CANCELLED",
-          title: "Order Cancelled";
+          title: "Order Cancelled",
           explanation,
         };
       } else {
