@@ -138,28 +138,20 @@ test('Business OS - Domain Business Intelligence Modules are evidence-gated', as
 });
 
 
-test('Business OS - Autonomous Command Orchestrator (5-Stage Pipeline)', async () => {
-  // Execute a single command through the complete 5-stage pipeline
-  const result = await autonomousCommandOrchestrator.executeFounderCommand(
-    'Audit restaurant operations, check packaging stock, and prepare weekly finance summary.'
-  );
-
-  assert.ok(result.commandId.startsWith('cmd-'), 'Command ID must start with cmd-');
-  assert.ok(result.executionSteps.length >= 5, 'Must execute across all 5 stages');
-
-  // Stage checks
-  const stages = result.executionSteps.map((s) => s.stage);
-  assert.ok(stages.includes('PLAN'), 'Must include PLAN stage');
-  assert.ok(stages.includes('PARALLEL_AGENTS'), 'Must include PARALLEL_AGENTS stage');
-  assert.ok(stages.includes('MULTI_MODEL_VERIFY'), 'Must include MULTI_MODEL_VERIFY stage');
-  assert.ok(stages.includes('AUTHORIZATION'), 'Must include AUTHORIZATION stage');
-  assert.ok(stages.includes('EXECUTE'), 'Must include EXECUTE stage');
-
-  // Multi-model consensus verification
-  assert.ok(result.consensus.verdicts.length >= 1, 'Consensus must have verdicts');
-  assert.ok(result.consensus.consensusAgreementScore >= 90, 'Consensus agreement score must be >= 90');
-
-  // Concise executive summary
-  assert.ok(result.conciseSummary.length > 50, 'Concise summary must be informative');
-  assert.ok(result.totalDurationMs >= 0, 'Duration should be tracked');
+test('Business OS - Autonomous Command Orchestrator fails closed without OpenAI', async () => {
+  const originalKey = process.env.OPENAI_API_KEY;
+  delete process.env.OPENAI_API_KEY;
+  try {
+    await assert.rejects(
+      () =>
+        autonomousCommandOrchestrator.executeFounderCommand(
+          'Audit restaurant operations, check packaging stock, and prepare weekly finance summary.'
+        ),
+      /OPENAI_API_KEY is not configured/,
+      "Founder command execution must not simulate AI verification",
+    );
+  } finally {
+    if (originalKey === undefined) delete process.env.OPENAI_API_KEY;
+    else process.env.OPENAI_API_KEY = originalKey;
+  }
 });
