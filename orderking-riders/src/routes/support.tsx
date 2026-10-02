@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
 import { useI18n } from "@/lib/rider/i18n-context";
+import { useCurrentRider } from "@/components/rider/use-current-rider";
 import { createTicketFn, listTicketsFn, riderAiSupportFn } from "@/lib/server/rider-fns";
 import type { TicketTopic } from "@/lib/rider/types";
 import { useEffect, useState, type FormEvent } from "react";
@@ -35,6 +36,7 @@ function Page() {
   const [aiResolution, setAiResolution] = useState<string>("");
   const [aiMessage, setAiMessage] = useState("");
   const [aiPending, setAiPending] = useState(false);
+  const rider = useCurrentRider();
 
   async function load() {
     try {
@@ -195,6 +197,54 @@ function Page() {
             <a href="tel:112" className="rounded-lg border border-red-200 bg-red-50 p-2.5 text-xs font-bold text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">🚨 112 Emergency SOS</a>
             <a href="tel:1930" className="rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-xs font-bold text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">💳 1930 Cyber Fraud</a>
           </div>
+        </Card>
+
+        {/* Responsible geographic growth tasks */}
+        <Card className="space-y-3 border-primary/20 bg-primary/5 p-4">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-bold">Local Growth & Share</h2>
+              <p className="text-xs text-muted-foreground">
+                Share OrderKing with people you choose. Zone, referral, and campaign attribution remain platform-controlled.
+              </p>
+            </div>
+            <Badge tone="muted">{rider?.profile?.preferredZones?.[0] ?? "Your area"}</Badge>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                const shareData = {
+                  title: "OrderKing",
+                  text: "Try OrderKing for local food delivery.",
+                  url: window.location.origin,
+                };
+                if (navigator.share) {
+                  void navigator.share(shareData).catch(() => undefined);
+                } else {
+                  void navigator.clipboard?.writeText(window.location.origin);
+                }
+              }}
+            >
+              Share OrderKing
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                const text = "OrderKing rider referral / local share";
+                void navigator.clipboard?.writeText(text);
+              }}
+            >
+              Copy Share Prompt
+            </Button>
+          </div>
+
+          <p className="text-[11px] text-muted-foreground">
+            No bulk SMS, WhatsApp broadcast, fake reviews, or automatic outreach is performed from this screen.
+          </p>
         </Card>
 
         {/* Traditional Ticket Logging */}
