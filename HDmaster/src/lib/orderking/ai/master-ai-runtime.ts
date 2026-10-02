@@ -1600,112 +1600,67 @@ export async function executeTool(
 
     case "generate_corporate_alliance": {
       requirePermission(ws.ctx, "manage_promotions");
-      const partnerName = String(args.partnerName || args.name || "HDFC Bank & Corporate Park Karimganj");
-      const allianceType = String(args.type || "CO_FUNDED_BANK_DISCOUNT");
-      const allianceId = `all_${Date.now()}`;
-
+      const partnerName = String(args.partnerName ?? args.name ?? "").trim();
+      const allianceType = String(args.type ?? "").trim();
+      if (!partnerName || !allianceType) {
+        return {
+          status: "ALLIANCE_INPUT_REQUIRED",
+          created: false,
+          requiredFields: ["partnerName", "type"],
+          note: "No corporate partner, funding split, order commitment, discount, GMV, or margin is invented.",
+        };
+      }
       return {
-        allianceId,
+        status: "ALLIANCE_PROPOSAL_READY",
+        allianceId: null,
+        created: false,
         partnerName,
         allianceType,
-        status: "ALLIANCE_ACTIVE",
-        createdAt: new Date().toISOString(),
-        contractTerms: {
-          fundingSplit: "70% Partner Funded / 30% Platform Funded",
-          minimumMonthlyOrderCommitment: 3500,
-          discountStructure: "10% Instant Discount up to ₹100 on orders above ₹499",
-          exclusiveCorporateCateringRights: true,
-        },
-        projectedMonthlyGmvPaise: 45000000,
-        projectedPlatformFeePaise: 5400000,
-        zeroDownsideGuarantee: "Platform incurs zero un-reimbursed promo expense.",
+        contractTerms: null,
+        projectedMonthlyGmvPaise: null,
+        projectedPlatformFeePaise: null,
+        zeroDownsideGuarantee: null,
+        nextStep: "Obtain documented commercial terms and explicit approval before creating or activating an alliance.",
       };
     }
-
     case "customer_mind_reader_recommend": {
-      const customerId = id || "cust_active";
-      const now = new Date();
-      const currentHour = now.getHours();
-      let mealContext = "LATE_NIGHT_SNACKS";
-      let cravingMood = "Comfort Fast Food & Desserts";
-
-      if (currentHour >= 6 && currentHour < 11) {
-        mealContext = "BREAKFAST";
-        cravingMood = "Hot Tea, Parathas, Kachoris & Fresh Juice";
-      } else if (currentHour >= 11 && currentHour < 16) {
-        mealContext = "LUNCH_PEAK";
-        cravingMood = "Aromatic Dum Biryani, Bengali Thalis & Rice Bowls";
-      } else if (currentHour >= 16 && currentHour < 19) {
-        mealContext = "EVENING_SNACKS";
-        cravingMood = "Crispy Momos, Samosas, Chai & Pastries";
-      } else if (currentHour >= 19 && currentHour < 23) {
-        mealContext = "DINNER_PEAK";
-        cravingMood = "Gourmet Pizza, Tandoori Platters, Curries & Naan";
-      }
-
-      const recommendations = [
-        {
-          dishName: "Royal Dum Mutton Biryani",
-          restaurant: "Grand Karimganj Kitchen",
-          cuisine: "Mughlai",
-          cravingScore: 98,
-          pricePaise: 38000,
-          prepAndDeliveryMinutes: 28,
-          whyRecommended: `Matches your high ${mealContext} preference and 4.9-star rating in your zone.`,
-        },
-        {
-          dishName: "Butter Chicken & Garlic Naan Combo",
-          restaurant: "Spice Symphony",
-          cuisine: "North Indian",
-          cravingScore: 95,
-          pricePaise: 32000,
-          prepAndDeliveryMinutes: 24,
-          whyRecommended: "Trending dish with 85% repeat ordering rate right now.",
-        },
-        {
-          dishName: "Warm Gulab Jamun (2 pcs)",
-          restaurant: "Sweet Bengal Delights",
-          cuisine: "Desserts",
-          cravingScore: 91,
-          pricePaise: 6000,
-          prepAndDeliveryMinutes: 15,
-          whyRecommended: "Perfect sweet pairing based on your previous order endings.",
-        },
-      ];
-
+      const customerId = id;
+      if (!customerId) throw new Error("customer_mind_reader_recommend requires customer id");
+      const q = await import("../server/queries.server.ts");
+      const customer = await q.getCustomer(ws.ctx, customerId);
       return {
         customerId,
-        timestamp: now.toISOString(),
-        mealContext,
-        cravingMood,
-        weatherSignal: "Clear, Warm Evening",
-        conversionPredictionMultiplier: "3.6x higher CTR vs standard catalog",
-        recommendations,
+        timestamp: new Date().toISOString(),
+        status: "CUSTOMER_DATA_AVAILABLE_RECOMMENDATION_NOT_SYNTHESIZED",
+        customer,
+        mealContext: null,
+        cravingMood: null,
+        weatherSignal: null,
+        conversionPredictionMultiplier: null,
+        recommendations: [],
+        note: "No restaurant, price, rating, conversion, or craving score is fabricated. Recommendations require the live customer profile, current serviceability, current menu/catalog data, and approved recommendation model.",
       };
     }
-
     case "optimize_kingpay_flow": {
       requirePermission(ws.ctx, "view_finance");
       return {
-        status: "KINGPAY_FLOW_OPTIMIZED",
+        status: "KINGPAY_FLOW_READINESS_ONLY",
         timestamp: new Date().toISOString(),
         metrics: {
-          oneTapCheckoutLatencyMs: 165,
-          zeroDropCheckoutGuarantee: "ACTIVE",
-          offline2GTokenValiditySeconds: 180,
-          packetLossTolerancePercentage: 95,
-          cryptographicSignatureAlgorithm: "HMAC-SHA256",
+          oneTapCheckoutLatencyMs: null,
+          zeroDropCheckoutGuarantee: null,
+          offline2GTokenValiditySeconds: null,
+          packetLossTolerancePercentage: null,
+          cryptographicSignatureAlgorithm: "VERIFY_FROM_DEPLOYED_SECURITY_CONFIGURATION",
         },
         networkOptimizationsApplied: [
-          "Optimistic wallet balance deduction with instant local receipt",
-          "Cryptographic offline token validation resistant to replay attacks",
-          "Automatic background reconciliation queue with exponential backoff & jitter",
-          "Zero-dependency lightweight SVG fallbacks for slow 2G asset loads",
+          "Measure cold-start and checkout latency from real client telemetry",
+          "Verify offline queue replay and idempotency under controlled test traffic",
+          "Measure packet-loss tolerance before publishing a performance claim",
         ],
-        result: "KingPay checkout will execute smoothly and instantly without hanging or freezing even on congested 2G networks.",
+        result: "No zero-drop or sub-second performance guarantee is published without measured production telemetry.",
       };
     }
-
     case "market_competitive_radar": {
       requirePermission(ws.ctx, "view_analytics");
       const q = await import("../server/queries.server.ts");
@@ -1998,48 +1953,23 @@ export async function executeTool(
     case "autonomous_omni_prestige_grant_and_hyper_growth_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "OMNI_PRESTIGE_AND_HYPER_GROWTH_ORCHESTRATED",
+        status: "GRANT_AND_GROWTH_DISCOVERY_ONLY",
         timestamp: new Date().toISOString(),
-        totalDirectCashGrantsInr: 10500000,
-        totalCloudSubsidiesInr: 37400000,
-        totalGrantAndSubsidyVaultInr: 47900000,
-        governmentSubsidiesVault: {
-          assamStartupPolicy: "₹50,00,000 MAS Scale Grant + ₹5,00,000 Idea Grant (IIMCIP)",
-          dpiitStartupIndia: "₹20,00,000 SISFS Grant + ₹50,00,000 debt via partner incubators",
-          section80IacTaxHoliday: "₹35,00,000+ estimated 3-year 100% Income Tax savings",
-          dstNidhiPrayas: "₹10,00,000 prototype to commercial grant",
-          msmeIdeaHackathon: "₹15,00,000 innovation grant via PFMS direct transfer",
-          meityTide2: "₹7,00,000 (EIR) to ₹30,00,000 (Scale Grant)",
-          meityNpciReimbursement: "0.25% - 0.50% zero-MDR reimbursement on UPI/RuPay",
-          cloudInfrastructureCredits: "$450,000 USD (~₹3.74 Crore) via Google Cloud, AWS & Microsoft Azure",
-        },
-        academicKeynoteInvitations: [
-          { institution: "IIT Guwahati", topic: "Rural-First Hyperlocal Logistics & Autonomous AI Dispatch", honorarium: "₹50,000 + Campus Citation" },
-          { institution: "NIT Silchar", topic: "Overthrowing Zomato: How Localized Tech Beats Multinational Bloatware", honorarium: "₹35,000 + VIP Memento" },
-          { institution: "Assam University", topic: "Zero-Loss Unit Economics & 2G Resilient FinTech", honorarium: "University Citation & Honorarium" },
-          { institution: "Tezpur University", topic: "Hyperlocal Logistics in Assam: Conquering Remote Towns", honorarium: "Plaque & Honorarium" },
-          { institution: "IIT Bombay E-Summit", topic: "David vs Goliath: Bootstrapping an Indian Super-App against Decacorns", honorarium: "₹1,00,000 Travel & Showcase" },
-          { institution: "BITS Pilani Conquest", topic: "Zero-MDR FinTech & 2G Resilient Edge Delivery Networks", honorarium: "Honorarium & Syndicate Access" },
-          { institution: "IIM Calcutta Innovation Park", topic: "Empowering 500+ Kitchens with 0% Markup Aggregation", honorarium: "Institutional Mentorship" },
-        ],
-        nationalAwardsRegistry: [
-          { title: "National Startup Awards", authority: "DPIIT, Govt of India", prize: "₹10,00,000 Cash + Trophy" },
-          { title: "Assam Youth Entrepreneur of the Year", authority: "Govt of Assam & CII", prize: "State Felicitation & Memento" },
-          { title: "National MSME Award for Innovation", authority: "Ministry of MSME", prize: "₹3,00,000 Cash + PMO Felicitation" },
-          { title: "North East Business Excellence Award", authority: "ICC & Ministry of DoNER", prize: "Gold Memento & Citation" },
-          { title: "FICCI / ASSOCHAM India Digital Disruptor", authority: "FICCI & ASSOCHAM", prize: "National Leadership Trophy" },
-        ],
+        totalDirectCashGrantsInr: null,
+        totalCloudSubsidiesInr: null,
+        totalGrantAndSubsidyVaultInr: null,
+        governmentSubsidiesVault: [],
+        academicKeynoteInvitations: [],
+        nationalAwardsRegistry: [],
         hyperViralEngine: {
-          whatsAppStatusLoop: "1-Tap 'Share Scratch Card on Status -> Unlock ₹25' generates 50,000 daily local impressions at ₹0 ad spend",
-          metaMarketingApiV21: "Geofenced to 788710, 788711, 788712 @ ₹150/day reaching 3,200 local residents daily",
-          googleAdsPMax: "Performance Max campaign live with local store assets and search themes @ ₹200/day",
-          viralReelsScriptsCount: 3,
-          influencerBarterPitch: "Ready for local Instagram creators with ₹750 free food barter",
+          status: "NOT_EXECUTED",
+          projectedReach: null,
+          spend: null,
+          attribution: null,
         },
-        verdict: "Over ₹4.79 Crore in non-dilutive capital, 7 premier university keynote invitations, and 100,000x Meta/Google local geofenced reach activated with zero debt and zero equity dilution.",
+        nextStep: "Research current program eligibility and create application-ready drafts only after source verification and explicit approval.",
       };
     }
-
     case "autonomous_opportunity_radar_and_auto_booking_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
@@ -2149,25 +2079,20 @@ export async function executeTool(
     }
     case "autonomous_planetary_multi_repo_watchdog_and_self_healing_core": {
       requirePermission(ws.ctx, "access_AI");
-      const repos = ORDER_KING_REPOS.map((repo) => {
-        const exists = validateRepo(repo);
-        return {
-          repo,
-          existsOnDisk: exists,
-          canonicalContractStatus: exists ? "VERIFIED_PARITY" : "REMOTE_ONLY",
-        };
-      });
+      const repos = ORDER_KING_REPOS.map((repo) => ({
+        repo,
+        existsOnDisk: validateRepo(repo),
+      }));
       return {
-        status: "PLANETARY_MULTI_REPO_WATCHDOG_PASSED",
+        status: "MULTI_REPO_READINESS_CHECK",
         timestamp: new Date().toISOString(),
         scannedRepositoriesCount: repos.length,
         repositories: repos,
-        schemaParity: "100% SYNCHRONIZED",
-        testSuiteStatus: "ALL 129 HDMASTER TESTS & 73 CUSTOMER TESTS PASSING (0 FAILURES)",
-        verdict: "All 5 physical repositories verified with 100% schema parity and zero contract drift. Planetary stability guaranteed.",
+        schemaParity: null,
+        testSuiteStatus: "NOT_RUN_IN_THIS_REQUEST",
+        verdict: "Repository presence is reported only where the authorized workspace adapter can verify it. Schema parity, test pass counts, and stability are not claimed without fresh CI/test evidence.",
       };
     }
-
     case "autonomous_superpower_revenue_harvester_and_cash_generator": {
       requirePermission(ws.ctx, "view_finance");
       return {
@@ -2181,233 +2106,46 @@ export async function executeTool(
     }
     case "autonomous_corporate_catering_rfp_and_contract_dispatcher": {
       requirePermission(ws.ctx, "manage_promotions");
-      const { CORPORATE_CATERING_PIPELINE } = await import("@/lib/orderking/finance/revenue-harvester.ts");
-      const targetId = typeof args.id === "string" ? args.id : undefined;
-      const contracts = targetId
-        ? CORPORATE_CATERING_PIPELINE.filter((c) => c.id === targetId)
-        : CORPORATE_CATERING_PIPELINE;
-      const totalContractVolumePaise = contracts.reduce((sum, c) => sum + c.monthlyContractVolumePaise, 0);
-      const totalPlatformProfitPaise = contracts.reduce((sum, c) => sum + c.monthlyPlatformProfitPaise, 0);
-
+      const targetId = typeof args.id === "string" ? args.id.trim() : null;
       return {
-        status: "CORPORATE_CATERING_CONTRACTS_DISPATCHED",
+        status: "CORPORATE_CATERING_PROPOSAL_ONLY",
         timestamp: new Date().toISOString(),
-        dispatchedContractsCount: contracts.length,
-        totalMonthlyContractVolumeInr: `₹${(totalContractVolumePaise / 100).toLocaleString("en-IN")}`,
-        totalMonthlyPlatformProfitInr: `₹${(totalPlatformProfitPaise / 100).toLocaleString("en-IN")}`,
-        platformMargin: "15.0% Guaranteed Locked Margin",
-        contracts: contracts.map((c) => ({
-          id: c.id,
-          institution: c.institutionName,
-          department: c.contactDepartment,
-          monthlyPlates: c.monthlyPlatesEstimated,
-          monthlyVolumeInr: `₹${(c.monthlyContractVolumePaise / 100).toLocaleString("en-IN")}`,
-          monthlyProfitInr: `₹${(c.monthlyPlatformProfitPaise / 100).toLocaleString("en-IN")}`,
-          rfpLetterPreview: c.rfpProposalLetter.slice(0, 300) + "...",
-        })),
-        verdict: "Institutional corporate catering RFP proposals dispatched to NIT Silchar, Assam University, DC Office, Karimganj Civil Hospital, and Banking Hubs with 15% guaranteed platform margin.",
+        selectedPipelineId: targetId,
+        dispatchedContractsCount: 0,
+        totalMonthlyContractVolumeInr: null,
+        totalMonthlyPlatformProfitInr: null,
+        platformMargin: null,
+        contracts: [],
+        outreachExecuted: false,
+        nextStep: "Load verified institution records and obtain explicit approval before generating or sending any RFP.",
       };
     }
-
     case "autonomous_meity_zero_mdr_subsidy_claim_generator": {
       requirePermission(ws.ctx, "view_finance");
+      const quarter = typeof args.quarter === "string" ? args.quarter.trim() : "";
+      const upiCount = typeof args.upiCount === "number" ? args.upiCount : null;
+      const rupayCount = typeof args.rupayCount === "number" ? args.rupayCount : null;
+      const volumePaise = typeof args.volumePaise === "number" ? args.volumePaise : null;
+      if (!quarter || upiCount == null || rupayCount == null || volumePaise == null) {
+        return {
+          status: "CLAIM_INPUT_REQUIRED",
+          timestamp: new Date().toISOString(),
+          created: false,
+          requiredFields: ["quarter", "upiCount", "rupayCount", "volumePaise"],
+          note: "Eligibility, reimbursement rate, provider agreement, and government scheme version must be verified from current official/provider evidence before a claim schedule is generated.",
+        };
+      }
       const { generateMeityUpiClaimSchedule } = await import("@/lib/orderking/finance/revenue-harvester.ts");
-      const quarter = typeof args.quarter === "string" ? args.quarter : "Q1_2026_27";
       const claim = generateMeityUpiClaimSchedule({
         quarter,
-        upiTransactionsCount: typeof args.upiCount === "number" ? args.upiCount : 25000,
-        rupayTransactionsCount: typeof args.rupayCount === "number" ? args.rupayCount : 2500,
-        totalEligibleVolumePaise: typeof args.volumePaise === "number" ? args.volumePaise : 750000000,
+        upiTransactionsCount: upiCount,
+        rupayTransactionsCount: rupayCount,
+        totalEligibleVolumePaise: volumePaise,
       });
-
       return {
-        status: "MEITY_ZERO_MDR_CLAIM_SCHEDULE_COMPILED",
+        status: "CLAIM_SCHEDULE_COMPILED_FROM_SUPPLIED_INPUTS",
         timestamp: new Date().toISOString(),
-        batchId: claim.batchId,
-        reportingQuarter: claim.reportingQuarter,
-        eligibleUpiTransactions: claim.totalEligibleUpiTransactions,
-        eligibleRupayTransactions: claim.totalEligibleRupayTransactions,
-        eligibleVolumeInr: `₹${(claim.totalEligibleGmvPaise / 100).toLocaleString("en-IN")}`,
-        reimbursementPercentage: "0.40%",
-        claimAmountInr: `₹${(claim.totalClaimAmountPaise / 100).toLocaleString("en-IN")}`,
-        claimAmountPaise: claim.totalClaimAmountPaise,
-        nodalBankEscrowIfsc: claim.nodalBankEscrowIfsc,
-        xmlPayloadSnippet: claim.claimSubmissionXmlPayload,
-        verdict: `MeitY 0.40% reimbursement claim compiled. Total claim of ₹${(claim.totalClaimAmountPaise / 100).toLocaleString("en-IN")} ready for PFMS DBT direct credit.`,
+        ...claim,
+        note: "Compilation is not approval, filing, eligibility certification, or government payment confirmation.",
       };
     }
-
-    default:
-      throw new Error(`Tool '${name}' handler not connected.`);
-  }
-}
-
-export async function runMasterAi(
-  ws: Workspace,
-  input: MasterAiInput
-): Promise<MasterAiRuntimeResult> {
-  const question = input.question.trim();
-  if (!question) {
-    return { ok: false, error: "Question is required", status: 400 };
-  }
-  if (question.length > MAX_QUESTION_LENGTH) {
-    return { ok: false, error: "Question exceeds maximum length limit", status: 400 };
-  }
-
-  const specialist = getSpecialist(input.specialistId || "architect");
-  const systemPrompt = buildSystemPrompt(ws, input.mode, specialist);
-  const toolDefinitions = getActiveToolDefinitions(specialist);
-
-  // If this invocation carries an explicitly approved call, execute it immediately!
-  if (input.approvedCallName) {
-    const spec = MASTER_AI_TOOL_REGISTRY[input.approvedCallName as MasterAiToolName];
-    if (spec) {
-      try {
-        const result = await executeTool(ws, input.approvedCallName, input.approvedCallArgs || {});
-        await auditToolCall(ws, {
-          name: input.approvedCallName,
-          status: "executed",
-          risk: spec.risk,
-          callId: input.approvedCallId,
-          details: { approvedByUser: ws.ctx.userId },
-        });
-        return {
-          ok: true,
-          text: `Action \`${input.approvedCallName}\` was approved and executed successfully.\n\n\`\`\`json\n${JSON.stringify(result, null, 2)}\n\`\`\``,
-          provider: input.provider || "local_deterministic",
-          model: "governed-execution-engine",
-          specialist: { id: specialist.id, name: specialist.name, team: specialist.team, title: specialist.title },
-          toolCalls: [{ callId: input.approvedCallId, name: input.approvedCallName, status: "executed", risk: spec.risk }],
-          evidence: ["ACTION", "RESULT", "SYSTEM_DATA"],
-          pendingApprovals: [],
-        };
-      } catch (err) {
-        return {
-          ok: false,
-          error: err instanceof Error ? err.message : "Approved action execution failed",
-          status: 500,
-        };
-      }
-    }
-  }
-
-  const messages: ModelMessage[] = [
-    ...(input.conversation ?? [])
-      .slice(-MAX_CONVERSATION_MESSAGES)
-      .map((m) => ({ role: m.role, content: m.content.slice(0, MAX_MESSAGE_LENGTH) })),
-    { role: "user", content: question },
-  ];
-
-  const toolCallsSummary: ToolCallResult[] = [];
-  const pendingApprovals: PendingApproval[] = [];
-  const evidence = new Set<string>(["RESULT"]);
-  let activeProvider: string = input.provider || "local_deterministic";
-  let activeModel = "orderking-master-ai-v1";
-  let finalText = "";
-
-  for (let round = 0; round < MAX_ROUNDS; round++) {
-    const modelResponse = await routeModelTurn({
-      systemPrompt,
-      messages,
-      tools: toolDefinitions,
-      reasoningEffort: input.reasoningEffort,
-    }, input.provider as any);
-
-    activeProvider = modelResponse.provider;
-    activeModel = modelResponse.model;
-
-    // If model returned text and no tool calls, we are finished!
-    if (!modelResponse.toolCalls || modelResponse.toolCalls.length === 0) {
-      finalText = modelResponse.text || "Report generated from verified telemetry.";
-      break;
-    }
-
-    // Add assistant's tool-call response to history
-    messages.push({
-      role: "assistant",
-      content: modelResponse.text || `Executing specialist tools: ${modelResponse.toolCalls.map((t) => t.name).join(", ")}`,
-    });
-
-    // Execute each tool call
-    for (const call of modelResponse.toolCalls) {
-      const name = call.name;
-      const callId = call.callId;
-      const args = call.arguments || {};
-      const spec = MASTER_AI_TOOL_REGISTRY[name as MasterAiToolName];
-
-      if (!spec) {
-        toolCallsSummary.push({ callId, name, status: "unavailable" });
-        messages.push({ role: "tool", toolCallId: callId, name, content: JSON.stringify({ error: "Unknown tool" }) });
-        continue;
-      }
-
-      // Check risk & human approval barrier:
-      const needsApproval = requiresHumanApproval(spec.risk, spec.confirmationRequired) || spec.risk === "HIGH_RISK" || spec.risk === "FINANCIAL";
-      if (needsApproval && input.approvedCallId !== callId) {
-        const approvalItem: PendingApproval = {
-          callId,
-          toolName: name,
-          risk: spec.risk,
-          arguments: args,
-          description: spec.description,
-          requiredPermission: spec.requiredPermission,
-        };
-        pendingApprovals.push(approvalItem);
-        toolCallsSummary.push({ callId, name, status: "approval_required", risk: spec.risk });
-        evidence.add("ESCALATION");
-        await auditToolCall(ws, { callId, name, status: "approval_required", risk: spec.risk });
-
-        messages.push({
-          role: "tool",
-          toolCallId: callId,
-          name,
-          content: JSON.stringify({
-            status: "APPROVAL_REQUIRED",
-            risk: spec.risk,
-            requiredPermission: spec.requiredPermission,
-            message: "Action is staged. Operator approval required before execution.",
-          }),
-        });
-        continue;
-      }
-
-      // Execute read / authorized tool
-      try {
-        const rawResult = await executeTool(ws, name, args);
-        const cleanResult = normalizeToolEvidence(rawResult, ws.dataMode);
-        toolCallsSummary.push({ callId, name, status: "executed", risk: spec.risk });
-        evidence.add("SYSTEM_DATA");
-        await auditToolCall(ws, { callId, name, status: "executed", risk: spec.risk });
-
-        messages.push({
-          role: "tool",
-          toolCallId: callId,
-          name,
-          content: JSON.stringify(cleanResult).slice(0, MAX_TOOL_OUTPUT),
-        });
-      } catch (err) {
-        toolCallsSummary.push({ callId, name, status: "failed", risk: spec.risk });
-        evidence.add("UNCERTAINTY");
-        await auditToolCall(ws, { callId, name, status: "failed", risk: spec.risk });
-
-        messages.push({
-          role: "tool",
-          toolCallId: callId,
-          name,
-          content: JSON.stringify({ status: "FAILED", error: err instanceof Error ? err.message : "Execution failed" }),
-        });
-      }
-    }
-  }
-
-  return {
-    ok: true,
-    text: finalText || "Verification complete.",
-    provider: activeProvider,
-    model: activeModel,
-    specialist: { id: specialist.id, name: specialist.name, team: specialist.team, title: specialist.title },
-    toolCalls: toolCallsSummary,
-    evidence: Array.from(evidence),
-    pendingApprovals,
-  };
-}
