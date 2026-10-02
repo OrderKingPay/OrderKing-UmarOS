@@ -1,1 +1,11 @@
-const { execSync } = require('child_process'); const envs = { DATABASE_URL: 'postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres', VITE_AUTH_ENABLED: 'true', GROK_PROJECT_ID: '1809652e-8dad-44ba-8bfa-67bafbfb2dfd', BETTER_AUTH_SECRET: 'ok_prod_sec_1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b', BETTER_AUTH_URL: 'https://orderking-customers.vercel.app' }; for (const [key, val] of Object.entries(envs)) { console.log('Adding ' + key); execSync('npx vercel env add ' + key + ' production', { input: val, stdio: ['pipe', 'inherit', 'inherit'] }); }
+/**
+ * Legacy provisioning helper intentionally disabled.
+ *
+ * Production secrets must be provisioned through the Cloudflare Pages/Workers
+ * environment settings. No credentials, database passwords, or deployment
+ * provider CLI commands belong in source control.
+ */
+console.log(
+  "Cloudflare-only project: configure production secrets in Cloudflare. " +
+    "This legacy helper performs no deployment or secret mutation.",
+);
