@@ -99,7 +99,34 @@ export class ReportingDocumentEngine {
     let summary = '';
     let sections: ReportSection[] = [];
 
-    switch (reportType) {
+    // Production truth gate: report templates contain presentation logic but no
+    // template is allowed to emit fallback/demo ledger values as FACT/CALCULATION.
+    // Callers must explicitly mark the payload as verified production telemetry.
+    const verifiedProductionData = params.customData?.__verifiedProductionData === true;
+    if (!verifiedProductionData) {
+      title = `Verified-data required: ${reportType}`;
+      summary = "No production report was synthesized because canonical order, ledger, provider, or telemetry data was not supplied and verified. Default/template values are never emitted as production facts.";
+      sections = [
+        {
+          id: "data_gate",
+          title: "Production Data Gate",
+          description: "Supply canonical verified telemetry with __verifiedProductionData=true before generating the requested report.",
+          metrics: [
+            {
+              key: "report_data_status",
+              label: "Report Data Status",
+              value: "LIVE_DATA_REQUIRED",
+              category: "RECOMMENDATION",
+              sourceNote: "Canonical ledger/order/provider telemetry required",
+            },
+          ],
+          notes: [
+            "Template defaults and demo figures are blocked from production reporting.",
+            "A verified payload should contain the exact period, source records, and provider receipts used by the report.",
+          ],
+        },
+      ];
+    } else switch (reportType) {
       case 'DAILY_FOUNDER_BRIEFING':
         title = `Daily Founder Executive Briefing (${periodEnd})`;
         summary = `Operational and financial pulse for Order King. Zero-commission marketplace dynamics, ledger status, and active operational alerts.`;
