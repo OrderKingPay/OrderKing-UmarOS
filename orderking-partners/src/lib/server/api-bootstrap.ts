@@ -66,7 +66,7 @@ export const getBootstrap = createServerFn({ method: "GET" })
 
 export const createRestaurantDraft = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((d: {
+  .validator((d: {
     name: string;
     displayName: string;
     ownerName: string;
@@ -123,7 +123,7 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
 
 export const updateRestaurantProfile = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((d: {
+  .validator((d: {
     restaurantId?: string;
     name?: string;
     displayName?: string;
@@ -231,7 +231,7 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
 
 export const submitForReview = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((d: { restaurantId: string }) => d)
+  .validator((d: { restaurantId: string }) => d)
   .handler(async ({ context, data }) => {
     const { withVendor } = await import("./helpers");
     return withVendor(context.userId, data.restaurantId, "onboarding.edit", async (sql, ctx) => {
@@ -256,7 +256,7 @@ export const submitForReview = createServerFn({ method: "POST" })
 
 export const getRestaurant = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .inputValidator((d: { restaurantId?: string }) => d)
+  .validator((d: { restaurantId?: string }) => d)
   .handler(async ({ context, data }) => {
     const { withVendor } = await import("./helpers");
     return withVendor(context.userId, data.restaurantId, "dashboard.view", async (sql, ctx) => {
@@ -329,7 +329,7 @@ export const getRestaurant = createServerFn({ method: "GET" })
 
 export const uploadDocument = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((d: {
+  .validator((d: {
     restaurantId: string;
     kind: string;
     fileName: string;

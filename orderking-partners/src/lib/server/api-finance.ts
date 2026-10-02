@@ -9,7 +9,7 @@ import type { PromotionFunder, PromotionKind } from "@/lib/contracts";
 
 export const getSettlements = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .inputValidator((d: { restaurantId?: string }) => d)
+  .validator((d: { restaurantId?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "settlements.view", async (sql, ctx) => {
       const batches = await sql<{
@@ -87,7 +87,7 @@ export const getSettlements = createServerFn({ method: "GET" })
 
 export const exportSettlementJson = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .inputValidator((d: { restaurantId?: string; batchId: string }) => d)
+  .validator((d: { restaurantId?: string; batchId: string }) => d)
   .handler(async ({ context, data }) => {
     const payload = await getSettlements({ data: { restaurantId: data.restaurantId } });
     const batch = payload.batches.find((b) => b.id === data.batchId);
@@ -102,7 +102,7 @@ export const exportSettlementJson = createServerFn({ method: "GET" })
 
 export const getPromotions = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .inputValidator((d: { restaurantId?: string }) => d)
+  .validator((d: { restaurantId?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "promotions.view", async (sql, ctx) => {
       const rows = await sql<{
@@ -157,7 +157,7 @@ export const getPromotions = createServerFn({ method: "GET" })
 
 export const savePromotion = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((d: {
+  .validator((d: {
     restaurantId?: string;
     id?: string;
     name: string;
@@ -210,7 +210,7 @@ export const savePromotion = createServerFn({ method: "POST" })
 
 export const getAdCampaign = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .inputValidator((d: { restaurantId?: string }) => d)
+  .validator((d: { restaurantId?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "promotions.view", async (sql, ctx) => {
       const rows = await sql<{
@@ -233,7 +233,7 @@ export const getAdCampaign = createServerFn({ method: "GET" })
 
 export const saveAdCampaign = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((d: { restaurantId?: string; isActive: boolean; dailyBudgetPaise: number }) => d)
+  .validator((d: { restaurantId?: string; isActive: boolean; dailyBudgetPaise: number }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "promotions.edit", async (sql, ctx) => {
       const budget = paise(data.dailyBudgetPaise);
@@ -263,7 +263,7 @@ export const saveAdCampaign = createServerFn({ method: "POST" })
 
 export const getAnalytics = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .inputValidator((d: { restaurantId?: string; range?: "day" | "week" | "month" }) => d)
+  .validator((d: { restaurantId?: string; range?: "day" | "week" | "month" }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "analytics.view", async (sql, ctx) => {
       const range = data.range ?? "week";

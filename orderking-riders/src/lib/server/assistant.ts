@@ -12,7 +12,7 @@ type Snapshot = Awaited<ReturnType<RiderEngine["snapshotForAssistant"]>>;
 
 export const askAssistantFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .inputValidator((input: { question: string; busy: boolean }) => input)
+  .validator((input: { question: string; busy: boolean }) => input)
   .handler(async ({ context, data }: any) => {
     const sql = await getSql();
     const eng = new RiderEngine(new PgStore(sql));

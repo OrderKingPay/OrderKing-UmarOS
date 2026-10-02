@@ -370,7 +370,7 @@ importers:
         version: 1.33.0
       nitro:
         specifier: 3.0.260610-beta
-        version: 3.0.260610-beta(@electric-sql/pglite@0.5.8)(ioredis@6.0.0(supports-color@7.2.0))(jiti@2.7.0)(vite@8.3.1(@types/node@22.20.4)(jiti@2.7.0))
+        version: 3.0.260610-beta(@electric-sql/pglite@0.5.8)(chokidar@5.0.0)(ioredis@6.0.0(supports-color@7.2.0))(jiti@2.7.0)(vite@8.3.1(@types/node@22.20.4)(jiti@2.7.0))
       playwright:
         specifier: ^1.62.0
         version: 1.63.0
@@ -602,7 +602,7 @@ importers:
         version: 1.33.0
       nitro:
         specifier: 3.0.260610-beta
-        version: 3.0.260610-beta(@electric-sql/pglite@0.5.8)(ioredis@6.0.0(supports-color@7.2.0))(jiti@2.7.0)(vite@8.3.1(@types/node@22.20.4)(jiti@2.7.0))
+        version: 3.0.260610-beta(@electric-sql/pglite@0.5.8)(chokidar@5.0.0)(ioredis@6.0.0(supports-color@7.2.0))(jiti@2.7.0)(vite@8.3.1(@types/node@22.20.4)(jiti@2.7.0))
       playwright:
         specifier: ^1.62.0
         version: 1.63.0
@@ -840,7 +840,7 @@ importers:
         version: 1.33.0
       nitro:
         specifier: 3.0.260610-beta
-        version: 3.0.260610-beta(@electric-sql/pglite@0.5.8)(jiti@2.7.0)(vite@8.1.5(@types/node@22.20.4)(jiti@2.7.0))
+        version: 3.0.260610-beta(@electric-sql/pglite@0.5.8)(chokidar@5.0.0)(jiti@2.7.0)(vite@8.1.5(@types/node@22.20.4)(jiti@2.7.0))
       playwright:
         specifier: ^1.62.0
         version: 1.63.0
@@ -1066,7 +1066,7 @@ importers:
         version: 1.33.0
       nitro:
         specifier: 3.0.260610-beta
-        version: 3.0.260610-beta(@electric-sql/pglite@0.5.8)(jiti@2.7.0)(vite@8.1.5(@types/node@22.20.4)(jiti@2.7.0))
+        version: 3.0.260610-beta(@electric-sql/pglite@0.5.8)(chokidar@5.0.0)(jiti@2.7.0)(vite@8.1.5(@types/node@22.20.4)(jiti@2.7.0))
       playwright:
         specifier: ^1.62.0
         version: 1.63.0
@@ -1289,7 +1289,7 @@ importers:
         version: 1.33.0
       nitro:
         specifier: 3.0.260610-beta
-        version: 3.0.260610-beta(@electric-sql/pglite@0.5.8)(jiti@2.7.0)(vite@8.1.5(@types/node@22.20.4)(jiti@2.7.0))
+        version: 3.0.260610-beta(@electric-sql/pglite@0.5.8)(chokidar@5.0.0)(jiti@2.7.0)(vite@8.1.5(@types/node@22.20.4)(jiti@2.7.0))
       playwright:
         specifier: ^1.62.0
         version: 1.63.0
@@ -3252,6 +3252,10 @@ packages:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
     engines: {node: '>= 8.10.0'}
 
+  chokidar@5.0.0:
+    resolution: {integrity: sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw==}
+    engines: {node: '>= 20.19.0'}
+
   class-variance-authority@0.7.1:
     resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
 
@@ -4780,6 +4784,10 @@ packages:
   readdirp@3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
     engines: {node: '>=8.10.0'}
+
+  readdirp@5.1.1:
+    resolution: {integrity: sha512-Kko+Y5XQ6fM+Ce3dq3m9YGxnacYZYl9cA1wZjaF3Vbry2L3i1qVg8+CAgNPsXRArPMUMCaOR7oa9Nqntc43JKA==}
+    engines: {node: '>= 20.19.0'}
 
   recharts-scale@0.4.5:
     resolution: {integrity: sha512-kivNFO+0OcUNu7jQquLXAxz1FIwZj8nrj+YkOKc5694NbjCvcT6aSZiIzNzd2Kul4o4rTto8QVR9lMNtxD4G1w==}
@@ -7569,6 +7577,11 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
+  chokidar@5.0.0:
+    dependencies:
+      readdirp: 5.1.1
+    optional: true
+
   class-variance-authority@0.7.1:
     dependencies:
       clsx: 2.1.1
@@ -8669,7 +8682,7 @@ snapshots:
 
   nf3@0.3.24: {}
 
-  nitro@3.0.260610-beta(@electric-sql/pglite@0.5.8)(ioredis@6.0.0(supports-color@7.2.0))(jiti@2.7.0)(vite@8.3.1(@types/node@22.20.4)(jiti@2.7.0)):
+  nitro@3.0.260610-beta(@electric-sql/pglite@0.5.8)(chokidar@5.0.0)(ioredis@6.0.0(supports-color@7.2.0))(jiti@2.7.0)(vite@8.3.1(@types/node@22.20.4)(jiti@2.7.0)):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.12(srvx@0.11.22)
@@ -8684,7 +8697,7 @@ snapshots:
       rolldown: 1.2.11
       srvx: 0.11.22
       unenv: 2.0.0-rc.24
-      unstorage: 2.0.0-alpha.7(db0@0.3.4(@electric-sql/pglite@0.5.8))(ioredis@6.0.0(supports-color@7.2.0))(ofetch@2.0.0-alpha.3)
+      unstorage: 2.0.0-alpha.7(chokidar@5.0.0)(db0@0.3.4(@electric-sql/pglite@0.5.8))(ioredis@6.0.0(supports-color@7.2.0))(ofetch@2.0.0-alpha.3)
     optionalDependencies:
       jiti: 2.7.0
       vite: 8.3.1(@types/node@22.20.4)(jiti@2.7.0)
@@ -8720,7 +8733,7 @@ snapshots:
       - uploadthing
       - wrangler
 
-  nitro@3.0.260610-beta(@electric-sql/pglite@0.5.8)(jiti@2.7.0)(vite@8.1.5(@types/node@22.20.4)(jiti@2.7.0)):
+  nitro@3.0.260610-beta(@electric-sql/pglite@0.5.8)(chokidar@5.0.0)(jiti@2.7.0)(vite@8.1.5(@types/node@22.20.4)(jiti@2.7.0)):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.12(srvx@0.11.22)
@@ -8735,7 +8748,7 @@ snapshots:
       rolldown: 1.2.11
       srvx: 0.11.22
       unenv: 2.0.0-rc.24
-      unstorage: 2.0.0-alpha.7(db0@0.3.4(@electric-sql/pglite@0.5.8))(ioredis@6.0.0(supports-color@7.2.0))(ofetch@2.0.0-alpha.3)
+      unstorage: 2.0.0-alpha.7(chokidar@5.0.0)(db0@0.3.4(@electric-sql/pglite@0.5.8))(ioredis@6.0.0(supports-color@7.2.0))(ofetch@2.0.0-alpha.3)
     optionalDependencies:
       jiti: 2.7.0
       vite: 8.1.5(@types/node@22.20.4)(jiti@2.7.0)
@@ -9089,6 +9102,9 @@ snapshots:
   readdirp@3.6.0:
     dependencies:
       picomatch: 2.3.2
+
+  readdirp@5.1.1:
+    optional: true
 
   recharts-scale@0.4.5:
     dependencies:
@@ -9485,8 +9501,9 @@ snapshots:
       rolldown: 1.2.11
       vite: 8.3.1(@types/node@22.20.4)(jiti@2.7.0)
 
-  unstorage@2.0.0-alpha.7(db0@0.3.4(@electric-sql/pglite@0.5.8))(ioredis@6.0.0(supports-color@7.2.0))(ofetch@2.0.0-alpha.3):
+  unstorage@2.0.0-alpha.7(chokidar@5.0.0)(db0@0.3.4(@electric-sql/pglite@0.5.8))(ioredis@6.0.0(supports-color@7.2.0))(ofetch@2.0.0-alpha.3):
     optionalDependencies:
+      chokidar: 5.0.0
       db0: 0.3.4(@electric-sql/pglite@0.5.8)
       ioredis: 6.0.0(supports-color@7.2.0)
       ofetch: 2.0.0-alpha.3
