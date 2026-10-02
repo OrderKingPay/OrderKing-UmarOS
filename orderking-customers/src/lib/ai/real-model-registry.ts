@@ -6,7 +6,7 @@
 export interface VerifiedModelRecord {
   id: string;
   displayName: string;
-  provider: "Local Sovereign" | "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus";
+  provider: "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus";
   realApiId: string;
   connectionStatus: "CONNECTED" | "CONFIGURATION_REQUIRED" | "UNAVAILABLE";
   authStatus: "VERIFIED" | "MISSING_KEY" | "LOCAL_CORE";
@@ -82,29 +82,6 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
 
   return [
     {
-      id: "sovereign-ultra",
-      displayName: "👑 Umar Sovereign Local Engine",
-      provider: "Local Sovereign",
-      realApiId: "sovereign-local-core",
-      connectionStatus: "UNAVAILABLE",
-      authStatus: "LOCAL_CORE",
-      supportedModalities: ["text", "code", "file"],
-      contextWindow: "128k tokens (In-Memory)",
-      supportsTools: true,
-      supportsReasoning: true,
-      supportsWebSearch: false,
-      measuredLatencyMs: 4,
-      lastChecked: now,
-      fallbackModelId: "self",
-      description: "Always-active sovereign core with zero external latency or cost. Runs clinical differential diagnostics, software engineering, mathematics, and business OS tools locally.",
-      capabilities: {
-        canStream: true,
-        canProcessImages: false,
-        canProcessFiles: true,
-        canUseTools: true,
-      },
-    },
-    {
       id: "auto-supreme-orchestrator",
       displayName: "⚡ Auto-Select Best Model (Supreme Orchestrator)",
       provider: "Orchestrator",
@@ -118,8 +95,8 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: true,
       measuredLatencyMs: 12,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
-      description: "Intelligently routes every query to the fastest and most capable connected model. If external models lack API keys, seamlessly executes via Sovereign Local Core with clear disclosure.",
+      fallbackModelId: "none",
+      description: "Routes each query only to a configured external provider. When no provider is configured, the request is blocked rather than answered by a simulated or embedded model.",
       capabilities: {
         canStream: true,
         canProcessImages: true,
@@ -142,7 +119,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       measuredLatencyMs: 22,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
-      description: "Runs all currently active connected models simultaneously and cross-verifies output invariants. Never fabricates participation: only genuinely connected models are counted.",
+      description: "Runs only providers that are actually configured and can be verified at request time. Never fabricates participation.",
       capabilities: {
         canStream: true,
         canProcessImages: false,
@@ -200,9 +177,9 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     },
     {
       id: "gpt-5-6-sol",
-      displayName: "OpenAI GPT-5.6 Sol / GPT-5.6 Luna",
+      displayName: "OpenAI GPT-6 Luna / GPT-6 Sol",
       provider: "OpenAI",
-      realApiId: "gpt-5.6-sol",
+      realApiId: (typeof process !== "undefined" ? process.env.OPENAI_MODEL?.trim() : undefined) || "gpt-6-luna",
       connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
       authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "OPENAI_API_KEY",
@@ -214,7 +191,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       measuredLatencyMs: openaiKey ? 165 : 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
-      description: "OpenAI GPT-5.6 flagship reasoning model. The provider adapter uses the configured OpenAI API and reports the actual model ID used by the deployment.",
+      description: "OpenAI frontier model selected by OPENAI_MODEL (default gpt-6-luna). Connectivity is verified against the provider API before a model is reported as usable.",
       capabilities: {
         canStream: true,
         canProcessImages: true,
@@ -246,52 +223,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
         canUseTools: true,
       },
     },
-    {
-      id: "codex-supreme",
-      displayName: "Codex Supreme Architect (Local Core)",
-      provider: "Local Sovereign",
-      realApiId: "codex-local-v1",
-      connectionStatus: "UNAVAILABLE",
-      authStatus: "LOCAL_CORE",
-      supportedModalities: ["text", "code", "file"],
-      contextWindow: "64k tokens",
-      supportsTools: true,
-      supportsReasoning: true,
-      supportsWebSearch: false,
-      measuredLatencyMs: 6,
-      lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
-      description: "Deterministic full-stack code generator, TypeScript validator, and database schema synthesizer running locally.",
-      capabilities: {
-        canStream: true,
-        canProcessImages: false,
-        canProcessFiles: true,
-        canUseTools: true,
-      },
-    },
-    {
-      id: "deepseek-r1-sovereign",
-      displayName: "DeepSeek R1 Sovereign (Local Math Core)",
-      provider: "Local Sovereign",
-      realApiId: "deepseek-r1-local",
-      connectionStatus: "CONNECTED",
-      authStatus: "LOCAL_CORE",
-      supportedModalities: ["text", "code", "file"],
-      contextWindow: "64k tokens",
-      supportsTools: false,
-      supportsReasoning: true,
-      supportsWebSearch: false,
-      measuredLatencyMs: 5,
-      lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
-      description: "Axiomatic mathematical formalization, proof verification, and exact logic analysis running locally without network overhead.",
-      capabilities: {
-        canStream: true,
-        canProcessImages: false,
-        canProcessFiles: true,
-        canUseTools: false,
-      },
-    },
+
   ];
 }
 
@@ -305,7 +237,7 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
   const registry = getVerifiedModelRegistry();
   const target = registry.find((m) => m.id === modelId) || registry[0];
 
-  if (target.provider === "Local Sovereign") {
+  if (false) {
     return {
       modelId: target.id,
       success: false,
@@ -356,7 +288,12 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
       });
       testSuccess = res.ok;
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-      realModelReturned = "gpt-5.6-sol";
+      const catalog = (await res.json()) as { data?: Array<{ id?: string }> };
+      const configuredModel = target.realApiId;
+      const available = new Set((catalog.data ?? []).map((m) => m.id).filter(Boolean) as string[]);
+      testSuccess = available.has(configuredModel);
+      realModelReturned = configuredModel;
+      if (!testSuccess) throw new Error(`Configured model ${configuredModel} is not present in the OpenAI model catalog for this API key.`);
     } else if (target.provider === "Anthropic") {
       const res = await fetch("https://api.anthropic.com/v1/models", {
         method: "GET",
