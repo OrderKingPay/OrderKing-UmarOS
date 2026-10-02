@@ -85,11 +85,15 @@ function PromotionsPage() {
           </div>
           <div className="rounded-lg border border-border bg-surface p-3">
             <span className="text-xs text-muted">Est. Impressions</span>
-            <p className="text-lg font-bold text-fg">~{adQuery.data?.estimatedImpressions ?? 3000} views/day</p>
+            <p className="text-lg font-bold text-fg">
+              {typeof adQuery.data?.estimatedImpressions === "number" ? adQuery.data.estimatedImpressions.toLocaleString("en-IN") : "Not measured"}
+            </p>
           </div>
           <div className="rounded-lg border border-border bg-surface p-3">
             <span className="text-xs text-muted">Est. Extra Orders</span>
-            <p className="text-lg font-bold text-primary">~{adQuery.data?.estimatedClicks ?? 35} clicks</p>
+            <p className="text-lg font-bold text-primary">
+              {typeof adQuery.data?.estimatedClicks === "number" ? adQuery.data.estimatedClicks.toLocaleString("en-IN") : "Not measured"}
+            </p>
           </div>
         </div>
 
