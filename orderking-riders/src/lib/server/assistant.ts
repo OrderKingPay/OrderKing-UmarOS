@@ -18,7 +18,8 @@ export const askAssistantFn = createServerFn({ method: "POST" })
     const eng = new RiderEngine(new PgStore(sql));
     await eng.ensureRider({ id: context.userId });
     const snapshot = await eng.snapshotForAssistant(context.userId);
-    const apiKey = process.env.XAI_API_KEY;
+    const openAiKey = process.env.OPENAI_API_KEY?.trim();
+    const xaiKey = process.env.XAI_API_KEY?.trim();
     const facts = JSON.stringify(snapshot);
     const question = data.question.slice(0, 500);
     if (!apiKey) {
