@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useBrand, useT } from "@/components/providers";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { ensureProfile, getLoyalty, requestDeletion, updateProfile } from "@/lib/server/account";
+import { getReferralStats } from "@/lib/server/referrals";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -24,6 +25,13 @@ function AccountPage() {
     queryFn: () => ensureProfile({ data: { name: user?.displayName ?? undefined, language: lang } }),
     enabled: Boolean(user),
   });
+  const referral = useQuery({
+    queryKey: ["referral-stats", user?.id],
+    queryFn: () => getReferralStats(),
+    enabled: Boolean(user),
+    staleTime: 60_000,
+  });
+
   const loyalty = useQuery({
     queryKey: ["loyalty"],
     queryFn: () => getLoyalty(),
@@ -129,7 +137,7 @@ function AccountPage() {
             <div className="flex items-center justify-between">
               <div>
                 <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-300">
-                  ⭐ OrderKing Gold VIP
+                  ⭐ {String(loyalty.data?.loyalty.tier ?? "starter").replace(/_/g, " ")}
                 </span>
                 <h2 className="mt-1.5 font-display text-xl font-bold">
                   {t("account.loyalty", { name: brand.appName })}
@@ -197,34 +205,48 @@ function AccountPage() {
                   🎁
                 </span>
                 <div>
-                  <h3 className="font-display text-lg font-bold text-fg">Refer & Earn Wallet Cash</h3>
-                  <p className="text-xs text-muted">Give ₹40 + Free Delivery, Get ₹25 for every friend who orders (min ₹249)</p>
+                  <h3 className="font-display text-lg font-bold text-fg">Refer & Earn</h3>
+                  <p className="text-xs text-muted">
+                    Share your personal referral link. Rewards are credited only after OrderKing verifies the referral activation.
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 rounded-xl border border-border bg-surface p-3 flex items-center justify-between">
+            <div className="mt-4 rounded-xl border border-border bg-surface p-3 flex items-center justify-between gap-3">
               <div>
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">Your Referral Code</span>
-                <p className="font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">KINGVIP</p>
+                <p className="font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">
+                  {referral.data?.referralCode ?? "Loading…"}
+                </p>
               </div>
               <button
                 type="button"
+                disabled={!referral.data?.referralCode}
                 onClick={() => {
-                  void navigator.clipboard?.writeText("KINGVIP");
-                  toast.success("Referral code copied!");
+                  if (!referral.data?.referralCode) return;
+                  void navigator.clipboard?.writeText(referral.data.referralCode);
+                  toast.success("Referral code copied.");
                 }}
-                className="rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-fg hover:bg-surface-3 transition"
+                className="rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-fg hover:bg-surface-3 transition disabled:opacity-50"
               >
                 Copy Code
               </button>
             </div>
 
+            <div className="mt-3 flex items-center gap-3 text-xs text-muted">
+              <span>Invited: <strong className="text-fg">{referral.data?.totalInvited ?? 0}</strong></span>
+              <span>Earned: <strong className="text-fg">₹{((referral.data?.totalEarnedPaise ?? 0) / 100).toFixed(2)}</strong></span>
+            </div>
+
             <div className="mt-3 flex gap-2">
               <a
-                href={`https://wa.me/?text=${encodeURIComponent("Hey! Use my referral code KINGVIP to get ₹40 OFF + Free Delivery on your first delicious food order on OrderKing: https://orderking.in/?ref=KINGVIP")}`}
+                href={referral.data?.shareUrl ? `https://wa.me/?text=${encodeURIComponent(`Join me on OrderKing: ${referral.data.shareUrl}`)}` : "#"}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(event) => {
+                  if (!referral.data?.shareUrl) event.preventDefault();
+                }}
                 className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
               >
                 <span>💬</span>
