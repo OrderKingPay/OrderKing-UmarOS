@@ -704,7 +704,7 @@ export function FoodAiConcierge({
 
     try {
       const result = await askAiSupportAssistant({ data: { query: text } });
-      const actionMap: Record<string, ChatMessage["actionPayload"]["type"]> = {
+      const actionMap: Record<string, NonNullable<ChatMessage["actionPayload"]>["type"]> = {
         where_order: "TRACK_ORDERS",
         cancel_order: "TRACK_ORDERS",
         missing_item: "SUBMIT_DISPUTE_CONSENT",
@@ -737,16 +737,6 @@ export function FoodAiConcierge({
       if (isVoice || callModeRef.current) speakResponse(unavailable, matchedLang.voiceLang);
     }
 
-
-    if (isVoice || callModeRef.current) {
-      setMessages((prev) => [...prev, aiMsg]);
-      speakResponse(replyText, matchedLang.voiceLang);
-    } else {
-      setTimeout(() => {
-        setMessages((prev) => [...prev, aiMsg]);
-        // Strictly NO auto-speaking on keyboard text input
-      }, 200);
-    }
   };
 
   const handleActionClick = (action: NonNullable<ChatMessage["actionPayload"]>) => {
