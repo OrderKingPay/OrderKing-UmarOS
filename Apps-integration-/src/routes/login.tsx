@@ -72,7 +72,7 @@ function Login() {
                   type="button"
                   variant="secondary"
                   className="w-full"
-                  onClick={() => signIn(p.providerId, { callbackURL: "/" })}
+                  onClick={() => void signIn(p.providerId, { callbackURL: "/" }).catch((err) => setError(err instanceof Error ? err.message : "Sign-in failed"))}
                 >
                   Continue with {p.label}
                 </Button>
