@@ -34,9 +34,7 @@ import { betterAuth } from "better-auth";
 import { bearer, genericOAuth } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { getCookie } from "@tanstack/react-start/server";
-import { randomBytes } from "node:crypto";
 import { Pool } from "pg";
-import { ensureDbReady, getPglite } from "../db";
 import { emailAndPasswordEnabled } from "./email-password";
 import { GATE_PROVIDER_ID, gateIdentitySessions } from "./gate-session.server";
 import { GROK_PROVIDERS } from "./providers";
@@ -48,24 +46,20 @@ import {
   PREVIEW_CLIENT_SECRET,
 } from "./preview";
 
-// Kick (and share) PGLite bootstrap as soon as the auth server module loads.
-void ensureDbReady();
-
 /**
  * Preview secret must outlive module reloads: PGLite (and its session rows) is
  * stored on `globalThis`, so an HMR re-eval of this file must NOT mint a new
  * signing secret or every existing session becomes invalid mid-dev. Process
  * restart clears both the secret and PGLite together.
  */
-const globalAuthRef = globalThis as typeof globalThis & {
-  __grokAuthPreviewSecret__?: string;
-};
+/**
+ * Cloudflare Workers forbids request-sensitive async work and randomness at
+ * module/global scope. Production authentication therefore requires the real
+ * BETTER_AUTH_SECRET from the platform secret store. Preview uses a fixed
+ * non-production fallback so module evaluation stays synchronous.
+ */
 function previewAuthSecret(): string {
-  if (process.env.NODE_ENV === "production") {
-    return "unconfigured-production-secret-do-not-use";
-  }
-  globalAuthRef.__grokAuthPreviewSecret__ ??= randomBytes(32).toString("hex");
-  return globalAuthRef.__grokAuthPreviewSecret__;
+  return "orderking-preview-auth-secret-not-for-production";
 }
 
 /** Read an env var, treating empty/whitespace as unset. */
@@ -77,17 +71,27 @@ const env = (key: string): string | undefined => {
 // Explicit off-switch. The deployer sets `VITE_AUTH_ENABLED=true` when it
 // provisions auth; set it to "false" to force auth off everywhere (dev user).
 const authDisabled = env("VITE_AUTH_ENABLED") === "false";
+const productionRuntime = env("NODE_ENV") === "production";
+const betterAuthSecret = env("BETTER_AUTH_SECRET");
 
-// Broker federation creds: the deployer injects a per-app client when deployed;
-// otherwise fall back to the shared live-preview client, which the broker accepts
-// for any `*.grok-sandbox.com` callback (see `./preview`).
+// Broker federation creds: production uses only explicitly provisioned secrets.
+// Preview/local can use the checked-in preview client.
 const grokIssuer = env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
-const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
-const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
+const grokClientId =
+  env("GROK_AUTH_CLIENT_ID") ??
+  (!productionRuntime ? PREVIEW_CLIENT_ID : undefined);
+const grokClientSecret =
+  env("GROK_AUTH_CLIENT_SECRET") ??
+  (!productionRuntime ? PREVIEW_CLIENT_SECRET : undefined);
 
-/** True when federated sign-in is active (real auth is enforced). */
+/** True only when the required real auth inputs exist. */
 export const authConfigured =
-  !authDisabled && Boolean(grokClientId && grokClientSecret);
+  !authDisabled &&
+  Boolean(
+    grokClientId &&
+      grokClientSecret &&
+      (!productionRuntime || betterAuthSecret),
+  );
 
 // This app's own Better Auth origin. When deployed the deployer injects the
 // public URL. In the sandbox live preview there's no fixed URL (each preview gets
@@ -215,7 +219,7 @@ export const auth = betterAuth({
   baseURL,
   // Deployed apps inject BETTER_AUTH_SECRET. Preview: process-stable secret on
   // globalThis so HMR doesn't invalidate PGLite-backed sessions (see above).
-  secret: env("BETTER_AUTH_SECRET") ?? previewAuthSecret(),
+  secret: betterAuthSecret ?? previewAuthSecret(),
   database,
 
   // CSRF / origin check for credentialed auth POSTs (email sign-up/sign-in, …).
@@ -250,7 +254,9 @@ export const auth = betterAuth({
   session: { cookieCache: { enabled: true, maxAge: 300 } },
 
   // Local email/password — toggled only via `./email-password` (not a plugin).
-  ...(emailAndPasswordEnabled ? { emailAndPassword: { enabled: true } } : {}),
+  ...(authConfigured && emailAndPasswordEnabled
+    ? { emailAndPassword: { enabled: true } }
+    : {}),
 
   // `__Host-` prefixed cookies: the browser REFUSES any same-named cookie that
   // carries a `Domain` attribute, so a sibling `*.grok.me` app cannot "toss" a
