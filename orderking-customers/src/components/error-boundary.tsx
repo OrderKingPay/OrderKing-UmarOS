@@ -1,7 +1,7 @@
 import { Component, type ReactNode } from "react";
 
 type Props = { children: ReactNode; fallback?: ReactNode };
-type State = { hasError: boolean; errorMessage: string | null; incidentId: string | null };
+type State = { hasError: boolean; incidentId: string | null };
 
 function createIncidentId() {
   try {
@@ -15,12 +15,11 @@ function createIncidentId() {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  state: State = { hasError: false, errorMessage: null, incidentId: null };
+  state: State = { hasError: false, incidentId: null };
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(): State {
     return {
       hasError: true,
-      errorMessage: error instanceof Error ? error.message : null,
       incidentId: createIncidentId(),
     };
   }
@@ -35,7 +34,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   private reset = () => {
-    this.setState({ hasError: false, errorMessage: null, incidentId: null });
+    this.setState({ hasError: false, incidentId: null });
     if (typeof window !== "undefined") {
       window.location.reload();
     }
