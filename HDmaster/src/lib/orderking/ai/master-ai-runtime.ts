@@ -1370,16 +1370,33 @@ export async function executeTool(
 
     case "autonomous_hotpatch_engine": {
       requirePermission(ws.ctx, "access_AI");
+      const sql = await getSql();
+      const recent = await sql.query<{ action: string; created_at: string }>(
+        `select action, created_at::text
+         from audit_logs
+         where org_id = $1 and action like 'master_ai.tool.%'
+         order by created_at desc
+         limit 50`,
+        [ws.ctx.orgId],
+      );
       return {
-        status: "AUTONOMOUS_HOTPATCH_APPLIED",
+        status: "HOTPATCH_READINESS_TELEMETRY_ONLY",
         timestamp: new Date().toISOString(),
-        targetService: "api-gateway",
-        patchType: "NON_BREAKING_HOTPATCH",
-        validationStatus: "PASSING",
-        auditTrail: "ENCRYPTED_SIGNATURE_VERIFIED",
+        activeRuntimeExceptions: null,
+        unhandledRejectionsLast24h: null,
+        synthesizedPatchesStaged: null,
+        synthesizerHealth: "NOT_MEASURED",
+        verifiedTestPassRate: null,
+        typecheckErrors: null,
+        evidence: recent,
+        capabilities: [
+          "Read recent governed AI tool audit events",
+          "Inspect CI and repository status through approved read adapters",
+          "Stage only explicitly approved code changes",
+        ],
+        result: "No runtime/test health percentage is claimed without fresh CI or runtime telemetry.",
       };
     }
-
     case "run_hyper_cognitive_diagnostic_and_healing": {
       requirePermission(ws.ctx, "access_AI");
       return {
@@ -1473,54 +1490,39 @@ export async function executeTool(
     case "autonomous_planetary_viral_and_spreadable_tech_engine": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "PLANETARY_VIRAL_ENGINE_DEPLOYED",
+        status: "GROWTH_ENGINE_READY_NOT_EXECUTED",
         timestamp: new Date().toISOString(),
-        infrastructure: "SpaceX/Starlink & Cloudflare Edge Workers",
-        algorithmStatus: "100x Exponential Growth Initiated",
+        infrastructure: "OrderKing application + configured advertising/share integrations only",
+        algorithmStatus: "PLAN_REQUIRED",
         metrics: {
-          projectedReach: "1.2 Billion users",
-          latency: "< 5ms global",
-          networkNodesActive: 14200,
+          projectedReach: null,
+          latency: null,
+          networkNodesActive: null,
         },
-        auditNotes: "Deployed the world's highest proven algorithms. System is now fully spreadable and viral.",
+        policyTasks: [
+          "Generate location-specific storefront QR/share assets",
+          "Generate consent-based referral links and attribution",
+          "Generate localized social/ad copy for approved channels",
+          "Require platform/merchant policy approval before paid campaign launch",
+        ],
+        auditNotes: "No reach, virality, network-node, or latency claim is made without measured campaign telemetry.",
       };
     }
-
     case "autonomous_revenue_and_affiliate_maximizer": {
       requirePermission(ws.ctx, "view_finance");
       return {
-        status: "REVENUE_AND_AFFILIATE_MAXIMIZED",
+        status: "REVENUE_PROVIDER_TELEMETRY_REQUIRED",
         timestamp: new Date().toISOString(),
-        multiFunnelYieldMetrics: {
-          projectedMonthlyOwnerYieldPaise: 44100000,
-          loansAndCreditLinesDisbursedYieldPaise: 18500000,
-          fuelAndPetroAlliancesYieldPaise: 9500000,
-          creditCardsActivationCpaYieldPaise: 7200000,
-          bbpsUtilityAndTravelCommissionPaise: 3400000,
-          insuranceAndGoldArbitrageYieldPaise: 5500000,
+        multiFunnelYieldMetrics: null,
+        fuelAndPetroMonetizationTelemetry: null,
+        activePartnerAlliances: [],
+        compliance: {
+          status: "UNVERIFIED",
+          reason: "Provider contracts, transaction ledgers, and regulated-partner reporting are required.",
         },
-        fuelAndPetroMonetizationTelemetry: {
-          coBrandedFuelCardsCpaYieldPaise: 4500000,
-          digitalFuelVouchersWholesaleMarginPaise: 2500000,
-          riderFleetVolumeRebatePaise: 2500000,
-          activeFleetCardsCount: 380,
-          complimentaryInsuranceCoverTotalPaise: 7600000000,
-        },
-        activePartnerAlliances: [
-          { partner: "HPCL (HP Pay & DriveTrack Plus)", activeOffers: 8, leadConversionRate: "46.2%", yieldPosture: "MAXIMIZED" },
-          { partner: "IndianOil (IOCL ONE & XTRAPOWER)", activeOffers: 6, leadConversionRate: "44.0%", yieldPosture: "MAXIMIZED" },
-          { partner: "BPCL SmartDrive & SBI Octane", activeOffers: 4, leadConversionRate: "39.7%", yieldPosture: "MAXIMIZED" },
-          { partner: "Bajaj Finserv Ltd", activeOffers: 20, leadConversionRate: "42.8%", yieldPosture: "MAXIMIZED" },
-          { partner: "Navi Finserv", activeOffers: 4, leadConversionRate: "38.5%", yieldPosture: "MAXIMIZED" },
-          { partner: "HDFC Bank & SBI Cards", activeOffers: 6, leadConversionRate: "29.4%", yieldPosture: "MAXIMIZED" },
-          { partner: "Lendingkart & Hero FinCorp", activeOffers: 5, leadConversionRate: "35.1%", yieldPosture: "MAXIMIZED" },
-        ],
-        rbiLspComplianceGuarantee: "100_PERCENT_LSP_COMPLIANT_ZERO_OWNER_LIABILITY",
-        zeroLeakageAudit: "CONFIRMED_ALL_LEAD_TOKENS_RECONCILED",
-        verdict: "Affiliate monetization running at peak 1000x efficiency with zero owner liability, zero capital risk, and maximized HPCL/IOCL/BPCL fuel yields.",
+        verdict: "No affiliate yield, partner conversion, capital-risk, or regulatory-compliance claim is made without live provider evidence.",
       };
     }
-
     case "autonomous_customer_addiction_and_gamification_director": {
       requirePermission(ws.ctx, "manage_promotions");
       const q = await import("../server/queries.server.ts");
@@ -1564,192 +1566,51 @@ export async function executeTool(
     }
     case "founder_private_cash_vault_telemetry": {
       requirePermission(ws.ctx, "view_finance");
-      const vaultSummary = calculateFounderRetainedCashVault({
-        periodLabel: "Current Month-to-Date (Barak Valley Operations)",
-        totalOrdersCount: 4850,
-        grossCustomerInflowPaise: 242500000, // ₹24,25,000 gross customer spend in bank
-        foodGrossPaise: 194000000, // ₹19,40,000 food gross
-        restaurantDiscountsPaise: 9700000,
-        platformCommissionBps: 1500, // 15% platform commission
-        packagingChargesPaise: 9700000, // ₹97,000
-        riderBasePaise: 16975000, // ₹1,69,750 base pay
-        riderDistancePaise: 13580000, // ₹1,35,800 distance pay
-        riderSurgePaise: 7275000, // ₹72,750 surge
-        riderMilestoneBonusPaise: 2425000, // ₹24,250
-        customerTipsPaise: 9700000, // ₹97,000 100% tips pass-through
-        cashCollectedCodPaise: 4850000, // ₹48,500 COD holding
-        unclaimedWalletFloatPaise: 2180000, // ₹21,800
-      });
-
       return {
-        status: "FOUNDER_VAULT_AUDITED_CONFIDENTIAL",
+        status: "FOUNDER_LEDGER_REVIEW_REQUIRED",
         timestamp: new Date().toISOString(),
-        confidentialityLevel: "STRICTLY_RESTRICTED_FOUNDER_CEO_ONLY",
-        vaultSummary,
-        ownerBankHoldingSummary: {
-          totalCashDepositedInOwnerAccountPaise: vaultSummary.grossCustomerInflowPaise,
-          totalDisbursedToPartnersPaise: vaultSummary.netDisbursedToRestaurantsPaise + vaultSummary.netDisbursedToRidersPaise,
-          totalRetainedInOwnerAccountPaise: vaultSummary.retainedPlatformFloatPaise,
-          statutoryTaxReserveEscrowPaise: vaultSummary.statutoryTaxReservePaise,
-          pureOwnerWithdrawableProfitPaise: vaultSummary.pureOwnerNetProfitPaise,
-          retainedCashMargin: vaultSummary.ownerNetMarginPercentage,
-        },
+        confidentialityLevel: "FOUNDER_ONLY",
+        vaultSummary: null,
+        ownerBankHoldingSummary: null,
         statutoryLegalShield: {
-          intermediaryStatus: "IT_ACT_2000_SECTION_79_SAFE_HARBOR_CERTIFIED",
-          taxCompliance194O: "TDS_1_PERCENT_WITHHELD_FORM_16A_ISSUABLE",
-          gstComplianceSection95: "5_PERCENT_RESTAURANT_GST_DEPOSITED_UNDER_GSTIN",
-          merchantAgreementBinding: "CLICK_WRAP_DIGITAL_CONTRACT_SECTION_10A_VALID",
-          disputeResolution: "SOLE_ARBITRATOR_LOCAL_DISTRICT_EXCLUSIVE_JURISDICTION",
-          legalActionRiskScore: "0.0_ZERO_LEGAL_EXPOSURE",
+          status: "NOT_AUDITED",
+          legalAdvice: "NOT_PROVIDED_BY_THIS_TOOL",
         },
-        verdict: "100% of customer funds are securely collected into the owner's bank account. Net disbursements to restaurants and riders are mathematically reconciled with zero unexplained deductions. Retained cash float and owner profit are 100% protected under Indian statutory law with zero legal liability.",
+        verdict: "Founder cash, bank holdings, taxes, escrow, and legal status are never reconstructed from hardcoded scenario values. Use the canonical bank, payment, ledger, and tax records.",
       };
     }
-
     case "founder_profit_maximizer_and_tax_arbitrage": {
       requirePermission(ws.ctx, "view_finance");
-      const vaultSummary = calculateFounderRetainedCashVault({
-        periodLabel: "Current Operating Run-Rate (Barak Valley Expansion)",
-        totalOrdersCount: 8400,
-        grossCustomerInflowPaise: 420000000, // ₹42,00,000 gross customer spend in bank
-        foodGrossPaise: 336000000, // ₹33,60,000 food gross
-        restaurantDiscountsPaise: 16800000,
-        platformCommissionBps: 1500, // 15% platform commission
-        packagingChargesPaise: 16800000,
-        riderBasePaise: 29400000,
-        riderDistancePaise: 23520000,
-        riderSurgePaise: 12600000,
-        riderMilestoneBonusPaise: 4200000,
-        customerTipsPaise: 16800000,
-        cashCollectedCodPaise: 8400000,
-        unclaimedWalletFloatPaise: 3780000,
-        breakageAndGlitchFloatPaise: 4920000, // ₹49,200 round-off surpluses, cancellation forfeits & unallocated deposits
-        eligibleInputTaxCreditPaise: 12500000, // ₹1,25,000 ITC from AWS servers, payment gateway & marketing
-        platformConvenienceFeesPaise: 4200000, // ₹42,000 platform fees
-      });
-
+      const q = await import("../server/queries.server.ts");
+      const finance = await q.financeSummary(ws.ctx);
       return {
-        status: "PROFIT_MAXIMIZATION_AND_GST_ARBITRAGE_ACTIVE",
+        status: "FINANCE_FACTS_AVAILABLE_NOT_OPTIMIZED",
         timestamp: new Date().toISOString(),
-        confidentialityLevel: "STRICTLY_RESTRICTED_FOUNDER_CEO_ONLY",
-        vaultSummary,
-        glitchAndBreakageRetainedSummary: {
-          totalBreakageAndGlitchPaise: vaultSummary.breakageAndGlitchFloatPaise,
-          breakageRetentionRule: vaultSummary.disbursementRules.glitchMoneyRetentionRule,
-          restaurantEntitlementRule: vaultSummary.disbursementRules.restaurantDisbursementRule,
-          disbursementStatus: "STRICT_CONTRACTUAL_DISBURSEMENT_ZERO_LEAKAGE",
+        finance,
+        optimization: {
+          projectedProfitUpliftPaise: null,
+          taxArbitrage: "NOT_PROVIDED",
+          statutoryRiskScore: null,
         },
-        gstWorkingCapitalArbitrage: {
-          totalOutwardGstCollectedPaise: vaultSummary.gstItcOffsetAndArbitrage.totalOutwardGstCollectedPaise,
-          eligibleItcAccruedPaise: vaultSummary.gstItcOffsetAndArbitrage.eligibleInputTaxCreditPaise,
-          netCashGstPayableToGovtPaise: vaultSummary.gstItcOffsetAndArbitrage.netCashGstLiabilityPaise,
-          retainedCashGstWorkingCapitalPaise: vaultSummary.gstItcOffsetAndArbitrage.retainedGstWorkingCapitalPaise,
-          section95EscrowFloatYieldPaise: vaultSummary.gstItcOffsetAndArbitrage.section95GstEscrowFloatYieldPaise,
-          statutoryGrounding: "CGST Act 2017 Sections 16 & 17 (ITC) and Section 9(5) (Aggregator Escrow)",
-          auditRiskScore: "0.0_ZERO_INQUIRY_RISK_100_PERCENT_LEGAL",
-        },
-        competitiveZomatoBeater: {
-          zomatoCommissionRate: "25.0%",
-          orderKingCommissionRate: "15.0%",
-          restaurantSavingsPerMonthPaise: vaultSummary.competitiveZomatoComparison.restaurantSavingsVsZomatoPaise,
-          takeHomeProfitUplift: vaultSummary.competitiveZomatoComparison.restaurantTakeHomeUpliftPercentage,
-          zomatoOnboardingExtortionSavedPaise: vaultSummary.competitiveZomatoComparison.zomatoOnboardingFeeSavedPaise,
-          orderVolumeSurgeMultiplier: vaultSummary.competitiveZomatoComparison.orderKingVolumeMultiplier,
-          partnerLoyaltyIndex: "98.7%_RESTAURANTS_PRIORITIZE_ORDERKING",
-        },
-        verdict: "Breakage, overpayments, and glitch float are 100% retained in the founder's account with zero disbursement to partners. Indian GST liability is legally minimized to near-zero via Section 16 & 17 ITC offsetting, retaining maximum cash working capital for the founder. Restaurants enjoy +13.3% higher take-home profit than Zomato, creating an unbreakable competitive moat.",
+        verdict: "Current canonical finance data is shown without inventing tax offsets, partner savings, owner profit, or legal-risk scores. Any optimization proposal requires verified contracts and professional tax/legal review.",
       };
     }
-
     case "autonomous_legal_income_discovery_engine": {
       requirePermission(ws.ctx, "view_finance");
-      const profitSummary = calculateMasterProfitEngine({
-        periodLabel: "Autonomous Run-Rate & Legal Revenue Expansion (Q4 2026)",
-        monthlyDeliveredOrders: 75_000,
-        grossMerchandiseValuePaise: 22_500_000_00, // ₹2.25 Crore GMV
-        activeRestaurantsCount: 320,
-        activeRidersCount: 520,
-        activeKingPayUsersCount: 68_000,
-        platformCommissionBps: 1500, // 15% flat
-        packagingChargesPaise: 15_000_000,
-        customerPlatformFeePerOrderPaise: 400, // ₹4.00
-        adAuctionBidsPaise: 28_000_000, // ₹2.8L ad spend
-        vipGoldActiveSubscribersCount: 6800,
-        vipGoldQuarterlyFeePaise: 9900, // ₹99/quarter
-        monthlyUtilityRechargeVolumePaise: 120_000_000_00, // ₹1.2 Cr BBPS
-        bbpsAverageMarginBps: 120, // 1.2%
-        approvedCreditCardsCount: 180,
-        creditCardCpaPaise: 200_000, // ₹2,000 CPA
-        disbursedPersonalLoansVolumePaise: 400_000_000, // ₹40L loans
-        personalLoanCommissionBps: 300, // 3.0%
-        bajajInstaEmiCardsActivated: 380,
-        bajajInstaEmiCpaPaise: 50_000, // ₹500
-        bajajKitchenEquipmentLoansDisbursedPaise: 250_000_000, // ₹25L equipment loans
-        bajajEquipmentLoanCommissionBps: 350, // 3.5%
-        fuelVouchersSoldVolumePaise: 450_000_000, // ₹45L vouchers
-        fuelVoucherWholesaleDiscountBps: 300, // 3.0%
-        coBrandedFuelCardsApproved: 120,
-        fuelCardCpaPaise: 220_000, // ₹2,200 CPA
-        monthlyDigitalGoldSalesVolumePaise: 220_000_000, // ₹22L gold
-        goldBuySellSpreadBps: 180, // 1.8%
-        corporateCateringVolumePaise: 350_000_000, // ₹35L catering
-        corporateCateringMarginBps: 1200, // 12%
-        offPeakHyperlocalDropsCount: 4500,
-        offPeakDropMarginPaise: 2000, // ₹20/drop
-        averageDailyEscrowBalancePaise: 180_000_000_00, // ₹1.8 Cr escrow
-        annualizedTreasuryYieldBps: 680, // 6.8% p.a.
-        eligibleBusinessExpensesGstPaidPaise: 65_000_000, // ₹6.5L ITC
-      });
-
-      const newlyDiscoveredOpportunities = [
-        {
-          opportunityId: "opp_ev_battery_swapping",
-          name: "Sun Mobility / Battery Smart EV Swapping Network Alliance",
-          sector: "Green Mobility & Rider Logistics",
-          projectedMonthlyEbitdaUpliftPaise: 120_000_00, // ₹1,20,000/mo
-          regulatoryFramework: "FAME-II & National Electric Mobility Mission (Zero Owner Liability)",
-          status: "READY_FOR_FOUNDER_DEPLOYMENT",
-          rationale: "Riders save 40% on battery operational costs vs petrol; OrderKing earns ₹250/rider/month network referral fee.",
-        },
-        {
-          opportunityId: "opp_restaurant_raw_spices",
-          name: "Direct Farmer-to-Kitchen Wholesale Raw Material Procurement",
-          sector: "Restaurant B2B Supply Chain",
-          projectedMonthlyEbitdaUpliftPaise: 280_000_00, // ₹2,80,000/mo
-          regulatoryFramework: "APMC Deregulation & e-NAM (National Agriculture Market) Compliance",
-          status: "READY_FOR_FOUNDER_DEPLOYMENT",
-          rationale: "Restaurants get 15% cheaper bulk mustard oil, rice, and spices; platform earns 2.5% wholesale distribution margin.",
-        },
-        {
-          opportunityId: "opp_transit_metro_smartcards",
-          name: "Assam ASTC / National Common Mobility Card (NCMC) Recharges",
-          sector: "KingPay Urban Transit",
-          projectedMonthlyEbitdaUpliftPaise: 85_000_00, // ₹85,000/mo
-          regulatoryFramework: "RBI PPI & NPCI NCMC Interoperability Standards",
-          status: "READY_FOR_FOUNDER_DEPLOYMENT",
-          rationale: "Transit users recharge smart bus cards via KingPay; platform earns 1.0% recharge margin.",
-        },
-      ];
-
       return {
-        status: "AUTONOMOUS_LEGAL_PROFIT_ENGINE_DISCOVERY_ACTIVE",
+        status: "REVENUE_OPPORTUNITIES_REQUIRE_PROVIDER_EVIDENCE",
         timestamp: new Date().toISOString(),
-        confidentialityLevel: "STRICTLY_RESTRICTED_FOUNDER_CEO_ONLY",
-        masterProfitSummary: profitSummary,
-        newlyDiscoveredOpportunities,
-        invariantsEnforced: {
-          zeroUncontractualRetention: "STRICTLY_COMPLIANT_ZERO_LEAKAGE",
-          gstItcOptimization: "100_PERCENT_LEGAL_CGST_SECTIONS_16_17_SET_OFF",
-          rbiLspCompliance: "RBI_DIGITAL_LENDING_GUIDELINES_ZERO_CREDIT_RISK",
-          participantMutualBenefitIndex: "100_PERCENT_PARTICIPANTS_FINANCIALLY_BETTER_OFF",
-        },
-        verdict: "The 12-stream profit engine generates 10x–100x higher sustainable founder free cash flow than competitors by completely eliminating corporate bloatware and activating high-margin fintech, ad, and affiliate flywheels, while guaranteeing that restaurants, riders, and customers earn or save significantly more than on Zomato or Swiggy.",
+        discoveredStreams: [],
+        totalNewDiscoveredMonthlyRunRatePaise: null,
+        providerEvidenceRequired: [
+          "Executed commercial agreement",
+          "Current provider rate card",
+          "Recorded transaction volume",
+          "Applicable tax/regulatory status",
+        ],
+        result: "No projected revenue stream is presented as discovered or legally cleared without documentary/provider evidence.",
       };
     }
-
-    // -----------------------------------------------------------------------
-    // Executive Autonomous Operations (Strategy, Alliances, Mind-Reader, Treasury, KingPay)
-    // -----------------------------------------------------------------------
     case "maximize_profit_margins": {
       requirePermission(ws.ctx, "manage_promotions");
       const fin = await q.financeSummary(ws.ctx);
@@ -2022,30 +1883,20 @@ export async function executeTool(
     case "neural_fraud_sentinel": {
       requirePermission(ws.ctx, "view_risk");
       return {
-        status: "NEURAL_FRAUD_SENTINEL_ACTIVE",
+        status: "FRAUD_TELEMETRY_REQUIRED",
         timestamp: new Date().toISOString(),
         sentinelAssessment: {
-          threatLevel: "NOMINAL_SECURE",
-          compositeRiskScore: 4,
-          nodesAnalyzed: 14820,
-          suspiciousClustersQuarantined: 3,
-          telemetrySignals: {
-            gpsSpoofingDetected: 0,
-            voucherSybilRingsNeutralized: 12,
-            collusiveRefundLoopsDetected: 0,
-            rootedMockLocationBlocks: 27,
-          },
-          capitalShieldedPaise: 34820000,
+          threatLevel: "UNVERIFIED",
+          compositeRiskScore: null,
+          nodesAnalyzed: null,
+          suspiciousClustersQuarantined: null,
+          telemetrySignals: null,
+          capitalShieldedPaise: null,
         },
-        graphAlgorithmsApplied: [
-          "Graph Neural Network (GNN) community detection for device-fingerprint clusters",
-          "Kalman-filter trajectory smoothing for rider GPS spoofing detection",
-          "Bi-directional graph flow analysis for circular merchant-customer refund collusion",
-        ],
-        result: "Zero undetected fraud rings. Platform capital and merchant trust 100% fortified.",
+        graphAlgorithmsApplied: [],
+        result: "Fraud posture is not inferred from hardcoded figures. Device, GPS, refund, payment, and account telemetry must be queried from live risk systems.",
       };
     }
-
     case "autonomous_hotpatch_engine": {
       requirePermission(ws.ctx, "access_AI");
       return {
@@ -2137,131 +1988,35 @@ export async function executeTool(
 
     case "autonomous_maximum_force_profit_orchestrator": {
       requirePermission(ws.ctx, "view_finance");
-      const profitSummary = calculateMasterProfitEngine({
-        periodLabel: "Maximum Force Run-Rate (Barak Valley Ecosystem)",
-        monthlyDeliveredOrders: 50_000,
-        grossMerchandiseValuePaise: 15_000_000_00,
-        activeRestaurantsCount: 220,
-        activeRidersCount: 380,
-        activeKingPayUsersCount: 42_000,
-        platformCommissionBps: 1500,
-        packagingChargesPaise: 10_000_000,
-        customerPlatformFeePerOrderPaise: 400,
-        adAuctionBidsPaise: 18_000_000,
-        vipGoldActiveSubscribersCount: 4500,
-        vipGoldQuarterlyFeePaise: 9900,
-        monthlyUtilityRechargeVolumePaise: 80_000_000_00,
-        bbpsAverageMarginBps: 120,
-        approvedCreditCardsCount: 120,
-        creditCardCpaPaise: 200_000,
-        disbursedPersonalLoansVolumePaise: 250_000_000,
-        personalLoanCommissionBps: 300,
-        bajajInstaEmiCardsActivated: 250,
-        bajajInstaEmiCpaPaise: 50_000,
-        bajajKitchenEquipmentLoansDisbursedPaise: 150_000_000,
-        bajajEquipmentLoanCommissionBps: 350,
-        fuelVouchersSoldVolumePaise: 300_000_000,
-        fuelVoucherWholesaleDiscountBps: 300,
-        coBrandedFuelCardsApproved: 80,
-        fuelCardCpaPaise: 220_000,
-        monthlyDigitalGoldSalesVolumePaise: 150_000_000,
-        goldBuySellSpreadBps: 180,
-        corporateCateringVolumePaise: 200_000_000,
-        corporateCateringMarginBps: 1200,
-        offPeakHyperlocalDropsCount: 3000,
-        offPeakDropMarginPaise: 2000,
-        averageDailyEscrowBalancePaise: 120_000_000_00,
-        annualizedTreasuryYieldBps: 680,
-        eligibleBusinessExpensesGstPaidPaise: 40_000_000,
-        monthlyGoldRoundupsVolumePaise: 50_000_000,
-        goldRoundupSpreadBps: 180,
-        monthlyInstantPayoutVolumePaise: 150_000_000,
-        instantPayoutFeeBps: 50,
-      });
-
+      const q = await import("../server/queries.server.ts");
+      const finance = await q.financeSummary(ws.ctx);
+      const profitability = await q.profitability(ws.ctx);
       return {
-        status: "MAXIMUM_FORCE_PROFIT_ORCHESTRATED",
+        status: "PROFITABILITY_TELEMETRY_AVAILABLE",
         timestamp: new Date().toISOString(),
-        summary: profitSummary,
+        summary: { finance, profitability },
         resilienceStatus: {
-          lowNetworkModeActive: true,
-          zeroOrderLossGuarantee: "100% VERIFIED",
-          offlineQueueSyncLatencyMs: 450,
+          lowNetworkModeActive: "UNVERIFIED",
+          zeroOrderLossGuarantee: null,
+          offlineQueueSyncLatencyMs: null,
         },
-        result: "14 synchronized revenue streams producing 100x higher free cash flow than Zomato with 0ms 2G offline-first caching and zero legal/tax liability.",
+        result: "Current profitability data is available. No multiplier, guarantee, or legal-liability claim is inferred from scenario numbers.",
       };
     }
-
     case "autonomous_100x_profit_and_addiction_director": {
       requirePermission(ws.ctx, "view_finance");
-      const profitSummary = calculateMasterProfitEngine({
-        periodLabel: "100x Profit & Addiction Run-Rate (Barak Valley Ecosystem)",
-        monthlyDeliveredOrders: 50_000,
-        grossMerchandiseValuePaise: 15_000_000_00,
-        activeRestaurantsCount: 220,
-        activeRidersCount: 380,
-        activeKingPayUsersCount: 42_000,
-        platformCommissionBps: 1500,
-        packagingChargesPaise: 10_000_000,
-        customerPlatformFeePerOrderPaise: 400,
-        adAuctionBidsPaise: 18_000_000,
-        vipGoldActiveSubscribersCount: 4500,
-        vipGoldQuarterlyFeePaise: 9900,
-        monthlyUtilityRechargeVolumePaise: 80_000_000_00,
-        bbpsAverageMarginBps: 120,
-        approvedCreditCardsCount: 120,
-        creditCardCpaPaise: 200_000,
-        disbursedPersonalLoansVolumePaise: 250_000_000,
-        personalLoanCommissionBps: 300,
-        bajajInstaEmiCardsActivated: 250,
-        bajajInstaEmiCpaPaise: 50_000,
-        bajajKitchenEquipmentLoansDisbursedPaise: 150_000_000,
-        bajajEquipmentLoanCommissionBps: 350,
-        fuelVouchersSoldVolumePaise: 300_000_000,
-        fuelVoucherWholesaleDiscountBps: 300,
-        coBrandedFuelCardsApproved: 80,
-        fuelCardCpaPaise: 220_000,
-        monthlyDigitalGoldSalesVolumePaise: 150_000_000,
-        goldBuySellSpreadBps: 180,
-        corporateCateringVolumePaise: 200_000_000,
-        corporateCateringMarginBps: 1200,
-        offPeakHyperlocalDropsCount: 3000,
-        offPeakDropMarginPaise: 2000,
-        averageDailyEscrowBalancePaise: 120_000_000_00,
-        annualizedTreasuryYieldBps: 680,
-        eligibleBusinessExpensesGstPaidPaise: 40_000_000,
-        monthlyGoldRoundupsVolumePaise: 50_000_000,
-        goldRoundupSpreadBps: 180,
-        monthlyInstantPayoutVolumePaise: 150_000_000,
-        instantPayoutFeeBps: 50,
-        monthlyFranchiseGmvPaise: 40_000_000_00,
-        franchiseRoyaltyBps: 250,
-        activePosSubscribersCount: 150,
-        monthlyPosSubscriptionFeePaise: 49900,
-        evBatterySwapsCount: 4000,
-        evBatterySwapReferralMarginPaise: 1500,
-        fmcgBrandSponsorshipMonthlyPaise: 15_000_000,
-      });
-
+      const q = await import("../server/queries.server.ts");
+      const finance = await q.financeSummary(ws.ctx);
       return {
-        status: "100X_PROFIT_AND_ADDICTION_ORCHESTRATED",
+        status: "GROWTH_AND_FINANCE_FACTS_AVAILABLE",
         timestamp: new Date().toISOString(),
-        summary: profitSummary,
-        addictionFlywheels: {
-          viralBillSplitAdoption: "42.8% of weekend orders",
-          merchantSoundboxSaasActive: "180 partner kitchens",
-          customer24kGoldRoundupParticipation: "68.4% of checkouts",
-          riderRetentionRate: "99.4% (HPCL/IOCL fleet fuel advantage)",
-        },
-        resilienceStatus: {
-          lowNetworkModeActive: true,
-          zeroOrderLossGuarantee: "100% VERIFIED",
-          offlineQueueSyncLatencyMs: 450,
-        },
-        result: "18 synchronized legal revenue streams producing 100x higher free cash flow than Zomato, radical 1-tap customer ease, and instant voice soundbox announcements.",
+        finance,
+        growthMultiplierClaim: null,
+        retentionUpliftClaim: null,
+        addictionOptimization: "NOT_USED",
+        result: "Umar OS does not claim a 100x financial or retention result without measured baseline and experiment evidence.",
       };
     }
-
     case "autonomous_go_live_production_director": {
       requirePermission(ws.ctx, "manage_platform_settings");
       const { DEFAULT_GOLIVE_CONFIG, evaluateGoLiveReadiness } = await import("@/lib/orderking/golive/golive-engine.ts");
@@ -2336,57 +2091,13 @@ export async function executeTool(
     case "autonomous_prestige_subsidies_and_viral_growth_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "PRESTIGE_SUBSIDIES_AND_VIRAL_GROWTH_ORCHESTRATED",
+        status: "PROGRAM_DISCOVERY_ONLY",
         timestamp: new Date().toISOString(),
-        governmentSubsidiesVault: {
-          assamStartupPolicy: {
-            matchingGrant: "₹50,00,000 (MAS / IIM Calcutta Innovation Park)",
-            ideaGrant: "₹5,00,000",
-            infraReimbursement: "33% lease + 100% stamp duty waiver",
-            portal: "https://startup.assam.gov.in",
-            status: "READY_FOR_FOUNDER_APPLICATION",
-          },
-          dpiitStartupIndia: {
-            seedFundGrant: "Up to ₹20,00,000 grant + ₹50,00,000 debt (SISFS)",
-            taxExemption: "Section 80-IAC 3-year 100% Income Tax holiday",
-            portal: "https://seedfund.startupindia.gov.in",
-            status: "READY_FOR_FOUNDER_APPLICATION",
-          },
-          cloudInfrastructureCredits: {
-            googleCloudForStartups: "$100,000 - $200,000 USD (~₹1.66 Crore) credits + Maps API",
-            awsActivate: "$100,000 USD (~₹83 Lakhs) credits",
-            microsoftFoundersHub: "$150,000 USD (~₹1.25 Crore) Azure & OpenAI credits",
-            totalFreeCloudCreditsInr: "₹3,74,00,000 (~$450,000 USD)",
-            status: "READY_FOR_FOUNDER_CLAIM",
-          },
-          digitalPaymentsIncentive: {
-            meityNpciReimbursement: "0.25% - 0.50% zero-MDR reimbursement on UPI/RuPay",
-            status: "AUTOMATICALLY_CLAIMABLE_VIA_PG",
-          },
-        },
-        founderPrestigeAndAwardsRegistry: {
-          nationalStartupAwards: "Nomination ready under Food & Hyperlocal Logistics category (PIB / Doordarshan national coverage)",
-          assamYouthIconAward: "Nomination ready under Barak Valley Technologist of the Year (CII North-East)",
-          tieNorthEastTrailblazer: "Keynote presentation & TiE Emerge 50 award pathway",
-          pressReleaseBlueprint: {
-            headline: "Barak Valley Technologist Launches OrderKing: Overthrowing Zomato With Zero Food Inflation & Instant 24K Gold",
-            syndicationWires: ["ANI News", "Press Trust of India (PTI)", "Barak Bulletin", "Dainik Jugasankha", "YourStory"],
-          },
-        },
-        hyperViralSocialLoopEngine: {
-          whatsAppStatusMultiplier: "1-Tap 'Share Scratch Card on Status -> Unlock ₹25' creates 50,000 daily local impressions at ₹0 ad cost",
-          metaMicroBudgetAdEngine: {
-            targetRadiusKm: 5.0,
-            targetPinCodes: ["788710", "788711", "788712"],
-            dailySpendInr: 150,
-            dailyLocalReach: "3,200 active mobile users in Karimganj Town",
-          },
-          movingBillboardFleet: "10 delivery riders with high-visibility QR boxes act as 24/7 moving street billboards across town",
-        },
-        verdict: "Over ₹3.74 Crore in genuine cloud and government subsidies identified. WhatsApp Status viral loop and micro-budget Meta geofencing activated to dominate local mobile feeds 100x faster than competitors.",
+        grantsOrSubsidies: [],
+        outreachExecuted: false,
+        result: "Government grants, awards, subsidies, or institutional outreach are never reported as secured/dispatched without a documented program match and verified submission receipt.",
       };
     }
-
     case "autonomous_omni_prestige_grant_and_hyper_growth_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
@@ -2523,18 +2234,22 @@ export async function executeTool(
 
     case "autonomous_off_peak_demand_stimulator_and_revenue_multiplier": {
       requirePermission(ws.ctx, "manage_promotions");
+      const q = await import("../server/queries.server.ts");
+      const analytics = await q.analyticsSeries(ws.ctx);
       return {
-        status: "OFF_PEAK_DEMAND_STIMULATOR_ACTIVE",
+        status: "OFF_PEAK_ANALYSIS_READY",
         timestamp: new Date().toISOString(),
-        offPeakHours: "14:00 - 17:30 and 22:30 - 06:00 IST",
-        budgetCeilingPaise: 14900,
-        budgetCeilingInr: "₹149.00",
-        promotedDishCategories: ["Mutton Biryani Quick Combos", "Rohu Fish Thali Bowls", "Kathi Rolls & Momos", "Masala Chai & Snacks"],
-        targetedVolumeUplift: "+42% order conversion during afternoon and late-night lulls",
-        verdict: "Off-peak demand stimulator active. Low-price high-demand meals prioritized to double kitchen throughput during low-sales hours.",
+        multiplier: null,
+        projectedIncrementalRevenuePaise: null,
+        evidence: analytics,
+        recommendedActions: [
+          "Identify verified low-demand windows from order telemetry",
+          "Use restaurant-approved offers with explicit budget caps",
+          "Measure incremental orders, margin, and cancellation impact before scaling",
+        ],
+        result: "No revenue multiplier is claimed until an A/B or matched-period measurement exists.",
       };
     }
-
     case "autonomous_planetary_multi_repo_watchdog_and_self_healing_core": {
       requirePermission(ws.ctx, "access_AI");
       const repos = ORDER_KING_REPOS.map((repo) => {
@@ -2558,32 +2273,15 @@ export async function executeTool(
 
     case "autonomous_superpower_revenue_harvester_and_cash_generator": {
       requirePermission(ws.ctx, "view_finance");
-      const { calculatePlanetaryRevenueHarvest } = await import("@/lib/orderking/finance/revenue-harvester.ts");
-      const harvest = calculatePlanetaryRevenueHarvest({
-        ownerConsent: true,
-        activeRestaurantsCount: typeof args.activeRestaurantsCount === "number" ? args.activeRestaurantsCount : 150,
-        monthlyOrdersCount: typeof args.monthlyOrdersCount === "number" ? args.monthlyOrdersCount : 25000,
-        monthlyGmvPaise: typeof args.monthlyGmvPaise === "number" ? args.monthlyGmvPaise : 750000000,
-      });
       return {
-        status: "SUPERPOWER_REVENUE_HARVEST_EXECUTED",
-        timestamp: harvest.harvestTimestamp,
-        ownerConsentVerified: harvest.ownerConsentVerified,
-        totalMonthlyCollectibleYieldPaise: harvest.totalMonthlyCollectibleYieldPaise,
-        totalMonthlyCollectibleYieldInr: `₹${(harvest.totalMonthlyCollectibleYieldPaise / 100).toLocaleString("en-IN")}`,
-        totalAnnualCollectibleYieldPaise: harvest.totalAnnualCollectibleYieldPaise,
-        totalAnnualCollectibleYieldInr: `₹${(harvest.totalAnnualCollectibleYieldPaise / 100).toLocaleString("en-IN")}`,
-        totalNonDilutiveGrantVaultPaise: harvest.totalNonDilutiveGrantVaultPaise,
-        totalNonDilutiveGrantVaultInr: `₹${(harvest.totalNonDilutiveGrantVaultPaise / 100).toLocaleString("en-IN")}`,
-        streams: harvest.streams,
-        ledgerEntriesPostedCount: harvest.ledgerEntriesToPost.length,
-        ledgerEntriesToPost: harvest.ledgerEntriesToPost,
-        meityClaimBatchId: harvest.meityClaim.batchId,
-        corporateCateringContractsCount: harvest.corporateCateringContracts.length,
-        verdict: harvest.executionAuditSummary,
+        status: "REVENUE_HARVESTER_GOVERNED",
+        timestamp: new Date().toISOString(),
+        automaticCashGeneration: false,
+        projectedMonthlyPaise: null,
+        activeProviders: [],
+        result: "Cash is never claimed as generated or collected without an actual payment/ledger receipt. Revenue opportunities remain proposals until a real provider path is configured and executed.",
       };
     }
-
     case "autonomous_corporate_catering_rfp_and_contract_dispatcher": {
       requirePermission(ws.ctx, "manage_promotions");
       const { CORPORATE_CATERING_PIPELINE } = await import("@/lib/orderking/finance/revenue-harvester.ts");
