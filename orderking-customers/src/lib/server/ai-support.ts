@@ -91,7 +91,7 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
       if (isEarlyCancel || isExcessiveDelay) {
         // Instant cancellation allowed
         await sql`update orders set status = 'CANCELLED', updated_at = now() where id = ${order.id} and user_id = ${context.userId}`;
-        await sql`insert into order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note) values (${newId("oev")}, ${order.id}, ${order.status}, 'CANCELLED', ${context.userId}, 'customer', ${isExcessiveDelay ? 'Cancelled due to severe kitchen delay (>35 mins) with 100% refund' : 'Instant cancellation within 3 minutes'})`;
+        await sql`insert into order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note) values (${newId("oev")}, ${order.id}, ${order.status}, 'CANCELLED', ${context.userId}, 'customer', ${isExcessiveDelay ? 'Cancelled due to severe kitchen delay (>35 mins)' : 'Instant cancellation within 3 minutes'})`;
 
         const explanation = `Your order #${order.public_id} was cancelled in OrderKing's order system. Any refund is handled only through the verified payment/refund provider and is not marked as initiated by this support action.`;
 
@@ -100,7 +100,7 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
           orderId: order.id,
           issueType: data.issueType,
           actionTaken: "AUTO_CANCELLED",
-          title: "Order Cancelled & 100% Refunded",
+          title: "Order Cancelled";
           explanation,
         };
       } else {
@@ -157,7 +157,7 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
       issueType: data.issueType,
       actionTaken: "ESCALATED_TO_PRIORITY",
       title: "Support Ticket Logged",
-      explanation: `Your inquiry has been escalated to our Karimganj local operations team under ticket #${ticketId}. We typically respond within 10 minutes.`,
+      explanation: `Your support request is recorded under ticket #${ticketId}. The current system does not claim a human response or SLA until an actual support workflow acknowledges it.`,
       ticketId,
     };
   });
