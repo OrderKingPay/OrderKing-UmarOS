@@ -12,9 +12,14 @@ import appCss from "../styles.css?url";
 const APP_NAME = DEFAULT_BRANDING.appName;
 
 const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
-  const { getSessionUser } = await import("@/lib/auth/verify.server");
-  const u = await getSessionUser();
-  return u ? { id: u.id, email: u.email } : null;
+  try {
+    const { getSessionUser } = await import("@/lib/auth/verify.server");
+    const u = await getSessionUser();
+    return u ? { id: u.id, email: u.email } : null;
+  } catch (error) {
+    console.error("[fetchSessionUser] Error:", error);
+    return null;
+  }
 });
 
 export const Route = createRootRoute({
