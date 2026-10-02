@@ -95,7 +95,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
         );
         if (entry.status === "BLOCKED_AML") return json({ error: "Payment blocked by AML policy", code: "AML_BLOCKED" }, 403);
       }
-    if (process.env.VERCEL_ENV === "production" && input.paymentMethod === "UPI_SANDBOX") {
+    if (process.env.CF_PAGES === "1" || process.env.NODE_ENV === "production" && input.paymentMethod === "UPI_SANDBOX") {
       return json({ error: "Sandbox UPI is not available in production.", code: "SANDBOX_PAYMENT_BLOCKED" }, 400);
     }
     const paymentStatus = input.paymentMethod === "COD" ? "PENDING" : input.paymentMethod === "KING_PAY" ? "PAID_WALLET" : "AUTHORIZED_SANDBOX";
