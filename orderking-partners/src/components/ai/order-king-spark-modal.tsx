@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Sparkles, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { askAssistant } from "@/lib/server/api-more";
+import { askAssistant, createUmarOsEscalation } from "@/lib/server/api-more";
 import { useVendor } from "@/components/use-vendor";
 
 interface OrderKingSparkModalProps {
@@ -66,6 +66,54 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           id: `error-${Date.now()}`,
           sender: "spark",
           text: `Restaurant AI request failed: ${error instanceof Error ? error.message : "Unknown error"}. No simulated answer was generated.`,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        },
+      ]);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleEscalate = async () => {
+    if (sending) return;
+    const lastUser = [...messages].reverse().find((message) => message.sender === "user");
+    const lastSpark = [...messages].reverse().find((message) => message.sender === "spark");
+    const subject = (lastUser?.text || "Restaurant support request").slice(0, 180);
+    const details = [
+      `Partner request: ${lastUser?.text || "No prior question recorded."}`,
+      `Spark response: ${lastSpark?.text || "No Spark response recorded."}`,
+    ].join("\n\n");
+
+    setSending(true);
+    try {
+      const result = await createUmarOsEscalation({
+        data: {
+          restaurantId,
+          category: "RESTAURANT_SUPPORT",
+          severity: "MEDIUM",
+          subject,
+          details,
+          geographicContext: "Restaurant location/zone remains server-authoritative and is not inferred by the client.",
+        },
+      });
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `esc-${Date.now()}`,
+          sender: "spark",
+          text: result.ok
+            ? `Escalation ${result.escalationId} was created in the ${result.targetQueue} queue. Status: ${result.status}. No admin action is claimed until the queue processes it.`
+            : "The escalation request was not created.",
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        },
+      ]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `esc-error-${Date.now()}`,
+          sender: "spark",
+          text: `Escalation could not be created: ${error instanceof Error ? error.message : "Unknown error"}.`,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -140,7 +188,10 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           />
           <Button type="button" onClick={() => void handleSend(inputQuery)} disabled={!inputQuery.trim() || sending} className="h-10 bg-amber-500 px-4 text-xs font-bold text-black hover:bg-amber-400">
             <Send className="mr-1.5 size-3.5" />
-            {sending ? "Thinking…" : "Send"}
+            {sending ? "Working…" : "Send"}
+          </Button>
+          <Button type="button" onClick={() => void handleEscalate()} disabled={!messages.some((m) => m.sender === "user") || sending} className="h-10 border border-zinc-700 bg-zinc-900 px-3 text-[11px] font-bold text-amber-300 hover:bg-zinc-800">
+            Escalate to Umar OS
           </Button>
         </div>
       </div>
