@@ -1264,16 +1264,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const togglePayLater = () => {
-    const next = !payLaterActive;
-    setPayLaterActive(next);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_later_active", String(next));
-    }
-    if (next) {
-      toast.success("⚡ KingPay Later Activated! ₹2,500 credit limit ready at 0% interest.");
-    } else {
-      toast.info("KingPay Later deactivated.");
-    }
+    toast.info("KingPay Later is unavailable until a verified lender and credit decisioning provider are connected.");
   };
 
   const claimStreak = () => {
@@ -1298,23 +1289,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
       status: string;
     }>
   >([]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedTx = localStorage.getItem("ok_kingpay_transactions");
-      if (savedTx) {
-        try {
-          setTransactions(JSON.parse(savedTx));
-        } catch {}
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && transactions.length > 0) {
-      localStorage.setItem("ok_kingpay_transactions", JSON.stringify(transactions));
-    }
-  }, [transactions]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
