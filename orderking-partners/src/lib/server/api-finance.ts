@@ -220,7 +220,7 @@ export const getAdCampaign = createServerFn({ method: "GET" })
         is_active: boolean;
       }>`select id, name, amount_paise as daily_budget_paise, is_active from promotions where restaurant_id = ${ctx.restaurantId} and kind = 'item' and name = 'SPONSORED_BOOST' limit 1`;
       const c = rows[0];
-      const budget = c ? asInt(c.daily_budget_paise, 25000) : 25000;
+      const budget = c ? asInt(c.daily_budget_paise, 0) : null;
       return {
         hasCampaign: Boolean(c),
         isActive: c ? (c.is_active === true || (c.is_active as unknown) === "t") : false,
