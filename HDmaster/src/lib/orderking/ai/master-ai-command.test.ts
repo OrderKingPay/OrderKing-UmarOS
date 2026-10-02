@@ -7,10 +7,10 @@ import { detectAvailableProviders, selectActiveProvider, runCognitiveConsensus, 
 import { MASTER_AI_TOOL_REGISTRY, getMasterAiToolSpec } from "./tool-registry.ts";
 import { MASTER_AI_OPERATING_CONTRACT } from "./master-ai-operating-contract.ts";
 
-process.env.OPENAI_API_KEY = "dummy_openai";
-process.env.GEMINI_API_KEY = "dummy_gemini";
-process.env.ANTHROPIC_API_KEY = "dummy_anthropic";
-process.env.XAI_API_KEY = "dummy_xai";
+delete process.env.OPENAI_API_KEY;
+delete process.env.GEMINI_API_KEY;
+delete process.env.ANTHROPIC_API_KEY;
+delete process.env.XAI_API_KEY;
 
 test("Order King Master AI - 23 Specialists Coverage (Zero-Employee Architecture)", () => {
   const specialists = listSpecialists();
@@ -72,12 +72,11 @@ test("Order King Master AI - Multi-Repository Allowlist Invariant", () => {
   assert.throws(() => validateRepo("../../../etc"), /not in the Order King ecosystem allowlist/);
 });
 
-test("Order King Master AI - Multi-Model Routing & Local Fallback", () => {
+test("Order King Master AI - OpenAI-required routing with no local fallback", () => {
   const providers = detectAvailableProviders();
-  assert.ok(providers.length >= 4);
-
+  assert.deepEqual(providers, []);
   const selected = selectActiveProvider();
-  assert.ok(selected.provider === "openai" || selected.provider === "none");
+  assert.equal(selected.provider, "none");
 });
 
 test("Order King Master AI - Tool Registry Coverage & Safety", () => {
@@ -169,20 +168,17 @@ test("Order King Master AI - Tool Registry Coverage & Safety", () => {
   assert.equal(hotpatchSpec.confirmationRequired, true);
 });
 
-test("Order King Master AI - Multi-Model Cognitive Consensus Quorum Engine", async () => {
+test("Order King Master AI - Cognitive Consensus Fails Closed Without Providers", async () => {
   const req: ModelCallRequest = {
-    // specialist: getSpecialist("architect"),
     systemPrompt: "You are the Chief Systems Architect.",
-    messages: [{ role: "user", content: "Evaluate cross-repository architectural state." }],
+    messages: [{ role: "user", content: "Evaluate cross-repository architectural state without inventing facts." }],
     tools: [],
   };
 
-  const consensus = (await runCognitiveConsensus(req)) as any;
-  assert.equal(consensus.consensusReached, true);
-  assert.ok(consensus.confidenceScore >= 0.85);
-  assert.ok(consensus.modelsParticipated.length >= 3);
-  assert.ok(consensus.agreementRatio.includes("Quorum Agreement"));
-  assert.ok(consensus.synthesizedResponse.text.length > 0);
+  await assert.rejects(
+    () => runCognitiveConsensus(req),
+    /All configured AI providers failed during cognitive consensus|No configured AI providers/,
+  );
 });
 
 test("Order King Master AI - Operating Contract Identity", () => {
