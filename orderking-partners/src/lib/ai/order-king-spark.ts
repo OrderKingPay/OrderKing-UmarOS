@@ -45,30 +45,24 @@ export interface SparkChatMessage {
 }
 
 export class OrderKingSpark {
-  private menuItems: Map<string, SparkMenuItem> = new Map();
+  private menuItems: SparkMenuItem[] = [];
   private activeAnomalies: SparkKitchenAnomaly[] = [];
 
-  constructor() {
-    // Production truth rule: this assistant never seeds restaurant data.
-    // Live menu, orders, settlements and anomalies must come from authorized server data.
+  public loadAuthorizedData(data: { menuItems?: SparkMenuItem[]; activeAnomalies?: SparkKitchenAnomaly[] }): void {
+    this.menuItems = Array.isArray(data.menuItems) ? [...data.menuItems] : [];
+    this.activeAnomalies = Array.isArray(data.activeAnomalies) ? [...data.activeAnomalies] : [];
   }
 
   public getMenuItems(): SparkMenuItem[] {
-    return Array.from(this.menuItems.values());
+    return [...this.menuItems];
   }
 
-  public toggleItemAvailability(itemId: string): { success: boolean; item?: SparkMenuItem } {
-    const item = this.menuItems.get(itemId);
-    if (!item) return { success: false };
-    item.isAvailable = !item.isAvailable;
-    return { success: true, item };
+  public toggleItemAvailability(_itemId: string): { success: boolean; item?: SparkMenuItem; reason?: string } {
+    return { success: false, reason: "SERVER_MUTATION_REQUIRED" };
   }
 
-  public updateItemPrice(itemId: string, newPricePaise: number): { success: boolean; item?: SparkMenuItem } {
-    const item = this.menuItems.get(itemId);
-    if (!item || newPricePaise <= 0) return { success: false };
-    item.pricePaise = newPricePaise;
-    return { success: true, item };
+  public updateItemPrice(_itemId: string, _newPricePaise: number): { success: boolean; item?: SparkMenuItem; reason?: string } {
+    return { success: false, reason: "SERVER_MUTATION_REQUIRED" };
   }
 
   public getActiveAnomalies(): SparkKitchenAnomaly[] {
@@ -77,7 +71,7 @@ export class OrderKingSpark {
 
   public getSettlementSummary(): SparkSettlementSummary {
     return {
-      period: "Live ledger required",
+      period: "Authorized settlement data required",
       grossSalesPaise: 0,
       commissionPaidPaise: 0,
       swiggyZomatoLossAvoidedPaise: 0,
@@ -148,12 +142,7 @@ Live operational signals must be calculated from verified restaurant orders and 
       id,
       sender: "spark",
       text: `### 🚀 Order King Spark Active
-I am your restaurant growth partner. I can:
-1. **Manage Menu & Prices**: Toggle out-of-stock items or adjust menu rates instantly.
-2. **Audit 0% Commission Savings**: See exactly how much money you keep vs Swiggy/Zomato.
-3. **Monitor Kitchen Velocity**: Track prep time bottlenecks and prevent customer cancellations.
-
-*Ask me anything about your kitchen, orders, or settlement!*`,
+I am connected to the authorized restaurant AI service. I can explain verified restaurant operations, menu, orders, settlement and growth signals. I will not claim that an action happened unless the server confirms it.`,
       timestamp,
       actionCard: {
         type: "growth_plan",
