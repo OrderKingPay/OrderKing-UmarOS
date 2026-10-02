@@ -64,7 +64,7 @@ function Login() {
                   key={p.providerId}
                   type="button"
                   variant="secondary"
-                  onClick={() => signIn(p.providerId, { callbackURL: "/dashboard" })}
+                  onClick={() => void signIn(p.providerId, { callbackURL: "/dashboard" }).catch((err) => setError(err instanceof Error ? err.message : t("auth.error")))}
                 >
                   {p.idp === "google" ? t("auth.continueGoogle") : t("auth.continueX")}
                 </Button>
