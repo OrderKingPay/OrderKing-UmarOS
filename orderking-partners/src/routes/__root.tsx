@@ -75,32 +75,35 @@ function Root() {
     
     window.addEventListener("online", handleOnline);
     
-    // Supabase Realtime WebSocket for inventory and orders
-    const channel = supabaseCloud
-      .channel("partner_realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "item_availability" },
-        () => {
-          console.log("[Realtime] Inventory changed, invalidating catalog");
-          queryClient.invalidateQueries({ queryKey: ["catalog"] });
-          queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "orders" },
-        () => {
-          console.log("[Realtime] Order changed, invalidating orders");
-          queryClient.invalidateQueries({ queryKey: ["orders"] });
-          queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-        }
-      )
-      .subscribe();
+    // Supabase Realtime starts only when real browser credentials are
+    // provisioned. Missing credentials must never prevent the app shell from
+    // rendering; protected data paths still fail closed server-side.
+    let channel: ReturnType<NonNullable<typeof supabaseCloud>["channel"]> | null = null;
+    if (supabaseCloud) {
+      channel = supabaseCloud
+        .channel("partner_realtime")
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "item_availability" },
+          () => {
+            queryClient.invalidateQueries({ queryKey: ["catalog"] });
+            queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+          }
+        )
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "orders" },
+          () => {
+            queryClient.invalidateQueries({ queryKey: ["orders"] });
+            queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+          }
+        )
+        .subscribe();
+    }
 
     return () => {
       window.removeEventListener("online", handleOnline);
-      supabaseCloud.removeChannel(channel);
+      if (channel && supabaseCloud) supabaseCloud.removeChannel(channel);
     };
   }, []);
 
