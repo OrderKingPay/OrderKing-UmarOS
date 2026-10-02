@@ -1061,23 +1061,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
 
-  const handleUtilityPayment = (title: string, amount: number) => {
-    if (amount > walletBalance) {
-      toast.error(`Insufficient KingPay balance (₹${walletBalance}). Please add money.`);
-      return;
-    }
-    const newBal = walletBalance - amount;
-    setWalletBalance(newBal);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-    }
-    addTransaction(amount, title, "debit");
-    playSoundboxChime(amount);
-    const earnedCoins = Math.round(amount * 0.05 * 10);
-    setKingCoins((c) => c + earnedCoins);
-    toast.success(`⚡ ${title} successful! Paid ₹${amount} with 0% fee. +${earnedCoins} King Coins earned!`);
-    setActiveUtilityModal(null);
-    setUtilityInput("");
+  const handleUtilityPayment = (_title: string, _amount: number) => {
+    toast.info(
+      "Direct utility payment is unavailable until a verified payment provider is connected. No wallet debit or success is recorded.",
+    );
   };
 
   // CRED-style Interactive Scratch Card
@@ -2758,14 +2745,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               </div>
               <Button
                 size="sm"
-                variant="primary"
-                onClick={() => {
-                  toast.success("APDCL Bill Paid via KingPay! +50 King Coins Earned.");
-                  playSoundboxChime(840);
-                }}
+                variant="outline"
+                disabled
                 className="text-xs font-bold py-1 px-3"
               >
-                Pay ₹840
+                Provider not connected
               </Button>
             </div>
 
@@ -2780,13 +2764,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => {
-                  toast.success("Airtel Fiber Paid via KingPay! +40 King Coins Earned.");
-                  playSoundboxChime(799);
-                }}
+                disabled
                 className="text-xs font-bold py-1 px-3"
               >
-                Pay ₹799
+                Provider not connected
               </Button>
             </div>
           </div>

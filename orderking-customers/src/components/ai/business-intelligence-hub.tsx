@@ -118,7 +118,7 @@ export function BusinessIntelligenceHub() {
           </div>
           <div className="rounded-lg bg-black/40 p-3 border border-indigo-500/20">
             <span className="text-xs text-slate-400">Top Channel Conversion</span>
-            <div className="text-2xl font-bold text-amber-400">87.5% (Referral)</div>
+            <div className="text-2xl font-bold text-amber-400">Live data required</div>
           </div>
           <div className="rounded-lg bg-black/40 p-3 border border-indigo-500/20">
             <span className="text-xs text-slate-400">Active Schedules</span>
