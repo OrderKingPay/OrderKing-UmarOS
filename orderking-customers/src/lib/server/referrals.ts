@@ -2,6 +2,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
+import { createHash } from "node:crypto";
 
 export type ReferralStats = {
   referralCode: string;
@@ -19,34 +20,50 @@ export const getReferralStats = createServerFn({ method: "GET" })
     const sql = await getSql();
     const userId = context.userId;
 
-    // Derive deterministic, user-friendly referral code
-    const shortHash = userId.replace(/[^a-zA-Z0-9]/g, "").slice(-5).toUpperCase() || "VIP26";
-    const referralCode = `KING${shortHash}`;
+    const existing = await sql<{ referral_code: string | null }>`
+      select referral_code from users where id = ${userId} limit 1
+    `;
+    if (!existing[0]) throw new Error("Account not found.");
 
-    // Query referral redemption stats from DB if available
+    let referralCode = existing[0].referral_code?.trim() ?? "";
+    if (!referralCode) {
+      const stable = createHash("sha256").update(userId).digest("hex").slice(-8).toUpperCase();
+      referralCode = `OK-${stable}`;
+      const collision = await sql<{ id: string }>`
+        select id from users where referral_code = ${referralCode} and id <> ${userId} limit 1
+      `;
+      if (collision[0]) throw new Error("Referral code allocation is temporarily unavailable.");
+      await sql`
+        update users set referral_code = ${referralCode}
+        where id = ${userId} and (referral_code is null or trim(referral_code) = '')
+      `;
+    }
+
     let totalInvited = 0;
     let totalEarnedPaise = 0;
     try {
       const rows = await sql<{ count: number; earned: number }>`
-        select count(*)::int as count, coalesce(sum(delta), 0)::int as earned
+        select count(*)::int as count,
+               coalesce(sum(case when delta > 0 then delta * 100 else 0 end), 0)::int as earned
         from loyalty_transactions
         where user_id = ${userId} and reason like 'referral%'
       `;
       if (rows[0]) {
         totalInvited = rows[0].count;
-        totalEarnedPaise = rows[0].earned * 100; // 1 point = 100 paise (₹1)
+        totalEarnedPaise = rows[0].earned;
       }
-    } catch {
-      // Fallback if table doesn't have loyalty transactions yet
+    } catch (err) {
+      console.error("Referral stats read failed:", err);
     }
 
+    const verifiedRewardPaise = 10_000;
     return {
       referralCode,
-      shareUrl: `https://orderking.in/?ref=${referralCode}`,
+      shareUrl: `https://orderking.in/?ref=${encodeURIComponent(referralCode)}`,
       totalInvited,
       totalEarnedPaise,
-      rewardPerFriendPaise: 2_500, // ₹25 wallet credit for referrer (drives repeat order)
-      friendDiscountPaise: 4_000, // ₹40 OFF for friend (completely covered by commission)
-      minOrderPaise: 24_900, // ₹249 min order (guarantees positive platform profit on every order)
+      rewardPerFriendPaise: verifiedRewardPaise,
+      friendDiscountPaise: verifiedRewardPaise,
+      minOrderPaise: 0,
     };
   });
