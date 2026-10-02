@@ -177,7 +177,7 @@ test("Order King Master AI - Cognitive Consensus Fails Closed Without Providers"
 
   await assert.rejects(
     () => runCognitiveConsensus(req),
-    /All configured AI providers failed during cognitive consensus|No configured AI providers/,
+    /All configured AI providers failed during cognitive consensus|No configured AI providers|No external AI providers configured/,
   );
 });
 
