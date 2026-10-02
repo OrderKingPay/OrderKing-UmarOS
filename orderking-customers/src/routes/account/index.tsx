@@ -206,13 +206,15 @@ function AccountPage() {
             <div className="mt-4 rounded-xl border border-border bg-surface p-3 flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">Your Referral Code</span>
-                <p className="font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">KINGVIP</p>
+                <p className="font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">
+                  Referral available after verified account sign-in
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  void navigator.clipboard?.writeText("KINGVIP");
-                  toast.success("Referral code copied!");
+                  void navigator.clipboard?.writeText(window.location.origin + "/?ref=account");
+                  toast.success("Your referral link is copied.");
                 }}
                 className="rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-fg hover:bg-surface-3 transition"
               >
