@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { asInt, asIso, newId } from "@/lib/utils";
 import { notificationChannelStatus } from "@/lib/adapters/notifications";
-import { withVendor, writeAudit } from "./helpers";
+import { notifyInApp, withVendor, writeAudit } from "./helpers";
 import { isRestaurantRole, type RestaurantRole } from "@/lib/rbac";
 import { platformConfig } from "@/lib/platform-config";
 
@@ -199,6 +199,16 @@ export const createUmarOsEscalation = createServerFn({ method: "POST" })
           connectorStatus = "FAILED";
         }
       }
+
+      await notifyInApp(sql, {
+        restaurantId: ctx.restaurantId,
+        type: "SUPPORT_ESCALATION",
+        title: "Umar OS escalation created",
+        body:
+          connectorStatus === "LINKED"
+            ? `Case ${id} is linked to Umar OS ticket ${remoteTicketId}.`
+            : `Case ${id} is stored locally. Umar OS connector status: ${connectorStatus}.`,
+      });
 
       return {
         ok: true as const,
