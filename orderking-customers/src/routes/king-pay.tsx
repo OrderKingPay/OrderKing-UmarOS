@@ -710,32 +710,7 @@ export type BankAccount = {
   icon: string;
 };
 
-const DEFAULT_BANKS: BankAccount[] = [
-  {
-    id: "bank_sbi_1",
-    bankName: "State Bank of India",
-    bankCode: "sbi",
-    accountNumberMasked: "•••• 4821",
-    accountType: "Savings",
-    isPrimary: true,
-    balance: 24850,
-    balanceCheckedAt: "Just now",
-    color: "from-blue-600 to-indigo-800",
-    icon: "🏛️",
-  },
-  {
-    id: "bank_hdfc_1",
-    bankName: "HDFC Bank",
-    bankCode: "hdfc",
-    accountNumberMasked: "•••• 9014",
-    accountType: "Savings",
-    isPrimary: false,
-    balance: 68120,
-    balanceCheckedAt: "Today 11:30 AM",
-    color: "from-blue-800 to-sky-900",
-    icon: "🏦",
-  },
-];
+const DEFAULT_BANKS: BankAccount[] = [];
 
 const POPULAR_BANKS_FOR_ADDING = [
   { name: "State Bank of India (SBI)", code: "sbi", icon: "🏛️", popular: true },
@@ -890,7 +865,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   // 10x Low-Bandwidth & Offline 2G Mode
   const [isOffline, setIsOffline] = useState(false);
   const [force2GMode, setForce2GMode] = useState(false);
-  const [offlineToken, setOfflineToken] = useState("OKPAY-OFFLINE-7841");
+  const [offlineToken] = useState("");
 
   // Navi-style KingPay Later Micro-Credit
   const [payLaterActive, setPayLaterActive] = useState(false);
@@ -902,7 +877,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   // Interactive Scan & Pay Simulator
   const [showScanner, setShowScanner] = useState(false);
-  const [scanRecipient, setScanRecipient] = useState("karimganj.store@upi");
+  const [scanRecipient, setScanRecipient] = useState("");
   const [scanAmount, setScanAmount] = useState("150");
   const [scannerTab, setScannerTab] = useState<"camera" | "manual">("camera");
   const [flashlightOn, setFlashlightOn] = useState(false);
@@ -914,9 +889,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [selectedBankForBalance, setSelectedBankForBalance] = useState<BankAccount | null>(null);
   const [upiPinInput, setUpiPinInput] = useState("");
   const [pinVerifying, setPinVerifying] = useState(false);
-  const [balanceRevealed, setBalanceRevealed] = useState<{ [bankId: string]: number }>({
-    bank_sbi_1: 24850,
-  });
+  const [balanceRevealed] = useState<Record<string, number>>({});
 
   // Add Bank Account Flow State
   const [showAddBankModal, setShowAddBankModal] = useState(false);
@@ -945,33 +918,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [isFetchingBill, setIsFetchingBill] = useState(false);
 
   const handleFetchBBPSBill = async () => {
-    if (!utilityInput) {
-      toast.error("Please enter ID/Number");
-      return;
-    }
-    setIsFetchingBill(true);
-    setFetchedBill(null);
-    try {
-      const billerId = activeUtilityModal === "electricity" ? "APDCL" :
-                       activeUtilityModal === "gas" ? "INDANE_GAS" :
-                       activeUtilityModal === "fastag" ? "FASTAG_NHAI" : "GENERIC_BILLER";
-                       
-      const res = await fetch("/api/bbps/fetch-bill", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ billerId, consumerNumber: utilityInput })
-      });
-      if (res.ok) {
-        setFetchedBill(await res.json());
-        toast.success("Details fetched successfully from BBPS!");
-      } else {
-        toast.error("Failed to fetch details. Check input.");
-      }
-    } catch (e) {
-      toast.error("Network error while fetching from BBPS");
-    } finally {
-      setIsFetchingBill(false);
-    }
+    toast.info("BBPS bill lookup is unavailable until a verified BBPS provider is connected.");
   };
 
   const handlePayBBPSBill = async () => {
@@ -987,15 +934,15 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [showScratchCard, setShowScratchCard] = useState(false);
   const [scratched, setScratched] = useState(false);
   const [scratchReward, setScratchReward] = useState({
-    title: "🎉 Flat ₹25 Cashback!",
-    desc: "Added directly to your KingPay wallet float.",
-    amount: 25,
-    coins: 100,
+    title: "Reward unavailable",
+    desc: "A verified rewards ledger is not connected.",
+    amount: 0,
+    coins: 0,
   });
 
   // 24K Digital Gold Partner Savings (Jar / Paytm Gold style)
   const [showGoldModal, setShowGoldModal] = useState(false);
-  const [goldGrams, setGoldGrams] = useState(0.045);
+  const [goldGrams, setGoldGrams] = useState(0);
   const [goldAmount, setGoldAmount] = useState("100");
 
   // Split Bill with Friends (Splitwise + PhonePe style)
@@ -1088,16 +1035,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   // Auto-sync offline transaction queue when connectivity returns
   const syncOfflineQueue = () => {
     if (typeof window === "undefined") return;
-    try {
-      const rawQueue = localStorage.getItem("ok_offline_tx_queue");
-      if (!rawQueue) return;
-      const queue = JSON.parse(rawQueue) as Array<{ id: string; amount: number; recipient: string; timestamp: string }>;
-      if (Array.isArray(queue) && queue.length > 0) {
-        localStorage.removeItem("ok_offline_tx_queue");
-        toast.success(`⚡ Reconnected: Synced ${queue.length} offline KingPay transaction${queue.length > 1 ? "s" : ""} to OrderKing core!`);
-      }
-    } catch {
-      // ignore parsing error
+    const rawQueue = localStorage.getItem("ok_offline_tx_queue");
+    if (rawQueue) {
+      toast.info("Offline payment records are not automatically submitted: no verified offline payment rail is connected.");
     }
   };
 
@@ -1123,15 +1063,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
       setForce2GMode(true);
     }
 
-    // Refresh offline token every 60s
-    const interval = setInterval(() => {
-      setOfflineToken(`OKPAY-OFFLINE-${Math.floor(1000 + Math.random() * 9000)}`);
-    }, 60000);
-
     return () => {
       window.removeEventListener("online", onOnline);
       window.removeEventListener("offline", onOffline);
-      clearInterval(interval);
     };
   }, []);
 
