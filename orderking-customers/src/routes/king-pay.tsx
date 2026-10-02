@@ -1002,7 +1002,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   // Interactive Loan EMI & Eligibility Calculator
   const [calcAmount, setCalcAmount] = useState(100000);
   const [calcTenure, setCalcTenure] = useState(12);
-  const [simulatedCibilScore, setSimulatedCibilScore] = useState(785);
   const [calcCategory, setCalcCategory] = useState<"personal" | "business" | "bike" | "card" | "bajaj">("personal");
   const [selectedBajajOfferCategory, setSelectedBajajOfferCategory] = useState<"all" | "electronics" | "home" | "business" | "health" | "vehicle" | "lifestyle">("all");
 
@@ -1104,7 +1103,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         currency: orderData.currency,
         name: "OrderKing",
         description: "Add Money to KingPay Wallet",
-        image: "https://your_logo_url",
         order_id: orderData.id,
         handler: async function (response: any) {
           try {
@@ -1130,11 +1128,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           } catch (err) {
             toast.error("Verification error");
           }
-        },
-        prefill: {
-          name: "KingPay User",
-          email: "user@example.com",
-          contact: "9999999999",
         },
         theme: {
           color: "#059669", 
@@ -1598,7 +1591,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             <div className="flex items-center gap-1.5 text-muted">
               <span>My UPI ID:</span>
               <code className="font-mono font-bold text-fg bg-surface-2 px-2 py-0.5 rounded">
-                user9876@kingpay
+                Not connected until a verified UPI handle is provisioned
               </code>
               <button
                 type="button"
@@ -2016,47 +2009,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               </div>
             </div>
 
-            {/* Slider 3: CIBIL Score & Instant Pre-Approval Dial */}
-            <div className="space-y-1.5 pt-1 border-t border-indigo-500/20">
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-muted font-medium">Your CIBIL Score Dial:</span>
-                <span className={`font-mono font-extrabold text-sm ${simulatedCibilScore >= 750 ? "text-emerald-600" : simulatedCibilScore >= 650 ? "text-indigo-600" : "text-amber-600"}`}>
-                  {simulatedCibilScore} ({simulatedCibilScore >= 750 ? "Super-Prime Pre-Approved" : simulatedCibilScore >= 650 ? "Good Approval Rate" : "100% Guaranteed FD-Backed"})
-                </span>
-              </div>
-              <input
-                type="range"
-                min={300}
-                max={900}
-                step={5}
-                value={simulatedCibilScore}
-                onChange={(e) => setSimulatedCibilScore(Number(e.target.value))}
-                className="w-full h-1.5 bg-surface-2 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-              />
-              <div className="flex justify-between text-[10px] text-muted font-mono">
-                <span>300 (New to Credit)</span>
-                <span>650 (Average)</span>
-                <span>750+ (Super Prime)</span>
-                <span>900 (Perfect)</span>
-              </div>
-            </div>
-
-            {/* Dynamic Mutual Benefit & Owner Yield Card */}
-            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-2.5 text-xs space-y-1">
-              <div className="flex items-center justify-between font-bold text-emerald-800 dark:text-emerald-300">
-                <span>🤝 Customer Benefit:</span>
-                <span>
-                  {simulatedCibilScore >= 750
-                    ? "0% Interest / 9.9% p.a. · Instant Disbursal in 20 Mins"
-                    : simulatedCibilScore >= 650
-                    ? "Fast Digital Approval · Low Documentation"
-                    : "100% Guaranteed Approval (Zero Rejections)"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-[11px] text-amber-800 dark:text-amber-300 font-semibold border-t border-emerald-500/20 pt-1">
-                <span>🛡️ Zero Hidden Charges:</span>
-                <span>100% Transparent · Zero Foreclosure Penalty · Instant Bank Disbursal</span>
-              </div>
+            {/* Credit eligibility — intentionally fail-closed until a real bureau/lender connection is configured. */}
+            <div className="rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-3 text-xs text-muted">
+              <p className="font-semibold text-fg">Credit eligibility</p>
+              <p className="mt-1">CIBIL score, approval status, rates, and disbursal are shown only after a verified credit-bureau and lender integration is connected.</p>
             </div>
           </div>
 
