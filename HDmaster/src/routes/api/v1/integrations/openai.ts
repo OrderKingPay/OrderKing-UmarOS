@@ -1,45 +1,46 @@
-// @ts-nocheck
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 
-// OPENAI API SCAFFOLDING
-// Drop your production API keys in Netlify Environment Variables:
-// VITE_OPENAI_API_KEY
-
+/**
+ * OpenAI integration is fail-closed until a real server-side provider
+ * configuration exists. Never return a fabricated AI response.
+ */
 export const APIRoute = createAPIFileRoute('/api/v1/integrations/openai')({
-  POST: async () => {
-  try {
-    const { prompt } = await request.json();
-    const openAiKey = process.env.VITE_OPENAI_API_KEY;
+  POST: async ({ request }) => {
+    try {
+      const body = (await request.json()) as { prompt?: unknown };
+      const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : '';
 
-    if (!openAiKey) {
-      return new Response(JSON.stringify({ 
-        error: "Missing VITE_OPENAI_API_KEY. System is prepared but waiting for Founder to provide the key in Netlify settings." 
-      }), { status: 500 });
+      if (!prompt) {
+        return Response.json({ error: 'A prompt is required.' }, { status: 400 });
+      }
+
+      const apiKey = process.env.OPENAI_API_KEY;
+      const model = process.env.OPENAI_MODEL;
+
+      if (!apiKey || !model) {
+        return Response.json(
+          {
+            error: 'OpenAI is not configured. Configure OPENAI_API_KEY and OPENAI_MODEL in Cloudflare secrets.',
+            code: 'AI_PROVIDER_NOT_CONFIGURED',
+          },
+          { status: 503, headers: { 'Cache-Control': 'no-store' } },
+        );
+      }
+
+      return Response.json(
+        {
+          error: 'OpenAI transport is not yet wired to the production AI gateway.',
+          code: 'AI_PROVIDER_PENDING',
+          provider: 'openai',
+          model,
+        },
+        { status: 503, headers: { 'Cache-Control': 'no-store' } },
+      );
+    } catch {
+      return Response.json(
+        { error: 'Invalid request body.' },
+        { status: 400, headers: { 'Cache-Control': 'no-store' } },
+      );
     }
-    
-    // Real API Call to OpenAI will go here:
-    /*
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${openAiKey}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [{ role: "system", content: "You are the top OrderKing AI." }, { role: "user", content: prompt }]
-      })
-    });
-    const data = await res.json();
-    return new Response(JSON.stringify({ success: true, ai_response: data.choices[0].message.content }));
-    */
-    
-    return new Response(JSON.stringify({ success: true, message: "OpenAI API scaffolding ready. Waiting for keys." }), {
-      headers: { "Content-Type": "application/json" }
-    });
-
-  } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: "Internal Server Error" }), { status: 500 });
-  }
-  }
+  },
 });
