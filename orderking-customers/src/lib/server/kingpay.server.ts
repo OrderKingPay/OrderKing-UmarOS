@@ -22,4 +22,6 @@ export const getKingpayBalance = createServerFn({ method: "GET" }).handler(async
   }
 });
 
-// Wallet mutations are intentionally not exposed as generic client-callable server functions.\n// Credits must come from provider-verified, idempotent payment events; debits must be\n// tied to authoritative server transactions.\n
+// Wallet mutations are intentionally not exposed as generic client-callable server functions.
+// Credits must come from provider-verified, idempotent payment events; debits must be
+// tied to authoritative server transactions.
