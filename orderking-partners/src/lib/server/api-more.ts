@@ -160,11 +160,53 @@ export const createUmarOsEscalation = createServerFn({ method: "POST" })
         detail: `${severity}: ${subject}`,
       });
 
+      const connectorUrl = process.env.UMAR_OS_ESCALATION_URL?.trim();
+      const connectorSecret = process.env.UMAR_OS_ESCALATION_SECRET?.trim();
+      let remoteTicketId: string | null = null;
+      let connectorStatus: "LINKED" | "NOT_CONFIGURED" | "FAILED" = "NOT_CONFIGURED";
+
+      if (connectorUrl && connectorSecret) {
+        try {
+          const response = await fetch(connectorUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${connectorSecret}`,
+            },
+            body: JSON.stringify({
+              escalationId: id,
+              restaurantId: ctx.restaurantId,
+              category: data.category.trim().slice(0, 80),
+              severity,
+              subject,
+              details,
+              geographicContext: data.geographicContext?.trim().slice(0, 300) || null,
+              createdByUserId: context.userId,
+            }),
+          });
+          const remote = (await response.json().catch(() => ({}))) as {
+            ok?: boolean;
+            ticketId?: string;
+          };
+          if (response.ok && remote.ok && remote.ticketId) {
+            remoteTicketId = remote.ticketId;
+            connectorStatus = "LINKED";
+            await sql`update support_escalations set status = 'UMAR_OS_LINKED', updated_at = now() where id = ${id}`;
+          } else {
+            connectorStatus = "FAILED";
+          }
+        } catch {
+          connectorStatus = "FAILED";
+        }
+      }
+
       return {
         ok: true as const,
         escalationId: id,
-        status: "OPEN" as const,
+        status: connectorStatus === "LINKED" ? "UMAR_OS_LINKED" as const : "OPEN" as const,
         targetQueue: "UMAR_OS_RESTAURANT_SUPPORT" as const,
+        connectorStatus,
+        remoteTicketId,
         dataMode: "ACTUAL" as const,
       };
     });
