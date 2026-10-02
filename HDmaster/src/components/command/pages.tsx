@@ -2488,10 +2488,10 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-800 dark:text-indigo-300 transition-all"
-                  onClick={() => runPreset("audit_bajaj_finance_affiliate_and_emi_leads: Autonomously audit Bajaj Finserv Insta EMI card conversions, personal loans, and commercial equipment financing leads with zero commission leakage", "finance")}
+                  onClick={() => runPreset("audit_bajaj_finance_affiliate_and_emi_leads: Audit verified Bajaj Finance partner lead, disbursement, and commission records", "finance")}
                 >
                   <span className="font-semibold">💳 1-Click Bajaj Finserv Affiliate &amp; No-Cost EMI Audit</span>
-                  <p className="text-[11px] text-muted">Reconcile 284 Bajaj leads, Insta EMI cards, equipment loans &amp; zero-leakage commission.</p>
+                  <p className="text-[11px] text-muted">Reconcile verified Bajaj partner lead, disbursement, and commission records; no leakage/compliance result is assumed.</p>
                 </button>
                 <button
                   type="button"
