@@ -2782,8 +2782,8 @@ export async function runMasterAi(
   const toolCallsSummary: ToolCallResult[] = [];
   const pendingApprovals: PendingApproval[] = [];
   const evidence = new Set<string>(["RESULT"]);
-  let activeProvider: string = input.provider || "local_deterministic";
-  let activeModel = "orderking-master-ai-v1";
+  let activeProvider: string = input.provider || "none";
+  let activeModel = "unavailable";
   let finalText = "";
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
