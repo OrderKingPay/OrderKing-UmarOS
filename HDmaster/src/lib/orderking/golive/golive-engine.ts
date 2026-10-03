@@ -84,7 +84,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     lastTestedAt: null,
   },
   endpoints: {
-    hostingProvider: "VERCEL",
+    hostingProvider: "CLOUDFLARE_PAGES",
     customerAppUrl: process.env.CUSTOMER_APP_URL ?? "",
     partnerAppUrl: process.env.PARTNER_APP_URL ?? "",
     riderAppUrl: process.env.RIDER_APP_URL ?? "",
@@ -201,7 +201,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
     infraScore += 7;
   } else {
     infraWarnings.push("SSL enforcement or custom domain DNS verification is pending.");
-    recommendedActions.push("Verify CNAME records for orderking.in on Vercel/Cloudflare.");
+    recommendedActions.push("Verify CNAME records for orderking.in on Cloudflare Pages/Cloudflare.");
   }
 
   const infraPillar: GoLivePillarScore = {
