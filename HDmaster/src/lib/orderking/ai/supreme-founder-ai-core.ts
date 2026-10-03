@@ -1226,17 +1226,15 @@ Select any module below to **preview standalone source code, download full ZIP p
   ) {
     const consensus = ensembleConsensusEngine.executeConsensus(query);
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Simultaneous Multi-Model Fanout", status: "COMPLETED", detail: "GPT-5.6, Claude 4.6, Grok 4.6, Gemini 3.8, Codex, DeepSeek invoked" },
-      { stepNumber: 2, totalSteps: 4, label: "Cross-Model Critique & Verification", status: "COMPLETED", detail: "Checked 0.00% hallucinations, verified algorithmic correctness" },
-      { stepNumber: 3, totalSteps: 4, label: "Mathematical Consensus Synthesis", status: "COMPLETED", detail: `${consensus.overallConsensusAgreement}% Inter-model agreement reached` },
-      { stepNumber: 4, totalSteps: 4, label: "Single Unified Flawless Deliverable", status: "COMPLETED", detail: "Unified production solution authorized" },
+      { stepNumber: 1, totalSteps: 2, label: "Provider Configuration Check", status: "COMPLETED", detail: `${consensus.modelsParticipatedCount} providers available for verified consensus` },
+      { stepNumber: 2, totalSteps: 2, label: "Consensus Result", status: "COMPLETED", detail: consensus.executionStatus === "UNIFIED_CONSENSUS_REACHED" ? "Consensus result returned." : "Consensus unavailable; no fabricated model output is shown." },
     ];
 
     return {
       intent: "ensemble_consensus",
       detectedLanguage,
       responseMarkdown: consensus.unifiedSynthesis,
-      voiceSpokenText: `All 6 strongest frontier models have executed together in complete consensus with ${consensus.overallConsensusAgreement} percent agreement. The deliverable is 100% verified with zero hallucinations.`,
+      voiceSpokenText: consensus.executionStatus === "UNIFIED_CONSENSUS_REACHED" ? `Verified consensus returned with ${consensus.modelsParticipatedCount} configured providers.` : "Verified multi-model consensus is unavailable because this legacy path does not execute external inference.",
       executionSteps,
       actionCard: {
         type: "ensemble_consensus",
