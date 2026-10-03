@@ -136,7 +136,7 @@ export function PlatformIntegrationsModal({
                 </Badge>
               </div>
               <p className="text-xs text-slate-400">
-                Connect and force work done across GitHub, Upwork, WhatsApp, Stripe, Vercel, and Cloud databases with safe results.
+                Connect and force work done across GitHub, Upwork, WhatsApp, Stripe, Cloudflare, and connected databases with safe results.
               </p>
             </div>
           </div>
