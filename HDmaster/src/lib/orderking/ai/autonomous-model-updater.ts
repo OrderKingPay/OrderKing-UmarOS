@@ -16,74 +16,8 @@ export interface UpgradableModelInfo {
   benchmarkScore: number;
 }
 
-export const INITIAL_MODEL_REGISTRY: UpgradableModelInfo[] = [
-  {
-    id: "gpt-4o",
-    name: "OpenAI GPT-4o",
-    generation: "gpt-4o",
-    provider: "OpenAI",
-    releaseDate: "Production Verified",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["Multimodal vision & text", "Structured outputs & tool calling", "Sub-150ms TTFT"],
-    performanceGainPct: 35,
-    benchmarkScore: 99.8,
-  },
-  {
-    id: "claude-3-7-sonnet",
-    name: "Anthropic Claude 3.7 Sonnet",
-    generation: "claude-3-7-sonnet-20250219",
-    provider: "Anthropic",
-    releaseDate: "Production Verified",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["Hybrid extended thinking", "Deep systems architecture", "Flawless contractual drafting"],
-    performanceGainPct: 40,
-    benchmarkScore: 99.9,
-  },
-  {
-    id: "grok-2",
-    name: "xAI Grok 2",
-    generation: "grok-2-1212",
-    provider: "xAI",
-    releaseDate: "Production Verified",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["Real-time web search integration", "Truthful live retrieval", "Mathematical analysis"],
-    performanceGainPct: 38,
-    benchmarkScore: 99.4,
-  },
-  {
-    id: "gemini-2-0-flash",
-    name: "Google Gemini 2.0 Flash",
-    generation: "gemini-2.0-flash",
-    provider: "Google DeepMind",
-    releaseDate: "Production Verified",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["1M token context window", "Native multimodal vision & audio", "High-throughput token streaming"],
-    performanceGainPct: 42,
-    benchmarkScore: 99.6,
-  },
-  {
-    id: "codex-supreme",
-    name: "Codex Supreme Architect",
-    generation: "codex-local-v1",
-    provider: "Codex Sovereign",
-    releaseDate: "Always Active",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["Deterministic code synthesis", "Zero-defect typechecking", "Instant edge bundling"],
-    performanceGainPct: 50,
-    benchmarkScore: 100.0,
-  },
-  {
-    id: "deepseek-r1-sovereign",
-    name: "DeepSeek R1 Sovereign Reasoner",
-    generation: "deepseek-r1-local",
-    provider: "DeepSeek Sovereign",
-    releaseDate: "Always Active",
-    status: "ACTIVE_PRODUCTION",
-    improvements: ["Mathematical verification", "Zero-fee ledger arbitration", "Extreme algorithmic efficiency"],
-    performanceGainPct: 44,
-    benchmarkScore: 99.7,
-  },
-];
+export const INITIAL_MODEL_REGISTRY: UpgradableModelInfo[] = [];
+
 
 export interface PendingUpgradeNotification {
   upgradeId: string;
