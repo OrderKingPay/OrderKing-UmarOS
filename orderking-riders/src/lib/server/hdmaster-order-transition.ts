@@ -10,7 +10,7 @@ type LiveTransition = { from: CanonicalStatus; to: CanonicalStatus; reason?: str
 
 function config() {
   const url = process.env.HDMASTER_URL?.trim().replace(/\/+$/, "");
-  const token = process.env.ORDERKING_SERVICE_TOKEN?.trim() || process.env.ORDERKING_SERVICE_TOKEN?.trim();
+  const token = process.env.ORDERKING_SERVICE_TOKEN?.trim();
   if (!url || !token) throw new Error("HDMASTER_URL and ORDERKING_SERVICE_TOKEN are required for LIVE rider operations");
   return { url, token };
 }
