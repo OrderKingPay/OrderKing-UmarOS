@@ -2113,7 +2113,7 @@ const ZOMATO_PARITY_ITEMS = [
 function AiPage({ mode }: { mode: "ops" | "ceo" }) {
   const [activeTab, setActiveTab] = useState<"console" | "ecosystem" | "backlog" | "governance" | "growth">("console");
   const [specialistId, setSpecialistId] = useState<string>("architect");
-  const [provider, setProvider] = useState<any>("local_deterministic");
+  const [provider, setProvider] = useState<any>("auto");
   const [q, setQ] = useState(
     mode === "ceo"
       ? "Provide an executive health brief on today's GMV, active orders, and system risks."
@@ -2129,7 +2129,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
   const ecosystem = ecoQuery.data && ecoQuery.data.ok ? ecoQuery.data : null;
 
   const ask = useMutation({
-    mutationFn: (overrideInput?: { approvedCallId?: string; approvedCallName?: string; approvedCallArgs?: Record<string, unknown> }) =>
+    mutationFn: (overrideInput?: { approvedCallId?: string; approvedCallName?: string; approvedCallArgs?: Record<string, unknown>; approvalToken?: string }) =>
       askAssistant({
         data: {
           question: q,
@@ -2140,6 +2140,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
           approvedCallId: overrideInput?.approvedCallId,
           approvedCallName: overrideInput?.approvedCallName,
           approvedCallArgs: overrideInput?.approvedCallArgs,
+          approvalToken: overrideInput?.approvalToken,
         },
       }),
     onSuccess: (r: any) => {
@@ -2170,13 +2171,14 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
     if (suggestedSpecialist) setSpecialistId(suggestedSpecialist);
   };
 
-  const executeApproval = (approval: { callId: string; toolName: string; arguments: Record<string, unknown> }) => {
+  const executeApproval = (approval: { callId: string; toolName: string; arguments: Record<string, unknown>; approvalToken: string }) => {
     toast.loading(`Executing authorized action: ${approval.toolName}...`, { id: "approval-exec" });
     ask.mutate(
       {
         approvedCallId: approval.callId,
         approvedCallName: approval.toolName,
         approvedCallArgs: approval.arguments,
+        approvalToken: approval.approvalToken,
       },
       {
         onSettled: () => toast.dismiss("approval-exec"),
