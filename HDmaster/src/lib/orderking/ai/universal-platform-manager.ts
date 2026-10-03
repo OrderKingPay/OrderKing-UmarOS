@@ -1,7 +1,7 @@
 // @ts-nocheck
 // Universal Platform Integrator & Connector Hub
 // Connects, forces execution, and safely reports truthful results back to Founder
-// Supports GitHub, Upwork, WhatsApp, Telegram, Stripe, KingPay, Vercel, Supabase, Shopify, and Universal Webhooks
+// Supports registered ecosystem connectors; production execution requires provider-specific verification.
 // Strict Rule: Zero false simulations. Truthful status reporting based on real credentials & deep-links.
 
 export type PlatformId =
@@ -703,7 +703,11 @@ export const CORE_ECOSYSTEM_APPS: EcosystemApp[] = [
 export function getAllEcosystemApps(): EcosystemApp[] {
   return CORE_ECOSYSTEM_APPS
     .filter((app) => app.id !== "app-vercel")
-    .map((app) => ({ ...app, status: "READY" as const, actions: app.actions.filter(Boolean) }));
+    .map((app) => ({
+      ...app,
+      status: "STANDBY",
+      actions: [],
+    }));
 }
 export function searchEcosystemApps(query: string, category?: string): EcosystemApp[] {
   const all = getAllEcosystemApps();
