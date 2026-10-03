@@ -87,6 +87,20 @@ export function OrderCard({
     };
   }, [restaurantId, order.id]);
 
+  useEffect(() => {
+    if (!restaurantId) return;
+    const onFlushed = (event: Event) => {
+      const detail = (event as CustomEvent<{ orderId?: string; restaurantId?: string }>).detail;
+      if (detail?.orderId !== order.id || detail?.restaurantId !== restaurantId) return;
+      setQueued(false);
+      setError(null);
+      clearActionKey(order.id, order.state === "PLACED" ? "accept" : order.state === "ACCEPTED" ? "preparing" : "ready");
+      onChanged?.();
+    };
+    window.addEventListener("orderking:partner-queue-flushed", onFlushed);
+    return () => window.removeEventListener("orderking:partner-queue-flushed", onFlushed);
+  }, [restaurantId, order.id, order.state, onChanged]);
+
   async function act(action: "accept" | "reject" | "preparing" | "ready") {
     setBusy(true);
     setError(null);
