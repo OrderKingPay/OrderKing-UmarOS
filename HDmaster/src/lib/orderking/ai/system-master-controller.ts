@@ -82,7 +82,7 @@ export class SystemMasterController {
       memoryPreserved: true,
       glitchesClearedCount: 4,
       latencyMs: Math.max(1, latency),
-      message: "Soft Refresh Complete: Audio buffer resynced, DOM glitches cleared. 100% connected with zero data loss.",
+      message: "Soft refresh completed locally. External provider connectivity and data-loss guarantees were not asserted.",
     };
   }
 
@@ -92,13 +92,13 @@ export class SystemMasterController {
     this.restartCount++;
 
     const components = [
-      "Supreme Model Router (8 Models Verified)",
+      "Supreme Model Router (runtime configuration only)",
       "Local Deterministic Fallback Engine",
       "Universal Platform Integrator",
       "Voice Synthesis Acoustic DSP",
       "Sovereign Media Storage Vault",
       "Client Acquisition CRM Pipeline",
-      "King Pay Section 79 UPI Engine",
+      "King Pay payment rail (provider verification required)",
     ];
 
     const duration = Math.round(performance.now() - startTime);
@@ -108,9 +108,9 @@ export class SystemMasterController {
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
       bootDurationMs: Math.max(15, duration),
       componentsRebooted: components,
-      activeModelsVerified: 8,
+      activeModelsVerified: 0,
       cleanMemoryInitialized: true,
-      message: "System Restart Complete: All 7 sovereign engines rebooted into clean runtime memory state.",
+      message: "System restart routine completed locally. External model/provider health was not verified.",
     };
   }
 
@@ -220,7 +220,7 @@ export class SystemMasterController {
     status: string;
   } {
     const fixedItems: string[] = [];
-    const memoryReclaimedBytes = 1450000; // ~1.45 MB reclaimed
+    const memoryReclaimedBytes = 0; // Byte reclamation is not measured by this routine.
 
     // 1. Audio context lock clearing
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -261,7 +261,7 @@ export class SystemMasterController {
     if (corruptCount > 0) {
       fixedItems.push(`Eliminated ${corruptCount} corrupted media vault records`);
     } else {
-      fixedItems.push("Validated all 100% of media vault records integrity");
+      fixedItems.push("Checked media vault records for obvious empty/corrupt fields; no byte-level integrity certification was issued.");
     }
 
     // 4. Memory leak cleanup
