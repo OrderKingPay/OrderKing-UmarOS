@@ -90,11 +90,11 @@ export function OrderCard({
   useEffect(() => {
     if (!restaurantId) return;
     const onFlushed = (event: Event) => {
-      const detail = (event as CustomEvent<{ orderId?: string; restaurantId?: string }>).detail;
+      const detail = (event as CustomEvent<{ orderId?: string; restaurantId?: string; action?: "accept" | "reject" | "preparing" | "ready" }>).detail;
       if (detail?.orderId !== order.id || detail?.restaurantId !== restaurantId) return;
       setQueued(false);
       setError(null);
-      clearActionKey(order.id, order.state === "PLACED" ? "accept" : order.state === "ACCEPTED" ? "preparing" : "ready");
+      if (detail?.action) clearActionKey(order.id, detail.action);
       onChanged?.();
     };
     window.addEventListener("orderking:partner-queue-flushed", onFlushed);
