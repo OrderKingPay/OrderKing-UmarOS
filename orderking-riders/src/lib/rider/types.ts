@@ -155,7 +155,7 @@ export type PlatformConfig = {
   pickupVerification: PickupVerification;
   podMethods: PodMethod[];
   dataMode: DataMode;
-  supportPhone: string;
+  supportPhone: string | null;
   emergencyPhone: string;
   locationRetentionHours: number;
   gpsHistoryMaxPings: number;
