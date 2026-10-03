@@ -131,11 +131,14 @@ function getActiveToolDefinitions(specialist: SpecialistPersona): ModelToolDefin
   allowedTools.add("get_order");
   allowedTools.add("get_repository_status");
 
-  return Object.entries(MASTER_AI_TOOL_REGISTRY).map(([name, spec]) => ({
-    name,
-    description: `${spec.description} [Risk=${spec.risk}]`,
-    parameters: toolParameters(spec, name),
-  }));
+  return Object.entries(MASTER_AI_TOOL_REGISTRY)
+    .filter(([name]) => allowedTools.has(name))
+    .map(([name, spec]) => ({
+      name,
+      description: `${spec.description} [Risk=${spec.risk}]`,
+      parameters: toolParameters(spec, name),
+    }));
+
 }
 
 function normalizeToolEvidence(value: unknown, _dataMode: string): unknown {
@@ -2362,6 +2365,21 @@ export async function runMasterAi(
     const spec = MASTER_AI_TOOL_REGISTRY[input.approvedCallName as MasterAiToolName];
     if (spec) {
       requirePermission(ws.ctx, spec.requiredPermission);
+      if (!requiresHumanApproval(spec.risk, spec.confirmationRequired)) {
+        return { ok: false, error: "This tool does not require an approval-token execution path.", status: 400 };
+      }
+      const approvalFingerprint = await crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode(JSON.stringify({
+          userId: ws.ctx.userId,
+          toolName: input.approvedCallName,
+          args: input.approvedCallArgs || {},
+        })),
+      );
+      const expectedApprovalId = Array.from(new Uint8Array(approvalFingerprint)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+      if (input.approvedCallId !== expectedApprovalId) {
+        return { ok: false, error: "Approval token does not match the exact staged action.", status: 403 };
+      }
       try {
         const result = await executeTool(ws, input.approvedCallName, input.approvedCallArgs || {});
         await auditToolCall(ws, {
