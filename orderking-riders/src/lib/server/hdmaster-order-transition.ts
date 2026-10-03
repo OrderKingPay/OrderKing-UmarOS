@@ -45,6 +45,7 @@ export async function transitionLiveOrder(input: {
     networkType: string;
     speedKmh: number;
   };
+  verificationCode?: string;
 }) {
   const transition = mapDeliveryAction(input.deliveryState, input.action, input.reason);
   if (!transition) return { skipped: true as const };
@@ -67,6 +68,7 @@ export async function transitionLiveOrder(input: {
       reason: transition.reason,
       correlationId,
       telemetry: input.telemetry ?? null,
+      verificationCode: input.verificationCode ?? undefined,
     }),
   });
   const payload = (await response.json().catch(() => ({}))) as { data?: unknown; error?: string };
