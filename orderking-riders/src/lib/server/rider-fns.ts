@@ -216,9 +216,16 @@ export const deliveryActionFn = createServerFn({ method: "POST" })
       const id = data.deliveryId;
       const key = data.idempotencyKey;
 
+      const current = await e.getDelivery(context.userId, id);
+      if (current.dataMode === "LIVE" && data.action === "COLLECT_CASH") {
+        throw new RiderError("CASH_RECONCILIATION_UNAVAILABLE", "Live COD collection is unavailable until the canonical cash-reconciliation service is connected.", 503);
+      }
+      if (current.dataMode === "LIVE" && data.action === "POD") {
+        throw new RiderError("POD_PROVIDER_UNAVAILABLE", "Live proof-of-delivery storage is unavailable until the canonical delivery-proof service is connected.", 503);
+      }
+
       const liveSyncAction = ["PICKUP", "START", "ARRIVE_CUSTOMER", "DELIVER", "UNAVAILABLE", "CANCEL"].includes(data.action);
       if (liveSyncAction) {
-        const current = await e.getDelivery(context.userId, id);
         if (current.dataMode === "LIVE") {
           if (data.action === "PICKUP" && ["OFFERED", "ACCEPTED", "ARRIVING_AT_RESTAURANT", "ARRIVED_AT_RESTAURANT"].includes(current.state)) {
             await ensureLiveRiderAssigned({ orderId: current.orderId, riderId: current.riderId, riderUserId: context.userId, idempotencyKey: `${key}:assign` });
