@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSql } from "../../../lib/db";
 
-export const APIRoute = createAPIFileRoute('/api/finance/escalations')({
-  GET: async ({ request }) => {
+export const Route = createFileRoute("/api/finance/escalations")({
+  // @ts-expect-error
+  server: {
+    handlers: {
+      GET: async ({ request }: any) => {
     try {
       const sql = await getSql();
       
