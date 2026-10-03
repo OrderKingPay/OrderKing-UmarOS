@@ -3331,7 +3331,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             setScannerTab("manual");
             setShowScanner(true);
           }}
-          }}
         />
 
         {/* MODAL 9: Everyday Needs Utility & Payment Modals */}
