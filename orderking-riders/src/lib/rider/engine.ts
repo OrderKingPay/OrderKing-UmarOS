@@ -1039,10 +1039,10 @@ export class RiderEngine {
     const net = earnings.reduce((a, e) => a + e.amountPaise, 0);
     return {
       completed,
-      offered: accepted + cancelled,
-      accepted,
+      offered: null,
+      accepted: null,
       cancelled,
-      onTimePickup: completed,
+      onTimePickup: null,
       successfulDelivery: completed,
       earningsPerOrderPaise: completed ? Math.round(net / completed) : 0,
     };
