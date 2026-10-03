@@ -116,6 +116,8 @@ export function calculateRestaurantWeeklySettlement(params: {
 
   // Statutory deductions are not universally fixed. This calculator leaves them at zero
   // until a verified tax/settlement engine supplies applicable amounts.
+  const tcsDeduction = 0;
+  const tdsDeduction = 0;
 
   // Total deductions
   const totalDeductions = commission + gstOnCommission + pgFee + gstOnPgFee + tcsDeduction + tdsDeduction;
