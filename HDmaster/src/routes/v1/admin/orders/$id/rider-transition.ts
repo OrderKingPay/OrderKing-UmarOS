@@ -28,7 +28,7 @@ export const Route = createFileRoute("/v1/admin/orders/$id/rider-transition")({
           lat?: number;
           lng?: number;
           accuracy?: number;
-          otp?: string;
+          verificationCode?: string;
         };
         if (body.contractVersion !== CONTRACT_VERSION) {
           return new Response(JSON.stringify({ error: "Unsupported order contract version", code: "CONTRACT_VERSION_UNSUPPORTED" }), {
@@ -55,7 +55,7 @@ export const Route = createFileRoute("/v1/admin/orders/$id/rider-transition")({
           lat: body.lat,
           lng: body.lng,
           accuracy: body.accuracy,
-          otp: body.otp,
+          verificationCode: body.verificationCode,
         });
       },
     },
