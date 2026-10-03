@@ -157,7 +157,7 @@ function KitchenPage() {
       .subscribe();
 
     return () => {
-      supabaseCloud.removeChannel(channel);
+      cloud.removeChannel(channel);
     };
   }, [vendor.restaurantId, qc]);
 
