@@ -45,8 +45,9 @@ export const Route = createFileRoute("/v1/admin/work/events")({
         if (existing[0]) return json({ data: { ok: true, duplicate: true, eventId: String(body.eventId), authoritative: "HDmaster" } });
 
         await sql.query(
-          `insert into audit_logs (id, org_id, actor_employee_id, user_id, action, target_type, target_id, previous_state, next_state, reason)
-           values ($1, coalesce($2, 'system'), coalesce($3, 'system'), $4, $5, $6, $7, $8, $9, $10)`,
+          `insert into audit_logs
+             (id, org_id, employee_id, user_id, role_key, action, target_type, target_id, previous_json, new_json, reason)
+           values ($1, $2, $3, $4, 'SYSTEM', $5, $6, $7, $8, $9, $10)`,
           [
             String(body.eventId),
             process.env.ORDERKING_SERVICE_ORG_ID?.trim() || "system",
@@ -55,7 +56,7 @@ export const Route = createFileRoute("/v1/admin/work/events")({
             body.type,
             body.projectId ? "project" : "job",
             String(body.projectId ?? body.acceptanceId ?? body.quoteId ?? body.jobId ?? ""),
-            null,
+            "",
             JSON.stringify(body),
             body.reason ? String(body.reason) : null,
           ],
