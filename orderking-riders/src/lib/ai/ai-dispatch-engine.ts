@@ -11,7 +11,7 @@ export type RiderInput = {
 
 export class AIDispatchEngine {
   /**
-   * Autonomously assigns orders to the most optimal rider.
+   * Scores eligible rider candidates from supplied verified inputs.
    * Calculates the true Haversine distance and estimated time of arrival (ETA) 
    * between the restaurant, the rider, and the customer.
    * Assigns the optimal rider instantly without human intervention.
@@ -35,7 +35,7 @@ export class AIDispatchEngine {
       // Distance restaurant -> customer
       const distRestToCust = haversineKm(restaurantLocation, customerLocation);
       
-      const travelFactor = 1.3; // Account for road winding
+      const travelFactor = 1.3; // Configurable road-network approximation
       const avgSpeedKmh = rider.vehicleType === 'BICYCLE' ? 15 : rider.vehicleType === 'MOTORCYCLE' ? 30 : 25;
 
       const etaRest = estimateMinutes({
@@ -74,17 +74,11 @@ export class AIDispatchEngine {
       }
     }
 
-    if (!optimalRiderId && availableRiders.length > 0) {
-      // Fallback to the first available if constraints filtered everyone
-      optimalRiderId = availableRiders[0].id;
-      optimalEtaMinutes = 30;
-    }
-
     return {
-      assignedRiderId: optimalRiderId || 'queue',
-      etaMinutes: optimalEtaMinutes,
-      reasoning: optimalRiderId 
-        ? 'Optimal rider assigned instantly based on true Haversine distance and ETA calculations.' 
+      assignedRiderId: optimalRiderId,
+      etaMinutes: optimalRiderId ? optimalEtaMinutes : null,
+      reasoning: optimalRiderId
+        ? 'Candidate selected from supplied route and rider inputs; a separate transactional dispatcher must authorize the assignment.'
         : 'No eligible riders available in the vicinity.'
     };
   }
