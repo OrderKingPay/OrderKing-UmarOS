@@ -28,11 +28,6 @@ function Page() {
     void getSettlementsFn().then(setSettlements).catch(() => undefined);
   }, [preset, t]);
 
-  const completedTrips =
-    data?.lines.filter((l: any) => (l.kind as string) === "DELIVERY_PAYOUT" || (l.kind as string) === "DELIVERY" || Boolean(l.orderCode)).length ?? 0;
-  const currentMilestoneIndex = MILESTONES.findIndex((m) => completedTrips < m.orders);
-  const nextMilestone = currentMilestoneIndex === -1 ? null : MILESTONES[currentMilestoneIndex];
-
   return (
     <AppShell>
       <div className="space-y-4">
@@ -41,19 +36,9 @@ function Page() {
           
         </div>
 
-        {/* Peak Surge Hours Banner */}
-        <div className="flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
-          <span className="text-xl">🔥</span>
-          <div className="flex-1">
-            <p className="font-semibold text-amber-900 dark:text-amber-200">
-              Dinner Peak Surge Active · 7:00 PM – 11:00 PM
-            </p>
-            <p className="text-xs text-amber-700 dark:text-amber-400">
-              Earn +₹15 extra surge bonus per completed delivery order in your zone.
-            </p>
-          </div>
-          <Badge tone="online">1.3x Boost</Badge>
-        </div>
+        <Card className="border-border bg-card">
+          <CardMeta>Only confirmed earnings and settlement records are shown. No unverified surge, milestone, cashout or partner-benefit amounts are displayed.</CardMeta>
+        </Card>
 
         <div className="flex flex-wrap gap-2">
           {(["today", "yesterday", "week", "month"] as const).map((p) => (
