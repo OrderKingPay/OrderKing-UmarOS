@@ -250,11 +250,11 @@ export function ogCardPublicPath(cwd = process.cwd()) {
 
 function detectCustomOgCard(cwd = process.cwd(), site = {}) {
   if (ogCardPublicPath(cwd)) return true;
-  // Vercel runtime has no public/: trust a bake that already saw the file.
+  // Published runtime may not expose the public directory directly; trust a bake that already saw the file.
   return siteHasCustomCard(site) || Boolean(String(site.image ?? "").trim());
 }
 
-/** Snapshot for Vite/Nitro to bake into the server bundle (Vercel has no workspace FS). */
+/** Snapshot for Vite/Nitro to bake into the server bundle (published server runtime has no workspace filesystem). */
 export function snapshotOgIdentity(cwd = process.cwd()) {
   const site = { ...readOgSite(cwd) };
   const disk = ogCardPublicPath(cwd);
@@ -308,7 +308,7 @@ export function siteHasCustomCard(site = {}) {
 
 /**
  * Preview: public/og.jpg|png on disk.
- * Vercel: the bake (`card=custom` / `image`) because the function cannot stat public/.
+ * Published server runtime: use the bake (`card=custom` / `image`) when the function cannot stat public/.
  * Otherwise empty — caller emits the og.grok.me placeholder.
  */
 export function resolveOgCardAsset(site = {}, cwd = process.cwd()) {
@@ -393,7 +393,7 @@ export function normalizeHeadContext(ctx = {}) {
   const cwd = ctx.cwd ?? process.cwd();
   // Middleware passes a baked `site`. Still consult the workspace so a
   // public/og.jpg generated after that snapshot (or missed by a wrong cwd)
-  // wins over the og.grok.me placeholder. Vercel has no public/ to read, so
+  // wins over the og.grok.me placeholder. the published runtime has no public/ to read, so
   // a correct bake is unchanged.
   const site = applyCustomCardFromFs(
     ctx.site !== undefined ? ctx.site : snapshotOgIdentity(cwd).site,
