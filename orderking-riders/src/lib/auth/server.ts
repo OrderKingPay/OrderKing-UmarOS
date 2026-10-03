@@ -140,13 +140,14 @@ const baseURL = explicitBaseURL ?? {
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = [ 'https://orderking-hdmaster.netlify.app', 'https://orderking.netlify.app', 'https://orderking-partners.netlify.app', 'https://orderking-riders.netlify.app', 
-  ...(explicitBaseURL ? [explicitBaseURL] : []),
+const trustedOrigins: string[] = [
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
   ...(process.env.CF_PAGES_URL ? [process.env.CF_PAGES_URL] : []),
-  'https://orderking-riders.pages.dev'
+  "https://orderking-riders.pages.dev",
+  ...(process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL] : []),
+  "https://orderking.in",
 ];
 
 const databaseUrl = env("DATABASE_URL");
