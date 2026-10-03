@@ -121,6 +121,15 @@ const LOCAL_DEV_ORIGINS: string[] = [
   "http://localhost:8085",
   "http://127.0.0.1:8085",
 ];
+// Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
+// Missing entries here surface as FORBIDDEN "Invalid origin".
+const CLOUDFLARE_ACTIVE_APP_ORIGINS = [
+  "https://orderking-customers.pages.dev",
+  "https://b7e8a4af.orderking-hdmaster.pages.dev",
+  "https://orderking-riders.pages.dev",
+  "https://orderking-partners.pages.dev",
+  "https://48080462.apps-integration.pages.dev",
+];
 const baseURL = explicitBaseURL ?? {
   // Include loopback hosts so dynamic baseURL resolves for local email/password
   // (not only the preview wildcard).
@@ -137,20 +146,13 @@ const baseURL = explicitBaseURL ?? {
   fallback: process.env.BETTER_AUTH_URL || process.env.CF_PAGES_URL || "http://localhost:8080",
 };
 
-// Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
-// Missing entries here surface as FORBIDDEN "Invalid origin".
-const CLOUDFLARE_ACTIVE_APP_ORIGINS = [
-  "https://orderking-customers.pages.dev",
-  "https://b7e8a4af.orderking-hdmaster.pages.dev",
-  "https://orderking-riders.pages.dev",
-  "https://orderking-partners.pages.dev",
-  "https://48080462.apps-integration.pages.dev",
-];\nconst trustedOrigins: string[] = [ 
+
+const trustedOrigins: string[] = [ 
   ...(explicitBaseURL ? [explicitBaseURL] : []),
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
-  ...CLOUD_FLARE_APP_ORIGINS,
+  ...CLOUDFLARE_ACTIVE_APP_ORIGINS,
   ...(process.env.CF_PAGES_URL ? [process.env.CF_PAGES_URL] : []),
 ];
 
