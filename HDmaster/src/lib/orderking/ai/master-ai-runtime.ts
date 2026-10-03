@@ -2832,6 +2832,7 @@ export async function runMasterAi(
           arguments: args,
           description: spec.description,
           requiredPermission: spec.requiredPermission,
+          approvalToken: issueApprovalToken(ws, callId, name, args, spec.risk),
         };
         pendingApprovals.push(approvalItem);
         toolCallsSummary.push({ callId, name, status: "approval_required", risk: spec.risk });
