@@ -1001,12 +1001,11 @@ export async function executeTool(
       requirePermission(ws.ctx, "modify_orders");
       return {
         orderId: id,
-        status: "RETRY_EXECUTED",
-        retriedAt: new Date().toISOString(),
-        result: "Operation retried with idempotency guarantee; state verified.",
+        status: "CANONICAL_EXECUTOR_REQUIRED",
+        retriedAt: null,
+        result: "No retry is marked successful here; the canonical order executor must perform and verify the idempotent retry.",
       };
     }
-
     case "restaurant_complaints": {
       if (!id) throw new Error("restaurant_complaints requires restaurant id");
       requirePermission(ws.ctx, "manage_support");
@@ -1545,112 +1544,70 @@ export async function executeTool(
 
     case "generate_corporate_alliance": {
       requirePermission(ws.ctx, "manage_promotions");
-      const partnerName = String(args.partnerName || args.name || "HDFC Bank & Corporate Park Karimganj");
-      const allianceType = String(args.type || "CO_FUNDED_BANK_DISCOUNT");
-      const allianceId = `all_${Date.now()}`;
-
+      const partnerName = String(args.partnerName || args.name || "");
+      const allianceType = String(args.type || "CO_FUNDED_PARTNERSHIP");
       return {
-        allianceId,
-        partnerName,
+        allianceId: null,
+        partnerName: partnerName || null,
         allianceType,
-        status: "ALLIANCE_ACTIVE",
+        status: "DRAFT_ONLY",
         createdAt: new Date().toISOString(),
         contractTerms: {
-          fundingSplit: "70% Partner Funded / 30% Platform Funded",
-          minimumMonthlyOrderCommitment: 3500,
-          discountStructure: "10% Instant Discount up to ₹100 on orders above ₹499",
-          exclusiveCorporateCateringRights: true,
+          fundingSplit: null,
+          minimumMonthlyOrderCommitment: null,
+          discountStructure: null,
+          exclusiveCorporateCateringRights: false,
         },
-        projectedMonthlyGmvPaise: 45000000,
-        projectedPlatformFeePaise: 5400000,
-        zeroDownsideGuarantee: "Platform incurs zero un-reimbursed promo expense.",
+        projectedMonthlyGmvPaise: null,
+        projectedPlatformFeePaise: null,
+        zeroDownsideGuarantee: "NOT_ASSERTED",
+        reason: "Commercial terms require an executed partner agreement and measured demand assumptions before activation.",
       };
     }
-
     case "customer_mind_reader_recommend": {
-      const customerId = id || "cust_active";
+      if (!id) throw new Error("customer_mind_reader_recommend requires customer id");
       const now = new Date();
       const currentHour = now.getHours();
-      let mealContext = "LATE_NIGHT_SNACKS";
-      let cravingMood = "Comfort Fast Food & Desserts";
+      let mealContext = "LATE_NIGHT";
+      let recommendations = ["Popular items available in the customer's service area"];
 
       if (currentHour >= 6 && currentHour < 11) {
         mealContext = "BREAKFAST";
-        cravingMood = "Hot Tea, Parathas, Kachoris & Fresh Juice";
+        recommendations = ["Breakfast items based on current time-of-day"];
       } else if (currentHour >= 11 && currentHour < 16) {
-        mealContext = "LUNCH_PEAK";
-        cravingMood = "Aromatic Dum Biryani, Bengali Thalis & Rice Bowls";
+        mealContext = "LUNCH";
+        recommendations = ["Lunch items based on current time-of-day"];
       } else if (currentHour >= 16 && currentHour < 19) {
-        mealContext = "EVENING_SNACKS";
-        cravingMood = "Crispy Momos, Samosas, Chai & Pastries";
-      } else if (currentHour >= 19 && currentHour < 23) {
-        mealContext = "DINNER_PEAK";
-        cravingMood = "Gourmet Pizza, Tandoori Platters, Curries & Naan";
+        mealContext = "EVENING";
+        recommendations = ["Evening snack items based on current time-of-day"];
       }
 
-      const recommendations = [
-        {
-          dishName: "Royal Dum Mutton Biryani",
-          restaurant: "Grand Karimganj Kitchen",
-          cuisine: "Mughlai",
-          cravingScore: 98,
-          pricePaise: 38000,
-          prepAndDeliveryMinutes: 28,
-          whyRecommended: `Matches your high ${mealContext} preference and 4.9-star rating in your zone.`,
-        },
-        {
-          dishName: "Butter Chicken & Garlic Naan Combo",
-          restaurant: "Spice Symphony",
-          cuisine: "North Indian",
-          cravingScore: 95,
-          pricePaise: 32000,
-          prepAndDeliveryMinutes: 24,
-          whyRecommended: "Trending dish with 85% repeat ordering rate right now.",
-        },
-        {
-          dishName: "Warm Gulab Jamun (2 pcs)",
-          restaurant: "Sweet Bengal Delights",
-          cuisine: "Desserts",
-          cravingScore: 91,
-          pricePaise: 6000,
-          prepAndDeliveryMinutes: 15,
-          whyRecommended: "Perfect sweet pairing based on your previous order endings.",
-        },
-      ];
-
       return {
-        customerId,
-        timestamp: now.toISOString(),
+        customerId: id,
+        status: "CONTEXTUAL_RECOMMENDATION",
+        recommendationBasis: ["time_of_day"],
         mealContext,
-        cravingMood,
-        weatherSignal: "Clear, Warm Evening",
-        conversionPredictionMultiplier: "3.6x higher CTR vs standard catalog",
+        weatherSignal: null,
+        conversionPredictionMultiplier: null,
         recommendations,
+        reason: "This handler provides a contextual suggestion only; customer-level uplift must come from canonical analytics.",
       };
     }
-
     case "optimize_kingpay_flow": {
       requirePermission(ws.ctx, "view_finance");
       return {
-        status: "KINGPAY_FLOW_OPTIMIZED",
+        status: "OPTIMIZATION_PLAN_ONLY",
         timestamp: new Date().toISOString(),
-        metrics: {
-          oneTapCheckoutLatencyMs: 165,
-          zeroDropCheckoutGuarantee: "ACTIVE",
-          offline2GTokenValiditySeconds: 180,
-          packetLossTolerancePercentage: 95,
-          cryptographicSignatureAlgorithm: "HMAC-SHA256",
-        },
-        networkOptimizationsApplied: [
-          "Optimistic wallet balance deduction with instant local receipt",
-          "Cryptographic offline token validation resistant to replay attacks",
-          "Automatic background reconciliation queue with exponential backoff & jitter",
-          "Zero-dependency lightweight SVG fallbacks for slow 2G asset loads",
+        metrics: null,
+        networkOptimizationsApplied: [],
+        proposedOptimizations: [
+          "Measure actual checkout latency from production telemetry",
+          "Validate offline-token security and replay protection through canonical payment services",
+          "Measure reconciliation queue behavior under degraded connectivity",
         ],
-        result: "KingPay checkout will execute smoothly and instantly without hanging or freezing even on congested 2G networks.",
+        result: "No latency, zero-drop or offline-payment guarantee is asserted without payment-service and network telemetry evidence.",
       };
     }
-
     case "market_competitive_radar": {
       requirePermission(ws.ctx, "view_analytics");
       return {
@@ -1851,102 +1808,27 @@ export async function executeTool(
     case "autonomous_prestige_subsidies_and_viral_growth_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "PRESTIGE_SUBSIDIES_AND_VIRAL_GROWTH_ORCHESTRATED",
+        status: "RESEARCH_REQUIRED",
         timestamp: new Date().toISOString(),
-        governmentSubsidiesVault: {
-          assamStartupPolicy: {
-            matchingGrant: "₹50,00,000 (MAS / IIM Calcutta Innovation Park)",
-            ideaGrant: "₹5,00,000",
-            infraReimbursement: "33% lease + 100% stamp duty waiver",
-            portal: "https://startup.assam.gov.in",
-            status: "READY_FOR_FOUNDER_APPLICATION",
-          },
-          dpiitStartupIndia: {
-            seedFundGrant: "Up to ₹20,00,000 grant + ₹50,00,000 debt (SISFS)",
-            taxExemption: "Section 80-IAC 3-year 100% Income Tax holiday",
-            portal: "https://seedfund.startupindia.gov.in",
-            status: "READY_FOR_FOUNDER_APPLICATION",
-          },
-          cloudInfrastructureCredits: {
-            googleCloudForStartups: "$100,000 - $200,000 USD (~₹1.66 Crore) credits + Maps API",
-            awsActivate: "$100,000 USD (~₹83 Lakhs) credits",
-            microsoftFoundersHub: "$150,000 USD (~₹1.25 Crore) Azure & OpenAI credits",
-            totalFreeCloudCreditsInr: "₹3,74,00,000 (~$450,000 USD)",
-            status: "READY_FOR_FOUNDER_CLAIM",
-          },
-          digitalPaymentsIncentive: {
-            meityNpciReimbursement: "0.25% - 0.50% zero-MDR reimbursement on UPI/RuPay",
-            status: "AUTOMATICALLY_CLAIMABLE_VIA_PG",
-          },
-        },
-        founderPrestigeAndAwardsRegistry: {
-          nationalStartupAwards: "Nomination ready under Food & Hyperlocal Logistics category (PIB / Doordarshan national coverage)",
-          assamYouthIconAward: "Nomination ready under Barak Valley Technologist of the Year (CII North-East)",
-          tieNorthEastTrailblazer: "Keynote presentation & TiE Emerge 50 award pathway",
-          pressReleaseBlueprint: {
-            headline: "Barak Valley Technologist Launches OrderKing: Overthrowing Zomato With Zero Food Inflation & Instant 24K Gold",
-            syndicationWires: ["ANI News", "Press Trust of India (PTI)", "Barak Bulletin", "Dainik Jugasankha", "YourStory"],
-          },
-        },
-        hyperViralSocialLoopEngine: {
-          whatsAppStatusMultiplier: "1-Tap 'Share Scratch Card on Status -> Unlock ₹25' creates 50,000 daily local impressions at ₹0 ad cost",
-          metaMicroBudgetAdEngine: {
-            targetRadiusKm: 5.0,
-            targetPinCodes: ["788710", "788711", "788712"],
-            dailySpendInr: 150,
-            dailyLocalReach: "3,200 active mobile users in Karimganj Town",
-          },
-          movingBillboardFleet: "10 delivery riders with high-visibility QR boxes act as 24/7 moving street billboards across town",
-        },
-        verdict: "Over ₹3.74 Crore in genuine cloud and government subsidies identified. WhatsApp Status viral loop and micro-budget Meta geofencing activated to dominate local mobile feeds 100x faster than competitors.",
+        opportunities: [],
+        subsidyAmountInr: null,
+        awardStatus: "NOT_VERIFIED",
+        advertisingStatus: "NOT_EXECUTED",
+        verdict: "Grant, award and growth opportunities require current source research, eligibility checks and explicit execution approvals.",
       };
     }
-
     case "autonomous_omni_prestige_grant_and_hyper_growth_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "OMNI_PRESTIGE_AND_HYPER_GROWTH_ORCHESTRATED",
+        status: "RESEARCH_REQUIRED",
         timestamp: new Date().toISOString(),
-        totalDirectCashGrantsInr: 10500000,
-        totalCloudSubsidiesInr: 37400000,
-        totalGrantAndSubsidyVaultInr: 47900000,
-        governmentSubsidiesVault: {
-          assamStartupPolicy: "₹50,00,000 MAS Scale Grant + ₹5,00,000 Idea Grant (IIMCIP)",
-          dpiitStartupIndia: "₹20,00,000 SISFS Grant + ₹50,00,000 debt via partner incubators",
-          section80IacTaxHoliday: "₹35,00,000+ estimated 3-year 100% Income Tax savings",
-          dstNidhiPrayas: "₹10,00,000 prototype to commercial grant",
-          msmeIdeaHackathon: "₹15,00,000 innovation grant via PFMS direct transfer",
-          meityTide2: "₹7,00,000 (EIR) to ₹30,00,000 (Scale Grant)",
-          meityNpciReimbursement: "0.25% - 0.50% zero-MDR reimbursement on UPI/RuPay",
-          cloudInfrastructureCredits: "$450,000 USD (~₹3.74 Crore) via Google Cloud, AWS & Microsoft Azure",
-        },
-        academicKeynoteInvitations: [
-          { institution: "IIT Guwahati", topic: "Rural-First Hyperlocal Logistics & Autonomous AI Dispatch", honorarium: "₹50,000 + Campus Citation" },
-          { institution: "NIT Silchar", topic: "Overthrowing Zomato: How Localized Tech Beats Multinational Bloatware", honorarium: "₹35,000 + VIP Memento" },
-          { institution: "Assam University", topic: "Zero-Loss Unit Economics & 2G Resilient FinTech", honorarium: "University Citation & Honorarium" },
-          { institution: "Tezpur University", topic: "Hyperlocal Logistics in Assam: Conquering Remote Towns", honorarium: "Plaque & Honorarium" },
-          { institution: "IIT Bombay E-Summit", topic: "David vs Goliath: Bootstrapping an Indian Super-App against Decacorns", honorarium: "₹1,00,000 Travel & Showcase" },
-          { institution: "BITS Pilani Conquest", topic: "Zero-MDR FinTech & 2G Resilient Edge Delivery Networks", honorarium: "Honorarium & Syndicate Access" },
-          { institution: "IIM Calcutta Innovation Park", topic: "Empowering 500+ Kitchens with 0% Markup Aggregation", honorarium: "Institutional Mentorship" },
-        ],
-        nationalAwardsRegistry: [
-          { title: "National Startup Awards", authority: "DPIIT, Govt of India", prize: "₹10,00,000 Cash + Trophy" },
-          { title: "Assam Youth Entrepreneur of the Year", authority: "Govt of Assam & CII", prize: "State Felicitation & Memento" },
-          { title: "National MSME Award for Innovation", authority: "Ministry of MSME", prize: "₹3,00,000 Cash + PMO Felicitation" },
-          { title: "North East Business Excellence Award", authority: "ICC & Ministry of DoNER", prize: "Gold Memento & Citation" },
-          { title: "FICCI / ASSOCHAM India Digital Disruptor", authority: "FICCI & ASSOCHAM", prize: "National Leadership Trophy" },
-        ],
-        hyperViralEngine: {
-          whatsAppStatusLoop: "1-Tap 'Share Scratch Card on Status -> Unlock ₹25' generates 50,000 daily local impressions at ₹0 ad spend",
-          metaMarketingApiV21: "Geofenced to 788710, 788711, 788712 @ ₹150/day reaching 3,200 local residents daily",
-          googleAdsPMax: "Performance Max campaign live with local store assets and search themes @ ₹200/day",
-          viralReelsScriptsCount: 3,
-          influencerBarterPitch: "Ready for local Instagram creators with ₹750 free food barter",
-        },
-        verdict: "Over ₹4.79 Crore in non-dilutive capital, 7 premier university keynote invitations, and 100,000x Meta/Google local geofenced reach activated with zero debt and zero equity dilution.",
+        governmentPrograms: [],
+        totalGrantAndSubsidyVaultInr: null,
+        institutionalOpportunities: [],
+        advertisingReachMultiplier: null,
+        verdict: "No grant amount, tax benefit, award or advertising reach is asserted without current source verification and eligibility review.",
       };
     }
-
     case "autonomous_opportunity_radar_and_auto_booking_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
@@ -2052,33 +1934,40 @@ export async function executeTool(
 
     case "autonomous_planetary_multi_repo_watchdog_and_self_healing_core": {
       requirePermission(ws.ctx, "access_AI");
-      const repos = ORDER_KING_REPOS.map((repo) => {
-        const exists = validateRepo(repo);
-        return {
-          repo,
-          existsOnDisk: exists,
-          canonicalContractStatus: exists ? "VERIFIED_PARITY" : "REMOTE_ONLY",
-        };
-      });
+      const repos = ORDER_KING_REPOS.map((repoName) => ({
+        repo: repoName,
+        existsOnDisk: validateRepo(repoName),
+      }));
       return {
-        status: "PLANETARY_MULTI_REPO_WATCHDOG_PASSED",
+        status: "REPOSITORY_INVENTORY_ONLY",
         timestamp: new Date().toISOString(),
         scannedRepositoriesCount: repos.length,
         repositories: repos,
-        schemaParity: "100% SYNCHRONIZED",
-        testSuiteStatus: "ALL 129 HDMASTER TESTS & 73 CUSTOMER TESTS PASSING (0 FAILURES)",
-        verdict: "All 5 physical repositories verified with 100% schema parity and zero contract drift. Planetary stability guaranteed.",
+        schemaParity: null,
+        testSuiteStatus: "NOT_RUN",
+        verdict: "Repository presence is reported only. Schema parity, test results, remediation and uptime require independent verification.",
       };
     }
-
     case "autonomous_superpower_revenue_harvester_and_cash_generator": {
       requirePermission(ws.ctx, "view_finance");
       const { calculatePlanetaryRevenueHarvest } = await import("@/lib/orderking/finance/revenue-harvester.ts");
+      if (
+        args.ownerConsent !== true ||
+        typeof args.activeRestaurantsCount !== "number" ||
+        typeof args.monthlyOrdersCount !== "number" ||
+        typeof args.monthlyGmvPaise !== "number"
+      ) {
+        return {
+          status: "CANONICAL_INPUTS_AND_EXPLICIT_CONSENT_REQUIRED",
+          timestamp: new Date().toISOString(),
+          reason: "No default production volumes or owner consent are assumed for financial calculations.",
+        };
+      }
       const harvest = calculatePlanetaryRevenueHarvest({
         ownerConsent: true,
-        activeRestaurantsCount: typeof args.activeRestaurantsCount === "number" ? args.activeRestaurantsCount : 150,
-        monthlyOrdersCount: typeof args.monthlyOrdersCount === "number" ? args.monthlyOrdersCount : 25000,
-        monthlyGmvPaise: typeof args.monthlyGmvPaise === "number" ? args.monthlyGmvPaise : 750000000,
+        activeRestaurantsCount: args.activeRestaurantsCount,
+        monthlyOrdersCount: args.monthlyOrdersCount,
+        monthlyGmvPaise: args.monthlyGmvPaise,
       });
       return {
         status: "SUPERPOWER_REVENUE_HARVEST_EXECUTED",
@@ -2115,7 +2004,7 @@ export async function executeTool(
         dispatchedContractsCount: contracts.length,
         totalMonthlyContractVolumeInr: `₹${(totalContractVolumePaise / 100).toLocaleString("en-IN")}`,
         totalMonthlyPlatformProfitInr: `₹${(totalPlatformProfitPaise / 100).toLocaleString("en-IN")}`,
-        platformMargin: "15.0% Guaranteed Locked Margin",
+        platformMargin: "Contract-specific; not guaranteed",
         contracts: contracts.map((c) => ({
           id: c.id,
           institution: c.institutionName,
@@ -2125,19 +2014,31 @@ export async function executeTool(
           monthlyProfitInr: `₹${(c.monthlyPlatformProfitPaise / 100).toLocaleString("en-IN")}`,
           rfpLetterPreview: c.rfpProposalLetter.slice(0, 300) + "...",
         })),
-        verdict: "Institutional corporate catering RFP proposals dispatched to NIT Silchar, Assam University, DC Office, Karimganj Civil Hospital, and Banking Hubs with 15% guaranteed platform margin.",
+        verdict: "Draft corporate catering proposals require explicit recipient verification, contract approval and an external dispatch integration; no RFP is marked as sent here.",
       };
     }
 
     case "autonomous_meity_zero_mdr_subsidy_claim_generator": {
       requirePermission(ws.ctx, "view_finance");
       const { generateMeityUpiClaimSchedule } = await import("@/lib/orderking/finance/revenue-harvester.ts");
-      const quarter = typeof args.quarter === "string" ? args.quarter : "Q1_2026_27";
+      const quarter = typeof args.quarter === "string" ? args.quarter : null;
+      if (
+        !quarter ||
+        typeof args.upiCount !== "number" ||
+        typeof args.rupayCount !== "number" ||
+        typeof args.volumePaise !== "number"
+      ) {
+        return {
+          status: "CLAIM_INPUTS_REQUIRED",
+          timestamp: new Date().toISOString(),
+          reason: "No transaction counts or eligible volume are assumed by default.",
+        };
+      }
       const claim = generateMeityUpiClaimSchedule({
         quarter,
-        upiTransactionsCount: typeof args.upiCount === "number" ? args.upiCount : 25000,
-        rupayTransactionsCount: typeof args.rupayCount === "number" ? args.rupayCount : 2500,
-        totalEligibleVolumePaise: typeof args.volumePaise === "number" ? args.volumePaise : 750000000,
+        upiTransactionsCount: args.upiCount,
+        rupayTransactionsCount: args.rupayCount,
+        totalEligibleVolumePaise: args.volumePaise,
       });
 
       return {
@@ -2148,12 +2049,12 @@ export async function executeTool(
         eligibleUpiTransactions: claim.totalEligibleUpiTransactions,
         eligibleRupayTransactions: claim.totalEligibleRupayTransactions,
         eligibleVolumeInr: `₹${(claim.totalEligibleGmvPaise / 100).toLocaleString("en-IN")}`,
-        reimbursementPercentage: "0.40%",
+        reimbursementPercentage: null,
         claimAmountInr: `₹${(claim.totalClaimAmountPaise / 100).toLocaleString("en-IN")}`,
         claimAmountPaise: claim.totalClaimAmountPaise,
         nodalBankEscrowIfsc: claim.nodalBankEscrowIfsc,
         xmlPayloadSnippet: claim.claimSubmissionXmlPayload,
-        verdict: `MeitY 0.40% reimbursement claim compiled. Total claim of ₹${(claim.totalClaimAmountPaise / 100).toLocaleString("en-IN")} ready for PFMS DBT direct credit.`,
+        verdict: `MeitY reimbursement scenario schedule compiled. Total claim of ₹${(claim.totalClaimAmountPaise / 100).toLocaleString("en-IN")} ready for PFMS DBT direct credit.`,
       };
     }
 
