@@ -14,10 +14,10 @@ export type AiProviderType = "openai" | "gemini" | "anthropic" | "xai" | "none";
  */
 export function detectAvailableProviders(): { provider: AiProviderType; ready: boolean }[] {
   const available: { provider: AiProviderType; ready: boolean }[] = [];
-  if (process.env.OPENAI_API_KEY) available.push({ provider: "openai", ready: true });
-  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) available.push({ provider: "gemini", ready: true });
-  if (process.env.ANTHROPIC_API_KEY) available.push({ provider: "anthropic", ready: true });
-  if (process.env.XAI_API_KEY) available.push({ provider: "xai", ready: true });
+  if (process.env.OPENAI_API_KEY?.trim() && process.env.OPENAI_MODEL?.trim()) available.push({ provider: "openai", ready: true });
+  if ((process.env.GEMINI_API_KEY?.trim() || process.env.GOOGLE_API_KEY?.trim()) && process.env.GEMINI_MODEL?.trim()) available.push({ provider: "gemini", ready: true });
+  if (process.env.ANTHROPIC_API_KEY?.trim() && process.env.ANTHROPIC_MODEL?.trim()) available.push({ provider: "anthropic", ready: true });
+  if (process.env.XAI_API_KEY?.trim() && process.env.XAI_MODEL?.trim()) available.push({ provider: "xai", ready: true });
   return available;
 }
 
@@ -45,15 +45,6 @@ export async function routeModelTurn(request: ChatRequest, preferredProvider?: A
 }
 
 export async function runCognitiveConsensus(request: ChatRequest): Promise<ChatResponse> {
-  if (process.env.OPENAI_API_KEY === "dummy_openai") {
-    return {
-      consensusReached: true,
-      confidenceScore: 0.95,
-      modelsParticipated: ["openai", "gemini", "anthropic"],
-      agreementRatio: "Quorum Agreement (3/3)",
-      synthesizedResponse: { text: "Simulated synthesis" }
-    } as any;
-  }
   const available = detectAvailableProviders().map((a) => a.provider);
   if (available.length === 0) throw new Error("No external AI providers configured. Consensus impossible.");
 
