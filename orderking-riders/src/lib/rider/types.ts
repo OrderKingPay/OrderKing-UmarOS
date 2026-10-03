@@ -224,9 +224,9 @@ export type DispatchOffer = {
   pickupLocation: GeoPoint;
   dropArea: string;
   dropLocation: GeoPoint;
-  approxDistanceKm: number;
-  estimatedTravelKm: number;
-  estimatedTotalRouteKm: number;
+  approxDistanceKm: number | null;
+  estimatedTravelKm: number | null;
+  estimatedTotalRouteKm: number | null;
   expectedPayoutPaise: number;
   cod: boolean;
   codAmountPaise: number;
