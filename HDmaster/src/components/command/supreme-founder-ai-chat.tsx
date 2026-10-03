@@ -1948,11 +1948,11 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
           </div>
         </div>
 
-        <div className="p-2.5 rounded-lg bg-black/60 border border-zinc-700 font-mono text-[11px] text-emerald-400 flex items-center justify-between">
-          <div>
-            <span className="text-zinc-500 block text-[10px] mb-1">CLI Production Deploy:</span>
-            <code>{deploy.vercelDeployCommand}</code>
-          </div>
+        <div className="p-2.5 rounded-lg bg-black/60 border border-zinc-700 font-mono text-[11px] text-amber-300">
+          <span className="text-zinc-500 block text-[10px] mb-1">Production Deploy:</span>
+          Cloudflare Pages deployment requires separate founder approval and actual deployment verification. No deployment command was generated here.
+        </div>
+      </div>
           <button
             onClick={() => {
               void navigator.clipboard?.writeText(deploy.vercelDeployCommand);
@@ -1978,7 +1978,7 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
             <span className="text-sm font-bold text-white">Autonomous Frontier Evolution</span>
           </div>
           <Badge className="bg-amber-500/20 text-amber-300 text-[10px] font-bold">
-            {report.availableUpgrades?.length || 3} Next-Gen Models Ready
+            {report.availableUpgrades?.length || 0} Verified Upgrades
           </Badge>
         </div>
 
