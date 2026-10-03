@@ -26,12 +26,8 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      - name: Diagnose canonical lockfile
-        run: |
-          pnpm install --lockfile-only --ignore-scripts
-          echo '--- LOCKFILE DIFF ---'
-          git diff -- pnpm-lock.yaml | sed -n '1,220p'
-          exit 1
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run Typecheck across 5 apps
         run: pnpm run typecheck
