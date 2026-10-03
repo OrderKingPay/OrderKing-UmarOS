@@ -75,7 +75,7 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
     id: "assam_startup_mas_55l",
     schemeName: "Assam Startup Policy (My Assam Startup / MAS)",
     authority: "Dept. of Industries & Commerce, Govt. of Assam & IIM Calcutta Innovation Park (IIMCIP)",
-    maxAmountInr: "₹55,00,000 (₹50L Scale Matching Grant + ₹5L Idea Grant)",
+    maxAmountInr: "VERIFY CURRENT SCHEME TERMS BEFORE APPLICATION",
     portalUrl: "https://startup.assam.gov.in",
     payoutMethod: "Direct RTGS to Entity Business Current Account upon milestone audit",
     statutoryEligibility: [
@@ -118,8 +118,8 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
       {
         sectionTitle: "3. Economic & Employment Impact in Assam",
         fields: [
-          { label: "Local Kitchens Empowered", value: "50+ local restaurants & home chefs onboarding in Phase 1; 500+ in Phase 2 across Barak Valley" },
-          { label: "Rider Jobs Created", value: "25+ active delivery riders earning ₹15,000–₹22,000/month in Karimganj" },
+          { label: "Local Kitchens Empowered", value: "Use verified current partner roster and onboarding pipeline." },
+          { label: "Rider Jobs Created", value: "Use verified current rider roster and settlement records; do not estimate employment or earnings." },
           { label: "Revenue Utilization Plan", value: "40% Rider fleet acquisition & safety equipment, 30% local merchant digitization tablets, 30% tech infrastructure & local hiring" },
         ],
       },
@@ -129,7 +129,7 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
     id: "msme_idea_hackathon_15l",
     schemeName: "MSME Innovative Idea Hackathon",
     authority: "Ministry of Micro, Small and Medium Enterprises (MSME), Govt. of India",
-    maxAmountInr: "₹15,00,000 Cash Grant",
+    maxAmountInr: "VERIFY CURRENT SCHEME TERMS BEFORE APPLICATION",
     portalUrl: "https://innovative.msme.gov.in",
     payoutMethod: "Direct PFMS (Public Financial Management System) DBT transfer to Bank Account",
     statutoryEligibility: [
@@ -143,7 +143,7 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
         fields: [
           { label: "Project Title", value: "OrderKing: 2G Resilient Autonomous Hyperlocal Food & FinTech Distribution Grid" },
           { label: "Focus Sector", value: "Service Sector / Supply Chain Logistics / Financial Technology" },
-          { label: "Stage of Development", value: "Commercial Deployment (Live PWA & Android app active in Karimganj, Assam)" },
+          { label: "Stage of Development", value: "Current deployment stage must be verified from the live system before submission." },
           {
             label: "Technical Novelty",
             value:
@@ -152,7 +152,7 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
           {
             label: "Commercial Viability",
             value:
-              "Positive unit economics on every delivery: ₹25 base rider pay + ₹8/km distance pay covered by transparent delivery fees + 10-18% transparent merchant commission without customer food markup.",
+              "Unit economics must be calculated from verified current orders, rider settlements, fees and merchant agreements before submission.",
           },
         ],
       },
@@ -162,7 +162,7 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
     id: "dst_nidhi_prayas_10l",
     schemeName: "DST NIDHI-PRAYAS Prototype Grant",
     authority: "Department of Science & Technology (DST), Govt. of India",
-    maxAmountInr: "₹10,00,000 Cash Grant",
+    maxAmountInr: "VERIFY CURRENT SCHEME TERMS BEFORE APPLICATION",
     portalUrl: "https://www.nidhi-prayas.org",
     payoutMethod: "Host Technology Business Incubator (TBI) direct wire transfer",
     statutoryEligibility: [
@@ -188,7 +188,7 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
     id: "startup_india_sisfs_20l",
     schemeName: "Startup India Seed Fund Scheme (SISFS)",
     authority: "DPIIT, Ministry of Commerce and Industry, Govt. of India",
-    maxAmountInr: "₹20,00,000 Non-Dilutive Grant",
+    maxAmountInr: "VERIFY CURRENT SCHEME TERMS BEFORE APPLICATION",
     portalUrl: "https://seedfund.startupindia.gov.in",
     payoutMethod: "Approved Incubator Escrow Account Direct Transfer",
     statutoryEligibility: [
