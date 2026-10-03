@@ -84,12 +84,14 @@ const grokClientSecret =
   (!productionRuntime ? PREVIEW_CLIENT_SECRET : undefined);
 
 /** True only when the required real auth inputs exist. */
+const databaseUrl = env("DATABASE_URL");
+
 export const authConfigured =
   !authDisabled &&
   Boolean(
-    grokClientId &&
-      grokClientSecret &&
-      (!productionRuntime || betterAuthSecret),
+    databaseUrl &&
+      (!productionRuntime || betterAuthSecret) &&
+      (emailAndPasswordEnabled || (grokClientId && grokClientSecret)),
   );
 
 // This app's own Better Auth origin. When deployed the deployer injects the
@@ -149,8 +151,6 @@ const trustedOrigins: string[] = [
   ...(process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL] : []),
   "https://orderking.in",
 ];
-
-const databaseUrl = env("DATABASE_URL");
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
