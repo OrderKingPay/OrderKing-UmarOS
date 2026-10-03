@@ -11,7 +11,7 @@ export interface DeploymentArtifact {
   liveUrl: string;
   targetDomain: string;
   previewBundleHtml: string;
-  vercelDeployCommand: string;
+  cloudflareDeployCommand: string;
   cloudflareDeployCommand: string;
   dockerfileContent: string;
   filesGeneratedCount: number;
@@ -92,14 +92,15 @@ export class InstantDeployEngine {
       liveUrl,
       targetDomain,
       previewBundleHtml,
-      vercelDeployCommand: `npx vercel --prod --yes --name ${slug}`,
+      cloudflareDeployCommand: `npx wrangler pages deploy dist --project-name ${slug}`,
       cloudflareDeployCommand: `npx wrangler pages deploy dist --project-name ${slug}`,
       dockerfileContent: `FROM node:20-alpine\nWORKDIR /app\nCOPY . .\nRUN npm install && npm run build\nEXPOSE 3000\nCMD ["npm", "run", "start"]`,
       filesGeneratedCount: 14,
       deployedAt: timestamp,
       status: "SANDBOX_PREVIEW_READY",
-      sslCertified: true,
-      edgeRegion: "Local Browser Sandbox (ap-south-1 Edge Deploy Ready)",
+      sslCertified: false,
+      edgeRegion: "Not deployed",
+
     };
   }
 }
