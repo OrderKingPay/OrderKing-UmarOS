@@ -1255,7 +1255,7 @@ Select any module below to **preview standalone source code, download full ZIP p
     q.includes("create product page") ||
     q.includes("deploy")
   ) {
-    const deployRes = instantDeployEngine.deployLive(
+    const deployRes = instantDeployEngine.prepareCloudflareDeployment(
       query.includes("hospital") ? "Sribhumi Health Care ERP" : query.includes("market") ? "Hyperlocal Marketplace" : "Sovereign Web System",
       query.includes("hospital") ? "erp" : query.includes("product") ? "product_page" : "website",
       query
