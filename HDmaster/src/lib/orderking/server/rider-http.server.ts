@@ -9,26 +9,31 @@ function json(body: unknown, status = 200) { return new Response(JSON.stringify(
 function fail(err: unknown) { if (err instanceof ForbiddenError) return json({ error: err.message, code: "FORBIDDEN" }, 403); const message = err instanceof Error ? err.message : "Unexpected error"; if (message === "Unauthorized") return json({ error: message, code: "UNAUTHORIZED" }, 401); return json({ error: message, code: "BAD_REQUEST" }, 400); }
 async function resolveServiceUserId(request: Request): Promise<string> { const authorization = request.headers.get("authorization")?.trim(); const configuredToken = process.env.ORDERKING_SERVICE_TOKEN?.trim(); const configuredUserId = process.env.ORDERKING_SERVICE_USER_ID?.trim(); if (configuredToken && configuredUserId && authorization === `Bearer ${configuredToken}`) return configuredUserId; return requireUserId(); }
 
-export async function handleRiderOrderTransition(request: Request, input: { orderId: string; riderId: string; from: CanonicalOrderStatus; to: CanonicalOrderStatus; reason?: string; idempotencyKey: string; correlationId?: string; lat?: number; lng?: number; accuracy?: number }): Promise<Response> {
+export async function handleRiderOrderTransition(request: Request, input: { orderId: string; riderId: string; from: CanonicalOrderStatus; to: CanonicalOrderStatus; reason?: string; idempotencyKey: string; correlationId?: string; lat?: number; lng?: number; accuracy?: number; otp?: string }): Promise<Response> {
   try {
     const userId = await resolveServiceUserId(request); const ws = await ensureWorkspace(userId); requirePermission(ws.ctx, "modify_orders", { orgId: ws.ctx.orgId, cityId: ws.ctx.cityId });
     const sql = await getSql();
     const riderUserId = request.headers.get("x-order-king-rider-user-id")?.trim();
     if (!riderUserId) throw new ForbiddenError("Rider identity is required");
     let riderRows = await sql.query<{ id: string }>(`select id from riders where org_id=$1 and user_id=$2 and data_mode='PRODUCTION' and status in ('ACTIVE','ONLINE','BUSY') limit 1`, [ws.ctx.orgId, riderUserId]);
-    let rider = riderRows[0];
-    if (!rider) {
-      const newId = nid('rid');
-      await sql.query(`insert into riders (id, org_id, city_id, user_id, display_ref, phone_masked, data_mode, status, online, current_lat, current_lng) values ($1, $2, 'city_1', $3, 'RIDER_' || substring($3 from 1 for 6), 'MASKED', 'PRODUCTION', 'ONLINE', 1, 0, 0)`, [newId, ws.ctx.orgId, riderUserId]);
-      riderRows = await sql.query<{ id: string }>(`select id from riders where id=$1 limit 1`, [newId]);
-      rider = riderRows[0];
-    }
+    const rider = riderRows[0];
+    if (!rider) throw new ForbiddenError("Rider is not provisioned and verified in the live HDmaster roster");
     // We trust the x-order-king-rider-user-id header and use the resolved HDmaster riderId
     const riderId = rider.id;
     assertCanonicalTransition({ contractVersion: ORDER_CONTRACT_VERSION, orderId: input.orderId, from: input.from, to: input.to, actor: "rider", idempotencyKey: input.idempotencyKey, reason: input.reason, correlationId: input.correlationId });
     const existing = await sql.query<{ response_json: string }>(`select response_json from idempotency_keys where key=$1 and org_id=$2 limit 1`, [input.idempotencyKey, ws.ctx.orgId]); if (existing[0]) return json({ data: JSON.parse(existing[0].response_json) });
-    const rows = await sql.query<{ id: string; status: CanonicalOrderStatus; restaurant_id: string; city_id: string; data_mode: string; rider_id: string | null; customer_id: string }>(`select id, status, restaurant_id, city_id, data_mode, rider_id, customer_id from orders where id=$1 and org_id=$2 ${ws.ctx.cityId ? "and city_id=$3" : ""} limit 1`, ws.ctx.cityId ? [input.orderId, ws.ctx.orgId, ws.ctx.cityId] : [input.orderId, ws.ctx.orgId]);
-    const order = rows[0]; if (!order) throw new ForbiddenError("Order not found"); if (order.data_mode !== "PRODUCTION") throw new Error("Rider LIVE transition endpoint accepts PRODUCTION orders only"); if (input.to !== "RIDER_ASSIGNED" && order.rider_id && order.rider_id !== riderId) throw new ForbiddenError("Rider is not assigned to this order");
+    const rows = await sql.query<{ id: string; status: CanonicalOrderStatus; restaurant_id: string; city_id: string; data_mode: string; rider_id: string | null; customer_id: string }>(`select id, status, restaurant_id, city_id, data_mode, rider_id, customer_id, delivery_otp from orders where id=$1 and org_id=$2 ${ws.ctx.cityId ? "and city_id=$3" : ""} limit 1`, ws.ctx.cityId ? [input.orderId, ws.ctx.orgId, ws.ctx.cityId] : [input.orderId, ws.ctx.orgId]);
+    const order = rows[0];
+    if (!order) throw new ForbiddenError("Order not found");
+    if (order.data_mode !== "PRODUCTION") throw new Error("Rider LIVE transition endpoint accepts PRODUCTION orders only");
+    if (input.to !== "RIDER_ASSIGNED" && order.rider_id && order.rider_id !== riderId) throw new ForbiddenError("Rider is not assigned to this order");
+    if (input.to === "DELIVERED") {
+      const suppliedOtp = input.otp?.trim();
+      const expectedOtp = order.delivery_otp == null ? "" : String(order.delivery_otp);
+      if (!suppliedOtp || !expectedOtp || suppliedOtp !== expectedOtp) {
+        throw new Error("Delivery OTP is missing or invalid");
+      }
+    }
     if (input.to === "RIDER_ASSIGNED" && input.from === "READY" && order.status === "RIDER_ASSIGNED" && order.rider_id === riderId) return json({ data: { ok: true as const, contractVersion: ORDER_CONTRACT_VERSION, orderId: input.orderId, from: "READY" as const, state: "RIDER_ASSIGNED" as const, actor: "rider" as const, riderId, duplicate: true as const, dataMode: order.data_mode } });
     if (order.status !== input.from) throw new Error(`Stale order state: expected ${input.from}, found ${order.status}`);
     const updated = await sql.query<{ id: string }>(`update orders set status=$4, rider_id=case when $4='RIDER_ASSIGNED' then $6 else rider_id end, picked_up_at=case when $4='PICKED_UP' then now() else picked_up_at end, delivered_at=case when $4='DELIVERED' then now() else delivered_at end where id=$1 and org_id=$2 and status=$5 returning id`, [input.orderId, ws.ctx.orgId, order.restaurant_id, input.to, input.from, riderId]); if (!updated[0]) throw new Error("Order transition lost a concurrency race; retry with fresh state");
