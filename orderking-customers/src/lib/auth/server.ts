@@ -125,13 +125,11 @@ const baseURL = explicitBaseURL ?? {
   // Include loopback hosts so dynamic baseURL resolves for local email/password
   // (not only the preview wildcard).
   allowedHosts: [
-      ...previewAllowedHosts, 
-      "localhost", 
-      "127.0.0.1", 
+      ...previewAllowedHosts,
+      "localhost",
+      "127.0.0.1",
       "[::1]",
-      ...(process.env.CF_PAGES_URL ? [new URL(process.env.CF_PAGES_URL).hostname] : []),
-      "orderking-customers.pages.dev",
-      "orderking.in"
+      ...CLOUDFLARE_ACTIVE_APP_ORIGINS.map((origin) => new URL(origin).hostname),
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
@@ -141,13 +139,12 @@ const baseURL = explicitBaseURL ?? {
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
-const CLOUD_FLARE_APP_ORIGINS = [
+const CLOUDFLARE_ACTIVE_APP_ORIGINS = [
   "https://orderking-customers.pages.dev",
-  "https://orderking-partners.pages.dev",
+  "https://b7e8a4af.orderking-hdmaster.pages.dev",
   "https://orderking-riders.pages.dev",
-  "https://orderking-hdmaster.pages.dev",
-  "https://apps-integration.pages.dev",
-  "https://orderking.in",
+  "https://orderking-partners.pages.dev",
+  "https://48080462.apps-integration.pages.dev",
 ];\nconst trustedOrigins: string[] = [ 
   ...(explicitBaseURL ? [explicitBaseURL] : []),
   ...LOCAL_DEV_ORIGINS,
