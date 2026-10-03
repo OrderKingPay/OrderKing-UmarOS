@@ -13,6 +13,7 @@ export type PlatformId =
   | "stripe"
   | "razorpay"
   | "kingpay"
+  | "cloudflare"
   | "supabase"
   | "shopify"
   | "google"
