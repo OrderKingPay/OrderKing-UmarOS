@@ -52,7 +52,7 @@ export const DEFAULT_CONFIG: PlatformConfig = {
   pickupVerification: "ORDER_CODE",
   podMethods: ["OTP", "PHOTO"],
   dataMode: "LIVE",
-  supportPhone: "+91-3843-000000",
+  supportPhone: null,
   emergencyPhone: "112",
   locationRetentionHours: 24,
   gpsHistoryMaxPings: 40,
