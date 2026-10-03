@@ -2318,12 +2318,10 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   value={provider}
                   onChange={(e) => setProvider(e.target.value)}
                 >
-                  <option value="antigravity">Antigravity Multi-Agent Core (10x Autonomous Capacity)</option>
                   <option value="anthropic">Claude 4.6 Sonnet (Anthropic Deep Engineering)</option>
                   <option value="openai">GPT-5.6 LUNA (OpenAI Advanced Reasoning)</option>
                   <option value="xai">SUPERGROK 4.6 (xAI Real-time Planetary Ops)</option>
                   <option value="gemini">Gemini 2.5 Pro Ultra (Google Multi-modal)</option>
-                  <option value="local_deterministic">Local Deterministic Engine (Always Ready)</option>
                 </select>
               </div>
             </Panel>
