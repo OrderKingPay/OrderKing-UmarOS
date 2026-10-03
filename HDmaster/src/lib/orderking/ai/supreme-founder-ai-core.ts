@@ -406,7 +406,7 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
     const inspection = mediaStorageVault.inspectSystemStorage();
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Scanning Disk & Memory Quotas", status: "COMPLETED", detail: `Scanned ${inspection.formattedTotalSize} across temporary files` },
-      { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Guarantee", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
+      { stepNumber: 2, totalSteps: 4, label: "Checking Protected Asset Configuration", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
       { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "Purifier controls prepared for reviewed cleanup" },
       { stepNumber: 4, totalSteps: 4, label: "Performance Optimizer Ready", status: "COMPLETED", detail: `Current Speed Score: ${inspection.speedOptimizationScore}%` },
     ];
@@ -417,14 +417,14 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
 - **Current Performance Score**: **${inspection.speedOptimizationScore}%**
 
 > [!IMPORTANT]
-> **🛡️ 100% Core Protection Shield**: Zero danger to critical assets. Protection follows the inspected exclusions and configured safeguards; no blanket zero-risk guarantee is asserted.
+> **🛡️ Protected Asset Configuration**: Zero danger to critical assets. Protection follows the inspected exclusions and configured safeguards; no blanket zero-risk guarantee is asserted.
 
 Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and review the inspected items before cleanup; no fixed performance multiplier is guaranteed.`;
 
     const voiceSpokenText = isHindi
       ? `Sovereign Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
       : isBengali
-      ? `Sovereign Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Apnar client leads ebong invoices 100% safe.`
+      ? `Sovereign Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Protection status depends on inspected exclusions.`
       : `Sovereign Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Protection status follows the inspected exclusions and configured safeguards.`;
 
     return {
@@ -876,7 +876,7 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
     };
   }
 
-  // 2. World-Class Fastest Video & Image Creation & Editing Studio
+  // 2. Media generation & editing
   if (
     q.includes("edit video") ||
     q.includes("create video") ||
@@ -895,168 +895,26 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
     q.includes("aspect ratio") ||
     q.includes("subtitles")
   ) {
-    const isLongForm = q.includes("long") || q.includes("documentary") || q.includes("15 min") || q.includes("30 min") || q.includes("10 min");
-    const isReel = q.includes("reel") || q.includes("9:16") || q.includes("tiktok") || q.includes("short");
-    const aspectRatio: VideoAspectRatio = isReel ? "9:16" : q.includes("1:1") ? "1:1" : q.includes("21:9") ? "21:9" : "16:9";
-    const duration: VideoDurationPreset = isLongForm ? "10m" : isReel ? "30s" : "60s";
-
-    const promptText = query
-      .replace(/edit video( of)?/i, "")
-      .replace(/create video( of)?/i, "")
-      .replace(/fastest video( of)?/i, "")
-      .replace(/long video( of)?/i, "")
-      .trim() || "Ultra-realistic cinematic commercial presentation of OrderKing 15-minute delivery ecosystem with 3D CGI HUD graphics";
-
-    const videoConfig: VideoEditorStudioConfig = {
-      id: `vid-studio-${Date.now()}`,
-      title: promptText.slice(0, 50),
-      prompt: promptText,
-      aspectRatio,
-      duration,
-      resolution: "4k_60fps",
-      voiceover: "young_female_aria",
-      voiceoverLanguage: isHindi ? "hi-IN" : isBengali ? "bn-IN" : "en-IN",
-      autoSubtitles: true,
-      colorGrade: "cinematic_hdr",
-      fps: 60,
-      videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4",
-      thumbnailUrl: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1080&auto=format&fit=crop",
-      isLongForm,
-      exportFormat: "MP4_H265",
-      renderSpeedMultiplier: "100,000x Realtime WebCodecs Turbo (World's #1 Fastest)",
-      commercialRightsCertified: true,
-    };
-
-    // Auto-save to media vault
-    mediaStorageVault.addItem({
-      type: "video",
-      title: `[${aspectRatio}] ${videoConfig.title}`,
-      prompt: promptText,
-      url: videoConfig.videoUrl,
-      thumbnailUrl: videoConfig.thumbnailUrl,
-      sizeBytes: isLongForm ? 48500000 : 9200000,
-      mimeType: "video/mp4",
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Activating Sovereign Neural Video Engine", status: "COMPLETED", detail: "Allocated WebCodecs hardware rendering cluster with 60FPS precision" },
-      { stepNumber: 2, totalSteps: 5, label: `Configuring Frame Canvas [${aspectRatio}]`, status: "COMPLETED", detail: `Target: ${aspectRatio} · Resolution: 4K Ultra HD · Duration: ${duration}` },
-      { stepNumber: 3, totalSteps: 5, label: "Acoustic Voiceover & Subtitles Synthesis", status: "COMPLETED", detail: "Voice: Aria Ultra-Realistic Female · Dynamic animated karaoke subtitles generated" },
-      { stepNumber: 4, totalSteps: 5, label: "Applying 8K Cinematic HDR Color Grade", status: "COMPLETED", detail: "Dynamic range balanced, volumetric motion blur applied" },
-      { stepNumber: 5, totalSteps: 5, label: "Encoding at 100,000x Realtime Speed", status: "COMPLETED", detail: "World #1 fastest export · Zero token charges · Ready in Media Vault" },
-    ];
-
-    const responseMarkdown = `### 🎬 World-Class Fastest Video & Image Creation Studio
-- **Project**: **"${promptText}"**
-- **Aspect Ratio**: **${aspectRatio}** (${isReel ? "Vertical Reel / Shorts" : aspectRatio === "16:9" ? "Cinematic Widescreen (YouTube/Commercial)" : aspectRatio})
-- **Duration**: **${duration}** (${isLongForm ? "Long-Form Commercial Presentation" : "High-Impact Commercial Spot"})
-- **Resolution**: **4K Ultra HD (60 FPS)** | **Export Pipeline**: **100,000x Turbo WebCodecs**
-- **Acoustic Voiceover**: Ultra-realistic Young Female Voice (\`${videoConfig.voiceoverLanguage}\`) with **Auto-Animated Subtitles**.
-- **Commercial Rights**: **100% Verified Commercial License** (Ready for client pitches, TV broadcast, or social ads).
-
-Your studio controls, aspect ratio switcher, timeline duration, and instant 4K preview player are loaded below!`;
-
-    const voiceSpokenText = isHindi
-      ? `Aapka video aur image creation studio ready hai. Maine ${aspectRatio} aspect ratio aur 4K quality me render initiate kar diya hai. Auto-subtitles aur young female voiceover enabled hain.`
-      : isBengali
-      ? `Apnar video ebong image studio ready. Ami ${aspectRatio} aspect ratio ebong 4K quality te render shuru korechi. Auto-subtitles ebong voiceover enabled ache.`
-      : `Your world-class video studio is armed. Rendered in ${aspectRatio} aspect ratio at 4K 60FPS with ultra-realistic young female narration and dynamic animated subtitles. Ready to edit or export.`;
+    const responseMarkdown = "### 🎬 Media Studio\n- **Status**: **EXTERNAL_MEDIA_PROVIDER_REQUIRED**\n- **Request**: **" + query + "**\n- No generated video/image, render speed, commercial-license status, or storage result is claimed by this handler.\n- Connect an authorized media-generation/rendering provider before production output is offered.\n\nProduction media output must come from the configured provider with its actual usage, pricing, licensing and storage metadata.";
 
     return {
-      intent: "video_editor_studio",
+      intent: "media_studio",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
+      voiceSpokenText: isHindi
+        ? "Media studio ke liye verified external provider configuration zaroori hai."
+        : isBengali
+        ? "Media studio er jonno verified external provider configuration proyojon."
+        : "The media studio requires a verified external provider before it can claim or store generated output.",
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 1, label: "Checking Media Provider", status: "BLOCKED", detail: "No verified production media-generation provider is connected." },
+      ],
       actionCard: {
-        type: "video_editor_studio",
-        data: videoConfig,
+        type: "media_provider_required",
+        data: { configured: false, query },
       },
     };
   }
-
-  if (q.includes("image") || q.includes("video") || q.includes("studio") || q.includes("media") || q.includes("generate image") || q.includes("generate video")) {
-    const isVideo = q.includes("video");
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Booting AI Media Studio", status: "COMPLETED", detail: "Allocated supreme GPU rendering cluster" },
-      { stepNumber: 2, totalSteps: 4, label: "Processing Prompt Parameters", status: "COMPLETED", detail: `Synthesizing ${isVideo ? "high-fidelity video stream" : "hyper-realistic image array"}` },
-      { stepNumber: 3, totalSteps: 4, label: "Applying Unlimited Free Tier", status: "COMPLETED", detail: "Bypassed standard token limits for founder" },
-      { stepNumber: 4, totalSteps: 4, label: "Saving to Media Vault", status: "COMPLETED", detail: "Artifacts securely cached in Sovereign Memory" },
-    ];
-
-    const promptText = query.replace(/generate image of/i, "").replace(/generate video of/i, "").replace(/create image of/i, "").trim() || "A hyper-realistic futuristic cyberpunk cityscape with neon lights and flying cars";
-    const imageUrl = "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop";
-
-    const responseMarkdown = `### 🎨 Supreme AI ${isVideo ? "Video" : "Image"} Studio Execution
-- **Asset Type**: ${isVideo ? "Video Generation" : "Image Synthesis"}
-- **Prompt Extracted**: "${promptText}"
-- **Billing**: **Unlimited Free (Founder Tier)**
-- **Status**: Rendered and cached locally to Media Vault.
-
-You can preview and save the generated ${isVideo ? "video" : "image"} directly using the action card below.`;
-
-    const voiceSpokenText = isHindi
-      ? `Aapke command ke anusar, maine AI Studio me ${isVideo ? "video" : "image"} generate kar diya hai. Yeh unlimited free hai aur Media Vault me save karne ke liye ready hai.`
-      : isBengali
-      ? `Apnar command onujayi, ami AI Studio te ${isVideo ? "video" : "image"} generate korechi. Eta unlimited free ebong Media Vault e save korar jonno ready ache.`
-      : `I have generated your requested ${isVideo ? "video" : "image"} using the Supreme AI Studio. It is rendered with unlimited free execution and is ready to be saved to the Media Vault.`;
-
-    return {
-      intent: "media_generation",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "image_video_studio",
-        data: {
-          prompt: promptText,
-          type: isVideo ? "video" : "image",
-          generatedUrl: imageUrl
-        }
-      }
-    };
-  }
-
-  if (q.includes("cache") || q.includes("purify") || q.includes("purifier") || q.includes("scan disk") || q.includes("purge")) {
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Booting Sovereign Cache Purifier", status: "COMPLETED", detail: "Initializing deep system scan" },
-      { stepNumber: 2, totalSteps: 4, label: "Scanning Temporary Files", status: "COMPLETED", detail: "Analyzing Next.js caches, Vite build artifacts, and local storage" },
-      { stepNumber: 3, totalSteps: 4, label: "Evaluating Protected Core", status: "COMPLETED", detail: "Isolating critical production assets & DB instances (0% Risk)" },
-      { stepNumber: 4, totalSteps: 4, label: "Purge Ready", status: "COMPLETED", detail: "Awaiting final confirmation for 1-click purge" },
-    ];
-
-    const responseMarkdown = `### 🛡️ Sovereign Cache Purifier Scan Complete
-- **Status**: Scan successful. Protected Core guarantee is **ACTIVE**.
-- **Found**: 14,208 redundant temporary files across node_modules and .next cache.
-- **Potential Free Space**: **4.2 GB**
-- **Safety Guarantee**: 100% safe to purge. Critical source code and production databases are strictly isolated.
-
-Use the action card below to execute the 1-click purge.`;
-
-    const voiceSpokenText = isHindi
-      ? `Sovereign Cache Purifier ne disk scan complete kar liya hai. 4 point 2 GB space free kiya ja sakta hai. Protected core guarantee active hai, isliye purge karna bilkul safe hai.`
-      : isBengali
-      ? `Sovereign Cache Purifier disk scan complete koreche. 4 point 2 GB space free kora jabe. Protected core guarantee active ache, tai purge kora completely safe.`
-      : `The Sovereign Cache Purifier has completed its disk scan. We can free up 4.2 Gigabytes of space. The protected core guarantee is active, so you can execute the 1-click purge safely without risking critical assets.`;
-
-    return {
-      intent: "storage_purifier",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "cache_purifier",
-        data: {
-          scannedFiles: 14208,
-          freedSpace: "4.2 GB",
-          isProtectedCoreIntact: true
-        }
-      }
-    };
-  }
-
   // 3. System Settings, Restart & Refresh (Glitch-Fix Without Disconnections)
   if (
     q.includes("setting") ||
@@ -1071,20 +929,20 @@ Use the action card below to execute the 1-click purge.`;
     const isRefresh = q.includes("refresh") || q.includes("glitch");
 
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Scanning System State & Memory", status: "COMPLETED", detail: "Memory clean · Zero data loss guaranteed · State snapshots verified" },
+      { stepNumber: 1, totalSteps: 4, label: "Scanning System State & Memory", status: "COMPLETED", detail: "System state inspected; no blanket zero-loss guarantee" },
       { stepNumber: 2, totalSteps: 4, label: isRestart ? "Executing Graceful System Restart" : "Applying Zero-Downtime Refresh", status: "COMPLETED", detail: isRestart ? "Reloading sovereign AI modules without session drop" : "Hot-fixing UI glitches & flushing stale buffers (0 disconnections)" },
-      { stepNumber: 3, totalSteps: 4, label: "Synchronizing Edge Gateways", status: "COMPLETED", detail: "All 8 connected platforms & RPC nodes healthy" },
-      { stepNumber: 4, totalSteps: 4, label: "Optimizer Verification Complete", status: "COMPLETED", detail: "Latency: 12ms · 100% Stable" },
+      { stepNumber: 3, totalSteps: 4, label: "Synchronizing Edge Gateways", status: "COMPLETED", detail: "Connected-platform health requires current provider telemetry" },
+      { stepNumber: 4, totalSteps: 4, label: "Optimizer Verification Complete", status: "COMPLETED", detail: "Latency and stability require current runtime telemetry" },
     ];
 
     const responseMarkdown = `### ⚙️ HDmaster System Configuration & Optimizer
 - **Operation**: **${isRestart ? "System Restart (Preserved State)" : isRefresh ? "Zero-Downtime Refresh (Glitch Fix)" : "Settings & Manual Customization"}**
-- **Status**: **100% Optimal & Connected** (0 Disconnections · Zero Data Loss)
+- **Status**: **Configuration/telemetry review required**
 - **Engine Tuning**: **Sovereign Ultra (Young Female Aria Acoustic Profile)**
 - **Security**: **HMAC-SHA256 Active · Zero-Leak Sandbox Armed**
 
 > [!NOTE]
-> **Zero Disconnection Guarantee**:
+> **Connection Safety Note**:
 > - **RESTART**: Gracefully reboots engine instances while permanently maintaining founder chats, invoices, and contracts.
 > - **REFRESH**: Flushes minor render glitches, resets audio contexts, and re-syncs state in **sub-5ms** without any disconnection.
 
@@ -1094,7 +952,7 @@ Manual customization controls and 1-click optimization triggers are available be
       ? `HDmaster system settings aur optimization ready hain. Refresh bina kisi disconnection ke glitches theek karta hai, aur restart aapke saare data ko surakshit rakhte hue system ko reboot karta hai.`
       : isBengali
       ? `HDmaster system settings ebong optimization ready ache. Refresh kono disconnection charai glitches fix kore, ebong restart apnar shob data safe rekhe system reboot kore.`
-      : `HDmaster system settings and optimizer are active. Refresh fixes UI glitches without disconnections, and Restart safely reboots all engines with 100% preserved founder state.`;
+      : `HDmaster system settings are available for review. Restart/refresh execution and connection preservation require current runtime verification.`;
 
     return {
       intent: "system_settings",
