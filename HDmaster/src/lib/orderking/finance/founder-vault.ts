@@ -11,7 +11,7 @@
 export type FounderVaultInput = {
   periodLabel: string;
   totalOrdersCount: number;
-  grossCustomerInflowPaise: number; // Total customer payments received in bank
+  grossCustomerInflowPaise: number; // Caller-supplied inflow scenario; not independently verified by this module
   foodGrossPaise: number;
   restaurantDiscountsPaise: number;
   platformCommissionBps: number; // e.g. 1500 for 15%
@@ -24,7 +24,7 @@ export type FounderVaultInput = {
   cashCollectedCodPaise: number;
   unclaimedWalletFloatPaise?: number;
   breakageAndGlitchFloatPaise?: number; // Overpayments, round-off surpluses, expired credits, customer cancellation forfeits, unallocated deposits
-  eligibleInputTaxCreditPaise?: number; // Inward 18% GST paid on cloud servers, payment gateway fees, SaaS, marketing
+  eligibleInputTaxCreditPaise?: number; // Caller-supplied eligible-ITC scenario; tax eligibility is not independently verified
   platformConvenienceFeesPaise?: number; // Platform fees charged to customers
 };
 
@@ -35,13 +35,13 @@ export type FounderVaultSummary = {
   netDisbursedToRestaurantsPaise: number;
   netDisbursedToRidersPaise: number;
   statutoryTaxReservePaise: number;
-  gstReserveSection95Paise: number; // 5% GST on food delivery
-  tdsReserveSection194OPaise: number; // 1% TDS withholding
-  tcsReserveSection52Paise: number;  // 1% TCS withholding
+  gstReserveSection95Paise: number; // Illustrative scenario reserve based on the module's configured rate; not legal advice
+  tdsReserveSection194OPaise: number; // Illustrative scenario reserve; current withholding rules must be verified
+  tcsReserveSection52Paise: number;  // Illustrative scenario reserve; current collection rules must be verified
   retainedPlatformFloatPaise: number; // Calculated residual from supplied scenario inputs; not an owner-bank balance
   pureOwnerNetProfitPaise: number;   // Calculated scenario residual; not a confirmed withdrawable amount
   breakageAndUnusedFloatPaise: number;
-  breakageAndGlitchFloatPaise: number; // Strictly non-distributable to restaurants or riders
+  breakageAndGlitchFloatPaise: number; // Calculated from supplied inputs; distribution/retention rights require separate verification
   ownerNetMarginPercentage: string;
   gstItcOffsetAndArbitrage: {
     grossGstCollectedFromCommissionsPaise: number;
@@ -114,22 +114,22 @@ export function calculateFounderRetainedCashVault(input: FounderVaultInput): Fou
   const eligibleItc = input.eligibleInputTaxCreditPaise ?? 0;
   const netCashGstLiability = Math.max(0, totalOutwardGst - eligibleItc);
   const retainedGstWorkingCapital = Math.min(totalOutwardGst, eligibleItc);
-  // 6.5% p.a. treasury float yield on 30-day average 5% GST escrow float held before GSTR-3B filing
+  // Scenario treasury-yield calculation using fixed illustrative assumptions; not a statement of available yield or permitted fund placement
   const section95FloatYield = Math.round((gstSection95 * 65 * 30) / (1000 * 365));
 
   const statutoryTaxReserve = gstSection95 + tdsDeduction + tcsDeduction + riderTds + netCashGstLiability;
 
-  // 5. Retained Platform Cash Float (Surplus cash staying permanently in owner bank account)
+  // 5. Retained platform cash scenario (not evidence of bank ownership or funds actually held)
   const totalDisbursed = netDisbursedToRestaurants + netDisbursedToRiders;
   const retainedPlatformFloat = Math.max(0, input.grossCustomerInflowPaise - totalDisbursed);
 
-  // 6. Pure Owner Net Profit (Enhanced with Breakage + ITC Working Capital + Float Yield)
+  // 6. Calculated residual profit scenario; not a confirmed distributable or withdrawable amount
   const pureOwnerNetProfit = Math.max(
     0,
     retainedPlatformFloat - statutoryTaxReserve + retainedGstWorkingCapital + section95FloatYield,
   );
 
-  // 7. Zomato vs OrderKing Comparative Savings Metrics
+  // 7. Competitor comparison is intentionally not asserted without current sourced terms
   const zomatoCommission = Math.round((netFoodSales * 2500) / 10000); // 25% Zomato take-rate
   const restaurantSavingsVsZomato = Math.max(0, zomatoCommission - commission);
 
@@ -163,20 +163,20 @@ export function calculateFounderRetainedCashVault(input: FounderVaultInput): Fou
       section95GstEscrowFloatYieldPaise: section95FloatYield,
     },
     competitiveZomatoComparison: {
-      zomatoAverageCommissionBps: 2500,
+      zomatoAverageCommissionBps: 0,
       orderKingCommissionBps: input.platformCommissionBps,
-      restaurantSavingsVsZomatoPaise: restaurantSavingsVsZomato,
-      restaurantTakeHomeUpliftPercentage: "+13.3% higher take-home profit",
-      zomatoOnboardingFeeSavedPaise: 1_000_000, // ₹10,000 saved per restaurant
-      orderKingVolumeMultiplier: "3.2x",
+      restaurantSavingsVsZomatoPaise: 0,
+      restaurantTakeHomeUpliftPercentage: "NOT_VERIFIED",
+      zomatoOnboardingFeeSavedPaise: 0,
+      orderKingVolumeMultiplier: "NOT_VERIFIED",
     },
     disbursementRules: {
       restaurantDisbursementRule:
-        "Strictly (Net Food + Packaging) - 15% Commission - 18% GST - 1% TDS - 1% TCS. Zero excess money, glitch, or breakage distributed.",
+        "Scenario formula only; actual restaurant settlement terms must come from executed contracts and the canonical settlement service.",
       riderDisbursementRule:
-        "Strictly (Base + Distance + Surge + Milestones + 100% Tips) - COD Cash Collected - 1% TDS. Zero float leakage.",
+        "Scenario formula only; actual rider payout, COD and tax treatment must come from the canonical rider settlement service.",
       glitchMoneyRetentionRule:
-        "100% of round-off surpluses, expired credits, customer late-cancellation forfeit fees, and unallocated deposits permanently retained in Owner Bank Account.",
+        "Unallocated, expired or disputed amounts require contract, consumer-protection and accounting review; this calculator does not determine ownership or retention rights.",
     },
     legalComplianceStatus: {
       itActSection79Intermediary: "NOT_VERIFIED",
