@@ -339,12 +339,20 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   const totalScore = infraScore + pgScore + commScore + legalScore;
   let status: "PRODUCTION_READY" | "PILOT_READY" | "NOT_READY" = "NOT_READY";
 
-  if (criticalBlockers.length === 0) {
-    if (totalScore >= 85) {
-      status = "PRODUCTION_READY";
-    } else if (totalScore >= 60) {
-      status = "PILOT_READY";
-    }
+  const independentlyVerified =
+    config.database.status === "CONNECTED" &&
+    config.paymentGateway.status === "CONNECTED" &&
+    config.smsGateway.status === "CONNECTED" &&
+    config.maps.status === "CONNECTED" &&
+    config.endpoints.customDomainVerified &&
+    Boolean(config.database.lastTestedAt) &&
+    Boolean(config.paymentGateway.lastTestedAt) &&
+    Boolean(config.smsGateway.lastTestedAt) &&
+    Boolean(config.maps.lastTestedAt);
+
+  if (criticalBlockers.length === 0 && independentlyVerified) {
+    if (totalScore >= 85) status = "PRODUCTION_READY";
+    else if (totalScore >= 60) status = "PILOT_READY";
   }
 
   return {
@@ -380,7 +388,7 @@ export function enforceCapacityLimits(
     if (orderCount >= config.capacity.pilotMaxDailyOrders) {
       return {
         allowed: false,
-        reason: `Daily pilot capacity limit (${config.capacity.pilotMaxDailyOrders} orders) reached for ${config.capacity.pilotCityName}. Orders will resume tomorrow at 06:00 AM.`,
+        reason: `Daily pilot capacity limit (${config.capacity.pilotMaxDailyOrders} orders) reached for ${config.capacity.pilotCityName}. New orders remain paused until capacity is available and the operator verifies reopening.`,
       };
     }
     if (distanceKm > config.capacity.pilotMaxDeliveryRadiusKm) {
