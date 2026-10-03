@@ -285,31 +285,31 @@ export function generateFounderClientInvoice(params: {
   description: string;
   founderUpiVpa?: string;
 }): ClientInvoice {
-  const vpa = params.founderUpiVpa || "orderking@okhdfcbank";
+  const vpa = params.founderUpiVpa?.trim();
   const invNum = `INV-${Date.now().toString().slice(-6)}`;
   const advance = Math.round(params.amountInr * 0.5);
-  const upiLink = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKingSovereign&am=${advance}&tn=${encodeURIComponent(
-    `Advance-${invNum}`
-  )}&cu=INR`;
-  const qrPayload = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
-
+  const upiPaymentLink = vpa
+    ? `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKingSovereign&am=${advance}&tn=${encodeURIComponent(`Advance-${invNum}`)}&cu=INR`
+    : "";
+  const qrPayload = upiPaymentLink
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiPaymentLink)}`
+    : "";
   const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
-
   return {
     invoiceNumber: invNum,
     clientName: params.clientName,
     amountInr: params.amountInr,
     advanceRequiredInr: advance,
     description: params.description,
-    upiPaymentLink: upiLink,
+    upiPaymentLink,
     qrPayload,
     dueDate,
-    status: "SENT",
-    payoutAccount: `Founder Direct Private Escrow (UPI: ${vpa})`,
+    status: "DRAFT",
+    payoutAccount: vpa ? `Configured UPI destination: ${vpa}` : "Payment destination not configured",
   };
 }
 
@@ -1245,7 +1245,7 @@ Select any module below to **preview standalone source code, download full ZIP p
     };
   }
 
-  // 7. 1-Command Instant Live App & Website Deployer
+  // 7. Deployment preview / Cloudflare handoff
   if (
     q.includes("deploy live") ||
     q.includes("1-command deploy") ||
@@ -1255,37 +1255,33 @@ Select any module below to **preview standalone source code, download full ZIP p
     q.includes("create product page") ||
     q.includes("deploy")
   ) {
-    const deployRes = instantDeployEngine.deployLive(
+    const deployRes = instantDeployEngine.preparePreview(
       query.includes("hospital") ? "Sribhumi Health Care ERP" : query.includes("market") ? "Hyperlocal Marketplace" : "Sovereign Web System",
       query.includes("hospital") ? "erp" : query.includes("product") ? "product_page" : "website",
       query
     );
 
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Synthesizing Full-Stack Artifacts", status: "COMPLETED", detail: `${deployRes.filesGeneratedCount} files scaffolded with React 19 & Tailwind` },
-      { stepNumber: 2, totalSteps: 4, label: "Bundling Standalone Production PWA", status: "COMPLETED", detail: "HTML5/ESM bundle compiled with zero external dependencies" },
-      { stepNumber: 3, totalSteps: 4, label: "Deploying Edge CDN Route", status: "COMPLETED", detail: `Live at ${deployRes.liveUrl} with SSL 100% certified` },
-      { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Vercel & Cloudflare 1-click terminal scripts ready" },
+      { stepNumber: 1, totalSteps: 3, label: "Preparing Sandbox Artifacts", status: "COMPLETED", detail: `${deployRes.filesGeneratedCount} preview files prepared` },
+      { stepNumber: 2, totalSteps: 3, label: "Generating Local Preview", status: "COMPLETED", detail: "Browser sandbox preview prepared; no production deployment was executed." },
+      { stepNumber: 3, totalSteps: 3, label: "Cloudflare Handoff", status: "PENDING", detail: "Founder-approved Cloudflare deployment must be performed and verified separately." },
     ];
 
-    const responseMarkdown = `### 🚀 1-Command Live Deployment Complete
+    const responseMarkdown = `### Sandbox Preview Prepared
 - **Project**: **${deployRes.projectName}**
-- **Live URL**: [\`${deployRes.liveUrl}\`](${deployRes.liveUrl})
-- **Status**: **${deployRes.status}** (SSL Encrypted · CDN Edge: ${deployRes.edgeRegion})
-- **Files Generated**: **${deployRes.filesGeneratedCount} production files**
+- **Status**: **${deployRes.status}**
+- **Preview**: ${deployRes.liveUrl}
+- **Production deployment**: **Not executed**
+- **Approved deployment target**: **Cloudflare Pages**
+- **SSL / CDN verification**: **Pending actual deployment verification**
 
-\`\`\`bash
-# 1-Click Terminal Deployment Script
-${deployRes.vercelDeployCommand}
-\`\`\`
-
-The live standalone preview bundle is compiled and ready for instant preview or direct customer handoff!`;
+No Vercel deployment command or live-production claim was generated.`;
 
     return {
       intent: "instant_deploy",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText: `Your project ${deployRes.projectName} has been compiled and deployed live in one command. SSL is active and the production preview is ready.`,
+      voiceSpokenText: `The sandbox preview for ${deployRes.projectName} is prepared. No production deployment was claimed or executed.`,
       executionSteps,
       actionCard: {
         type: "instant_deploy",
@@ -1294,43 +1290,23 @@ The live standalone preview bundle is compiled and ready for instant preview or 
     };
   }
 
-  // 8. Autonomous Frontier Model Evolution & Self-Upgrading Tracker
+  // 8. Model configuration status
   if (
     q.includes("model update") ||
     q.includes("frontier model") ||
     q.includes("next gen") ||
-    q.includes("gpt-6") ||
-    q.includes("claude 5") ||
-    q.includes("grok 5") ||
     q.includes("upgrade model") ||
     q.includes("generation upgrade") ||
     q.includes("evolution")
   ) {
-    const updateReport = autonomousModelUpdater.checkForUpdates();
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 3, label: "Scanning Frontier AI Labs", status: "COMPLETED", detail: "Queried OpenAI, Anthropic, xAI, Google DeepMind registries" },
-      { stepNumber: 2, totalSteps: 3, label: "Evaluating Zero-Downtime Hot-Swaps", status: "COMPLETED", detail: "Prepared 3 next-gen models for instantaneous founder consent" },
-      { stepNumber: 3, totalSteps: 3, label: "Founder Consent Gate Armed", status: "COMPLETED", detail: "Awaiting 1-click founder authorization" },
-    ];
-
-    const responseMarkdown = `### 🔮 Autonomous Model Evolution: Next-Gen Upgrades Detected
-- **Current Active Generation**: **Gen-5.6 / Gen-4.6 (GPT-5.6, Claude 4.Opus, Grok 4.6)**
-- **Next-Generation Releases Available**: **${updateReport.notifications.length} Hot-Swaps Ready**
-- **Upgrade Policy**: **Autonomous Detection with 1-Click Founder Consent**
-- **Guarantee**: Umar OS will **never remain stuck** on an obsolete generation. Whenever OpenAI, Anthropic, or xAI drop newer iterations, the system auto-configures and upgrades smoothly.
-
-Review available model upgrades below and click **"1-Click Hot-Upgrade"** to switch engine generations instantly.`;
-
     return {
       intent: "general_executive",
       detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText: `I have scanned the frontier AI laboratories. Three next-generation model upgrades are ready for hot-swapping into Umar OS. You can authorize any upgrade in one click with zero downtime.`,
-      executionSteps,
-      actionCard: {
-        type: "model_updates",
-        data: updateReport,
-      },
+      responseMarkdown: "### Model Configuration Status\nCurrent/next-generation model availability is not asserted from hardcoded labels. Use the server-side real-model registry to inspect configured provider/model IDs. No hot-swap or zero-downtime guarantee is claimed.",
+      voiceSpokenText: "Model availability must be read from the configured provider registry. No upgrade was executed.",
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 1, label: "Provider Registry Check Required", status: "PENDING", detail: "No provider/model upgrade was claimed." },
+      ],
     };
   }
 
