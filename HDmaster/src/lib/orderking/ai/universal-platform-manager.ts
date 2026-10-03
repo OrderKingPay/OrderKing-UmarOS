@@ -14,6 +14,7 @@ export type PlatformId =
   | "razorpay"
   | "kingpay"
   | "vercel"
+  | "cloudflare"
   | "supabase"
   | "shopify"
   | "google"
@@ -99,13 +100,13 @@ export class UniversalPlatformManager {
         id: "whatsapp",
         name: "WhatsApp Business & Click-to-Chat",
         category: "messaging",
-        status: "ONLINE", // Always online via direct WhatsApp click-to-chat protocol
-        description: "Direct high-ticket client pitch delivery via native WhatsApp deep-links and Meta Cloud API.",
+        status: getEnvOrStorage("WHATSAPP_ACCESS_TOKEN") ? "ONLINE" : "STANDBY",
+        description: "Configured WhatsApp integration; click-to-chat links are not evidence of Meta API connectivity.",
         icon: "MessageSquare",
-        latencyMs: 24,
+        latencyMs: 0,
         lastSyncAt: new Date().toISOString(),
         capabilities: ["send_pitch", "fleet_dispatch", "payment_reminder", "broadcast_announcement"],
-        isNativeLocal: true,
+        credentialRequired: "WHATSAPP_ACCESS_TOKEN",
       },
       {
         id: "telegram",
@@ -156,27 +157,37 @@ export class UniversalPlatformManager {
       },
       {
         id: "kingpay",
-        name: "King Pay 0% Fee UPI Core",
+        name: "King Pay UPI Rail",
         category: "payments",
-        status: "ONLINE", // Fully operational client-side UPI standard
-        description: "Statutory Section 79 compliant zero-fee UPI QR codes and deep-intent links direct to founder VPA.",
+        status: "STANDBY",
+        description: "King Pay payment rail requires a verified provider/bank contract. QR/deep-link generation alone is not payment connectivity.",
         icon: "QrCode",
-        latencyMs: 4,
+        latencyMs: 0,
         lastSyncAt: new Date().toISOString(),
-        capabilities: ["generate_qr", "instant_soundbox_voice", "zero_fee_settle", "meity_subsidy_claim"],
-        isNativeLocal: true,
+        capabilities: [],
       },
       {
         id: "vercel",
-        name: "Vercel & Cloudflare Edge",
+        name: "Vercel (disabled)",
         category: "cloud",
-        status: getEnvOrStorage("VERCEL_TOKEN") ? "ONLINE" : "STANDBY",
-        description: "1-Click automated edge deployments, custom domains, and terminal CLI deploy commands.",
+        status: "STANDBY",
+        description: "Disabled by the Cloudflare-only deployment policy. No Vercel deployment action is available.",
         icon: "Globe",
-        latencyMs: 48,
+        latencyMs: 0,
         lastSyncAt: new Date().toISOString(),
-        capabilities: ["deploy_project", "bind_custom_domain", "purge_edge_cache", "inspect_logs"],
-        credentialRequired: "VERCEL_TOKEN",
+        capabilities: [],
+      },
+      {
+        id: "cloudflare",
+        name: "Cloudflare Pages",
+        category: "cloud",
+        status: getEnvOrStorage("CLOUDFLARE_API_TOKEN") ? "ONLINE" : "STANDBY",
+        description: "Approved deployment target for OrderKing. Connectivity requires an actual Cloudflare credential.",
+        icon: "Shield",
+        latencyMs: 0,
+        lastSyncAt: new Date().toISOString(),
+        capabilities: ["deploy_pages", "inspect_deploy", "inspect_logs"],
+        credentialRequired: "CLOUDFLARE_API_TOKEN",
       },
       {
         id: "supabase",
@@ -460,15 +471,23 @@ export class UniversalPlatformManager {
       }
 
       case "vercel": {
-        const projectName = params.payload.projectName || "orderking-cloud-hub";
-        const deployCommand = `npx vercel --prod --yes --name ${projectName}`;
-        outputData = {
-          projectName,
-          deployCommand,
-          cloudflareDeployCommand: `npx wrangler pages deploy ./dist --project-name ${projectName}`,
-          status: "CLI_DEPLOY_SCRIPT_READY",
-        };
-        summary = `Generated production CLI deploy script for Vercel/Cloudflare. Run in terminal to publish live.`;
+        outputData = { status: "DISABLED", reason: "Cloudflare-only deployment policy" };
+        summary = "Vercel deployment is disabled. No deployment command was generated or executed.";
+        actionSuccess = false;
+        break;
+      }
+
+      case "cloudflare": {
+        const token = getEnvOrStorage("CLOUDFLARE_API_TOKEN");
+        if (!token) {
+          outputData = { status: "CREDENTIAL_REQUIRED", credentialKey: "CLOUDFLARE_API_TOKEN" };
+          summary = "Cloudflare credential is not configured. No deployment was attempted.";
+          actionSuccess = false;
+        } else {
+          outputData = { status: "CONFIGURED", action: params.action, note: "Deployment execution is not implemented in this client-side manager." };
+          summary = "Cloudflare credentials are present, but this manager does not claim deployment execution.";
+          actionSuccess = false;
+        }
         break;
       }
 
@@ -682,40 +701,10 @@ export const CORE_ECOSYSTEM_APPS: EcosystemApp[] = [
 ];
 
 export function getAllEcosystemApps(): EcosystemApp[] {
-  const all: EcosystemApp[] = [...CORE_ECOSYSTEM_APPS];
-  
-  const additionalCategories = [
-    { cat: "fintech" as const, prefix: "Bank & Payment Rail", icon: "CreditCard", auth: "HMAC Token" as const, actions: ["verify_kyc", "initiate_settlement"] },
-    { cat: "logistics" as const, prefix: "Regional Fleet Partner", icon: "Truck", auth: "API Key" as const, actions: ["dispatch_consignment", "track_gps"] },
-    { cat: "commerce" as const, prefix: "Supplier ERP Gateway", icon: "ShoppingBag", auth: "OAuth 2.0" as const, actions: ["sync_inventory", "push_invoice"] },
-    { cat: "messaging" as const, prefix: "Enterprise Notification Node", icon: "MessageSquare", auth: "Webhook" as const, actions: ["broadcast_alert", "ping_status"] },
-    { cat: "ai" as const, prefix: "Autonomous Agent Subnet", icon: "Cpu", auth: "API Key" as const, actions: ["invoke_agent", "stream_inference"] },
-    { cat: "crm" as const, prefix: "Client Lifecycle Connector", icon: "Briefcase", auth: "OAuth 2.0" as const, actions: ["log_call", "advance_deal"] },
-    { cat: "devops" as const, prefix: "Edge Server Node", icon: "Server", auth: "API Key" as const, actions: ["health_check", "reboot_service"] },
-    { cat: "analytics" as const, prefix: "Data Pipeline Stream", icon: "BarChart", auth: "HMAC Token" as const, actions: ["ingest_events", "aggregate_metrics"] },
-  ];
-
-  let currentCount = all.length;
-  let idx = 1;
-  while (currentCount < 508) {
-    const template = additionalCategories[idx % additionalCategories.length];
-    all.push({
-      id: `app-auto-${idx}`,
-      name: `${template.prefix} #${idx + 100}`,
-      category: template.cat,
-      description: `Production-grade connected integration with 1-click execution and zero-token leak isolation.`,
-      iconName: template.icon,
-      authMethod: template.auth,
-      status: "READY",
-      actions: template.actions,
-    });
-    currentCount++;
-    idx++;
-  }
-
-  return all;
+  return CORE_ECOSYSTEM_APPS
+    .filter((app) => app.id !== "app-vercel")
+    .map((app) => ({ ...app, status: "READY" as const, actions: app.actions.filter(Boolean) }));
 }
-
 export function searchEcosystemApps(query: string, category?: string): EcosystemApp[] {
   const all = getAllEcosystemApps();
   const q = query.trim().toLowerCase();
