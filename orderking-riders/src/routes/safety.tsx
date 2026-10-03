@@ -66,9 +66,15 @@ function Page() {
               {DEFAULT_CONFIG.emergencyPhone}
             </a>
           </Button>
-          <Button asChild variant="outline" className="mt-2 w-full">
-            <a href={`tel:${DEFAULT_CONFIG.supportPhone}`}>{t("support")}</a>
-          </Button>
+          {DEFAULT_CONFIG.supportPhone ? (
+            <Button asChild variant="outline" className="mt-2 w-full">
+              <a href={`tel:${DEFAULT_CONFIG.supportPhone}`}>{t("support")}</a>
+            </Button>
+          ) : (
+            <Button variant="outline" className="mt-2 w-full" disabled>
+              {t("support")} — contact unavailable
+            </Button>
+          )}
         </Card>
         <Card className="space-y-3">
           <Button
