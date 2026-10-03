@@ -30,7 +30,7 @@ export const Route = createFileRoute("/api/razorpay/verify")({
             .digest("hex");
           const given = String(razorpay_signature).trim();
           if (given.length !== generated.length ||
-              !$crypto.timingSafeEqual(Buffer.from(given), Buffer.from(generated))) {
+              !crypto.timingSafeEqual(Buffer.from(given), Buffer.from(generated))) {
             return Response.json({ error: "Invalid signature" }, { status: 400 });
           }
 
