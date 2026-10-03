@@ -38,35 +38,20 @@ export interface ModelConnectionTestResult {
   timestamp: string;
 }
 
-// Key manager: reads from process.env or browser localStorage
+// Provider credentials are server-side only. Never read or persist API keys in browser storage.
 export function getProviderApiKey(provider: string): string | undefined {
   const envMap: Record<string, string | undefined> = {
-    openai: typeof process !== "undefined" ? process.env?.OPENAI_API_KEY : undefined,
-    anthropic: typeof process !== "undefined" ? process.env?.ANTHROPIC_API_KEY : undefined,
-    gemini: typeof process !== "undefined" ? (process.env?.GEMINI_API_KEY || process.env?.GOOGLE_API_KEY) : undefined,
-    xai: typeof process !== "undefined" ? process.env?.XAI_API_KEY : undefined,
+    openai: process.env?.OPENAI_API_KEY,
+    anthropic: process.env?.ANTHROPIC_API_KEY,
+    gemini: process.env?.GEMINI_API_KEY || process.env?.GOOGLE_API_KEY,
+    xai: process.env?.XAI_API_KEY,
   };
-
-  const keyFromEnv = envMap[provider.toLowerCase()];
-  if (keyFromEnv && keyFromEnv.trim().length > 0) return keyFromEnv.trim();
-
-  // Browser localStorage fallback if available
-  if (typeof window !== "undefined" && window.localStorage) {
-    const key = window.localStorage.getItem(`umar_os_apikey_${provider.toLowerCase()}`);
-    if (key && key.trim().length > 0) return key.trim();
-  }
-
-  return undefined;
+  const value = envMap[provider.toLowerCase()];
+  return value?.trim() || undefined;
 }
 
-export function setProviderApiKey(provider: string, apiKey: string): void {
-  if (typeof window !== "undefined" && window.localStorage) {
-    if (apiKey.trim()) {
-      window.localStorage.setItem(`umar_os_apikey_${provider.toLowerCase()}`, apiKey.trim());
-    } else {
-      window.localStorage.removeItem(`umar_os_apikey_${provider.toLowerCase()}`);
-    }
-  }
+export function setProviderApiKey(_provider: string, _apiKey: string): never {
+  throw new Error("Provider API keys must be configured server-side; browser storage is disabled.");
 }
 
 /**
