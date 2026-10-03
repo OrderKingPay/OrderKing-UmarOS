@@ -2486,10 +2486,11 @@ export async function runMasterAi(
   const systemPrompt = buildSystemPrompt(ws, input.mode, specialist);
   const toolDefinitions = getActiveToolDefinitions(specialist);
 
-  // If this invocation carries an explicitly approved call, execute it immediately!
-  if (input.approvedCallName) {
+  // Approved execution requires both the approval identity and the approved tool name.
+  if (input.approvedCallName && input.approvedCallId) {
     const spec = MASTER_AI_TOOL_REGISTRY[input.approvedCallName as MasterAiToolName];
     if (spec) {
+      requirePermission(ws.ctx, spec.requiredPermission);
       try {
         const result = await executeTool(ws, input.approvedCallName, input.approvedCallArgs || {});
         await auditToolCall(ws, {
@@ -2502,7 +2503,7 @@ export async function runMasterAi(
         return {
           ok: true,
           text: `Action \`${input.approvedCallName}\` was approved and executed successfully.\n\n\`\`\`json\n${JSON.stringify(result, null, 2)}\n\`\`\``,
-          provider: input.provider || "local_deterministic",
+          provider: input.provider || "governed-execution-engine",
           model: "governed-execution-engine",
           specialist: { id: specialist.id, name: specialist.name, team: specialist.team, title: specialist.title },
           toolCalls: [{ callId: input.approvedCallId, name: input.approvedCallName, status: "executed", risk: spec.risk }],
@@ -2543,6 +2544,9 @@ export async function runMasterAi(
 
     activeProvider = modelResponse.provider;
     activeModel = modelResponse.model;
+    if (activeProvider === "local_deterministic") {
+      return { ok: false, error: "No configured external AI provider is available for Master AI. Local deterministic fallback is disabled for production truth.", status: 503 };
+    }
 
     // If model returned text and no tool calls, we are finished!
     if (!modelResponse.toolCalls || modelResponse.toolCalls.length === 0) {
