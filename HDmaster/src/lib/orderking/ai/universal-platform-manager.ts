@@ -98,7 +98,7 @@ export class UniversalPlatformManager {
         id: "whatsapp",
         name: "WhatsApp Business & Click-to-Chat",
         category: "messaging",
-        status: "ONLINE", // Always online via direct WhatsApp click-to-chat protocol
+        status: "STANDBY",
         description: "Direct high-ticket client pitch delivery via native WhatsApp deep-links and Meta Cloud API.",
         icon: "MessageSquare",
         latencyMs: 24,
@@ -229,8 +229,8 @@ export class UniversalPlatformManager {
         id: "webhook",
         name: "Universal Arbitrary Webhook / REST",
         category: "custom",
-        status: "ONLINE",
-        description: "Direct HTTP POST/GET bridge to dispatch payloads to any external URL with live network execution.",
+        status: "STANDBY",
+        description: "Webhook adapter is available only after an authorized endpoint and signing policy are configured.",
         icon: "Plug",
         latencyMs: 30,
         lastSyncAt: new Date().toISOString(),
@@ -268,7 +268,7 @@ export class UniversalPlatformManager {
     let summary = "";
     let outputData: any = {};
     let shareableUrl: string | undefined = undefined;
-    let actionSuccess = true;
+    let actionSuccess = false;
 
     switch (params.platformId) {
       case "github": {
@@ -303,7 +303,7 @@ export class UniversalPlatformManager {
         const proposalText = `Dear Hiring Team,\n\nI reviewed your requirements for '${jobTitle}'. As a sovereign full-stack systems architect, I build high-concurrency applications using zero-bloat modern stacks (TypeScript, React 19, Tailwind, Cloudflare Workers). I can propose an implementation after confirming scope, integrations, acceptance criteria and delivery timeline.\n\nBest regards,\nUmar Habibullah`;
         outputData = {
           jobTitle,
-          status: "PROPOSAL_SYNTHESIZED",
+          status: "PROPOSAL_DRAFTED_NOT_SUBMITTED",
           proposalText,
           actionRequired: "Paste proposal into client job posting on Upwork.",
         };
@@ -319,7 +319,7 @@ export class UniversalPlatformManager {
           recipientPhone: rawPhone,
           messageText: text,
           clickToChatUrl,
-          status: "DIRECT_LINK_GENERATED",
+          status: "LINK_GENERATED_NOT_SENT",
         };
         summary = `WhatsApp direct dispatch link generated. Click the link to open WhatsApp directly with prefilled text.`;
         shareableUrl = clickToChatUrl;
@@ -334,7 +334,7 @@ export class UniversalPlatformManager {
           targetChannel: channel,
           text,
           telegramShareUrl: shareUrl,
-          status: "SHARE_LINK_READY",
+          status: "SHARE_LINK_READY_NOT_SENT",
         };
         summary = `Telegram share link generated for channel ${channel}. Click to broadcast directly.`;
         shareableUrl = shareUrl;
