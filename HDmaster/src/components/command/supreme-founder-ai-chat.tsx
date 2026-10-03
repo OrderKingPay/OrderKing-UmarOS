@@ -460,8 +460,6 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
   const [cartTotal, setCartTotal] = useState(0);
   const [cartItems, setCartItems] = useState<{ name: string; price: number; qty: number }[]>([]);
 
-  const [ledgerBalance, setLedgerBalance] = useState(1450000);
-  const [disbursedCount, setDisbursedCount] = useState(38);
 
   const activeCodeObj = blueprint.files.find((f) => f.filename === selectedFile) || blueprint.files[0];
 
@@ -2451,12 +2449,9 @@ function FounderWorkHub({
   };
 
   const handleRunAudit = () => {
-    setIsAuditing(true);
-    setTimeout(() => {
-      setIsAuditing(false);
-      setAuditPassed(true);
-      toast.success("🛡️ 160-Suite Integrity Verified: Zero Blockers, Zero Fabrication, All Systems Nominal.");
-    }, 600);
+    setIsAuditing(false);
+    setAuditPassed(false);
+    toast.error("Server-side integrity audit is not available from this browser action. No simulated pass result was generated.");
   };
 
   // 5 Non-Negotiable Strict Tasks (100% Truthful, Zero-Fabrication)
