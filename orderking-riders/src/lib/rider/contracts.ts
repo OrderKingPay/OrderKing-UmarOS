@@ -1,7 +1,7 @@
 /**
  * Versioned integration contracts for Windows 1, 2, 4 and 5.
- * These are the shapes Window 3 expects. Adapters in this app currently
- * speak SIMULATED data that matches the same schemas.
+ * These are versioned adapter shapes. Live operations are accepted only through
+ * the authoritative HDmaster integration; simulation is explicitly separated.
  */
 
 export const API_VERSION = "v1";
