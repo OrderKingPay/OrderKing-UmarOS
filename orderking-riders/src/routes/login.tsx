@@ -11,7 +11,6 @@ import { useState, type FormEvent } from "react";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
-  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const { t, locale, setLocale } = useI18n();
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
@@ -63,10 +62,9 @@ function Login() {
       </p>
       <h1 className="mt-2 font-display text-4xl leading-none">{DEFAULT_BRANDING.riderFacingBrand}</h1>
       <p className="mt-3 max-w-sm text-muted-foreground">{t("loginLead")}</p>
-      <p className="mt-2 text-xs text-muted-foreground">{t("simulatedBanner")}</p>
 
       <div className="mt-8 space-y-3">
-        {authEnabled && !isVercel ? (
+        {authEnabled ? (
           GROK_PROVIDERS.map((p) => (
             <Button
               key={p.providerId}
