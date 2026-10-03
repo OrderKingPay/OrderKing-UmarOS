@@ -137,12 +137,14 @@ const baseURL = explicitBaseURL ?? {
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = [ ...(explicitBaseURL ? [explicitBaseURL] : []),
+const trustedOrigins: string[] = [
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
   ...(process.env.CF_PAGES_URL ? [process.env.CF_PAGES_URL] : []),
-  'https://orderking-hdmaster.pages.dev'
+  "https://HDmaster.pages.dev",
+  ...(process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL] : []),
+  "https://orderking.in",
 ];
 
 const databaseUrl = env("DATABASE_URL");
