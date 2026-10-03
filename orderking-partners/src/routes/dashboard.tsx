@@ -10,6 +10,7 @@ import { useT } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
 import { getDashboard, quickThrottleKitchen } from "@/lib/server/api-orders";
 import { cn } from "@/lib/utils";
+import { WorkOpportunitiesCard } from "@/components/work-opportunities-card";
 
 export const Route = createFileRoute("/dashboard")({ component: DashboardPage });
 
@@ -133,38 +134,7 @@ function DashboardPage() {
         </div>
       </Card>
 
-      {/* Strategic Fast-Prep Priority & Zomato Savings Advantage */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Card className="border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-surface to-transparent p-4">
-          <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/20 text-lg">
-              ⚡
-            </span>
-            <div>
-              <h3 className="text-sm font-bold text-fg">Fast-Track Kitchen: Top Priority</h3>
-              <p className="text-[11px] text-muted">Average Prep Time: <span className="font-semibold text-emerald-600 dark:text-emerald-400">11m 40s</span> (Target: &lt;15m)</p>
-            </div>
-          </div>
-          <p className="mt-2 text-xs leading-relaxed text-muted">
-            <strong className="text-emerald-700 dark:text-emerald-300">+35% Organic Ranking Boost</strong> is active! Preparing OrderKing orders fast keeps your restaurant pinned at the top of customer search and home carousels.
-          </p>
-        </Card>
-
-        <Card className="border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-surface to-transparent p-4">
-          <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-amber-500/20 text-lg">
-              💰
-            </span>
-            <div>
-              <h3 className="text-sm font-bold text-fg">Fair Commission Advantage</h3>
-              <p className="text-[11px] text-muted">OrderKing: <strong className="text-emerald-600">10%</strong> vs Zomato: <strong className="text-rose-600">24%</strong></p>
-            </div>
-          </div>
-          <p className="mt-2 text-xs leading-relaxed text-muted">
-            You keep <strong className="text-fg">14% more profit per order</strong> on OrderKing with zero hidden marketing levies. You saved approx. <strong className="text-amber-700 dark:text-amber-400">₹4,250</strong> this week!
-          </p>
-        </Card>
-      </div>
+      <WorkOpportunitiesCard />
 
       <Card>
         <h2 className="font-display text-xl">{t("dashboard.attention")}</h2>
