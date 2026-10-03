@@ -85,6 +85,8 @@ const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
 const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
 
 /** True when federated sign-in is active (real auth is enforced). */
+const databaseUrl = env("DATABASE_URL");
+
 export const authConfigured =
   !authDisabled && Boolean(grokClientId && grokClientSecret);
 
@@ -145,8 +147,6 @@ const trustedOrigins: string[] = [
   ...(process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL] : []),
   "https://orderking.in",
 ];
-
-const databaseUrl = env("DATABASE_URL");
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
