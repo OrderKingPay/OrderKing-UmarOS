@@ -28,7 +28,8 @@ export class OpenAIProvider implements AIProvider {
   }
 
   private constructPayload(input: ChatRequest, stream: boolean): Record<string, unknown> {
-    const model = input.model || "gpt-5.6-luna";
+    const model = input.model || process.env.OPENAI_MODEL?.trim();
+    if (!model) throw new Error("OPENAI_MODEL is not configured.");
     const messages: Array<Record<string, unknown>> = [];
     
     if (input.systemPrompt) {
