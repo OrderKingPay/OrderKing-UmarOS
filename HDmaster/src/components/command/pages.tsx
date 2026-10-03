@@ -999,10 +999,10 @@ function FinancePage() {
               <span className="text-base">🤖</span>
               <div>
                 <p className="font-semibold text-fg">Autonomous CFO Agent Status</p>
-                <p className="text-muted text-[11px]">Continuous double-entry ledger audits active. Reconciles every PG webhook with 0 math errors.</p>
+                <p className="text-muted text-[11px]">Financial integrity is reported only from verified ledger/provider evidence; unverified PG reconciliation is not claimed.</p>
               </div>
             </div>
-            <Button size="sm" variant="secondary" onClick={() => toast.success("Ledger invariant verified: All 4,852 wallet entries 100% balanced with bank escrow!")}>
+            <Button size="sm" variant="secondary" onClick={() => toast.error("Ledger invariant verification requires the server-side financial audit. No simulated verification result is shown.")}>
               Run AI Audit
             </Button>
           </div>
