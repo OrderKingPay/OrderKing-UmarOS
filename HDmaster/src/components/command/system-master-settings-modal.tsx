@@ -191,9 +191,8 @@ export function SystemMasterSettingsModal({
     toast.success(`Model check complete: ${connected}/${providers.length} providers connected.`);
   };
 
-  const handleSaveApiKey = (provider: string, keyVal: string) => {
-    setProviderApiKey(provider, keyVal);
-    toast.success(`Saved API key for ${provider.toUpperCase()}`);
+  const handleSaveApiKey = (_provider: string, _keyVal: string) => {
+    toast.error("API keys are not stored in the browser. Configure provider secrets server-side in Cloudflare.");
     setModelsList(getVerifiedModelRegistry());
   };
 
@@ -581,7 +580,7 @@ export function SystemMasterSettingsModal({
                     <ShieldCheck className="size-3.5 text-amber-400" />
                     <span>Configure Provider API Keys (Saved Securely):</span>
                   </h4>
-                  <span className="text-[10px] text-slate-400">Keys stored in local session storage</span>
+                  <span className="text-[10px] text-slate-400">Keys are server-side only; configure them in Cloudflare</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
