@@ -3,16 +3,14 @@ import { AutoSettlementEngine } from '../../../../lib/orderking/finance/auto-set
 
 /**
  * 👑 AI ZOMATO-STYLE SETTLEMENT CRON ENDPOINT
- * Triggered automatically by Vercel every Monday at 2:00 AM (0 2 * * 1).
+ * Scheduled execution must be provided by an authorized Cloudflare Worker/cron caller.
  */
 export const APIRoute = createAPIFileRoute('/api/finance/cron/run-settlement')({
   GET: async ({ request }) => {
     try {
-      // Basic security to ensure this is triggered by Vercel Cron or Admin
+      // Cloudflare Worker/cron or an authorized internal caller must provide the shared secret.
       const authHeader = request.headers.get('authorization');
-      const isCron = request.headers.get('x-vercel-cron') === '1'; // Vercel Cron injects this
-      
-      if (!isCron && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
       }
 
