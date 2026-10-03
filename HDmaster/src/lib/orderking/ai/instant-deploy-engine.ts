@@ -1,8 +1,6 @@
 // @ts-nocheck
-// Umar OS Instant 1-Command Live Deployment Engine
-// Enables the founder to create any website, app, business system, or product page
-// and deploy it live in one single command.
-// Generates fully operational standalone in-browser data URI sandboxes and authentic CLI production commands.
+// Umar OS deployment preview engine.
+// Prepares a truthful local sandbox preview. It never claims a production deploy occurred.
 
 export interface DeploymentArtifact {
   deployId: string;
@@ -11,7 +9,7 @@ export interface DeploymentArtifact {
   liveUrl: string;
   targetDomain: string;
   previewBundleHtml: string;
-  vercelDeployCommand: string;
+  cloudflareDeployCommand: string;
   cloudflareDeployCommand: string;
   dockerfileContent: string;
   filesGeneratedCount: number;
@@ -22,13 +20,13 @@ export interface DeploymentArtifact {
 }
 
 export class InstantDeployEngine {
-  public deployLive(
+  public preparePreview(
     name: string,
     category: "website" | "web_app" | "business_system" | "product_page" | "erp" = "website",
     customPrompt?: string
   ): DeploymentArtifact {
-    const deployId = `live-${Date.now().toString(36)}`;
-    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const deployId = `preview-${Date.now().toString(36)}`;
+    const timestamp = new Date().toISOString();
     const slug = name.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "");
 
     const previewBundleHtml = `<!DOCTYPE html>
@@ -83,7 +81,7 @@ export class InstantDeployEngine {
 </html>`;
 
     const liveUrl = `data:text/html;charset=utf-8,${encodeURIComponent(previewBundleHtml)}`;
-    const targetDomain = `https://${slug}.orderking.in`;
+    const targetDomain = "";
 
     return {
       deployId,
@@ -92,14 +90,14 @@ export class InstantDeployEngine {
       liveUrl,
       targetDomain,
       previewBundleHtml,
-      vercelDeployCommand: `npx vercel --prod --yes --name ${slug}`,
+
       cloudflareDeployCommand: `npx wrangler pages deploy dist --project-name ${slug}`,
       dockerfileContent: `FROM node:20-alpine\nWORKDIR /app\nCOPY . .\nRUN npm install && npm run build\nEXPOSE 3000\nCMD ["npm", "run", "start"]`,
       filesGeneratedCount: 14,
       deployedAt: timestamp,
       status: "SANDBOX_PREVIEW_READY",
-      sslCertified: true,
-      edgeRegion: "Local Browser Sandbox (ap-south-1 Edge Deploy Ready)",
+      sslCertified: false,
+      edgeRegion: "Local Browser Sandbox only",
     };
   }
 }
