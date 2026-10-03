@@ -30,7 +30,7 @@ export type CreatedProject = {
   description: string;
   liveUrl: string;
   deployedAt: string;
-  status: "LIVE" | "BUILDING" | "READY";
+  status: "PREVIEW_ONLY" | "BUILDING" | "READY";
   filesCount: number;
   monthlyRevenueEst: string;
 };
@@ -41,41 +41,8 @@ export function SupremeCreatorEngine() {
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"editor" | "preview" | "files">("preview");
 
-  const [projects, setProjects] = useState<CreatedProject[]>([
-    {
-      id: "proj-01",
-      name: "Luxury Biryani Dark Kitchen Hub",
-      type: "business_system",
-      description: "Direct-to-consumer order engine with zero aggregator commission and WhatsApp auto-dispatch.",
-      liveUrl: "https://biryani.orderking.in",
-      deployedAt: "2 hours ago",
-      status: "LIVE",
-      filesCount: 24,
-      monthlyRevenueEst: "₹2,40,000",
-    },
-    {
-      id: "proj-02",
-      name: "Sovereign Gold Jewelry Boutique",
-      type: "website",
-      description: "High-ticket jewelry showcase with 3D interactive viewer, live gold rate ticker & UPI checkout.",
-      liveUrl: "https://gold.orderking.in",
-      deployedAt: "Yesterday",
-      status: "LIVE",
-      filesCount: 18,
-      monthlyRevenueEst: "₹8,50,000",
-    },
-    {
-      id: "proj-03",
-      name: "Fast-Track Vehicle Insurance & PUC Portal",
-      type: "product_page",
-      description: "0-Paperwork instant motor insurance purchase page with Parivahan Vahan API lookup.",
-      liveUrl: "https://insurance.orderking.in",
-      deployedAt: "3 days ago",
-      status: "LIVE",
-      filesCount: 12,
-      monthlyRevenueEst: "₹1,20,000",
-    },
-  ]);
+  const [projects, setProjects] = useState<CreatedProject[]>([]);
+
 
   const PRESET_PROMPTS = [
     "Build a complete multi-vendor organic grocery marketplace with 15-min delivery and UPI soundbox",
