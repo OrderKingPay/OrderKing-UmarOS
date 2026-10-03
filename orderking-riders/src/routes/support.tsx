@@ -84,88 +84,24 @@ function Page() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="font-display text-3xl">{t("support")}</h1>
-          <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>24x7 AI Copilot Active</span>
-          </div>
+          <Badge tone="muted">AI support</Badge>
         </div>
 
-        {/* 🚨 Emergency & Statutory Ombudsman Direct Links (Zero Legal Headache) */}
         <Card className="border-amber-500/30 bg-amber-500/5 p-4">
           <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
-            <span className="text-lg">⚖️</span>
-            <h2 className="text-sm font-bold tracking-tight">STATUTORY GIG-WORKER HELPLINES & OMBUDSMAN</h2>
+            <span className="text-lg">🛡️</span>
+            <h2 className="text-sm font-bold tracking-tight">Emergency & verified escalation</h2>
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            Direct escalation to official Indian statutory authorities and emergency services. Fulfills MoLE social security compliance.
+            Use emergency services for immediate danger. Use OrderKing support for delivery, cash, account and operational issues.
           </p>
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            <a
-              href="tel:112"
-              className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-2.5 text-xs font-bold text-red-700 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300"
-            >
-              <span>🚨</span>
-              <div>
-                <div>112 Emergency SOS</div>
-                <div className="text-[10px] font-normal text-red-600 dark:text-red-400">National Police & SOS</div>
-              </div>
-            </a>
-            <a
-              href="tel:108"
-              className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 p-2.5 text-xs font-bold text-blue-700 hover:bg-blue-100 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300"
-            >
-              <span>🚑</span>
-              <div>
-                <div>108 Free Ambulance</div>
-                <div className="text-[10px] font-normal text-blue-600 dark:text-blue-400">Accident Response</div>
-              </div>
-            </a>
-            <a
-              href="https://eshram.gov.in"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs font-bold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300"
-            >
-              <span>🛡️</span>
-              <div>
-                <div>MoLE e-Shram</div>
-                <div className="text-[10px] font-normal text-emerald-600 dark:text-emerald-400">eshram.gov.in</div>
-              </div>
-            </a>
-            <a
-              href="tel:18002585956"
-              className="flex items-center gap-2 rounded-lg border border-purple-200 bg-purple-50 p-2.5 text-xs font-bold text-purple-700 hover:bg-purple-100 dark:border-purple-900/50 dark:bg-purple-950/40 dark:text-purple-300"
-            >
-              <span>🏥</span>
-              <div>
-                <div>1800-258-5956</div>
-                <div className="text-[10px] font-normal text-purple-600 dark:text-purple-400">Accident Insurance TPA</div>
-              </div>
-            </a>
-            <a
-              href="tel:1930"
-              className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-xs font-bold text-amber-700 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300"
-            >
-              <span>💳</span>
-              <div>
-                <div>1930 Cyber Fraud</div>
-                <div className="text-[10px] font-normal text-amber-600 dark:text-amber-400">Payment Disputes</div>
-              </div>
-            </a>
-            <a
-              href="mailto:rider.grievance@orderking.in"
-              className="flex items-center gap-2 rounded-lg border border-border bg-surface p-2.5 text-xs font-bold text-foreground hover:bg-accent"
-            >
-              <span>📩</span>
-              <div>
-                <div>Rider Grievance</div>
-                <div className="text-[10px] font-normal text-muted-foreground">Statutory Officer</div>
-              </div>
-            </a>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <a href="tel:112" className="rounded-lg border border-red-200 bg-red-50 p-2.5 text-xs font-bold text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">🚨 112 Emergency SOS</a>
+            <a href="tel:1930" className="rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-xs font-bold text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">💳 1930 Cyber Fraud</a>
           </div>
         </Card>
 
-        {/* Real OpenAI Rider Support */}
+        {/* Rider AI Support */}
         <Card className="space-y-3 p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold">🤖 OpenAI Rider Support</h2>
@@ -182,19 +118,6 @@ function Page() {
           <Button type="button" variant="outline" className="w-full" onClick={() => { setTopic("OTHER"); setMessage(aiMessage); document.getElementById("rider-support-ticket")?.scrollIntoView({ behavior: "smooth" }); }}>
             Create verified support ticket
           </Button>
-        </Card>
-
-        {/* Emergency & statutory escalation */}
-        <Card className="border-amber-500/30 bg-amber-500/5 p-4">
-          <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
-            <span className="text-lg">⚖️</span>
-            <h2 className="text-sm font-bold tracking-tight">Safety & statutory escalation</h2>
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">Use emergency services for immediate danger; use platform support for operational disputes.</p>
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            <a href="tel:112" className="rounded-lg border border-red-200 bg-red-50 p-2.5 text-xs font-bold text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">🚨 112 Emergency SOS</a>
-            <a href="tel:1930" className="rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-xs font-bold text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">💳 1930 Cyber Fraud</a>
-          </div>
         </Card>
 
         {/* Traditional Ticket Logging */}
