@@ -457,16 +457,19 @@ export class UniversalPlatformManager {
         break;
       }
 
-      case "vercel": {
+      case "cloudflare": {
         const projectName = params.payload.projectName || "orderking-cloud-hub";
-        const deployCommand = `npx vercel --prod --yes --name ${projectName}`;
-        outputData = {
-          projectName,
-          deployCommand,
-          cloudflareDeployCommand: `npx wrangler pages deploy ./dist --project-name ${projectName}`,
-          status: "CLI_DEPLOY_SCRIPT_READY",
-        };
-        summary = `Generated production CLI deploy script for Vercel/Cloudflare. Run in terminal to publish live.`;
+        const token = getEnvOrStorage("CLOUDFLARE_API_TOKEN");
+        const accountId = getEnvOrStorage("CLOUDFLARE_ACCOUNT_ID");
+        if (!token || !accountId) {
+          actionSuccess = false;
+          summary = "Cloudflare credentials are not configured. No deployment was executed.";
+          outputData = { projectName, status: "NOT_CONFIGURED", credentialRequired: "CLOUDFLARE_API_TOKEN" };
+          break;
+        }
+        actionSuccess = false;
+        summary = "Cloudflare credentials are present, but this manager does not execute deployments without an explicit verified deployment adapter.";
+        outputData = { projectName, status: "ADAPTER_REQUIRED", accountId };
         break;
       }
 
