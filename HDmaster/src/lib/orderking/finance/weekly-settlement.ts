@@ -1,16 +1,14 @@
 // @ts-nocheck
 /**
  * Zomato / Swiggy Compatible Weekly Settlement Engine for Order King
- * Standard Indian Food Delivery Cycle:
- * - Cycle: Monday 00:00:00 to Sunday 23:59:59 IST
- * - Payout Day: Wednesday (Disbursed via NEFT/IMPS/Razorpay Route)
+ * Settlement calculation only. Cycle and payout dates must come from verified platform configuration/provider records.
  */
 
 export type WeeklyCyclePeriod = {
   cycleId: string;
   startDate: string; // YYYY-MM-DD (Monday)
   endDate: string;   // YYYY-MM-DD (Sunday)
-  payoutDate: string;// YYYY-MM-DD (Wednesday)
+  payoutDate: string;// YYYY-MM-DD (provider-configured)
   status: "OPEN" | "RECONCILING" | "DISBURSED";
 };
 
@@ -28,12 +26,12 @@ export type RestaurantWeeklySettlement = {
   gstOnCommissionPaise: number;    // 18% GST on commission
   paymentGatewayFeePaise: number;  // ~1.8% PG fee
   gstOnPgFeePaise: number;         // 18% GST on PG fee
-  tcsDeductionPaise: number;       // 1% TCS (CGST Act Section 52)
-  tdsDeductionPaise: number;       // 1% TDS (Income Tax Section 194-O)
+  tcsDeductionPaise: number;       // Provider/tax-engine confirmed amount
+  tdsDeductionPaise: number;       // Provider/tax-engine confirmed amount
   platformReimbursementsPaise: number;
   kingCoinsLiabilityFundedPaise: number;
   netPayablePaise: number;
-  payoutStatus: "PENDING" | "PROCESSING" | "PAID";
+  payoutStatus: "PENDING" | "PROCESSING" | "PAID" | "UNAVAILABLE";
 };
 
 export type RiderWeeklySettlement = {
@@ -100,7 +98,7 @@ export function calculateRestaurantWeeklySettlement(params: {
   platformReimbursementsPaise?: number;
   kingCoinsBurnedPaise?: number;
   commissionBps: number; // e.g. 1200 for 12%
-  pgFeeBps?: number;     // e.g. 180 for 1.8%
+  pgFeeBps?: number;     // Must be supplied by the verified payment provider
 }): RestaurantWeeklySettlement {
   const packaging = params.packagingChargesPaise ?? 0;
   const reimbursements = params.platformReimbursementsPaise ?? 0;
@@ -112,13 +110,12 @@ export function calculateRestaurantWeeklySettlement(params: {
   const gstOnCommission = Math.round((commission * 18) / 100);
 
   // 2. Payment gateway fee & 18% GST on PG fee
-  const pgFeeBps = params.pgFeeBps ?? 180; // 1.8%
+  const pgFeeBps = params.pgFeeBps ?? 0;
   const pgFee = Math.round((params.grossSalesPaise * pgFeeBps) / 10000);
   const gstOnPgFee = Math.round((pgFee * 18) / 100);
 
-  // 3. Indian Statutory Tax Deductions (TCS 1% + TDS 1%)
-  const tcsDeduction = Math.round((netFoodSales * 100) / 10000); // 1% TCS
-  const tdsDeduction = Math.round((netFoodSales * 100) / 10000); // 1% TDS
+  // Statutory deductions are not universally fixed. This calculator leaves them at zero
+  // until a verified tax/settlement engine supplies applicable amounts.
 
   // Total deductions
   const totalDeductions = commission + gstOnCommission + pgFee + gstOnPgFee + tcsDeduction + tdsDeduction;
@@ -129,7 +126,7 @@ export function calculateRestaurantWeeklySettlement(params: {
   return {
     restaurantId: params.restaurantId,
     restaurantName: params.restaurantName,
-    bankAccountNumberMasked: params.bankAccountMasked || "XXXX-XXXX-1234",
+    bankAccountNumberMasked: params.bankAccountMasked || "UNVERIFIED",
     cycle: params.cycle,
     deliveredOrdersCount: params.deliveredOrdersCount,
     grossSalesPaise: params.grossSalesPaise,
@@ -169,8 +166,8 @@ export function calculateRiderWeeklySettlement(params: {
   const surge = params.surgeIncentivesPaise ?? 0;
   const milestone = params.milestoneBonusPaise ?? 0;
   
-  // Real geographic distance pay: Rs 5 per km (500 paise/km) if totalDistanceKm is provided
-  const distancePay = params.distancePayPaise ?? (params.totalDistanceKm ? Math.round(params.totalDistanceKm * 500) : 0);
+  // Distance pay must come from the verified rider-pay policy or settlement ledger.
+  const distancePay = params.distancePayPaise ?? 0;
   
   const gross = params.basePayPaise + distancePay + surge + milestone;
   const cashCollected = params.cashCollectedPaise ?? 0;
@@ -178,7 +175,7 @@ export function calculateRiderWeeklySettlement(params: {
   return {
     riderId: params.riderId,
     riderName: params.riderName,
-    upiIdOrBankMasked: params.upiOrBankMasked || "rider@upi",
+    upiIdOrBankMasked: params.upiOrBankMasked || "UNVERIFIED",
     cycle: params.cycle,
     deliveriesCompleted: params.deliveriesCompleted,
     basePayPaise: params.basePayPaise,
