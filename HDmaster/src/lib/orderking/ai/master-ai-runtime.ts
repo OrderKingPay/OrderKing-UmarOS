@@ -30,6 +30,7 @@ import { calculateFounderRetainedCashVault } from "../finance/founder-vault.ts";
 import { calculateMasterProfitEngine } from "../finance/profit-engine.ts";
 
 import type { Workspace } from "../server/workspace.server.ts";
+import * as crypto from "crypto";
 
 export type MasterAiInput = {
   question: string;
@@ -41,6 +42,7 @@ export type MasterAiInput = {
   approvedCallId?: string;
   approvedCallName?: string;
   approvedCallArgs?: Record<string, unknown>;
+  approvalToken?: string;
 };
 
 export type ToolCallResult = {
@@ -58,6 +60,7 @@ export type PendingApproval = {
   arguments: Record<string, unknown>;
   description: string;
   requiredPermission: string;
+  approvalToken: string;
 };
 
 export type MasterAiRuntimeResult =
@@ -78,6 +81,45 @@ const MAX_TOOL_OUTPUT = 12_000;
 const MAX_QUESTION_LENGTH = 12_000;
 const MAX_MESSAGE_LENGTH = 12_000;
 const MAX_CONVERSATION_MESSAGES = 20;
+const APPROVAL_TOKEN_TTL_MS = 10 * 60 * 1000;
+
+function stableJson(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return "[" + value.map(stableJson).join(",") + "]";
+  const record = value as Record<string, unknown>;
+  return "{" + Object.keys(record).sort().map((k) => JSON.stringify(k) + ":" + stableJson(record[k])).join(",") + "}";
+}
+
+function approvalSecret(): string {
+  const secret = process.env.FOUNDER_APPROVAL_SIGNING_SECRET?.trim();
+  if (!secret) throw new Error("FOUNDER_APPROVAL_SIGNING_SECRET is not configured; governed approval execution is disabled.");
+  return secret;
+}
+
+function issueApprovalToken(ws: Workspace, callId: string, name: string, args: Record<string, unknown>, risk: string): string {
+  const issuedAt = Date.now();
+  const nonce = crypto.randomBytes(16).toString("hex");
+  const argsHash = crypto.createHash("sha256").update(stableJson(args)).digest("hex");
+  const payload = [ws.ctx.orgId, ws.ctx.userId, callId, name, risk, argsHash, String(issuedAt), nonce].join(".");
+  const signature = crypto.createHmac("sha256", approvalSecret()).update(payload).digest("base64url");
+  return Buffer.from(payload, "utf8").toString("base64url") + "." + signature;
+}
+
+function verifyApprovalToken(ws: Workspace, token: string, callId: string, name: string, args: Record<string, unknown>, risk: string): void {
+  const [encoded, signature] = token.split(".");
+  if (!encoded || !signature) throw new Error("Invalid founder approval token");
+  const payload = Buffer.from(encoded, "base64url").toString("utf8");
+  const expected = crypto.createHmac("sha256", approvalSecret()).update(payload).digest("base64url");
+  if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) throw new Error("Invalid founder approval signature");
+  const parts = payload.split(".");
+  if (parts.length !== 8) throw new Error("Malformed founder approval token");
+  const [orgId, userId, tokenCallId, tokenName, tokenRisk, argsHash, issuedAtRaw] = parts;
+  const issuedAt = Number(issuedAtRaw);
+  if (orgId !== ws.ctx.orgId || userId !== ws.ctx.userId || tokenCallId !== callId || tokenName !== name || tokenRisk !== risk) throw new Error("Approval token does not match this action");
+  if (!Number.isFinite(issuedAt) || Date.now() - issuedAt < 0 || Date.now() - issuedAt > APPROVAL_TOKEN_TTL_MS) throw new Error("Founder approval token expired");
+  const expectedArgsHash = crypto.createHash("sha256").update(stableJson(args)).digest("hex");
+  if (argsHash !== expectedArgsHash) throw new Error("Approved arguments were modified");
+}
 
 function toolParameters(spec: MasterAiToolSpec, name: string): Record<string, unknown> {
   const properties: Record<string, unknown> = {
