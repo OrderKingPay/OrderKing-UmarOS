@@ -1,7 +1,7 @@
 // @ts-nocheck
 // Universal Platform Integrator & Connector Hub
 // Connects, forces execution, and safely reports truthful results back to Founder
-// Supports GitHub, Upwork, WhatsApp, Telegram, Stripe, KingPay, Vercel, Supabase, Shopify, and Universal Webhooks
+// Supports GitHub, Upwork, WhatsApp, Telegram, Stripe, KingPay, Cloudflare, Supabase, Shopify, and Universal Webhooks
 // Strict Rule: Zero false simulations. Truthful status reporting based on real credentials & deep-links.
 
 export type PlatformId =
@@ -13,7 +13,6 @@ export type PlatformId =
   | "stripe"
   | "razorpay"
   | "kingpay"
-  | "vercel"
   | "supabase"
   | "shopify"
   | "google"
@@ -156,27 +155,27 @@ export class UniversalPlatformManager {
       },
       {
         id: "kingpay",
-        name: "King Pay 0% Fee UPI Core",
+        name: "King Pay",
         category: "payments",
-        status: "ONLINE", // Fully operational client-side UPI standard
-        description: "Statutory Section 79 compliant zero-fee UPI QR codes and deep-intent links direct to founder VPA.",
+        status: "STANDBY",
+        description: "Internal King Pay control layer. Payment execution requires a verified external payment provider; no client-side payment success is claimed.",
         icon: "QrCode",
         latencyMs: 4,
         lastSyncAt: new Date().toISOString(),
-        capabilities: ["generate_qr", "instant_soundbox_voice", "zero_fee_settle", "meity_subsidy_claim"],
+        capabilities: [],
         isNativeLocal: true,
       },
       {
-        id: "vercel",
-        name: "Vercel & Cloudflare Edge",
+        id: "cloudflare",
+        name: "Cloudflare Pages / Workers",
         category: "cloud",
-        status: getEnvOrStorage("VERCEL_TOKEN") ? "ONLINE" : "STANDBY",
-        description: "1-Click automated edge deployments, custom domains, and terminal CLI deploy commands.",
+        status: getEnvOrStorage("CLOUDFLARE_API_TOKEN") && getEnvOrStorage("CLOUDFLARE_ACCOUNT_ID") ? "ONLINE" : "STANDBY",
+        description: "Approved OrderKing deployment target. Live deployment and domain operations require authorized Cloudflare credentials.",
         icon: "Globe",
         latencyMs: 48,
         lastSyncAt: new Date().toISOString(),
-        capabilities: ["deploy_project", "bind_custom_domain", "purge_edge_cache", "inspect_logs"],
-        credentialRequired: "VERCEL_TOKEN",
+        capabilities: ["deploy_pages", "bind_custom_domain", "purge_edge_cache", "inspect_logs"],
+        credentialRequired: "CLOUDFLARE_API_TOKEN",
       },
       {
         id: "supabase",
@@ -301,12 +300,11 @@ export class UniversalPlatformManager {
 
       case "upwork": {
         const jobTitle = params.payload.jobTitle || "Senior React & Next.js Architecture Specialist";
-        const proposalText = `Dear Hiring Team,\n\nI reviewed your requirements for '${jobTitle}'. As a sovereign full-stack systems architect, I build high-concurrency applications using zero-bloat modern stacks (TypeScript, React 19, Tailwind, Cloudflare Workers). I can guarantee sub-100ms response times and production deployment in 24 hours.\n\nBest regards,\nUmar Habibullah`;
+        const proposalText = `Dear Hiring Team,\n\nI reviewed your requirements for '${jobTitle}'. As a sovereign full-stack systems architect, I build high-concurrency applications using zero-bloat modern stacks (TypeScript, React 19, Tailwind, Cloudflare Workers). I can propose an implementation after confirming scope, integrations, acceptance criteria and delivery timeline.\n\nBest regards,\nUmar Habibullah`;
         outputData = {
           jobTitle,
           status: "PROPOSAL_SYNTHESIZED",
           proposalText,
-          estimatedRate: "$85–$120/hr",
           actionRequired: "Paste proposal into client job posting on Upwork.",
         };
         summary = `High-conversion proposal synthesized for '${jobTitle}'. Ready to submit on Upwork.`;
