@@ -1264,8 +1264,8 @@ Select any module below to **preview standalone source code, download full ZIP p
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Synthesizing Full-Stack Artifacts", status: "COMPLETED", detail: `${deployRes.filesGeneratedCount} files scaffolded with React 19 & Tailwind` },
       { stepNumber: 2, totalSteps: 4, label: "Bundling Standalone Production PWA", status: "COMPLETED", detail: "HTML5/ESM bundle compiled with zero external dependencies" },
-      { stepNumber: 3, totalSteps: 4, label: "Deploying Edge CDN Route", status: "COMPLETED", detail: `Live at ${deployRes.liveUrl} with SSL 100% certified` },
-      { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Vercel & Cloudflare 1-click terminal scripts ready" },
+      { stepNumber: 3, totalSteps: 4, label: "Deploying Edge CDN Route", status: "COMPLETED", detail: `Preview generated at ${deployRes.liveUrl}; no live deployment is claimed` },
+      { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Cloudflare Pages deployment command prepared; execution requires an authorized deployment step" },
     ];
 
     const responseMarkdown = `### 🚀 1-Command Live Deployment Complete
@@ -1276,16 +1276,16 @@ Select any module below to **preview standalone source code, download full ZIP p
 
 \`\`\`bash
 # 1-Click Terminal Deployment Script
-${deployRes.vercelDeployCommand}
+${deployRes.cloudflareDeployCommand}
 \`\`\`
 
-The live standalone preview bundle is compiled and ready for instant preview or direct customer handoff!`;
+A standalone preview bundle is generated. It is not represented as a live production deployment until Cloudflare deployment and verification are completed.`;
 
     return {
       intent: "instant_deploy",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText: `Your project ${deployRes.projectName} has been compiled and deployed live in one command. SSL is active and the production preview is ready.`,
+      voiceSpokenText: `Your project ${deployRes.projectName} has a generated preview. Cloudflare deployment and live verification are still required.`,
       executionSteps,
       actionCard: {
         type: "instant_deploy",
