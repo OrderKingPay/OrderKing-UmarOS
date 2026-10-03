@@ -1265,27 +1265,27 @@ Select any module below to **preview standalone source code, download full ZIP p
       { stepNumber: 1, totalSteps: 4, label: "Synthesizing Full-Stack Artifacts", status: "COMPLETED", detail: `${deployRes.filesGeneratedCount} files scaffolded with React 19 & Tailwind` },
       { stepNumber: 2, totalSteps: 4, label: "Bundling Standalone Production PWA", status: "COMPLETED", detail: "HTML5/ESM bundle compiled with zero external dependencies" },
       { stepNumber: 3, totalSteps: 4, label: "Deploying Edge CDN Route", status: "COMPLETED", detail: `Live at ${deployRes.liveUrl} with SSL 100% certified` },
-      { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Vercel & Cloudflare 1-click terminal scripts ready" },
+      { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Cloudflare Pages deployment command prepared; no deployment executed" },
     ];
 
     const responseMarkdown = `### 🚀 1-Command Live Deployment Complete
 - **Project**: **${deployRes.projectName}**
 - **Live URL**: [\`${deployRes.liveUrl}\`](${deployRes.liveUrl})
-- **Status**: **${deployRes.status}** (SSL Encrypted · CDN Edge: ${deployRes.edgeRegion})
+- **Status**: **${deployRes.status}** (Deployment not executed · Target: Cloudflare Pages · Edge: ${deployRes.edgeRegion})
 - **Files Generated**: **${deployRes.filesGeneratedCount} production files**
 
 \`\`\`bash
 # 1-Click Terminal Deployment Script
-${deployRes.vercelDeployCommand}
+${deployRes.cloudflareDeployCommand}
 \`\`\`
 
-The live standalone preview bundle is compiled and ready for instant preview or direct customer handoff!`;
+A sandbox preview bundle is available. Production deployment requires the governed Cloudflare deployment step and has not been executed here.`;
 
     return {
       intent: "instant_deploy",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText: `Your project ${deployRes.projectName} has been compiled and deployed live in one command. SSL is active and the production preview is ready.`,
+      voiceSpokenText: `Your project ${deployRes.projectName} has a generated sandbox preview. Production deployment was not executed.`,
       executionSteps,
       actionCard: {
         type: "instant_deploy",
