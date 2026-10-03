@@ -9,20 +9,8 @@ import type {
 } from "../ai/supreme-founder-ai-core";
 
 export async function getCuratedClientLeadsFromDb(): Promise<ClientLead[]> {
-  const sql = await getSql();
-  const rows = await sql`SELECT * FROM founder_client_leads ORDER BY id ASC`;
-  return rows.map(r => ({
-    id: String(r.id),
-    businessName: String(r.business_name),
-    category: String(r.category) as any,
-    location: String(r.location),
-    monthlyRevenueEst: String(r.monthly_revenue_est),
-    painPoint: String(r.pain_point),
-    projectBudget: Number(r.project_budget),
-    status: String(r.status) as any,
-    suggestedSolution: String(r.suggested_solution),
-    potentialGmvGrowth: String(r.potential_gmv_growth)
-  }));
+  // Static seed opportunities are not presented as verified external leads.
+  return [];
 }
 
 export async function getUniversalPlatformsFromDb(): Promise<ConnectedPlatform[]> {
@@ -34,50 +22,28 @@ export async function getUniversalPlatformsFromDb(): Promise<ConnectedPlatform[]
     category: String(r.category) as any,
     description: String(r.description),
     icon: String(r.icon),
-    status: String(r.status) as any,
-    apiLatencyMs: Number(r.api_latency_ms),
-    lastSyncTime: String(r.last_sync_time),
+    status: "STANDBY",
+    apiLatencyMs: 0,
+    lastSyncTime: "NOT_VERIFIED",
     authMethod: String(r.auth_method),
-    guardrailProtection: Array.isArray(r.guardrail_protection) ? r.guardrail_protection as string[] : [],
-    supportedActions: Array.isArray(r.supported_actions) ? r.supported_actions as string[] : []
+    guardrailProtection: {
+      sandboxVerified: false,
+      zeroDataLeak: false,
+      rollbackSnapshotReady: false,
+      rateLimitSafe: false,
+    },
+    supportedActions: [],
   })) as unknown as ConnectedPlatform[];
 }
 
 export async function getCuratedRemoteGigsFromDb(): Promise<RemoteContractGig[]> {
-  const sql = await getSql();
-  const rows = await sql`SELECT * FROM founder_remote_gigs ORDER BY id ASC`;
-  return rows.map(r => ({
-    id: String(r.id),
-    title: String(r.title),
-    clientLocation: String(r.client_location),
-    hourlyRateUsd: Number(r.hourly_rate_usd),
-    fixedBudgetUsd: r.fixed_budget_usd ? Number(r.fixed_budget_usd) : undefined,
-    duration: String(r.duration),
-    skillsRequired: Array.isArray(r.skills_required) ? r.skills_required as string[] : [],
-    description: String(r.description),
-    matchScore: Number(r.match_score),
-    platform: String(r.platform),
-    proposalTemplate: String(r.proposal_template)
-  })) as unknown as RemoteContractGig[];
+  // Seeded contract records are not verified live marketplace opportunities.
+  return [];
 }
 
 export async function getSeparableModulesFromDb(): Promise<SeparableModule[]> {
-  const sql = await getSql();
-  const rows = await sql`SELECT * FROM founder_separable_modules ORDER BY id ASC`;
-  return rows.map(r => ({
-    id: String(r.id),
-    name: String(r.name),
-    tagline: String(r.tagline),
-    description: String(r.description),
-    category: String(r.category),
-    standaloneRoute: String(r.standalone_route),
-    subdomainUrl: String(r.subdomain_url),
-    filesCount: Number(r.files_count),
-    bundleSizeKb: Number(r.bundle_size_kb),
-    techStack: Array.isArray(r.tech_stack) ? r.tech_stack as string[] : [],
-    standalonePackageJson: typeof r.standalone_package_json === 'object' && r.standalone_package_json !== null ? r.standalone_package_json as any : {},
-    sampleComponentCode: String(r.sample_component_code)
-  })) as unknown as SeparableModule[];
+  // Static module catalog records are not evidence of deployed standalone products.
+  return [];
 }
 
 export async function getEnterpriseBlueprintsFromDb(): Promise<Record<string, EnterpriseProjectBlueprint>> {
