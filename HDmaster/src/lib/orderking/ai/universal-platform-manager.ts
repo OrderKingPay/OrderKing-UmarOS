@@ -1,7 +1,7 @@
 // @ts-nocheck
 // Universal Platform Integrator & Connector Hub
 // Connects, forces execution, and safely reports truthful results back to Founder
-// Supports GitHub, Upwork, WhatsApp, Telegram, Stripe, KingPay, Vercel, Supabase, Shopify, and Universal Webhooks
+// Supports GitHub, Upwork, WhatsApp, Telegram, Stripe, KingPay, Cloudflare Pages, Supabase, Shopify, and Universal Webhooks
 // Strict Rule: Zero false simulations. Truthful status reporting based on real credentials & deep-links.
 
 export type PlatformId =
@@ -13,7 +13,7 @@ export type PlatformId =
   | "stripe"
   | "razorpay"
   | "kingpay"
-  | "vercel"
+  | "cloudflare"
   | "supabase"
   | "shopify"
   | "google"
@@ -53,11 +53,7 @@ function getEnvOrStorage(key: string): string | undefined {
       return process.env[key];
     }
   } catch {}
-  try {
-    if (typeof window !== "undefined" && window?.localStorage) {
-      return window.localStorage.getItem(key) || undefined;
-    }
-  } catch {}
+
   return undefined;
 }
 
@@ -167,16 +163,16 @@ export class UniversalPlatformManager {
         isNativeLocal: true,
       },
       {
-        id: "vercel",
-        name: "Vercel & Cloudflare Edge",
+        id: "cloudflare",
+        name: "Cloudflare Pages / Workers",
         category: "cloud",
-        status: getEnvOrStorage("VERCEL_TOKEN") ? "ONLINE" : "STANDBY",
-        description: "1-Click automated edge deployments, custom domains, and terminal CLI deploy commands.",
+        status: process.env.CLOUDFLARE_API_TOKEN?.trim() ? "ONLINE" : "STANDBY",
+        description: "Approved deployment target for OrderKing production hosting.",
         icon: "Globe",
-        latencyMs: 48,
+        latencyMs: 0,
         lastSyncAt: new Date().toISOString(),
-        capabilities: ["deploy_project", "bind_custom_domain", "purge_edge_cache", "inspect_logs"],
-        credentialRequired: "VERCEL_TOKEN",
+        capabilities: ["deploy_project", "bind_custom_domain", "inspect_logs"],
+        credentialRequired: "CLOUDFLARE_API_TOKEN",
       },
       {
         id: "supabase",
@@ -459,16 +455,15 @@ export class UniversalPlatformManager {
         break;
       }
 
-      case "vercel": {
+      case "cloudflare": {
         const projectName = params.payload.projectName || "orderking-cloud-hub";
-        const deployCommand = `npx vercel --prod --yes --name ${projectName}`;
+        const deployCommand = `npx wrangler pages deploy ./dist --project-name ${projectName}`;
         outputData = {
           projectName,
-          deployCommand,
-          cloudflareDeployCommand: `npx wrangler pages deploy ./dist --project-name ${projectName}`,
-          status: "CLI_DEPLOY_SCRIPT_READY",
+          cloudflareDeployCommand: deployCommand,
+          status: process.env.CLOUDFLARE_API_TOKEN?.trim() ? "CLI_DEPLOY_SCRIPT_READY" : "BLOCKED_PROVIDER_NOT_CONFIGURED",
         };
-        summary = `Generated production CLI deploy script for Vercel/Cloudflare. Run in terminal to publish live.`;
+        summary = process.env.CLOUDFLARE_API_TOKEN?.trim() ? `Generated the approved Cloudflare Pages deploy command. Execution was not performed by this adapter.` : `Cloudflare API token is not configured; deployment is blocked.`;
         break;
       }
 
@@ -622,7 +617,6 @@ export interface EcosystemApp {
 export const CORE_ECOSYSTEM_APPS: EcosystemApp[] = [
   // DevOps & Cloud Infrastructure
   { id: "app-github", name: "GitHub Enterprise", category: "devops", description: "Repository orchestration, branch management, actions CI/CD", iconName: "Github", authMethod: "OAuth 2.0", status: "CONNECTED", actions: ["create_repo", "push_branch", "create_pr"] },
-  { id: "app-vercel", name: "Vercel Edge Platform", category: "devops", description: "Instant serverless deploy, custom domains, edge functions", iconName: "Globe", authMethod: "API Key", status: "CONNECTED", actions: ["deploy_prod", "purge_cache"] },
   { id: "app-cloudflare", name: "Cloudflare Zero Trust & Pages", category: "devops", description: "Edge CDN, DDoS mitigation, DNS records, Workers KV", iconName: "Shield", authMethod: "API Key", status: "CONNECTED", actions: ["deploy_pages", "update_dns"] },
   { id: "app-docker", name: "Docker Hub Registry", category: "devops", description: "Container image compilation, automated tags, vulnerability scan", iconName: "Server", authMethod: "API Key", status: "CONNECTED", actions: ["push_image", "scan_cve"] },
   { id: "app-aws", name: "AWS Cloud Infrastructure", category: "devops", description: "S3 bucket storage, Lambda serverless, RDS database clusters", iconName: "Server", authMethod: "HMAC Token", status: "CONNECTED", actions: ["sync_s3", "invoke_lambda"] },

@@ -1,6 +1,6 @@
 
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Heart, Leaf } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -29,6 +29,11 @@ function RestaurantPage() {
   const location = useLocationStore((s) => s.location);
   const user = useCurrentUser();
   const addItem = useCartStore((s) => s.addItem);
+  const favouriteMutation = useMutation({
+    mutationFn: () => toggleFavourite({ data: { restaurantId: restaurant?.card.id ?? "" } }),
+    onError: (err) => toast.error(err instanceof Error ? err.message : "Could not update favourites."),
+    onSuccess: (result) => toast.success(result.favourite ? "Added to favourites." : "Removed from favourites."),
+  });
   const replaceAndAdd = useCartStore((s) => s.replaceAndAdd);
   const [custom, setCustom] = useState<MenuItemView | null>(null);
   const [replaceWith, setReplaceWith] = useState<{ name: string; line: CartItem } | null>(null);
@@ -128,7 +133,8 @@ function RestaurantPage() {
                   type="button"
                   className="grid size-11 place-items-center rounded-full bg-surface"
                   aria-label={t("account.favourites")}
-                  onClick={() => void toggleFavourite({ data: { restaurantId: restaurant.card.id } })}
+                  disabled={favouriteMutation.isPending || !restaurant}
+                  onClick={() => favouriteMutation.mutate()}
                 >
                   <Heart className="size-5" />
                 </button>
@@ -147,39 +153,6 @@ function RestaurantPage() {
               <p className="mt-2 text-sm text-warn">{t("restaurant.sampleNotice")}</p>
             ) : null}
             {!restaurant.card.open ? <p className="mt-2 text-sm text-danger">{t("restaurant.closedNotice")}</p> : null}
-
-            {/* OrderKing VIP Gold Pass Banner (Zomato Gold / Swiggy One equivalent) */}
-            <div className="mt-3 rounded-[var(--radius-xl)] border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-surface to-amber-500/5 p-3.5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex size-8 items-center justify-center rounded-lg bg-amber-500/20 text-base">
-                    👑
-                  </span>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-display text-sm font-bold text-fg">OrderKing VIP Member</span>
-                      <span className="rounded-full bg-amber-500/20 px-2 py-0.2 text-[10px] font-bold text-amber-800 dark:text-amber-200">
-                        Active Perks
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted">
-                      Free Delivery on orders above ₹199 + Extra 15% OFF (use code <span className="font-mono font-bold text-primary">VIPGOLD</span>)
-                    </p>
-                  </div>
-                </div>
-                <Badge tone="primary">VIP Priority</Badge>
-              </div>
-            </div>
-
-            {/* FSSAI Hygiene & Kitchen Safety Audit Card */}
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-surface-2/60 px-3 py-2 text-xs">
-              <div className="flex items-center gap-2 text-muted">
-                <span className="font-semibold text-fg">🛡️ FSSAI Lic: 10321999000124</span>
-                <span>•</span>
-                <span className="text-emerald-600 font-medium">⭐ 4.8/5 Clean Kitchen Verified</span>
-              </div>
-              <span className="text-[11px] text-muted">🌡️ Chef Temp: 98.4°F (Checked Today)</span>
-            </div>
 
             <input
               value={menuQ}
@@ -236,15 +209,23 @@ function RestaurantPage() {
                 type="button"
                 onClick={() => {
                   const url = typeof window !== "undefined" ? window.location.href : "";
+                  if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+                    void navigator.share({
+                      title: restaurant.card.name,
+                      text: `View ${restaurant.card.name} on OrderKing`,
+                      url,
+                    }).catch(() => undefined);
+                    return;
+                  }
                   if (typeof navigator !== "undefined" && navigator.clipboard) {
-                    navigator.clipboard.writeText(url);
-                    toast.success("Group order link copied! Share with friends to order together.");
+                    void navigator.clipboard.writeText(url);
+                    toast.success("Restaurant link copied.");
                   }
                 }}
-                className="flex shrink-0 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20"
+                className="flex shrink-0 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
               >
-                <span>👥</span>
-                Group Order
+                <span>↗</span>
+                Share Restaurant
               </button>
             </div>
           </div>
@@ -292,15 +273,9 @@ function RestaurantPage() {
                         </div>
                         <p className="line-clamp-2 text-sm text-muted">{it.description}</p>
                         <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted">
-                          <span className="rounded bg-surface-2 px-1.5 py-0.5 font-medium">
-                            🔥 {it.veg ? "320-380 kcal" : "420-520 kcal"}
-                          </span>
-                          <span className="rounded bg-surface-2 px-1.5 py-0.5 font-medium">
-                            💪 {it.veg ? "12g Protein" : "26g Protein"}
-                          </span>
-                          <span className="text-[10px] text-emerald-600 font-semibold">
-                            {it.veg ? "🌱 100% Pure Veg" : "🍗 Halal Certified"}
-                          </span>
+                          {it.veg ? (
+                            <span className="text-[10px] text-emerald-600 font-semibold">🌱 Vegetarian</span>
+                          ) : null}
                         </div>
                         <p className="mt-1.5 tabular-nums text-sm font-semibold">{formatPaise(it.basePricePaise, { locale })}</p>
                       </div>
@@ -317,28 +292,6 @@ function RestaurantPage() {
               </section>
             );
           })}
-          {/* Zomato-standard FSSAI License & Food Safety Regulatory Card */}
-          <div className="mx-4 my-8 rounded-[var(--radius-lg)] border border-border bg-surface p-4 text-xs text-muted space-y-3 shadow-sm">
-            <div className="flex items-center gap-3 border-b border-border pb-3">
-              <div className="flex h-8 w-14 items-center justify-center rounded border border-border bg-white px-1 text-slate-800 font-extrabold tracking-tight text-[11px] shadow-sm">
-                fssai
-              </div>
-              <div>
-                <p className="font-semibold text-fg text-xs">
-                  License No. {restaurant.card.id.slice(0, 4).replace(/\D/g, "1") || "10"}321001000{restaurant.card.id.slice(-3).replace(/\D/g, "9") || "452"}
-                </p>
-                <p className="text-[11px] text-muted">Registered FSSAI Kitchen Partner</p>
-              </div>
-            </div>
-            <div className="space-y-1">
-              <p className="font-medium text-fg">{restaurant.card.name}</p>
-              <p>{restaurant.addressLine || restaurant.area || "Authorized Commercial Kitchen"}</p>
-            </div>
-            <div className="border-t border-border pt-2 text-[11px] leading-relaxed text-muted">
-              OrderKing acts as a technology platform connecting customers with verified restaurants. Food preparation, hygiene standards, packaging integrity, and statutory licenses are managed directly by the licensed food business operator.
-            </div>
-          </div>
-
           <CustomizeDialog
             item={custom}
             open={Boolean(custom)}

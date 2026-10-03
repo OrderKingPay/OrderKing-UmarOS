@@ -44,7 +44,8 @@ export class GoogleGeminiProvider implements AIProvider {
   async chat(input: ChatRequest): Promise<ChatResponse> {
     this.ensureConfigured();
     const start = Date.now();
-    const model = input.model || "gemini-2.5-pro";
+    const model = input.model || process.env.GEMINI_MODEL?.trim();
+    if (!model) throw new Error("GEMINI_MODEL is not configured.");
 
     const contents = input.messages
       .filter((m) => m.role !== "system")
@@ -105,7 +106,8 @@ export class GoogleGeminiProvider implements AIProvider {
 
   async *stream(input: ChatRequest): AsyncIterable<ChatChunk> {
     this.ensureConfigured();
-    const model = input.model || "gemini-2.5-pro";
+    const model = input.model || process.env.GEMINI_MODEL?.trim();
+    if (!model) throw new Error("GEMINI_MODEL is not configured.");
 
     const contents = input.messages
       .filter((m) => m.role !== "system")

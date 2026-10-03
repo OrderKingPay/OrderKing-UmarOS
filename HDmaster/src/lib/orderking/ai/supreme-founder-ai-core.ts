@@ -406,26 +406,26 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
     const inspection = mediaStorageVault.inspectSystemStorage();
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Scanning Disk & Memory Quotas", status: "COMPLETED", detail: `Scanned ${inspection.formattedTotalSize} across temporary files` },
-      { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Guarantee", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
-      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "100x cleaner than browser cache tools active" },
+      { stepNumber: 2, totalSteps: 4, label: "Checking Protected Asset Configuration", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
+      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "Purifier controls prepared for reviewed cleanup" },
       { stepNumber: 4, totalSteps: 4, label: "Performance Optimizer Ready", status: "COMPLETED", detail: `Current Speed Score: ${inspection.speedOptimizationScore}%` },
     ];
 
-    const responseMarkdown = `### 🧹 Sovereign Cache & Storage Purifier Armed (100x Cleaner)
+    const responseMarkdown = `### 🧹 Sovereign Cache & Storage Purifier Ready
 - **Total Temporary Storage**: **${inspection.formattedTotalSize}** (${inspection.itemCount} cached items)
 - **Generated Media Footprint**: ${(inspection.breakdown.generatedImagesBytes / (1024 * 1024)).toFixed(1)} MB Images · ${(inspection.breakdown.generatedVideosBytes / (1024 * 1024)).toFixed(1)} MB Videos
 - **Current Performance Score**: **${inspection.speedOptimizationScore}%**
 
 > [!IMPORTANT]
-> **🛡️ 100% Core Protection Shield**: Zero danger to critical assets. Your verified Client Leads, King Pay UPI Invoices, MSA Contracts, and Founder Vault Keys are **permanently locked & protected**.
+> **🛡️ Protected Asset Configuration**: Zero danger to critical assets. Protection follows the inspected exclusions and configured safeguards; no blanket zero-risk guarantee is asserted.
 
-Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and boost engine performance by 100x!`;
+Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and review the inspected items before cleanup; no fixed performance multiplier is guaranteed.`;
 
     const voiceSpokenText = isHindi
       ? `Sovereign Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
       : isBengali
-      ? `Sovereign Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Apnar client leads ebong invoices 100% safe.`
-      : `Sovereign Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Your client leads and invoices are 100% protected and safe.`;
+      ? `Sovereign Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Protection status depends on inspected exclusions.`
+      : `Sovereign Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Protection status follows the inspected exclusions and configured safeguards.`;
 
     return {
       intent: "storage_purifier",
@@ -478,7 +478,7 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent cloud & local storage indexed" },
     ];
 
-    const responseMarkdown = `### 🎨 Supreme AI Image Generated (100% Free & Unlimited)
+    const responseMarkdown = `### 🎨 Supreme AI Image Generation Result
 - **Prompt**: *"${rawPrompt}"*
 - **Resolution**: **1024 × 1024 (Ultra HD)** | **Cost**: **$0.00 (Unlimited Forever)**
 - **Vault Status**: Indexed in **HD Master Media Vault** (ready to download, enlarge, or embed in client pitch decks).
@@ -488,10 +488,10 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
 You can download this image, copy its direct CDN link, or command further edits below!`;
 
     const voiceSpokenText = isHindi
-      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Yeh 100% free hai aur aapke media vault me save ho gaya hai.`
+      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Provider availability, limits, and storage depend on the configured service.`
       : isBengali
-      ? `Ami apnar jonno high-resolution AI image toiri korechi. Eta 100% free ebong apnar media vault e save hoyeche.`
-      : `I have generated your high-resolution AI image. It is 100% free with unlimited generation capacity and has been saved to your Media Vault.`;
+      ? `Ami apnar jonno high-resolution AI image toiri korechi. Provider availability, limits, and storage depend on the configured service.`
+      : `I have generated your high-resolution AI image. Pricing, limits, and storage status depend on the configured provider.`;
 
     return {
       intent: "media_generation",
@@ -607,7 +607,7 @@ The video is ready for playback below with full audio-visual motion capabilities
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 5, label: "Scanning Market Radar", status: "COMPLETED", detail: "Scanned 14 local food brands in Karimganj & Silchar" },
       { stepNumber: 2, totalSteps: 5, label: "Isolating High-Margin Lead", status: "COMPLETED", detail: `Identified ${lead.businessName} (GMV: ₹18.5L/mo, Loss: 28% to Swiggy)` },
-      { stepNumber: 3, totalSteps: 5, label: "Compiling Turnkey Pitch", status: "COMPLETED", detail: "Generated 0% Commission & Price Parity ROI calculation" },
+      { stepNumber: 3, totalSteps: 5, label: "Compiling Turnkey Pitch", status: "COMPLETED", detail: "Generated Commission and pricing assumptions prepared for review" },
       { stepNumber: 4, totalSteps: 5, label: "Minting Advance Invoice", status: "COMPLETED", detail: `50% Advance Lock: ₹${invoice.advanceRequiredInr.toLocaleString("en-IN")} via King Pay UPI` },
       { stepNumber: 5, totalSteps: 5, label: "Deploying Edge Preview", status: "COMPLETED", detail: "Client sandbox ready at https://royal-darbar.orderking.in" },
     ];
@@ -659,7 +659,7 @@ Ready to lock this contract and receive the advance payment immediately into you
       { stepNumber: 1, totalSteps: 4, label: "Scanning Remote Radar", status: "COMPLETED", detail: "Scanned Upwork Enterprise, Toptal, and US direct clients" },
       { stepNumber: 2, totalSteps: 4, label: "Filtering $100+/hr Contracts", status: "COMPLETED", detail: `Isolated ${gig.title} paying $${gig.hourlyRateUsd}/hr` },
       { stepNumber: 3, totalSteps: 4, label: "Tailoring Proof-of-Work", status: "COMPLETED", detail: "Linked live double-entry ledger & sub-50ms PGlite state machine" },
-      { stepNumber: 4, totalSteps: 4, label: "Synthesizing Bid Proposal", status: "COMPLETED", detail: "Ready to submit with 85%+ interview conversion guarantee" },
+      { stepNumber: 4, totalSteps: 4, label: "Synthesizing Bid Proposal", status: "COMPLETED", detail: "Ready to submit; conversion outcome is not guaranteed" },
     ];
 
     const responseMarkdown = `### 💼 High-Paid Remote Contract Match: **${gig.title}**
@@ -673,7 +673,7 @@ Ready to lock this contract and receive the advance payment immediately into you
 \`\`\`markdown
 ${gig.proposalTemplate}
 \`\`\`
-- **Strategy**: Direct proof of work showing OrderKing's live double-entry ledger and sub-50ms PGlite state machine. Guarantees 85%+ interview conversion.`;
+- **Strategy**: Direct proof of work showing OrderKing's live double-entry ledger and sub-50ms PGlite state machine. Provides a conversion strategy; interview outcomes are not guaranteed.`;
 
     const voiceSpokenText = isHindi
       ? `Aapke liye ek $${gig.hourlyRateUsd} prati ghanta ka high-paying remote contract match hua hai. Iski fixed value lagbhag $${gig.fixedBudgetUsd} dollar hai. Maine custom proposal generate kar diya hai.`
@@ -776,7 +776,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
       { stepNumber: 1, totalSteps: 4, label: "Compiling Legal Invoice", status: "COMPLETED", detail: `Invoice #${inv.invoiceNumber} generated with 18% GST allocation` },
       { stepNumber: 2, totalSteps: 4, label: "Generating King Pay UPI Deep-Link", status: "COMPLETED", detail: `50% Advance Lock (₹${inv.advanceRequiredInr.toLocaleString("en-IN")})` },
       { stepNumber: 3, totalSteps: 4, label: "Encoding Dynamic QR Matrix", status: "COMPLETED", detail: "Compatible with GPay, PhonePe, Paytm, BHIM, CRED" },
-      { stepNumber: 4, totalSteps: 4, label: "Verifying Section 79 Protection", status: "COMPLETED", detail: "Direct founder bank settlement with 0% gateway cut" },
+      { stepNumber: 4, totalSteps: 4, label: "Verifying Section 79 Protection", status: "COMPLETED", detail: "Configured payment settlement requires provider verification" },
     ];
 
     const responseMarkdown = `### 💵 Instant Founder Invoice & King Pay UPI Link Generated
@@ -788,7 +788,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
 
 ---
 > [!NOTE]
-> **Zero Gateway Cuts**: Payments made via this link or QR code deposit 100% of the funds straight into your designated bank account with zero intermediary commission fees.`;
+> **Payment Terms**: The configured provider, settlement destination, fees, and fund flow must be verified before payment is requested.`;
 
     const voiceSpokenText = isHindi
       ? `Aapke liye ₹${inv.amountInr.toLocaleString("en-IN")} ka direct UPI invoice generate ho gaya hai. 50% advance payment sidhe aapke bank account me transfer hoga.`
@@ -876,7 +876,7 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
     };
   }
 
-  // 2. World-Class Fastest Video & Image Creation & Editing Studio
+  // 2. Media generation & editing
   if (
     q.includes("edit video") ||
     q.includes("create video") ||
@@ -895,168 +895,26 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
     q.includes("aspect ratio") ||
     q.includes("subtitles")
   ) {
-    const isLongForm = q.includes("long") || q.includes("documentary") || q.includes("15 min") || q.includes("30 min") || q.includes("10 min");
-    const isReel = q.includes("reel") || q.includes("9:16") || q.includes("tiktok") || q.includes("short");
-    const aspectRatio: VideoAspectRatio = isReel ? "9:16" : q.includes("1:1") ? "1:1" : q.includes("21:9") ? "21:9" : "16:9";
-    const duration: VideoDurationPreset = isLongForm ? "10m" : isReel ? "30s" : "60s";
-
-    const promptText = query
-      .replace(/edit video( of)?/i, "")
-      .replace(/create video( of)?/i, "")
-      .replace(/fastest video( of)?/i, "")
-      .replace(/long video( of)?/i, "")
-      .trim() || "Ultra-realistic cinematic commercial presentation of OrderKing 15-minute delivery ecosystem with 3D CGI HUD graphics";
-
-    const videoConfig: VideoEditorStudioConfig = {
-      id: `vid-studio-${Date.now()}`,
-      title: promptText.slice(0, 50),
-      prompt: promptText,
-      aspectRatio,
-      duration,
-      resolution: "4k_60fps",
-      voiceover: "young_female_aria",
-      voiceoverLanguage: isHindi ? "hi-IN" : isBengali ? "bn-IN" : "en-IN",
-      autoSubtitles: true,
-      colorGrade: "cinematic_hdr",
-      fps: 60,
-      videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4",
-      thumbnailUrl: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1080&auto=format&fit=crop",
-      isLongForm,
-      exportFormat: "MP4_H265",
-      renderSpeedMultiplier: "100,000x Realtime WebCodecs Turbo (World's #1 Fastest)",
-      commercialRightsCertified: true,
-    };
-
-    // Auto-save to media vault
-    mediaStorageVault.addItem({
-      type: "video",
-      title: `[${aspectRatio}] ${videoConfig.title}`,
-      prompt: promptText,
-      url: videoConfig.videoUrl,
-      thumbnailUrl: videoConfig.thumbnailUrl,
-      sizeBytes: isLongForm ? 48500000 : 9200000,
-      mimeType: "video/mp4",
-    });
-
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Activating Sovereign Neural Video Engine", status: "COMPLETED", detail: "Allocated WebCodecs hardware rendering cluster with 60FPS precision" },
-      { stepNumber: 2, totalSteps: 5, label: `Configuring Frame Canvas [${aspectRatio}]`, status: "COMPLETED", detail: `Target: ${aspectRatio} · Resolution: 4K Ultra HD · Duration: ${duration}` },
-      { stepNumber: 3, totalSteps: 5, label: "Acoustic Voiceover & Subtitles Synthesis", status: "COMPLETED", detail: "Voice: Aria Ultra-Realistic Female · Dynamic animated karaoke subtitles generated" },
-      { stepNumber: 4, totalSteps: 5, label: "Applying 8K Cinematic HDR Color Grade", status: "COMPLETED", detail: "Dynamic range balanced, volumetric motion blur applied" },
-      { stepNumber: 5, totalSteps: 5, label: "Encoding at 100,000x Realtime Speed", status: "COMPLETED", detail: "World #1 fastest export · Zero token charges · Ready in Media Vault" },
-    ];
-
-    const responseMarkdown = `### 🎬 World-Class Fastest Video & Image Creation Studio
-- **Project**: **"${promptText}"**
-- **Aspect Ratio**: **${aspectRatio}** (${isReel ? "Vertical Reel / Shorts" : aspectRatio === "16:9" ? "Cinematic Widescreen (YouTube/Commercial)" : aspectRatio})
-- **Duration**: **${duration}** (${isLongForm ? "Long-Form Commercial Presentation" : "High-Impact Commercial Spot"})
-- **Resolution**: **4K Ultra HD (60 FPS)** | **Export Pipeline**: **100,000x Turbo WebCodecs**
-- **Acoustic Voiceover**: Ultra-realistic Young Female Voice (\`${videoConfig.voiceoverLanguage}\`) with **Auto-Animated Subtitles**.
-- **Commercial Rights**: **100% Verified Commercial License** (Ready for client pitches, TV broadcast, or social ads).
-
-Your studio controls, aspect ratio switcher, timeline duration, and instant 4K preview player are loaded below!`;
-
-    const voiceSpokenText = isHindi
-      ? `Aapka video aur image creation studio ready hai. Maine ${aspectRatio} aspect ratio aur 4K quality me render initiate kar diya hai. Auto-subtitles aur young female voiceover enabled hain.`
-      : isBengali
-      ? `Apnar video ebong image studio ready. Ami ${aspectRatio} aspect ratio ebong 4K quality te render shuru korechi. Auto-subtitles ebong voiceover enabled ache.`
-      : `Your world-class video studio is armed. Rendered in ${aspectRatio} aspect ratio at 4K 60FPS with ultra-realistic young female narration and dynamic animated subtitles. Ready to edit or export.`;
+    const responseMarkdown = "### 🎬 Media Studio\n- **Status**: **EXTERNAL_MEDIA_PROVIDER_REQUIRED**\n- **Request**: **" + query + "**\n- No generated video/image, render speed, commercial-license status, or storage result is claimed by this handler.\n- Connect an authorized media-generation/rendering provider before production output is offered.\n\nProduction media output must come from the configured provider with its actual usage, pricing, licensing and storage metadata.";
 
     return {
-      intent: "video_editor_studio",
+      intent: "media_studio",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
+      voiceSpokenText: isHindi
+        ? "Media studio ke liye verified external provider configuration zaroori hai."
+        : isBengali
+        ? "Media studio er jonno verified external provider configuration proyojon."
+        : "The media studio requires a verified external provider before it can claim or store generated output.",
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 1, label: "Checking Media Provider", status: "BLOCKED", detail: "No verified production media-generation provider is connected." },
+      ],
       actionCard: {
-        type: "video_editor_studio",
-        data: videoConfig,
+        type: "media_provider_required",
+        data: { configured: false, query },
       },
     };
   }
-
-  if (q.includes("image") || q.includes("video") || q.includes("studio") || q.includes("media") || q.includes("generate image") || q.includes("generate video")) {
-    const isVideo = q.includes("video");
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Booting AI Media Studio", status: "COMPLETED", detail: "Allocated supreme GPU rendering cluster" },
-      { stepNumber: 2, totalSteps: 4, label: "Processing Prompt Parameters", status: "COMPLETED", detail: `Synthesizing ${isVideo ? "high-fidelity video stream" : "hyper-realistic image array"}` },
-      { stepNumber: 3, totalSteps: 4, label: "Applying Unlimited Free Tier", status: "COMPLETED", detail: "Bypassed standard token limits for founder" },
-      { stepNumber: 4, totalSteps: 4, label: "Saving to Media Vault", status: "COMPLETED", detail: "Artifacts securely cached in Sovereign Memory" },
-    ];
-
-    const promptText = query.replace(/generate image of/i, "").replace(/generate video of/i, "").replace(/create image of/i, "").trim() || "A hyper-realistic futuristic cyberpunk cityscape with neon lights and flying cars";
-    const imageUrl = "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop";
-
-    const responseMarkdown = `### 🎨 Supreme AI ${isVideo ? "Video" : "Image"} Studio Execution
-- **Asset Type**: ${isVideo ? "Video Generation" : "Image Synthesis"}
-- **Prompt Extracted**: "${promptText}"
-- **Billing**: **Unlimited Free (Founder Tier)**
-- **Status**: Rendered and cached locally to Media Vault.
-
-You can preview and save the generated ${isVideo ? "video" : "image"} directly using the action card below.`;
-
-    const voiceSpokenText = isHindi
-      ? `Aapke command ke anusar, maine AI Studio me ${isVideo ? "video" : "image"} generate kar diya hai. Yeh unlimited free hai aur Media Vault me save karne ke liye ready hai.`
-      : isBengali
-      ? `Apnar command onujayi, ami AI Studio te ${isVideo ? "video" : "image"} generate korechi. Eta unlimited free ebong Media Vault e save korar jonno ready ache.`
-      : `I have generated your requested ${isVideo ? "video" : "image"} using the Supreme AI Studio. It is rendered with unlimited free execution and is ready to be saved to the Media Vault.`;
-
-    return {
-      intent: "media_generation",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "image_video_studio",
-        data: {
-          prompt: promptText,
-          type: isVideo ? "video" : "image",
-          generatedUrl: imageUrl
-        }
-      }
-    };
-  }
-
-  if (q.includes("cache") || q.includes("purify") || q.includes("purifier") || q.includes("scan disk") || q.includes("purge")) {
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Booting Sovereign Cache Purifier", status: "COMPLETED", detail: "Initializing deep system scan" },
-      { stepNumber: 2, totalSteps: 4, label: "Scanning Temporary Files", status: "COMPLETED", detail: "Analyzing Next.js caches, Vite build artifacts, and local storage" },
-      { stepNumber: 3, totalSteps: 4, label: "Evaluating Protected Core", status: "COMPLETED", detail: "Isolating critical production assets & DB instances (0% Risk)" },
-      { stepNumber: 4, totalSteps: 4, label: "Purge Ready", status: "COMPLETED", detail: "Awaiting final confirmation for 1-click purge" },
-    ];
-
-    const responseMarkdown = `### 🛡️ Sovereign Cache Purifier Scan Complete
-- **Status**: Scan successful. Protected Core guarantee is **ACTIVE**.
-- **Found**: 14,208 redundant temporary files across node_modules and .next cache.
-- **Potential Free Space**: **4.2 GB**
-- **Safety Guarantee**: 100% safe to purge. Critical source code and production databases are strictly isolated.
-
-Use the action card below to execute the 1-click purge.`;
-
-    const voiceSpokenText = isHindi
-      ? `Sovereign Cache Purifier ne disk scan complete kar liya hai. 4 point 2 GB space free kiya ja sakta hai. Protected core guarantee active hai, isliye purge karna bilkul safe hai.`
-      : isBengali
-      ? `Sovereign Cache Purifier disk scan complete koreche. 4 point 2 GB space free kora jabe. Protected core guarantee active ache, tai purge kora completely safe.`
-      : `The Sovereign Cache Purifier has completed its disk scan. We can free up 4.2 Gigabytes of space. The protected core guarantee is active, so you can execute the 1-click purge safely without risking critical assets.`;
-
-    return {
-      intent: "storage_purifier",
-      detectedLanguage,
-      responseMarkdown,
-      voiceSpokenText,
-      executionSteps,
-      actionCard: {
-        type: "cache_purifier",
-        data: {
-          scannedFiles: 14208,
-          freedSpace: "4.2 GB",
-          isProtectedCoreIntact: true
-        }
-      }
-    };
-  }
-
   // 3. System Settings, Restart & Refresh (Glitch-Fix Without Disconnections)
   if (
     q.includes("setting") ||
@@ -1071,20 +929,20 @@ Use the action card below to execute the 1-click purge.`;
     const isRefresh = q.includes("refresh") || q.includes("glitch");
 
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Scanning System State & Memory", status: "COMPLETED", detail: "Memory clean · Zero data loss guaranteed · State snapshots verified" },
+      { stepNumber: 1, totalSteps: 4, label: "Scanning System State & Memory", status: "COMPLETED", detail: "System state inspected; no blanket zero-loss guarantee" },
       { stepNumber: 2, totalSteps: 4, label: isRestart ? "Executing Graceful System Restart" : "Applying Zero-Downtime Refresh", status: "COMPLETED", detail: isRestart ? "Reloading sovereign AI modules without session drop" : "Hot-fixing UI glitches & flushing stale buffers (0 disconnections)" },
-      { stepNumber: 3, totalSteps: 4, label: "Synchronizing Edge Gateways", status: "COMPLETED", detail: "All 8 connected platforms & RPC nodes healthy" },
-      { stepNumber: 4, totalSteps: 4, label: "Optimizer Verification Complete", status: "COMPLETED", detail: "Latency: 12ms · 100% Stable" },
+      { stepNumber: 3, totalSteps: 4, label: "Synchronizing Edge Gateways", status: "COMPLETED", detail: "Connected-platform health requires current provider telemetry" },
+      { stepNumber: 4, totalSteps: 4, label: "Optimizer Verification Complete", status: "COMPLETED", detail: "Latency and stability require current runtime telemetry" },
     ];
 
     const responseMarkdown = `### ⚙️ HDmaster System Configuration & Optimizer
 - **Operation**: **${isRestart ? "System Restart (Preserved State)" : isRefresh ? "Zero-Downtime Refresh (Glitch Fix)" : "Settings & Manual Customization"}**
-- **Status**: **100% Optimal & Connected** (0 Disconnections · Zero Data Loss)
+- **Status**: **Configuration/telemetry review required**
 - **Engine Tuning**: **Sovereign Ultra (Young Female Aria Acoustic Profile)**
 - **Security**: **HMAC-SHA256 Active · Zero-Leak Sandbox Armed**
 
 > [!NOTE]
-> **Zero Disconnection Guarantee**:
+> **Connection Safety Note**:
 > - **RESTART**: Gracefully reboots engine instances while permanently maintaining founder chats, invoices, and contracts.
 > - **REFRESH**: Flushes minor render glitches, resets audio contexts, and re-syncs state in **sub-5ms** without any disconnection.
 
@@ -1094,7 +952,7 @@ Manual customization controls and 1-click optimization triggers are available be
       ? `HDmaster system settings aur optimization ready hain. Refresh bina kisi disconnection ke glitches theek karta hai, aur restart aapke saare data ko surakshit rakhte hue system ko reboot karta hai.`
       : isBengali
       ? `HDmaster system settings ebong optimization ready ache. Refresh kono disconnection charai glitches fix kore, ebong restart apnar shob data safe rekhe system reboot kore.`
-      : `HDmaster system settings and optimizer are active. Refresh fixes UI glitches without disconnections, and Restart safely reboots all engines with 100% preserved founder state.`;
+      : `HDmaster system settings are available for review. Restart/refresh execution and connection preservation require current runtime verification.`;
 
     return {
       intent: "system_settings",
@@ -1226,17 +1084,15 @@ Select any module below to **preview standalone source code, download full ZIP p
   ) {
     const consensus = ensembleConsensusEngine.executeConsensus(query);
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Simultaneous Multi-Model Fanout", status: "COMPLETED", detail: "GPT-5.6, Claude 4.6, Grok 4.6, Gemini 3.8, Codex, DeepSeek invoked" },
-      { stepNumber: 2, totalSteps: 4, label: "Cross-Model Critique & Verification", status: "COMPLETED", detail: "Checked 0.00% hallucinations, verified algorithmic correctness" },
-      { stepNumber: 3, totalSteps: 4, label: "Mathematical Consensus Synthesis", status: "COMPLETED", detail: `${consensus.overallConsensusAgreement}% Inter-model agreement reached` },
-      { stepNumber: 4, totalSteps: 4, label: "Single Unified Flawless Deliverable", status: "COMPLETED", detail: "Unified production solution authorized" },
+      { stepNumber: 1, totalSteps: 2, label: "Provider Configuration Check", status: "COMPLETED", detail: `${consensus.modelsParticipatedCount} providers available for verified consensus` },
+      { stepNumber: 2, totalSteps: 2, label: "Consensus Result", status: "COMPLETED", detail: consensus.executionStatus === "UNIFIED_CONSENSUS_REACHED" ? "Consensus result returned." : "Consensus unavailable; no fabricated model output is shown." },
     ];
 
     return {
       intent: "ensemble_consensus",
       detectedLanguage,
       responseMarkdown: consensus.unifiedSynthesis,
-      voiceSpokenText: `All 6 strongest frontier models have executed together in complete consensus with ${consensus.overallConsensusAgreement} percent agreement. The deliverable is 100% verified with zero hallucinations.`,
+      voiceSpokenText: consensus.executionStatus === "UNIFIED_CONSENSUS_REACHED" ? `Verified consensus returned with ${consensus.modelsParticipatedCount} configured providers.` : "Verified multi-model consensus is unavailable because this legacy path does not execute external inference.",
       executionSteps,
       actionCard: {
         type: "ensemble_consensus",
@@ -1264,28 +1120,28 @@ Select any module below to **preview standalone source code, download full ZIP p
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Synthesizing Full-Stack Artifacts", status: "COMPLETED", detail: `${deployRes.filesGeneratedCount} files scaffolded with React 19 & Tailwind` },
       { stepNumber: 2, totalSteps: 4, label: "Bundling Standalone Production PWA", status: "COMPLETED", detail: "HTML5/ESM bundle compiled with zero external dependencies" },
-      { stepNumber: 3, totalSteps: 4, label: "Deploying Edge CDN Route", status: "COMPLETED", detail: `Live at ${deployRes.liveUrl} with SSL 100% certified` },
-      { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Vercel & Cloudflare 1-click terminal scripts ready" },
+      { stepNumber: 3, totalSteps: 4, label: "Deploying Edge CDN Route", status: "COMPLETED", detail: `Preview/target URL: ${deployRes.liveUrl}; SSL and production serving require independent verification` },
+      { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Cloudflare Pages deployment command prepared; no deployment executed" },
     ];
 
-    const responseMarkdown = `### 🚀 1-Command Live Deployment Complete
+    const responseMarkdown = `### 🚀 1-Command Deployment Preparation Complete
 - **Project**: **${deployRes.projectName}**
 - **Live URL**: [\`${deployRes.liveUrl}\`](${deployRes.liveUrl})
-- **Status**: **${deployRes.status}** (SSL Encrypted · CDN Edge: ${deployRes.edgeRegion})
+- **Status**: **${deployRes.status}** (Deployment not executed · Target: Cloudflare Pages · Edge: ${deployRes.edgeRegion})
 - **Files Generated**: **${deployRes.filesGeneratedCount} production files**
 
 \`\`\`bash
 # 1-Click Terminal Deployment Script
-${deployRes.vercelDeployCommand}
+${deployRes.cloudflareDeployCommand}
 \`\`\`
 
-The live standalone preview bundle is compiled and ready for instant preview or direct customer handoff!`;
+A sandbox preview bundle is available. Production deployment requires the governed Cloudflare deployment step and has not been executed here.`;
 
     return {
       intent: "instant_deploy",
       detectedLanguage,
       responseMarkdown,
-      voiceSpokenText: `Your project ${deployRes.projectName} has been compiled and deployed live in one command. SSL is active and the production preview is ready.`,
+      voiceSpokenText: `Your project ${deployRes.projectName} has a generated sandbox preview. Production deployment was not executed.`,
       executionSteps,
       actionCard: {
         type: "instant_deploy",
@@ -1334,7 +1190,7 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
     };
   }
 
-  // 9. 1,000x Strict Geofencing & Food Delivery Zone Quarantine
+  // 9. Strict Geofencing & Food Delivery Zone Status
   if (
     q.includes("geofence") ||
     q.includes("zone") ||
@@ -1347,17 +1203,17 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
     const activeZone = ACTIVE_DELIVERY_ZONES[0];
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 3, label: "Querying Spatial GPS Radar", status: "COMPLETED", detail: "Enforcing 12km strict radius centered at Sribhumi / Karimganj" },
-      { stepNumber: 2, totalSteps: 3, label: "Verifying Inactive Zone Quarantine", status: "COMPLETED", detail: "Food ordering masked across inactive regions; King Pay rendered exclusively" },
-      { stepNumber: 3, totalSteps: 3, label: "Compliance & Fee Verification", status: "COMPLETED", detail: "0% Gateway fees guaranteed Pan-India via direct UPI escrow" },
+      { stepNumber: 2, totalSteps: 3, label: "Verifying Inactive Zone Quarantine", status: "COMPLETED", detail: "Food ordering masked across inactive regions; Configured outside-zone behavior is shown according to deployed product rules" },
+      { stepNumber: 3, totalSteps: 3, label: "Compliance & Fee Verification", status: "COMPLETED", detail: "Gateway fees and settlement flow require provider verification" },
     ];
 
-    const responseMarkdown = `### 🛡️ 1,000x Strict Geofence Enforcement Status
+    const responseMarkdown = `### 🛡️ Strict Geofence Enforcement Status
 - **Active Food Delivery Zone**: **${activeZone.name}** (12.0 km strict radius)
 - **Active Coordinates**: \`24.8688° N, 92.3511° E\`
 - **Pan-India Inactive Zone Rule**:
   - Customers outside the active 12km delivery zone **NEVER** see open restaurants or food delivery listings.
-  - Across all other Indian cities, users experience **King Pay** exclusively (0% fee instant payment network).
-- **Zero-Fee Infrastructure**: Direct bank settlements with zero gateway commissions and IT Act §79 intermediary protection.`;
+  - Across all other Indian cities, users experience **King Pay** exclusively (configured payment network and fee schedule).
+- **Zero-Fee Infrastructure**: Settlement routing, gateway fees, and legal treatment must be verified from configured providers and current requirements.`;
 
     return {
       intent: "general_executive",

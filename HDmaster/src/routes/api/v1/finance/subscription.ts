@@ -1,4 +1,12 @@
-import { Request, Response } from 'express';
+type Request = {
+  body: Record<string, unknown>;
+  params: Record<string, string | undefined>;
+};
+
+type Response = {
+  status: (code: number) => Response;
+  json: (body: unknown) => Response;
+};
 
 // Utility for SQL template literal (assuming pg or similar driver usage in project)
 const getSql = (strings: TemplateStringsArray, ...values: any[]) => {

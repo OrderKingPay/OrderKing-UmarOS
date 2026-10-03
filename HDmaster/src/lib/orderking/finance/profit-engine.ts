@@ -1,13 +1,13 @@
 // @ts-nocheck
 /**
- * Master 12-Stream Revenue & Maximum Legal Profit Engine
+ * Master multi-stream revenue and unit-economics scenario calculator
  * OrderKing (Food Delivery) + KingPay (Fintech Layer)
  * 
  * Non-Negotiable Invariants:
- * 1. 100% legal under Indian Law (CGST Act, Income Tax Act, RBI PPI / Digital Lending, Companies Act, Code on Social Security 2020).
+ * 1. Legal/compliance treatment must be independently verified for the applicable business model, contract and period.
  * 2. Zero retention of any money that is not contractually or legally ours (unallocated funds held in suspense escrow, never recognized as revenue).
  * 3. Every revenue stream has a realistic, sustainable commercial rationale.
- * 4. Mutual benefit first: All participants (restaurants, riders, customers, merchants) earn or save more than on competitor platforms.
+ * 4. Participant outcomes are modeled from supplied inputs; competitor comparisons are not verified in this calculator.
  */
 
 export type ProfitEngineInput = {
@@ -441,33 +441,33 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       participant: "RESTAURANT",
       orderKingValueProposition:
         "15% flat commission, ₹0 onboarding fee, ₹0 forced ad spend, weekly integer-paise settlement, optional 1-tap instant cashout.",
-      competitorComparison: "Zomato charges 25%–28% commission, ₹10,000 onboarding, and mandatory ad spend.",
-      averageMonthlyAdvantagePaise: 2_000_000, // ₹20,000 extra profit per ₹2L monthly sales
-      verifiedSafeHarbor: "IT Act §79 Intermediary Protection + Binding Arbitration (Arbitration Act 1996)",
+      competitorComparison: "External competitor pricing/terms not verified by this calculator.",
+      averageMonthlyAdvantagePaise: 0, // External advantage requires verified competitor and contract data
+      verifiedSafeHarbor: "SOURCE REVIEW REQUIRED",
     },
     {
       participant: "RIDER",
       orderKingValueProposition:
         "100% customer tips pass-through, HPCL/IOCL fleet card saving ₹1,650/mo, 40% cheaper EV battery swaps, complimentary ₹2L accident cover.",
-      competitorComparison: "Zomato imposes arbitrary penalty deductions and offers no petrol discount.",
-      averageMonthlyAdvantagePaise: 165_000, // ₹1,650/month petrol savings + insurance
-      verifiedSafeHarbor: "Code on Social Security 2020 Independent Gig Partner Compliance",
+      competitorComparison: "External competitor terms not verified by this calculator.",
+      averageMonthlyAdvantagePaise: 0, // Rider savings require verified partner and insurance terms
+      verifiedSafeHarbor: "SOURCE REVIEW REQUIRED",
     },
     {
       participant: "CUSTOMER",
       orderKingValueProposition:
         "Zero inflated menu prices, ₹4 platform fee, King Coins food burn, spare-change 24K gold accumulation, instant KingPay 1-tap checkout.",
-      competitorComparison: "Zomato charges ₹10–₹15 platform fee + surge markups on menu prices.",
-      averageMonthlyAdvantagePaise: 12_000, // ₹120 savings per month across 8 orders
-      verifiedSafeHarbor: "Consumer Protection (E-Commerce) Rules 2020 Compliance",
+      competitorComparison: "External competitor terms not verified by this calculator.",
+      averageMonthlyAdvantagePaise: 0, // Customer savings require verified current pricing
+      verifiedSafeHarbor: "SOURCE REVIEW REQUIRED",
     },
     {
       participant: "MERCHANT",
       orderKingValueProposition:
         "0% MDR on UPI QR payments, instant bank settlement, BBPS bill payment commission sharing, KingPay local store discoverability.",
-      competitorComparison: "Paytm and PhonePe charge rental fees for soundboxes and offer no food cross-promotion.",
-      averageMonthlyAdvantagePaise: 150_000, // ₹1,500/month saved on soundbox rentals & MDR
-      verifiedSafeHarbor: "NPCI UPI Guidelines & RBI Merchant Payment Settlement Regulations",
+      competitorComparison: "External competitor terms not verified by this calculator.",
+      averageMonthlyAdvantagePaise: 0, // Merchant savings require verified contracts and fee schedules
+      verifiedSafeHarbor: "SOURCE REVIEW REQUIRED",
     },
   ];
 
@@ -478,25 +478,25 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
     founderNetFreeCashFlowPaise: founderNetFreeCashFlowPaise,
     founderEbitdaMarginPercentage: ebitdaMarginPct,
     competitorBurnMultiplier:
-      "100x Higher Free Cash Flow than Zomato (OrderKing has zero corporate bloat, automated AI overhead, 18 synchronized revenue streams, and 2G resilience)",
+      "NOT_VERIFIED",
     revenueStreams: streams,
     participantBenefits,
     statutoryComplianceChecklist: {
-      gstCompliant: true,
-      rbiCompliant: true,
-      companiesActCompliant: true,
-      labourAndSocialSecurityCompliant: true,
-      consumerProtectionCompliant: true,
-      zeroUncontractualRetentionVerified: true,
+      gstCompliant: "NOT_VERIFIED",
+      rbiCompliant: "NOT_VERIFIED",
+      companiesActCompliant: "NOT_VERIFIED",
+      labourAndSocialSecurityCompliant: "NOT_VERIFIED",
+      consumerProtectionCompliant: "NOT_VERIFIED",
+      zeroUncontractualRetentionVerified: "NOT_VERIFIED",
     },
     resilienceTelemetry: {
-      lowNetworkCacheHitRate: "99.4% on 2G/EDGE networks",
-      zeroOrderLossGuarantee: true,
-      offlineQueueSyncLatencyMs: 450,
+      lowNetworkCacheHitRate: null,
+      zeroOrderLossGuarantee: null,
+      offlineQueueSyncLatencyMs: null,
     },
     auditTrail: {
-      suspenseEscrowBalancePaise: 0, // Invariant: Zero uncontractual money retained as revenue
-      integerPaiseInvariantVerified: true,
+      suspenseEscrowBalancePaise: null,
+      integerPaiseInvariantVerified: false,
       generatedAt: new Date().toISOString(),
     },
   };

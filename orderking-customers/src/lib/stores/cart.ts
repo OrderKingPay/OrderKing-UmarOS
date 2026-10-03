@@ -9,26 +9,55 @@ export type { CartItem };
 
 const supabaseStorage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (!deviceId) {
-      deviceId = crypto.randomUUID();
-      localStorage.setItem("device_id", deviceId);
+    // Local device storage is immediate so the cart remains usable on poor or absent connectivity.
+    try {
+      const local = localStorage.getItem(name);
+      if (local !== null) return local;
+    } catch {
+      // Continue to the remote fallback below.
     }
-    const { data } = await supabase.from("customer_carts").select("cart_state").eq("id", deviceId).single();
-    return data ? data.cart_state : null;
+    try {
+      let deviceId = localStorage.getItem("device_id");
+      if (!deviceId) {
+        deviceId = crypto.randomUUID();
+        localStorage.setItem("device_id", deviceId);
+      }
+      const { data } = await supabase.from("customer_carts").select("cart_state").eq("id", deviceId).single();
+      return data?.cart_state ?? null;
+    } catch {
+      return null;
+    }
   },
   setItem: async (name: string, value: string): Promise<void> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (!deviceId) {
-      deviceId = crypto.randomUUID();
-      localStorage.setItem("device_id", deviceId);
+    try {
+      localStorage.setItem(name, value);
+    } catch {
+      // In-memory Zustand state remains usable for this session.
     }
-    await supabase.from("customer_carts").upsert({ id: deviceId, cart_state: value });
+    try {
+      let deviceId = localStorage.getItem("device_id");
+      if (!deviceId) {
+        deviceId = crypto.randomUUID();
+        localStorage.setItem("device_id", deviceId);
+      }
+      await supabase.from("customer_carts").upsert({ id: deviceId, cart_state: value });
+    } catch {
+      // Cloud persistence is best-effort and never blocks cart mutations.
+    }
   },
   removeItem: async (name: string): Promise<void> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (deviceId) {
-      await supabase.from("customer_carts").delete().eq("id", deviceId);
+    try {
+      localStorage.removeItem(name);
+    } catch {
+      // Ignore browser storage failures.
+    }
+    try {
+      const deviceId = localStorage.getItem("device_id");
+      if (deviceId) {
+        await supabase.from("customer_carts").delete().eq("id", deviceId);
+      }
+    } catch {
+      // Best-effort remote cleanup.
     }
   },
 };

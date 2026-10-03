@@ -11,6 +11,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useBrand, useT } from "@/components/providers";
 import { listCategories, listRestaurants } from "@/lib/server/catalog";
 import { listMyOrders, reorderItems } from "@/lib/server/orders";
+import { claimReferralCode, getReferralStats } from "@/lib/server/referrals";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { formatPaise } from "@/lib/money";
 import { useLocationStore } from "@/lib/stores/location";
 import { useCartStore } from "@/lib/stores/cart";
@@ -35,6 +37,7 @@ export function HomeFeed({
   const { t, lang } = useT();
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
   const { marketplace, brand } = useBrand();
+  const { user } = useCurrentUserState();
   const location = useLocationStore((s) => s.location);
   const setLocation = useLocationStore((s) => s.setLocation);
   const [isGeoActive, setIsGeoActive] = useState<boolean>(true);
@@ -56,7 +59,7 @@ export function HomeFeed({
           });
           toast.success("100% Real-Time GPS Active! Verifying restaurants in your vicinity...");
         },
-        (err) => {
+        (_err: GeolocationPositionError) => {
           setIsRequestingGeo(false);
           setIsGeoActive(false);
           toast.error("Accurate GPS location required to show verified restaurants.");
@@ -81,6 +84,50 @@ export function HomeFeed({
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
+
+  const referral = useQuery({
+    queryKey: ["referral-stats", user?.id],
+    queryFn: () => getReferralStats(),
+    enabled: Boolean(user),
+    staleTime: 60_000,
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const code = new URLSearchParams(window.location.search).get("ref")?.trim().toUpperCase();
+    if (!code || code.length > 64) return;
+    try {
+      window.sessionStorage.setItem("orderking.pendingReferralCode", code);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("ref");
+      window.history.replaceState({}, "", url.pathname + url.search + url.hash);
+    } catch {
+      // Storage/history may be unavailable in restricted browsers.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!user || typeof window === "undefined") return;
+    let code: string | null = null;
+    try {
+      code = window.sessionStorage.getItem("orderking.pendingReferralCode");
+    } catch {
+      return;
+    }
+    if (!code) return;
+    void claimReferralCode({ data: { referralCode: code } })
+      .then(() => {
+        try { window.sessionStorage.removeItem("orderking.pendingReferralCode"); } catch {}
+        void referral.refetch();
+        toast.success("Referral activation verified.");
+      })
+      .catch((err) => {
+        const message = err instanceof Error ? err.message : "";
+        if (/invalid|expired|self-referral|already claimed/i.test(message)) {
+          try { window.sessionStorage.removeItem("orderking.pendingReferralCode"); } catch {}
+        }
+      });
+  }, [user, referral.refetch]);
 
   const pastOrders = useQuery({
     queryKey: ["pastOrders"],
@@ -145,7 +192,7 @@ export function HomeFeed({
           <div className="flex items-center gap-2">
             <span>⚡</span>
             <span className="font-semibold">2G / Low-Network Mode Active</span>
-            <span className="text-[11px] text-muted hidden sm:inline">· Instant 0ms cached browsing &amp; background sync</span>
+            <span className="text-[11px] text-muted hidden sm:inline">· Cached browsing where available; writes always require server confirmation</span>
           </div>
           <span className="font-mono text-[10px] uppercase font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">
             {networkSpeed}
@@ -264,46 +311,49 @@ export function HomeFeed({
       {/* Preferred & Top-Rated Kitchens Ad Row (Ranked by Ad Spend + Performance) */}
       {!q && !veg && !openNow && !category ? <PreferredKitchensAdRow className="my-1" /> : null}
 
-      {/* 100x Viral Marketing: Invite Friends & Both Get Rewarded */}
-      {!q && !veg && !openNow && !category ? (
-        <section aria-label="Referral Rewards" className="rounded-[var(--radius-3xl)] border border-white/20 dark:border-white/10 bg-gradient-to-r from-primary/20 via-white/40 to-white/10 dark:via-black/40 dark:to-black/10 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/20 text-2xl shadow-inner">
-                🎁
-              </span>
-              <div>
-                <h3 className="font-display text-base font-bold text-fg">Give ₹40 + Free Delivery, Get ₹40!</h3>
-                <p className="text-xs text-muted">
-                  Share OrderKing with friends. They get <span className="font-semibold text-primary">₹40 OFF + Free Delivery</span> (min ₹249) and you get <span className="font-semibold text-primary">₹40 wallet cash</span>!
-                </p>
-              </div>
+      {/* Verified referral sharing — reward language comes from the server-side referral contract. */}
+      {user && referral.data && !q && !veg && !openNow && !category ? (
+        <section aria-label="Referral sharing" className="rounded-[var(--radius-3xl)] border border-white/20 dark:border-white/10 bg-gradient-to-r from-primary/20 via-white/40 to-white/10 dark:via-black/40 dark:to-black/10 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="font-display text-base font-bold text-fg">Invite friends to OrderKing</h3>
+              <p className="text-xs text-muted">
+                Share your personal referral link. Eligible rewards are credited only after the platform verifies the referral activation.
+              </p>
+              <p className="mt-1 text-[11px] text-muted">
+                Referrals: <span className="font-semibold text-fg">{referral.data.totalInvited}</span> · Earned: <span className="font-semibold text-fg">{formatPaise(referral.data.totalEarnedPaise, { locale })}</span>
+              </p>
             </div>
-            <div className="flex w-full sm:w-auto items-center gap-2">
-              <a
-                href={`https://wa.me/?text=${encodeURIComponent("Hey! Use my code to get ₹40 OFF + Free Delivery on your first delicious food order on OrderKing: https://orderking.in/?ref=KINGVIP")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700 active:scale-95"
-              >
-                <span>💬</span>
-                <span>Share WhatsApp</span>
-              </a>
+            <div className="flex w-full gap-2 sm:w-auto">
               <button
                 type="button"
                 onClick={() => {
-                  void navigator.clipboard?.writeText("https://orderking.in/?ref=KINGVIP");
-                  toast.success("Referral link copied to clipboard!");
+                  const shareText = `Join me on OrderKing: ${referral.data.shareUrl}`;
+                  if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+                    void navigator.share({ title: "OrderKing referral", text: shareText, url: referral.data.shareUrl }).catch(() => undefined);
+                  } else {
+                    void navigator.clipboard?.writeText(referral.data.shareUrl);
+                    toast.success("Referral link copied.");
+                  }
                 }}
-                className="inline-flex items-center justify-center rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-fg shadow-xs transition hover:bg-surface-2"
+                className="flex-1 rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:flex-initial"
               >
-                Copy Link
+                Share referral link
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard?.writeText(referral.data.shareUrl);
+                  toast.success("Referral link copied.");
+                }}
+                className="rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+              >
+                Copy
               </button>
             </div>
           </div>
         </section>
       ) : null}
-
       {marketplace.sampleCatalogueBanner ? (
         <p className="rounded-[var(--radius-lg)] bg-surface px-3 py-3 text-sm text-muted">{t("home.sampleBanner")}</p>
       ) : null}

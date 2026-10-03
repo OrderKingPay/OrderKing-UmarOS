@@ -19,8 +19,8 @@ import { GROK_PROVIDERS } from "./providers";
 const getBaseURL = () => {
   if (typeof window !== "undefined") return window.location.origin;
   if (typeof process !== "undefined" && process.env) {
-    if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+    if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL;
+    if (process.env.CF_PAGES_URL) return process.env.CF_PAGES_URL;
   }
   return "http://localhost:8080";
 };

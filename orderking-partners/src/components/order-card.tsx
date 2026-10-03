@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { formatINR } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { REJECT_REASONS, type OrderState } from "@/lib/orders/state-machine";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
-import { enqueueMutation } from "@/lib/offline/durable-queue";
+import { enqueueMutation, hasPendingMutation } from "@/lib/offline/durable-queue";
 
 export type OrderView = {
   id: string;
@@ -72,8 +72,34 @@ export function OrderCard({
   const [rejectOpen, setRejectOpen] = useState(false);
   const [reason, setReason] = useState<(typeof REJECT_REASONS)[number]>("item_unavailable");
   const [error, setError] = useState<string | null>(null);
+  const [queued, setQueued] = useState(false);
 
   const qc = useQueryClient();
+
+  useEffect(() => {
+    let active = true;
+    if (!restaurantId) return;
+    void hasPendingMutation(restaurantId, order.id).then((pending) => {
+      if (active) setQueued(pending);
+    });
+    return () => {
+      active = false;
+    };
+  }, [restaurantId, order.id]);
+
+  useEffect(() => {
+    if (!restaurantId) return;
+    const onFlushed = (event: Event) => {
+      const detail = (event as CustomEvent<{ orderId?: string; restaurantId?: string; action?: "accept" | "reject" | "preparing" | "ready" }>).detail;
+      if (detail?.orderId !== order.id || detail?.restaurantId !== restaurantId) return;
+      setQueued(false);
+      setError(null);
+      if (detail?.action) clearActionKey(order.id, detail.action);
+      onChanged?.();
+    };
+    window.addEventListener("orderking:partner-queue-flushed", onFlushed);
+    return () => window.removeEventListener("orderking:partner-queue-flushed", onFlushed);
+  }, [restaurantId, order.id, order.state, onChanged]);
 
   async function act(action: "accept" | "reject" | "preparing" | "ready") {
     setBusy(true);
@@ -82,32 +108,20 @@ export function OrderCard({
       const idempotencyKey = actionKey(order.id, action);
       
       if (typeof navigator !== "undefined" && !navigator.onLine) {
-        // Optimistic offline update
+        if (!restaurantId) throw new Error("Restaurant context unavailable.");
         await enqueueMutation({
-          restaurantId: restaurantId!,
+          restaurantId,
           orderId: order.id,
           action,
           reason: action === "reject" ? reason : undefined,
-          idempotencyKey
+          idempotencyKey,
         });
-        
-        qc.setQueryData(["orders", restaurantId, "live"], (old: any) => {
-          if (!old) return old;
-          const nextState: Record<string, string> = { accept: "ACCEPTED", reject: "REJECTED", preparing: "PREPARING", ready: "READY" };
-          return {
-            ...old,
-            orders: old.orders.map((o: any) => 
-              o.id === order.id ? { ...o, state: nextState[action] || o.state } : o
-            )
-          };
-        });
-        
-        clearActionKey(order.id, action);
+        setQueued(true);
         setRejectOpen(false);
-        onChanged?.();
+        setError("Pending server confirmation: this device queued the action, but the order status has not changed yet.");
         return;
       }
-      
+
       await transitionOrderViaHDmaster({
         data: {
           restaurantId,
@@ -118,6 +132,7 @@ export function OrderCard({
         },
       });
       clearActionKey(order.id, action);
+      setQueued(false);
       setRejectOpen(false);
       onChanged?.();
     } catch (e) {
@@ -241,7 +256,7 @@ export function OrderCard({
         ) : null}
       </div>
 
-      {error ? <p className="text-sm text-danger">{error}</p> : null}
+      {error ? <p className={cn("text-sm", queued ? "text-warn" : "text-danger")}>{error}</p> : null}
 
       {rejectOpen ? (
         <div className="space-y-2 rounded-[16px] bg-surface-2 p-3">
@@ -264,15 +279,15 @@ export function OrderCard({
         <div className="flex flex-wrap gap-2">
           {order.state === "PLACED" ? (
             <>
-              <Button size={large ? "lg" : "md"} disabled={busy} onClick={() => void act("accept")}>{t("orders.accept")}</Button>
-              <Button size={large ? "lg" : "md"} variant="secondary" disabled={busy} onClick={() => setRejectOpen(true)}>{t("orders.reject")}</Button>
+              <Button size={large ? "lg" : "md"} disabled={busy || queued} onClick={() => void act("accept")}>{t("orders.accept")}</Button>
+              <Button size={large ? "lg" : "md"} variant="secondary" disabled={busy || queued} onClick={() => setRejectOpen(true)}>{t("orders.reject")}</Button>
             </>
           ) : null}
           {order.state === "ACCEPTED" ? (
-            <Button size={large ? "lg" : "md"} disabled={busy} onClick={() => void act("preparing")}>{t("orders.preparing")}</Button>
+            <Button size={large ? "lg" : "md"} disabled={busy || queued} onClick={() => void act("preparing")}>{t("orders.preparing")}</Button>
           ) : null}
           {order.state === "PREPARING" ? (
-            <Button size={large ? "lg" : "md"} variant="leaf" disabled={busy} onClick={() => void act("ready")}>{t("orders.ready")}</Button>
+            <Button size={large ? "lg" : "md"} variant="leaf" disabled={busy || queued} onClick={() => void act("ready")}>{t("orders.ready")}</Button>
           ) : null}
         </div>
       )}

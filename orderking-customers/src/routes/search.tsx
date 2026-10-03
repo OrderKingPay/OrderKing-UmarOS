@@ -116,7 +116,7 @@ function FilterChip({ active, onClick, label }: { active: boolean; onClick: () =
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-11 shrink-0 rounded-full px-3 text-sm ${active ? "bg-primary text-primary-fg" : "bg-surface text-fg"}`}
+      className={`min-h-11 shrink-0 rounded-full px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg ${active ? "bg-primary text-primary-fg" : "bg-surface text-fg"}`}
     >
       {label}
     </button>

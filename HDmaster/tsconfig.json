@@ -26,6 +26,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@tanstack/react-start/api": [
+        "./src/lib/createAPIFileRoute.ts"
       ]
     },
     "allowImportingTsExtensions": true

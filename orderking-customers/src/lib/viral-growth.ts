@@ -1,133 +1,161 @@
 import { getSql, type Sql } from "./db";
 import { createHash, randomBytes } from "node:crypto";
-import { walletEngine } from "./kingpay/wallet";
 
 /**
- * 👑 ORDERKING ELITE VIRAL GROWTH ENGINE
- * 
- * ZERO-COST AUTONOMOUS SPREAD ARCHITECTURE
- * - Cryptographically secure unique referral codes (Collision-resistant)
- * - Strict ACID database transactions 
- * - Multi-platform localized viral hooks (WhatsApp, Telegram, Twitter, Native Web Share)
- * - Deep-link attribution tracking
+ * Referral attribution and reward engine.
+ *
+ * All referral identity, attribution, and wallet credits use the same Better Auth
+ * user table and canonical KingPay wallet ledger.
  */
-
 export const ViralGrowthEngine = {
-  /**
-   * Generates a deterministic, short, and collision-resistant referral code for a user.
-   * Format: OK-{4 chars from hash}-{3 random chars}
-   */
   generateReferralCode(userId: string): string {
-    const secret = typeof process !== "undefined" && process.env.BETTER_AUTH_SECRET ? process.env.BETTER_AUTH_SECRET : "default_secret";
-    const hash = createHash("sha256").update(userId + secret).digest("hex").substring(0, 4).toUpperCase();
+    const secret =
+      typeof process !== "undefined" && process.env.BETTER_AUTH_SECRET
+        ? process.env.BETTER_AUTH_SECRET
+        : "default_secret";
+    const hash = createHash("sha256")
+      .update(userId + secret)
+      .digest("hex")
+      .substring(0, 4)
+      .toUpperCase();
     const entropy = randomBytes(2).toString("hex").substring(0, 3).toUpperCase();
     return `OK-${hash}${entropy}`;
   },
 
-  /**
-   * Generates the high-conversion, dynamic deep link for sharing.
-   */
   generateDeepLink(referralCode: string): string {
-    const baseUrl = typeof process !== "undefined" && process.env.VERCEL_PROJECT_PRODUCTION_URL 
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` 
-      : "https://orderking.in";
-    return `${baseUrl}/r/${referralCode}`;
+    const baseUrl =
+      typeof process !== "undefined" && process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : "https://orderking.in";
+    return `${baseUrl}/?ref=${encodeURIComponent(referralCode)}`;
   },
 
-  /**
-   * Generates native share intents optimized for maximum organic spread.
-   */
   createViralShareIntent(referralCode: string, amount: number = 100) {
     const link = this.generateDeepLink(referralCode);
-    const copy = `👑 I just got ₹${amount} free food credit on OrderKing!\n\nUse my invite link to claim your ₹${amount} welcome bonus instantly. No hidden fees, just real food at 0% markup.\n\nClaim here: ${link}`;
+    const copy = `Join me on OrderKing using my referral link. Eligible referral rewards are credited after OrderKing verifies the activation.\n\n${link}`;
     const encodedCopy = encodeURIComponent(copy);
 
     return {
       whatsapp: `https://wa.me/?text=${encodedCopy}`,
-      telegram: `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(`Claim ₹${amount} free food on OrderKing!`)}`,
+      telegram: `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent("Join me on OrderKing")}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodedCopy}`,
-      navigatorShare: typeof navigator !== "undefined" && typeof navigator.share === 'function' ? {
-        title: "OrderKing Welcome Bonus",
-        text: copy,
-        url: link
-      } : null,
+      navigatorShare:
+        typeof navigator !== "undefined" && typeof navigator.share === "function"
+          ? { title: "OrderKing referral", text: copy, url: link }
+          : null,
       rawCopy: copy,
-      link: link
+      link,
+      rewardAmountPaise: amount * 100,
     };
   },
 
-  /**
-   * Resolves a referral code back to the original referrer ID.
-   */
   async resolveReferrerId(referralCode: string): Promise<string | null> {
     const sql = await getSql();
     const rows = await sql.query<{ id: string }>(
-      `SELECT id FROM users WHERE referral_code = $1 LIMIT 1`,
-      [referralCode]
+      `SELECT id FROM "user" WHERE referral_code = $1 LIMIT 1`,
+      [referralCode.trim().toUpperCase()],
     );
     return rows.length > 0 ? rows[0].id : null;
   },
 
-  /**
-   * PROCESS REFERRAL (BANKING-GRADE)
-   * Restored direct integration with KingPay Wallet Engine to prevent any schema mismatch.
-   */
-  async processReferralActivation(referralCode: string, newUserId: string): Promise<{ success: boolean; message: string; amountCredited: number }> {
+  async processReferralActivation(
+    referralCode: string,
+    newUserId: string,
+  ): Promise<{ success: boolean; message: string; amountCredited: number }> {
     const sql = await getSql();
-    
+
     return await sql.transaction(async (tx: Sql) => {
-      // 1. Resolve code to Referrer
+      const code = referralCode.trim().toUpperCase();
       const referrerRows = await tx.query<{ id: string }>(
-        `SELECT id FROM users WHERE referral_code = $1 LIMIT 1 FOR UPDATE SKIP LOCKED`, 
-        [referralCode]
+        `SELECT id FROM "user" WHERE referral_code = $1 LIMIT 1 FOR UPDATE SKIP LOCKED`,
+        [code],
       );
-      
+
       if (referrerRows.length === 0) {
         return { success: false, message: "Invalid or expired referral code", amountCredited: 0 };
       }
-      
-      const referrerId = referrerRows[0].id;
 
+      const referrerId = referrerRows[0].id;
       if (referrerId === newUserId) {
         return { success: false, message: "Self-referral detected and blocked.", amountCredited: 0 };
       }
 
-      // 2. Check Idempotency (Has this user already been referred?)
-      const existingRef = await tx.query(
-        `SELECT 1 FROM referrals WHERE new_user_id = $1 LIMIT 1`,
-        [newUserId]
+      const existingRef = await tx.query<{ id: string }>(
+        `SELECT id FROM referrals WHERE new_user_id = $1 LIMIT 1`,
+        [newUserId],
       );
-      
       if (existingRef.length > 0) {
         return { success: false, message: "User has already claimed a welcome bonus.", amountCredited: 0 };
       }
 
-      // 3. Record the Referral Event Atomically
+      const referrerCreditId = `ref_reward_${referrerId}_${newUserId}`;
+      const newUserCreditId = `ref_reward_welcome_${newUserId}_${referrerId}`;
+      const rewardPaise = 10_000;
+
+      const creditWallet = async (userId: string, transactionId: string, description: string) => {
+        const already = await tx<{ id: string }>`
+          select id from kingpay_transactions where id = ${transactionId} limit 1
+        `;
+        if (already[0]) return "already_processed" as const;
+
+        await tx`
+          insert into kingpay_wallets (user_id, balance_paise, king_coins)
+          values (${userId}, 0, 0)
+          on conflict (user_id) do nothing
+        `;
+
+        const wallets = await tx<{ balance_paise: number }>`
+          select balance_paise
+          from kingpay_wallets
+          where user_id = ${userId}
+          for update
+        `;
+        if (!wallets[0]) throw new Error("KingPay wallet could not be created.");
+
+        await tx`
+          update kingpay_wallets
+          set balance_paise = balance_paise + ${rewardPaise}, updated_at = now()
+          where user_id = ${userId}
+        `;
+
+        await tx`
+          insert into kingpay_transactions (id, user_id, amount_paise, type, description)
+          values (${transactionId}, ${userId}, ${rewardPaise}, 'CREDIT', ${description})
+        `;
+
+        return "success" as const;
+      };
+
+      const referrerCredit = await creditWallet(
+        referrerId,
+        referrerCreditId,
+        `Verified referral reward: ${newUserId}`,
+      );
+      const newUserCredit = await creditWallet(
+        newUserId,
+        newUserCreditId,
+        `Verified referral welcome credit: ${referrerId}`,
+      );
+
       await tx.query(
-        `INSERT INTO referrals (referrer_id, new_user_id, status, created_at) VALUES ($1, $2, 'COMPLETED', NOW())`,
-        [referrerId, newUserId]
+        `INSERT INTO referrals (id, referrer_id, new_user_id, status, created_at)
+         VALUES ($1, $2, $3, 'COMPLETED', NOW())`,
+        [`ref_${referrerId}_${newUserId}`, referrerId, newUserId],
       );
 
-      // 4. Execute the Wallet Credits via KingPay Wallet Engine (₹100 = 10000 paise)
-      const REWARD_PAISE = 10000;
-      
-      const referrerCredit = await walletEngine.creditWallet(
-        referrerId, 
-        REWARD_PAISE, 
-        `ref_reward_${referrerId}_${newUserId}`
-      );
-
-      const newUserCredit = await walletEngine.creditWallet(
-        newUserId, 
-        REWARD_PAISE, 
-        `ref_reward_welcome_${newUserId}_${referrerId}`
-      );
-
-      if (referrerCredit.status !== "success" || newUserCredit.status !== "success") {
-         throw new Error("Failed to credit wallets via KingPay engine");
+      if (referrerCredit === "success" || newUserCredit === "success") {
+        return {
+          success: true,
+          message: "Referral activation verified and rewards credited.",
+          amountCredited: rewardPaise,
+        };
       }
 
-      return { success: true, message: "Bonus successfully deployed to wallets.", amountCredited: REWARD_PAISE };
+      return {
+        success: true,
+        message: "Referral activation was already credited.",
+        amountCredited: rewardPaise,
+      };
     });
-  }
+  },
 };

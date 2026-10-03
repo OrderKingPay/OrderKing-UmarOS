@@ -1,146 +1,106 @@
-importScripts('https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js');
-
 /**
- * 🚀 ORDERKING STARLINK-LEVEL SERVICE WORKER
- * Built for India's 2G/3G deepest rural networks.
- * 
- * Features:
- * 1. 10000x Faster Load Times via aggressive IDB caching of all static assets.
- * 2. Stale-While-Revalidate for API responses (shows instantaneous data, updates in background).
- * 3. Offline Order Queue: Places orders into IDB when offline, Background Sync automatically fires them when online.
- * 4. Image compression bypass logic.
+ * OrderKing Customer Service Worker
+ *
+ * Safe offline-first behavior:
+ * - Cache the application shell/static assets for fast repeat loads.
+ * - Keep authenticated API responses network-only to prevent cross-account cache leakage.
+ * - Never manufacture an accepted/paid/placed response for an offline mutation.
+ *
+ * A food order, payment, refund, wallet transfer, or other financial mutation
+ * is authoritative only after the real server/provider confirms it.
  */
 
-const CACHE_NAME = 'orderking-starlink-v1';
+const CACHE_NAME = "orderking-customer-shell-v2";
 const STATIC_ASSETS = [
-  '/',
-  '/manifest.json',
-  '/logo.jpg',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/offline.html'
+  "/",
+  "/manifest.json",
+  "/logo.jpg",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/offline.html",
 ];
 
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      for (const asset of STATIC_ASSETS) {
+        try {
+          await cache.add(asset);
+        } catch {
+          // Keep installation resilient when one optional asset is unavailable.
+        }
+      }
+    })
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
+        )
+      )
   );
   self.clients.claim();
 });
 
-// Advanced Stale-While-Revalidate & Offline Queueing
-self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+  const url = new URL(request.url);
 
-  // 1. OFFLINE ORDER QUEUEING
-  if (event.request.method === 'POST' && url.pathname.includes('/api/orders/create')) {
-    if (!navigator.onLine) {
-      event.respondWith(
-        (async () => {
-          const reqClone = event.request.clone();
-          const body = await reqClone.json();
-          // Store in IDB Queue
-          let queue = (await idbKeyval.get('offline-order-queue')) || [];
-          queue.push({ id: Date.now(), url: event.request.url, body, timestamp: Date.now() });
-          await idbKeyval.set('offline-order-queue', queue);
-          
-          // Register Background Sync if supported
-          if ('sync' in self.registration) {
-            await self.registration.sync.register('sync-orders');
-          }
-
-          return new Response(JSON.stringify({ 
-            success: true, 
-            message: 'Order queued offline. Will sync automatically.',
-            isOfflineQueue: true 
-          }), { headers: { 'Content-Type': 'application/json' } });
-        })()
-      );
-      return;
-    }
+  // Financial/order/account mutations MUST reach a real server.
+  // No offline response is synthesized for a write operation.
+  if (request.method !== "GET" && url.pathname.startsWith("/api/")) {
+    return;
   }
 
-  // 2. API REQUESTS: Network First, Fallback to IDB Cache
-  if (url.pathname.startsWith('/api/')) {
+  // Authenticated API responses are deliberately not cached by the service worker.
+  // Cache keys cannot safely distinguish logged-in users across sessions on the same device.
+  if (url.pathname.startsWith("/api/") && request.method === "GET") {
     event.respondWith(
-      fetch(event.request).then(async (response) => {
-        if (event.request.method === 'GET' && response.ok) {
-          const clone = response.clone();
-          await idbKeyval.set('api_' + url.pathname, await clone.json());
-        }
-        return response;
-      }).catch(async () => {
-        if (event.request.method === 'GET') {
-          const cachedData = await idbKeyval.get('api_' + url.pathname);
-          if (cachedData) {
-            return new Response(JSON.stringify(cachedData), { headers: { 'Content-Type': 'application/json' } });
-          }
-        }
-        return new Response(JSON.stringify({ error: 'Network offline' }), { status: 503 });
-      })
+      fetch(request).catch(
+        () =>
+          new Response(
+            JSON.stringify({
+              ok: false,
+              code: "NETWORK_UNAVAILABLE",
+              message: "Network unavailable. Reconnect to refresh account, order, payment, or delivery data.",
+            }),
+            {
+              status: 503,
+              headers: { "content-type": "application/json" },
+            }
+          )
+      )
     );
     return;
   }
 
-  // 3. STATIC ASSETS & HTML: Stale-While-Revalidate
+  // Fast shell/static delivery with a network refresh when available.
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        caches.open(CACHE_NAME).then((cache) => {
-          if (event.request.method === 'GET') {
-            cache.put(event.request, networkResponse.clone());
+    caches.match(request).then((cachedResponse) => {
+      const refresh = fetch(request)
+        .then(async (response) => {
+          if (response.ok && request.method === "GET") {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.put(request, response.clone());
           }
+          return response;
+        })
+        .catch(() => {
+          if (request.mode === "navigate") {
+            return caches.match("/offline.html");
+          }
+          return cachedResponse;
         });
-        return networkResponse;
-      }).catch(() => {
-        // Return custom offline page for navigation requests
-        if (event.request.mode === 'navigate') {
-          return caches.match('/offline.html');
-        }
-      });
 
-      return cachedResponse || fetchPromise;
+      return cachedResponse || refresh;
     })
   );
-});
-
-// Background Sync Event Listener
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-orders') {
-    event.waitUntil(
-      (async () => {
-        const queue = (await idbKeyval.get('offline-order-queue')) || [];
-        if (queue.length === 0) return;
-
-        console.log(`[Starlink PWA] Syncing ${queue.length} offline orders...`);
-        
-        const remainingQueue = [];
-        for (const order of queue) {
-          try {
-            const res = await fetch(order.url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(order.body)
-            });
-            if (!res.ok) throw new Error('Sync failed');
-            console.log(`[Starlink PWA] Offline order ${order.id} synced successfully.`);
-          } catch (error) {
-            // Keep in queue if it fails
-            remainingQueue.push(order);
-          }
-        }
-        
-        await idbKeyval.set('offline-order-queue', remainingQueue);
-      })()
-    );
-  }
 });

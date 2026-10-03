@@ -59,94 +59,10 @@ export class RealMoneyOperatingEngine {
   private opportunities: Map<string, RealMoneyOpportunity> = new Map();
 
   constructor() {
-    this.seedInitialOpportunities();
-  }
-
-  private seedInitialOpportunities() {
-    const opp1: RealMoneyOpportunity = {
-      id: "OPP-901",
-      title: "Royal Darbar Direct Ordering App & Fleet Logistics",
-      clientName: "Royal Darbar Palace",
-      category: "client_service",
-      stage: "PAYMENT_CONFIRMED",
-      currency: "INR",
-      economics: {
-        expectedGrossRevenue: 149999,
-        platformFees: 0,
-        paymentGatewayFees: 0, // 0% via King Pay UPI
-        infrastructureCost: 1500,
-        aiApiCost: 450,
-        estimatedLaborCost: 8000,
-        otherKnownCosts: 500,
-        estimatedContribution: 139549,
-        isEstimate: false,
-      },
-      proofHash: "SHA256:8f9b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b",
-      bankReferenceNumber: "UPI-UTR-908234710293",
-      confirmedPaymentDate: "2026-09-21 15:40",
-      notes: ["Advance 50% milestone received directly into founder bank account via King Pay UPI."],
-      history: [
-        { stage: "DISCOVERED", timestamp: "2026-09-19 10:00", note: "Identified ₹5.18L/mo aggregator commission loss", actor: "AI_RADAR" },
-        { stage: "PROPOSAL" as FinancialStage, timestamp: "2026-09-20 14:00", note: "Custom proposal sent with 28% margin recovery model", actor: "FOUNDER" },
-        { stage: "CONTRACTED", timestamp: "2026-09-21 11:00", note: "Signed 14-day SLA delivery contract", actor: "FOUNDER" },
-        { stage: "INVOICED", timestamp: "2026-09-21 12:00", note: "Invoice INV-8801 issued for ₹74,999 advance", actor: "FOUNDER" },
-        { stage: "PAYMENT_CONFIRMED", timestamp: "2026-09-21 15:40", note: "Bank verified deposit UTR 908234710293", actor: "BANK_WEBHOOK" },
-      ],
-    };
-
-    const opp2: RealMoneyOpportunity = {
-      id: "OPP-902",
-      title: "Assam Valley Tea Headless Next.js Storefront",
-      clientName: "Assam Valley Organic Tea & Spices",
-      category: "client_service",
-      stage: "CONTRACTED",
-      currency: "INR",
-      economics: {
-        expectedGrossRevenue: 299999,
-        platformFees: 0,
-        paymentGatewayFees: 0,
-        infrastructureCost: 2500,
-        aiApiCost: 750,
-        estimatedLaborCost: 15000,
-        otherKnownCosts: 1000,
-        estimatedContribution: 280749,
-        isEstimate: true,
-      },
-      notes: ["Contract signed. Awaiting 50% advance invoice settlement."],
-      history: [
-        { stage: "DISCOVERED", timestamp: "2026-09-20 09:30", note: "Audited Shopify store with 68% checkout bounce rate", actor: "AI_RADAR" },
-        { stage: "CONTRACTED", timestamp: "2026-09-22 08:00", note: "Contract CTR-982103 agreed for ₹2,99,999", actor: "FOUNDER" },
-      ],
-    };
-
-    const opp3: RealMoneyOpportunity = {
-      id: "OPP-903",
-      title: "FinTech Ledger Double-Entry Remote Contract",
-      clientName: "London FinTech Labs",
-      category: "remote_job",
-      stage: "QUALIFIED",
-      currency: "USD",
-      economics: {
-        expectedGrossRevenue: 24000, // $24,000 (~₹20,00,000)
-        platformFees: 0,
-        paymentGatewayFees: 240, // 1% international wire
-        infrastructureCost: 100,
-        aiApiCost: 50,
-        estimatedLaborCost: 3000,
-        otherKnownCosts: 100,
-        estimatedContribution: 20510,
-        isEstimate: true,
-      },
-      notes: ["Match score 96%. One-click application ready."],
-      history: [
-        { stage: "DISCOVERED", timestamp: "2026-09-21 17:00", note: "Scanned Toptal remote board", actor: "AI_RADAR" },
-        { stage: "QUALIFIED", timestamp: "2026-09-22 06:00", note: "Skills verified: Next.js 15, PostgreSQL, Ledger", actor: "AI_EVALUATOR" },
-      ],
-    };
-
-    this.opportunities.set(opp1.id, opp1);
-    this.opportunities.set(opp2.id, opp2);
-    this.opportunities.set(opp3.id, opp3);
+    // Production truth: no hard-coded opportunities, contracts, clients, payment references,
+    // or bank confirmations are created in memory. Real opportunities must be loaded from
+    // connected business/finance records before they are reported as actual.
+    this.opportunities = new Map();
   }
 
   getOpportunities(): RealMoneyOpportunity[] {

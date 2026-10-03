@@ -217,6 +217,7 @@ export type CustomerSlice = {
 export type DispatchOffer = {
   id: string;
   riderId: string;
+  orderId?: string;
   orderCode: string;
   restaurant: RestaurantSlice;
   customer: CustomerSlice;
@@ -298,6 +299,7 @@ export type ProofOfDelivery = {
   photoContentType: string | null;
   photoBytes: number | null;
   photoDataUrl: string | null;
+  storageUrl: string | null;
   capturedAt: string;
   dataMode: DataMode;
 };

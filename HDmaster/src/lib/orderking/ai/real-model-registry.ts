@@ -38,35 +38,20 @@ export interface ModelConnectionTestResult {
   timestamp: string;
 }
 
-// Key manager: reads from process.env or browser localStorage
+// Provider credentials are server-side only. Never read or persist API keys in browser storage.
 export function getProviderApiKey(provider: string): string | undefined {
   const envMap: Record<string, string | undefined> = {
-    openai: typeof process !== "undefined" ? process.env?.OPENAI_API_KEY : undefined,
-    anthropic: typeof process !== "undefined" ? process.env?.ANTHROPIC_API_KEY : undefined,
-    gemini: typeof process !== "undefined" ? (process.env?.GEMINI_API_KEY || process.env?.GOOGLE_API_KEY) : undefined,
-    xai: typeof process !== "undefined" ? process.env?.XAI_API_KEY : undefined,
+    openai: process.env?.OPENAI_API_KEY,
+    anthropic: process.env?.ANTHROPIC_API_KEY,
+    gemini: process.env?.GEMINI_API_KEY || process.env?.GOOGLE_API_KEY,
+    xai: process.env?.XAI_API_KEY,
   };
-
-  const keyFromEnv = envMap[provider.toLowerCase()];
-  if (keyFromEnv && keyFromEnv.trim().length > 0) return keyFromEnv.trim();
-
-  // Browser localStorage fallback if available
-  if (typeof window !== "undefined" && window.localStorage) {
-    const key = window.localStorage.getItem(`umar_os_apikey_${provider.toLowerCase()}`);
-    if (key && key.trim().length > 0) return key.trim();
-  }
-
-  return undefined;
+  const value = envMap[provider.toLowerCase()];
+  return value?.trim() || undefined;
 }
 
-export function setProviderApiKey(provider: string, apiKey: string): void {
-  if (typeof window !== "undefined" && window.localStorage) {
-    if (apiKey.trim()) {
-      window.localStorage.setItem(`umar_os_apikey_${provider.toLowerCase()}`, apiKey.trim());
-    } else {
-      window.localStorage.removeItem(`umar_os_apikey_${provider.toLowerCase()}`);
-    }
-  }
+export function setProviderApiKey(_provider: string, _apiKey: string): never {
+  throw new Error("Provider API keys must be configured server-side; browser storage is disabled.");
 }
 
 /**
@@ -78,7 +63,11 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
   const openaiKey = getProviderApiKey("openai");
   const xaiKey = getProviderApiKey("xai");
 
-  const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const geminiModel = process.env.GEMINI_MODEL?.trim();
+  const anthropicModel = process.env.ANTHROPIC_MODEL?.trim();
+  const openaiModel = process.env.OPENAI_MODEL?.trim();
+  const xaiModel = process.env.XAI_MODEL?.trim();
+  const now = new Date().toISOString();
 
   return [
     {
@@ -93,10 +82,10 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: false,
-      measuredLatencyMs: 4,
+      measuredLatencyMs: 0,
       lastChecked: now,
-      fallbackModelId: "self",
-      description: "Always-active sovereign core with zero external latency or cost. Runs clinical differential diagnostics, software engineering, mathematics, and business OS tools locally.",
+      fallbackModelId: "",
+      description: "No embedded local LLM is deployed in this runtime. External provider configuration is required for AI inference.",
       capabilities: {
         canStream: true,
         canProcessImages: false,
@@ -109,8 +98,8 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       displayName: "⚡ Auto-Select Best Model (Supreme Orchestrator)",
       provider: "Orchestrator",
       realApiId: "dynamic-router-v1",
-      connectionStatus: (openaiKey || geminiKey || anthropicKey || xaiKey) ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      authStatus: (openaiKey || geminiKey || anthropicKey || xaiKey) ? "VERIFIED" : "MISSING_KEY",
+      connectionStatus: (openaiKey && openaiModel) || (geminiKey && geminiModel) || (anthropicKey && anthropicModel) || (xaiKey && xaiModel) ? "CONNECTED" : "CONFIGURATION_REQUIRED",
+      authStatus: (openaiKey && openaiModel) || (geminiKey && geminiModel) || (anthropicKey && anthropicModel) || (xaiKey && xaiModel) ? "VERIFIED" : "MISSING_KEY",
       supportedModalities: ["text", "vision", "voice", "code", "file"],
       contextWindow: "Dynamic",
       supportsTools: true,
@@ -118,7 +107,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: true,
       measuredLatencyMs: 12,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
+      fallbackModelId: "",
       description: "Intelligently routes every query to the fastest and most capable connected model. If external models lack API keys, seamlessly executes via Sovereign Local Core with clear disclosure.",
       capabilities: {
         canStream: true,
@@ -155,15 +144,15 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       displayName: "Google Gemini 2.0 / 2.5",
       provider: "Google",
       realApiId: "gemini-2.0-flash",
-      connectionStatus: geminiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      authStatus: geminiKey ? "VERIFIED" : "MISSING_KEY",
+      connectionStatus: geminiKey && geminiModel ? "CONNECTED" : "CONFIGURATION_REQUIRED",
+      authStatus: geminiKey && geminiModel ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "GEMINI_API_KEY",
       supportedModalities: ["text", "vision", "voice", "file"],
       contextWindow: "1M tokens",
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
-      measuredLatencyMs: geminiKey ? 140 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
       description: "Google frontier multimodal reasoning engine with high-speed tokens and 1M context window. Connect via GEMINI_API_KEY.",
@@ -179,15 +168,15 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       displayName: "Anthropic Claude 3.7 Sonnet",
       provider: "Anthropic",
       realApiId: "claude-3-7-sonnet-20250219",
-      connectionStatus: anthropicKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      authStatus: anthropicKey ? "VERIFIED" : "MISSING_KEY",
+      connectionStatus: anthropicKey && anthropicModel ? "CONNECTED" : "CONFIGURATION_REQUIRED",
+      authStatus: anthropicKey && anthropicModel ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "ANTHROPIC_API_KEY",
       supportedModalities: ["text", "vision", "code", "file"],
       contextWindow: "200k tokens",
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: false,
-      measuredLatencyMs: anthropicKey ? 190 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
       description: "Anthropic state-of-the-art hybrid reasoning model for deep systems architecture and complex coding. Connect via ANTHROPIC_API_KEY.",
@@ -203,15 +192,15 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       displayName: "OpenAI GPT-5.6 Sol / GPT-5.6 Luna",
       provider: "OpenAI",
       realApiId: "gpt-5.6-sol",
-      connectionStatus: openaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      authStatus: openaiKey ? "VERIFIED" : "MISSING_KEY",
+      connectionStatus: openaiKey && openaiModel ? "CONNECTED" : "CONFIGURATION_REQUIRED",
+      authStatus: openaiKey && openaiModel ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "OPENAI_API_KEY",
       supportedModalities: ["text", "vision", "code", "file"],
       contextWindow: "1.05M tokens",
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
-      measuredLatencyMs: openaiKey ? 165 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
       description: "OpenAI GPT-5.6 flagship reasoning model. The provider adapter uses the configured OpenAI API and reports the actual model ID used by the deployment.",
@@ -227,15 +216,15 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       displayName: "xAI Grok 2 / 3",
       provider: "xAI",
       realApiId: "grok-2",
-      connectionStatus: xaiKey ? "CONNECTED" : "CONFIGURATION_REQUIRED",
-      authStatus: xaiKey ? "VERIFIED" : "MISSING_KEY",
+      connectionStatus: xaiKey && xaiModel ? "CONNECTED" : "CONFIGURATION_REQUIRED",
+      authStatus: xaiKey && xaiModel ? "VERIFIED" : "MISSING_KEY",
       requiredEnvVar: "XAI_API_KEY",
       supportedModalities: ["text", "code", "file"],
       contextWindow: "128k tokens",
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: true,
-      measuredLatencyMs: xaiKey ? 180 : 0,
+      measuredLatencyMs: 0,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
       description: "xAI frontier intelligence with integrated real-time search capabilities. Connect via XAI_API_KEY.",
@@ -261,7 +250,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       measuredLatencyMs: 6,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
-      description: "Deterministic full-stack code generator, TypeScript validator, and database schema synthesizer running locally.",
+      description: "Local code-generation placeholder is unavailable in this runtime; no embedded model is exposed as production AI.",
       capabilities: {
         canStream: true,
         canProcessImages: false,
@@ -284,7 +273,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       measuredLatencyMs: 5,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
-      description: "Axiomatic mathematical formalization, proof verification, and exact logic analysis running locally without network overhead.",
+      description: "Local mathematical model is unavailable in this runtime; no embedded model is exposed as production AI.",
       capabilities: {
         canStream: true,
         canProcessImages: false,

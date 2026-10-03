@@ -9,6 +9,8 @@ import { useT } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
 import { useClientState } from "@/lib/client-state";
 import { listOrders } from "@/lib/server/api-orders";
+import { flushQueue } from "@/lib/offline/durable-queue";
+import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
 import { isFeatureEnabled } from "@/lib/platform-config";
 import { Volume2, VolumeX } from "lucide-react";
 
@@ -88,6 +90,19 @@ function OrdersPage() {
   const soundOn = useClientState((s) => s.soundOn);
   const setSoundOn = useClientState((s) => s.setSoundOn);
   const [scope, setScope] = useState<"live" | "history">("live");
+  useEffect(() => {
+    if (!vendor.restaurantId) return;
+    const reconcile = async () => {
+      await flushQueue((data) => transitionOrderViaHDmaster(data));
+      await qc.invalidateQueries({ queryKey: ["orders", vendor.restaurantId, scope] });
+      await qc.invalidateQueries({ queryKey: ["dashboard", vendor.restaurantId] });
+    };
+    void reconcile();
+    const onOnline = () => void reconcile();
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [vendor.restaurantId, scope, qc]);
+
   const q = useQuery({
     queryKey: ["orders", vendor.restaurantId, scope],
     queryFn: () => listOrders({ data: { restaurantId: vendor.restaurantId, scope } }),

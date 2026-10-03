@@ -1,7 +1,7 @@
 
 // Umar OS: 1-Command Instant Live Deployment Engine
 // Autonomously scaffolds and bundles any website, web app, business portal, or product page in 1 command.
-// Produces interactive in-browser sandboxes (data URI), standalone HTML5/PWA codebases, and production Vercel/Cloudflare CLI deploy scripts.
+// Produces interactive in-browser sandboxes (data URI), standalone HTML5/PWA codebases, and a Cloudflare Pages CLI deploy script.
 
 export interface DeployTarget {
   id: string;
@@ -18,7 +18,6 @@ export interface DeployTarget {
     content: string;
     language: "html" | "typescript" | "css" | "json";
   }[];
-  deployScriptVercel: string;
   deployScriptCloudflare: string;
   createdAt: string;
   status: "SANDBOX_PREVIEW_READY" | "LIVE_AT_EDGE" | "PROVISIONING" | "SYNCED";
@@ -98,13 +97,7 @@ export class InstantDeployEngine {
       bundleSizeBytes: bundleBytes,
       generatedFiles: [
         { filename: "index.html", content: generatedHtml, language: "html" },
-        {
-          filename: "vercel.json",
-          content: JSON.stringify({ routes: [{ src: "/(.*)", dest: "/index.html" }] }, null, 2),
-          language: "json",
-        },
       ],
-      deployScriptVercel: `npx vercel --prod --yes --name ${slug}`,
       deployScriptCloudflare: `npx wrangler pages deploy ./dist --project-name ${slug}`,
       createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       status: "SANDBOX_PREVIEW_READY",

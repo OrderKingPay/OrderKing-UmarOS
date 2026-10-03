@@ -393,8 +393,8 @@ export class PgStore implements RiderStore {
 
   async insertPod(p: ProofOfDelivery, userId: string) {
     await this.sql.query(
-      `insert into proof_of_delivery (id, delivery_id, rider_id, user_id, method, photo_content_type, photo_bytes, photo_data_url, captured_at, data_mode)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      `insert into proof_of_delivery (id, delivery_id, rider_id, user_id, method, photo_content_type, photo_bytes, photo_data_url, storage_url, captured_at, data_mode)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
       [
         p.id,
         p.deliveryId,
@@ -404,6 +404,7 @@ export class PgStore implements RiderStore {
         p.photoContentType,
         p.photoBytes,
         p.photoDataUrl,
+        p.storageUrl ?? null,
         p.capturedAt,
         p.dataMode,
       ],
@@ -424,6 +425,7 @@ export class PgStore implements RiderStore {
         photoContentType: r.photo_content_type ? String(r.photo_content_type) : null,
         photoBytes: r.photo_bytes == null ? null : num(r.photo_bytes),
         photoDataUrl: r.photo_data_url ? String(r.photo_data_url) : null,
+        storageUrl: r.storage_url ? String(r.storage_url) : null,
         capturedAt: iso(r.captured_at),
         dataMode: (r.data_mode as ProofOfDelivery["dataMode"]) ?? "SIMULATED",
       }),

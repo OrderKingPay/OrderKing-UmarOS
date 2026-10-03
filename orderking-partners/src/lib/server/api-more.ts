@@ -67,8 +67,9 @@ export const askAssistant = createServerFn({ method: "POST" })
       const question = data.question.trim().slice(0, 1000);
       if (!question) throw new Error("Ask a question");
 
-      const apiKey = process.env.OPENAI_API_KEY;
-      if (!apiKey) {
+      const apiKey = process.env.OPENAI_API_KEY?.trim();
+      const model = process.env.OPENAI_MODEL?.trim();
+      if (!apiKey || !model) {
         return {
           ok: false as const,
           error: "AI_PROVIDER_NOT_CONFIGURED",
@@ -97,7 +98,7 @@ export const askAssistant = createServerFn({ method: "POST" })
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({
-          model: "gpt-5.6",
+          model,
           input: [
             {
               role: "system",

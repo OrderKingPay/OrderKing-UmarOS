@@ -9,6 +9,8 @@ import { useT } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
 import { useClientState } from "@/lib/client-state";
 import { listOrders } from "@/lib/server/api-orders";
+import { flushQueue } from "@/lib/offline/durable-queue";
+import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
 import { isFeatureEnabled } from "@/lib/platform-config";
 import { supabaseCloud } from "@/lib/db-cloud";
 import { Volume2, VolumeX } from "lucide-react";
@@ -101,7 +103,7 @@ function speakKitchenOrder(orderId: string, totalPaise: number) {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
     const amountRs = Math.round(totalPaise / 100);
     const shortId = orderId.slice(-4).toUpperCase();
-    const text = `OrderKing: New order #${shortId} received! Total amount ₹${amountRs} paid via KingPay.`;
+    const text = `OrderKing: New order #${shortId} received. Total amount ₹${amountRs}.`;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1.0;
     utterance.pitch = 1.1;
@@ -125,7 +127,20 @@ function KitchenPage() {
 
   useEffect(() => {
     if (!vendor.restaurantId) return;
-    const channel = supabaseCloud
+    const reconcile = async () => {
+      await flushQueue((data) => transitionOrderViaHDmaster(data));
+      await qc.invalidateQueries({ queryKey: ["orders", vendor.restaurantId, "live"] });
+    };
+    void reconcile();
+    const onOnline = () => void reconcile();
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [vendor.restaurantId, qc]);
+
+  useEffect(() => {
+    const cloud = supabaseCloud;
+    if (!vendor.restaurantId || !cloud) return;
+    const channel = cloud
       .channel(`orders-${vendor.restaurantId}`)
       .on(
         "postgres_changes",
@@ -142,7 +157,7 @@ function KitchenPage() {
       .subscribe();
 
     return () => {
-      supabaseCloud.removeChannel(channel);
+      cloud.removeChannel(channel);
     };
   }, [vendor.restaurantId, qc]);
 
@@ -186,33 +201,29 @@ function KitchenPage() {
         </Button>
       </div>
 
-      {/* King Pay Merchant Soundbox Software (₹99/mo) */}
-      <Card className="border border-primary/30 bg-primary/5 p-4 space-y-2">
+      <Card className="border border-primary/20 bg-primary/5 p-4 space-y-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="text-xl">📢</span>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-sm text-foreground">King Pay AI Soundbox Active</h3>
-                <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                  ₹99/mo Active
-                </span>
-              </div>
-              <p className="text-xs text-muted mt-0.5">
-                Zero physical hardware cost. Announces incoming orders and King Pay UPI payments aloud in Bengali, Hindi, and English.
-              </p>
-            </div>
+          <div>
+            <h3 className="font-semibold text-sm text-foreground">Kitchen audio alerts</h3>
+            <p className="text-xs text-muted mt-0.5">
+              Uses this device&apos;s browser audio only. It does not confirm a payment or a payment-provider connection.
+            </p>
           </div>
           <Button
             size="sm"
             variant="outline"
             onClick={() => {
               playKitchenBell();
-              speakKitchenOrder("TEST-8421", 45000);
+              try {
+                const utterance = new SpeechSynthesisUtterance("OrderKing kitchen audio test.");
+                window.speechSynthesis?.speak(utterance);
+              } catch {
+                /* ignore local audio test errors */
+              }
             }}
             className="shrink-0 text-xs font-medium"
           >
-            🔊 Test Voice Announcement
+            🔊 Test local alert
           </Button>
         </div>
       </Card>

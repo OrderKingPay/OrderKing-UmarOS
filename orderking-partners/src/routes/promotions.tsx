@@ -10,7 +10,6 @@ import { MoneyText } from "@/components/money-text";
 import { useT } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
 import { getPromotions, savePromotion, getAdCampaign, saveAdCampaign } from "@/lib/server/api-finance";
-import { rupeesToPaise } from "@/lib/money";
 import { can } from "@/lib/rbac";
 import type { PromotionKind } from "@/lib/contracts";
 
@@ -44,92 +43,24 @@ function PromotionsPage() {
   const [maxDiscountRupees, setMaxDiscountRupees] = useState("75");
 
   // Ad Campaign Budget Selection
-  const [adBudgetRupees, setAdBudgetRupees] = useState("250");
-
   const rest = q.data?.promotions.filter((p) => p.funder === "RESTAURANT") ?? [];
   const plat = q.data?.promotions.filter((p) => p.funder === "PLATFORM") ?? [];
 
   return (
     <VendorShell title={t("nav.promotions")} dataLabel={q.data?.dataLabel ?? vendor.dataLabel}>
-      {/* Zomato-Style Sponsored Ads & Boost Section */}
-      <Card className="mb-6 space-y-4 border-2 border-primary/20 bg-gradient-to-br from-surface via-surface to-primary/5 p-5 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-                Zomato-Style Ad Engine
-              </span>
-              <h2 className="font-display text-xl font-bold">Promote & Boost Kitchen</h2>
-            </div>
-            <p className="mt-1 text-sm text-muted">
-              Get top placement on customer app Search & Home feed with a Promoted badge.
-            </p>
-          </div>
-          {adQuery.data?.isActive ? (
-            <span className="flex items-center gap-1.5 rounded-full bg-success/15 px-3 py-1 text-xs font-medium text-success">
-              <span className="h-2 w-2 rounded-full bg-success animate-pulse" /> Active Campaign
-            </span>
-          ) : (
-            <span className="rounded-full bg-muted/20 px-3 py-1 text-xs font-medium text-muted">
-              Campaign Paused
-            </span>
-          )}
+      <Card className="mb-6 border border-line bg-surface-2 p-5">
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-muted/20 px-2.5 py-0.5 text-xs font-semibold text-muted">
+            Sponsored ads unavailable
+          </span>
+          <h2 className="font-display text-xl font-bold">Promote &amp; Boost Kitchen</h2>
         </div>
-
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border border-border bg-surface p-3">
-            <span className="text-xs text-muted">Daily Budget</span>
-            <p className="text-lg font-bold">
-              <MoneyText paise={adQuery.data?.dailyBudgetPaise ?? 25000} />
-            </p>
-          </div>
-          <div className="rounded-lg border border-border bg-surface p-3">
-            <span className="text-xs text-muted">Est. Impressions</span>
-            <p className="text-lg font-bold text-fg">~{adQuery.data?.estimatedImpressions ?? 3000} views/day</p>
-          </div>
-          <div className="rounded-lg border border-border bg-surface p-3">
-            <span className="text-xs text-muted">Est. Extra Orders</span>
-            <p className="text-lg font-bold text-primary">~{adQuery.data?.estimatedClicks ?? 35} clicks</p>
-          </div>
-        </div>
-
-        {canEdit ? (
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Label className="text-sm font-medium">Set Daily Budget (₹):</Label>
-            <div className="flex gap-2">
-              {["100", "250", "500", "1000"].map((amt) => (
-                <button
-                  key={amt}
-                  type="button"
-                  onClick={() => setAdBudgetRupees(amt)}
-                  className={`rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
-                    adBudgetRupees === amt
-                      ? "bg-primary text-white"
-                      : "bg-surface-2 text-fg hover:bg-surface-3"
-                  }`}
-                >
-                  ₹{amt}
-                </button>
-              ))}
-            </div>
-            <div className="ml-auto flex gap-2">
-              <Button
-                variant={adQuery.data?.isActive ? "outline" : "primary"}
-                onClick={() =>
-                  void saveAdCampaign({
-                    data: {
-                      restaurantId: vendor.restaurantId,
-                      dailyBudgetPaise: rupeesToPaise(Number(adBudgetRupees) || 250),
-                      isActive: !adQuery.data?.isActive,
-                    },
-                  }).then(() => qc.invalidateQueries({ queryKey: ["adCampaign"] }))
-                }
-              >
-                {adQuery.data?.isActive ? "Pause Campaign" : "🚀 Launch Ad Boost"}
-              </Button>
-            </div>
-          </div>
-        ) : null}
+        <p className="mt-2 text-sm text-muted">
+          OrderKing does not currently have a connected ad-delivery and measurement provider for restaurant campaigns. No impressions, clicks, placement, or ad spend will be claimed from this screen.
+        </p>
+        <p className="mt-2 text-xs text-muted">
+          Restaurant-funded offers below are configuration records and are separate from sponsored placement.
+        </p>
       </Card>
 
       {/* Offers & Discounts Grid */}

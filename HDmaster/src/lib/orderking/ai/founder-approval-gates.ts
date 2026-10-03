@@ -59,11 +59,7 @@ export class FounderApprovalGates {
   }
 
   public requiresApproval(domain: ApprovalRiskDomain, payload?: { amountInr?: number }): boolean {
-    if (domain === "FINANCIAL") {
-      // Auto-authorize micro-refunds under ₹200; require founder approval for all larger transfers
-      if (payload?.amountInr && payload.amountInr <= 200) return false;
-      return true;
-    }
+    if (domain === "FINANCIAL") return true;
     // Legal, Destructive, Production, and External ALWAYS require founder approval
     return true;
   }
@@ -79,9 +75,9 @@ export class FounderApprovalGates {
     rollbackAction?: { actionName: string; payload: Record<string, unknown> };
   }): PendingApprovalRequest {
     const id = `gate-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-    const createdAt = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const createdAt = new Date().toISOString();
 
-    const auditHash = Math.random().toString(36).substring(2, 15);
+    const auditHash = crypto.createHash('sha256').update(JSON.stringify({ id, domain: params.domain, title: params.title, targetEntity: params.targetEntity, createdAt, previousHash: this.lastHash })).digest('hex');
 
     const req: PendingApprovalRequest = {
       id,
@@ -129,7 +125,7 @@ export class FounderApprovalGates {
       details: `Founder authorized execution for: "${req.title}".`,
     });
 
-    return { success: true, message: `Action "${req.title}" approved and executed.`, request: req };
+    return { success: true, message: `Action "${req.title}" approved and released to the governed executor; execution is not implied by approval.`, request: req };
   }
 
   public rejectRequest(id: string, reason = "Rejected by Founder"): { success: boolean; message: string } {

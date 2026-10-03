@@ -13,54 +13,33 @@ import { validateUpload } from "@/lib/adapters/storage";
 export const getBootstrap = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    try {
-      const sql = await getSql();
-      const memberships = await loadMemberships(sql, context.userId);
-      return {
-        userId: context.userId,
-        memberships,
-        branding: {
-          appName: platformConfig.brand.appName,
-          tagline: platformConfig.brand.tagline,
-          restaurantFacingBrandName: platformConfig.brand.restaurantFacingBrandName,
-          logo: platformConfig.brand.restaurantFacingLogo,
-          primary: platformConfig.theme.primary,
-          supportEmail: platformConfig.support.email,
+    const sql = await getSql();
+    const memberships = await loadMemberships(sql, context.userId);
+    return {
+      userId: context.userId,
+      memberships,
+      branding: {
+        appName: platformConfig.brand.appName,
+        tagline: platformConfig.brand.tagline,
+        restaurantFacingBrandName: platformConfig.brand.restaurantFacingBrandName,
+        logo: platformConfig.brand.restaurantFacingLogo,
+        primary: platformConfig.theme.primary,
+        supportEmail: platformConfig.support.email,
+      },
+      featureFlags: platformConfig.featureFlags,
+      adapters: {
+        notifications: notificationChannelStatus(),
+        storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
+        dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
+        payments: { connected: false, provider: "NOT_CONNECTED" },
+        ai: {
+          connected: Boolean(process.env.OPENAI_API_KEY?.trim() && process.env.OPENAI_MODEL?.trim()),
+          provider: process.env.OPENAI_API_KEY?.trim() && process.env.OPENAI_MODEL?.trim() ? "OpenAI" : "NOT_CONNECTED",
+          model: process.env.OPENAI_MODEL?.trim() || null,
         },
-        featureFlags: platformConfig.featureFlags,
-        adapters: {
-          notifications: notificationChannelStatus(),
-          storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
-          dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
-          payments: { connected: false, provider: "NOT_CONNECTED" },
-          ai: { connected: Boolean(process.env.XAI_API_KEY), provider: process.env.XAI_API_KEY ? "xAI" : "NOT_CONNECTED" },
-        },
-        commissionOptionsBps: [...platformConfig.commission.allowedBps],
-      };
-    } catch (error) {
-      console.error("[getBootstrap] Failed DB connect:", error);
-      return {
-        userId: context.userId,
-        memberships: [],
-        branding: {
-          appName: platformConfig.brand.appName,
-          tagline: platformConfig.brand.tagline,
-          restaurantFacingBrandName: platformConfig.brand.restaurantFacingBrandName,
-          logo: platformConfig.brand.restaurantFacingLogo,
-          primary: platformConfig.theme.primary,
-          supportEmail: platformConfig.support.email,
-        },
-        featureFlags: platformConfig.featureFlags,
-        adapters: {
-          notifications: notificationChannelStatus(),
-          storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
-          dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
-          payments: { connected: false, provider: "NOT_CONNECTED" },
-          ai: { connected: Boolean(process.env.XAI_API_KEY), provider: process.env.XAI_API_KEY ? "xAI" : "NOT_CONNECTED" },
-        },
-        commissionOptionsBps: [...platformConfig.commission.allowedBps],
-      };
-    }
+      },
+      commissionOptionsBps: [...platformConfig.commission.allowedBps],
+    };
   });
 
 
@@ -339,15 +318,31 @@ export const uploadDocument = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const { withVendor } = await import("./helpers");
     return withVendor(context.userId, data.restaurantId, "documents.upload", async (sql, ctx) => {
+      if (!storageAdapter.connected) {
+        throw new Error("Document storage is not connected. Upload is unavailable; nothing was saved.");
+      }
       const comma = data.dataUrl.indexOf(",");
-      const b64 = comma >= 0 ? data.dataUrl.slice(comma + 1) : data.dataUrl;
-      const byteSize = Math.floor((b64.length * 3) / 4);
+      const header = comma >= 0 ? data.dataUrl.slice(0, comma) : "";
+      const b64 = (comma >= 0 ? data.dataUrl.slice(comma + 1) : data.dataUrl).replace(/\\s+/g, "");
+      const declaredType = header.match(/^data:([^;,]+)/i)?.[1]?.toLowerCase();
+      if (declaredType && declaredType !== data.contentType.toLowerCase()) {
+        throw new Error("Uploaded file type does not match the declared content type.");
+      }
+      let binary: string;
+      try {
+        binary = globalThis.atob(b64);
+      } catch {
+        throw new Error("Uploaded file data is invalid.");
+      }
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const byteSize = bytes.byteLength;
       const check = validateUpload({ contentType: data.contentType, byteSize, kind: "document" });
       if (!check.ok) throw new Error(check.error);
       const stored = await storageAdapter.put({
         key: `${ctx.restaurantId}/${data.kind}/${data.fileName}`,
         contentType: data.contentType,
-        bytes: new Uint8Array(byteSize),
+        bytes,
       });
       const id = newId("doc");
       await sql`

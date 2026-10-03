@@ -43,90 +43,28 @@ function AssistantPage() {
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted">{t("assistant.disclaimer")}</p>
         <div className="flex items-center gap-1.5 rounded-full bg-leaf-soft px-3 py-1 text-xs font-semibold text-leaf">
-          <span className="h-2 w-2 rounded-full bg-leaf animate-pulse" />
-          <span>AI Kitchen Assistant Online</span>
+          <span className={connected ? "h-2 w-2 rounded-full bg-leaf animate-pulse" : "h-2 w-2 rounded-full bg-muted"} />
+          <span>{connected ? "AI provider connected" : "AI provider unavailable"}</span>
         </div>
       </div>
 
-      {/* ⚖️ Statutory Government & Regulatory Direct Links (Zero Legal Headache) */}
-      <Card className="border-amber-500/30 bg-amber-500/5 p-4">
-        <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+      <Card className="border-line bg-surface-2 p-4">
+        <div className="flex items-center gap-2">
           <span className="text-lg">⚖️</span>
-          <h2 className="text-sm font-bold tracking-tight">STATUTORY MERCHANT HELPLINES & OMBUDSMAN</h2>
+          <h2 className="text-sm font-bold tracking-tight">Official business resources</h2>
         </div>
         <p className="mt-1 text-xs text-muted">
-          Direct escalation to official Indian statutory departments and regulatory desks. Ensures compliance under FSSAI, GST &amp; DPIIT rules.
+          Use official government portals for food licensing, tax, and MSME services. OrderKing does not present third-party contacts as statutory desks.
         </p>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          <a
-            href="https://foscos.fssai.gov.in"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 rounded-lg border border-leaf-soft bg-surface p-2.5 text-xs font-bold text-leaf hover:bg-leaf-soft/50 transition-colors"
-          >
-            <span>📜</span>
-            <div>
-              <div>FSSAI FoSCoS</div>
-              <div className="text-[10px] font-normal text-muted">foscos.fssai.gov.in</div>
-            </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <a href="https://foscos.fssai.gov.in" target="_blank" rel="noreferrer" className="rounded-lg border border-line bg-surface px-3 py-2 text-xs font-semibold hover:bg-accent">
+            FSSAI FoSCoS
           </a>
-          <a
-            href="https://www.gst.gov.in"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 rounded-lg border border-line bg-surface p-2.5 text-xs font-bold text-foreground hover:bg-accent transition-colors"
-          >
-            <span>🏛️</span>
-            <div>
-              <div>GST Seva Kendra</div>
-              <div className="text-[10px] font-normal text-muted">1800-103-4786</div>
-            </div>
+          <a href="https://www.gst.gov.in" target="_blank" rel="noreferrer" className="rounded-lg border border-line bg-surface px-3 py-2 text-xs font-semibold hover:bg-accent">
+            GST Portal
           </a>
-          <a
-            href="https://samadhaan.msme.gov.in"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 rounded-lg border border-line bg-surface p-2.5 text-xs font-bold text-foreground hover:bg-accent transition-colors"
-          >
-            <span>🛡️</span>
-            <div>
-              <div>MSME Samadhaan</div>
-              <div className="text-[10px] font-normal text-muted">Delayed Payments</div>
-            </div>
-          </a>
-          <a
-            href="https://odrcountry.in"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 rounded-lg border border-line bg-surface p-2.5 text-xs font-bold text-foreground hover:bg-accent transition-colors"
-          >
-            <span>⚖️</span>
-            <div>
-              <div>DPIIT ODR</div>
-              <div className="text-[10px] font-normal text-muted">Dispute Resolution</div>
-            </div>
-          </a>
-          <a
-            href="mailto:merchant.care@orderking.in"
-            className="flex items-center gap-2 rounded-lg border border-line bg-surface p-2.5 text-xs font-bold text-foreground hover:bg-accent transition-colors"
-          >
-            <span>📩</span>
-            <div>
-              <div>Merchant Ombudsman</div>
-              <div className="text-[10px] font-normal text-muted">Statutory Desk</div>
-            </div>
-          </a>
-          <a
-            href="https://wa.me/919223166166?text=RESTAURANT%20PARTNER%20PRIORITY%20SUPPORT:%20Need%20immediate%20kitchen%20settlement%20assistance"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 rounded-lg bg-[#25D366]/10 p-2.5 text-xs font-bold text-[#25D366] hover:bg-[#25D366]/20 transition-colors"
-          >
-            <span>💬</span>
-            <div>
-              <div>WhatsApp VIP Care</div>
-              <div className="text-[10px] font-normal text-muted">24x7 Priority Desk</div>
-            </div>
+          <a href="https://www.my.msme.gov.in/MyMsme/Reg/home.aspx" target="_blank" rel="noreferrer" className="rounded-lg border border-line bg-surface px-3 py-2 text-xs font-semibold hover:bg-accent">
+            MSME / Samadhaan
           </a>
         </div>
       </Card>
@@ -148,11 +86,11 @@ function AssistantPage() {
         <Button variant="secondary" size="sm" onClick={() => void send("How are my kitchen sales and orders today?")}>
           📊 Today&apos;s Sales &amp; Orders
         </Button>
-        <Button variant="secondary" size="sm" onClick={() => void send("Explain my Wednesday payout breakdown with 12% commission, GST, TCS and TDS deductions.")}>
+        <Button variant="secondary" size="sm" onClick={() => void send("Explain my actual settlement and tax deductions using only the authorized data available to you.")}>
           💳 Wednesday Payout &amp; Tax Breakdown
         </Button>
-        <Button variant="secondary" size="sm" onClick={() => void send("How do I claim 100% food value reimbursement for a customer-cancelled order?")}>
-          🛡️ Cancelled Order Reimbursement
+        <Button variant="secondary" size="sm" onClick={() => void send("What is the documented process for a customer-cancelled order and any reimbursement that the actual platform policy supports?")}>
+          🛡️ Cancellation & reimbursement policy
         </Button>
         <Button variant="secondary" size="sm" onClick={() => void send("What are my top selling dishes today?")}>
           🍲 Top Selling Dishes

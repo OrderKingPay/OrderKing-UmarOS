@@ -30,6 +30,29 @@ function hasGlobbedMigrations(root: string): boolean {
  * migrations — no schema to apply — skips it entirely rather than paying for a
  * PGLite instance it never queries.
  */
+function legacyApiRouteCompatPlugin(): Plugin {
+  const targets = new Set([
+    "src/routes/api/v1/integrations/openai.ts",
+    "src/routes/api/v1/integrations/travel.ts",
+  ]);
+
+  return {
+    name: "app-builder:legacy-api-route-compat",
+    enforce: "pre",
+    transform(code, id) {
+      const normalized = id.split("\\").join("/");
+      if (!normalized.endsWith("/HDmaster/")) return null;
+      const relative = normalized.slice(normalized.indexOf("/src/routes/"));
+      if (!targets.has(relative.replace(/^\//, "")) || !code.includes("createAPIFileRoute")) return null;
+      const next = code.replace(/\bcreateAPIFileRoute\b/g, "__legacyCreateAPIFileRoute");
+      return {
+        code: `import { createAPIFileRoute as __legacyCreateAPIFileRoute } from "@/lib/createAPIFileRoute";\n${next}`,
+        map: null,
+      };
+    },
+  };
+}
+
 function pgliteBootstrapPlugin(): Plugin {
   return {
     name: "app-builder:pglite-bootstrap",
@@ -52,7 +75,7 @@ function pgliteBootstrapPlugin(): Plugin {
 }
 
 /**
- * Nitro's Vercel bundle inlines `@electric-sql/pglite` but does not copy the
+ * Nitro's Cloudflare Pages bundle inlines `@electric-sql/pglite` but does not copy the
  * sibling WASM/data blobs the WASM loader resolves next to the chunk
  * (`pglite.data`, `pglite.wasm`). Local `vite preview` (no DATABASE_URL) needs
  * them; a deployed Neon app never loads PGLite. Copy after the nitro emit.
@@ -64,7 +87,7 @@ function pglitePreviewAssetsPlugin(): Plugin {
     closeBundle() {
       const destDir = join(
         process.cwd(),
-        ".vercel/output/functions/__server.func/_libs",
+        "dist/_worker.js/_libs",
       );
       const srcDir = join(
         process.cwd(),
@@ -197,8 +220,14 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   
-  resolve: { tsconfigPaths: true },
+  resolve: {
+    tsconfigPaths: true,
+    alias: {
+      "@tanstack/react-start/api": join(process.cwd(), "src/lib/createAPIFileRoute.ts"),
+    },
+  },
   plugins: [
+    legacyApiRouteCompatPlugin(),
     pgliteBootstrapPlugin(),
     pglitePreviewAssetsPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
@@ -212,7 +241,7 @@ export default defineConfig(({ command, isPreview }) => ({
     ...(command === "build" || isPreview
       ? [
           nitro({
-            preset: "netlify",
+            preset: "cloudflare-pages",
             // Auto-registers server/middleware/* (the PWA install page +
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.

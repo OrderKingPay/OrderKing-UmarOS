@@ -41,7 +41,8 @@ export class AnthropicProvider implements AIProvider {
   async chat(input: ChatRequest): Promise<ChatResponse> {
     this.ensureConfigured();
     const start = Date.now();
-    const model = input.model || "claude-3-7-sonnet-20250219";
+    const model = input.model || process.env.ANTHROPIC_MODEL?.trim();
+    if (!model) throw new Error("ANTHROPIC_MODEL is not configured.");
 
     const messages = input.messages
       .filter((m) => m.role !== "system")
@@ -97,7 +98,8 @@ export class AnthropicProvider implements AIProvider {
 
   async *stream(input: ChatRequest): AsyncIterable<ChatChunk> {
     this.ensureConfigured();
-    const model = input.model || "claude-3-7-sonnet-20250219";
+    const model = input.model || process.env.ANTHROPIC_MODEL?.trim();
+    if (!model) throw new Error("ANTHROPIC_MODEL is not configured.");
 
     const messages = input.messages
       .filter((m) => m.role !== "system")

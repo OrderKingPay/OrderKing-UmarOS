@@ -52,7 +52,7 @@ update app_config set value = $cfg${
   "founderPhone": "+91 99999 99999",
   "founderName": "Umar Hasan",
   "portalName": "OrderKing for Kitchens",
-  "portalUrl": "https://orderking-partners.vercel.app",
+  "portalUrl": "https://orderking-partners.pages.dev",
   "notificationSender": "OrderKing Kitchens",
   "settlementStatementBrand": "OrderKing Marketplace",
   "settlementSupportEmail": "finance@orderking.com",

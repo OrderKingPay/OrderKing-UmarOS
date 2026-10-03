@@ -212,52 +212,22 @@ export const getAdCampaign = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .validator((d: { restaurantId?: string }) => d)
   .handler(async ({ context, data }) => {
-    return withVendor(context.userId, data.restaurantId, "promotions.view", async (sql, ctx) => {
-      const rows = await sql<{
-        id: string;
-        name: string;
-        daily_budget_paise: number;
-        is_active: boolean;
-      }>`select id, name, amount_paise as daily_budget_paise, is_active from promotions where restaurant_id = ${ctx.restaurantId} and kind = 'item' and name = 'SPONSORED_BOOST' limit 1`;
-      const c = rows[0];
-      const budget = c ? asInt(c.daily_budget_paise, 25000) : 25000;
-      return {
-        hasCampaign: Boolean(c),
-        isActive: c ? (c.is_active === true || (c.is_active as unknown) === "t") : false,
-        dailyBudgetPaise: budget,
-        estimatedImpressions: Math.round((budget / 100) * 12),
-        estimatedClicks: Math.round((budget / 100) * 1.5),
-      };
-    });
+    return withVendor(context.userId, data.restaurantId, "promotions.view", async () => ({
+      providerConnected: false as const,
+      hasCampaign: false,
+      isActive: false,
+      dailyBudgetPaise: null,
+      estimatedImpressions: null,
+      estimatedClicks: null,
+    }));
   });
 
 export const saveAdCampaign = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((d: { restaurantId?: string; isActive: boolean; dailyBudgetPaise: number }) => d)
   .handler(async ({ context, data }) => {
-    return withVendor(context.userId, data.restaurantId, "promotions.edit", async (sql, ctx) => {
-      const budget = paise(data.dailyBudgetPaise);
-      const existing = await sql<{ id: string }>`
-        select id from promotions where restaurant_id = ${ctx.restaurantId} and kind = 'item' and name = 'SPONSORED_BOOST' limit 1
-      `;
-      if (existing[0]) {
-        await sql`
-          update promotions set
-            amount_paise = ${budget},
-            is_active = ${data.isActive}
-          where id = ${existing[0].id} and restaurant_id = ${ctx.restaurantId}
-        `;
-      } else {
-        const id = newId("pro");
-        await sql`
-          insert into promotions (
-            id, restaurant_id, name, funder, kind, amount_paise, is_active, min_order_paise, assumed_orders_per_day
-          ) values (
-            ${id}, ${ctx.restaurantId}, 'SPONSORED_BOOST', 'RESTAURANT', 'item', ${budget}, ${data.isActive}, 0, 10
-          )
-        `;
-      }
-      return { ok: true as const, isActive: data.isActive, dailyBudgetPaise: budget };
+    return withVendor(context.userId, data.restaurantId, "promotions.edit", async () => {
+      throw new Error("Sponsored ad delivery is not connected. No campaign, budget, impression, or click tracking was changed.");
     });
   });
 

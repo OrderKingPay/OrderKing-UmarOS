@@ -11,6 +11,6 @@
     "deploy:cloudrun": "powershell -ExecutionPolicy Bypass -File scripts/deploy-cloudrun.ps1"
   },
   "devDependencies": {
-    "turbo": "latest"
+    "turbo": "2.11.5"
   }
 }

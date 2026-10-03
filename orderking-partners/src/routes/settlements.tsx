@@ -95,104 +95,21 @@ function SettlementsPage() {
         </div>
       </Card>
 
-      {/* 1-Tap Instant Daily Settlement (0.5% Fee) */}
-      <Card className="border border-primary/30 bg-primary/5 p-4 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-lg">⚡</span>
-              <h3 className="font-semibold text-foreground text-sm">1-Tap Instant Daily Settlement</h3>
-              <span className="rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">IMPS Real-Time</span>
-            </div>
-            <p className="text-xs text-muted mt-1">
-              Need working capital immediately? Settle today&apos;s accrued balance ({q.data ? formatINR(q.data.currentPayablePaise) : "—"}) in 15 seconds to your registered bank account for a tiny 0.5% convenience fee.
-            </p>
-          </div>
-          <Button
-            size="sm"
-            disabled={!q.data || q.data.currentPayablePaise <= 0 || instantSettling}
-            onClick={() => handleInstantSettlement()}
-            className="shrink-0 bg-primary hover:bg-primary/90 text-white font-medium"
-          >
-            {instantSettling ? "Settling via IMPS..." : `Instant Cashout (${q.data ? formatINR(Math.max(0, Math.round(q.data.currentPayablePaise * 0.995))) : "—"})`}
-          </Button>
-        </div>
-        {instantError && (
-          <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">
-            {instantError}
-          </p>
-        )}
+      <Card className="border border-line bg-surface-2 p-4 space-y-2">
+        <h3 className="font-semibold text-sm">Bank payout connection</h3>
+        <p className="text-xs text-muted">
+          Automated bank payout is not connected in this environment. No payout can be initiated from Partner, and this screen will not claim a transfer occurred.
+        </p>
       </Card>
 
       <Card className="space-y-2 text-sm">
         <h2 className="font-display text-lg">{t("settlements.formula")}</h2>
         <p className="text-muted">{t("settlements.formulaHint")}</p>
       </Card>
-      {/* Zero Unexplained Deductions Guarantee & Statutory Safe Harbor */}
-      <Card className="border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-2 text-xs">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-base">🛡️</span>
-            <h3 className="font-semibold text-emerald-900 dark:text-emerald-300 text-sm">Zero Unexplained Deductions &amp; Statutory Safe Harbor</h3>
-          </div>
-          <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded">
-            IT Act §79 Protected
-          </span>
-        </div>
+      <Card className="border border-line bg-surface-2 p-4 space-y-2 text-xs">
+        <h3 className="font-semibold text-sm">Settlement accounting</h3>
         <p className="text-muted leading-relaxed">
-          OrderKing strictly adheres to transparent merchant accounting under Indian Law. Every single deduction is legally mandated and itemized:
-        </p>
-        <ul className="list-disc pl-4 space-y-1 text-muted">
-          <li><strong>GST (5%)</strong>: Remitted under Section 9(5) CGST Act (E-Commerce Restaurant Delivery Services).</li>
-          <li><strong>TCS (1%)</strong>: Tax Collected at Source under Section 52 CGST Act.</li>
-          <li><strong>TDS (1%)</strong>: Withholding tax under Section 194-O Income Tax Act (Form 16A issued quarterly).</li>
-          <li><strong>Intermediary Safe Harbor</strong>: Platform operates as a neutral technology intermediary under Section 79 of the Information Technology Act, 2000.</li>
-          <li><strong>Binding Arbitration</strong>: All disputes governed by the Arbitration and Conciliation Act, 1996, with exclusive jurisdiction in local district court.</li>
-          <li><strong>Zero Arbitrary Levies</strong>: No unexplained marketing or listing penalties. Every single rupee is mathematically accounted for in integer paise.</li>
-        </ul>
-      </Card>
-
-      {/* 10x More Profitable than Zomato: Transparent Partner Savings Engine */}
-      <Card className="border border-indigo-500/30 bg-gradient-to-r from-indigo-500/5 via-primary/5 to-emerald-500/5 p-4 space-y-3 text-xs">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-base">🚀</span>
-            <h3 className="font-semibold text-indigo-900 dark:text-indigo-300 text-sm">
-              Why OrderKing is 10x More Profitable for You than Zomato
-            </h3>
-          </div>
-          <span className="text-[10px] font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded">
-            +13.3% Higher Take-Home Profit
-          </span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-          <div className="rounded-lg border border-line bg-surface/50 p-2.5">
-            <p className="text-[11px] text-muted uppercase font-medium">Platform Commission</p>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">15% Flat</span>
-              <span className="text-xs text-muted line-through">25% on Zomato</span>
-            </div>
-            <p className="text-[10px] text-muted mt-1">You save ₹100 on every ₹1,000 food order.</p>
-          </div>
-          <div className="rounded-lg border border-line bg-surface/50 p-2.5">
-            <p className="text-[11px] text-muted uppercase font-medium">Onboarding &amp; Hidden Levies</p>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">₹0 (FREE)</span>
-              <span className="text-xs text-muted line-through">₹10,000+ fee</span>
-            </div>
-            <p className="text-[10px] text-muted mt-1">Zero forced ad spend or listing penalties.</p>
-          </div>
-          <div className="rounded-lg border border-line bg-surface/50 p-2.5">
-            <p className="text-[11px] text-muted uppercase font-medium">Settlement Certainty</p>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-base font-bold text-primary">Integer-Paise</span>
-              <span className="text-xs text-muted">Weekly direct transfer</span>
-            </div>
-            <p className="text-[10px] text-muted mt-1">All deductions statutory: GST §9(5), TDS 194-O, TCS §52.</p>
-          </div>
-        </div>
-        <p className="text-[11px] text-muted">
-          💡 <em>Pro-tip:</em> Because you take home ₹20,000+ extra per ₹2,00,000 monthly sales compared to Zomato, pass on 5% combo discounts to customers to triple your daily order volume!
+          The figures above and in each statement are derived from the Partner settlement data available to this restaurant. Tax treatment, platform fees, refunds, and other deductions must be verified against the actual statement and applicable records; no statutory guarantee is asserted here.
         </p>
       </Card>
       <div className="flex gap-2">

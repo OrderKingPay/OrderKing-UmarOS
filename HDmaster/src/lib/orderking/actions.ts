@@ -704,7 +704,7 @@ export const askAssistant = createServerFn({ method: "POST" })
     question: string;
     mode: "ops" | "ceo";
     specialistId?: string;
-    provider?: "gemini" | "anthropic" | "openai" | "xai" | "local_deterministic";
+    provider?: "gemini" | "anthropic" | "openai" | "xai";
     conversation?: Array<{ role: "user" | "assistant"; content: string }>;
     approvedCallId?: string;
     approvedCallName?: string;
@@ -730,6 +730,7 @@ export const askAssistant = createServerFn({ method: "POST" })
         approvedCallId: data.approvedCallId,
         approvedCallName: data.approvedCallName,
         approvedCallArgs: data.approvedCallArgs,
+        approvalToken: data.approvalToken,
       });
 
       if (!result.ok) {
@@ -755,6 +756,7 @@ export const askAssistant = createServerFn({ method: "POST" })
           arguments: p.arguments as Record<string, string | number | boolean | null>,
           description: p.description,
           requiredPermission: p.requiredPermission,
+          approvalToken: p.approvalToken,
         })),
       };
     } catch (err) {

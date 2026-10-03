@@ -7,6 +7,7 @@ import { computeQuote, type FeeSchedule, type PricedCartLine, type PromoInput } 
 import type { QuoteRequest, QuoteResult } from "@/lib/market-types";
 import type { DataLabel } from "@/lib/config/types";
 import { loadConfig } from "./load-config";
+import { getSessionUser } from "@/lib/auth/verify.server";
 
 type Built = {
   restaurantId: string;
@@ -263,7 +264,20 @@ export const quoteCart = createServerFn({ method: "POST" })
   .// @ts-ignore
   validator((input: QuoteRequest & { isFirstOrder?: boolean }) => input)
   .handler(async ({ data }: any) => {
-    const built = await buildQuote(data, Boolean(data.isFirstOrder));
+    // Never trust the client for eligibility. Quote-time first-order status is derived from the authenticated account.
+    const user = await getSessionUser();
+    let isFirstOrder = false;
+    if (user) {
+      const sql = await getSql();
+      const rows = await sql<{ c: number }>`
+        select count(*)::int as c
+        from orders
+        where user_id = ${user.id}
+          and status not in ('FAILED_PAYMENT', 'CANCELLED')
+      `;
+      isFirstOrder = (rows[0]?.c ?? 0) === 0;
+    }
+    const built = await buildQuote(data, isFirstOrder);
     return built.result;
   });
 

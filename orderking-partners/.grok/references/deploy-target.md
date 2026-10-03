@@ -1,40 +1,28 @@
 # Build & deploy target
 
-You never trigger the deploy yourself, **but the app you build is eventually
-deployed to Vercel** by the platform — so your output must build cleanly under
-Vercel's process. `npm run build` must succeed and emit valid output, and code
-that works under `npm run dev` but breaks a production / SSR build is a bug.
-Watch for dev-only deps, server-only Node APIs run at import time, runtime
-filesystem writes, and hard-coded ports / hosts / secrets.
+**Cloudflare Pages is the only approved deployment target for this OrderKing/Umar OS workspace.**
 
-## A passing `npm run build` does not mean the deployed app renders
+**Active deployment URL:** https://orderking-partners.pages.dev/login
+**Do not substitute another Vercel, Netlify, or Cloudflare preview URL for production operations without explicit founder direction.
+Do not configure, trigger, or restore Vercel, Netlify, Render, or another hosting platform.
 
-The most common blank-deploy failure is
-`Failed to load module script … MIME type "text/html"`: the built `index.html`
-requests JS assets that 404 in prod, so the server returns the HTML fallback
-(wrong MIME) and the page is blank. Fix the asset base path / build output so
-`/assets/*` resolve, and ensure the SPA/SSR fallback doesn't shadow real asset
-requests — then re-verify the served build renders.
+Production work must follow:
 
-If you edited source after kicking off the build, re-run `npm run build` first,
-then `npm run preview:restart` — it frees `:8081` before serving, so you never
-smoke the previous build's output.
+**Inspect → Plan → Validate → Preview locally → Founder approval → Cloudflare deploy → Verify → Audit**
 
-## What `vite.config.ts` already does
+## Runtime contracts
 
-The workspace ships a ready `vite.config.ts` and `tsconfig.json` — don't
-recreate them, and don't import a vendored `vite-tanstack-config` preset. The
-config:
+- Dev server: `0.0.0.0:8080`
+- Local preview: `127.0.0.1:8081`
+- Production host comes from `BETTER_AUTH_URL` / `CF_PAGES_URL` / the configured Cloudflare custom domain.
+- Cloudflare Pages/Workers environment variables and secrets are the only production deployment configuration source.
+- Never hard-code deployment provider URLs, tokens, API keys, or secrets.
+- Do not run a deployment merely to prove a source change. Runtime verification requires the actual local development machine or a specifically approved Cloudflare deployment.
 
-- binds the dev port `0.0.0.0:8080`;
-- pins `vite preview` to loopback `127.0.0.1:8081`, so the built output can
-  never be picked up as the user's live preview;
-- gates `nitro({ preset: "vercel" })` on `command === "build" || isPreview`, so
-  it never runs in dev — left on in dev, nitro opens a second dev-server port,
-  which breaks the single-port 8080 live preview — but still serves the built
-  output under `vite preview`;
-- mounts `grokPwaPlugin()`.
+## Build configuration
 
-If you edit it, preserve both port contracts, the build/preview-gated nitro
-plugin **including its `serverDir: "./server"` option** (without it the deployed
-app loses the Home Screen install page), and `grokPwaPlugin()`.
+Preserve the existing TanStack Start + Vite architecture, `grokPwaPlugin()`, and `serverDir: "./server"` where present.
+
+Use Nitro's **Cloudflare Pages** preset for Cloudflare deployment.
+
+Do not add provider-specific configuration for another hosting platform.

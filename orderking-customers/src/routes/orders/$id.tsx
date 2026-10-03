@@ -14,6 +14,7 @@ import { advanceSimulatedOrder, cancelMyOrder, getMyOrder, reorderItems } from "
 import { getMyHDmasterOrder } from "@/lib/server/hdmaster-order-read";
 import { submitOrderReview, getOrderReview } from "@/lib/server/reviews";
 import { loadConfig } from "@/lib/server/load-config";
+import { createTicket } from "@/lib/server/account";
 import { CUSTOMER_TRACK_STEPS } from "@/lib/orders/state";
 import { formatPaise } from "@/lib/money";
 import { useOrderSSE } from "@/lib/hooks/use-order-sse";
@@ -65,26 +66,33 @@ function OrderDetailPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleComplaintSubmit = () => {
+  const handleComplaintSubmit = async () => {
     if (!complaintText.trim() && !complaintImage) {
       toast.error("Please provide a description or attach photo proof of the issue.");
       return;
     }
-    const ticketNum = Math.floor(100000 + Math.random() * 900000);
-    const newComplaint = {
-      ticketId: `HD-COMPLAINT-${ticketNum}`,
-      category: complaintCategory,
-      resolution:
-        preferredResolution === "REFUND"
-          ? "Instant 100% Wallet Refund"
-          : preferredResolution === "REDELIVERY"
-            ? "Free Express Redelivery"
-            : "Escalated to HDmaster Founder Operations",
-      status: "UNDER_REVIEW",
-      createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-    setSubmittedComplaint(newComplaint);
-    toast.success(`Complaint registered! Ticket #${newComplaint.ticketId} escalated.`);
+    try {
+      const proofNote = complaintImage ? " Customer attached photo evidence." : "";
+      const message = `Order complaint — ${complaintCategory}. Requested resolution: ${preferredResolution}.${proofNote} ${complaintText.trim()}`.trim();
+      const ticket = await createTicket({
+        data: {
+          orderId: id,
+          topic: "ORDER_ISSUE",
+          message,
+        },
+      });
+      setSubmittedComplaint({
+        ticketId: ticket.id,
+        category: complaintCategory,
+        resolution: preferredResolution,
+        status: "open",
+        createdAt: new Date().toISOString(),
+      });
+      setComplaintOpen(false);
+      toast.success(`Support ticket ${ticket.id} created. Your complaint was actually submitted.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not submit the complaint.");
+    }
   };
   const detail = useQuery({
     queryKey: ["order", id],
@@ -199,13 +207,10 @@ function OrderDetailPage() {
                   </p>
                 </div>
               </div>
-              <a
-                href="tel:18001000"
-                className="flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-fg shadow-xs hover:bg-surface-3"
-              >
+              <span className="flex max-w-[360px] items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-[11px] font-medium text-muted">
                 <span>📞</span>
-                <span>Call (Masked)</span>
-              </a>
+                <span>Masked calling is unavailable until a verified calling provider is connected.</span>
+              </span>
             </div>
             {order.notes ? (
               <div className="mt-3 rounded-lg bg-surface-2/60 p-2 text-xs text-muted">
@@ -223,79 +228,6 @@ function OrderDetailPage() {
           riderProgressOverride={lastEvent?.step ? lastEvent.step / 20 : undefined}
           etaOverride={lastEvent?.eta}
         />
-
-        {/* Google Pay / CRED-Style Mystery Scratch Card on Delivery */}
-        {order.status === "DELIVERED" && (
-          <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-surface to-amber-500/5 p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-lg">
-                  🎁
-                </span>
-                <div>
-                  <h3 className="font-display font-bold text-fg">Delivery Mystery Scratch Card</h3>
-                  <p className="text-xs text-muted">You unlocked secret rewards on this order!</p>
-                </div>
-              </div>
-              <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-800 dark:text-amber-200">
-                King Club
-              </span>
-            </div>
-
-            <div className="mt-3">
-              {!scratched ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setScratched(true);
-                    toast.success("🎉 Mystery Reward Unlocked!");
-                  }}
-                  className="group flex h-24 w-full items-center justify-center rounded-xl border border-dashed border-amber-500/60 bg-gradient-to-r from-amber-500/10 via-primary/10 to-amber-500/10 text-center transition hover:border-amber-500 cursor-pointer"
-                >
-                  <div>
-                    <span className="text-2xl transition-transform group-hover:scale-125 inline-block">✨</span>
-                    <p className="font-bold text-sm text-fg">Tap to Scratch Your Reward</p>
-                    <p className="text-[11px] text-muted">Win King Coins, Fuel Vouchers & Brand Deals</p>
-                  </div>
-                </button>
-              ) : (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-center">
-                  <span className="text-2xl">🎉</span>
-                  <p className="font-bold text-sm text-emerald-800 dark:text-emerald-200">
-                    You won 2,500 King Coins + ₹50 HP Fuel Voucher!
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted">
-                    Code: <span className="font-mono font-bold text-fg">HPFUEL50</span> (HP Pay / IndianOil ONE)
-                  </p>
-                  <div className="mt-2.5 flex flex-wrap justify-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        void navigator.clipboard?.writeText("HPFUEL50");
-                        toast.success("Voucher code copied!");
-                      }}
-                    >
-                      Copy Code
-                    </Button>
-                    <a
-                      href="https://hppay.in?ref=orderking"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
-                    >
-                      <span>Redeem on HP Pay</span>
-                      <span>↗</span>
-                    </a>
-                    <Button size="sm" variant="ghost" asChild>
-                      <Link to="/king-pay">KingPay Hub →</Link>
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Multi-Category Post-Delivery Review Card (Restaurant + Food + Rider + App) */}
         {order.status === "DELIVERED" && (
@@ -550,15 +482,9 @@ function OrderDetailPage() {
                   {submittedComplaint.resolution}
                 </p>
                 <div className="flex items-center justify-between pt-1 border-t border-border">
-                  <span className="text-[11px] text-muted">Escalated to HDmaster Founder Operations at {submittedComplaint.createdAt}</span>
-                  <a
-                    href="https://wa.me/918000000000?text=Hi%2C%20I%20have%20an%20urgent%20complaint%20regarding%20ticket%20"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary font-bold text-[11px] hover:underline"
-                  >
-                    💬 WhatsApp Escalation →
-                  </a>
+                  <span className="text-[11px] text-muted">
+                    OrderKing Support received this ticket at {new Date(submittedComplaint.createdAt).toLocaleString()}
+                  </span>
                 </div>
               </div>
             )}
@@ -648,9 +574,9 @@ function OrderDetailPage() {
                   </label>
                   <div className="grid grid-cols-3 gap-1.5">
                     {[
-                      { id: "REFUND", label: "⚡ 100% Instant Refund", desc: "Credited to KingPay Wallet" },
-                      { id: "REDELIVERY", label: "🛵 Free Priority Redelivery", desc: "Fresh hot dish in 15m" },
-                      { id: "HDMASTER", label: "👑 HDmaster Escalation", desc: "Direct Founder Review" },
+                      { id: "REFUND", label: "Request refund review", desc: "Handled under the order refund policy" },
+                      { id: "REDELIVERY", label: "Request redelivery review", desc: "Subject to kitchen and rider availability" },
+                      { id: "HDMASTER", label: "Escalate to OrderKing", desc: "Support triage; Umar OS escalation when required" },
                     ].map((res) => (
                       <button
                         key={res.id}
@@ -688,53 +614,17 @@ function OrderDetailPage() {
           </div>
         )}
 
-        {/* 1-Tap Split Bill with Friends via UPI (Increases AOV, viral acquisition, 0.5% convenience fee) */}
-        <div className="mt-4 rounded-[var(--radius-xl)] border border-primary/20 bg-primary/5 p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xl">👥</span>
-              <div>
-                <h3 className="font-semibold text-sm text-foreground">Split Bill with Friends via UPI</h3>
-                <p className="text-xs text-muted">Generate instant UPI payment links for your friends in 1-tap</p>
-              </div>
-            </div>
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-              Zero Friction
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex-1 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-mono">
-              Split between {splitCount} people: ₹{((order.summary.totalPaise / splitCount) / 100).toFixed(2)} each
-            </div>
-            <div className="flex gap-1">
-              {[2, 3, 4, 5].map((cnt) => (
-                <button
-                  key={cnt}
-                  type="button"
-                  onClick={() => setSplitCount(cnt)}
-                  className={`size-7 rounded-md text-xs font-bold transition ${splitCount === cnt ? "bg-primary text-white" : "border border-border bg-surface text-muted"}`}
-                >
-                  {cnt}
-                </button>
-              ))}
+        {/* Split-bill payments — fail closed until a server-issued payment request exists. */}
+        <div className="mt-4 rounded-[var(--radius-xl)] border border-border bg-surface p-4">
+          <div className="flex items-start gap-3">
+            <span className="text-xl" aria-hidden="true">👥</span>
+            <div>
+              <h3 className="font-semibold text-sm text-foreground">Split bill</h3>
+              <p className="mt-1 text-xs text-muted">
+                Split-payment requests are temporarily unavailable until OrderKing can issue and verify real payment requests for this order. No fixed UPI address or unverified payment link is shown.
+              </p>
             </div>
           </div>
-          <Button
-            size="sm"
-            variant="secondary"
-            className="w-full text-xs font-medium"
-            onClick={() => {
-              const text = `Hey! Here's your ₹${((order.summary.totalPaise / splitCount) / 100).toFixed(2)} share for our food order from ${order.summary.restaurantName}: upi://pay?pa=orderking@icici&pn=OrderKing&am=${((order.summary.totalPaise / splitCount) / 100).toFixed(2)}&cu=INR&tn=Bill Split for ${order.summary.publicId}`;
-              if (typeof navigator !== "undefined" && navigator.share) {
-                void navigator.share({ title: "Split Bill on OrderKing", text });
-              } else if (typeof navigator !== "undefined") {
-                void navigator.clipboard?.writeText(text);
-                toast.success("UPI split payment link copied to clipboard!");
-              }
-            }}
-          >
-            📲 Share UPI Split Link (WhatsApp / SMS)
-          </Button>
         </div>
 
         {order.summary.dataLabel === "REAL" ? <p className="mt-4 text-sm text-muted">Live status is synchronized from OrderKing Command.</p> : null}

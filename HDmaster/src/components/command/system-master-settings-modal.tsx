@@ -66,11 +66,6 @@ export function SystemMasterSettingsModal({
   const [testingModelId, setTestingModelId] = useState<string | null>(null);
   const [testResults, setTestResults] = useState<Record<string, ModelConnectionTestResult>>({});
 
-  const [geminiKeyInput, setGeminiKeyInput] = useState(getProviderApiKey("gemini") || "");
-  const [openaiKeyInput, setOpenaiKeyInput] = useState(getProviderApiKey("openai") || "");
-  const [anthropicKeyInput, setAnthropicKeyInput] = useState(getProviderApiKey("anthropic") || "");
-  const [xaiKeyInput, setXaiKeyInput] = useState(getProviderApiKey("xai") || "");
-
   // Chat Behavior Settings
   const [chatMode, setChatMode] = useState<"auto" | "fast" | "deep">(() => {
     if (typeof window !== "undefined") return (localStorage.getItem("umar_os_chat_mode") as any) || "auto";
@@ -191,9 +186,8 @@ export function SystemMasterSettingsModal({
     toast.success(`Model check complete: ${connected}/${providers.length} providers connected.`);
   };
 
-  const handleSaveApiKey = (provider: string, keyVal: string) => {
-    setProviderApiKey(provider, keyVal);
-    toast.success(`Saved API key for ${provider.toUpperCase()}`);
+  const handleSaveApiKey = (_provider: string, _keyVal: string) => {
+    toast.error("API keys are not stored in the browser. Configure provider secrets server-side in Cloudflare.");
     setModelsList(getVerifiedModelRegistry());
   };
 
@@ -575,114 +569,18 @@ export function SystemMasterSettingsModal({
               </div>
 
               {/* Provider API Keys Configuration */}
-              <div className="border-t border-white/10 pt-3 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <ShieldCheck className="size-3.5 text-amber-400" />
-                    <span>Configure Provider API Keys (Saved Securely):</span>
-                  </h4>
-                  <span className="text-[10px] text-slate-400">Keys stored in local session storage</span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {/* Google */}
-                  <div className="p-2.5 rounded-xl bg-black/40 border border-white/10 space-y-1.5">
-                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-200">
-                      <span>Google Gemini API</span>
-                      <span className="text-[9px] font-mono text-slate-400">GEMINI_API_KEY</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        type="password"
-                        placeholder="AIzaSy..."
-                        value={geminiKeyInput}
-                        onChange={(e) => setGeminiKeyInput(e.target.value)}
-                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400"
-                      />
-                      <Button
-                        size="sm"
-                        onClick={() => handleSaveApiKey("gemini", geminiKeyInput)}
-                        className="h-7 px-2 text-[10px] font-bold bg-amber-500 hover:bg-amber-400 text-black"
-                      >
-                        Save
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Anthropic */}
-                  <div className="p-2.5 rounded-xl bg-black/40 border border-white/10 space-y-1.5">
-                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-200">
-                      <span>Anthropic Claude API</span>
-                      <span className="text-[9px] font-mono text-slate-400">ANTHROPIC_API_KEY</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        type="password"
-                        placeholder="sk-ant-..."
-                        value={anthropicKeyInput}
-                        onChange={(e) => setAnthropicKeyInput(e.target.value)}
-                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400"
-                      />
-                      <Button
-                        size="sm"
-                        onClick={() => handleSaveApiKey("anthropic", anthropicKeyInput)}
-                        className="h-7 px-2 text-[10px] font-bold bg-amber-500 hover:bg-amber-400 text-black"
-                      >
-                        Save
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* OpenAI */}
-                  <div className="p-2.5 rounded-xl bg-black/40 border border-white/10 space-y-1.5">
-                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-200">
-                      <span>OpenAI API</span>
-                      <span className="text-[9px] font-mono text-slate-400">OPENAI_API_KEY</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        type="password"
-                        placeholder="sk-..."
-                        value={openaiKeyInput}
-                        onChange={(e) => setOpenaiKeyInput(e.target.value)}
-                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400"
-                      />
-                      <Button
-                        size="sm"
-                        onClick={() => handleSaveApiKey("openai", openaiKeyInput)}
-                        className="h-7 px-2 text-[10px] font-bold bg-amber-500 hover:bg-amber-400 text-black"
-                      >
-                        Save
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* xAI */}
-                  <div className="p-2.5 rounded-xl bg-black/40 border border-white/10 space-y-1.5">
-                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-200">
-                      <span>xAI Grok API</span>
-                      <span className="text-[9px] font-mono text-slate-400">XAI_API_KEY</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        type="password"
-                        placeholder="xai-..."
-                        value={xaiKeyInput}
-                        onChange={(e) => setXaiKeyInput(e.target.value)}
-                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400"
-                      />
-                      <Button
-                        size="sm"
-                        onClick={() => handleSaveApiKey("xai", xaiKeyInput)}
-                        className="h-7 px-2 text-[10px] font-bold bg-amber-500 hover:bg-amber-400 text-black"
-                      >
-                        Save
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <div className="border-t border-white/10 pt-3 space-y-2">
+                <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <ShieldCheck className="size-3.5 text-amber-400" />
+                  <span>Provider secrets</span>
+                </h4>
+                <p className="text-xs text-slate-400">
+                  API keys and model IDs are server-side secrets. This browser UI does not accept, store, or echo secret values.
+                  Configure <code>OPENAI_API_KEY</code>/<code>OPENAI_MODEL</code>, <code>GEMINI_API_KEY</code>/<code>GEMINI_MODEL</code>,
+                  <code>ANTHROPIC_API_KEY</code>/<code>ANTHROPIC_MODEL</code>, and <code>XAI_API_KEY</code>/<code>XAI_MODEL</code>
+                  in the approved Cloudflare environment.
+                </p>
+              </div>            </div>
           )}
 
           {/* TAB: CHAT BEHAVIOR */}
