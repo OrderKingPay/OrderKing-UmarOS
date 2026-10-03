@@ -10,8 +10,7 @@ import { Input, Label } from "@/components/ui/input";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
-  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
-  const { user } = useCurrentUserState();
+  const { user, isPending } = useCurrentUserState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -19,7 +18,7 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  if (user) return <Navigate to="/app" />;
+  if (!isPending && user) return <Navigate to="/app" />;
 
   async function onEmail(e: FormEvent) {
     e.preventDefault();
