@@ -1061,23 +1061,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
 
-  const handleUtilityPayment = (title: string, amount: number) => {
-    if (amount > walletBalance) {
-      toast.error(`Insufficient KingPay balance (₹${walletBalance}). Please add money.`);
-      return;
-    }
-    const newBal = walletBalance - amount;
-    setWalletBalance(newBal);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-    }
-    addTransaction(amount, title, "debit");
-    playSoundboxChime(amount);
-    const earnedCoins = Math.round(amount * 0.05 * 10);
-    setKingCoins((c) => c + earnedCoins);
-    toast.success(`⚡ ${title} successful! Paid ₹${amount} with 0% fee. +${earnedCoins} King Coins earned!`);
-    setActiveUtilityModal(null);
-    setUtilityInput("");
+  // Utility payments must be backed by a real provider transaction.
+  // Never debit the client-side wallet or award rewards merely because a button was clicked.
+  const handleUtilityPayment = (_title: string, _amount: number) => {
+    toast.info(
+      "This utility payment is temporarily unavailable because no verified live provider transaction is connected."
+    );
   };
 
   // CRED-style Interactive Scratch Card
@@ -2760,7 +2749,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 size="sm"
                 variant="primary"
                 onClick={() => {
-                  toast.success("APDCL Bill Paid via KingPay! +50 King Coins Earned.");
+                  toast.info("APDCL payment is available only after a verified BBPS transaction is connected.");
                   playSoundboxChime(840);
                 }}
                 className="text-xs font-bold py-1 px-3"
@@ -2781,7 +2770,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 size="sm"
                 variant="outline"
                 onClick={() => {
-                  toast.success("Airtel Fiber Paid via KingPay! +40 King Coins Earned.");
+                  toast.info("Airtel Fiber payment is available only after a verified BBPS transaction is connected.");
                   playSoundboxChime(799);
                 }}
                 className="text-xs font-bold py-1 px-3"
@@ -2808,11 +2797,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           </div>
 
           <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {[
-              { bank: "State Bank of India", acct: "****3912", bal: "₹34,200.00", icon: "🏛️" },
-              { bank: "HDFC Bank", acct: "****7741", bal: "₹52,450.00", icon: "🏢" },
-              { bank: "Assam Gramin Vikash", acct: "****8820", bal: "₹18,900.00", icon: "🌾" },
-            ].map((b) => (
+            {[]}.map((b) => (
               <div key={b.acct} className="rounded-lg border border-border bg-surface-2/40 p-2.5 flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-1.5">
