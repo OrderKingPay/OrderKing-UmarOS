@@ -66,83 +66,12 @@ export class AutonomousModelUpdater {
     activeModelsCount: number;
     availableUpgrades: UpgradableModelInfo[];
   } {
-    const hasOpenAI = Boolean(getEnvOrStorage("OPENAI_API_KEY"));
-    const hasAnthropic = Boolean(getEnvOrStorage("ANTHROPIC_API_KEY"));
-    const hasGoogle = Boolean(getEnvOrStorage("GEMINI_API_KEY"));
-    const hasXAI = Boolean(getEnvOrStorage("XAI_API_KEY"));
-
-    const availableUpgrades: UpgradableModelInfo[] = [
-      {
-        id: "o3-mini",
-        name: "OpenAI o3-mini Reasoning Engine",
-        generation: "o3-mini",
-        provider: "OpenAI",
-        releaseDate: "Production Ready",
-        status: hasOpenAI ? "AVAILABLE_UPDATE" : "PENDING_FOUNDER_APPROVAL",
-        improvements: ["Ultra-low latency math & coding", "Customizable reasoning effort", "STEM benchmark leader"],
-        performanceGainPct: 45,
-        benchmarkScore: 99.7,
-      },
-      {
-        id: "gemini-2-0-pro-exp",
-        name: "Gemini 2.0 Pro Experimental",
-        generation: "gemini-2.0-pro-exp-02-05",
-        provider: "Google DeepMind",
-        releaseDate: "Experimental Frontier",
-        status: hasGoogle ? "AVAILABLE_UPDATE" : "PENDING_FOUNDER_APPROVAL",
-        improvements: ["Advanced coding & complex problem solving", "2M token context", "Deep world knowledge"],
-        performanceGainPct: 48,
-        benchmarkScore: 99.9,
-      },
-      {
-        id: "claude-3-5-haiku",
-        name: "Anthropic Claude 3.5 Haiku",
-        generation: "claude-3-5-haiku-20241022",
-        provider: "Anthropic",
-        releaseDate: "Production Ready",
-        status: hasAnthropic ? "AVAILABLE_UPDATE" : "PENDING_FOUNDER_APPROVAL",
-        improvements: ["Sub-80ms first token response", "High accuracy JSON extraction", "Cost-effective routing"],
-        performanceGainPct: 30,
-        benchmarkScore: 98.9,
-      },
-    ];
-
-    const nextGenReleases: PendingUpgradeNotification[] = [
-      {
-        upgradeId: "o3-mini",
-        title: "OpenAI o3-mini Reasoning Tier Available",
-        sourceProvider: "OpenAI Official API",
-        suggestedAction: hasOpenAI
-          ? "Route high-complexity math and logic queries to o3-mini for faster reasoning."
-          : "Add OPENAI_API_KEY to unlock live o3-mini inference.",
-        autoApply: hasOpenAI,
-        benchmarkGain: "+45% Math & Logic Efficiency",
-        detectedAt: "Live",
-      },
-      {
-        upgradeId: "gemini-2-0-pro-exp",
-        title: "Gemini 2.0 Pro Experimental Available",
-        sourceProvider: "Google DeepMind Official API",
-        suggestedAction: hasGoogle
-          ? "Activate 2.0 Pro for 2M token context long-document synthesis."
-          : "Add GEMINI_API_KEY to route to Gemini 2.0 Pro.",
-        autoApply: hasGoogle,
-        benchmarkGain: "+48% Context Synthesis",
-        detectedAt: "Live",
-      },
-    ];
-
-    this.pendingNotifications = nextGenReleases;
-
-    const connectedCount = [hasOpenAI, hasAnthropic, hasGoogle, hasXAI].filter(Boolean).length;
-    const summary = `Model Registry Verified: 2 Sovereign local cores always active. ${connectedCount}/4 cloud API providers configured. 2 production upgrades ready for routing.`;
-
     return {
-      updatesFound: true,
-      notifications: this.pendingNotifications,
-      summary,
+      updatesFound: false,
+      notifications: [],
+      summary: "No independently verified model-release or benchmark feed is connected. Provider keys alone do not establish model availability or performance.",
       activeModelsCount: this.registry.length,
-      availableUpgrades,
+      availableUpgrades: [],
     };
   }
 
