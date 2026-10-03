@@ -634,7 +634,7 @@ export interface EcosystemApp {
   description: string;
   iconName: string;
   authMethod: "API Key" | "OAuth 2.0" | "HMAC Token" | "Webhook";
-  status: "CONNECTED" | "READY" | "AUTHENTICATED";
+  status: "CONNECTED" | "READY" | "AUTHENTICATED" | "STANDBY";
   actions: string[];
 }
 
