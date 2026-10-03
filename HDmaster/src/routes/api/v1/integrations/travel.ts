@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createFileRoute } from "@tanstack/react-router";
 
 /**
  * Travel search/booking stays fail-closed until a real provider adapter is
