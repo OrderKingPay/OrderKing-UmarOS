@@ -10,7 +10,6 @@ import { useBrand, useT } from "@/components/providers";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
-  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const { t } = useT();
   const { brand } = useBrand();
   const [mode, setMode] = useState<"in" | "up">("in");
@@ -43,7 +42,7 @@ function Login() {
       <Wordmark />
       <h1 className="mt-8 font-display text-3xl">{t("auth.title", { name: brand.appName })}</h1>
       <p className="mt-2 text-sm text-muted">{t("auth.subtitle")}</p>
-      {authEnabled && !isVercel ? (
+      {authEnabled ? (
         <div className="mt-6 space-y-3">
           {/* Viral Growth Hooks: WhatsApp OTP & Truecaller One-Tap */}
           <div className="space-y-3 pb-3">
