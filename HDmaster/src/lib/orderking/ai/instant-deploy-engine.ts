@@ -15,13 +15,13 @@ export interface DeploymentArtifact {
   dockerfileContent: string;
   filesGeneratedCount: number;
   deployedAt: string;
-  status: "SANDBOX_PREVIEW_READY" | "LIVE_PRODUCTION_READY" | "EDGE_DISTRIBUTED";
+  status: "SANDBOX_PREVIEW_READY";
   sslCertified: boolean;
   edgeRegion: string;
 }
 
 export class InstantDeployEngine {
-  public deployLive(
+  public prepareCloudflareDeployment(
     name: string,
     category: "website" | "web_app" | "business_system" | "product_page" | "erp" = "website",
     customPrompt?: string
@@ -93,7 +93,7 @@ export class InstantDeployEngine {
       previewBundleHtml,
       cloudflareDeployCommand: `npx wrangler pages deploy dist --project-name ${slug}`,
       dockerfileContent: `FROM node:20-alpine\nWORKDIR /app\nCOPY . .\nRUN npm install && npm run build\nEXPOSE 3000\nCMD ["npm", "run", "start"]`,
-      filesGeneratedCount: 14,
+      filesGeneratedCount: 0,
       deployedAt: timestamp,
       status: "SANDBOX_PREVIEW_READY",
       sslCertified: false,
