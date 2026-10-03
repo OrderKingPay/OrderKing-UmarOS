@@ -10,7 +10,6 @@ import { Input, Label } from "@/components/ui/input";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
-  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const { user } = useCurrentUserState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
