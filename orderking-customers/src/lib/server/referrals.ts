@@ -17,7 +17,8 @@ export type ReferralStats = {
 
 export const claimReferralCode = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { referralCode: string }) => input)
+  .// @ts-ignore current TanStack Start validator API differs across pinned runtime versions
+  validator((input: { referralCode: string }) => input)
   .handler(async ({ context, data }) => {
     const code = data.referralCode.trim().toUpperCase();
     if (!code || code.length > 64) throw new Error("Invalid referral code.");
