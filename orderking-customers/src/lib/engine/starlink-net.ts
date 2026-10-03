@@ -26,9 +26,9 @@ export class StarlinkNet {
     while (retries > 0) {
       try {
         const response = await fetch(url, {
-          ...options,
+          ...requestInit,
           // If critical, force bypass cache to ensure real-time accuracy
-          cache: options.priority === 'critical' ? 'no-store' : options.cache
+          cache: priority === "critical" ? "no-store" : requestInit.cache,
         });
         
         if (!response.ok && response.status >= 500) {
