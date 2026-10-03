@@ -67,9 +67,6 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-bg text-fg">
-      <div className="bg-sim px-4 py-2 text-center text-xs font-medium tracking-wide text-primary-foreground">
-        {t("simulatedBanner")}
-      </div>
       {!online ? (
         <div className="bg-offline px-4 py-2 text-center text-sm text-primary-foreground">
           {t("connectionLost")} — {t("connectionLostBody")}
@@ -89,7 +86,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </Link>
         <div className="flex items-center gap-2">
-          <Badge tone="sim">{t("simulated")}</Badge>
           <Link to="/support" className="grid size-11 place-items-center rounded-md hover:bg-muted" aria-label={t("support")}>
             <CircleHelp className="size-5" />
           </Link>
