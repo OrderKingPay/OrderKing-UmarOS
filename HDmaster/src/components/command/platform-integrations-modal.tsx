@@ -110,7 +110,7 @@ export function PlatformIntegrationsModal({
       case "whatsapp": return <MessageSquare className="size-5" />;
       case "stripe": return <CreditCard className="size-5" />;
       case "kingpay": return <QrCode className="size-5" />;
-      case "vercel": return <Globe className="size-5" />;
+      case "cloudflare": return <Globe className="size-5" />;
       case "supabase": return <Database className="size-5" />;
       case "shopify": return <ShoppingBag className="size-5" />;
       default: return <Plug className="size-5" />;
