@@ -64,7 +64,7 @@ function pglitePreviewAssetsPlugin(): Plugin {
     closeBundle() {
       const destDir = join(
         process.cwd(),
-        ".vercel/output/functions/__server.func/_libs",
+        "dist/_worker.js/_libs",
       );
       const srcDir = join(
         process.cwd(),
