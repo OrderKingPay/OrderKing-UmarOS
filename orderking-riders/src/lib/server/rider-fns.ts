@@ -231,7 +231,7 @@ export const deliveryActionFn = createServerFn({ method: "POST" })
             action: data.action,
             idempotencyKey: key,
             reason: data.reason,
-            otp: data.action === "DELIVER" ? data.otp : undefined,
+            verificationCode: data.action === "DELIVER" ? data.otp : undefined,
           });
         }
       }
