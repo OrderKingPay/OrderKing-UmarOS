@@ -155,7 +155,6 @@ snapshots:
       '@pnpm/exe.win32-arm64': 12.8.1
       '@pnpm/exe.win32-x64': 12.8.1
 ---
----
 lockfileVersion: '9.0'
 
 settings:
@@ -168,7 +167,7 @@ importers:
     configDependencies: {}
     devDependencies:
       turbo:
-        specifier: latest
+        specifier: 2.11.5
         version: 2.11.5
 
   Apps-integration-:
