@@ -23,6 +23,12 @@ export type QueueItem = {
   timestamp: number;
 };
 
+export async function hasPendingMutation(restaurantId: string, orderId: string): Promise<boolean> {
+  const db = await initQueueDB();
+  const items: QueueItem[] = await db.getAll(STORE_NAME);
+  return items.some((item) => item.restaurantId === restaurantId && item.orderId === orderId);
+}
+
 export async function enqueueMutation(item: Omit<QueueItem, "id" | "timestamp">) {
   const db = await initQueueDB();
   const id = crypto.randomUUID();
