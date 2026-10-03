@@ -28,7 +28,8 @@ export class XAIProvider implements AIProvider {
   }
 
   private constructPayload(input: ChatRequest, stream: boolean): Record<string, unknown> {
-    const model = input.model || "grok-3";
+    const model = input.model || process.env.XAI_MODEL?.trim();
+    if (!model) throw new Error("XAI_MODEL is not configured.");
     const messages: Array<Record<string, unknown>> = [];
     if (input.systemPrompt) {
       messages.push({ role: "system", content: input.systemPrompt });
