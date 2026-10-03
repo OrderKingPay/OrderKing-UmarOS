@@ -75,7 +75,7 @@ export function getWeeklyCycle(referenceDate = new Date()): WeeklyCyclePeriod {
     startDate: formatDate(monday),
     endDate: formatDate(sunday),
     payoutDate: formatDate(payoutWednesday),
-    status: new Date() > payoutWednesday ? "DISBURSED" : "OPEN",
+    status: "OPEN",
   };
 }
 
