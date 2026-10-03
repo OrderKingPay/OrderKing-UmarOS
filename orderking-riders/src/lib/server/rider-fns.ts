@@ -45,39 +45,43 @@ export const getHomeFn = createServerFn({ method: "GET" })
       const e = await engine();
       await e.ensureRider({ id: context.userId });
       let home = await e.home(context.userId);
-      if (process.env.HDMASTER_URL && process.env.ORDERKING_SERVICE_TOKEN) {
-        try {
-          const offers = await fetchLiveOffers(context.userId);
+      if (home.dataMode === "LIVE") {
+        if (!process.env.HDMASTER_URL?.trim() || !process.env.ORDERKING_SERVICE_TOKEN?.trim()) {
+          throw new RiderError("DISPATCH_UNAVAILABLE", "Live dispatch is not connected. Live duty cannot continue.", 503);
+        }
+        const offers = await fetchLiveOffers(context.userId);
           if (offers && offers.length > 0) {
             const o = offers[0];
             const existingOffer = await e.getStore().getOpenOfferForRider(home.rider.id);
             if (!existingOffer || existingOffer.orderCode !== o.order_id) {
-              if (existingOffer) {
-                 await e.getStore().casOffer(existingOffer.id, home.rider.id, "EXPIRED");
-              }
-              const restaurant = { id: o.restaurant_id ?? "live_restaurant", name: o.restaurant_name ?? "Restaurant", area: "", address: o.restaurant_address ?? "", location: { lat: o.restaurant_lat ?? 0, lng: o.restaurant_lng ?? 0 }, phoneMasked: "XXX", specialPickupInstructions: null, preparationStatus: "READY" as const };
-              const customer = { displayName: o.customer_name ?? "Customer", area: o.zone_name ?? "", address: o.customer_address ?? o.zone_name ?? "", contactMasked: null, contactAllowed: false, instructions: null };
-              await e.getStore().insertDelivery({
-                id: o.order_id,
-                orderCode: o.order_id,
-                orderId: o.order_id,
-                offerId: o.id,
-                userId: context.userId,
-                riderId: home.rider.id,
-                state: "OFFERED",
-                dataMode: "LIVE",
-                valuePaise: o.total_paise,
-                expectedDistanceM: o.distance_m ?? 0,
-                expectedEtaSeconds: o.eta_seconds ?? 0,
-                restaurant,
-                customer,
-                pickupWindowStart: o.offered_at,
-                pickupWindowEnd: o.expires_at,
-                dropoffWindowStart: o.offered_at,
-                dropoffWindowEnd: o.expires_at,
-                routeScore: o.score,
-                createdAt: o.offered_at,
-              });
+            if (existingOffer) {
+              await e.getStore().casOffer(existingOffer.id, home.rider.id, "EXPIRED");
+            }
+            const restaurantLat = Number(o.restaurant_lat);
+            const restaurantLng = Number(o.restaurant_lng);
+            const customerLat = Number(o.customer_lat);
+            const customerLng = Number(o.customer_lng);
+            if (![restaurantLat, restaurantLng, customerLat, customerLng].every(Number.isFinite)) {
+              continue;
+            }
+            const restaurant = {
+              id: String(o.restaurant_id),
+              name: String(o.restaurant_name),
+              area: String(o.zone_name ?? ""),
+              address: String(o.restaurant_address ?? ""),
+              location: { lat: restaurantLat, lng: restaurantLng },
+              phoneMasked: "",
+              specialPickupInstructions: null,
+              preparationStatus: "READY" as const,
+            };
+            const customer = {
+              displayName: String(o.customer_name ?? "Customer"),
+              area: String(o.zone_name ?? ""),
+              address: o.customer_address ? String(o.customer_address) : null,
+              contactMasked: null,
+              contactAllowed: false,
+              instructions: null,
+            };
               await e.getStore().insertOffer({
                 id: o.id,
                 orderCode: o.order_id,
@@ -101,8 +105,6 @@ export const getHomeFn = createServerFn({ method: "GET" })
               home = await e.home(context.userId);
             }
           }
-        } catch (err) {
-          console.error("Failed to fetch live offers", err);
         }
       }
       return home;
@@ -161,12 +163,11 @@ export const respondOfferFn = createServerFn({ method: "POST" })
     try {
       const e = await engine();
       const offer = await e.getStore().getOfferById(data.offerId);
-      if (offer && offer.dataMode === "LIVE" && process.env.HDMASTER_URL && process.env.ORDERKING_SERVICE_TOKEN) {
-        try {
-          await respondLiveOffer({ offerId: data.offerId, decision: data.decision, reason: data.reason, idempotencyKey: data.idempotencyKey, riderUserId: context.userId });
-        } catch (err) {
-          console.error("Failed to respond to live offer", err);
+      if (offer?.dataMode === "LIVE") {
+        if (!process.env.HDMASTER_URL?.trim() || !process.env.ORDERKING_SERVICE_TOKEN?.trim()) {
+          throw new RiderError("DISPATCH_UNAVAILABLE", "Live dispatch is not connected.", 503);
         }
+        await respondLiveOffer({ offerId: data.offerId, decision: data.decision, reason: data.reason, idempotencyKey: data.idempotencyKey, riderUserId: context.userId });
       }
       return await e.respondOffer(
         context.userId,
@@ -228,6 +229,7 @@ export const deliveryActionFn = createServerFn({ method: "POST" })
             action: data.action,
             idempotencyKey: key,
             reason: data.reason,
+            otp: data.action === "DELIVER" ? data.otp : undefined,
           });
         }
       }
@@ -458,8 +460,7 @@ export const getDeliveryFn = createServerFn({ method: "GET" })
     try {
       const e = await engine();
       const delivery = await e.getDelivery(context.userId, data.deliveryId);
-      const simulatedOtp = await e.otpForSimulation(context.userId, data.deliveryId);
-      return { delivery, simulatedOtp };
+      return { delivery, simulatedOtp: null };
     } catch (err) {
       fail(err);
     }
@@ -483,7 +484,8 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
   .validator((input: { message: string; locale?: LocaleCode; deliveryId?: string | null }) => input)
   .handler(async ({ context, data }) => {
     const apiKey = process.env.OPENAI_API_KEY?.trim();
-    if (!apiKey) throw new RiderError("AI_UNAVAILABLE", "OpenAI support is not configured on the rider server.", 503);
+    const model = process.env.OPENAI_RIDER_MODEL?.trim();
+    if (!apiKey || !model) throw new RiderError("AI_PROVIDER_NOT_CONFIGURED", "Rider AI is unavailable until the OpenAI provider and model are configured.", 503);
     const message = data.message.trim();
     if (!message) throw new RiderError("INVALID", "Describe the issue first.", 400);
 
@@ -491,7 +493,7 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        model: process.env.OPENAI_RIDER_MODEL?.trim() || "gpt-5.6-luna",
+        model,
         temperature: 0.2,
         messages: [
           {
@@ -519,6 +521,6 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
     const body = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
     const text = body.choices?.[0]?.message?.content?.trim();
     if (!text) throw new RiderError("AI_UNAVAILABLE", "OpenAI returned no support response.", 503);
-    return { provider: "openai", model: process.env.OPENAI_RIDER_MODEL?.trim() || "gpt-5.6-luna", text };
+    return { provider: "openai", model, text };
   });
 
