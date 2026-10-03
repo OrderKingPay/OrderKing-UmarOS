@@ -456,14 +456,13 @@ export class UniversalPlatformManager {
 
       case "cloudflare": {
         const projectName = params.payload.projectName || "orderking-cloud-hub";
-        const deployCommand = `npx vercel --prod --yes --name ${projectName}`;
+        const deployCommand = `npx wrangler pages deploy ./dist --project-name ${projectName}`;
         outputData = {
           projectName,
-          deployCommand,
-          cloudflareDeployCommand: `npx wrangler pages deploy ./dist --project-name ${projectName}`,
-          status: "CLI_DEPLOY_SCRIPT_READY",
+          cloudflareDeployCommand: deployCommand,
+          status: process.env.CLOUDFLARE_API_TOKEN?.trim() ? "CLI_DEPLOY_SCRIPT_READY" : "BLOCKED_PROVIDER_NOT_CONFIGURED",
         };
-        summary = `Generated production CLI deploy script for Vercel/Cloudflare. Run in terminal to publish live.`;
+        summary = process.env.CLOUDFLARE_API_TOKEN?.trim() ? `Generated the approved Cloudflare Pages deploy command. Execution was not performed by this adapter.` : `Cloudflare API token is not configured; deployment is blocked.`;
         break;
       }
 
@@ -617,7 +616,6 @@ export interface EcosystemApp {
 export const CORE_ECOSYSTEM_APPS: EcosystemApp[] = [
   // DevOps & Cloud Infrastructure
   { id: "app-github", name: "GitHub Enterprise", category: "devops", description: "Repository orchestration, branch management, actions CI/CD", iconName: "Github", authMethod: "OAuth 2.0", status: "CONNECTED", actions: ["create_repo", "push_branch", "create_pr"] },
-  { id: "app-vercel", name: "Vercel Edge Platform", category: "devops", description: "Instant serverless deploy, custom domains, edge functions", iconName: "Globe", authMethod: "API Key", status: "CONNECTED", actions: ["deploy_prod", "purge_cache"] },
   { id: "app-cloudflare", name: "Cloudflare Zero Trust & Pages", category: "devops", description: "Edge CDN, DDoS mitigation, DNS records, Workers KV", iconName: "Shield", authMethod: "API Key", status: "CONNECTED", actions: ["deploy_pages", "update_dns"] },
   { id: "app-docker", name: "Docker Hub Registry", category: "devops", description: "Container image compilation, automated tags, vulnerability scan", iconName: "Server", authMethod: "API Key", status: "CONNECTED", actions: ["push_image", "scan_cve"] },
   { id: "app-aws", name: "AWS Cloud Infrastructure", category: "devops", description: "S3 bucket storage, Lambda serverless, RDS database clusters", iconName: "Server", authMethod: "HMAC Token", status: "CONNECTED", actions: ["sync_s3", "invoke_lambda"] },
