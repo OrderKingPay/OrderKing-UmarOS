@@ -1,7 +1,7 @@
 // @ts-nocheck
 // Universal Platform Integrator & Connector Hub
 // Connects, forces execution, and safely reports truthful results back to Founder
-// Supports GitHub, Upwork, WhatsApp, Telegram, Stripe, KingPay, Vercel, Supabase, Shopify, and Universal Webhooks
+// Supports GitHub, Upwork, WhatsApp, Telegram, Stripe, KingPay, Cloudflare Pages, Supabase, Shopify, and Universal Webhooks
 // Strict Rule: Zero false simulations. Truthful status reporting based on real credentials & deep-links.
 
 export type PlatformId =
@@ -13,7 +13,6 @@ export type PlatformId =
   | "stripe"
   | "razorpay"
   | "kingpay"
-  | "vercel"
   | "supabase"
   | "shopify"
   | "google"
@@ -53,11 +52,7 @@ function getEnvOrStorage(key: string): string | undefined {
       return process.env[key];
     }
   } catch {}
-  try {
-    if (typeof window !== "undefined" && window?.localStorage) {
-      return window.localStorage.getItem(key) || undefined;
-    }
-  } catch {}
+
   return undefined;
 }
 
@@ -167,16 +162,16 @@ export class UniversalPlatformManager {
         isNativeLocal: true,
       },
       {
-        id: "vercel",
-        name: "Vercel & Cloudflare Edge",
+        id: "cloudflare",
+        name: "Cloudflare Pages / Workers",
         category: "cloud",
-        status: getEnvOrStorage("VERCEL_TOKEN") ? "ONLINE" : "STANDBY",
-        description: "1-Click automated edge deployments, custom domains, and terminal CLI deploy commands.",
+        status: process.env.CLOUDFLARE_API_TOKEN?.trim() ? "ONLINE" : "STANDBY",
+        description: "Approved deployment target for OrderKing production hosting.",
         icon: "Globe",
-        latencyMs: 48,
+        latencyMs: 0,
         lastSyncAt: new Date().toISOString(),
-        capabilities: ["deploy_project", "bind_custom_domain", "purge_edge_cache", "inspect_logs"],
-        credentialRequired: "VERCEL_TOKEN",
+        capabilities: ["deploy_project", "bind_custom_domain", "inspect_logs"],
+        credentialRequired: "CLOUDFLARE_API_TOKEN",
       },
       {
         id: "supabase",
@@ -459,7 +454,7 @@ export class UniversalPlatformManager {
         break;
       }
 
-      case "vercel": {
+      case "cloudflare": {
         const projectName = params.payload.projectName || "orderking-cloud-hub";
         const deployCommand = `npx vercel --prod --yes --name ${projectName}`;
         outputData = {
