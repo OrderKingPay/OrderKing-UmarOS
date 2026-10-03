@@ -12,12 +12,12 @@ import type { DispatchOffer } from "@/lib/rider/types";
 import { Link } from "@tanstack/react-router";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
 import { Clock3, Wallet } from "lucide-react";
+import { DEFAULT_CONFIG } from "@/lib/rider/config";
 import { useCallback, useEffect, useState } from "react";
 import { ConfirmDialog } from "./confirm-dialog";
 import { MapPane } from "./map-pane";
 import { DeliveryActions } from "./delivery-actions";
 import { useDutyLocation } from "./use-duty-location";
-import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
 
@@ -52,11 +52,10 @@ export function HomeView() {
     return () => window.clearInterval(id);
   }, []);
 
-  useGpsHeartbeat(Boolean(home && (home.rider.status !== "OFFLINE" || home.active)), 2000, undefined, home?.rider?.id);
   useDutyLocation(
     Boolean(home && (home.rider.status !== "OFFLINE" || home.active)),
     home?.active?.id ?? null,
-    2,
+    DEFAULT_CONFIG.locationUpdateIntervalSeconds,
   );
 
   if (!home && !error) {
