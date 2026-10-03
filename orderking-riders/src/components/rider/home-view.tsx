@@ -137,7 +137,7 @@ export function HomeView() {
         </div>
         {kyc !== "VERIFIED" ? (
           <p className="mt-3 rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
-            {kyc === "UNDER_REVIEW" ? t("underReview") : t("kycHint")} {t("practiceMode")}
+            {kyc === "UNDER_REVIEW" ? t("underReview") : t("kycHint")} {home.dataMode === "SIMULATED" ? t("practiceMode") : ""}
           </p>
         ) : null}
         <dl className="mt-5 grid grid-cols-3 gap-2 text-center">
@@ -173,96 +173,14 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* OrderKing Rider Advantage vs Zomato */}
-      <section className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-emerald-500/5 p-4 shadow-sm">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-primary/20 text-sm">
-            ⭐
-          </span>
-          <h3 className="font-display text-sm font-bold text-foreground">OrderKing Rider Advantage</h3>
+      <section className="rounded-xl border border-border bg-card p-4">
+        <div className="flex items-center gap-2">
+          <Wallet className="size-4" />
+          <h3 className="font-display text-sm font-bold">{t("todayEarnings")}</h3>
         </div>
-        <div className="grid grid-cols-3 gap-2 text-center text-xs">
-          <div className="rounded-lg bg-card/80 p-2 border border-border/50">
-            <span className="text-base">💰</span>
-            <p className="font-bold text-foreground mt-0.5">100% Tips</p>
-            <p className="text-[10px] text-muted-foreground">Zero platform cut</p>
-          </div>
-          <div className="rounded-lg bg-card/80 p-2 border border-border/50">
-            <span className="text-base">⏱️</span>
-            <p className="font-bold text-foreground mt-0.5">Wait Pay</p>
-            <p className="text-[10px] text-muted-foreground">₹1/min after 10m</p>
-          </div>
-          <div className="rounded-lg bg-card/80 p-2 border border-border/50">
-            <span className="text-base">🛡️</span>
-            <p className="font-bold text-foreground mt-0.5">Zero Penalties</p>
-            <p className="text-[10px] text-muted-foreground">AI Co-Pilot support</p>
-          </div>
-        </div>
-      </section>
-
-      {/* HPCL & IOCL Partner Fuel Pump Quick Navigator */}
-      <section className="rounded-xl border-2 border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-sm">
-              ⛽
-            </span>
-            <div>
-              <h3 className="font-display text-sm font-bold text-foreground">Nearby Partner Fuel Pumps</h3>
-              <p className="text-[11px] text-muted-foreground">Save 2.5% on petrol + ₹2L accidental insurance</p>
-            </div>
-          </div>
-          <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-            Active Fleet ID
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          <div className="rounded-lg border border-border bg-card p-2.5 flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-foreground">HPCL Station - Karimganj Bypass</p>
-              <p className="text-[10px] text-muted-foreground">0.8 km away · Free Air · Priority Lane</p>
-            </div>
-            <a
-              href="https://maps.google.com/?q=HPCL+Petrol+Pump+Karimganj"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 text-[11px] font-bold transition"
-            >
-              📍 Route
-            </a>
-          </div>
-          <div className="rounded-lg border border-border bg-card p-2.5 flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-foreground">IOCL Station - Silchar Main Rd</p>
-              <p className="text-[10px] text-muted-foreground">1.4 km away · 2.5% Instant Cashback</p>
-            </div>
-            <a
-              href="https://maps.google.com/?q=IOCL+Petrol+Pump+Silchar"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 text-[11px] font-bold transition"
-            >
-              📍 Route
-            </a>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between border-t border-emerald-500/20 pt-2 text-[11px]">
-          <span className="font-mono text-muted-foreground">Fleet ID: OK-RIDER-HP-8421</span>
-          <button
-            type="button"
-            onClick={() => {
-              if (typeof navigator !== "undefined") {
-                void navigator.clipboard?.writeText("OK-RIDER-HP-8421");
-                alert("Fleet ID copied: OK-RIDER-HP-8421");
-              }
-            }}
-            className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline"
-          >
-            📋 Copy ID
-          </button>
-        </div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Earnings and payouts are shown only from confirmed OrderKing records. Unverified bonuses or partner discounts are not displayed.
+        </p>
       </section>
 
       {home.active ? (
@@ -446,28 +364,6 @@ function OfferCard({
       </div>
       
       {/* 1000x Realism: Deep Learning Dispatch Metrics */}
-      {(offer as any).aiMetrics ? (
-        <div className="mt-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs space-y-2">
-           <div className="flex items-center justify-between font-bold">
-              <span className="text-primary flex items-center gap-1">
-                <span className="animate-pulse">⚡</span> AI Smart Match
-              </span>
-              <span className="text-foreground border border-primary/30 rounded px-1.5 py-0.5 bg-primary/10">
-                Score: {(offer as any).aiMetrics.score}/100
-              </span>
-           </div>
-           <div className="grid grid-cols-2 gap-2 text-[10px] text-muted-foreground">
-              <div>Weather: <span className="font-bold text-foreground">{(offer as any).aiMetrics.weather}</span></div>
-              <div>Traffic: <span className="font-bold text-foreground">{(offer as any).aiMetrics.traffic}</span></div>
-           </div>
-           {(offer as any).aiMetrics.surge && (
-             <div className="text-[10px] text-amber-500 font-bold bg-amber-500/10 rounded px-2 py-1 mt-1 border border-amber-500/20 text-center">
-               🔥 HIGH DEMAND SURGE APPLIED
-             </div>
-           )}
-        </div>
-      ) : null}
-
       <p className="mt-3 flex items-center gap-2 font-display text-2xl tabular-nums">
         <Clock3 className="size-5" />
         {remaining}s
@@ -479,11 +375,11 @@ function OfferCard({
         </div>
         <div>
           <dt className="text-muted-foreground">{t("distance")}</dt>
-          <dd className="tabular-nums">{offer.approxDistanceKm.toFixed(1)} km</dd>
+          <dd className="tabular-nums">{offer.approxDistanceKm == null ? "—" : `${offer.approxDistanceKm.toFixed(1)} km`}</dd>
         </div>
         <div>
           <dt className="text-muted-foreground">{t("route")}</dt>
-          <dd className="tabular-nums">{offer.estimatedTotalRouteKm.toFixed(1)} km</dd>
+          <dd className="tabular-nums">{offer.estimatedTotalRouteKm == null ? "—" : `${offer.estimatedTotalRouteKm.toFixed(1)} km`}</dd>
         </div>
         <div>
           <dt className="text-muted-foreground">{t("packages")}</dt>
