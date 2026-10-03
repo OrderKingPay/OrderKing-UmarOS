@@ -290,12 +290,7 @@ export async function executeTool(
     case "reassign_rider": {
       if (!id) throw new Error("reassign requires orderId");
       requirePermission(ws.ctx, "modify_orders");
-      return {
-        orderId: id,
-        action: "REASSIGN_REQUESTED",
-        reassignedAt: new Date().toISOString(),
-        note: "Dispatched to canonical matching engine.",
-      };
+      throw new Error("Rider reassignment is unavailable until the canonical dispatch service is connected. No reassignment was made.");
     }
 
     case "mark_intervention_required": {
@@ -347,25 +342,7 @@ export async function executeTool(
 
     case "onboard_rider": {
       requirePermission(ws.ctx, "approve_riders");
-      const riderName = String(args.name || args.query || "Rider Partner");
-      const phone = String(args.phone || "9876501234");
-      const vehicleType = String(args.vehicleType || "MOTORCYCLE");
-      const zone = String(args.zone || "Karimganj Central");
-      const upiId = String(args.upiId || `${riderName.toLowerCase().replace(/\s+/g, "")}@okaxis`);
-      const newRiderId = `rdr_${Date.now()}`;
-      return {
-        riderId: newRiderId,
-        name: riderName,
-        phone,
-        vehicleType,
-        zone,
-        kycStatus: "VERIFIED",
-        status: "ONLINE",
-        onboardedAt: new Date().toISOString(),
-        payoutMethod: "WEEKLY_WEDNESDAY_DIRECT_UPI",
-        upiId,
-        note: "Rider verified, KYC approved, and registered for weekly Wednesday settlements.",
-      };
+      throw new Error("Rider onboarding/KYC activation is unavailable from Master AI until the canonical KYC and rider-registry workflow is connected. No rider was created or verified.");
     }
 
     case "rider_health":
@@ -409,12 +386,8 @@ export async function executeTool(
 
     case "create_support_case":
       requirePermission(ws.ctx, "manage_support");
-      return {
-        ticketId: `tkt_${Date.now()}`,
-        status: "OPEN",
-        subject: args.notes ?? "Automated ticket",
-        createdAt: new Date().toISOString(),
-      };
+      throw new Error("Support-case creation is unavailable from Master AI until the canonical ticket service is connected. No ticket was created.");
+
 
     // -----------------------------------------------------------------------
     // Finance & Payments
