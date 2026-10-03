@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, readdirSync } from "node:fs";
+import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import type { Plugin } from "vite";
 import { defineConfig } from "vite";
@@ -46,35 +46,6 @@ function pgliteBootstrapPlugin(): Plugin {
       } catch (err) {
         console.error("[app-builder] DB bootstrap failed:", err);
         throw err;
-      }
-    },
-  };
-}
-
-/**
- * Nitro's Cloudflare Pages bundle inlines `@electric-sql/pglite` but does not copy the
- * sibling WASM/data blobs the WASM loader resolves next to the chunk
- * (`pglite.data`, `pglite.wasm`). Local `vite preview` (no DATABASE_URL) needs
- * them; a deployed Neon app never loads PGLite. Copy after the nitro emit.
- */
-function pglitePreviewAssetsPlugin(): Plugin {
-  return {
-    name: "app-builder:pglite-preview-assets",
-    apply: "build",
-    closeBundle() {
-      const destDir = join(
-        process.cwd(),
-        ".vercel/output/functions/__server.func/_libs",
-      );
-      const srcDir = join(
-        process.cwd(),
-        "node_modules/@electric-sql/pglite/dist",
-      );
-      if (!existsSync(destDir) || !existsSync(srcDir)) return;
-      for (const file of ["pglite.data", "pglite.wasm", "initdb.wasm"]) {
-        const src = join(srcDir, file);
-        const dest = join(destDir, file);
-        if (existsSync(src)) copyFileSync(src, dest);
       }
     },
   };
@@ -200,7 +171,6 @@ export default defineConfig(({ command, isPreview }) => ({
   resolve: { tsconfigPaths: true },
   plugins: [
     pgliteBootstrapPlugin(),
-    pglitePreviewAssetsPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
     authPopupPlugin(),
     // Dev-only /__app-env, read by scripts/check-auth-invariant.mjs.
