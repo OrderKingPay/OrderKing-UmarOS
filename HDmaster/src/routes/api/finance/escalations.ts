@@ -31,6 +31,7 @@ export const Route = createFileRoute("/api/finance/escalations")({
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       });
-    }
-  }
+      }
+    },
+  },
 });
