@@ -47,30 +47,6 @@ export async function getSeparableModulesFromDb(): Promise<SeparableModule[]> {
 }
 
 export async function getEnterpriseBlueprintsFromDb(): Promise<Record<string, EnterpriseProjectBlueprint>> {
-  const sql = await getSql();
-  const rows = await sql`SELECT * FROM founder_enterprise_blueprints`;
-  const result: Record<string, EnterpriseProjectBlueprint> = {};
-  for (const r of rows) {
-    const key = String(r.key_name);
-    result[key] = {
-      id: String(r.id),
-      title: String(r.title),
-      category: String(r.category) as any,
-      targetOrganization: String(r.target_organization),
-      techStack: Array.isArray(r.tech_stack) ? r.tech_stack as string[] : [],
-      databaseSchema: typeof r.database_schema === 'object' && r.database_schema !== null ? r.database_schema as any : {},
-      apiEndpoints: Array.isArray(r.api_endpoints) ? r.api_endpoints as string[] : [],
-      frontendRoutes: Array.isArray(r.frontend_routes) ? r.frontend_routes as string[] : [],
-      // Blueprint metadata is not proof of deployment. Never expose seeded preview URLs,
-      // credentials, or handoff-ready claims until a real deployment and credential vault
-      // workflow has produced verified evidence.
-      livePreviewUrl: "",
-      estimatedBuildTime: String(r.estimated_build_time),
-      commercialValueInr: 0,
-      clientHandoffReady: false,
-      handoffCredentials: undefined as any,
-      files: Array.isArray(r.files) ? r.files as any[] : []
-    };
-  }
-  return result;
+  // Seeded blueprints are planning artifacts, not deployed client projects.
+  return {};
 }
