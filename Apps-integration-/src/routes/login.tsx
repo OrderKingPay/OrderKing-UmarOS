@@ -9,7 +9,6 @@ import { AuthSplash } from "@/components/auth-splash";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
-  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const { user, isPending } = useCurrentUserState();
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
@@ -21,7 +20,7 @@ function Login() {
   if (isPending) {
     return <AuthSplash />;
   }
-  if (user) return <Navigate to="/" />;
+  if (!isPending && user) return <Navigate to="/" />;
 
   async function onEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -64,7 +63,7 @@ function Login() {
             <h2 className="font-display text-2xl">Sign in</h2>
             <p className="mt-1 text-sm text-muted">Use your work account. First sign-in becomes CEO of this organisation.</p>
           </div>
-          {authEnabled && !isVercel ? (
+          {authEnabled ? (
             <div className="space-y-2">
               {GROK_PROVIDERS.map((p) => (
                 <Button
