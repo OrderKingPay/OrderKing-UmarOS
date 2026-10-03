@@ -407,25 +407,25 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Scanning Disk & Memory Quotas", status: "COMPLETED", detail: `Scanned ${inspection.formattedTotalSize} across temporary files` },
       { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Guarantee", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
-      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "100x cleaner than browser cache tools active" },
+      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "Purifier controls prepared for reviewed cleanup" },
       { stepNumber: 4, totalSteps: 4, label: "Performance Optimizer Ready", status: "COMPLETED", detail: `Current Speed Score: ${inspection.speedOptimizationScore}%` },
     ];
 
-    const responseMarkdown = `### 🧹 Sovereign Cache & Storage Purifier Armed (100x Cleaner)
+    const responseMarkdown = `### 🧹 Sovereign Cache & Storage Purifier Ready
 - **Total Temporary Storage**: **${inspection.formattedTotalSize}** (${inspection.itemCount} cached items)
 - **Generated Media Footprint**: ${(inspection.breakdown.generatedImagesBytes / (1024 * 1024)).toFixed(1)} MB Images · ${(inspection.breakdown.generatedVideosBytes / (1024 * 1024)).toFixed(1)} MB Videos
 - **Current Performance Score**: **${inspection.speedOptimizationScore}%**
 
 > [!IMPORTANT]
-> **🛡️ 100% Core Protection Shield**: Zero danger to critical assets. Your verified Client Leads, King Pay UPI Invoices, MSA Contracts, and Founder Vault Keys are **permanently locked & protected**.
+> **🛡️ 100% Core Protection Shield**: Zero danger to critical assets. Protection follows the inspected exclusions and configured safeguards; no blanket zero-risk guarantee is asserted.
 
-Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and boost engine performance by 100x!`;
+Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and review the inspected items before cleanup; no fixed performance multiplier is guaranteed.`;
 
     const voiceSpokenText = isHindi
       ? `Sovereign Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
       : isBengali
       ? `Sovereign Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Apnar client leads ebong invoices 100% safe.`
-      : `Sovereign Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Your client leads and invoices are 100% protected and safe.`;
+      : `Sovereign Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Protection status follows the inspected exclusions and configured safeguards.`;
 
     return {
       intent: "storage_purifier",
@@ -478,7 +478,7 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent cloud & local storage indexed" },
     ];
 
-    const responseMarkdown = `### 🎨 Supreme AI Image Generated (100% Free & Unlimited)
+    const responseMarkdown = `### 🎨 Supreme AI Image Generation Result
 - **Prompt**: *"${rawPrompt}"*
 - **Resolution**: **1024 × 1024 (Ultra HD)** | **Cost**: **$0.00 (Unlimited Forever)**
 - **Vault Status**: Indexed in **HD Master Media Vault** (ready to download, enlarge, or embed in client pitch decks).
@@ -488,10 +488,10 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
 You can download this image, copy its direct CDN link, or command further edits below!`;
 
     const voiceSpokenText = isHindi
-      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Yeh 100% free hai aur aapke media vault me save ho gaya hai.`
+      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Provider availability, limits, and storage depend on the configured service.`
       : isBengali
-      ? `Ami apnar jonno high-resolution AI image toiri korechi. Eta 100% free ebong apnar media vault e save hoyeche.`
-      : `I have generated your high-resolution AI image. It is 100% free with unlimited generation capacity and has been saved to your Media Vault.`;
+      ? `Ami apnar jonno high-resolution AI image toiri korechi. Provider availability, limits, and storage depend on the configured service.`
+      : `I have generated your high-resolution AI image. Pricing, limits, and storage status depend on the configured provider.`;
 
     return {
       intent: "media_generation",
@@ -607,7 +607,7 @@ The video is ready for playback below with full audio-visual motion capabilities
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 5, label: "Scanning Market Radar", status: "COMPLETED", detail: "Scanned 14 local food brands in Karimganj & Silchar" },
       { stepNumber: 2, totalSteps: 5, label: "Isolating High-Margin Lead", status: "COMPLETED", detail: `Identified ${lead.businessName} (GMV: ₹18.5L/mo, Loss: 28% to Swiggy)` },
-      { stepNumber: 3, totalSteps: 5, label: "Compiling Turnkey Pitch", status: "COMPLETED", detail: "Generated 0% Commission & Price Parity ROI calculation" },
+      { stepNumber: 3, totalSteps: 5, label: "Compiling Turnkey Pitch", status: "COMPLETED", detail: "Generated Commission and pricing assumptions prepared for review" },
       { stepNumber: 4, totalSteps: 5, label: "Minting Advance Invoice", status: "COMPLETED", detail: `50% Advance Lock: ₹${invoice.advanceRequiredInr.toLocaleString("en-IN")} via King Pay UPI` },
       { stepNumber: 5, totalSteps: 5, label: "Deploying Edge Preview", status: "COMPLETED", detail: "Client sandbox ready at https://royal-darbar.orderking.in" },
     ];
@@ -659,7 +659,7 @@ Ready to lock this contract and receive the advance payment immediately into you
       { stepNumber: 1, totalSteps: 4, label: "Scanning Remote Radar", status: "COMPLETED", detail: "Scanned Upwork Enterprise, Toptal, and US direct clients" },
       { stepNumber: 2, totalSteps: 4, label: "Filtering $100+/hr Contracts", status: "COMPLETED", detail: `Isolated ${gig.title} paying $${gig.hourlyRateUsd}/hr` },
       { stepNumber: 3, totalSteps: 4, label: "Tailoring Proof-of-Work", status: "COMPLETED", detail: "Linked live double-entry ledger & sub-50ms PGlite state machine" },
-      { stepNumber: 4, totalSteps: 4, label: "Synthesizing Bid Proposal", status: "COMPLETED", detail: "Ready to submit with 85%+ interview conversion guarantee" },
+      { stepNumber: 4, totalSteps: 4, label: "Synthesizing Bid Proposal", status: "COMPLETED", detail: "Ready to submit; conversion outcome is not guaranteed" },
     ];
 
     const responseMarkdown = `### 💼 High-Paid Remote Contract Match: **${gig.title}**
@@ -673,7 +673,7 @@ Ready to lock this contract and receive the advance payment immediately into you
 \`\`\`markdown
 ${gig.proposalTemplate}
 \`\`\`
-- **Strategy**: Direct proof of work showing OrderKing's live double-entry ledger and sub-50ms PGlite state machine. Guarantees 85%+ interview conversion.`;
+- **Strategy**: Direct proof of work showing OrderKing's live double-entry ledger and sub-50ms PGlite state machine. Provides a conversion strategy; interview outcomes are not guaranteed.`;
 
     const voiceSpokenText = isHindi
       ? `Aapke liye ek $${gig.hourlyRateUsd} prati ghanta ka high-paying remote contract match hua hai. Iski fixed value lagbhag $${gig.fixedBudgetUsd} dollar hai. Maine custom proposal generate kar diya hai.`
@@ -776,7 +776,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
       { stepNumber: 1, totalSteps: 4, label: "Compiling Legal Invoice", status: "COMPLETED", detail: `Invoice #${inv.invoiceNumber} generated with 18% GST allocation` },
       { stepNumber: 2, totalSteps: 4, label: "Generating King Pay UPI Deep-Link", status: "COMPLETED", detail: `50% Advance Lock (₹${inv.advanceRequiredInr.toLocaleString("en-IN")})` },
       { stepNumber: 3, totalSteps: 4, label: "Encoding Dynamic QR Matrix", status: "COMPLETED", detail: "Compatible with GPay, PhonePe, Paytm, BHIM, CRED" },
-      { stepNumber: 4, totalSteps: 4, label: "Verifying Section 79 Protection", status: "COMPLETED", detail: "Direct founder bank settlement with 0% gateway cut" },
+      { stepNumber: 4, totalSteps: 4, label: "Verifying Section 79 Protection", status: "COMPLETED", detail: "Configured payment settlement requires provider verification" },
     ];
 
     const responseMarkdown = `### 💵 Instant Founder Invoice & King Pay UPI Link Generated
@@ -788,7 +788,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
 
 ---
 > [!NOTE]
-> **Zero Gateway Cuts**: Payments made via this link or QR code deposit 100% of the funds straight into your designated bank account with zero intermediary commission fees.`;
+> **Payment Terms**: The configured provider, settlement destination, fees, and fund flow must be verified before payment is requested.`;
 
     const voiceSpokenText = isHindi
       ? `Aapke liye ₹${inv.amountInr.toLocaleString("en-IN")} ka direct UPI invoice generate ho gaya hai. 50% advance payment sidhe aapke bank account me transfer hoga.`
@@ -1262,11 +1262,11 @@ Select any module below to **preview standalone source code, download full ZIP p
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Synthesizing Full-Stack Artifacts", status: "COMPLETED", detail: `${deployRes.filesGeneratedCount} files scaffolded with React 19 & Tailwind` },
       { stepNumber: 2, totalSteps: 4, label: "Bundling Standalone Production PWA", status: "COMPLETED", detail: "HTML5/ESM bundle compiled with zero external dependencies" },
-      { stepNumber: 3, totalSteps: 4, label: "Deploying Edge CDN Route", status: "COMPLETED", detail: `Live at ${deployRes.liveUrl} with SSL 100% certified` },
+      { stepNumber: 3, totalSteps: 4, label: "Deploying Edge CDN Route", status: "COMPLETED", detail: `Preview/target URL: ${deployRes.liveUrl}; SSL and production serving require independent verification` },
       { stepNumber: 4, totalSteps: 4, label: "Generating One-Command CLI Scripts", status: "COMPLETED", detail: "Cloudflare Pages deployment command prepared; no deployment executed" },
     ];
 
-    const responseMarkdown = `### 🚀 1-Command Live Deployment Complete
+    const responseMarkdown = `### 🚀 1-Command Deployment Preparation Complete
 - **Project**: **${deployRes.projectName}**
 - **Live URL**: [\`${deployRes.liveUrl}\`](${deployRes.liveUrl})
 - **Status**: **${deployRes.status}** (Deployment not executed · Target: Cloudflare Pages · Edge: ${deployRes.edgeRegion})
@@ -1332,7 +1332,7 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
     };
   }
 
-  // 9. 1,000x Strict Geofencing & Food Delivery Zone Quarantine
+  // 9. Strict Geofencing & Food Delivery Zone Status
   if (
     q.includes("geofence") ||
     q.includes("zone") ||
@@ -1345,17 +1345,17 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
     const activeZone = ACTIVE_DELIVERY_ZONES[0];
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 3, label: "Querying Spatial GPS Radar", status: "COMPLETED", detail: "Enforcing 12km strict radius centered at Sribhumi / Karimganj" },
-      { stepNumber: 2, totalSteps: 3, label: "Verifying Inactive Zone Quarantine", status: "COMPLETED", detail: "Food ordering masked across inactive regions; King Pay rendered exclusively" },
-      { stepNumber: 3, totalSteps: 3, label: "Compliance & Fee Verification", status: "COMPLETED", detail: "0% Gateway fees guaranteed Pan-India via direct UPI escrow" },
+      { stepNumber: 2, totalSteps: 3, label: "Verifying Inactive Zone Quarantine", status: "COMPLETED", detail: "Food ordering masked across inactive regions; Configured outside-zone behavior is shown according to deployed product rules" },
+      { stepNumber: 3, totalSteps: 3, label: "Compliance & Fee Verification", status: "COMPLETED", detail: "Gateway fees and settlement flow require provider verification" },
     ];
 
-    const responseMarkdown = `### 🛡️ 1,000x Strict Geofence Enforcement Status
+    const responseMarkdown = `### 🛡️ Strict Geofence Enforcement Status
 - **Active Food Delivery Zone**: **${activeZone.name}** (12.0 km strict radius)
 - **Active Coordinates**: \`24.8688° N, 92.3511° E\`
 - **Pan-India Inactive Zone Rule**:
   - Customers outside the active 12km delivery zone **NEVER** see open restaurants or food delivery listings.
-  - Across all other Indian cities, users experience **King Pay** exclusively (0% fee instant payment network).
-- **Zero-Fee Infrastructure**: Direct bank settlements with zero gateway commissions and IT Act §79 intermediary protection.`;
+  - Across all other Indian cities, users experience **King Pay** exclusively (configured payment network and fee schedule).
+- **Zero-Fee Infrastructure**: Settlement routing, gateway fees, and legal treatment must be verified from configured providers and current requirements.`;
 
     return {
       intent: "general_executive",
