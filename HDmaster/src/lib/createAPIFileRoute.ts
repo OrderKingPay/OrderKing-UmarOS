@@ -4,7 +4,13 @@ type Handler = (ctx: { request: Request; params?: Record<string, string | undefi
 
 type APIOptions = {
   server?: { handlers?: Record<string, Handler> };
-  [method: string]: unknown;
+  GET?: Handler;
+  POST?: Handler;
+  PUT?: Handler;
+  PATCH?: Handler;
+  DELETE?: Handler;
+  HEAD?: Handler;
+  OPTIONS?: Handler;
 };
 
 const HTTP_METHODS = new Set([
