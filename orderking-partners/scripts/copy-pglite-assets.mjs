@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const srcDir = join(root, "node_modules/@electric-sql/pglite/dist");
-const destDir = join(root, ".vercel/output/functions/__server.func/_libs");
+const destDir = join(root, "dist/_worker.js/_libs");
 
 if (!existsSync(destDir)) process.exit(0);
 
