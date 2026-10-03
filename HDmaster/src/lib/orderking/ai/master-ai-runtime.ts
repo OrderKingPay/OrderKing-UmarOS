@@ -212,6 +212,18 @@ export async function executeTool(
   const limit = typeof args.limit === "number" ? Math.min(100, Math.max(1, args.limit)) : 25;
   const repo = args.repo;
 
+  // Legacy autonomous_* handlers contain historical/static strategy outputs. Do not
+  // expose them as live execution until each handler is backed by a verified data
+  // source and governed executor.
+  if (name.startsWith("autonomous_")) {
+    return {
+      status: "BLOCKED",
+      code: "VERIFIED_TOOL_REQUIRED",
+      tool: name,
+      message: "This autonomous capability is not exposed as a live action until its data sources, provider integration and approval/execution path are verified.",
+    };
+  }
+
   switch (name) {
     // -----------------------------------------------------------------------
     // Orders
