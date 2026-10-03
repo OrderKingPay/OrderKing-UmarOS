@@ -3,7 +3,7 @@ import { getSql } from "@/lib/db";
 import { cellToLatLng, latLngToCell } from "h3-js";
 import { nid } from "./workspace.server";
 
-// We use resolution 9 which represents an area of ~0.1 km^2, perfect for hyper-local tracking
+// H3 resolution is used only as a spatial index for verified telemetry.
 const H3_RESOLUTION = 9;
 
 export interface TelemetryPayload {
@@ -18,8 +18,7 @@ export interface TelemetryPayload {
 }
 
 /**
- * Zomato-Killer 100x Powerful Geospatial Telemetry Engine.
- * Logs every single real-time movement perfectly with Uber's H3 Hexagonal Grid Indexing.
+ * Stores verified geospatial telemetry and updates active-order coordinates.
  */
 export async function logGeospatialTelemetry(payload: TelemetryPayload) {
   const sql = await getSql();
@@ -54,10 +53,10 @@ export async function logGeospatialTelemetry(payload: TelemetryPayload) {
         [payload.lat, payload.lng, payload.heading ?? null, payload.entityId]
       );
     }
-  } catch (err: any) {
-    console.error("100x Telemetry Error:", err.message);
-    // Suppress error in production so pinging doesn't fail the app
+  } catch (err) {
+    console.error("Geospatial telemetry error:", err);
+    throw new Error("Telemetry was not persisted");
   }
 
-  return { success: true, h3Index };
+  return { persisted: true, h3Index };
 }
