@@ -28,9 +28,7 @@ async function resolveRiderId(request: Request, orgId: string) {
   const sql = await getSql();
   const rows = await sql<{ id: string }>`select id from riders where org_id=${orgId} and user_id=${riderUserId} and data_mode='PRODUCTION' and status in ('ACTIVE','ONLINE','BUSY') limit 1`;
   if (!rows[0]) {
-    const newId = nid('rid');
-    await sql`insert into riders (id, org_id, city_id, user_id, display_ref, phone_masked, data_mode, status, online, current_lat, current_lng) values (${newId}, ${orgId}, 'city_1', ${riderUserId}, 'RIDER_' || substring(${riderUserId} from 1 for 6), 'MASKED', 'PRODUCTION', 'ONLINE', 1, 0, 0)`;
-    return newId;
+    throw new Error("Rider is not provisioned and verified in the live HDmaster roster");
   }
   return rows[0].id;
 }
@@ -44,9 +42,9 @@ export async function handleRiderOffersHttp(request: Request): Promise<Response>
     const sql = await getSql();
 
     if (request.method === "GET") {
-      const rows = await sql<{ id: string; order_id: string; score: number; distance_m: number | null; eta_seconds: number | null; offered_at: string; expires_at: string; restaurant_id: string; restaurant_name: string; restaurant_address: string; restaurant_lat: number | null; restaurant_lng: number | null; customer_lat: number | null; customer_lng: number | null; customer_name: string | null; customer_phone: string | null; customer_address: string | null; zone_name: string; total_paise: number }>`
+      const rows = await sql<{ id: string; order_id: string; score: number; distance_m: number | null; eta_seconds: number | null; offered_at: string; expires_at: string; restaurant_id: string; restaurant_name: string; restaurant_address: string; restaurant_lat: number | null; restaurant_lng: number | null; customer_lat: number | null; customer_lng: number | null; customer_name: string | null; customer_phone: string | null; customer_address: string | null; zone_name: string; total_paise: number; rider_payout_paise: number | null; payment_method: string; package_count: number }>`
         select da.id, da.order_id, da.score, da.distance_m, da.eta_seconds, da.offered_at::text, (da.offered_at + interval '30 seconds')::text as expires_at,
-               r.id as restaurant_id, r.name as restaurant_name, r.address as restaurant_address, (select lat from restaurant_outlets ro where ro.restaurant_id = r.id and ro.active = true limit 1) as restaurant_lat, (select lng from restaurant_outlets ro where ro.restaurant_id = r.id and ro.active = true limit 1) as restaurant_lng, cast(o.delivery_address_json->>'lat' as float) as customer_lat, cast(o.delivery_address_json->>'lng' as float) as customer_lng, cast(o.delivery_address_json->>'name' as text) as customer_name, cast(o.delivery_address_json->>'phone' as text) as customer_phone, cast(o.delivery_address_json->>'address' as text) as customer_address, z.name as zone_name, o.total_paise
+               r.id as restaurant_id, r.name as restaurant_name, r.address as restaurant_address, (select lat from restaurant_outlets ro where ro.restaurant_id = r.id and ro.active = true limit 1) as restaurant_lat, (select lng from restaurant_outlets ro where ro.restaurant_id = r.id and ro.active = true limit 1) as restaurant_lng, cast(o.delivery_address_json->>'lat' as float) as customer_lat, cast(o.delivery_address_json->>'lng' as float) as customer_lng, cast(o.delivery_address_json->>'name' as text) as customer_name, cast(o.delivery_address_json->>'phone' as text) as customer_phone, cast(o.delivery_address_json->>'address' as text) as customer_address, z.name as zone_name, o.total_paise, o.rider_payout_paise, o.payment_method, coalesce((select sum(qty)::int from order_items oi where oi.order_id=o.id and oi.org_id=o.org_id), 1) as package_count
         from dispatch_assignments da join orders o on o.id=da.order_id join restaurants r on r.id=o.restaurant_id join zones z on z.id=o.zone_id
         where da.org_id=${ws.ctx.orgId} and da.rider_id=${riderId} and da.status='OFFERED' and o.data_mode='PRODUCTION' and o.status='READY'
           and da.offered_at > now() - interval '30 seconds' order by da.offered_at desc limit 5`;
