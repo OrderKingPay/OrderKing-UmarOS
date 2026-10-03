@@ -77,6 +77,7 @@ describe("Rider Low-Network & 2G Offline Cache Layer", () => {
     const executedActions: RiderQueuedAction[] = [];
     const result = await flushRiderOfflineQueue(async (action) => {
       executedActions.push(action);
+      return { confirmed: true };
     });
 
     assert.equal(result.syncedCount, 1);
@@ -84,5 +85,19 @@ describe("Rider Low-Network & 2G Offline Cache Layer", () => {
     assert.equal(executedActions.length, 1);
     assert.equal(executedActions[0].deliveryId, "del_88");
     assert.equal(getRiderOfflineQueue().length, 0);
+  });
+
+  test("keeps queued actions when the server does not confirm them", async () => {
+    enqueueRiderOfflineAction({
+      deliveryId: "del_unconfirmed",
+      action: "PICKUP",
+      idempotencyKey: "idem_unconfirmed",
+    });
+
+    const result = await flushRiderOfflineQueue(async () => ({ confirmed: false }));
+
+    assert.equal(result.syncedCount, 0);
+    assert.equal(result.failedCount, 1);
+    assert.equal(getRiderOfflineQueue().length, 1);
   });
 });
