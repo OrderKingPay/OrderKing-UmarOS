@@ -1868,36 +1868,15 @@ export async function executeTool(
     case "autonomous_meta_and_google_ad_domination_orchestrator": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "META_AND_GOOGLE_AD_DOMINATION_DEPLOYED",
+        status: "AD_PLAN_ONLY",
         timestamp: new Date().toISOString(),
-        metaMarketingApiPayload: {
-          apiVersion: "v21.0",
-          campaignName: "OrderKing_Dominance_Karimganj_Meta_V21",
-          dailyBudgetInr: 150,
-          targetPostalCodes: ["788710", "788711", "788712", "788701"],
-          targetRadiusKm: 5.0,
-          estimatedDailyReach: "3,200 active local mobile users",
-          placements: ["instagram_reels", "instagram_feed", "facebook_feed", "facebook_stories"],
-          adCreativeHeadline: "Karimganj's Own Food App: 0% Markup + 24K Gold 👑",
-        },
-        googleAdsPMaxPayload: {
-          advertisingChannelType: "PERFORMANCE_MAX",
-          campaignName: "OrderKing_Karimganj_Google_PMax_Domination",
-          dailyBudgetInr: 200,
-          geoTargeting: ["Karimganj", "Barak Valley", "Assam"],
-          searchThemes: ["food delivery near me", "best biryani in town", "online food ordering"],
-          headlinesCount: 5,
-        },
-        viralSocialDistribution: {
-          whatsappStatusLoop: "1-Tap 'Share Scratch Card on Status -> Unlock ₹25' generates 50,000 daily local impressions at ₹0 ad spend",
-          viralReelsScriptsCount: 3,
-          influencerBarterPitch: "Ready for local Instagram creators with ₹750 free food barter",
-          googleLocalSeoSchema: "FoodDeliveryService JSON-LD schema deployed for #1 Google Search & Maps ranking",
-        },
-        verdict: "100,000x force advertising engine primed. Dominates mobile screens across Facebook, Instagram, Google Maps, Search, and WhatsApp Status with sub-₹150 daily budget.",
+        channels: ["Meta", "Google", "WhatsApp"],
+        campaignsPrepared: [],
+        estimatedReach: null,
+        budget: null,
+        verdict: "Advertising execution requires connected ad-platform APIs, current audience telemetry, approved budgets and measured results. No reach multiplier or spend claim is asserted here.",
       };
     }
-
     case "autonomous_strategic_nearest_rider_and_fleet_orchestrator": {
       requirePermission(ws.ctx, "modify_orders");
       const sql = await getSql();
