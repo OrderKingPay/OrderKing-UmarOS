@@ -3,16 +3,14 @@ import { runAlgorithmicAutoDispatch } from '../../../../lib/orderking/server/aut
 
 /**
  * 🚀 AI STARLINK-LEVEL DISPATCH CRON ENDPOINT
- * Triggered automatically by Vercel every minute (* * * * *).
+ * Scheduled execution must be provided by an authorized Cloudflare Worker/cron caller.
  */
 export const APIRoute = createAPIFileRoute('/api/dispatch/cron/run-auto-dispatch')({
   GET: async ({ request }) => {
     try {
-      // Allow internal invocation or authenticated Vercel Cron
+      // Cloudflare Worker/cron or an authorized internal caller must provide the shared secret.
       const authHeader = request.headers.get('authorization');
-      const isCron = request.headers.get('x-vercel-cron') === '1';
-      
-      if (!isCron && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
       }
 
