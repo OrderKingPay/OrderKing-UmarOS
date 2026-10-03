@@ -60,8 +60,7 @@ export class FounderApprovalGates {
 
   public requiresApproval(domain: ApprovalRiskDomain, payload?: { amountInr?: number }): boolean {
     if (domain === "FINANCIAL") {
-      // Auto-authorize micro-refunds under ₹200; require founder approval for all larger transfers
-      if (payload?.amountInr && payload.amountInr <= 200) return false;
+      // Every financial action requires explicit founder approval.
       return true;
     }
     // Legal, Destructive, Production, and External ALWAYS require founder approval
@@ -129,7 +128,7 @@ export class FounderApprovalGates {
       details: `Founder authorized execution for: "${req.title}".`,
     });
 
-    return { success: true, message: `Action "${req.title}" approved and executed.`, request: req };
+    return { success: true, message: `Action "${req.title}" approved. Execution must occur through a separate authorized executor.`, request: req };
   }
 
   public rejectRequest(id: string, reason = "Rejected by Founder"): { success: boolean; message: string } {
