@@ -28,6 +28,7 @@ export function DeliveryActions({
   const [code, setCode] = useState("");
   const [otp, setOtp] = useState("");
   const [pending, setPending] = useState(false);
+  const [queued, setQueued] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [reason, setReason] = useState("vehicle problem");
@@ -48,17 +49,23 @@ export function DeliveryActions({
     extra: Record<string, unknown> = {},
   ) {
     setPending(true);
+    setQueued(false);
     setError(null);
     const idempotencyKey = newIdempotencyKey();
 
     if (getRiderNetworkSpeed() === "OFFLINE") {
+      if (action === "COLLECT_CASH" || action === "DELIVER") {
+        setError("A network connection is required to record cash collection or complete delivery.");
+        setPending(false);
+        return;
+      }
       enqueueRiderOfflineAction({
         deliveryId: delivery.id,
         action,
         idempotencyKey,
         payload: extra,
       });
-      onChanged();
+      setQueued(true);
       setPending(false);
       return;
     }
@@ -75,13 +82,17 @@ export function DeliveryActions({
       onChanged();
     } catch (e) {
       if (typeof navigator !== "undefined" && !navigator.onLine) {
-        enqueueRiderOfflineAction({
-          deliveryId: delivery.id,
-          action,
-          idempotencyKey,
-          payload: extra,
-        });
-        onChanged();
+        if (action === "COLLECT_CASH" || action === "DELIVER") {
+          setError("The server did not confirm this financial or completion action. Reconnect and retry.");
+        } else {
+          enqueueRiderOfflineAction({
+            deliveryId: delivery.id,
+            action,
+            idempotencyKey,
+            payload: extra,
+          });
+          setQueued(true);
+        }
       } else {
         setError(errorMessage(e, t("actionNotConfirmed")));
       }
@@ -155,16 +166,16 @@ export function DeliveryActions({
         </p>
       ) : null}
 
-      {/* Zomato-style Rider Quick-Connect & Safety SOS Bar */}
-      <div className="grid grid-cols-4 gap-2 border-t border-border pt-2">
-        {d.customer.contactAllowed ? (
+      {/* Verified contact and safety actions */}
+      <div className="grid grid-cols-2 gap-2 border-t border-border pt-2">
+        {d.customer.contactAllowed && d.customer.contactMasked ? (
           <a
-            href={`tel:${d.customer.contactMasked || "18001000"}`}
+            href={`tel:${d.customer.contactMasked}`}
             className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70"
           >
             <span className="text-base">📞</span>
-            <span>Call</span>
-            <span className="text-[10px] text-muted-foreground">Masked</span>
+            <span>Call customer</span>
+            <span className="text-[10px] text-muted-foreground">Verified contact</span>
           </a>
         ) : (
           <button
@@ -173,31 +184,10 @@ export function DeliveryActions({
             className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-muted/10 p-2 text-center text-xs font-medium text-muted-foreground opacity-50"
           >
             <span className="text-base">📞</span>
-            <span>Call</span>
-            <span className="text-[10px]">Restricted</span>
+            <span>Customer call unavailable</span>
+            <span className="text-[10px]">Provider not connected</span>
           </button>
         )}
-
-        <a
-          href={`https://wa.me/?text=${encodeURIComponent(`Hi, I am your OrderKing delivery partner for Order #${d.orderCode}!`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex flex-col items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2 text-center text-xs font-medium text-emerald-700 dark:text-emerald-400 transition hover:bg-emerald-500/20"
-        >
-          <span className="text-base">💬</span>
-          <span>WhatsApp</span>
-          <span className="text-[10px]">Chat</span>
-        </a>
-
-        <a
-          href="tel:18001000"
-          className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70"
-        >
-          <span className="text-base">🏬</span>
-          <span>Kitchen</span>
-          <span className="text-[10px] text-muted-foreground">Direct</span>
-        </a>
-
         <a
           href="tel:112"
           className="flex flex-col items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 p-2 text-center text-xs font-bold text-destructive transition hover:bg-destructive/10"
@@ -229,6 +219,7 @@ export function DeliveryActions({
         })()
       )}
 
+      {queued ? <CardMeta>Pending server confirmation. The delivery state has not been changed locally.</CardMeta> : null}
       {error ? <p className="text-sm text-offline">{error}</p> : null}
 
       {d.state === "ACCEPTED" ? (
@@ -243,11 +234,17 @@ export function DeliveryActions({
       ) : null}
       {d.state === "ARRIVED_AT_RESTAURANT" || d.state === "RESTAURANT_NOT_READY" ? (
         <div className="space-y-3">
-          <p className="text-sm">
-            {t("pickupCode")}: <span className="font-mono tabular-nums">{d.pickupCode}</span>
-          </p>
-          <Label>{t("pickupCode")}</Label>
-          <Input inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value)} />
+          {d.dataMode === "LIVE" ? (
+            <CardMeta>Pickup is confirmed by the live order service. No local pickup code is treated as authoritative.</CardMeta>
+          ) : (
+            <>
+              <p className="text-sm">
+                {t("pickupCode")}: <span className="font-mono tabular-nums">{d.pickupCode}</span>
+              </p>
+              <Label>{t("pickupCode")}</Label>
+              <Input inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value)} />
+            </>
+          )}
           <Button
             size="lg"
             className="w-full"
