@@ -704,7 +704,7 @@ export const askAssistant = createServerFn({ method: "POST" })
     question: string;
     mode: "ops" | "ceo";
     specialistId?: string;
-    provider?: "gemini" | "anthropic" | "openai" | "xai" | "local_deterministic";
+    provider?: "gemini" | "anthropic" | "openai" | "xai";
     conversation?: Array<{ role: "user" | "assistant"; content: string }>;
     approvedCallId?: string;
     approvedCallName?: string;
