@@ -9,7 +9,7 @@ function json(body: unknown, status = 200) { return new Response(JSON.stringify(
 function fail(err: unknown) { if (err instanceof ForbiddenError) return json({ error: err.message, code: "FORBIDDEN" }, 403); const message = err instanceof Error ? err.message : "Unexpected error"; if (message === "Unauthorized") return json({ error: message, code: "UNAUTHORIZED" }, 401); return json({ error: message, code: "BAD_REQUEST" }, 400); }
 async function resolveServiceUserId(request: Request): Promise<string> { const authorization = request.headers.get("authorization")?.trim(); const configuredToken = process.env.ORDERKING_SERVICE_TOKEN?.trim(); const configuredUserId = process.env.ORDERKING_SERVICE_USER_ID?.trim(); if (configuredToken && configuredUserId && authorization === `Bearer ${configuredToken}`) return configuredUserId; return requireUserId(); }
 
-export async function handleRiderOrderTransition(request: Request, input: { orderId: string; riderId: string; from: CanonicalOrderStatus; to: CanonicalOrderStatus; reason?: string; idempotencyKey: string; correlationId?: string; lat?: number; lng?: number; accuracy?: number; otp?: string }): Promise<Response> {
+export async function handleRiderOrderTransition(request: Request, input: { orderId: string; riderId: string; from: CanonicalOrderStatus; to: CanonicalOrderStatus; reason?: string; idempotencyKey: string; correlationId?: string; lat?: number; lng?: number; accuracy?: number; verificationCode?: string }): Promise<Response> {
   try {
     const userId = await resolveServiceUserId(request); const ws = await ensureWorkspace(userId); requirePermission(ws.ctx, "modify_orders", { orgId: ws.ctx.orgId, cityId: ws.ctx.cityId });
     const sql = await getSql();
@@ -28,9 +28,9 @@ export async function handleRiderOrderTransition(request: Request, input: { orde
     if (order.data_mode !== "PRODUCTION") throw new Error("Rider LIVE transition endpoint accepts PRODUCTION orders only");
     if (input.to !== "RIDER_ASSIGNED" && order.rider_id && order.rider_id !== riderId) throw new ForbiddenError("Rider is not assigned to this order");
     if (input.to === "DELIVERED") {
-      const suppliedOtp = input.otp?.trim();
+      const suppliedCode = input.verificationCode?.trim();
       const expectedOtp = order.delivery_otp == null ? "" : String(order.delivery_otp);
-      if (!suppliedOtp || !expectedOtp || suppliedOtp !== expectedOtp) {
+      if (!suppliedCode || !expectedOtp || suppliedCode !== expectedOtp) {
         throw new Error("Delivery OTP is missing or invalid");
       }
     }
