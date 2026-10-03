@@ -34,4 +34,5 @@ export const Route = createFileRoute("/api/finance/escalations")({
       }
     },
   },
+  },
 });
