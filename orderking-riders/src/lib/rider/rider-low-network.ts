@@ -2,7 +2,7 @@
  * Low-Network & 2G Offline-First Cache Layer
  * OrderKing Rider / Delivery Fleet App
  * 
- * Guarantees zero delivery action drops and 0ms UI responsiveness even in:
+ * Designed for resilient rider UI and queued non-final actions across:
  * - Underground parking lots / basement restaurant kitchens
  * - High-speed transit in remote / border cell towers
  * - 2G, EDGE, or momentary network cutouts
@@ -121,9 +121,13 @@ export function clearRiderOfflineQueue(): void {
   }
 }
 
+let flushInProgress = false;
+
 export async function flushRiderOfflineQueue(
-  executor: (action: RiderQueuedAction) => Promise<void>,
+  executor: (action: RiderQueuedAction) => Promise<{ confirmed: boolean }>,
 ): Promise<{ syncedCount: number; failedCount: number }> {
+  if (flushInProgress) return { syncedCount: 0, failedCount: getRiderOfflineQueue().length };
+  flushInProgress = true;
   const queue = getRiderOfflineQueue();
   if (queue.length === 0) return { syncedCount: 0, failedCount: 0 };
 
@@ -131,14 +135,19 @@ export async function flushRiderOfflineQueue(
   let failedCount = 0;
   const remaining: RiderQueuedAction[] = [];
 
-  for (const item of queue) {
-    try {
-      await executor(item);
-      syncedCount++;
-    } catch {
-      failedCount++;
-      remaining.push(item);
+  try {
+    for (const item of queue) {
+      try {
+        const result = await executor(item);
+        if (!result?.confirmed) throw new Error("Server did not confirm the rider action");
+        syncedCount++;
+      } catch {
+        failedCount++;
+        remaining.push(item);
+      }
     }
+  } finally {
+    flushInProgress = false;
   }
 
   try {
