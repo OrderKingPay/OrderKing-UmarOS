@@ -843,22 +843,19 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
       { stepNumber: 5, totalSteps: 5, label: "Founder Safety Protocol Engaged", status: "COMPLETED", detail: "100% data loss prevention active · Results piped directly back to founder" },
     ];
 
-    const responseMarkdown = `### 🌐 Universal Platform & App Connector Active: **${matchedPlatform.name}**
-- **Connection Status**: **${matchedPlatform.status}** (Latency: \`${matchedPlatform.apiLatencyMs}ms\` · Auth: \`${matchedPlatform.authMethod}\`)
-- **Safety Guardrail**: **100% Verified** (Zero data leak, automatic rollback snapshot, rate-limit protector active)
-- **Available Actions to Enforce**:
-${matchedPlatform.supportedActions.map((a) => `  - **${a.label}** (\`${a.safetyLevel}\`): ${a.description}`).join("\n")}
+    const responseMarkdown = `### 🌐 Founder Platform Registry: **${matchedPlatform.name}**
+- **Registry status**: **${matchedPlatform.status}**
+- **Provider verification**: required before this can be considered connected
+- **Latency**: not measured by the registry
+- **Available actions**: ${matchedPlatform.supportedActions.length === 0 ? "none — provider execution is not connected" : "listed for review only"}
 
-> [!NOTE]
-> **Founder Safety Shield**: All external apps and APIs are forced to execute within our isolated sandbox. If an external service throws an error or rate limit, our automated rollback restores state in **sub-10ms** with zero business impact.
-
-Use the interactive card below to force task execution on **${matchedPlatform.name}** or browse other connected platforms.`;
+No sandbox, rollback-speed, zero-leak, or production-execution guarantee is claimed.`;
 
     const voiceSpokenText = isHindi
       ? `Maine ${matchedPlatform.name} ke saath sovereign integration verify kar li hai. Safety guardrails active hain aur aap 1-click me task enforce kar sakte hain.`
       : isBengali
       ? `Ami ${matchedPlatform.name} er sathe sovereign connection verify korechi. Safety guardrail active ache ebong apni 1-click e kaaj force korte paren.`
-      : `Universal Platform Connector is synchronized with ${matchedPlatform.name}. All safety guardrails and rollback snapshots are verified. Ready to force task execution on your order.`;
+      : `The platform registry lists ${matchedPlatform.name}, but no live connection or forced execution is claimed until provider verification succeeds.`;
 
     return {
       intent: "platform_connector",
