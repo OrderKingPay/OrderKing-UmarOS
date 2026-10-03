@@ -54,7 +54,7 @@ export interface MultiModelConsensusResult {
   unifiedExecutiveSummary: string;
   strongestCandidateModel: string;
   totalTokensUsed: number;
-  totalCostInr: number;
+  totalCostInr: number | null;
   auditSignature: string;
   hallucinationFreeVerified: boolean;
   deliveryBasePaise: number;
@@ -124,8 +124,8 @@ export class LiveOrchestrationEngine {
   }
 
   /**
-   * Concurrently dispatches prompt across all registered providers, evaluates semantic convergence,
-   * detects and filters hallucinations, and synthesizes a single unified executive result.
+   * Concurrently dispatches prompt across configured external providers.
+   * Raw model outputs are never treated as independently verified facts.
    */
   public async executeMultiModelConsensus(params: {
     prompt: string;
@@ -166,7 +166,7 @@ export class LiveOrchestrationEngine {
           output: res.text,
           confidenceScore: null,
           tokensUsed: res.tokensUsed,
-          estimatedCostInr: parseFloat(costInr.toFixed(4)),
+          estimatedCostInr: null,
           latencyMs: res.latencyMs,
           verifiedFactual: false,
           keyInsights: ["Provider response received. Independent factual verification not performed by this engine."],
@@ -200,7 +200,7 @@ export class LiveOrchestrationEngine {
 
     const totalTokens = validVerdicts.reduce((sum, v) => sum + v.tokensUsed.total, 0);
     const totalCost = null;
-    this.monthlyCostAccumulatorInr += totalCost;
+    if (typeof totalCost === "number") this.monthlyCostAccumulatorInr += totalCost;
 
     // Pick strongest candidate (highest confidence score & lowest latency)
     const strongest = [...validVerdicts].sort((a, b) => a.latencyMs - b.latencyMs)[0]!;
