@@ -19,8 +19,9 @@ export class StarlinkNet {
    * Executes a fault-tolerant fetch with exponential backoff and jitter.
    */
   static async fetch(url: string, options: FetchOptions = {}): Promise<Response> {
-    let retries = options.retries ?? this.MAX_RETRIES;
-    let delay = options.backoffDelay ?? 500;
+    const { retries: configuredRetries, backoffDelay, priority, ...requestInit } = options;
+    let retries = configuredRetries ?? this.MAX_RETRIES;
+    let delay = backoffDelay ?? 500;
 
     while (retries > 0) {
       try {
