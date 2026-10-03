@@ -218,136 +218,41 @@ export class LiveOrchestrationEngine {
       ? Array.from(this.adapters.values()).filter((a) => params.preferredProviders?.includes(a.id))
       : Array.from(this.adapters.values());
 
-    // Execute concurrently across all selected adapters
-    const executionPromises = targetAdapters.map(async (adapter) => {
-      const activeModel = adapter.activeModels[0] || "default";
-      try {
-        const res = await adapter.executePrompt({
-          model: activeModel,
-          systemPrompt,
-          prompt: params.prompt,
-        });
-
-        // Calculate real cost in INR (USD -> INR ~ 87.0)
-        const usdRate = 87.0;
-        const promptCost = (res.tokensUsed.prompt / 1000) * adapter.costPer1kTokensUsd.input;
-        const completionCost = (res.tokensUsed.completion / 1000) * adapter.costPer1kTokensUsd.output;
-        const costInr = (promptCost + completionCost) * usdRate;
-
-        const verdict: ModelOutputVerdict = {
-          providerId: adapter.id,
-          providerName: adapter.name,
-          vendor: adapter.vendor,
-          model: res.model,
-          output: res.text,
-          confidenceScore: adapter.vendor === "Sovereign" ? 99.9 : 99.7,
-          tokensUsed: res.tokensUsed,
-          estimatedCostInr: parseFloat(costInr.toFixed(4)),
-          latencyMs: res.latencyMs,
-          verifiedFactual: true,
-          keyInsights: [
-            `Verified via ${adapter.name} weights`,
-            `Zero contradiction identified with platform rules`,
-          ],
-        };
-
-        return verdict;
-      } catch (err) {
-        // Safe fallback verdict
-        return {
-          providerId: adapter.id,
-          providerName: adapter.name,
-          vendor: adapter.vendor,
-          model: "fallback",
-          output: `Adapter ${adapter.name} offline or rate-limited; bypassed gracefully.`,
-          confidenceScore: 0,
-          tokensUsed: { prompt: 0, completion: 0, total: 0 },
-          estimatedCostInr: 0,
-          latencyMs: 1,
-          verifiedFactual: false,
-          keyInsights: ["Fallback triggered"],
-        } as ModelOutputVerdict;
-      }
-    });
-
-    const settledResults = await Promise.allSettled(executionPromises);
-    const validVerdicts: ModelOutputVerdict[] = settledResults
-      .filter((r): r is PromiseFulfilledResult<ModelOutputVerdict> => r.status === "fulfilled" && r.value.verifiedFactual)
-      .map((r) => r.value);
-
-    // If all external failed, ensure at least the sovereign local verdict is available
-    if (validVerdicts.length === 0) {
-      const localAdapter = this.adapters.get("sovereign_local")!;
-      const localRes = await localAdapter.executePrompt({
-        model: "sovereign-ultra-deterministic",
-        systemPrompt,
+    // Only independently verifiable provider outputs can participate.
+    // A provider response alone is not proof of factual correctness.
+    const configuredAdapters = targetAdapters.filter((adapter) => adapter.isConfigured);
+    if (configuredAdapters.length === 0) {
+      return {
+        consensusId,
+        timestamp,
         prompt: params.prompt,
-      });
-      validVerdicts.push({
-        providerId: localAdapter.id,
-        providerName: localAdapter.name,
-        vendor: localAdapter.vendor,
-        model: localRes.model,
-        output: localRes.text,
-        confidenceScore: 99.9,
-        tokensUsed: localRes.tokensUsed,
-        estimatedCostInr: 0,
-        latencyMs: localRes.latencyMs,
-        verifiedFactual: true,
-        keyInsights: ["Local deterministic invariant verification active"],
-      });
-    }
-
-    const totalTokens = validVerdicts.reduce((sum, v) => sum + v.tokensUsed.total, 0);
-    const totalCost = validVerdicts.reduce((sum, v) => sum + v.estimatedCostInr, 0);
-    this.monthlyCostAccumulatorInr += totalCost;
-
-    // Pick strongest candidate (highest confidence score & lowest latency)
-    const strongest = [...validVerdicts].sort((a, b) => b.confidenceScore - a.confidenceScore || a.latencyMs - b.latencyMs)[0]!;
-
-    // Calculate cross-model consensus score
-    const avgConfidence = validVerdicts.reduce((s, v) => s + v.confidenceScore, 0) / validVerdicts.length;
-    const consensusAgreementScore = parseFloat(avgConfidence.toFixed(1));
-
-    // Synthesize concise executive result
-    const unifiedExecutiveSummary = `### 👑 Live Multi-Model Consensus (${validVerdicts.length}/${targetAdapters.length} Providers Aligned)
-- **Primary Model**: **${strongest.providerName} (${strongest.model})**
-- **Consensus Agreement**: **${consensusAgreementScore}%** (Zero hallucinations detected)
-- **Cost & Quota**: **₹${totalCost.toFixed(3)}** (~${totalTokens} tokens across models)
-- **Verdict**: Autonomous execution validated across ${validVerdicts.map((v) => v.providerName).join(", ")}.`;
-
-    const auditSignature = Math.random().toString(36).substring(2, 15)
-      .substring(0, 16)
-      .toUpperCase();
-
-    let surgeMultiplier = 1.0;
-    let deliveryBasePaise = 4000;
-
-    if (params.surgeParams) {
-      const surgeResult = surgePricingEngine.calculateSurge({
-        riderSupplyDensity: params.surgeParams.riderSupplyDensity,
-        incomingOrderVelocity: params.surgeParams.incomingOrderVelocity,
-        weatherConditionMultiplier: params.surgeParams.weatherConditionMultiplier,
-        timeOfDayMultiplier: params.surgeParams.timeOfDayMultiplier,
-      });
-      surgeMultiplier = surgeResult.multiplier;
-      deliveryBasePaise = surgeResult.adjustedDeliveryBasePaise;
+        verdicts: [],
+        consensusAgreementScore: 0,
+        unifiedExecutiveSummary: "Multi-model consensus is unavailable: no configured external provider is available.",
+        strongestCandidateModel: "",
+        totalTokensUsed: 0,
+        totalCostInr: 0,
+        auditSignature: "UNVERIFIED",
+        hallucinationFreeVerified: false,
+        deliveryBasePaise: 4000,
+        surgeMultiplier: 1,
+      };
     }
 
     return {
       consensusId,
       timestamp,
       prompt: params.prompt,
-      verdicts: validVerdicts,
-      consensusAgreementScore,
-      unifiedExecutiveSummary,
-      strongestCandidateModel: `${strongest.providerName} (${strongest.model})`,
-      totalTokensUsed: totalTokens,
-      totalCostInr: parseFloat(totalCost.toFixed(4)),
-      auditSignature: `SIG_${auditSignature}`,
-      hallucinationFreeVerified: true,
-      deliveryBasePaise,
-      surgeMultiplier,
+      verdicts: [],
+      consensusAgreementScore: 0,
+      unifiedExecutiveSummary: "External model responses require an independent verification layer before Umar OS can label a consensus or hallucination-free result as verified.",
+      strongestCandidateModel: "",
+      totalTokensUsed: 0,
+      totalCostInr: 0,
+      auditSignature: "UNVERIFIED",
+      hallucinationFreeVerified: false,
+      deliveryBasePaise: 4000,
+      surgeMultiplier: 1,
     };
   }
 }
