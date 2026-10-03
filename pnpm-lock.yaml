@@ -20,6 +20,8 @@ packages:
 snapshots:
 
   pnpm@12.8.1:
+
+---
 lockfileVersion: '9.0'
 
 settings:
