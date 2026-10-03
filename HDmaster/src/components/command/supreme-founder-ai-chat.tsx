@@ -1953,12 +1953,12 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
         <div className="p-2.5 rounded-lg bg-black/60 border border-zinc-700 font-mono text-[11px] text-emerald-400 flex items-center justify-between">
           <div>
             <span className="text-zinc-500 block text-[10px] mb-1">CLI Production Deploy:</span>
-            <code>{deploy.vercelDeployCommand}</code>
+            <code>{deploy.cloudflareDeployCommand}</code>
           </div>
           <button
             onClick={() => {
-              void navigator.clipboard?.writeText(deploy.vercelDeployCommand);
-              toast.success("Vercel production deploy command copied!");
+              void navigator.clipboard?.writeText(deploy.cloudflareDeployCommand);
+              toast.success("Cloudflare Pages deploy command copied!");
             }}
             className="text-[10px] px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-600 transition"
           >
