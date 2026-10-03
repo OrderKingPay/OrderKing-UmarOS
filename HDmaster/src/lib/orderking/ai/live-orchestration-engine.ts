@@ -168,7 +168,7 @@ export class LiveOrchestrationEngine {
           tokensUsed: res.tokensUsed,
           estimatedCostInr: parseFloat(costInr.toFixed(4)),
           latencyMs: res.latencyMs,
-          verifiedFactual: true,
+          verifiedFactual: false,
           keyInsights: ["Provider response received. Independent factual verification not performed by this engine."],
         };
 
@@ -193,7 +193,7 @@ export class LiveOrchestrationEngine {
 
     const settledResults = await Promise.allSettled(executionPromises);
     const validVerdicts: ModelOutputVerdict[] = settledResults
-      .filter((r): r is PromiseFulfilledResult<ModelOutputVerdict> => r.status === "fulfilled" && r.value.verifiedFactual)
+      .filter((r): r is PromiseFulfilledResult<ModelOutputVerdict> => r.status === "fulfilled")
       .map((r) => r.value);
 
     if (validVerdicts.length === 0) throw new Error("No configured external AI providers produced a verified response.");
