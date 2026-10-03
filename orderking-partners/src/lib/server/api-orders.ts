@@ -21,8 +21,14 @@ export const listOrders = createServerFn({ method: "GET" }).middleware([authMidd
     const res = await fetch(`${coreUrl()}/v1/admin/restaurants/${ctx.restaurantId}/partner-orders?scope=${scope}`, {
       headers: { authorization: `Bearer ${serviceToken()}` }
     });
-    const payload = (await res.json()) as any;
-    const { rows, lines, events } = payload.data || { rows: [], lines: [], events: [] };
+    const payload = (await res.json().catch(() => ({}))) as any;
+    if (!res.ok) {
+      throw new Error(payload?.error ?? `Order service unavailable (HTTP ${res.status})`);
+    }
+    if (!payload?.data || !Array.isArray(payload.data.rows) || !Array.isArray(payload.data.lines) || !Array.isArray(payload.data.events)) {
+      throw new Error("Order service returned an invalid response.");
+    }
+    const { rows, lines, events } = payload.data;
 
     const linesByOrder = new Map<string, OrderLineView[]>();
     for (const line of lines) { const list = linesByOrder.get(line.order_id) ?? []; list.push({ id: line.id, itemName: line.item_name, variantName: line.variant_name, quantity: asInt(line.quantity), unitPricePaise: asInt(line.unit_price_paise), lineTotalPaise: asInt(line.line_total_paise), specialInstructions: line.special_instructions, addons: [] }); linesByOrder.set(line.order_id, list); }
@@ -57,8 +63,14 @@ export const getDashboard = createServerFn({ method: "GET" }).middleware([authMi
     const res = await fetch(`${coreUrl()}/v1/admin/restaurants/${ctx.restaurantId}/partner-dashboard`, {
       headers: { authorization: `Bearer ${serviceToken()}` }
     });
-    const payload = (await res.json()) as any;
-    const hdStats = payload.data || {};
+    const payload = (await res.json().catch(() => ({}))) as any;
+    if (!res.ok) {
+      throw new Error(payload?.error ?? `Order dashboard unavailable (HTTP ${res.status})`);
+    }
+    if (!payload?.data || typeof payload.data !== "object") {
+      throw new Error("Order dashboard returned an invalid response.");
+    }
+    const hdStats = payload.data;
     
     const unavailable = await sql<{ c: number }>`select count(*)::int as c from item_availability a join items i on i.id = a.item_id where a.restaurant_id = ${ctx.restaurantId} and a.status <> 'available' and i.is_active = true`;
     const rating = await sql<{ avg: number | null; n: number }>`select avg(rating)::float as avg, count(*)::int as n from reviews where restaurant_id = ${ctx.restaurantId}`;
