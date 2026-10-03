@@ -403,15 +403,25 @@ export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ o
   if (!validatePostgresUrl(config.connectionString)) {
     return { ok: false, message: "Malformed PostgreSQL connection string.", latencyMs: 0 };
   }
-  // Simulated handshake or connection pool ping
-  const latencyMs = Math.floor(Math.random() * 25) + 15;
-  return {
-    ok: true,
+  const { Pool } = await import("pg");
+  const pool = new Pool({
+    connectionString: config.connectionString,
+    max: 1,
+    ssl: config.sslMode === "require" ? { rejectUnauthorized: false } : undefined,
+  });
+  try {
+    await pool.query("select 1");
+    return {
+      ok: true,
       message: `PostgreSQL connection verified (${config.provider}, ${config.sslMode} SSL).`,
-      latencyMs,
+      latencyMs: Date.now() - start,
     };
   } catch (error) {
-    return { ok: false, message: error instanceof Error ? error.message : "Database connection failed.", latencyMs: Date.now() - start };
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Database connection failed.",
+      latencyMs: Date.now() - start,
+    };
   } finally {
     await pool.end().catch(() => undefined);
   }
@@ -419,22 +429,36 @@ export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ o
 
 export async function testPgConnection(config: PaymentGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey || !config.secretKey) {
-    return { ok: false, message: "Missing API Key or Secret Key.", latencyMs: 0 };
+    return { ok: false, message: "Missing payment gateway API credentials.", latencyMs: 0 };
   }
-  if (!config.webhookSecret) return { ok: false, message: "Payment credentials are present but webhook secret is missing.", latencyMs: 0 };
-  return { ok: false, message: "Payment credentials are configured; live provider connectivity and webhook verification require an actual provider test transaction.", latencyMs: 0 };
+  if (!config.webhookSecret) {
+    return { ok: false, message: "Payment credentials are present but webhook secret is missing.", latencyMs: 0 };
+  }
+  return {
+    ok: false,
+    message: "Payment credentials are configured; a real provider transaction/webhook verification is required before this service can be marked connected.",
+    latencyMs: 0,
+  };
 }
 
 export async function testSmsConnection(config: SmsGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing SMS Gateway API Key. Operating in local simulation.", latencyMs: 0 };
+    return { ok: false, message: "Missing SMS Gateway API credentials.", latencyMs: 0 };
   }
-  return { ok: false, message: "SMS credentials are configured, but this diagnostic does not send a real SMS and therefore cannot mark the provider connected.", latencyMs: 0 };
+  return {
+    ok: false,
+    message: "SMS credentials are configured; this diagnostic does not send a real message and therefore cannot mark the provider connected.",
+    latencyMs: 0,
+  };
 }
 
 export async function testMapsConnection(config: MapsConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing Maps API Key. Falling back to offline Haversine matrix.", latencyMs: 0 };
+    return { ok: false, message: "Missing maps provider credentials.", latencyMs: 0 };
   }
-  return { ok: false, message: "Maps credentials are configured, but this diagnostic does not issue a provider request and therefore cannot mark the provider connected.", latencyMs: 0 };
+  return {
+    ok: false,
+    message: "Maps credentials are configured; this diagnostic does not issue a live routing request and therefore cannot mark the provider connected.",
+    latencyMs: 0,
+  };
 }
