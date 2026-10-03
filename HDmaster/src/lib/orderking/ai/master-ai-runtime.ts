@@ -262,17 +262,13 @@ export async function executeTool(
 
     case "cancel_order": {
       if (!id) throw new Error("cancel_order requires 'id' or 'orderId'");
-      requirePermission(ws.ctx, "cancel_orders");
-      const sql = await getSql();
-      await sql.query(
-        `UPDATE orders SET status='CANCELLED' WHERE id=$1 AND org_id=$2`,
-        [id, ws.ctx.orgId]
-      );
-      await sql.query(
-        `INSERT INTO order_events (id, org_id, order_id, actor_employee_id, from_status, to_status, action, note) VALUES ($1, $2, $3, $4, null, 'CANCELLED', 'master_ai.cancel_order', $5)`,
-        [`ev_${Date.now()}`, ws.ctx.orgId, id, ws.ctx.employeeId, String(args.reason || "Cancelled via Master AI")]
-      );
-      return { orderId: id, status: "CANCELLED", cancelledAt: new Date().toISOString() };
+      const result = await q.interveneOrder(ws, {
+        orderId: id,
+        action: "cancel",
+        reason: String(args.reason || "Cancelled via Master AI"),
+        idempotencyKey: typeof args.idempotencyKey === "string" ? args.idempotencyKey : undefined,
+      });
+      return { orderId: id, status: "CANCELLED", result };
     }
 
     case "reassign_order":
@@ -312,230 +308,20 @@ export async function executeTool(
 
     case "sync_restaurant_menu":
       requirePermission(ws.ctx, "manage_cms");
-      return { restaurantId: id, status: "SYNCED", syncedAt: new Date().toISOString() };
+      throw new Error("Restaurant menu synchronization is unavailable until a canonical partner/catalog provider is connected.");
 
     case "set_restaurant_online":
-      requirePermission(ws.ctx, "view_restaurants");
-      return { restaurantId: id, online: true, updatedAt: new Date().toISOString() };
+      requirePermission(ws.ctx, "manage_cms");
+      throw new Error("Restaurant availability mutation is unavailable until the canonical restaurant-status service is connected.");
 
     case "onboard_restaurant": {
       requirePermission(ws.ctx, "approve_restaurants");
-      const restaurantName = String(args.name || args.query || "New Partner Kitchen");
-      const cuisine = String(args.cuisine || "North Indian & Biryani");
-      const phone = String(args.phone || "9876543210");
-      const hours = String(args.hours || "10:00 - 23:00 (All Days)");
-      const commissionBps = typeof args.commissionBps === "number" ? args.commissionBps : 1000;
-      const zone = String(args.zone || "Karimganj Central / NE Hub");
-      const address = String(args.address || "Main Road, Karimganj, Assam");
-      const coverImage = String(
-        args.coverImage ||
-        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80"
-      );
-      const newRestId = `rst_${Date.now()}`;
-      const withImages = args.withImages !== false;
-
-      // 1-Command Full Menu Generator (Auto-attached on onboarding)
-      const autoDishes = [
-        {
-          name: "Signature Chicken Dum Biryani",
-          category: "Biryani & Rice",
-          diet: "NONVEG" as const,
-          pricePaise: 24000,
-          prepMinutes: 20,
-          description: "Slow-cooked aromatic basmati rice layered with spiced tender chicken, saffron, and crispy onions.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Paneer Butter Masala",
-          category: "Main Course",
-          diet: "VEG" as const,
-          pricePaise: 18000,
-          prepMinutes: 15,
-          description: "Fresh cottage cheese cubes in a rich, buttery tomato cream gravy with fragrant kasuri methi.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Butter Naan (2 pcs)",
-          category: "Breads",
-          diet: "VEG" as const,
-          pricePaise: 6000,
-          prepMinutes: 8,
-          description: "Traditional tandoor-baked leavened flatbread brushed with golden farm butter.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: false,
-          bestSeller: true,
-        },
-        {
-          name: "Tandoori Chicken Full",
-          category: "Starters & Tandoor",
-          diet: "NONVEG" as const,
-          pricePaise: 38000,
-          prepMinutes: 25,
-          description: "Whole chicken marinated overnight in Greek yogurt, Kashmiri chili, and roasted garam masala.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: false,
-        },
-        {
-          name: "Crispy Chicken Steamed Momos (6 pcs)",
-          category: "Starters & Snacks",
-          diet: "NONVEG" as const,
-          pricePaise: 12000,
-          prepMinutes: 12,
-          description: "Delicate dumplings stuffed with seasoned minced chicken, served with spicy red chutney.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Gulab Jamun (2 pcs)",
-          category: "Desserts",
-          diet: "VEG" as const,
-          pricePaise: 5000,
-          prepMinutes: 5,
-          description: "Warm golden milk-solid dumplings soaked in green cardamom and rose water sugar syrup.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1589119908995-c6837fa14d48?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: false,
-          bestSeller: false,
-        },
-      ];
-
-      return {
-        restaurantId: newRestId,
-        name: restaurantName,
-        cuisine,
-        phone,
-        status: "ACTIVE",
-        onboardedAt: new Date().toISOString(),
-        commissionBps,
-        operatingHours: hours,
-        zone,
-        address,
-        coverImage,
-        payoutSchedule: "WEEKLY_WEDNESDAY",
-        menuStatus: "PUBLISHED_LIVE",
-        initialMenu: {
-          categoriesCount: 5,
-          dishesCount: autoDishes.length,
-          dishes: autoDishes,
-          hasRealisticImages: withImages,
-        },
-        note: "Successfully onboarded in 1 command via Master AI: full kitchen profile active, operating hours set, and live menu with authentic dish photography published.",
-      };
+      throw new Error("Restaurant onboarding execution is unavailable from Master AI until the canonical onboarding/KYC workflow is connected. No restaurant was activated.");
     }
 
     case "generate_menu": {
       requirePermission(ws.ctx, "manage_cms");
-      const withImages = args.withImages !== false;
-      const cuisine = String(args.cuisine || "North Indian & Biryani");
-      const dishes = [
-        {
-          name: "Signature Chicken Dum Biryani",
-          category: "Biryani & Rice",
-          diet: "NONVEG",
-          pricePaise: 24000,
-          prepMinutes: 20,
-          description: "Slow-cooked aromatic basmati rice layered with spiced tender chicken, saffron, and crispy onions.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Paneer Butter Masala",
-          category: "Main Course",
-          diet: "VEG",
-          pricePaise: 18000,
-          prepMinutes: 15,
-          description: "Fresh cottage cheese cubes in a rich, buttery tomato cream gravy with fragrant kasuri methi.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Butter Naan (2 pcs)",
-          category: "Breads",
-          diet: "VEG",
-          pricePaise: 6000,
-          prepMinutes: 8,
-          description: "Traditional tandoor-baked leavened flatbread brushed with golden farm butter.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: false,
-          bestSeller: true,
-        },
-        {
-          name: "Tandoori Chicken Full",
-          category: "Starters & Tandoor",
-          diet: "NONVEG",
-          pricePaise: 38000,
-          prepMinutes: 25,
-          description: "Whole chicken marinated overnight in Greek yogurt, Kashmiri chili, and roasted garam masala.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: false,
-        },
-        {
-          name: "Dal Makhani",
-          category: "Main Course",
-          diet: "VEG",
-          pricePaise: 16000,
-          prepMinutes: 15,
-          description: "Slow-simmered black lentils and kidney beans enriched with dairy butter and fresh cream.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: false,
-        },
-        {
-          name: "Crispy Chicken Steamed Momos (6 pcs)",
-          category: "Starters & Snacks",
-          diet: "NONVEG",
-          pricePaise: 12000,
-          prepMinutes: 12,
-          description: "Delicate dumplings stuffed with seasoned minced chicken, served with spicy red chutney.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Gulab Jamun (2 pcs)",
-          category: "Desserts",
-          diet: "VEG",
-          pricePaise: 5000,
-          prepMinutes: 5,
-          description: "Warm golden milk-solid dumplings soaked in green cardamom and rose water sugar syrup.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1589119908995-c6837fa14d48?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: false,
-          bestSeller: false,
-        },
-      ];
-      return {
-        restaurantId: id || "rst_active",
-        cuisine,
-        categoriesCreated: 5,
-        itemsCreated: dishes.length,
-        dishes,
-        hasImages: withImages,
-        status: "PUBLISHED_LIVE",
-        updatedAt: new Date().toISOString(),
-        note: "Menu generated with authentic dish images, FSSAI diet tags, and realistic market pricing.",
-      };
+      throw new Error("Menu generation is unavailable from Master AI until it can write to the canonical restaurant menu service. No menu was published.");
     }
 
     // -----------------------------------------------------------------------
@@ -654,14 +440,15 @@ export async function executeTool(
       };
 
     case "issue_refund": {
-      requirePermission(ws.ctx, "issue_refunds");
-      return {
+      if (!id) throw new Error("issue_refund requires orderId");
+      const result = await q.interveneOrder(ws, {
         orderId: id,
-        refundId: `ref_${Date.now()}`,
+        action: "refund",
         amountPaise: Number(args.amountPaise || 0),
-        status: "EXECUTED",
-        executedAt: new Date().toISOString(),
-      };
+        reason: String(args.reason || "Refund requested via Master AI"),
+        idempotencyKey: typeof args.idempotencyKey === "string" ? args.idempotencyKey : undefined,
+      });
+      return { orderId: id, status: "REFUND_PENDING", result };
     }
 
     case "settlement_preview":
@@ -873,15 +660,12 @@ export async function executeTool(
     case "inspect_ci": {
       try {
         return await inspectGithubCi(repo ?? "HDmaster", args.runId);
-      } catch {
+      } catch (error) {
         return {
           repo: repo ?? "HDmaster",
-          status: "LOCAL_SIMULATION",
-          checks: [
-            { name: "typecheck", status: "PASS" },
-            { name: "lint", status: "PASS" },
-            { name: "tests", status: "PASS" },
-          ],
+          status: "UNAVAILABLE",
+          checks: [],
+          error: error instanceof Error ? error.message : "CI inspection failed",
         };
       }
     }
@@ -2306,7 +2090,7 @@ export async function executeTool(
       const { DEFAULT_GOLIVE_CONFIG, evaluateGoLiveReadiness } = await import("@/lib/orderking/golive/golive-engine.ts");
       const report = evaluateGoLiveReadiness(DEFAULT_GOLIVE_CONFIG);
       return {
-        status: "GO_LIVE_PRODUCTION_AUDIT_COMPLETED",
+        status: report.status === "PRODUCTION_READY" ? "GO_LIVE_READINESS_REPORTED" : "GO_LIVE_BLOCKED",
         timestamp: new Date().toISOString(),
         overallScore: report.overallScore,
         readinessStatus: report.status,
@@ -2321,7 +2105,7 @@ export async function executeTool(
           maxActiveRestaurants: DEFAULT_GOLIVE_CONFIG.capacity.pilotMaxActiveRestaurants,
           maxActiveRiders: DEFAULT_GOLIVE_CONFIG.capacity.pilotMaxActiveRiders,
         },
-        result: `Go-Live Readiness evaluated at ${report.overallScore}% (${report.status}). All 4 pillars audited with 1-by-1 granular controls ready in HDmaster Go-Live Switchboard.`,
+        result: `Go-Live readiness was evaluated from configured evidence: ${report.overallScore}% (${report.status}). This report does not certify deployment or provider connectivity.`,
       };
     }
 
