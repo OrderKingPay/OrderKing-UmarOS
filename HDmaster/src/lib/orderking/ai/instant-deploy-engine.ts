@@ -12,7 +12,6 @@ export interface DeploymentArtifact {
   targetDomain: string;
   previewBundleHtml: string;
   cloudflareDeployCommand: string;
-  cloudflareDeployCommand: string;
   dockerfileContent: string;
   filesGeneratedCount: number;
   deployedAt: string;
@@ -48,7 +47,7 @@ export class InstantDeployEngine {
   <header class="max-w-5xl mx-auto w-full flex items-center justify-between py-4 border-b border-white/10">
     <div class="flex items-center gap-2">
       <span class="text-2xl font-black font-display tracking-tight text-amber-400">${name}</span>
-      <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">Sandbox Active · 100% Functional</span>
+      <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">Sandbox Preview · Not Live</span>
     </div>
     <a href="#cta" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shadow-lg transition">
       Get Started Now
@@ -63,7 +62,7 @@ export class InstantDeployEngine {
       ${name}
     </h1>
     <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto">
-      ${customPrompt || "Engineered autonomously in 1 command with high-conversion UI, edge database integration, and sub-10ms CDN routing."}
+      ${customPrompt || "Engineered autonomously in 1 command with high-conversion UI, edge database integration, and deployment target and integration plan; live performance is verified only after deployment."}
     </p>
     <div class="pt-6 flex flex-wrap justify-center gap-4">
       <button onclick="alert('System operational! In-browser sandbox fully reactive.')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black text-sm shadow-xl hover:scale-105 transition">
