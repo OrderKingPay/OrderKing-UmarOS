@@ -54,7 +54,7 @@ function Login() {
             Employees only see what their role requires.
           </p>
         </div>
-        <p className="text-xs text-subtle">Guwahati · Commercial operations · Simulated marketplace until Shared Core</p>
+        <p className="text-xs text-subtle">Cloudflare deployment · Commercial operations</p>
       </section>
       <section className="flex items-center justify-center p-6">
         <div className="w-full max-w-sm space-y-5">
