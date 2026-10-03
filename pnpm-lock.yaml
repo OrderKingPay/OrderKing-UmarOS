@@ -1,29 +1,6 @@
 ---
 lockfileVersion: '9.0'
 
-importers:
-
-  .:
-    configDependencies: {}
-    packageManagerDependencies:
-      pnpm:
-        specifier: 12.8.1
-        version: 12.8.1
-
-packages:
-
-  pnpm@12.8.1:
-    resolution: {integrity: sha512-9kupB1B/XOr+BsjTjmBS0BeURFgOwSed3Vv8EctIqoomRLZlmOB+dh2oSHKp/FfV+QK4f6SdAkGY1VhhKqu+RQ==}
-    engines: {node: '>=18.*'}
-    hasBin: true
-
-snapshots:
-
-  pnpm@12.8.1:
-
----
-lockfileVersion: '9.0'
-
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
@@ -32,6 +9,10 @@ importers:
 
   .:
     configDependencies: {}
+    packageManagerDependencies:
+      pnpm:
+        specifier: 12.8.1
+        version: 12.8.1
     devDependencies:
       turbo:
         specifier: 2.11.5
@@ -1202,6 +1183,11 @@ importers:
         version: 5.9.3
 
 packages:
+  pnpm@12.8.1:
+    resolution: {integrity: sha512-9kupB1B/XOr+BsjTjmBS0BeURFgOwSed3Vv8EctIqoomRLZlmOB+dh2oSHKp/FfV+QK4f6SdAkGY1VhhKqu+RQ==}
+    engines: {node: '>=18.*'}
+    hasBin: true
+
 
 
 
@@ -5328,6 +5314,8 @@ packages:
 
 
 snapshots:
+  pnpm@12.8.1:
+
 
 
 
