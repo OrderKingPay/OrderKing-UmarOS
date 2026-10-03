@@ -61,8 +61,8 @@ export const getHomeFn = createServerFn({ method: "GET" })
             const restaurantLng = Number(o.restaurant_lng);
             const customerLat = Number(o.customer_lat);
             const customerLng = Number(o.customer_lng);
-            if (![restaurantLat, restaurantLng, customerLat, customerLng].every(Number.isFinite)) {
-              continue;
+            if (![restaurantLat, restaurantLng, customerLat, customerLng].every(Number.isFinite) || !Number.isFinite(Number(o.rider_payout_paise))) {
+              throw new RiderError("DISPATCH_DATA_INVALID", "Live offer is missing verified routing or payout data.", 502);
             }
             const restaurant = {
               id: String(o.restaurant_id),
@@ -83,24 +83,26 @@ export const getHomeFn = createServerFn({ method: "GET" })
               instructions: null,
             };
               await e.getStore().insertOffer({
-                id: o.id,
-                orderCode: o.order_id,
-                orderId: o.order_id,
+                id: String(o.id),
+                orderId: String(o.order_id),
+                orderCode: String(o.order_id),
                 riderId: home.rider.id,
-                dataMode: "LIVE",
-                status: "OPEN",
-                valuePaise: o.total_paise,
-                expectedDistanceM: o.distance_m ?? 0,
-                expectedEtaSeconds: o.eta_seconds ?? 0,
                 restaurant,
                 customer,
-                pickupWindowStart: o.offered_at,
-                pickupWindowEnd: o.expires_at,
-                dropoffWindowStart: o.offered_at,
-                dropoffWindowEnd: o.expires_at,
-                offeredAt: o.offered_at,
-                expiresAt: o.expires_at,
-                routeScore: o.score,
+                pickupLocation: { lat: restaurantLat, lng: restaurantLng },
+                dropArea: String(o.zone_name ?? ""),
+                dropLocation: { lat: customerLat, lng: customerLng },
+                approxDistanceKm: o.distance_m == null ? null : Number(o.distance_m) / 1000,
+                estimatedTravelKm: o.distance_m == null ? null : Number(o.distance_m) / 1000,
+                estimatedTotalRouteKm: o.distance_m == null ? null : Number(o.distance_m) / 1000,
+                expectedPayoutPaise: Number(o.rider_payout_paise),
+                cod: String(o.payment_method).toUpperCase() === "COD",
+                codAmountPaise: String(o.payment_method).toUpperCase() === "COD" ? Number(o.total_paise) : 0,
+                packageCount: Math.max(1, Number(o.package_count) || 1),
+                expiresAt: String(o.expires_at),
+                status: "OPEN",
+                createdAt: String(o.offered_at),
+                dataMode: "LIVE",
               }, context.userId);
               home = await e.home(context.userId);
             }
