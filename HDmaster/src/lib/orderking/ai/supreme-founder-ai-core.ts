@@ -1212,7 +1212,7 @@ Select any module below to **preview standalone source code, download full ZIP p
     };
   }
 
-  // 6. Multi-Model Ensemble Consensus (All Strongest Models Run Together)
+  // 6. Multi-Model Consensus
   if (
     q.includes("ensemble") ||
     q.includes("all model") ||
@@ -1221,23 +1221,17 @@ Select any module below to **preview standalone source code, download full ZIP p
     q.includes("all strongest") ||
     q.includes("together")
   ) {
-    const consensus = ensembleConsensusEngine.executeConsensus(query);
-    const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Simultaneous Multi-Model Fanout", status: "COMPLETED", detail: "GPT-5.6, Claude 4.6, Grok 4.6, Gemini 3.8, Codex, DeepSeek invoked" },
-      { stepNumber: 2, totalSteps: 4, label: "Cross-Model Critique & Verification", status: "COMPLETED", detail: "Checked 0.00% hallucinations, verified algorithmic correctness" },
-      { stepNumber: 3, totalSteps: 4, label: "Mathematical Consensus Synthesis", status: "COMPLETED", detail: `${consensus.overallConsensusAgreement}% Inter-model agreement reached` },
-      { stepNumber: 4, totalSteps: 4, label: "Single Unified Flawless Deliverable", status: "COMPLETED", detail: "Unified production solution authorized" },
-    ];
-
     return {
       intent: "ensemble_consensus",
       detectedLanguage,
-      responseMarkdown: consensus.unifiedSynthesis,
-      voiceSpokenText: `All 6 strongest frontier models have executed together in complete consensus with ${consensus.overallConsensusAgreement} percent agreement. The deliverable is 100% verified with zero hallucinations.`,
-      executionSteps,
+      responseMarkdown: "### Multi-Model Consensus Unavailable\nIndependent provider execution and factual verification are not currently connected. No model-count, agreement percentage or hallucination-free claim is reported.",
+      voiceSpokenText: "Multi-model consensus is not verified, so no agreement or zero-hallucination result is claimed.",
+      executionSteps: [
+        { stepNumber: 1, totalSteps: 1, label: "Provider Verification Required", status: "PENDING", detail: "No multi-model execution was claimed." },
+      ],
       actionCard: {
         type: "ensemble_consensus",
-        data: consensus,
+        data: { status: "UNVERIFIED", providers: [] },
       },
     };
   }
