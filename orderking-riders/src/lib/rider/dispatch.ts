@@ -137,18 +137,21 @@ export function evaluateRiderEligibilityAndScore(input: EligibilityInput): Dispa
     proximityScore = Math.max(0, 100 - Math.pow(km / effectiveMaxRadius, 2) * 100);
   }
 
-  // Simulated IoT Telemetry: Battery & Network Drops
-  const simulatedBattery = Math.random() * 100;
-  const telemetryPenalty = simulatedBattery < 15 ? -50 : 0;
+  // No synthetic device telemetry is permitted. If telemetry is not supplied,
+  // the score does not invent battery/network penalties.
+  const telemetryPenalty = 0;
 
-  // KYC Level Reliability
-  const reliability = input.rider.kycStatus === "VERIFIED" ? 100 : 50;
+  // KYC is an eligibility control, not a fabricated reliability score.
+  const reliability = input.rider.kycStatus === "VERIFIED" ? 100 : 0;
 
-  // Historical Performance (AI Predictive Quality)
-  const acceptance = input.rider.historicalAcceptanceRate ?? 85;
-  const completion = input.rider.historicalCompletionRate ?? 95;
-  const rating = input.rider.averageRating ?? 4.8;
-  const historicalPerformance = (acceptance * 0.3) + (completion * 0.4) + ((rating / 5) * 100 * 0.3);
+  // Use only verified historical inputs supplied by the caller.
+  const performanceParts: number[] = [];
+  if (typeof input.rider.historicalAcceptanceRate === "number") performanceParts.push(input.rider.historicalAcceptanceRate);
+  if (typeof input.rider.historicalCompletionRate === "number") performanceParts.push(input.rider.historicalCompletionRate);
+  if (typeof input.rider.averageRating === "number") performanceParts.push((input.rider.averageRating / 5) * 100);
+  const historicalPerformance = performanceParts.length
+    ? performanceParts.reduce((sum, value) => sum + value, 0) / performanceParts.length
+    : 0;
 
   // Weather & Traffic Modifiers
   let weatherModifier = 100;
