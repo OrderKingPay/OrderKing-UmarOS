@@ -2744,39 +2744,34 @@ export async function runMasterAi(
   const systemPrompt = buildSystemPrompt(ws, input.mode, specialist);
   const toolDefinitions = getActiveToolDefinitions(specialist);
 
-  // If this invocation carries an explicitly approved call, execute it immediately!
-  if (input.approvedCallName) {
+  // Explicit approval execution requires a server-issued, time-limited token
+  // bound to the exact user, tool, risk class and arguments.
+  if (input.approvedCallName || input.approvalToken) {
+    if (!input.approvedCallName || !input.approvedCallId || !input.approvedCallArgs || !input.approvalToken) {
+      return { ok: false, error: "Complete founder approval token and action payload are required.", status: 400 };
+    }
     const spec = MASTER_AI_TOOL_REGISTRY[input.approvedCallName as MasterAiToolName];
-    if (spec) {
-      try {
-        const result = await executeTool(ws, input.approvedCallName, input.approvedCallArgs || {});
-        await auditToolCall(ws, {
-          name: input.approvedCallName,
-          status: "executed",
-          risk: spec.risk,
-          callId: input.approvedCallId,
-          details: { approvedByUser: ws.ctx.userId },
-        });
-        return {
-          ok: true,
-          text: `Action \`${input.approvedCallName}\` was approved and executed successfully.\n\n\`\`\`json\n${JSON.stringify(result, null, 2)}\n\`\`\``,
-          provider: input.provider || "local_deterministic",
-          model: "governed-execution-engine",
-          specialist: { id: specialist.id, name: specialist.name, team: specialist.team, title: specialist.title },
-          toolCalls: [{ callId: input.approvedCallId, name: input.approvedCallName, status: "executed", risk: spec.risk }],
-          evidence: ["ACTION", "RESULT", "SYSTEM_DATA"],
-          pendingApprovals: [],
-        };
-      } catch (err) {
-        return {
-          ok: false,
-          error: err instanceof Error ? err.message : "Approved action execution failed",
-          status: 500,
-        };
-      }
+    if (!spec) return { ok: false, error: "Approved tool is not registered.", status: 400 };
+    requirePermission(ws.ctx, spec.requiredPermission);
+    if (!requiresHumanApproval(spec.risk, spec.confirmationRequired)) return { ok: false, error: "This tool does not require an approval replay.", status: 400 };
+    verifyApprovalToken(ws, input.approvalToken, input.approvedCallId, input.approvedCallName, input.approvedCallArgs, spec.risk);
+    try {
+      const result = await executeTool(ws, input.approvedCallName, input.approvedCallArgs);
+      await auditToolCall(ws, { name: input.approvedCallName, status: "executed", risk: spec.risk, callId: input.approvedCallId, details: { approvedByUser: ws.ctx.userId, verifiedApprovalToken: true } });
+      return {
+        ok: true,
+        text: "Action `" + input.approvedCallName + "` executed successfully after verified founder approval.\n\n```json\n" + JSON.stringify(result, null, 2) + "\n```",
+        provider: input.provider || "governed-execution-engine",
+        model: "governed-execution-engine",
+        specialist: { id: specialist.id, name: specialist.name, team: specialist.team, title: specialist.title },
+        toolCalls: [{ callId: input.approvedCallId, name: input.approvedCallName, status: "executed", risk: spec.risk }],
+        evidence: ["ACTION", "RESULT", "SYSTEM_DATA"],
+        pendingApprovals: [],
+      };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : "Approved action execution failed", status: 500 };
     }
   }
-
   const messages: ModelMessage[] = [
     ...(input.conversation ?? [])
       .slice(-MAX_CONVERSATION_MESSAGES)
