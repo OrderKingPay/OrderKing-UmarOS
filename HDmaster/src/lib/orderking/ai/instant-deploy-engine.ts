@@ -10,7 +10,6 @@ export interface DeploymentArtifact {
   targetDomain: string;
   previewBundleHtml: string;
   cloudflareDeployCommand: string;
-  cloudflareDeployCommand: string;
   dockerfileContent: string;
   filesGeneratedCount: number;
   deployedAt: string;
