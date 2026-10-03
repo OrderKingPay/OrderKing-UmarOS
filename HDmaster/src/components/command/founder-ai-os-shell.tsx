@@ -618,12 +618,12 @@ export function FounderAiOsShell() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {[
-                { name: "King Pay UPI Deep-Link", status: "Active (0% Fee)", type: "Payment", ready: true },
-                { name: "Razorpay Standard Gateway", status: "Active (Key Ready)", type: "Payment", ready: true },
-                { name: "Stripe International", status: "Active (API Ready)", type: "Payment", ready: true },
-                { name: "PostgreSQL / PGlite", status: "Connected (Live DDL)", type: "Database", ready: true },
-                { name: "Vercel / Edge Preview", status: "Ready for Deploy", type: "Hosting", ready: true },
-                { name: "WhatsApp Cloud Fleet", status: "Dispatcher Ready", type: "Messaging", ready: true },
+                { name: "King Pay UPI Deep-Link", status: "Provider verification required", type: "Payment", ready: false },
+                { name: "Razorpay Standard Gateway", status: "Provider verification required", type: "Payment", ready: false },
+                { name: "Stripe International", status: "Provider verification required", type: "Payment", ready: false },
+                { name: "PostgreSQL / PGlite", status: "Runtime verification required", type: "Database", ready: false },
+                { name: "Cloudflare Pages", status: "Approved target; deployment verification required", type: "Hosting", ready: false },
+                { name: "WhatsApp Cloud Fleet", status: "Provider verification required", type: "Messaging", ready: false },
               ].map((ig) => (
                 <div key={ig.name} className="rounded-xl border border-border/70 bg-black/60 p-3.5 space-y-2">
                   <div className="flex justify-between items-start">
