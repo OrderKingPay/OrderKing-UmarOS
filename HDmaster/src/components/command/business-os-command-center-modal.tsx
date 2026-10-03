@@ -49,12 +49,19 @@ export function BusinessOsCommandCenterModal({
 
   const budgetStatus = liveOrchestrationEngine.getBudgetStatus();
   const adapters = liveOrchestrationEngine.listRegisteredAdapters();
-  const pnl = businessOsModules.calculateFinancialPnL();
-  const leads = businessOsModules.discoverLawfulOpportunities();
-  const slas = businessOsModules.auditKitchenSlas();
-  const inventory = businessOsModules.inspectInventoryAlerts();
-  const sre = businessOsModules.inspectSreHealth();
-  const roster = businessOsModules.getMinimalStaffRoster();
+  const pnl = {
+    netFounderProfitInr: "—",
+    cashRunwayMonths: "—",
+    grossMerchandiseValueInr: "—",
+    aggregatorSavingsInr: "—",
+    gstInputTaxCreditInr: "—",
+    retainedCapitalVaultInr: "—",
+  };
+  const leads: any[] = [];
+  const slas: any[] = [];
+  const inventory: any[] = [];
+  const sre: any[] = [];
+  const roster = { totalHumanStaff: "—", automatedSubsystemsCount: "—", monthlyPayrollSavingsInr: "—", roles: [] };
   const auditChain = founderApprovalGates.getAuditChain();
 
   if (!isOpen) return null;
@@ -329,10 +336,10 @@ export function BusinessOsCommandCenterModal({
                     <span>Sales Pipeline</span>
                   </span>
                   <div className="text-lg font-black text-white font-mono">
-                    {leads.length} Real Outlets
+                    {leads.length} Verified External Leads
                   </div>
                   <span className="text-[11px] text-slate-400 block">
-                    ₹{(leads.reduce((s, l) => s + l.annualAggregatorLossInr, 0) / 100000).toFixed(1)}L Annual Losses
+                    ₹{(leads.reduce((s, l) => s + l.annualAggregatorLossInr, 0) / 100000).toFixed(1)}L Unverified external opportunity data
                   </span>
                 </div>
 
@@ -345,7 +352,7 @@ export function BusinessOsCommandCenterModal({
                     {roster.totalHumanStaff} Staff · {roster.automatedSubsystemsCount} Bots
                   </div>
                   <span className="text-[11px] text-slate-400 block">
-                    ₹{(roster.monthlyPayrollSavingsInr / 1000).toFixed(0)}k/mo Headcount Saved
+                    Verified payroll data required
                   </span>
                 </div>
               </div>
@@ -391,7 +398,7 @@ export function BusinessOsCommandCenterModal({
                     <TrendingUp className="size-4 text-amber-400" />
                     <span>Lawful Opportunity Discovery ({leads.length})</span>
                   </span>
-                  <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">0% FAKE</Badge>
+                  <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">VERIFICATION REQUIRED</Badge>
                 </div>
                 <div className="space-y-1.5 max-h-48 overflow-y-auto">
                   {leads.map((l) => (
@@ -415,7 +422,7 @@ export function BusinessOsCommandCenterModal({
                     <Activity className="size-4 text-orange-400" />
                     <span>Kitchen SLAs &amp; Operations</span>
                   </span>
-                  <Badge className="bg-orange-500/20 text-orange-300 text-[9px] font-mono">REALTIME</Badge>
+                  <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">VERIFICATION REQUIRED</Badge>
                 </div>
                 <div className="space-y-1.5">
                   {slas.map((s) => (
@@ -439,7 +446,7 @@ export function BusinessOsCommandCenterModal({
                     <ShieldCheck className="size-4 text-cyan-400" />
                     <span>SRE &amp; Production Deploy Watchdog</span>
                   </span>
-                  <Badge className="bg-cyan-500/20 text-cyan-300 text-[9px] font-mono">ALL GREEN</Badge>
+                  <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">VERIFICATION REQUIRED</Badge>
                 </div>
                 <div className="space-y-1.5">
                   {sre.map((item) => (
