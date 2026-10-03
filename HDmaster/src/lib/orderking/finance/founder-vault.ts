@@ -1,15 +1,11 @@
 // @ts-nocheck
 /**
- * Founder Private Cash Vault & Retained Float Telemetry
+ * Founder cash-flow scenario calculator using caller-supplied reconciled inputs
  * Confidential: Restricted solely to Platform Owner / CEO
  * 
- * Tracks:
- * - 100% Customer Inflow Deposited into Owner Bank Account
- * - Net Disbursed to Restaurants (Food - Commission - Taxes)
- * - Net Disbursed to Delivery Riders (Base + Distance + Surge + Tips - COD)
- * - Statutory Tax Escrow Reserves (5% GST Section 9(5) + 1% TDS Section 194-O)
- * - Retained Cash Float Permanently Kept in Owner Bank Account
- * - Pure Owner Net Withdrawable Profit
+ * Important:
+ * - This module performs calculations only from supplied inputs.
+ * - It does not establish ownership of bank funds, legal compliance, tax rates, or withdrawable profit.
  */
 
 export type FounderVaultInput = {
@@ -42,8 +38,8 @@ export type FounderVaultSummary = {
   gstReserveSection95Paise: number; // 5% GST on food delivery
   tdsReserveSection194OPaise: number; // 1% TDS withholding
   tcsReserveSection52Paise: number;  // 1% TCS withholding
-  retainedPlatformFloatPaise: number; // Total cash staying in owner bank account
-  pureOwnerNetProfitPaise: number;   // Withdrawable owner profit after tax reserves
+  retainedPlatformFloatPaise: number; // Calculated residual from supplied scenario inputs; not an owner-bank balance
+  pureOwnerNetProfitPaise: number;   // Calculated scenario residual; not a confirmed withdrawable amount
   breakageAndUnusedFloatPaise: number;
   breakageAndGlitchFloatPaise: number; // Strictly non-distributable to restaurants or riders
   ownerNetMarginPercentage: string;
@@ -59,10 +55,10 @@ export type FounderVaultSummary = {
   competitiveZomatoComparison: {
     zomatoAverageCommissionBps: number; // 2500 (25%)
     orderKingCommissionBps: number; // 1500 (15%)
-    restaurantSavingsVsZomatoPaise: number; // 10% gross commission saved by partner restaurants
-    restaurantTakeHomeUpliftPercentage: string; // "+13.3% higher take-home profit"
-    zomatoOnboardingFeeSavedPaise: number; // ₹10,000 saved per restaurant
-    orderKingVolumeMultiplier: string; // "3.2x" estimated order volume surge
+    restaurantSavingsVsZomatoPaise: number;
+    restaurantTakeHomeUpliftPercentage: string;
+    zomatoOnboardingFeeSavedPaise: number;
+    orderKingVolumeMultiplier: string;
   };
   disbursementRules: {
     restaurantDisbursementRule: string;
@@ -70,11 +66,11 @@ export type FounderVaultSummary = {
     glitchMoneyRetentionRule: string;
   };
   legalComplianceStatus: {
-    itActSection79Intermediary: "PROTECTED_SAFE_HARBOR";
-    incomeTaxSection194O: "COMPLIANT_WITHHOLDING_ACTIVE";
-    cgstActSection95: "COMPLIANT_RESERVE_ACTIVE";
-    cgstActSection16And17Itc: "COMPLIANT_ITC_SETOFF_ACTIVE";
-    disputeJurisdiction: "EXCLUSIVE_LOCAL_ARBITRATION";
+    itActSection79Intermediary: string;
+    incomeTaxSection194O: string;
+    cgstActSection95: string;
+    cgstActSection16And17Itc: string;
+    disputeJurisdiction: string;
   };
   generatedAt: string;
 };
@@ -106,11 +102,11 @@ export function calculateFounderRetainedCashVault(input: FounderVaultInput): Fou
     riderGross - input.cashCollectedCodPaise - riderTds,
   );
 
-  // 3. Glitch, Breakage & Unclaimed Float (100% Platform Retained - Never Disbursed to Partners)
+  // 3. Glitch, breakage and unclaimed amounts are calculated from supplied inputs; legal treatment and ownership must be verified.
   const breakageAndGlitchFloat =
     (input.breakageAndGlitchFloatPaise ?? 0) + (input.unclaimedWalletFloatPaise ?? 0);
 
-  // 4. Statutory Indian GST Optimization & ITC Offsetting (CGST Act Sections 16, 17 & 9(5))
+  // 4. Tax/ITC scenario calculation from supplied rates and inputs; legal treatment must be independently reviewed.
   const gstSection95 = Math.round((netFoodSales * 5) / 100); // 5% GST on food delivery
   const platformFee = input.platformConvenienceFeesPaise ?? 0;
   const platformFeeGst = Math.round((platformFee * 18) / 100);
@@ -183,11 +179,11 @@ export function calculateFounderRetainedCashVault(input: FounderVaultInput): Fou
         "100% of round-off surpluses, expired credits, customer late-cancellation forfeit fees, and unallocated deposits permanently retained in Owner Bank Account.",
     },
     legalComplianceStatus: {
-      itActSection79Intermediary: "PROTECTED_SAFE_HARBOR",
-      incomeTaxSection194O: "COMPLIANT_WITHHOLDING_ACTIVE",
-      cgstActSection95: "COMPLIANT_RESERVE_ACTIVE",
-      cgstActSection16And17Itc: "COMPLIANT_ITC_SETOFF_ACTIVE",
-      disputeJurisdiction: "EXCLUSIVE_LOCAL_ARBITRATION",
+      itActSection79Intermediary: "NOT_VERIFIED",
+      incomeTaxSection194O: "NOT_VERIFIED",
+      cgstActSection95: "NOT_VERIFIED",
+      cgstActSection16And17Itc: "NOT_VERIFIED",
+      disputeJurisdiction: "NOT_VERIFIED",
     },
     generatedAt: new Date().toISOString(),
   };
