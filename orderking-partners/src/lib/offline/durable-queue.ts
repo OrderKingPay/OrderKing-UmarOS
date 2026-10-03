@@ -41,20 +41,12 @@ export async function enqueueMutation(item: Omit<QueueItem, "id" | "timestamp">)
 }
 
 export async function flushQueue(transitionFn: (data: any) => Promise<any>) {
-  if (typeof navigator !== "undefined" && !navigator.onLine) {
-    return;
-  }
-  
+  if (typeof navigator !== "undefined" && !navigator.onLine) return;
+
   const db = await initQueueDB();
-  const tx = db.transaction(STORE_NAME, "readwrite");
-  const store = tx.objectStore(STORE_NAME);
-  const items: QueueItem[] = await store.getAll();
-  
+  const items: QueueItem[] = await db.getAll(STORE_NAME);
   if (items.length === 0) return;
-  
-  console.log(`[DurableQueue] Flushing ${items.length} queued order transitions...`);
-  
-  // Sort by timestamp to ensure FIFO
+
   items.sort((a, b) => a.timestamp - b.timestamp);
 
   for (const item of items) {
@@ -66,15 +58,19 @@ export async function flushQueue(transitionFn: (data: any) => Promise<any>) {
           action: item.action,
           reason: item.reason,
           idempotencyKey: item.idempotencyKey,
-        }
+        },
       });
-      
-      console.log(`[DurableQueue] Successfully flushed mutation ${item.id}`);
       await db.delete(STORE_NAME, item.id);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("orderking:partner-queue-flushed", {
+            detail: { orderId: item.orderId, restaurantId: item.restaurantId, action: item.action },
+          }),
+        );
+      }
     } catch (e) {
-      console.error(`[DurableQueue] Error flushing mutation ${item.id}`, e);
-      // Wait for next network available to retry or break if network error
-      break; 
+      console.error("[DurableQueue] Could not reconcile queued mutation", item.id, e);
+      break;
     }
   }
 }
