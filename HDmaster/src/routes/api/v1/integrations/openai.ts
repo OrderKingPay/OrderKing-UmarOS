@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createFileRoute } from "@tanstack/react-router";
 
 /**
  * OpenAI integration is fail-closed until a real server-side provider
