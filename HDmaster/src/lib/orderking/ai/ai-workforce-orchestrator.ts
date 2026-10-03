@@ -290,6 +290,25 @@ export class AiWorkforceOrchestrator {
         return task;
       }
 
+      // Production truth gate: Business OS modules may contain fixtures/static planning data.
+      // Finance/operations/reporting/founder/QA workforce roles must not present those values as live execution.
+      const verifiedDataRoles: AgentRole[] = [
+        "FOUNDER_AI",
+        "FINANCE_AI",
+        "OPERATIONS_AI",
+        "REPORTING_AI",
+        "RESTAURANT_SUCCESS_AI",
+        "QA_AI",
+      ];
+      if (verifiedDataRoles.includes(task.assignedRole)) {
+        task.state = "BLOCKED";
+        task.errorMessage = "VERIFIED_DATA_REQUIRED: this workforce role is blocked until its data source is connected to canonical HDmaster records.";
+        task.executionLogs.push({ timestamp: new Date().toISOString(), message: task.errorMessage, level: "WARN" });
+        agent.activeTasksCount = Math.max(0, agent.activeTasksCount - 1);
+        agent.failedTasksCount += 1;
+        return task;
+      }
+
       // 2. Execute concrete business logic based on role
       let resultData: Record<string, unknown> = {};
 
