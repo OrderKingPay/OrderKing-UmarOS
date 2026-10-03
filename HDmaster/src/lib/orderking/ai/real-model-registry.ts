@@ -82,10 +82,10 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsTools: true,
       supportsReasoning: true,
       supportsWebSearch: false,
-      measuredLatencyMs: 4,
+      measuredLatencyMs: 0,
       lastChecked: now,
-      fallbackModelId: "self",
-      description: "Always-active sovereign core with zero external latency or cost. Runs clinical differential diagnostics, software engineering, mathematics, and business OS tools locally.",
+      fallbackModelId: "",
+      description: "No embedded local LLM is deployed in this runtime. External provider configuration is required for AI inference.",
       capabilities: {
         canStream: true,
         canProcessImages: false,
@@ -107,7 +107,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: true,
       measuredLatencyMs: 12,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
+      fallbackModelId: "",
       description: "Intelligently routes every query to the fastest and most capable connected model. If external models lack API keys, seamlessly executes via Sovereign Local Core with clear disclosure.",
       capabilities: {
         canStream: true,
@@ -250,7 +250,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       measuredLatencyMs: 6,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
-      description: "Deterministic full-stack code generator, TypeScript validator, and database schema synthesizer running locally.",
+      description: "Local code-generation placeholder is unavailable in this runtime; no embedded model is exposed as production AI.",
       capabilities: {
         canStream: true,
         canProcessImages: false,
@@ -273,7 +273,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       measuredLatencyMs: 5,
       lastChecked: now,
       fallbackModelId: "sovereign-ultra",
-      description: "Axiomatic mathematical formalization, proof verification, and exact logic analysis running locally without network overhead.",
+      description: "Local mathematical model is unavailable in this runtime; no embedded model is exposed as production AI.",
       capabilities: {
         canStream: true,
         canProcessImages: false,
