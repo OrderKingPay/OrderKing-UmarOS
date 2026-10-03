@@ -2187,7 +2187,7 @@ export async function runMasterAi(
     const spec = MASTER_AI_TOOL_REGISTRY[input.approvedCallName as MasterAiToolName];
     if (!spec) return { ok: false, error: "Approved tool is not registered.", status: 400 };
     requirePermission(ws.ctx, spec.requiredPermission);
-    if (!requiresHumanApproval(spec.risk, spec.confirmationRequired)) return { ok: false, error: "This tool does not require an approval replay.", status: 400 };
+    if (!requiresHumanApproval(spec.risk, spec.confirmationRequired) && !spec.financialImpact) return { ok: false, error: "This tool does not require an approval replay.", status: 400 };
     verifyApprovalToken(ws, input.approvalToken, input.approvedCallId, input.approvedCallName, input.approvedCallArgs, spec.risk);
     try {
       const result = await executeTool(ws, input.approvedCallName, input.approvedCallArgs);
@@ -2257,7 +2257,7 @@ export async function runMasterAi(
       }
 
       // Check risk & human approval barrier:
-      const needsApproval = requiresHumanApproval(spec.risk, spec.confirmationRequired) || spec.risk === "HIGH_RISK" || spec.risk === "FINANCIAL";
+      const needsApproval = requiresHumanApproval(spec.risk, spec.confirmationRequired) || spec.risk === "HIGH_RISK" || spec.risk === "FINANCIAL" || spec.financialImpact;
       if (needsApproval && input.approvedCallId !== callId) {
         const approvalItem: PendingApproval = {
           callId,
