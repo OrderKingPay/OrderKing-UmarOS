@@ -30,6 +30,29 @@ function hasGlobbedMigrations(root: string): boolean {
  * migrations — no schema to apply — skips it entirely rather than paying for a
  * PGLite instance it never queries.
  */
+function legacyApiRouteCompatPlugin(): Plugin {
+  const targets = new Set([
+    "src/routes/api/v1/integrations/openai.ts",
+    "src/routes/api/v1/integrations/travel.ts",
+  ]);
+
+  return {
+    name: "app-builder:legacy-api-route-compat",
+    enforce: "pre",
+    transform(code, id) {
+      const normalized = id.split("\\").join("/");
+      if (!normalized.endsWith("/HDmaster/")) return null;
+      const relative = normalized.slice(normalized.indexOf("/src/routes/"));
+      if (!targets.has(relative.replace(/^\//, "")) || !code.includes("createAPIFileRoute")) return null;
+      const next = code.replace(/\bcreateAPIFileRoute\b/g, "__legacyCreateAPIFileRoute");
+      return {
+        code: `import { createAPIFileRoute as __legacyCreateAPIFileRoute } from "@/lib/createAPIFileRoute";\n${next}`,
+        map: null,
+      };
+    },
+  };
+}
+
 function pgliteBootstrapPlugin(): Plugin {
   return {
     name: "app-builder:pglite-bootstrap",
@@ -197,8 +220,14 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   
-  resolve: { tsconfigPaths: true },
+  resolve: {
+    tsconfigPaths: true,
+    alias: {
+      "@tanstack/react-start/api": join(process.cwd(), "src/lib/createAPIFileRoute.ts"),
+    },
+  },
   plugins: [
+    legacyApiRouteCompatPlugin(),
     pgliteBootstrapPlugin(),
     pglitePreviewAssetsPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
