@@ -138,8 +138,9 @@ function KitchenPage() {
   }, [vendor.restaurantId, qc]);
 
   useEffect(() => {
-    if (!vendor.restaurantId) return;
-    const channel = supabaseCloud
+    const cloud = supabaseCloud;
+    if (!vendor.restaurantId || !cloud) return;
+    const channel = cloud
       .channel(`orders-${vendor.restaurantId}`)
       .on(
         "postgres_changes",
