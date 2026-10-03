@@ -59,7 +59,7 @@ export function HomeFeed({
           });
           toast.success("100% Real-Time GPS Active! Verifying restaurants in your vicinity...");
         },
-        (err) => {
+        (_err: GeolocationPositionError) => {
           setIsRequestingGeo(false);
           setIsGeoActive(false);
           toast.error("Accurate GPS location required to show verified restaurants.");
