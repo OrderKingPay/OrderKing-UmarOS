@@ -192,7 +192,7 @@ export function OrderKingCommandSuiteModal({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-black text-white">Live Fleet Management</h3>
-                  <p className="text-xs text-zinc-400">42 active delivery partners on road · 0 stalled orders</p>
+                  <p className="text-xs text-zinc-400">Live fleet count requires verified dispatch telemetry</p>
                 </div>
                 <Button
                   size="sm"
@@ -205,12 +205,7 @@ export function OrderKingCommandSuiteModal({
               </div>
 
               <div className="divide-y divide-zinc-800/80 rounded-2xl border border-zinc-800 bg-zinc-900/50">
-                {[
-                  { name: "Rahul Roy", id: "RD-402", location: "Hospital Road", ordersToday: 18, rating: 4.95, status: "ON_DELIVERY", phone: "+91 98765 11223" },
-                  { name: "Bikram Das", id: "RD-415", location: "Station Road", ordersToday: 14, rating: 4.88, status: "PICKING_UP", phone: "+91 98765 44332" },
-                  { name: "Suman Paul", id: "RD-428", location: "Tarapur Hub", ordersToday: 21, rating: 4.98, status: "IDLE_READY", phone: "+91 98765 77889" },
-                  { name: "Anupam Nath", id: "RD-431", location: "Goldighi Mall", ordersToday: 16, rating: 4.92, status: "ON_DELIVERY", phone: "+91 98765 99001" },
-                ].map((rider) => (
+                {[].map((rider) => (
                   <div key={rider.id} className="flex items-center justify-between p-3.5">
                     <div className="flex items-center gap-3">
                       <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 font-bold text-xs">
@@ -297,7 +292,7 @@ export function OrderKingCommandSuiteModal({
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900">
                     <span>Zero-Markup Enforcement</span>
-                    <span className="font-mono font-bold text-emerald-400">100% Verified (0 paisa added)</span>
+                    <span className="font-mono font-bold text-amber-300">Provider / ledger verification required</span>
                   </div>
                 </div>
               </div>
