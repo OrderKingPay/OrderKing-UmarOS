@@ -11,9 +11,9 @@ export interface UserOrderHistory {
 
 export class PredictiveLoyaltyEngine {
   /**
-   * VIP Addiction Engine.
-   * Analyzes order history to find exact biological craving times.
-   * Dispatches a highly personalized discount 15 minutes before they usually order.
+   * Predictive loyalty reminder engine.
+   * Uses observed ordering patterns to time a contextual reminder.
+   * Does not fabricate discounts, VIP entitlements, or guaranteed outcomes.
    */
   public static async calculateAndDispatchCravingOffers(
     users: UserOrderHistory[],
@@ -29,11 +29,11 @@ export class PredictiveLoyaltyEngine {
       // Check if they usually order in the NEXT hour on this specific day
       if (user.mostFrequentDay === currentDay && user.mostFrequentHour === (currentHour + 1) % 24) {
         
-        // Construct the VIP Push Notification
+        // Construct a factual loyalty reminder. Any offer must come from a canonical offer service.
         const pushSubject = 'mailto:founder@orderking.in';
-        user.pushEndpoint.title = '👑 VIP Secret Offer';
-        user.pushEndpoint.body = \We know you love \. Because you are a special VIP, here is a secret 15% discount valid for the next 30 minutes.\;
-        user.pushEndpoint.url = '/vip-checkout';
+        user.pushEndpoint.title = 'OrderKing reminder';
+        user.pushEndpoint.body = `Based on your usual ordering time, your favorite item ${user.favoriteItemName} may be a good choice when you are ready to order.`;
+        user.pushEndpoint.url = '/';
 
         // Fire natively via Antigravity Marketing Engine (No 3rd party SDKs)
         const success = await AntigravityMarketing.sendWebPush(
