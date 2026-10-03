@@ -10,7 +10,7 @@ export interface ActiveDeliveryZone {
   centerLat: number;
   centerLng: number;
   radiusKm: number;
-  status: "ACTIVE" | "EXPANDING_SOON";
+  status: "ACTIVE" | "EXPANDING_SOON" | "UNVERIFIED";
   description: string;
 }
 
@@ -26,8 +26,8 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     centerLat: 24.8688,
     centerLng: 92.3511,
     radiusKm: 12.0, // 12 km strict radius
-    status: "ACTIVE",
-    description: "15-minute ultra-fast sovereign delivery active with 0% surge and live rider fleet.",
+    status: "UNVERIFIED",
+    description: "Configured geographic reference only; delivery availability requires verified production configuration.",
   },
 ];
 
@@ -84,16 +84,7 @@ export interface CityWaitlistEntry {
   estimatedLaunchDays: number;
 }
 
-export const EXPANSION_WAITLIST: Record<string, CityWaitlistEntry> = {
-  Silchar: { cityName: "Silchar", waitlistVotes: 3420, trendingRank: 1, estimatedLaunchDays: 14 },
-  Guwahati: { cityName: "Guwahati", waitlistVotes: 8910, trendingRank: 2, estimatedLaunchDays: 30 },
-  Hailakandi: { cityName: "Hailakandi", waitlistVotes: 1840, trendingRank: 3, estimatedLaunchDays: 21 },
-  Badarpur: { cityName: "Badarpur", waitlistVotes: 2150, trendingRank: 4, estimatedLaunchDays: 7 },
-  Kolkata: { cityName: "Kolkata", waitlistVotes: 12400, trendingRank: 5, estimatedLaunchDays: 45 },
-  Delhi: { cityName: "Delhi NCR", waitlistVotes: 18200, trendingRank: 6, estimatedLaunchDays: 60 },
-  Mumbai: { cityName: "Mumbai", waitlistVotes: 16900, trendingRank: 7, estimatedLaunchDays: 60 },
-  Bengaluru: { cityName: "Bengaluru", waitlistVotes: 15400, trendingRank: 8, estimatedLaunchDays: 60 },
-};
+export const EXPANSION_WAITLIST: Record<string, CityWaitlistEntry> = {};
 
 export function getCityWaitlistInfo(cityName: string): CityWaitlistEntry {
   const match = Object.values(EXPANSION_WAITLIST).find(
