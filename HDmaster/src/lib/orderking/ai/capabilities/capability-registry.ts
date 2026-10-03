@@ -226,7 +226,7 @@ export class UniversalCapabilityRegistry {
       id: "cybersecurity_vulnerability_audit",
       name: "Cybersecurity & Secret Exposure Defense",
       category: "cybersecurity",
-      description: "Scans repository for exposed API keys, SQL injection attack vectors, and RBAC privilege leaks.",
+      description: "Provider-backed repository security audit. This capability does not self-certify its own results.",
       provider: "OrderKing Security Shield",
       permissions: ["access_CEO_dashboard"],
       inputSchema: { type: "object", properties: { targetScope: { type: "string" } } },
@@ -235,12 +235,10 @@ export class UniversalCapabilityRegistry {
       availability: "AVAILABLE",
       async execute() {
         return {
-          success: true,
+          success: false,
           data: {
-            secretsExposed: false,
-            rbacIntegrity: "100% COMPLIANT",
-            sqlInjectionRisk: "ZERO (Parameterized queries enforced)",
-            auditLogImmutability: "VERIFIED (Append-only)",
+            status: "CONFIGURATION_REQUIRED",
+            message: "Run an actual repository/security scanner before reporting compliance or vulnerability results.",
           },
           timestamp: new Date().toISOString(),
         };
@@ -250,26 +248,21 @@ export class UniversalCapabilityRegistry {
     // 5. King Pay UPI & Direct Payment Gateway
     this.register({
       id: "king_pay_upi_settlement",
-      name: "King Pay UPI 0% Direct Founder Settlement",
+      name: "King Pay payment rail",
       category: "invoicing_payments",
-      description: "Generates instant UPI payment links, QR codes, and verifies bank UTR settlements with 0% platform fee.",
-      provider: "King Pay UPI / NPCI Protocol",
+      description: "Payment execution is unavailable until a verified payment provider and beneficiary workflow are connected.",
+      provider: "King Pay",
       permissions: ["access_CEO_dashboard"],
       inputSchema: { type: "object", properties: { amountInr: { type: "number" }, clientName: { type: "string" } } },
-      outputSchema: { type: "object", properties: { upiLink: { type: "string" }, qrUrl: { type: "string" } } },
-      costModel: { estimatedCostUsd: 0, pricingType: "FREE" },
-      availability: "AVAILABLE",
-      async execute(input) {
-        const amount = Number(input.amountInr || 50000);
-        const upiLink = `upi://pay?pa=orderking@okhdfcbank&pn=OrderKing&am=${amount}&cu=INR&tn=Software%20Milestone`;
+      outputSchema: { type: "object", properties: { status: { type: "string" } } },
+      costModel: { estimatedCostUsd: 0, pricingType: "PROVIDER_DEPENDENT" },
+      availability: "CONFIGURATION_REQUIRED",
+      async execute() {
         return {
-          success: true,
+          success: false,
           data: {
-            amountInr: amount,
-            payeeVpa: "orderking@okhdfcbank",
-            upiLink,
-            qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`,
-            statutorySafeHarbor: "IT Act 2000 Section 79 Compliant",
+            status: "PAYOUT_PROVIDER_NOT_CONNECTED",
+            message: "No payment link, QR, settlement or statutory compliance result was generated.",
           },
           timestamp: new Date().toISOString(),
         };
