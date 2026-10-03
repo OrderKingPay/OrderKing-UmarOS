@@ -341,6 +341,32 @@ export class RiderEngine {
     return this.store.listDocuments(userId);
   }
 
+  async respondOffer(
+    userId: string,
+    offerId: string,
+    decision: "ACCEPT" | "DECLINE",
+    reason: string | undefined,
+    key: string,
+  ) {
+    return this.idem(userId, key, `offer.${decision.toLowerCase()}`, async () => {
+      const rider = await this.requireRider(userId);
+      const offer = await this.store.getOfferById(offerId);
+      if (!offer || offer.riderId !== rider.id) {
+        throw new RiderError("NOT_FOUND", "Offer not found", 404);
+      }
+      if (offer.status !== "OPEN" || new Date(offer.expiresAt).getTime() <= Date.now()) {
+        if (offer.status === "OPEN") await this.store.casOffer(offer.id, rider.id, "EXPIRED");
+        throw new RiderError("OFFER_GONE", "Offer is no longer available", 409);
+      }
+      const nextStatus = decision === "ACCEPT" ? "ACCEPTED" : "DECLINED";
+      const updated = await this.store.casOffer(offer.id, rider.id, nextStatus);
+      if (!updated) throw new RiderError("OFFER_GONE", "Offer is no longer available", 409);
+      await this.audit(userId, decision === "ACCEPT" ? "OFFER_ACCEPTED" : "OFFER_DECLINED", "offer", offer.id, reason ?? "");
+      if (decision === "ACCEPT") return this.createDeliveryFromOffer(rider, offer);
+      return { offerId: offer.id, decision: "DECLINE" as const, status: "DECLINED" as const, reason: reason ?? null };
+    });
+  }
+
   async setStatus(
     userId: string,
     status: AvailabilityStatus,
@@ -407,7 +433,7 @@ export class RiderEngine {
       riderId: rider.id,
       userId: rider.userId,
       orderCode: offer.orderCode,
-      orderId: nid(),
+      orderId: offer.orderId ?? nid(),
       state: "ACCEPTED",
       restaurant: offer.restaurant,
       customer: offer.customer,
@@ -418,7 +444,7 @@ export class RiderEngine {
       cod: offer.cod,
       codAmountPaise: offer.codAmountPaise,
       pickupVerification: cfg.pickupVerification,
-      pickupCode: String(1000 + Math.floor(Math.random() * 9000)),
+      pickupCode: offer.dataMode === "LIVE" ? "" : String(1000 + Math.floor(Math.random() * 9000)),
       otpRequired: cfg.flags.delivery_otp,
       arrivedRestaurantAt: null,
       expectedReadyAt: null,
@@ -435,7 +461,7 @@ export class RiderEngine {
     };
     await this.store.insertDelivery(delivery);
     await this.recordTransition(delivery, null, "ACCEPTED", "RIDER", rider.userId, "accepted offer");
-    if (cfg.flags.delivery_otp) {
+    if (cfg.flags.delivery_otp && offer.dataMode !== "LIVE") {
       const otp = generateOtp(4);
       const secret = newOtpSecret(otp);
       await this.store.saveOtp(
@@ -645,7 +671,7 @@ export class RiderEngine {
           throw new RiderError("CASH_REQUIRED", "Collect cash before completing this delivery", 400);
         }
       }
-      if (cfg.flags.delivery_otp && d.otpRequired) {
+      if (d.dataMode !== "LIVE" && cfg.flags.delivery_otp && d.otpRequired) {
         if (!otp || !isPlausibleOtp(otp)) {
           throw new RiderError("OTP_REQUIRED", "Enter the customer OTP to complete delivery", 400);
         }
@@ -688,12 +714,13 @@ export class RiderEngine {
       const delivered = await this.transition(userId, deliveryId, "DELIVERED", "otp verified", (row) => {
         row.deliveredAt = this.now();
       });
-      await this.creditEarnings(d);
+      if (d.dataMode !== "LIVE") await this.creditEarnings(d);
       return delivered;
     });
   }
 
   private async creditEarnings(d: Delivery) {
+    if (d.dataMode === "LIVE") return;
     const existing = await this.store.listEarnings(d.userId);
     if (existing.some((e) => e.deliveryId === d.id && e.kind === "DELIVERY_PAYOUT")) return;
     const cfg = await this.cfg();
@@ -783,6 +810,7 @@ export class RiderEngine {
       photoContentType: input.contentType ?? null,
       photoBytes: input.bytes ?? null,
       photoDataUrl: input.dataUrl ?? null,
+      storageUrl: (input as { storageUrl?: string }).storageUrl ?? null,
       capturedAt: this.now(),
       dataMode: (await this.cfg()).dataMode,
     };
@@ -979,25 +1007,8 @@ export class RiderEngine {
   }
 
   async settlements(userId: string) {
-    const rider = await this.requireRider(userId);
-    let rows = await this.store.listSettlements(userId);
-    if (rows.length === 0) {
-      const lines = await this.store.listEarnings(userId);
-      const net = lines.reduce((a, e) => a + e.amountPaise, 0);
-      const s = {
-        id: nid(),
-        riderId: rider.id,
-        periodStart: new Date().toISOString().slice(0, 10),
-        periodEnd: new Date().toISOString().slice(0, 10),
-        amountPaise: net,
-        status: "PAYABLE" as const,
-        confirmedPaidAt: null,
-        dataMode: (await this.cfg()).dataMode,
-      };
-      await this.store.insertSettlement(s, userId);
-      rows = [s];
-    }
-    return rows;
+    await this.requireRider(userId);
+    return this.store.listSettlements(userId);
   }
 
   async history(userId: string, range: { from: string; to: string }) {
