@@ -71,7 +71,7 @@ function Page() {
   );
 }
 
-function pct(n: number, d: number) {
-  if (!d) return "—";
+function pct(n: number | null, d: number | null) {
+  if (n == null || d == null || !d) return "—";
   return `${Math.round((n / d) * 100)}%`;
 }
