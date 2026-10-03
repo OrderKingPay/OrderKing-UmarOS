@@ -1,6 +1,6 @@
 // @ts-nocheck
 /**
- * OrderKing Executive Growth, Government Grants, Keynotes & 100,000x Ad Domination Toolkit
+ * OrderKing Executive Growth, Government Grants, Academic Outreach & Campaign Planning Toolkit
  *
  * Provides real, practical, production-ready:
  * 1. Government Grant Application Dossiers (Assam Startup ₹55L, MSME ₹15L, NIDHI-PRAYAS ₹10L, SISFS ₹20L)
@@ -465,7 +465,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
 // ============================================================================
 export const DOMAIN_GOLIVE_CONFIG: DomainGoLiveKit = {
   domain: "orderking.in",
-  targetService: "OrderKing Production Edge (Vercel / Cloudflare / Node Server)",
+  targetService: "OrderKing Production Edge (Cloudflare Pages / Workers)",
   dnsRecords: [
     {
       type: "A",
@@ -477,9 +477,9 @@ export const DOMAIN_GOLIVE_CONFIG: DomainGoLiveKit = {
     {
       type: "CNAME",
       host: "www",
-      value: "cname.vercel-dns.com",
+      value: "CONFIGURE_IN_CLOUDFLARE",
       ttl: "Auto / 300s",
-      purpose: "Aliases www.orderking.in to canonical root domain with HTTPS",
+      purpose: "Configure the verified Cloudflare custom-domain target; no provider hostname is assumed here.",
     },
     {
       type: "TXT",
@@ -493,9 +493,9 @@ export const DOMAIN_GOLIVE_CONFIG: DomainGoLiveKit = {
     "1. Log in to your domain registrar dashboard (Spaceship, Namecheap, GoDaddy, Hostinger, or Registry).",
     "2. Navigate to 'Domain Management' -> 'DNS Records / Manage DNS'.",
     "3. Delete any default parking/holding A records (e.g. 198.18.0.x or parking IPs).",
-    "4. Add the A Record: Host '@', Value '76.76.21.21'.",
-    "5. Add the CNAME Record: Host 'www', Value 'cname.vercel-dns.com'.",
-    "6. Save changes. Propagation typically takes 5 to 30 minutes.",
+    "4. Add the custom-domain records exactly as shown by the verified Cloudflare Pages/Workers dashboard.",
+    "5. Complete Cloudflare domain verification and HTTPS activation.",
+    "6. Save changes and verify DNS plus HTTPS before claiming the domain is live.",
   ],
   curlVerificationCommand: "nslookup -type=A orderking.in 8.8.8.8",
 };
