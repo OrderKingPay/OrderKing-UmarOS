@@ -129,6 +129,7 @@ async function exec(text: string, params: unknown[] = []) {
 }
 
 export async function seedIfNeeded(): Promise<void> {
+  if (process.env.CF_PAGES === "1" || process.env.NODE_ENV === "production") return;
   const sql = await getSql();
   const existing = await sql<{ seed_version: number }>`
     select seed_version from workspace_meta where org_id = ${DEFAULT_ORG_ID}
@@ -143,7 +144,7 @@ export async function seedIfNeeded(): Promise<void> {
   }
   await exec(
     `insert into workspace_meta (org_id, seed_version, seeded_at, data_mode)
-     values ($1,$2,now(),'ACTUAL')
+     values ($1,$2,now() ,'SIMULATED')
      on conflict (org_id) do update set seed_version = excluded.seed_version, seeded_at = excluded.seeded_at`,
     [DEFAULT_ORG_ID, SEED_VERSION],
   );
@@ -156,7 +157,7 @@ async function seedV1(): Promise<void> {
 
   await exec(
     `insert into organizations (id, name, legal_name, tagline, data_mode)
-     values ($1,$2,$3,$4,'ACTUAL')
+     values ($1,$2,$3,$4 ,'SIMULATED')
      on conflict (id) do nothing`,
     [DEFAULT_ORG_ID, "OrderKing", "OrderKing Foods Private Limited", "Command the marketplace."],
   );
