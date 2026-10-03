@@ -290,7 +290,28 @@ export class AiWorkforceOrchestrator {
         return task;
       }
 
-      // 2. Execute concrete business logic based on role
+      // 2. Require verified data sources for Business OS roles.
+      const verifiedDataRoles: AgentRole[] = [
+        "FOUNDER_AI",
+        "FINANCE_AI",
+        "OPERATIONS_AI",
+        "REPORTING_AI",
+        "RESTAURANT_SUCCESS_AI",
+        "QA_AI",
+      ];
+      if (verifiedDataRoles.includes(task.assignedRole)) {
+        task.state = "BLOCKED";
+        task.errorMessage = "VERIFIED_DATA_REQUIRED: this workforce role is not allowed to execute against static Business OS modules.";
+        task.executionLogs.push({
+          timestamp: new Date().toISOString(),
+          message: task.errorMessage,
+          level: "WARN",
+        });
+        agent.activeTasksCount = Math.max(0, agent.activeTasksCount - 1);
+        agent.failedTasksCount += 1;
+        return task;
+      }
+
       let resultData: Record<string, unknown> = {};
 
       switch (task.assignedRole) {
