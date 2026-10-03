@@ -11,9 +11,8 @@ import { platformConfig } from "@/lib/platform-config";
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
-  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const t = useT();
-  const { user } = useCurrentUserState();
+  const { user, isPending } = useCurrentUserState();
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +20,7 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
 
-  if (user) return <Navigate to="/dashboard" />;
+  if (!isPending && user) return <Navigate to="/dashboard" />;
 
   async function onEmail(e: FormEvent) {
     e.preventDefault();
@@ -57,7 +56,7 @@ function Login() {
           <h1 className="font-display text-3xl">{mode === "in" ? t("auth.signIn") : t("auth.signUp")}</h1>
           <p className="mt-1 text-sm text-muted">{t("landing.forOwners")}</p>
 
-          {authEnabled && !isVercel ? (
+          {authEnabled ? (
             <div className="mt-5 grid gap-2">
               {GROK_PROVIDERS.map((p) => (
                 <Button
