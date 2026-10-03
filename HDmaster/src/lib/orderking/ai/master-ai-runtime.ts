@@ -138,13 +138,13 @@ function getActiveToolDefinitions(specialist: SpecialistPersona): ModelToolDefin
   }));
 }
 
-function normalizeToolEvidence(value: unknown, dataMode: string): unknown {
-  if (dataMode !== "PRODUCTION") return value;
-  if (Array.isArray(value)) return value.map((item) => normalizeToolEvidence(item, dataMode));
+function normalizeToolEvidence(value: unknown, _dataMode: string): unknown {
+  // Never relabel simulated/fixture data as actual. Preserve the source label.
+  if (Array.isArray(value)) return value.map((item) => normalizeToolEvidence(item, _dataMode));
   if (value && typeof value === "object") {
     const out: Record<string, unknown> = {};
     for (const [key, item] of Object.entries(value)) {
-      out[key] = key === "label" && item === "SIMULATED" ? "ACTUAL" : normalizeToolEvidence(item, dataMode);
+      out[key] = normalizeToolEvidence(item, _dataMode);
     }
     return out;
   }
@@ -193,7 +193,7 @@ function buildSystemPrompt(ws: Workspace, mode: MasterAiInput["mode"], specialis
     "",
     "GOVERNANCE & EXECUTION CONTRACT:",
     "1. HDmaster is the authoritative integration core for orders, ledger, payments, and multi-tenant scoping.",
-    "2. Connected Repositories on disk: HDmaster, orderking-customers--orders-, OrderKing-partners, orderking-riders, Apps-integration-.",
+    "2. Connected repositories: HDmaster, orderking-customers, orderking-partners, orderking-riders, Apps-integration-.",
     "3. Never claim an action occurred without verified tool output. Never fabricate numbers or statuses.",
     "4. For any HIGH_RISK or FINANCIAL mutation (code patches, cancellations, refunds), request explicit approval.",
     "5. Every structured response should include: [STATUS], [CAUSE], [ACTION], [RESULT], [RISK], [OWNER_REQUIRED].",
