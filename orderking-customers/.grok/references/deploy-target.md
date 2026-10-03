@@ -1,6 +1,9 @@
 # Build & deploy target
 
 **Cloudflare Pages is the only approved deployment target for this OrderKing/Umar OS workspace.**
+
+**Active deployment URL:** https://orderking-customers.pages.dev/
+**Do not substitute another Vercel, Netlify, or Cloudflare preview URL for production operations without explicit founder direction.
 Do not configure, trigger, or restore Vercel, Netlify, Render, or another hosting platform.
 
 Production work must follow:
