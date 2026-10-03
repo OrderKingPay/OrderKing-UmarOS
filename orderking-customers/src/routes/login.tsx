@@ -44,24 +44,6 @@ function Login() {
       <p className="mt-2 text-sm text-muted">{t("auth.subtitle")}</p>
       {authEnabled ? (
         <div className="mt-6 space-y-3">
-          {/* Viral Growth Hooks: WhatsApp OTP & Truecaller One-Tap */}
-          <div className="space-y-3 pb-3">
-            <Button
-              type="button"
-              className="w-full bg-[#25D366] text-white hover:bg-[#128C7E]"
-              onClick={() => console.log('Initiate WhatsApp OTP flow')}
-            >
-              Sign in with WhatsApp OTP
-            </Button>
-            <Button
-              type="button"
-              className="w-full bg-[#0052FF] text-white hover:bg-[#0038FF]"
-              onClick={() => console.log('Initiate Truecaller One-Tap flow')}
-            >
-              Truecaller 1-Tap Login
-            </Button>
-          </div>
-          
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-muted/30" /></div>
             <div className="relative flex justify-center text-xs uppercase"><span className="bg-bg px-2 text-muted">Or continue with email</span></div>
