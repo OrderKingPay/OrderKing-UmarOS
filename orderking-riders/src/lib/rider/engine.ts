@@ -378,6 +378,9 @@ export class RiderEngine {
     if (status === "ONLINE" && cfg.dataMode === "LIVE" && rider.kycStatus !== "VERIFIED") {
       throw new RiderError("KYC", "Unverified partners cannot go online for live orders", 403);
     }
+    if (status === "ONLINE" && cfg.dataMode === "LIVE" && (!process.env.HDMASTER_URL?.trim() || !process.env.ORDERKING_SERVICE_TOKEN?.trim())) {
+      throw new RiderError("DISPATCH_UNAVAILABLE", "Live dispatch is not connected. Go-online is unavailable until it is configured.", 503);
+    }
     const active = await this.store.getActiveDeliveryForRider(rider.id);
     if (status === "OFFLINE" && active) {
       throw new RiderError("BUSY", "Finish the current delivery before going offline", 400);
@@ -605,7 +608,7 @@ export class RiderEngine {
         return this.presentDelivery(d);
       }
       const cfg = await this.cfg();
-      if (cfg.pickupVerification === "ORDER_CODE" || cfg.pickupVerification === "PIN") {
+      if (d.dataMode !== "LIVE" && (cfg.pickupVerification === "ORDER_CODE" || cfg.pickupVerification === "PIN")) {
         if (!verification.code || verification.code.trim() !== d.pickupCode) {
           throw new RiderError("PICKUP_CODE", "Pickup code does not match", 400);
         }
