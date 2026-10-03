@@ -792,7 +792,7 @@ export class RiderEngine {
   async addPod(
     userId: string,
     deliveryId: string,
-    input: { method: PodMethod; contentType?: string; dataUrl?: string; bytes?: number },
+    input: { method: PodMethod; contentType?: string; dataUrl?: string; bytes?: number; storageUrl?: string },
   ) {
     const cfg = await this.cfg();
     const d = await this.requireOwnedDelivery(userId, deliveryId);
@@ -813,7 +813,7 @@ export class RiderEngine {
       photoContentType: input.contentType ?? null,
       photoBytes: input.bytes ?? null,
       photoDataUrl: input.dataUrl ?? null,
-      storageUrl: (input as { storageUrl?: string }).storageUrl ?? null,
+      storageUrl: input.storageUrl ?? null,
       capturedAt: this.now(),
       dataMode: (await this.cfg()).dataMode,
     };
