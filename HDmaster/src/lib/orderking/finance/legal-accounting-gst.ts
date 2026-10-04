@@ -47,6 +47,10 @@ export class LegalAccountingGstEngine {
    * Generates automated GSTR-1 and GSTR-3B filings for platform commissions.
    */
   public generateMonthlyGstReturns(month: string = "September 2026"): GstReport[] {
+    // Live reports must come from the canonical ledger; never manufacture tax numbers.
+    const demoMode = String(process.env.ORDERKING_DATA_MODE ?? "").toUpperCase() === "SIMULATED";
+    if (!demoMode) return [];
+
     // 18% GST on platform convenience fees and restaurant commissions
     const taxableValuePaise = 18_500_0000; // ₹18,50,000.00
     const totalTaxPaise = Math.round(taxableValuePaise * 0.18);
