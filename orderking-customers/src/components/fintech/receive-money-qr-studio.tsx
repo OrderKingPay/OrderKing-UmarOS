@@ -124,12 +124,12 @@ const NOTE_PRESETS = [
 const QUICK_AMOUNTS = ["100", "250", "500", "1000", "2100", "5000"];
 
 export function ReceiveMoneyQrStudio({
-  defaultUpiId = "orderking.pay@okaxis",
-  defaultName = "OrderKing Sovereign Merchant",
+  defaultUpiId = "",
+  defaultName = "OrderKing Merchant",
   onClose,
   isModal = false,
 }: Props) {
-  const [upiId] = useState(defaultUpiId);
+  const [upiId] = useState(defaultUpiId.trim());
   const [payeeName, setPayeeName] = useState(defaultName);
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
@@ -158,6 +158,10 @@ export function ReceiveMoneyQrStudio({
 
   // Generate QR Code on change
   useEffect(() => {
+    if (!upiId) {
+      setQrDataUrl("");
+      return;
+    }
     const uri = generateUpiUri();
     QRCode.toDataURL(uri, {
       width: 480,
@@ -202,7 +206,7 @@ export function ReceiveMoneyQrStudio({
     const amtText = amount ? `₹${amount}` : "payment";
     const noteText = note ? `\nPurpose: "${note}"` : "";
     const msg = encodeURIComponent(
-      `Hello! Please pay ${amtText} directly via KingPay or any UPI App (GPay, PhonePe, Paytm): \n${generateUpiUri()}${noteText}\n\n0% convenience fee with KingPay!`
+      `Hello! Please pay ${amtText} using the verified UPI ID below: \n${generateUpiUri()}${noteText}`
     );
     window.open(`https://wa.me/?text=${msg}`, "_blank");
   };
@@ -248,7 +252,7 @@ export function ReceiveMoneyQrStudio({
                 Receive Money &amp; Custom QR
               </h2>
               <p className="text-[11px] text-muted">
-                Compatible with all UPI Apps · 0% Fee · Instant Settlement
+                Compatible UPI QR · Settlement depends on your verified bank/payment arrangement
               </p>
             </div>
           </div>
@@ -283,7 +287,7 @@ export function ReceiveMoneyQrStudio({
                 <span className={activeTheme.accentText}>{activeTheme.tagline}</span>
               </div>
               <h3 className="font-display text-xl font-black text-white tracking-tight">
-                King<span className="text-amber-400">Pay</span> Sovereign QR
+                King<span className="text-amber-400">Pay</span> UPI QR
               </h3>
               <p className="text-xs text-white/80 font-medium">
                 {payeeName || "OrderKing User"}
@@ -309,8 +313,8 @@ export function ReceiveMoneyQrStudio({
                   className="size-full object-contain rounded-xl"
                 />
               ) : (
-                <div className="size-full flex items-center justify-center text-xs text-slate-500">
-                  Generating High-Res QR...
+                <div className="size-full flex items-center justify-center px-6 text-center text-xs text-slate-500">
+                  A verified merchant UPI ID is required before a live payment QR can be generated.
                 </div>
               )}
 
@@ -343,7 +347,7 @@ export function ReceiveMoneyQrStudio({
             {/* Accepted Payment Apps Banner */}
             <div className="relative z-10 mt-5 pt-3 border-t border-white/15 flex flex-col items-center gap-1.5">
               <span className="text-[10px] uppercase font-bold tracking-widest text-white/70">
-                Scan with any app
+                Scan with a UPI app after VPA verification
               </span>
               <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-black text-white/90">
                 <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">GPay</span>
@@ -351,7 +355,7 @@ export function ReceiveMoneyQrStudio({
                 <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">Paytm</span>
                 <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">BHIM</span>
                 <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">Cred</span>
-                <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">Any Bank</span>
+                <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">Supported UPI app</span>
               </div>
             </div>
           </div>
