@@ -21,7 +21,6 @@ const priorityFor = (severity: EscalationPayload["severity"]): string => {
 };
 
 export const Route = createFileRoute("/api/internal/partner-escalations")({
-  // @ts-expect-error
   server: {
     handlers: {
       POST: async ({ request }: any) => {
