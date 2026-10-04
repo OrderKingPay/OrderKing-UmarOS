@@ -38,7 +38,6 @@ function getLocationProfile(baseIntervalMs: number) {
   const constrained = slow || effectiveType === "3g" || connection.saveData === true;
 
   return {
-    intervalMs: constrained ? Math.max(baseIntervalMs, slow ? 12_000 : 7_000) : Math.max(baseIntervalMs, 3_000),
     maximumAgeMs: constrained ? (slow ? 15_000 : 8_000) : 3_000,
     timeoutMs: constrained ? 12_000 : 8_000,
     persistEveryMs: constrained ? (slow ? 15_000 : 10_000) : 6_000,
@@ -119,15 +118,6 @@ export function useGpsHeartbeat(
         .then(() => undefined);
     }
 
-    const readPosition = () => {
-      if (stopped) return;
-      navigator.geolocation.getCurrentPosition(sendPosition, () => undefined, {
-        enableHighAccuracy: profile.highAccuracy,
-        maximumAge: profile.maximumAgeMs,
-        timeout: profile.timeoutMs,
-      });
-    };
-
     // One GPS source only: watchPosition already schedules fresh fixes.
     // This avoids the previous duplicate watch + interval traffic/battery drain.
     watchId = navigator.geolocation.watchPosition(
@@ -140,14 +130,9 @@ export function useGpsHeartbeat(
       },
     );
 
-    // Guarantee a fresh fix if a browser pauses watchPosition on constrained
-    // networks, while keeping the fallback interval far below the old 2s loop.
-    const fallbackTimer = window.setInterval(readPosition, profile.intervalMs);
-
     return () => {
       stopped = true;
       if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
-      window.clearInterval(fallbackTimer);
       if (channel) void supabase.removeChannel(channel);
     };
   }, [enabled, baseIntervalMs, riderId, onUpdate]);
