@@ -18,7 +18,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9
+          version: 12.8.1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -30,7 +30,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run Typecheck across 5 apps
-        run: pnpm run typecheck
+        run: pnpm run verify:cloudflare\n\n      - name: Run Typecheck across 5 apps\n        run: pnpm run typecheck
 
       - name: Build all 5 apps
         run: pnpm run build
