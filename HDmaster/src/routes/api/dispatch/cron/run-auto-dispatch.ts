@@ -35,5 +35,7 @@ export const Route = createFileRoute('/api/dispatch/cron/run-auto-dispatch')({
         headers: { 'Content-Type': 'application/json' }
       });
     }
-  } },
+      },
+    },
+  },
 });
