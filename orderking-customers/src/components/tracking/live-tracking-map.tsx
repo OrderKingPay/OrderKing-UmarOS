@@ -70,11 +70,11 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
   }, [initialLat, initialLng]);
 
   useEffect(() => {
-    // 60fps interpolation loop
-    let lastTime = performance.now();
+    let lastTime = 0;
 
     const animateMarker = (time: number) => {
-      const dt = time - lastTime;
+      if (!marker.current) return;
+      const dt = Math.min(time - (lastTime || time), 100);
       lastTime = time;
 
       const cLat = currentPos.current.lat;
@@ -82,38 +82,55 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
       const tLat = targetPos.current.lat;
       const tLng = targetPos.current.lng;
 
-      // Linear interpolation factor (adjust for smoothness)
-      const lerpFactor = 0.05 * (dt / 16); 
+      const deltaLat = tLat - cLat;
+      const deltaLng = tLng - cLng;
+      const distance = Math.hypot(deltaLat, deltaLng);
 
-      // Calculate bearing before moving
-      let bearing = 0;
-      if (Math.abs(tLat - cLat) > 0.00001 || Math.abs(tLng - cLng) > 0.00001) {
-        bearing = calcBearing(cLat, cLng, tLat, tLng);
-        marker.current?.setRotation(bearing);
+      if (distance < 0.000001) {
+        currentPos.current = targetPos.current;
+        marker.current.setLngLat([tLng, tLat]);
+        map.current?.jumpTo({ center: [tLng, tLat] });
+        animationFrameId.current = null;
+        return;
       }
 
-      const nextLat = cLat + (tLat - cLat) * lerpFactor;
-      const nextLng = cLng + (tLng - cLng) * lerpFactor;
-
+      const step = Math.min(1, Math.max(0.08, dt / 650));
+      const nextLat = cLat + deltaLat * step;
+      const nextLng = cLng + deltaLng * step;
       currentPos.current = { lat: nextLat, lng: nextLng };
-      marker.current?.setLngLat([nextLng, nextLat]);
-      
+
+      marker.current.setLngLat([nextLng, nextLat]);
       if (latRef.current) latRef.current.innerText = nextLat.toFixed(6);
       if (lngRef.current) lngRef.current.innerText = nextLng.toFixed(6);
 
-      // Keep map centered on marker smoothly
-      map.current?.easeTo({
-        center: [nextLng, nextLat],
-        duration: 0, 
-      });
+      const bearing = calcBearing(cLat, cLng, tLat, tLng);
+      marker.current.setRotation(bearing);
+      map.current?.jumpTo({ center: [nextLng, nextLat] });
 
       animationFrameId.current = requestAnimationFrame(animateMarker);
     };
 
-    animationFrameId.current = requestAnimationFrame(animateMarker);
+    const startAnimationIfNeeded = () => {
+      if (animationFrameId.current === null) {
+        animationFrameId.current = requestAnimationFrame(animateMarker);
+      }
+    };
+
+    const previousTarget = targetPos.current;
+    Object.defineProperty(targetPos, "current", {
+      configurable: true,
+      get: () => previousTarget,
+      set: (value) => {
+        targetPos.current = value;
+        startAnimationIfNeeded();
+      },
+    });
+
+    startAnimationIfNeeded();
 
     return () => {
-      if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+      if (animationFrameId.current !== null) cancelAnimationFrame(animationFrameId.current);
+      animationFrameId.current = null;
     };
   }, []);
 
@@ -169,7 +186,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
         
         <div className="flex items-center gap-2 bg-primary/20 backdrop-blur border border-primary/50 text-primary px-3 py-1.5 rounded-full">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="text-xs font-bold tracking-wide">60 FPS SYNC</span>
+          <span className="text-xs font-bold tracking-wide">LIVE GPS</span>
         </div>
       </div>
     </div>
