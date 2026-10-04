@@ -29,8 +29,11 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Verify Cloudflare-only deployment matrix
+        run: pnpm run verify:cloudflare
+
       - name: Run Typecheck across 5 apps
-        run: pnpm run verify:cloudflare\n\n      - name: Run Typecheck across 5 apps\n        run: pnpm run typecheck
+        run: pnpm run typecheck
 
       - name: Build all 5 apps
         run: pnpm run build
