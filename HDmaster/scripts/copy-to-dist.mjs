@@ -1,24 +1,30 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "node:fs";
+import path from "node:path";
 
 function copyDir(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
-  let entries = fs.readdirSync(src, { withFileTypes: true });
-  for (let entry of entries) {
-    let srcPath = path.join(src, entry.name);
-    let destPath = path.join(dest, entry.name);
-    entry.isDirectory() ? copyDir(srcPath, destPath) : fs.copyFileSync(srcPath, destPath);
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) copyDir(srcPath, destPath);
+    else fs.copyFileSync(srcPath, destPath);
   }
 }
 
-function run(appDir) {
-    const src = path.join(appDir, '.vercel/output/static');
-    const dest = path.join(appDir, 'dist/client');
-    if (fs.existsSync(src)) {
-        console.log(`Copying ${src} to ${dest}`);
-        copyDir(src, dest);
-    }
-}
-
 const appDir = process.cwd();
-run(appDir);
+const cloudflareStatic = path.join(appDir, ".output/public");
+const legacyVercelStatic = path.join(appDir, ".vercel/output/static");
+const dest = path.join(appDir, "dist/client");
+
+const source = fs.existsSync(cloudflareStatic)
+  ? cloudflareStatic
+  : fs.existsSync(legacyVercelStatic)
+    ? legacyVercelStatic
+    : null;
+
+if (source) {
+  console.log(`Copying ${source} to ${dest}`);
+  copyDir(source, dest);
+} else {
+  console.log("No Nitro static output found; leaving existing dist output unchanged.");
+}
