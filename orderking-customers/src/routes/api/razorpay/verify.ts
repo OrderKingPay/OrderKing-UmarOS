@@ -23,13 +23,13 @@ export const Route = createFileRoute("/api/razorpay/verify")({
           const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
           if (!keyId || !keySecret) return Response.json({ error: "Payment provider not configured" }, { status: 503 });
 
-          $crypto = await import("node:crypto"); const generated = $crypto
+          const crypto = await import("node:crypto"); const generated = crypto
             .createHmac("sha256", keySecret)
             .update(`${razorpay_order_id}|${razorpay_payment_id}`)
             .digest("hex");
           const given = String(razorpay_signature).trim();
           if (given.length !== generated.length ||
-              !$crypto.timingSafeEqual(Buffer.from(given), Buffer.from(generated))) {
+              !crypto.timingSafeEqual(Buffer.from(given), Buffer.from(generated))) {
             return Response.json({ error: "Invalid signature" }, { status: 400 });
           }
 
