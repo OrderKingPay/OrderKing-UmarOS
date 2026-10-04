@@ -1,7 +1,7 @@
 # Section 2 — Cloudflare Production Environment Matrix
 
 ## Rule
-No secret values belong in Git. Cloudflare Pages supports production and preview environment variables and encrypted secrets under **Workers & Pages → Project → Settings → Variables and Secrets**. Secrets should be created as encrypted values, not plain-text Wrangler vars. citeturn120690search0
+No secret values belong in Git. Cloudflare Pages supports production and preview environment variables and encrypted secrets under **Workers & Pages → Project → Settings → Variables and Secrets**. Secrets should be created as encrypted values, not plain-text Wrangler vars.
 
 ## Five project settings
 
@@ -15,7 +15,7 @@ No secret values belong in Git. Cloudflare Pages supports production and preview
 
 Production branch: `main`.
 
-Because this is one monorepo, Cloudflare allows up to **5 Pages projects per repository**; this design uses the full five-project allowance exactly. Configure build watch paths later so a change in one app does not unnecessarily rebuild the other four. citeturn149337search2
+Because this is one monorepo, Cloudflare allows up to **5 Pages projects per repository**; this design uses the full five-project allowance exactly. Configure build watch paths later so a change in one app does not unnecessarily rebuild the other four.
 
 ## Required server configuration — all five
 Always verify:
@@ -86,10 +86,10 @@ Recommended:
 - `rider.orderking.in` → Rider
 - `pay.orderking.in` → KingPay/integrations
 
-An apex domain must be a Cloudflare zone with Cloudflare nameservers. A subdomain can use a CNAME to the Pages `pages.dev` target, but Cloudflare says the custom-domain association must first be created in the Pages dashboard. citeturn149337search3
+An apex domain must be a Cloudflare zone with Cloudflare nameservers. A subdomain can use a CNAME to the Pages `pages.dev` target, but Cloudflare says the custom-domain association must first be created in the Pages dashboard.
 
 ## Free launch
-Cloudflare Pages Free currently provides 500 builds/month, one concurrent build, and up to 100 custom domains per project. citeturn149337search0
+Cloudflare Pages Free currently provides 500 builds/month, one concurrent build, and up to 100 custom domains per project.
 
 ## Section 2 completion boundary
 Repository configuration is complete. The remaining account-side actions require authenticated Cloudflare access:
@@ -101,4 +101,4 @@ Repository configuration is complete. The remaining account-side actions require
 6. Verify DNS, HTTPS, production deployment, Functions/runtime and logs.
 7. Record the exact production deployment commit in Umar OS.
 
-Cloudflare's own guidance recommends downloading/verifying the Pages project's Wrangler configuration against the dashboard before treating it as production truth. citeturn149337search1turn120690search5
+Cloudflare's own guidance recommends downloading/verifying the Pages project's Wrangler configuration against the dashboard before treating it as production truth.
