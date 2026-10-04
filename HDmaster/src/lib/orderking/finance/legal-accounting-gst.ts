@@ -134,7 +134,7 @@ export class LegalAccountingGstEngine {
     statutoryNotice: string;
   } {
     return {
-      isShieldActive: true,
+      isShieldActive: false,
       personalDataExposed: false,
       statutoryNotice:
         "OrderKing / KingPay operates as a pure technology intermediary under Section 79 of the Information Technology Act, 2000. Founder personal identity, phone, address, and personal accounts are 100% strictly masked and protected from all external entities.",
