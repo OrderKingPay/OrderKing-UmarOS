@@ -52,7 +52,13 @@ export function HomeView() {
     return () => window.clearInterval(id);
   }, []);
 
-  useGpsHeartbeat(Boolean(home && (home.rider.status !== "OFFLINE" || home.active)), 2000, undefined, home?.rider?.id);
+  useGpsHeartbeat(
+    Boolean(home && (home.rider.status !== "OFFLINE" || home.active)),
+    2000,
+    undefined,
+    home?.rider?.id,
+    home?.active?.id ?? null,
+  );
   useDutyLocation(
     Boolean(home && (home.rider.status !== "OFFLINE" || home.active)),
     home?.active?.id ?? null,
