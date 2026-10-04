@@ -14,7 +14,7 @@ function copyDir(src, dest) {
 const appDir = process.cwd();
 const cloudflareStatic = path.join(appDir, ".output/public");
 const legacyVercelStatic = path.join(appDir, ".vercel/output/static");
-const dest = path.join(appDir, "dist/client");
+const dest = path.join(appDir, "dist");
 
 const source = fs.existsSync(cloudflareStatic)
   ? cloudflareStatic
