@@ -33,5 +33,7 @@ export const Route = createFileRoute('/api/finance/cron/run-settlement')({
         headers: { 'Content-Type': 'application/json' }
       });
     }
-  } },
+      },
+    },
+  },
 });
