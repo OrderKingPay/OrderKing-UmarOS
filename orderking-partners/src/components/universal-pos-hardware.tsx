@@ -117,7 +117,7 @@ export function UniversalPosHardwareManager({
   const [autoPrintOnOrder, setAutoPrintOnOrder] = useState(true);
   const [autoCutPaper, setAutoCutPaper] = useState(true);
   const [dualKotRouting, setDualKotRouting] = useState(false);
-  const [printerConnected, setPrinterConnected] = useState(true);
+  const [printerConnected, setPrinterConnected] = useState(false);
   const [showTestPrintModal, setShowTestPrintModal] = useState(false);
 
   // --- POS State ---
@@ -143,7 +143,7 @@ export function UniversalPosHardwareManager({
       outletId: "OUTLET-SILCHAR-01",
     };
   });
-  const [posConnected, setPosConnected] = useState(true);
+  const [posConnected, setPosConnected] = useState(false);
   const [testingConnection, setTestingConnection] = useState(false);
 
   // Save printer settings
@@ -153,8 +153,8 @@ export function UniversalPosHardwareManager({
       localStorage.setItem("ok_printer_ip", printerIp);
       localStorage.setItem("ok_printer_port", printerPort);
     }
-    toast.success("Thermal Printer Configuration Saved & Verified!");
-    setPrinterConnected(true);
+    toast.success("Printer configuration saved. Live connection remains unverified until a real device handshake succeeds.");
+    setPrinterConnected(false);
   };
 
   // Save POS settings
@@ -163,8 +163,8 @@ export function UniversalPosHardwareManager({
       localStorage.setItem("ok_active_pos_id", activePosId);
       localStorage.setItem("ok_pos_config", JSON.stringify(posConfig));
     }
-    toast.success(`${SUPPORTED_POS_SYSTEMS.find((p) => p.id === activePosId)?.name} Integration Active!`);
-    setPosConnected(true);
+    toast.success(`${SUPPORTED_POS_SYSTEMS.find((p) => p.id === activePosId)?.name} configuration saved. Live integration remains unverified.`);
+    setPosConnected(false);
   };
 
   // Test POS Connection
@@ -172,9 +172,9 @@ export function UniversalPosHardwareManager({
     setTestingConnection(true);
     setTimeout(() => {
       setTestingConnection(false);
-      setPosConnected(true);
-      toast.success("POS Handshake 100% Successful: Bidirectional KOT & Menu Sync Active!");
-    }, 900);
+      setPosConnected(false);
+      toast.info("No live connector is configured for this POS provider yet. Credentials were not tested, and no sync is claimed.");
+    }, 50);
   };
 
   // Trigger test print
@@ -203,8 +203,8 @@ export function UniversalPosHardwareManager({
                 <h2 className="font-display text-xl font-bold text-foreground">
                   Universal POS, KOT &amp; Thermal Printer Gateway
                 </h2>
-                <span className="rounded-full bg-leaf-soft px-2.5 py-0.5 text-xs font-bold text-leaf">
-                  Active &amp; Ready
+                <span className="rounded-full bg-warn/10 px-2.5 py-0.5 text-xs font-bold text-warn">
+                  Configuration Only · Live Connection Unverified
                 </span>
               </div>
               <p className="text-xs text-muted mt-0.5">
@@ -311,8 +311,8 @@ export function UniversalPosHardwareManager({
               onClick={() => {
                 toast.info("Scanning for nearby Bluetooth ESC/POS printers...");
                 setTimeout(() => {
-                  toast.success("Connected to: 'MPT-II Thermal Bluetooth Printer'");
-                  setPrinterConnected(true);
+                  setPrinterConnected(false);
+                  toast.info("Bluetooth device selection is not yet wired to an ESC/POS transport; no printer connection is claimed.");
                 }, 800);
               }}
               className="text-xs font-bold"
@@ -335,8 +335,8 @@ export function UniversalPosHardwareManager({
               onClick={() => {
                 toast.info("Requesting WebUSB permission...");
                 setTimeout(() => {
-                  toast.success("Connected to: 'TVS RP 3160 Gold Thermal Printer'");
-                  setPrinterConnected(true);
+                  setPrinterConnected(false);
+                  toast.info("USB device selection is not yet wired to an ESC/POS transport; no printer connection is claimed.");
                 }, 800);
               }}
               className="text-xs font-bold"
