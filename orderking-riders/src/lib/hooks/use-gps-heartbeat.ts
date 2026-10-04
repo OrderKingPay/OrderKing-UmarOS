@@ -1,20 +1,75 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { supabase } from "../db-cloud";
 
-type GPSPosition = { lat: number; lng: number; accuracy: number; heading: number | null; speed: number | null; ts: number };
+type GPSPosition = {
+  lat: number;
+  lng: number;
+  accuracy: number;
+  heading: number | null;
+  speed: number | null;
+  ts: number;
+};
 
-export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpdate?: (pos: GPSPosition) => void, riderId?: string) {
+type NetworkConnection = {
+  effectiveType?: string;
+  saveData?: boolean;
+};
+
+function distanceMeters(a: GPSPosition | null, b: GPSPosition): number {
+  if (!a) return Number.POSITIVE_INFINITY;
+  const earthRadiusM = 6_371_000;
+  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
+  const lat1 = (a.lat * Math.PI) / 180;
+  const lat2 = (b.lat * Math.PI) / 180;
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  return 2 * earthRadiusM * Math.asin(Math.sqrt(h));
+}
+
+function getLocationProfile(baseIntervalMs: number) {
+  const connection =
+    typeof navigator !== "undefined"
+      ? ((navigator as unknown as { connection?: NetworkConnection }).connection ?? {})
+      : {};
+  const effectiveType = connection.effectiveType ?? "4g";
+  const slow = effectiveType === "slow-2g" || effectiveType === "2g";
+  const constrained = slow || effectiveType === "3g" || connection.saveData === true;
+
+  return {
+    intervalMs: constrained ? Math.max(baseIntervalMs, slow ? 12_000 : 7_000) : Math.max(baseIntervalMs, 3_000),
+    maximumAgeMs: constrained ? (slow ? 15_000 : 8_000) : 3_000,
+    timeoutMs: constrained ? 12_000 : 8_000,
+    persistEveryMs: constrained ? (slow ? 15_000 : 10_000) : 6_000,
+    persistDistanceM: constrained ? 10 : 5,
+    highAccuracy: !slow,
+  };
+}
+
+export function useGpsHeartbeat(
+  enabled: boolean,
+  baseIntervalMs = 2_000,
+  onUpdate?: (pos: GPSPosition) => void,
+  riderId?: string,
+) {
   const lastRef = useRef<GPSPosition | null>(null);
 
   useEffect(() => {
-    if (!enabled || !navigator.geolocation) return;
-    let watchId: number | undefined;
-    let timer: ReturnType<typeof setInterval> | undefined;
+    if (!enabled || typeof navigator === "undefined" || !navigator.geolocation) return;
 
-    const channel = supabase.channel('rider_gps');
-    channel.subscribe();
+    let watchId: number | undefined;
+    let lastPersisted: GPSPosition | null = null;
+    let lastPersistAt = 0;
+    let stopped = false;
+    const profile = getLocationProfile(baseIntervalMs);
+    const channel = riderId ? supabase.channel("rider_gps") : null;
+
+    if (channel) void channel.subscribe();
 
     async function sendPosition(position: GeolocationPosition) {
+      if (stopped) return;
+
       const pos: GPSPosition = {
         lat: position.coords.latitude,
         lng: position.coords.longitude,
@@ -23,44 +78,79 @@ export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpda
         speed: position.coords.speed,
         ts: position.timestamp,
       };
+
       lastRef.current = pos;
       onUpdate?.(pos);
 
-      if (riderId) {
-        // Send to realtime channel
-        channel.send({
-          type: 'broadcast',
-          event: 'gps_update',
-          payload: { riderId, pos }
-        });
+      if (!riderId || !channel) return;
 
-        // Insert into database
-        await supabase.from('rider_locations').insert([
-          { rider_id: riderId, lat: pos.lat, lng: pos.lng, accuracy: pos.accuracy, heading: pos.heading, speed: pos.speed, ts: new Date(pos.ts).toISOString() }
-        ]).select();
+      if (navigator.onLine) {
+        void channel.send({
+          type: "broadcast",
+          event: "gps_update",
+          payload: { riderId, pos },
+        });
       }
+
+      const now = Date.now();
+      const movedM = distanceMeters(lastPersisted, pos);
+      const shouldPersist =
+        navigator.onLine &&
+        (lastPersisted === null ||
+          now - lastPersistAt >= profile.persistEveryMs ||
+          movedM >= profile.persistDistanceM);
+
+      if (!shouldPersist) return;
+
+      lastPersistAt = now;
+      lastPersisted = pos;
+
+      void supabase
+        .from("rider_locations")
+        .insert({
+          rider_id: riderId,
+          lat: pos.lat,
+          lng: pos.lng,
+          accuracy: pos.accuracy,
+          heading: pos.heading,
+          speed: pos.speed,
+          ts: new Date(pos.ts).toISOString(),
+        })
+        .then(() => undefined);
     }
 
-    watchId = navigator.geolocation.watchPosition(sendPosition, () => {}, {
-      enableHighAccuracy: true,
-      maximumAge: 0,
-      timeout: baseIntervalMs,
-    });
-
-    timer = setInterval(() => {
-      navigator.geolocation.getCurrentPosition(sendPosition, () => {}, { 
-        enableHighAccuracy: true, 
-        maximumAge: 0, 
-        timeout: baseIntervalMs 
+    const readPosition = () => {
+      if (stopped) return;
+      navigator.geolocation.getCurrentPosition(sendPosition, () => undefined, {
+        enableHighAccuracy: profile.highAccuracy,
+        maximumAge: profile.maximumAgeMs,
+        timeout: profile.timeoutMs,
       });
-    }, baseIntervalMs);
+    };
+
+    // One GPS source only: watchPosition already schedules fresh fixes.
+    // This avoids the previous duplicate watch + interval traffic/battery drain.
+    watchId = navigator.geolocation.watchPosition(
+      sendPosition,
+      () => undefined,
+      {
+        enableHighAccuracy: profile.highAccuracy,
+        maximumAge: profile.maximumAgeMs,
+        timeout: profile.timeoutMs,
+      },
+    );
+
+    // Guarantee a fresh fix if a browser pauses watchPosition on constrained
+    // networks, while keeping the fallback interval far below the old 2s loop.
+    const fallbackTimer = window.setInterval(readPosition, profile.intervalMs);
 
     return () => {
+      stopped = true;
       if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
-      if (timer) clearInterval(timer);
-      supabase.removeChannel(channel);
+      window.clearInterval(fallbackTimer);
+      if (channel) void supabase.removeChannel(channel);
     };
-  }, [enabled, baseIntervalMs, riderId]);
+  }, [enabled, baseIntervalMs, riderId, onUpdate]);
 
   return lastRef;
 }
