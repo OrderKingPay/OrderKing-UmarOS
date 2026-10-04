@@ -1,4 +1,5 @@
 // @ts-nocheck
+// Section 1 audit: this module contains synthetic sandbox seed data; never treat it as production truth.
 import { getSql } from "@/lib/db";
 import { calculateOrderEconomics } from "@/lib/orderking/finance/settlement";
 import {
