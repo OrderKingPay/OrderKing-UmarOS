@@ -65,13 +65,7 @@ export function UmarModeCommandCenter() {
             <button 
               onClick={handleViralBroadcast}
               disabled
-              className={`relative group overflow-hidden rounded-2xl font-black text-xl px-10 py-5 transition-all duration-500 w-full md:w-auto ${
-                broadcastStatus === 'IDLE' 
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white shadow-[0_0_40px_rgba(37,99,235,0.5)]'
-                  : broadcastStatus === 'FIRING' 
-                  ? 'bg-yellow-500 text-black animate-pulse'
-                  : 'bg-green-500 text-black'
-              }`}
+              className="relative group overflow-hidden rounded-2xl font-black text-xl px-10 py-5 transition-all duration-500 w-full md:w-auto bg-slate-700 text-amber-200 border border-amber-500/30"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative flex items-center justify-center gap-3">
