@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getSql } from "@/lib/orderking/db.server";
-import { nid } from "@/lib/orderking/server/queries.server";
+import { getSql } from "@/lib/db";
+import { nid } from "@/lib/orderking/server/workspace.server";
 
 type EscalationPayload = {
   escalationId: string;
