@@ -1,4 +1,5 @@
+$schema = "./node_modules/wrangler/config-schema.json"
 name = "orderking-umar-os"
 compatibility_date = "2026-10-01"
 compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
-pages_build_output_dir = "dist"
+pages_build_output_dir = "./dist"
