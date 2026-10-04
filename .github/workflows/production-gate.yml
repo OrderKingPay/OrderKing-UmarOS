@@ -41,7 +41,7 @@ jobs:
           for app in "${apps[@]}"; do
             echo "===== ${app} ====="
             cd "${GITHUB_WORKSPACE}/${app}"
-            npm install --no-package-lock
+            npm install --legacy-peer-deps --no-package-lock
             npm run typecheck
             npm run build
           done
