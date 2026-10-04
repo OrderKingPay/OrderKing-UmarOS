@@ -10,9 +10,10 @@ function authorized(request: Request): boolean {
 }
 
 export const Route = createFileRoute("/api/dispatch/cron/run-auto-dispatch")({
+  // @ts-expect-error TanStack Start extends Router route options with server handlers.
   server: {
     handlers: {
-      GET: async ({ request }) => {
+      GET: async ({ request }: { request: Request }) => {
         if (!authorized(request)) {
           return new Response(JSON.stringify({ success: false, message: "Unauthorized" }), {
             status: 401,
