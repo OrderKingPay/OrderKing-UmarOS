@@ -12,6 +12,6 @@
     "verify:cloudflare": "node scripts/verify-cloudflare-matrix.mjs"
   },
   "devDependencies": {
-    "turbo": "2.11.5"
+    "turbo": "latest"
   }
 }
