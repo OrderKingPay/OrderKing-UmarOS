@@ -120,7 +120,6 @@ export function DeliveryActions({
             contentType: compressed.contentType,
             dataUrl: compressed.dataUrl,
             bytes: compressed.bytes,
-            storageUrl: publicUrl,
           },
         },
       });
