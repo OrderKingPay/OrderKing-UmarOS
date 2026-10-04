@@ -1,8 +1,5 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
 import { getKingpayBalance, addKingpayMoney, deductKingpayMoney } from "@/lib/server/kingpay.server";
-import { supabase } from "@/lib/db-cloud";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 export function useRealKingPayWallet() {
@@ -13,62 +10,46 @@ export function useRealKingPayWallet() {
     queryKey: ["kingpay_balance", user?.id],
     queryFn: () => getKingpayBalance(),
     enabled: !!user,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
+    staleTime: 2500,
   });
 
-  useEffect(() => {
-    if (!user) return;
-    const channel = supabase
-      .channel('kingpay_wallets_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'kingpay_wallets',
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          queryClient.setQueryData(["kingpay_balance", user.id], {
-            balance: payload.new.balance_paise / 100,
-            coins: payload.new.king_coins,
-          });
-        }
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [user, queryClient]);
-
-  const walletBalance = data?.balance ?? 0;
-  const kingCoins = data?.coins ?? 0;
-
   const addMoney = useMutation({
-    mutationFn: (args: { amount: number; description: string }) => addKingpayMoney({ data: args }),
+    mutationFn: (args: { amount: number; description: string }) =>
+      addKingpayMoney({ data: args }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
   });
 
   const deductMoney = useMutation({
-    mutationFn: (args: { amount: number; description: string }) => deductKingpayMoney({ data: args }),
+    mutationFn: (args: { amount: number; description: string }) =>
+      deductKingpayMoney({ data: args }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
   });
 
-  // Mock setWalletBalance to emulate the useState tuple structure for easy patching
   const setWalletBalance = (action: any) => {
-    let amount = 0;
-    if (typeof action === 'function') {
-      const result = action(walletBalance);
-      amount = result - walletBalance;
-    } else {
-      amount = action - walletBalance;
-    }
-    
+    const current = data?.balance ?? 0;
+    const target =
+      typeof action === "function" ? action(current) : Number(action);
+
+    const amount = target - current;
     if (amount > 0) {
-      addMoney.mutate({ amount, description: "Wallet Top-up / Reward" });
+      addMoney.mutate({ amount, description: "Wallet credit request" });
     } else if (amount < 0) {
-      deductMoney.mutate({ amount: Math.abs(amount), description: "Wallet Deduction" });
+      deductMoney.mutate({ amount: Math.abs(amount), description: "Wallet debit request" });
     }
   };
 
-  const setKingCoins = () => { /* read only for now, mutations can be added */ };
+  const setKingCoins = () => {
+    // Read-only until a verified KingPay rewards ledger is connected.
+  };
 
-  return { walletBalance, setWalletBalance, kingCoins, setKingCoins };
+  return {
+    walletBalance: data?.balance ?? 0,
+    setWalletBalance,
+    kingCoins: data?.coins ?? 0,
+    setKingCoins,
+    topUpPending: addMoney.isPending,
+    debitPending: deductMoney.isPending,
+  };
 }
