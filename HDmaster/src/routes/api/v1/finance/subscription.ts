@@ -1,21 +1,15 @@
-// Legacy King Pass HTTP adapter.
-// Production billing is intentionally fail-closed until the real provider,
-// webhook verification, and settlement contract are configured.
+// @ts-nocheck
+import { createAPIFileRoute } from "@tanstack/react-start/api";
 
-type RequestLike = {
-  body?: Record<string, unknown>;
-  params?: Record<string, string | undefined>;
-};
+function unavailable() {
+  return new Response(JSON.stringify({
+    success: false,
+    error: "KING_PASS_PROVIDER_NOT_CONFIGURED",
+    message: "King Pass billing is disabled until its production subscription provider is configured.",
+  }), { status: 503, headers: { "content-type": "application/json" } });
+}
 
-type ResponseLike = {
-  status(code: number): ResponseLike;
-  json(body: unknown): unknown;
-};
-
-const getSql = (strings: TemplateStringsArray, ...values: unknown[]) =>
-  strings.reduce((acc, str, i) => acc + str + (values[i] ?? ""), "");
-
-export const subscriptionMigrationQuery = getSql`
+export const subscriptionMigrationQuery = `
   CREATE TABLE IF NOT EXISTS customer_subscriptions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     customer_id UUID NOT NULL,
@@ -26,25 +20,11 @@ export const subscriptionMigrationQuery = getSql`
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
   );
-
   CREATE INDEX IF NOT EXISTS idx_cust_subs_customer_id ON customer_subscriptions(customer_id);
   CREATE INDEX IF NOT EXISTS idx_cust_subs_status_valid ON customer_subscriptions(status, valid_until);
 `;
 
-function unavailable(res: ResponseLike) {
-  return res.status(503).json({
-    success: false,
-    error: "KING_PASS_PROVIDER_NOT_CONFIGURED",
-    message: "King Pass billing is disabled until its production subscription provider is configured.",
-  });
-}
-
-export class SubscriptionController {
-  public static subscribe(_req: RequestLike, res: ResponseLike) {
-    return unavailable(res);
-  }
-
-  public static getSubscription(_req: RequestLike, res: ResponseLike) {
-    return unavailable(res);
-  }
-}
+export const Route = createAPIFileRoute("/api/v1/finance/subscription")({
+  GET: async () => unavailable(),
+  POST: async () => unavailable(),
+});
