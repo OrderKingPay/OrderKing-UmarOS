@@ -26,18 +26,10 @@ export const getKingpayBalance = createServerFn({ method: "GET" }).handler(async
 export const addKingpayMoney = createServerFn({ method: "POST" })
   .// @ts-ignore
   validator((d: { amount: number; description: string }) => d)
-  .handler(async ({ data }: any) => {
-    const user = await getSessionUser();
-    if (!user) throw new Error("Unauthorized");
-    const sql = await getSql();
-    const amountPaise = Math.round(data.amount * 100);
-    
-    await sql.transaction(async (tx) => {
-      await tx`INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins) VALUES (${user.id}, 0, 0) ON CONFLICT DO NOTHING`;
-      await tx`UPDATE kingpay_wallets SET balance_paise = balance_paise + ${amountPaise}, updated_at = NOW() WHERE user_id = ${user.id}`;
-      await tx`INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description) VALUES (${randomUUID()}, ${user.id}, ${amountPaise}, 'CREDIT', ${data.description})`;
-    });
-    return { success: true };
+  .handler(async () => {
+    throw new Error(
+      "KINGPAY_TOPUP_PROVIDER_REQUIRED: wallet credits are not created directly. A verified Razorpay/payment-provider capture must be confirmed before wallet credit.",
+    );
   });
 
 export const deductKingpayMoney = createServerFn({ method: "POST" })
