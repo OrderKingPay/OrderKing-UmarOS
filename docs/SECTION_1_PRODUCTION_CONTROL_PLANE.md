@@ -69,6 +69,9 @@ Umar OS will become the authoritative control plane for:
 ## Legal boundary
 The platform should be structured as a marketplace/technology intermediary where legally applicable, with separate merchant and rider contracts, clear allocation of obligations, indemnity provisions, insurance requirements where appropriate, grievance/refund processes, and transparent platform terms. Contracts cannot lawfully eliminate every potential liability of the founder/company.
 
+## Section 2 handoff
+Section 2 owns the Cloudflare deployment matrix and does not claim authenticated Cloudflare account actions without evidence.
+
 ## Section 1 acceptance gate
 Section 1 is complete when:
 - repository/application inventory is frozen,
