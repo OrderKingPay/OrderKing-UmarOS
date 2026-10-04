@@ -130,6 +130,12 @@ async function exec(text: string, params: unknown[] = []) {
 }
 
 export async function seedIfNeeded(): Promise<void> {
+  // Synthetic seed data is an explicit sandbox tool, never an implicit production initializer.
+  const runtime = String(process.env.NODE_ENV ?? "").toLowerCase();
+  const launchMode = String(process.env.ORDERKING_LAUNCH_MODE ?? "").toLowerCase();
+  const seedMode = String(process.env.ORDERKING_SEED_DATA ?? "").toLowerCase();
+  if (runtime === "production" || launchMode === "live" || seedMode !== "sandbox") return;
+
   const sql = await getSql();
   const existing = await sql<{ seed_version: number }>`
     select seed_version from workspace_meta where org_id = ${DEFAULT_ORG_ID}
