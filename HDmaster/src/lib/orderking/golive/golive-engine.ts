@@ -84,7 +84,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     lastTestedAt: null,
   },
   endpoints: {
-    hostingProvider: "VERCEL",
+    hostingProvider: "CLOUDFLARE_PAGES",
     customerAppUrl: process.env.CUSTOMER_APP_URL ?? "",
     partnerAppUrl: process.env.PARTNER_APP_URL ?? "",
     riderAppUrl: process.env.RIDER_APP_URL ?? "",
@@ -92,7 +92,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     apiGatewayUrl: process.env.API_GATEWAY_URL ?? "",
     sslEnforced: true,
     customDomainVerified: false,
-    dnsCnameTarget: process.env.VERCEL_DNS_CNAME_TARGET ?? "",
+    dnsCnameTarget: process.env.CLOUDFLARE_DNS_CNAME_TARGET ?? "",
   },
   paymentGateway: {
     provider: "RAZORPAY",
@@ -201,7 +201,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
     infraScore += 7;
   } else {
     infraWarnings.push("SSL enforcement or custom domain DNS verification is pending.");
-    recommendedActions.push("Verify CNAME records for orderking.in on Vercel/Cloudflare.");
+    recommendedActions.push("Verify CNAME/custom-domain records for orderking.in in Cloudflare.");
   }
 
   const infraPillar: GoLivePillarScore = {
