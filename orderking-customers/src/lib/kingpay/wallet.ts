@@ -3,10 +3,14 @@ import { getSql } from "../db.ts";
 import Razorpay from "razorpay";
 import { z } from "zod";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "test_key",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "test_secret",
-});
+function getRazorpay(): Razorpay {
+  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+  if (!keyId || !keySecret) {
+    throw new Error("Razorpay is not configured; live money movement is unavailable.");
+  }
+  return new Razorpay({ key_id: keyId, key_secret: keySecret });
+}
 
 export const TopUpSchema = z.object({
   customerId: z.string().uuid(),
@@ -27,7 +31,7 @@ export const walletEngine = {
 
   async createTopUpOrder(input: z.infer<typeof TopUpSchema>) {
     const data = TopUpSchema.parse(input);
-    const order = await razorpay.orders.create({
+    const order = await getRazorpay().orders.create({
       amount: data.amountPaise,
       currency: "INR",
       receipt: `topup_${data.customerId}_${Date.now()}`,
