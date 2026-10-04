@@ -312,229 +312,75 @@ export async function executeTool(
 
     case "sync_restaurant_menu":
       requirePermission(ws.ctx, "manage_cms");
-      return { restaurantId: id, status: "SYNCED", syncedAt: new Date().toISOString() };
+      if (!id) throw new Error("sync_restaurant_menu requires restaurant id");
+      return {
+        restaurantId: id,
+        status: "PROVIDER_REQUIRED",
+        message: "Menu sync was not executed because no external POS/menu source is configured.",
+      };
 
-    case "set_restaurant_online":
-      requirePermission(ws.ctx, "view_restaurants");
-      return { restaurantId: id, online: true, updatedAt: new Date().toISOString() };
+    case "set_restaurant_online": {
+      requirePermission(ws.ctx, "approve_restaurants");
+      if (!id) throw new Error("set_restaurant_online requires restaurant id");
+      const sql = await getSql();
+      const rows = await sql.query<{
+        id: string;
+        status: string;
+        kyc_status: string | null;
+        payout_status: string | null;
+        city_id: string | null;
+        zone_id: string | null;
+      }>(
+        "select id,status,kyc_status,payout_status,city_id,zone_id from restaurants where id=$1 and org_id=$2 limit 1",
+        [id, ws.ctx.orgId],
+      );
+      const restaurant = rows[0];
+      if (!restaurant) throw new Error("Restaurant not found");
+      if (!restaurant.city_id || !restaurant.zone_id) {
+        return {
+          restaurantId: id,
+          online: false,
+          status: "BLOCKED",
+          reason: "SERVICE_AREA_NOT_CONFIGURED",
+        };
+      }
+      if (restaurant.kyc_status && restaurant.kyc_status !== "VERIFIED") {
+        return {
+          restaurantId: id,
+          online: false,
+          status: "BLOCKED",
+          reason: "KYC_NOT_VERIFIED",
+        };
+      }
+      const updated = await sql.query<{ id: string; status: string }>(
+        "update restaurants set status='ACTIVE' where id=$1 and org_id=$2 returning id,status",
+        [id, ws.ctx.orgId],
+      );
+      return {
+        restaurantId: id,
+        online: updated[0]?.status === "ACTIVE",
+        status: updated[0]?.status ?? restaurant.status,
+        verified: true,
+      };
+    }
 
     case "onboard_restaurant": {
       requirePermission(ws.ctx, "approve_restaurants");
-      const restaurantName = String(args.name || args.query || "New Partner Kitchen");
-      const cuisine = String(args.cuisine || "North Indian & Biryani");
-      const phone = String(args.phone || "9876543210");
-      const hours = String(args.hours || "10:00 - 23:00 (All Days)");
-      const commissionBps = typeof args.commissionBps === "number" ? args.commissionBps : 1000;
-      const zone = String(args.zone || "Karimganj Central / NE Hub");
-      const address = String(args.address || "Main Road, Karimganj, Assam");
-      const coverImage = String(
-        args.coverImage ||
-        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80"
-      );
-      const newRestId = `rst_${Date.now()}`;
-      const withImages = args.withImages !== false;
-
-      // 1-Command Full Menu Generator (Auto-attached on onboarding)
-      const autoDishes = [
-        {
-          name: "Signature Chicken Dum Biryani",
-          category: "Biryani & Rice",
-          diet: "NONVEG" as const,
-          pricePaise: 24000,
-          prepMinutes: 20,
-          description: "Slow-cooked aromatic basmati rice layered with spiced tender chicken, saffron, and crispy onions.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Paneer Butter Masala",
-          category: "Main Course",
-          diet: "VEG" as const,
-          pricePaise: 18000,
-          prepMinutes: 15,
-          description: "Fresh cottage cheese cubes in a rich, buttery tomato cream gravy with fragrant kasuri methi.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Butter Naan (2 pcs)",
-          category: "Breads",
-          diet: "VEG" as const,
-          pricePaise: 6000,
-          prepMinutes: 8,
-          description: "Traditional tandoor-baked leavened flatbread brushed with golden farm butter.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: false,
-          bestSeller: true,
-        },
-        {
-          name: "Tandoori Chicken Full",
-          category: "Starters & Tandoor",
-          diet: "NONVEG" as const,
-          pricePaise: 38000,
-          prepMinutes: 25,
-          description: "Whole chicken marinated overnight in Greek yogurt, Kashmiri chili, and roasted garam masala.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: false,
-        },
-        {
-          name: "Crispy Chicken Steamed Momos (6 pcs)",
-          category: "Starters & Snacks",
-          diet: "NONVEG" as const,
-          pricePaise: 12000,
-          prepMinutes: 12,
-          description: "Delicate dumplings stuffed with seasoned minced chicken, served with spicy red chutney.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Gulab Jamun (2 pcs)",
-          category: "Desserts",
-          diet: "VEG" as const,
-          pricePaise: 5000,
-          prepMinutes: 5,
-          description: "Warm golden milk-solid dumplings soaked in green cardamom and rose water sugar syrup.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1589119908995-c6837fa14d48?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: false,
-          bestSeller: false,
-        },
-      ];
-
       return {
-        restaurantId: newRestId,
-        name: restaurantName,
-        cuisine,
-        phone,
-        status: "ACTIVE",
-        onboardedAt: new Date().toISOString(),
-        commissionBps,
-        operatingHours: hours,
-        zone,
-        address,
-        coverImage,
-        payoutSchedule: "WEEKLY_WEDNESDAY",
-        menuStatus: "PUBLISHED_LIVE",
-        initialMenu: {
-          categoriesCount: 5,
-          dishesCount: autoDishes.length,
-          dishes: autoDishes,
-          hasRealisticImages: withImages,
-        },
-        note: "Successfully onboarded in 1 command via Master AI: full kitchen profile active, operating hours set, and live menu with authentic dish photography published.",
+        status: "DRAFT_ONLY",
+        message: "AI prepared an onboarding draft only. KYC, ownership, service-area, bank and payout verification must be completed before activation.",
+        ownerRequired: true,
+        dataMode: ws.dataMode,
       };
     }
 
     case "generate_menu": {
       requirePermission(ws.ctx, "manage_cms");
-      const withImages = args.withImages !== false;
-      const cuisine = String(args.cuisine || "North Indian & Biryani");
-      const dishes = [
-        {
-          name: "Signature Chicken Dum Biryani",
-          category: "Biryani & Rice",
-          diet: "NONVEG",
-          pricePaise: 24000,
-          prepMinutes: 20,
-          description: "Slow-cooked aromatic basmati rice layered with spiced tender chicken, saffron, and crispy onions.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Paneer Butter Masala",
-          category: "Main Course",
-          diet: "VEG",
-          pricePaise: 18000,
-          prepMinutes: 15,
-          description: "Fresh cottage cheese cubes in a rich, buttery tomato cream gravy with fragrant kasuri methi.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Butter Naan (2 pcs)",
-          category: "Breads",
-          diet: "VEG",
-          pricePaise: 6000,
-          prepMinutes: 8,
-          description: "Traditional tandoor-baked leavened flatbread brushed with golden farm butter.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: false,
-          bestSeller: true,
-        },
-        {
-          name: "Tandoori Chicken Full",
-          category: "Starters & Tandoor",
-          diet: "NONVEG",
-          pricePaise: 38000,
-          prepMinutes: 25,
-          description: "Whole chicken marinated overnight in Greek yogurt, Kashmiri chili, and roasted garam masala.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: false,
-        },
-        {
-          name: "Dal Makhani",
-          category: "Main Course",
-          diet: "VEG",
-          pricePaise: 16000,
-          prepMinutes: 15,
-          description: "Slow-simmered black lentils and kidney beans enriched with dairy butter and fresh cream.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: false,
-        },
-        {
-          name: "Crispy Chicken Steamed Momos (6 pcs)",
-          category: "Starters & Snacks",
-          diet: "NONVEG",
-          pricePaise: 12000,
-          prepMinutes: 12,
-          description: "Delicate dumplings stuffed with seasoned minced chicken, served with spicy red chutney.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Gulab Jamun (2 pcs)",
-          category: "Desserts",
-          diet: "VEG",
-          pricePaise: 5000,
-          prepMinutes: 5,
-          description: "Warm golden milk-solid dumplings soaked in green cardamom and rose water sugar syrup.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1589119908995-c6837fa14d48?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: false,
-          bestSeller: false,
-        },
-      ];
       return {
-        restaurantId: id || "rst_active",
-        cuisine,
-        categoriesCreated: 5,
-        itemsCreated: dishes.length,
-        dishes,
-        hasImages: withImages,
-        status: "PUBLISHED_LIVE",
-        updatedAt: new Date().toISOString(),
-        note: "Menu generated with authentic dish images, FSSAI diet tags, and realistic market pricing.",
+        status: "DRAFT_ONLY",
+        restaurantId: id ?? null,
+        message: "AI can prepare menu drafts, but no generated menu is published automatically. A partner/operator must verify names, prices, allergens, images and availability.",
+        dataMode: ws.dataMode,
       };
     }
 
@@ -546,24 +392,11 @@ export async function executeTool(
 
     case "onboard_rider": {
       requirePermission(ws.ctx, "approve_riders");
-      const riderName = String(args.name || args.query || "Rider Partner");
-      const phone = String(args.phone || "9876501234");
-      const vehicleType = String(args.vehicleType || "MOTORCYCLE");
-      const zone = String(args.zone || "Karimganj Central");
-      const upiId = String(args.upiId || `${riderName.toLowerCase().replace(/\s+/g, "")}@okaxis`);
-      const newRiderId = `rdr_${Date.now()}`;
       return {
-        riderId: newRiderId,
-        name: riderName,
-        phone,
-        vehicleType,
-        zone,
-        kycStatus: "VERIFIED",
-        status: "ONLINE",
-        onboardedAt: new Date().toISOString(),
-        payoutMethod: "WEEKLY_WEDNESDAY_DIRECT_UPI",
-        upiId,
-        note: "Rider verified, KYC approved, and registered for weekly Wednesday settlements.",
+        status: "KYC_REQUIRED",
+        message: "AI prepared a rider onboarding draft only. Identity, licence, vehicle, insurance, bank/UPI and KYC must be verified before ONLINE status or payouts.",
+        ownerRequired: true,
+        dataMode: ws.dataMode,
       };
     }
 
@@ -655,12 +488,18 @@ export async function executeTool(
 
     case "issue_refund": {
       requirePermission(ws.ctx, "issue_refunds");
+      if (!id) throw new Error("issue_refund requires order id");
+      const amountPaise = Number(args.amountPaise || 0);
+      if (!Number.isInteger(amountPaise) || amountPaise <= 0) {
+        throw new Error("A positive integer refund amount in paise is required");
+      }
       return {
         orderId: id,
-        refundId: `ref_${Date.now()}`,
-        amountPaise: Number(args.amountPaise || 0),
-        status: "EXECUTED",
-        executedAt: new Date().toISOString(),
+        amountPaise,
+        status: "PENDING_PAYMENT_PROVIDER",
+        message: "Refund was not executed. A verified gateway refund reference is required before money is moved.",
+        ownerRequired: true,
+        dataMode: ws.dataMode,
       };
     }
 
