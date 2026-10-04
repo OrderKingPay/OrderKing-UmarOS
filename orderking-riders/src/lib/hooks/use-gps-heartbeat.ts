@@ -113,6 +113,7 @@ export function useGpsHeartbeat(
       };
 
       lastRef.current = pos;
+      window.dispatchEvent(new CustomEvent("orderking-geo", { detail: { ok: true } }));
       onUpdate?.(pos);
       void persistPosition(pos);
     }
@@ -121,7 +122,7 @@ export function useGpsHeartbeat(
     // battery/data while still providing frequent browser-native fixes.
     watchId = navigator.geolocation.watchPosition(
       sendPosition,
-      () => undefined,
+      () => window.dispatchEvent(new CustomEvent("orderking-geo", { detail: { ok: false } })),
       {
         enableHighAccuracy: profile.highAccuracy,
         maximumAge: profile.maximumAgeMs,
