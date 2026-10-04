@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getSql } from "@/lib/orderking/db.server";
-import { nid } from "@/lib/orderking/server/queries.server";
+import { getSql } from "@/lib/db";
+import { nid } from "@/lib/orderking/server/workspace.server";
 
 type EscalationPayload = {
   escalationId: string;
@@ -21,7 +21,6 @@ const priorityFor = (severity: EscalationPayload["severity"]): string => {
 };
 
 export const Route = createFileRoute("/api/internal/partner-escalations")({
-  // @ts-expect-error
   server: {
     handlers: {
       POST: async ({ request }: any) => {
@@ -76,7 +75,7 @@ export const Route = createFileRoute("/api/internal/partner-escalations")({
             `insert into tickets (
               id, org_id, city_id, queue, category, status, priority, subject,
               restaurant_id, sla_minutes, data_mode
-            ) values ($1,$2,$3,'partner',$4,'OPEN',$5,$6,$7,$8,'ACTUAL')`,
+            ) values ($1,$2,$3,'partner',$4,'OPEN',$5,$6,$7,$8,'REAL')`,
             [
               ticketId,
               restaurant.org_id,
@@ -112,7 +111,7 @@ export const Route = createFileRoute("/api/internal/partner-escalations")({
             ticketId,
             status: "OPEN",
             queue: "partner",
-            dataMode: "ACTUAL",
+            dataMode: "REAL",
           }), {
             status: 201,
             headers: { "content-type": "application/json" },

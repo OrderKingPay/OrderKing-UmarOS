@@ -47,6 +47,10 @@ export class LegalAccountingGstEngine {
    * Generates automated GSTR-1 and GSTR-3B filings for platform commissions.
    */
   public generateMonthlyGstReturns(month: string = "September 2026"): GstReport[] {
+    // Live reports must come from the canonical ledger; never manufacture tax numbers.
+    const demoMode = String(process.env.ORDERKING_DATA_MODE ?? "").toUpperCase() === "SIMULATED";
+    if (!demoMode) return [];
+
     // 18% GST on platform convenience fees and restaurant commissions
     const taxableValuePaise = 18_500_0000; // ₹18,50,000.00
     const totalTaxPaise = Math.round(taxableValuePaise * 0.18);
@@ -80,6 +84,10 @@ export class LegalAccountingGstEngine {
    * Generates automated settlement ledger with Section 194-O (1% TDS on e-commerce operators).
    */
   public getRecentSettlementLedger(): LegalPayoutEntry[] {
+    // Live settlement views must come from the verified settlement ledger.
+    const demoMode = String(process.env.ORDERKING_DATA_MODE ?? "").toUpperCase() === "SIMULATED";
+    if (!demoMode) return [];
+
     return [
       {
         id: "PAY-001",
@@ -126,7 +134,7 @@ export class LegalAccountingGstEngine {
     statutoryNotice: string;
   } {
     return {
-      isShieldActive: true,
+      isShieldActive: false,
       personalDataExposed: false,
       statutoryNotice:
         "OrderKing / KingPay operates as a pure technology intermediary under Section 79 of the Information Technology Act, 2000. Founder personal identity, phone, address, and personal accounts are 100% strictly masked and protected from all external entities.",

@@ -1,12 +1,12 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createFileRoute } from '@tanstack/react-router';
 import { runAlgorithmicAutoDispatch } from '../../../../lib/orderking/server/auto-dispatch-engine.server';
 
 /**
  * 🚀 AI STARLINK-LEVEL DISPATCH CRON ENDPOINT
  * Triggered automatically by Vercel every minute (* * * * *).
  */
-export const APIRoute = createAPIFileRoute('/api/dispatch/cron/run-auto-dispatch')({
-  GET: async ({ request }) => {
+export const Route = createFileRoute('/api/dispatch/cron/run-auto-dispatch')({
+  server: { handlers: { GET: async ({ request }) => {
     try {
       // Allow internal invocation or authenticated Vercel Cron
       const authHeader = request.headers.get('authorization');
@@ -35,5 +35,7 @@ export const APIRoute = createAPIFileRoute('/api/dispatch/cron/run-auto-dispatch
         headers: { 'Content-Type': 'application/json' }
       });
     }
-  }
+      },
+    },
+  },
 });

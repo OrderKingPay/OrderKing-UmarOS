@@ -1,12 +1,12 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createFileRoute } from '@tanstack/react-router';
 import { AutoSettlementEngine } from '../../../../lib/orderking/finance/auto-settlement-engine';
 
 /**
  * 👑 AI ZOMATO-STYLE SETTLEMENT CRON ENDPOINT
  * Triggered automatically by Vercel every Monday at 2:00 AM (0 2 * * 1).
  */
-export const APIRoute = createAPIFileRoute('/api/finance/cron/run-settlement')({
-  GET: async ({ request }) => {
+export const Route = createFileRoute('/api/finance/cron/run-settlement')({
+  server: { handlers: { GET: async ({ request }) => {
     try {
       // Basic security to ensure this is triggered by Vercel Cron or Admin
       const authHeader = request.headers.get('authorization');
@@ -33,5 +33,7 @@ export const APIRoute = createAPIFileRoute('/api/finance/cron/run-settlement')({
         headers: { 'Content-Type': 'application/json' }
       });
     }
-  }
+      },
+    },
+  },
 });

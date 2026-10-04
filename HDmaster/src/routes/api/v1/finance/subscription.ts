@@ -1,4 +1,12 @@
-import { Request, Response } from 'express';
+type LegacyRequest = {
+  body?: Record<string, unknown>;
+  params?: Record<string, string | undefined>;
+};
+
+type LegacyResponse = {
+  status(code: number): LegacyResponse;
+  json(payload: unknown): Response;
+};
 
 // Utility for SQL template literal (assuming pg or similar driver usage in project)
 const getSql = (strings: TemplateStringsArray, ...values: any[]) => {
@@ -27,9 +35,11 @@ export class SubscriptionController {
   /**
    * Create a King Pass subscription for a user
    */
-  public static async subscribe(req: Request, res: Response) {
+  public static async subscribe(req: LegacyRequest, res: LegacyResponse) {
     try {
-      const { customerId, planName } = req.body;
+      const body = req.body ?? {};
+      const customerId = typeof body.customerId === 'string' ? body.customerId : '';
+      const planName = typeof body.planName === 'string' ? body.planName : '';
       
       if (!customerId || !planName) {
         return res.status(400).json({ error: 'customerId and planName are required' });
@@ -80,9 +90,9 @@ export class SubscriptionController {
   /**
    * Get active subscription details
    */
-  public static async getSubscription(req: Request, res: Response) {
+  public static async getSubscription(req: LegacyRequest, res: LegacyResponse) {
     try {
-      const { customerId } = req.params;
+      const customerId = req.params?.customerId ?? '';
 
       const selectQuery = getSql`
         SELECT * FROM customer_subscriptions 

@@ -1,8 +1,8 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
-import { getSql } from '../../../../lib/db';
+import { createFileRoute } from '@tanstack/react-router';
+import { getSql } from '../../../lib/db';
 
-export const APIRoute = createAPIFileRoute('/api/finance/escalations')({
-  GET: async ({ request }) => {
+export const Route = createFileRoute('/api/finance/escalations')({
+  server: { handlers: { GET: async ({ request }) => {
     try {
       const sql = await getSql();
       
@@ -29,5 +29,7 @@ export const APIRoute = createAPIFileRoute('/api/finance/escalations')({
         headers: { 'Content-Type': 'application/json' }
       });
     }
-  }
+      },
+    },
+  },
 });
