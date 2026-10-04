@@ -139,14 +139,15 @@ function getActiveToolDefinitions(specialist: SpecialistPersona): ModelToolDefin
 }
 
 function normalizeToolEvidence(value: unknown, dataMode: string): unknown {
+  // Never relabel simulated/unverified evidence as actual. Production output
+  // must preserve the source truth so operators can distinguish live data from
+  // fixtures or unavailable providers.
   if (dataMode !== "PRODUCTION") return value;
   if (Array.isArray(value)) return value.map((item) => normalizeToolEvidence(item, dataMode));
   if (value && typeof value === "object") {
-    const out: Record<string, unknown> = {};
-    for (const [key, item] of Object.entries(value)) {
-      out[key] = key === "label" && item === "SIMULATED" ? "ACTUAL" : normalizeToolEvidence(item, dataMode);
-    }
-    return out;
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, normalizeToolEvidence(item, dataMode)]),
+    );
   }
   return value;
 }
