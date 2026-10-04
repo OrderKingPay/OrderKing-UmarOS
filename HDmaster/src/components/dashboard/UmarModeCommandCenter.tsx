@@ -12,15 +12,10 @@ import { Rocket, ShieldAlert, Users, TrendingUp, Zap, Send, Settings, Command } 
 export function UmarModeCommandCenter() {
   const [surgeMultiplier, setSurgeMultiplier] = useState(1.2);
   const [aiChatInput, setAiChatInput] = useState('');
-  const [broadcastStatus, setBroadcastStatus] = useState<'IDLE' | 'FIRING' | 'COMPLETE'>('IDLE');
+  const [broadcastStatus] = useState<'NOT_CONNECTED' | 'BLOCKED'>('NOT_CONNECTED');
 
-  const handleViralBroadcast = async () => {
-    setBroadcastStatus('FIRING');
-    // Triggers WhatsApp Business Graph API & Web Push
-    setTimeout(() => {
-      setBroadcastStatus('COMPLETE');
-      setTimeout(() => setBroadcastStatus('IDLE'), 3000);
-    }, 2500);
+  const handleViralBroadcast = () => {
+    // Production boundary: no provider is connected here, so no broadcast is claimed or simulated.
   };
 
   const handleAiCommand = (e: React.FormEvent) => {
@@ -46,7 +41,7 @@ export function UmarModeCommandCenter() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
           </span>
-          <span className="text-xs font-mono text-green-400 font-bold tracking-widest">GLOBAL EDGE NETWORK: ONLINE</span>
+          <span className="text-xs font-mono text-amber-400 font-bold tracking-widest">CONTROL PLANE: PROVIDERS NOT VERIFIED</span>
         </div>
       </header>
 
@@ -64,12 +59,12 @@ export function UmarModeCommandCenter() {
               <Rocket className="text-blue-400" size={32} /> Starlink-Tier Broadcast
             </h2>
             <p className="text-blue-200/70 text-sm mb-8 max-w-lg leading-relaxed font-medium">
-              Engage the real WhatsApp Business Graph API. Instantly message all existing customers with a unique trackable link. Forwarding pays ₹100 instantly. Mathematically guarantees extreme viral spread across India.
+              Live broadcast remains OFF until an approved messaging provider, consent policy, templates, delivery webhooks, rate limits and audit controls are configured. No viral outcome is guaranteed.
             </p>
             
             <button 
               onClick={handleViralBroadcast}
-              disabled={broadcastStatus !== 'IDLE'}
+              disabled
               className={`relative group overflow-hidden rounded-2xl font-black text-xl px-10 py-5 transition-all duration-500 w-full md:w-auto ${
                 broadcastStatus === 'IDLE' 
                   ? 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white shadow-[0_0_40px_rgba(37,99,235,0.5)]'
@@ -80,9 +75,8 @@ export function UmarModeCommandCenter() {
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
               <span className="relative flex items-center justify-center gap-3">
-                {broadcastStatus === 'IDLE' && <><Send size={24} /> PUSH TO EVERY SMARTPHONE</>}
-                {broadcastStatus === 'FIRING' && <><Zap size={24} className="animate-bounce" /> DEPLOYING TO EDGE NODES...</>}
-                {broadcastStatus === 'COMPLETE' && 'BROADCAST SUCCESSFUL'}
+                {broadcastStatus === 'NOT_CONNECTED' && <><ShieldAlert size={24} /> BROADCAST PROVIDER NOT CONNECTED</>}
+                {broadcastStatus === 'BLOCKED' && 'BROADCAST BLOCKED'}
               </span>
             </button>
           </section>
@@ -143,14 +137,14 @@ export function UmarModeCommandCenter() {
             <div className="space-y-4 relative z-10">
               <div className="flex justify-between items-center p-4 rounded-xl bg-black/40 border border-white/5">
                 <span className="text-sm text-gray-400 font-medium">Addicted Users (Daily)</span>
-                <span className="text-purple-400 font-black text-lg">14,208</span>
+                <span className="text-purple-400 font-black text-lg">LIVE TELEMETRY PENDING</span>
               </div>
               <div className="flex justify-between items-center p-4 rounded-xl bg-black/40 border border-white/5">
                 <span className="text-sm text-gray-400 font-medium">AI Targeted Push Sent</span>
-                <span className="text-purple-400 font-black text-lg">8,432 Today</span>
+                <span className="text-purple-400 font-black text-lg">LIVE TELEMETRY PENDING</span>
               </div>
               <p className="text-xs text-gray-500 mt-4 leading-relaxed">
-                The AI is invisibly recording favorite foods and dispatching secret 15% discounts 30 minutes before users normally get hungry. You do zero manual work.
+                Personalization is enabled only through consented, auditable production data. No hidden tracking, fabricated activity or guaranteed conversion is permitted.
               </p>
             </div>
           </section>
