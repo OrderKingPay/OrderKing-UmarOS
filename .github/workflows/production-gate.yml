@@ -2,7 +2,9 @@ name: Production Gate
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - audit/section-2-cloudflare-production
   pull_request:
     branches: [main]
   workflow_dispatch:
