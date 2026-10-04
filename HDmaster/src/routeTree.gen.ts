@@ -9,6 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ApiInternalPartnerEscalationsRouteImport } from './routes/api/internal/partner-escalations'
+import { Route as ApiFinanceEscalationsRouteImport } from './routes/api/finance/escalations'
+import { Route as ApiFinanceCronRunSettlementRouteImport } from './routes/api/finance/cron/run-settlement'
+import { Route as ApiDispatchCronRunAutoDispatchRouteImport } from './routes/api/dispatch/cron/run-auto-dispatch'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -195,7 +199,31 @@ const V1AdminCustomerOrdersIdCancelRoute =
     getParentRoute: () => V1AdminCustomerOrdersIdRoute,
   } as any)
 
+const ApiDispatchCronRunAutoDispatchRoute = ApiDispatchCronRunAutoDispatchRouteImport.update({
+  id: '/api/dispatch/cron/run-auto-dispatch',
+  path: '/api/dispatch/cron/run-auto-dispatch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiFinanceCronRunSettlementRoute = ApiFinanceCronRunSettlementRouteImport.update({
+  id: '/api/finance/cron/run-settlement',
+  path: '/api/finance/cron/run-settlement',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiFinanceEscalationsRoute = ApiFinanceEscalationsRouteImport.update({
+  id: '/api/finance/escalations',
+  path: '/api/finance/escalations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInternalPartnerEscalationsRoute = ApiInternalPartnerEscalationsRouteImport.update({
+  id: '/api/internal/partner-escalations',
+  path: '/api/internal/partner-escalations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 export interface FileRoutesByFullPath {
+  '/api/dispatch/cron/run-auto-dispatch': typeof ApiDispatchCronRunAutoDispatchRoute
+  '/api/finance/cron/run-settlement': typeof ApiFinanceCronRunSettlementRoute
+  '/api/finance/escalations': typeof ApiFinanceEscalationsRoute
+  '/api/internal/partner-escalations': typeof ApiInternalPartnerEscalationsRoute
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/login': typeof LoginRoute
@@ -257,6 +285,10 @@ export interface FileRoutesByTo {
   '/v1/admin/dispatch/reassign': typeof V1AdminDispatchReassignRoute
   '/v1/admin/customer-orders/$id/cancel': typeof V1AdminCustomerOrdersIdCancelRoute
   '/v1/admin/orders/$id/rider-transition': typeof V1AdminOrdersIdRiderTransitionRoute
+  '/api/dispatch/cron/run-auto-dispatch': typeof ApiDispatchCronRunAutoDispatchRoute
+  '/api/finance/cron/run-settlement': typeof ApiFinanceCronRunSettlementRoute
+  '/api/finance/escalations': typeof ApiFinanceEscalationsRoute
+  '/api/internal/partner-escalations': typeof ApiInternalPartnerEscalationsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -290,6 +322,10 @@ export interface FileRoutesById {
   '/v1/admin/dispatch/reassign': typeof V1AdminDispatchReassignRoute
   '/v1/admin/customer-orders/$id/cancel': typeof V1AdminCustomerOrdersIdCancelRoute
   '/v1/admin/orders/$id/rider-transition': typeof V1AdminOrdersIdRiderTransitionRoute
+  '/api/dispatch/cron/run-auto-dispatch': typeof ApiDispatchCronRunAutoDispatchRoute
+  '/api/finance/cron/run-settlement': typeof ApiFinanceCronRunSettlementRoute
+  '/api/finance/escalations': typeof ApiFinanceEscalationsRoute
+  '/api/internal/partner-escalations': typeof ApiInternalPartnerEscalationsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -415,6 +451,10 @@ export interface RootRouteChildren {
   V1AdminResourceIdRoute: typeof V1AdminResourceIdRoute
   V1AdminDispatchReassignRoute: typeof V1AdminDispatchReassignRoute
   V1AdminOrdersIdRiderTransitionRoute: typeof V1AdminOrdersIdRiderTransitionRoute
+  ApiDispatchCronRunAutoDispatchRoute: typeof ApiDispatchCronRunAutoDispatchRoute
+  ApiFinanceCronRunSettlementRoute: typeof ApiFinanceCronRunSettlementRoute
+  ApiFinanceEscalationsRoute: typeof ApiFinanceEscalationsRoute
+  ApiInternalPartnerEscalationsRoute: typeof ApiInternalPartnerEscalationsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -629,6 +669,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof V1AdminCustomerOrdersIdCancelRouteImport
       parentRoute: typeof V1AdminCustomerOrdersIdRoute
     }
+    '/api/dispatch/cron/run-auto-dispatch': {
+      id: '/api/dispatch/cron/run-auto-dispatch'
+      path: '/api/dispatch/cron/run-auto-dispatch'
+      fullPath: '/api/dispatch/cron/run-auto-dispatch'
+      preLoaderRoute: typeof ApiDispatchCronRunAutoDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/finance/cron/run-settlement': {
+      id: '/api/finance/cron/run-settlement'
+      path: '/api/finance/cron/run-settlement'
+      fullPath: '/api/finance/cron/run-settlement'
+      preLoaderRoute: typeof ApiFinanceCronRunSettlementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/finance/escalations': {
+      id: '/api/finance/escalations'
+      path: '/api/finance/escalations'
+      fullPath: '/api/finance/escalations'
+      preLoaderRoute: typeof ApiFinanceEscalationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/internal/partner-escalations': {
+      id: '/api/internal/partner-escalations'
+      path: '/api/internal/partner-escalations'
+      fullPath: '/api/internal/partner-escalations'
+      preLoaderRoute: typeof ApiInternalPartnerEscalationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -711,6 +779,10 @@ const rootRouteChildren: RootRouteChildren = {
   V1AdminResourceIdRoute: V1AdminResourceIdRoute,
   V1AdminDispatchReassignRoute: V1AdminDispatchReassignRoute,
   V1AdminOrdersIdRiderTransitionRoute: V1AdminOrdersIdRiderTransitionRoute,
+  ApiDispatchCronRunAutoDispatchRoute: ApiDispatchCronRunAutoDispatchRoute,
+  ApiFinanceCronRunSettlementRoute: ApiFinanceCronRunSettlementRoute,
+  ApiFinanceEscalationsRoute: ApiFinanceEscalationsRoute,
+  ApiInternalPartnerEscalationsRoute: ApiInternalPartnerEscalationsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
