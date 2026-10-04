@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { supabase } from "@/lib/db-cloud";
-
 const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
 if (!mapboxToken) {
   throw new Error("Mapbox configuration is missing. Live tracking cannot start without a real token.");
@@ -13,6 +11,8 @@ interface LiveTrackingMapProps {
   dispatchJobId: string;
   initialLat: number;
   initialLng: number;
+  riderLat?: number;
+  riderLng?: number;
 }
 
 function calcBearing(startLat: number, startLng: number, destLat: number, destLng: number) {
@@ -28,7 +28,7 @@ function calcBearing(startLat: number, startLng: number, destLat: number, destLn
   return (((Math.atan2(y, x) * 180) / Math.PI) + 360) % 360;
 }
 
-export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveTrackingMapProps) {
+export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng, riderLat, riderLng }: LiveTrackingMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
@@ -123,30 +123,11 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
   }, []);
 
   useEffect(() => {
-    const channel = supabase
-      .channel(`public:dispatch_jobs:${dispatchJobId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "orders",
-          filter: `id=eq.${dispatchJobId}`,
-        },
-        (payload: any) => {
-          const { rider_lat, rider_lng } = payload.new;
-          if (typeof rider_lat === "number" && typeof rider_lng === "number") {
-            targetPos.current = { lat: rider_lat, lng: rider_lng };
-            startAnimationRef.current?.();
-          }
-        },
-      )
-      .subscribe();
-
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [dispatchJobId]);
+    if (typeof riderLat !== "number" || typeof riderLng !== "number") return;
+    if (!Number.isFinite(riderLat) || !Number.isFinite(riderLng)) return;
+    targetPos.current = { lat: riderLat, lng: riderLng };
+    startAnimationRef.current?.();
+  }, [riderLat, riderLng]);
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 shadow-2xl">
