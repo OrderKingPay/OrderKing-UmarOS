@@ -15,22 +15,33 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            HDmaster/package-lock.json
+            orderking-customers/package-lock.json
+            orderking-partners/package-lock.json
+            orderking-riders/package-lock.json
+            Apps-integration-/package-lock.json
 
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run Typecheck across 5 apps
-        run: pnpm run typecheck
-
-      - name: Build all 5 apps
-        run: pnpm run build
+      - name: Install, typecheck and build all 5 apps
+        shell: bash
+        run: |
+          set -euo pipefail
+          apps=(
+            "HDmaster"
+            "orderking-customers"
+            "orderking-partners"
+            "orderking-riders"
+            "Apps-integration-"
+          )
+          for app in "${apps[@]}"; do
+            echo "===== ${app} ====="
+            cd "${GITHUB_WORKSPACE}/${app}"
+            npm ci
+            npm run typecheck
+            npm run build
+          done
