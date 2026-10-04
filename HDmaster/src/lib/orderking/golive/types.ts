@@ -11,7 +11,8 @@ export type HostingProvider =
   | "RAILWAY" 
   | "AWS_ECS" 
   | "CLOUD_RUN" 
-  | "VPS_DOCKER";
+  | "VPS_DOCKER"
+  | "CLOUDFLARE_PAGES";
 
 export type PaymentGatewayProvider = 
   | "CASHFREE" 
