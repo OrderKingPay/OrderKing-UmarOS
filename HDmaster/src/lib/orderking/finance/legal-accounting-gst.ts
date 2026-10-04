@@ -84,6 +84,10 @@ export class LegalAccountingGstEngine {
    * Generates automated settlement ledger with Section 194-O (1% TDS on e-commerce operators).
    */
   public getRecentSettlementLedger(): LegalPayoutEntry[] {
+    // Live settlement views must come from the verified settlement ledger.
+    const demoMode = String(process.env.ORDERKING_DATA_MODE ?? "").toUpperCase() === "SIMULATED";
+    if (!demoMode) return [];
+
     return [
       {
         id: "PAY-001",
