@@ -177,10 +177,10 @@ export function UniversalPosHardwareManager({
     }, 50);
   };
 
-  // Trigger test print
+  // Browser print preview only. No thermal device dispatch is claimed here.
   const handleExecuteTestPrint = () => {
     setShowTestPrintModal(false);
-    toast.success("Test Receipt Dispatched to Thermal Printer via ESC/POS!");
+    toast.info("Browser print preview opened. Thermal ESC/POS delivery remains unverified.");
     if (typeof window !== "undefined") {
       window.print();
     }
@@ -676,11 +676,11 @@ export function UniversalPosHardwareManager({
               </button>
             </div>
 
-            {/* Simulated ESC/POS Thermal Receipt */}
+            {/* Sample receipt preview — not a device dispatch */}
             <div className="rounded-lg border border-line bg-white p-4 font-mono text-[11px] text-black shadow-inner space-y-2">
               <div className="text-center border-b border-dashed border-gray-400 pb-2">
                 <div className="text-sm font-extrabold uppercase">{restaurantName}</div>
-                <div className="text-[10px] text-gray-600">OrderKing Kitchen KOT #OK-7841</div>
+                <div className="text-[10px] text-gray-600">Sample KOT Preview · Not a live order</div>
                 <div className="text-[10px] text-gray-500">{new Date().toLocaleString()}</div>
               </div>
 
