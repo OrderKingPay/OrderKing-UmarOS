@@ -14,7 +14,7 @@ for (const app of apps) {
     if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return \`https://\${process.env.VERCEL_PROJECT_PRODUCTION_URL}\`;
     if (process.env.VERCEL_URL) return \`https://\${process.env.VERCEL_URL}\`;
   }
-  return "http://localhost:8080";
+  return process.env.BETTER_AUTH_URL || "http://localhost:8080";
 };
 
 export const authClient = createAuthClient({
