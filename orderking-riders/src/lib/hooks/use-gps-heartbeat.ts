@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { supabase } from "../db-cloud";
+import { withRetry } from "@/lib/client/errors";
+import { postLocationFn } from "@/lib/server/rider-fns";
 
 type GPSPosition = {
   lat: number;
@@ -51,6 +52,7 @@ export function useGpsHeartbeat(
   baseIntervalMs = 2_000,
   onUpdate?: (pos: GPSPosition) => void,
   riderId?: string,
+  deliveryId?: string | null,
 ) {
   const lastRef = useRef<GPSPosition | null>(null);
 
@@ -62,11 +64,43 @@ export function useGpsHeartbeat(
     let lastPersistAt = 0;
     let stopped = false;
     const profile = getLocationProfile(baseIntervalMs);
-    const channel = riderId ? supabase.channel("rider_gps") : null;
 
-    if (channel) void channel.subscribe();
+    async function persistPosition(pos: GPSPosition) {
+      if (!riderId || !navigator.onLine || stopped) return;
 
-    async function sendPosition(position: GeolocationPosition) {
+      const now = Date.now();
+      const movedM = distanceMeters(lastPersisted, pos);
+      const shouldPersist =
+        lastPersisted === null ||
+        now - lastPersistAt >= profile.persistEveryMs ||
+        movedM >= profile.persistDistanceM;
+
+      if (!shouldPersist) return;
+
+      lastPersistAt = now;
+      lastPersisted = pos;
+
+      try {
+        // Use the authenticated server path. This writes through the Rider
+        // store to the canonical production telemetry table and avoids an
+        // unauthorized browser-side Supabase insert.
+        await withRetry(() =>
+          postLocationFn({
+            data: {
+              lat: pos.lat,
+              lng: pos.lng,
+              accuracyM: Number.isFinite(pos.accuracy) ? pos.accuracy : null,
+              deliveryId: deliveryId ?? null,
+            },
+          }),
+        );
+      } catch {
+        // The existing offline/retry UI remains responsible for user-visible
+        // connectivity state; GPS collection itself must keep running.
+      }
+    }
+
+    function sendPosition(position: GeolocationPosition) {
       if (stopped) return;
 
       const pos: GPSPosition = {
@@ -80,46 +114,11 @@ export function useGpsHeartbeat(
 
       lastRef.current = pos;
       onUpdate?.(pos);
-
-      if (!riderId || !channel) return;
-
-      if (navigator.onLine) {
-        void channel.send({
-          type: "broadcast",
-          event: "gps_update",
-          payload: { riderId, pos },
-        });
-      }
-
-      const now = Date.now();
-      const movedM = distanceMeters(lastPersisted, pos);
-      const shouldPersist =
-        navigator.onLine &&
-        (lastPersisted === null ||
-          now - lastPersistAt >= profile.persistEveryMs ||
-          movedM >= profile.persistDistanceM);
-
-      if (!shouldPersist) return;
-
-      lastPersistAt = now;
-      lastPersisted = pos;
-
-      void supabase
-        .from("rider_locations")
-        .insert({
-          rider_id: riderId,
-          lat: pos.lat,
-          lng: pos.lng,
-          accuracy: pos.accuracy,
-          heading: pos.heading,
-          speed: pos.speed,
-          ts: new Date(pos.ts).toISOString(),
-        })
-        .then(() => undefined);
+      void persistPosition(pos);
     }
 
-    // One GPS source only: watchPosition already schedules fresh fixes.
-    // This avoids the previous duplicate watch + interval traffic/battery drain.
+    // One GPS source only: watchPosition. Avoid duplicate timers that waste
+    // battery/data while still providing frequent browser-native fixes.
     watchId = navigator.geolocation.watchPosition(
       sendPosition,
       () => undefined,
@@ -133,9 +132,8 @@ export function useGpsHeartbeat(
     return () => {
       stopped = true;
       if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
-      if (channel) void supabase.removeChannel(channel);
     };
-  }, [enabled, baseIntervalMs, riderId, onUpdate]);
+  }, [enabled, baseIntervalMs, riderId, deliveryId, onUpdate]);
 
   return lastRef;
 }
