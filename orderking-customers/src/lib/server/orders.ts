@@ -194,3 +194,49 @@ export const reorderItems = createServerFn({ method: "POST" })
 
 
 
+
+
+export const getOrderTracking = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .validator((input: { orderId: string }) => input)
+  .handler(async ({ context, data }) => {
+    const sql = await getSql();
+    const rows = await sql<{
+      id: string;
+      status: string;
+      rider_lat: number | null;
+      rider_lng: number | null;
+      rider_heading: number | null;
+      last_ping_at: string | null;
+      restaurant_lat: number | null;
+      restaurant_lng: number | null;
+    }>`
+      select
+        o.id,
+        o.status,
+        o.rider_lat,
+        o.rider_lng,
+        o.rider_heading,
+        o.last_ping_at::text as last_ping_at,
+        ro.lat as restaurant_lat,
+        ro.lng as restaurant_lng
+      from orders o
+      left join restaurant_outlets ro on ro.id = o.outlet_id
+      where o.id = ${data.orderId}
+        and o.user_id = ${context.userId}
+      limit 1
+    `;
+    const row = rows[0];
+    if (!row) return { found: false } as const;
+    return {
+      found: true,
+      orderId: row.id,
+      status: row.status,
+      riderLat: row.rider_lat,
+      riderLng: row.rider_lng,
+      riderHeading: row.rider_heading,
+      lastPingAt: row.last_ping_at,
+      restaurantLat: row.restaurant_lat,
+      restaurantLng: row.restaurant_lng,
+    } as const;
+  });
