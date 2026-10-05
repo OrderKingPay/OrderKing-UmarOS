@@ -30,8 +30,9 @@ export const Route = createFileRoute("/api/finance/escalations")({
       console.error("[ESCALATION API FATAL]:", error);
       return new Response(JSON.stringify([]), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" }
       });
-    }
-  }
+      }
+    },
+  },
 });
