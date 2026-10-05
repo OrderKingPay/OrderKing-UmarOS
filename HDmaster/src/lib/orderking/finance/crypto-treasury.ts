@@ -55,8 +55,8 @@ export const CryptoTreasury = {
 
     return await sql.transaction(async (tx: Sql) => {
       // 1. Lock the intent
-      const intent = await tx`
-        SELECT id, amount, status FROM crypto_payment_intents 
+      const intent = await tx<{ id: string; amount: number; status: string }>`
+        SELECT id, amount, status FROM crypto_payment_intents
         WHERE order_id = ${orderId} FOR UPDATE SKIP LOCKED
       `;
 
