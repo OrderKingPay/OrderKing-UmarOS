@@ -18,7 +18,16 @@ const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 export const Route = createRootRoute({
-  beforeLoad: async () => ({ sessionUser: await fetchSessionUser() }),
+  beforeLoad: async ({ location }) => {
+    // Public/auth endpoints must render without requiring the session server
+    // function. On Cloudflare Pages a failed auth runtime dependency must not
+    // turn the public /login screen into a 500. The protected home route still
+    // receives the verified session context and redirects signed-out riders.
+    if (location.pathname === "/login" || location.pathname.startsWith("/api/auth/")) {
+      return { sessionUser: null };
+    }
+    return { sessionUser: await fetchSessionUser() };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
