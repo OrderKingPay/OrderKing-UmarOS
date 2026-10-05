@@ -23,6 +23,14 @@ server: {
           if (!keyId || !keySecret) {
             return Response.json({ error: "Razorpay keys not configured" }, { status: 503 });
           }
+          const mode = (process.env.RAZORPAY_MODE ?? "live").trim().toLowerCase();
+          const isTestKey = keyId.startsWith("rzp_test_");
+          if (mode === "live" && isTestKey) {
+            return Response.json({ error: "Live Razorpay mode refuses test credentials" }, { status: 503 });
+          }
+          if (mode === "sandbox" && !isTestKey) {
+            return Response.json({ error: "Sandbox Razorpay mode requires test credentials" }, { status: 503 });
+          }
 
           const Razorpay = (await import("razorpay")).default; const instance = new Razorpay({ key_id: keyId, key_secret: keySecret });
           const options = {
