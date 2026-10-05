@@ -3,10 +3,17 @@ import { getSql } from "../db.ts";
 import Razorpay from "razorpay";
 import { z } from "zod";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "test_key",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "test_secret",
-});
+function getRazorpayClient(): Razorpay {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  if (!keyId || !keySecret) {
+    throw new Error("Razorpay credentials are required for wallet operations.");
+  }
+  if (process.env.ORDERKING_RUNTIME === "production" && !keyId.startsWith("rzp_live_")) {
+    throw new Error("Production wallet operations require Razorpay live credentials.");
+  }
+  return new Razorpay({ key_id: keyId, key_secret: keySecret });
+}
 
 export const TopUpSchema = z.object({
   customerId: z.string().uuid(),
@@ -27,6 +34,7 @@ export const walletEngine = {
 
   async createTopUpOrder(input: z.infer<typeof TopUpSchema>) {
     const data = TopUpSchema.parse(input);
+    const razorpay = getRazorpayClient();
     const order = await razorpay.orders.create({
       amount: data.amountPaise,
       currency: "INR",
