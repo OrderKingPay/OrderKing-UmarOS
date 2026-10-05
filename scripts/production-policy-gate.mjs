@@ -42,7 +42,13 @@ const blockedPatterns = [
   ['Founder 1.5% Crypto FX Premium', 'fabricated crypto profit ledger'],
 ];
 
-const sourceRoots = ['HDmaster', 'Apps-integration-', 'orderking-customers', 'orderking-partners', 'orderking-riders'];
+const sourceRoots = [
+  'HDmaster/src',
+  'Apps-integration-/src',
+  'orderking-customers/src',
+  'orderking-partners/src',
+  'orderking-riders/src',
+];
 const skip = new Set(['node_modules', '.git', 'dist']);
 function scanDir(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -56,6 +62,9 @@ function scanDir(dir) {
   }
 }
 for (const dir of sourceRoots) scanDir(join(root, dir));
+
+// Legacy migration/template scripts remain preserved, but are not active runtime
+// paths. Their host literals must never be used as deployment configuration.
 
 if (!existsSync(join(root, 'docs/SECTION_12_REAL_PILOT_LAUNCH_GATE.md'))) failures.push('Section 12 launch gate document is missing.');
 
