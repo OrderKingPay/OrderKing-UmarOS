@@ -913,6 +913,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   } | null>(null);
 
   const handleBuyFuelVoucher = (brand: "HPCL (HP Pay)" | "IndianOil (IOCL ONE)" | "BPCL (SmartDrive)", amt: number) => {
+    if (!KINGPAY_CONSUMER_UPI_ENABLED) {
+      toast.info("NOT ENABLED: fuel vouchers require a verified partner integration.");
+      return;
+    }
     const coinsReward = Math.round(amt * 0.02 * 10); // 2% value in coins (10 coins = ₹1)
     const randomHex = Math.random().toString(36).substring(2, 6).toUpperCase();
     const prefix = brand.includes("HPCL") ? "HP" : brand.includes("IndianOil") ? "IOCL" : "BP";
@@ -958,9 +962,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [selectedBankForBalance, setSelectedBankForBalance] = useState<BankAccount | null>(null);
   const [upiPinInput, setUpiPinInput] = useState("");
   const [pinVerifying, setPinVerifying] = useState(false);
-  const [balanceRevealed, setBalanceRevealed] = useState<{ [bankId: string]: number }>({
-    bank_sbi_1: 24850,
-  });
+  const [balanceRevealed, setBalanceRevealed] = useState<{ [bankId: string]: number }>({});
 
   // Add Bank Account Flow State
   const [showAddBankModal, setShowAddBankModal] = useState(false);
@@ -1087,20 +1089,20 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [showScratchCard, setShowScratchCard] = useState(false);
   const [scratched, setScratched] = useState(false);
   const [scratchReward, setScratchReward] = useState({
-    title: "🎉 Flat ₹25 Cashback!",
-    desc: "Added directly to your KingPay wallet float.",
-    amount: 25,
-    coins: 100,
+    title: "Reward campaign unavailable",
+    desc: "Rewards are shown only when a verified campaign is active.",
+    amount: 0,
+    coins: 0,
   });
 
   // 24K Digital Gold Partner Savings (Jar / Paytm Gold style)
   const [showGoldModal, setShowGoldModal] = useState(false);
-  const [goldGrams, setGoldGrams] = useState(0.045);
-  const [goldAmount, setGoldAmount] = useState("100");
+  const [goldGrams, setGoldGrams] = useState(0);
+  const [goldAmount, setGoldAmount] = useState("");
 
   // Split Bill with Friends (Splitwise + PhonePe style)
-  const [splitAmount, setSplitAmount] = useState("600");
-  const [splitCount, setSplitCount] = useState(3);
+  const [splitAmount, setSplitAmount] = useState("");
+  const [splitCount, setSplitCount] = useState(0);
 
   // Biometric 1-Tap WebAuthn Authentication Simulator
   const [showBiometricModal, setShowBiometricModal] = useState(false);
@@ -1127,6 +1129,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleSpinWheel = () => {
+    if (!KINGPAY_CONSUMER_UPI_ENABLED) {
+      toast.info("NOT ENABLED: reward campaigns require a funded, verified campaign configuration.");
+      return;
+    }
     if (kingCoins < 100 && claimedToday) {
       toast.error("You need at least 100 King Coins to spin the Lucky Jackpot Wheel!");
       return;
@@ -1174,6 +1180,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleBurnCoinsForFood = (coinsToBurn: number, rupeeDiscount: number) => {
+    if (!KINGPAY_CONSUMER_UPI_ENABLED) {
+      toast.info("NOT ENABLED: rewards are available only during verified campaigns.");
+      return;
+    }
     if (kingCoins < coinsToBurn) {
       toast.error(`You need at least ${coinsToBurn} King Coins for a ₹${rupeeDiscount} food discount!`);
       return;
@@ -1201,9 +1211,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   } | null>(null);
 
   // Interactive Loan EMI & Eligibility Calculator
-  const [calcAmount, setCalcAmount] = useState(100000);
+  const [calcAmount, setCalcAmount] = useState(0);
   const [calcTenure, setCalcTenure] = useState(12);
-  const [simulatedCibilScore, setSimulatedCibilScore] = useState(785);
+  const [simulatedCibilScore, setSimulatedCibilScore] = useState(0);
   const [calcCategory, setCalcCategory] = useState<"personal" | "business" | "bike" | "card" | "bajaj">("personal");
   const [selectedBajajOfferCategory, setSelectedBajajOfferCategory] = useState<"all" | "electronics" | "home" | "business" | "health" | "vehicle" | "lifestyle">("all");
 
@@ -1214,6 +1224,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleBiometricPay = (amount: number, recipient: string) => {
+    if (!KINGPAY_CONSUMER_UPI_ENABLED) {
+      toast.info("NOT ENABLED: consumer payment rails are not activated.");
+      return;
+    }
     setShowBiometricModal(true);
     setBiometricScanning(true);
     setBiometricSuccess(false);
