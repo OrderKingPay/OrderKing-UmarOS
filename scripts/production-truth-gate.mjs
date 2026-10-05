@@ -94,6 +94,30 @@ if (exists(crypto) && !read(crypto).includes("FUTURE/DISABLED")) {
   failures.push("crypto treasury: unverified production payment path is not explicitly gated");
 }
 
+const kingpay = "orderking-customers/src/routes/king-pay.tsx";
+if (exists(kingpay)) {
+  const c = read(kingpay);
+  const forbiddenKingPaySimulation = [
+    /useState\\(750\\)/,
+    /balance:\\s*24850/,
+    /balance:\\s*68120/,
+    /randomBal/,
+    /Offline Payment Cleared/,
+    /verified via NPCI UPI/,
+  ];
+  for (const re of forbiddenKingPaySimulation) {
+    if (re.test(c)) failures.push(kingpay + ": simulated KingPay state remains");
+  }
+  if (!c.includes("VITE_KINGPAY_WALLET_ENABLED") || !c.includes("VITE_KINGPAY_PUBLIC_UPI_ENABLED") || !c.includes("VITE_KINGPAY_BANK_LINKING_ENABLED")) {
+    failures.push(kingpay + ": real-money KingPay feature gates are missing");
+  }
+}
+
+const customerWrangler = "orderking-customers/wrangler.toml";
+if (exists(customerWrangler) && !read(customerWrangler).includes('KINGPAY_WALLET_ENABLED = "false"')) {
+  failures.push("orderking-customers/wrangler.toml: KingPay wallet is not explicitly disabled in production");
+}
+
 const workflow = read(".github/workflows/production-gate.yml");
 if (!workflow.includes("version: 12.8.1")) failures.push("production-gate.yml: pnpm 12.8.1 not pinned");
 
