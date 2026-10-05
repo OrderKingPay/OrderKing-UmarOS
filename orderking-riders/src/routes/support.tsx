@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
 import { useI18n } from "@/lib/rider/i18n-context";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { createTicketFn, listTicketsFn, riderAiSupportFn } from "@/lib/server/rider-fns";
 import type { TicketTopic } from "@/lib/rider/types";
 import { useEffect, useState, type FormEvent } from "react";
@@ -27,6 +28,7 @@ const TOPICS: TicketTopic[] = [
 
 function Page() {
   const { t } = useI18n();
+  const { user } = useCurrentUserState();
   const [topic, setTopic] = useState<TicketTopic>("ORDER_ISSUE");
   const [message, setMessage] = useState("");
   const [tickets, setTickets] = useState<Awaited<ReturnType<typeof listTicketsFn>>>([]);
