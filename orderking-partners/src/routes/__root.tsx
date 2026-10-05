@@ -66,41 +66,47 @@ import { supabaseCloud } from "@/lib/db-cloud";
 
 function Root() {
   const location = useRouterState({ select: (s) => s.location.pathname });
+
   useEffect(() => {
     flushQueue(transitionOrderViaHDmaster);
-    
+
     const handleOnline = () => {
       flushQueue(transitionOrderViaHDmaster);
     };
-    
+
     window.addEventListener("online", handleOnline);
-    
-    // Supabase Realtime WebSocket for inventory and orders
-    const channel = supabaseCloud
+
+    const client = supabaseCloud;
+    if (!client) {
+      console.warn("[Realtime] Supabase client is not configured; realtime invalidation is disabled.");
+      return () => {
+        window.removeEventListener("online", handleOnline);
+      };
+    }
+
+    const channel = client
       .channel("partner_realtime")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "item_availability" },
         () => {
-          console.log("[Realtime] Inventory changed, invalidating catalog");
           queryClient.invalidateQueries({ queryKey: ["catalog"] });
           queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-        }
+        },
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "orders" },
         () => {
-          console.log("[Realtime] Order changed, invalidating orders");
           queryClient.invalidateQueries({ queryKey: ["orders"] });
           queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-        }
+        },
       )
       .subscribe();
 
     return () => {
       window.removeEventListener("online", handleOnline);
-      supabaseCloud.removeChannel(channel);
+      client.removeChannel(channel);
     };
   }, []);
 
