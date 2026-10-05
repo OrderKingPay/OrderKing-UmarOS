@@ -28,6 +28,7 @@ const KINGPAY_BBPS_ENABLED = import.meta.env.VITE_KINGPAY_BBPS_ENABLED === "true
 const KINGPAY_DIGITAL_GOLD_ENABLED = import.meta.env.VITE_KINGPAY_DIGITAL_GOLD_ENABLED === "true";
 const KINGPAY_CREDIT_ENABLED = import.meta.env.VITE_KINGPAY_CREDIT_ENABLED === "true";
 const KINGPAY_REWARDS_ENABLED = import.meta.env.VITE_KINGPAY_REWARDS_ENABLED === "true";
+const KINGPAY_AFFILIATES_ENABLED = import.meta.env.VITE_KINGPAY_AFFILIATES_ENABLED === "true";
 
 export const Route = createFileRoute('/king-pay')({ component: KingPayPage, head: () => ({ meta: [{ property: 'og:title', content: '👑 King Pay - Zero Credit Score, 100% Approval. Earn 7.5% Interest.' }, { property: 'og:description', content: 'The #1 FinTech App in India. Send money, pay bills, and get instant loans.' }, { name: 'twitter:title', content: '👑 King Pay - Zero Credit Score, 100% Approval.' }, { name: 'twitter:description', content: 'The #1 FinTech App in India.' }] }) });
 
@@ -1738,6 +1739,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               playSoundboxChime(amount);
             }}
           />
+          ) : (
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-sm text-amber-800 dark:text-amber-200">
+              Credit products are preserved but disabled until a verified regulated lender integration is connected.
+            </div>
+          )
         ) : activeSection === "passbook" ? (
           <KingPayPassbook transactions={transactions} />
         ) : activeSection === "account" ? (
@@ -2341,11 +2347,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 <div className="flex items-center gap-2">
                   <h3 className="font-display text-base font-bold text-fg">Instant Pre-Approved Loans</h3>
                   <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                    CIBIL 785 · Pre-Approved
+                    Provider eligibility not connected
                   </span>
                 </div>
                 <p className="text-xs text-muted">
-                  2-Minute Digital KYC · Instant UPI/Bank Disbursal · Zero Paperwork · 100% RBI Regulated
+                  Eligibility and disbursal are handled only by a verified regulated provider.
                 </p>
               </div>
             </div>
