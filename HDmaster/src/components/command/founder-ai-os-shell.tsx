@@ -186,11 +186,11 @@ export function FounderAiOsShell() {
         <div className="pt-3 border-t border-white/10/60 text-[10px] space-y-1 text-slate-400 px-2">
           <div className="flex items-center justify-between">
             <span>Core Intelligence:</span>
-            <span className="text-emerald-400 font-bold font-mono">100% ONLINE</span>
+            <span className="text-emerald-400 font-bold font-mono">STATUS REQUIRES EVIDENCE</span>
           </div>
           <div className="flex items-center justify-between">
             <span>King Pay UPI:</span>
-            <span className="text-emerald-400 font-bold font-mono">0% FEE CUT</span>
+            <span className="text-emerald-400 font-bold font-mono">PROVIDER-GATED</span>
           </div>
         </div>
       </aside>
@@ -425,10 +425,10 @@ export function FounderAiOsShell() {
             <div className="flex justify-between items-center pb-3 border-b border-white/10/70">
               <div>
                 <h3 className="font-display font-black text-lg text-white">Revenue &amp; Payout Studio</h3>
-                <p className="text-xs text-zinc-400">Direct founder bank settlements via King Pay UPI with 0% intermediary fee cuts.</p>
+                <p className="text-xs text-zinc-400">KingPay payment capabilities are provider- and regulatory-gated; no direct founder bank settlement is claimed here.</p>
               </div>
               <Badge className="bg-emerald-500/20 text-emerald-400 text-xs font-mono">
-                Section 79 IT Act Protected
+                Counsel review required
               </Badge>
             </div>
 
@@ -550,7 +550,7 @@ export function FounderAiOsShell() {
                 { title: "CTO & Lead Systems Architect", role: "Software & Infrastructure", icon: Code2, status: "Active" },
                 { title: "Growth & Client Acquisition Lead", role: "Sales & Marketing", icon: Megaphone, status: "Active" },
                 { title: "Chief Financial Officer", role: "King Pay UPI & Ledger", icon: Wallet, status: "Active" },
-                { title: "Security & Compliance Auditor", role: "Section 79 & RBAC", icon: ShieldCheck, status: "Active" },
+                { title: "Security & Compliance Auditor", role: "RBAC + counsel-gated compliance", icon: ShieldCheck, status: "Configured" },
               ].map((agent) => {
                 const Icon = agent.icon;
                 return (

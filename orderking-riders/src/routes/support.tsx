@@ -165,32 +165,35 @@ function Page() {
           </Button>
         </div>
 
-        {/* 🚀 Mandatory Growth & Advertisement Block */}
+        {/* 🚀 Optional Referral & Sharing */}
         <div className="rounded-[var(--radius-2xl)] border border-emerald-500/40 bg-gradient-to-r from-black via-emerald-950/40 to-black p-5 shadow-[0_0_20px_rgba(16,185,129,0.2)] backdrop-blur-xl">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl animate-bounce">🚀</span>
-            <h2 className="text-lg font-black text-emerald-400 tracking-wide drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]">MANDATORY RIDER GROWTH</h2>
+            <span className="text-2xl">🚀</span>
+            <h2 className="text-lg font-black text-emerald-400 tracking-wide drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]">SHARE ORDERKING</h2>
           </div>
           <p className="text-sm text-zinc-300 mb-4 font-medium">
-            To keep your VIP delivery status and high payouts, you must maximize your advertisement daily. Share the OrderKing app with customers, friends, and family!
+            Share OrderKing with customers, friends, and family. Referral rewards are shown only when a verified campaign is active.
           </p>
           <div className="flex flex-wrap gap-3">
-            {user && (
-              <a 
-                href={`https://wa.me/?text=${encodeURIComponent(`Order delicious food from OrderKing! Get ₹50 OFF your first order using my VIP code: KING${user.id.replace(/[^a-zA-Z0-9]/g, "").slice(-5).toUpperCase() || "VIP26"}! Tap here: https://orderking.in/?ref=KING${user.id.replace(/[^a-zA-Z0-9]/g, "").slice(-5).toUpperCase() || "VIP26"}`)}`}
-                target="_blank" 
-                rel="noreferrer" 
-                className="flex-1 min-w-[140px] text-center rounded-[var(--radius-lg)] bg-[#25D366]/20 border border-[#25D366]/40 py-2.5 text-sm font-bold text-[#25D366] hover:bg-[#25D366]/30 transition-all"
-              >
-                Share on WhatsApp
-              </a>
-            )}
-            <a href="#" className="flex-1 min-w-[140px] text-center rounded-[var(--radius-lg)] bg-pink-500/20 border border-pink-500/40 py-2.5 text-sm font-bold text-pink-400 hover:bg-pink-500/30 transition-all">
-              Post on Instagram
+            <a
+              href="https://wa.me/?text=Order%20food%20from%20OrderKing%3A%20https%3A%2F%2Forderking-customers.pages.dev"
+              target="_blank"
+              rel="noreferrer"
+              className="flex-1 min-w-[140px] text-center rounded-[var(--radius-lg)] bg-[#25D366]/20 border border-[#25D366]/40 py-2.5 text-sm font-bold text-[#25D366] hover:bg-[#25D366]/30 transition-all"
+            >
+              Share on WhatsApp
             </a>
-            <a href="#" className="flex-1 min-w-[140px] text-center rounded-[var(--radius-lg)] bg-blue-500/20 border border-blue-500/40 py-2.5 text-sm font-bold text-blue-400 hover:bg-blue-500/30 transition-all">
-              Share on Facebook
-            </a>
+            <button
+              type="button"
+              onClick={() => {
+                const share = { title: "OrderKing", text: "Order food from OrderKing", url: "https://orderking-customers.pages.dev" };
+                if (navigator.share) void navigator.share(share).catch(() => undefined);
+                else void navigator.clipboard?.writeText(share.url);
+              }}
+              className="flex-1 min-w-[140px] rounded-[var(--radius-lg)] bg-pink-500/20 border border-pink-500/40 py-2.5 text-sm font-bold text-pink-400 hover:bg-pink-500/30 transition-all"
+            >
+              Share elsewhere
+            </button>
           </div>
         </div>
 

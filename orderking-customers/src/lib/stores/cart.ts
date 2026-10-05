@@ -3,33 +3,19 @@ import { create } from "zustand";
 import { persist, createJSONStorage, type StateStorage } from "zustand/middleware";
 import type { CartLineInput } from "@/lib/market-types";
 import { canAddToCart, cartCount, cartKey, mergeItem, toCartItem, type CartItem } from "@/lib/cart-logic";
-import { supabase } from "@/lib/db-cloud";
 
 export type { CartItem };
 
-const supabaseStorage: StateStorage = {
-  getItem: async (name: string): Promise<string | null> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (!deviceId) {
-      deviceId = crypto.randomUUID();
-      localStorage.setItem("device_id", deviceId);
-    }
-    const { data } = await supabase.from("customer_carts").select("cart_state").eq("id", deviceId).single();
-    return data ? data.cart_state : null;
+const offlineCartStorage: StateStorage = {
+  getItem: (name: string) => {
+    if (typeof window === "undefined") return null;
+    return window.localStorage.getItem(name);
   },
-  setItem: async (name: string, value: string): Promise<void> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (!deviceId) {
-      deviceId = crypto.randomUUID();
-      localStorage.setItem("device_id", deviceId);
-    }
-    await supabase.from("customer_carts").upsert({ id: deviceId, cart_state: value });
+  setItem: (name: string, value: string) => {
+    if (typeof window !== "undefined") window.localStorage.setItem(name, value);
   },
-  removeItem: async (name: string): Promise<void> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (deviceId) {
-      await supabase.from("customer_carts").delete().eq("id", deviceId);
-    }
+  removeItem: (name: string) => {
+    if (typeof window !== "undefined") window.localStorage.removeItem(name);
   },
 };
 
@@ -90,7 +76,7 @@ export const useCartStore = create<State>()(
     }),
     { 
       name: "marketplace-cart",
-      storage: createJSONStorage(() => supabaseStorage),
+      storage: createJSONStorage(() => offlineCartStorage),
     },
   ),
 );

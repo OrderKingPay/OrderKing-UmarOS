@@ -7,8 +7,6 @@
  * is unavailable, the operation fails closed instead of writing invented text.
  */
 
-import { supabase } from "../db-cloud";
-
 const AI_CHAT_URL = "/api/ai/chat";
 
 type TranslationResponse = {
@@ -51,18 +49,16 @@ export class HDmasterMultilingualCore {
     }
 
     const translationResult = payload.text.trim();
-    const { error } = await supabase.from("localized_menus").insert({
-      restaurant_id: restaurantId,
-      original_text: cleanText,
-      ai_translation_matrix: translationResult,
-      status: "AUTO_LOCALIZED_BY_HDMASTER",
-    });
 
-    if (error) {
-      throw new Error(`Localized menu persistence failed: ${error.message}`);
-    }
+    // The current authoritative Supabase schema does not contain a
+    // `localized_menus` table, so never write through an anonymous browser
+    // client or pretend persistence succeeded.
+    return {
+      text: translationResult,
+      persistence: "NOT_ENABLED" as const,
+      reason: "Menu translation persistence awaits an authenticated server-side localization table/service.",
+    };
 
-    return translationResult;
   }
 
   static async autonomousRiderCommunication(

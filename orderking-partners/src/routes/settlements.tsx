@@ -157,26 +157,26 @@ function SettlementsPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-base">🛡️</span>
-            <h3 className="font-semibold text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.3)] text-sm">Zero Unexplained Deductions &amp; Statutory Safe Harbor</h3>
+            <h3 className="font-semibold text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.3)] text-sm">Transparent settlement review</h3>
           </div>
           <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded">
-            IT Act §79 Protected
+            COUNSEL REVIEW REQUIRED
           </span>
         </div>
         <p className="text-zinc-400 leading-relaxed">
-          OrderKing strictly adheres to transparent merchant accounting under Indian Law. Every single deduction is legally mandated and itemized:
+          Settlement calculations are shown for transparency. Actual tax, TDS/TCS, GST, dispute and legal treatment must be verified for the real operating entity and merchant contract:
         </p>
         <ul className="list-disc pl-4 space-y-1 text-zinc-400">
-          <li><strong>GST (5%)</strong>: Remitted under Section 9(5) CGST Act (E-Commerce Restaurant Delivery Services).</li>
-          <li><strong>TCS (1%)</strong>: Tax Collected at Source under Section 52 CGST Act.</li>
-          <li><strong>TDS (1%)</strong>: Withholding tax under Section 194-O Income Tax Act (Form 16A issued quarterly).</li>
-          <li><strong>Intermediary Safe Harbor</strong>: Platform operates as a neutral technology intermediary under Section 79 of the Information Technology Act, 2000.</li>
+          <li><strong>GST</strong>: Applied only after CA/tax configuration is verified for the applicable supply model.</li>
+          <li><strong>TCS</strong>: Applied only when legally applicable and configured from verified tax rules.</li>
+          <li><strong>TDS</strong>: Applied only when legally applicable and confirmed by CA/tax configuration.</li>
+          <li><strong>Legal posture</strong>: Marketplace/intermediary classification and safe-harbor applicability require counsel review.</li>
           <li><strong>Binding Arbitration</strong>: All disputes governed by the Arbitration and Conciliation Act, 1996, with exclusive jurisdiction in local district court.</li>
           <li><strong>Zero Arbitrary Levies</strong>: No unexplained marketing or listing penalties. Every single rupee is mathematically accounted for in integer paise.</li>
         </ul>
       </Card>
 
-      {/* 10x More Profitable than Zomato: Transparent Partner Savings Engine */}
+      {/* Partner Economics & Transparent Settlement Engine */}
       <Card className="rounded-[var(--radius-2xl)] border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-fuchsia-950/30 to-emerald-950/20 p-4 space-y-3 text-xs shadow-[0_0_15px_rgba(99,102,241,0.15)] backdrop-blur-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

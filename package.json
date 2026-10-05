@@ -7,6 +7,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "production:gate": "node scripts/production-policy-gate.mjs",
     "typecheck": "turbo run typecheck",
     "deploy:cloudrun": "powershell -ExecutionPolicy Bypass -File scripts/deploy-cloudrun.ps1"
   },

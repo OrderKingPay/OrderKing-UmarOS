@@ -2,7 +2,9 @@ name: Production Gate
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - "audit/**"
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -13,21 +15,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 12.8.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: 'pnpm'
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Production Policy Gate
+        run: node scripts/production-policy-gate.mjs
 
       - name: Run Typecheck across 5 apps
         run: pnpm run typecheck

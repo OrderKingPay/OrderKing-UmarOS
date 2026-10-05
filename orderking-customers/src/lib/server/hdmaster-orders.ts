@@ -6,8 +6,10 @@ import { buildQuote } from "./quote";
 import type { CartLineInput } from "@/lib/market-types";
 
 export function hdmasterConfig() {
-  const baseUrl = process.env.HDMASTER_URL?.replace(/\/$/, "") || "https://hdmaster-git-main-foodpalace-2028.vercel.app";
-  const token = process.env.ORDERKING_SERVICE_TOKEN?.trim() || "ok_prod_sec_9d8f3b2c1e4a7d6e5f8b9c0a1b2c3d4e5f6a7b8c";
+  const baseUrl = process.env.HDMASTER_URL?.trim().replace(/\/$/, "") || "https://orderking-hdmaster.pages.dev";
+  const token = process.env.ORDERKING_SERVICE_TOKEN?.trim();
+  if (!token) throw new Error("HDmaster service integration is not configured.");
+  if (/vercel\.app$/i.test(baseUrl)) throw new Error("Cloudflare-only policy: HDMASTER_URL may not target Vercel.");
   return { baseUrl, token };
 }
 

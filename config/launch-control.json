@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "hosting_provider": "cloudflare",
+  "public_launch": false,
+  "pilot_state": "OFF",
+  "customer_app": "antigravity-managed",
+  "section_gates": {
+    "S01": "BLOCKED",
+    "S02": "BLOCKED",
+    "S03": "BLOCKED",
+    "S04": "BLOCKED",
+    "S05": "BLOCKED",
+    "S06": "BLOCKED",
+    "S07": "BLOCKED",
+    "S08": "BLOCKED",
+    "S09": "BLOCKED",
+    "S10": "BLOCKED",
+    "S11": "BLOCKED",
+    "S12": "BLOCKED"
+  },
+  "capabilities": {
+    "food_delivery": "PRIMARY",
+    "kingpay_merchant_collection": "GATED_PENDING_PROVIDER_EVIDENCE",
+    "kingpay_consumer_upi": "FUTURE_REGULATED_CAPABILITY",
+    "crypto_payments": "OFF",
+    "affiliate_services": "FEATURE_FLAGGED",
+    "task_marketplace": "FEATURE_FLAGGED",
+    "vip_subscription": "FEATURE_FLAGGED"
+  },
+  "rules": {
+    "no_fake_production_data": true,
+    "no_fake_provider_success": true,
+    "no_synthetic_payment_confirmation": true,
+    "no_fabricated_fomo": true,
+    "no_unsafe_dark_patterns": true,
+    "cloudflare_only_production": true,
+    "preserve_future_capabilities": true
+  }
+}

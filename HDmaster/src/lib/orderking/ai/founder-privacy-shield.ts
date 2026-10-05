@@ -12,30 +12,29 @@ export interface PublicFacingEntity {
   regulatoryJurisdiction: string;
 }
 
-export const SOVEREIGN_PUBLIC_ENTITIES: Record<"FOODS" | "KINGPAY" | "SYSTEM", PublicFacingEntity> = {
+export const SOVEREIGN_PUBLIC_ENTITIES: Record<string, {
+  legalEntity: string;
+  publicContact: string;
+  paymentRail: string;
+  liabilityStatus: string;
+}> = {
   FOODS: {
-    appName: "Order King",
-    legalEntity: "OrderKing Sovereign Operations Private Limited",
-    supportEmail: "ops@orderking.in",
-    publicPhone: "+91 8000 123 456",
-    publicUpiVpa: "orderking@okhdfcbank",
-    regulatoryJurisdiction: "Sribhumi Jurisdiction, Section 79 IT Act 2000",
+    legalEntity: "LEGAL ENTITY CONFIGURATION REQUIRED",
+    publicContact: "",
+    paymentRail: "PAYMENT PROVIDER CONFIGURATION REQUIRED",
+    liabilityStatus: "COUNSEL_REVIEW_REQUIRED",
   },
   KINGPAY: {
-    appName: "King Pay",
-    legalEntity: "King Pay Technologies Private Limited",
-    supportEmail: "compliance@kingpay.in",
-    publicPhone: "+91 8000 987 654",
-    publicUpiVpa: "orderking@okhdfcbank",
-    regulatoryJurisdiction: "Reserve Bank of India Master Directions & IT Act 2000",
+    legalEntity: "REGULATORY / ENTITY CONFIGURATION REQUIRED",
+    publicContact: "",
+    paymentRail: "REGULATED PAYMENT RAIL REQUIRED",
+    liabilityStatus: "COUNSEL_REVIEW_REQUIRED",
   },
   SYSTEM: {
-    appName: "Umar OS",
-    legalEntity: "Umar Sovereign Infrastructure Group",
-    supportEmail: "executive@umaros.internal",
-    publicPhone: "+91 8000 000 000",
-    publicUpiVpa: "orderking@okhdfcbank",
-    regulatoryJurisdiction: "Autonomous Founder Protected Architecture",
+    legalEntity: "INTERNAL CONTROL PLANE",
+    publicContact: "",
+    paymentRail: "NOT_APPLICABLE",
+    liabilityStatus: "INTERNAL_ONLY",
   },
 };
 

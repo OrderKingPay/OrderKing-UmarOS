@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { supabase } from "../db-cloud";
+import { postLocationFn } from "@/lib/server/rider-fns";
 
 type GPSPosition = { lat: number; lng: number; accuracy: number; heading: number | null; speed: number | null; ts: number };
 
@@ -10,9 +10,6 @@ export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpda
     if (!enabled || !navigator.geolocation) return;
     let watchId: number | undefined;
     let timer: ReturnType<typeof setInterval> | undefined;
-
-    const channel = supabase.channel('rider_gps');
-    channel.subscribe();
 
     async function sendPosition(position: GeolocationPosition) {
       const pos: GPSPosition = {
@@ -27,17 +24,18 @@ export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpda
       onUpdate?.(pos);
 
       if (riderId) {
-        // Send to realtime channel
-        channel.send({
-          type: 'broadcast',
-          event: 'gps_update',
-          payload: { riderId, pos }
-        });
-
-        // Insert into database
-        await supabase.from('rider_locations').insert([
-          { rider_id: riderId, lat: pos.lat, lng: pos.lng, accuracy: pos.accuracy, heading: pos.heading, speed: pos.speed, ts: new Date(pos.ts).toISOString() }
-        ]).select();
+        try {
+          await postLocationFn({
+            data: {
+              lat: pos.lat,
+              lng: pos.lng,
+              accuracyM: Number.isFinite(pos.accuracy) ? pos.accuracy : null,
+              deliveryId: null,
+            },
+          });
+        } catch {
+          // Location delivery is retried by the next heartbeat; never surface an unhandled promise rejection.
+        }
       }
     }
 
@@ -58,7 +56,6 @@ export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpda
     return () => {
       if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
       if (timer) clearInterval(timer);
-      supabase.removeChannel(channel);
     };
   }, [enabled, baseIntervalMs, riderId]);
 

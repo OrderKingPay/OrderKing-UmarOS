@@ -1,30 +1,24 @@
-// @ts-nocheck
-// Live Multi-Model Orchestration Engine (HDmaster Core OS)
-// Concurrently coordinates frontier AI models, cross-validates outputs,
-// eliminates hallucinations, respects provider quotas/costs, and returns concise executive results.
-import { surgePricingEngine } from "../finance/surge-engine.ts";
+// Umar OS real-provider orchestration.
+// Only provider adapters that actually execute are counted.
+// No synthetic model output, latency, token usage, cost, confidence or "hallucination-free" claims.
 
+import { createHash } from "node:crypto";
+import { modelRouter } from "./providers/index.ts";
+import type { AIProvider, ChatResponse } from "./providers/provider-interface.ts";
 
 export interface AIProviderAdapter {
   id: string;
   name: string;
-  vendor: "Google" | "Anthropic" | "OpenAI" | "xAI" | "OpenSource" | "Sovereign";
+  vendor: "Google" | "Anthropic" | "OpenAI" | "xAI";
   isConfigured: boolean;
   activeModels: string[];
-  costPer1kTokensUsd: { input: number; output: number };
-  maxContextTokens: number;
   executePrompt(params: {
-    model: string;
+    model?: string;
     systemPrompt: string;
     prompt: string;
     temperature?: number;
     maxTokens?: number;
-  }): Promise<{
-    text: string;
-    tokensUsed: { prompt: number; completion: number; total: number };
-    latencyMs: number;
-    model: string;
-  }>;
+  }): Promise<ChatResponse>;
 }
 
 export interface ModelOutputVerdict {
@@ -33,172 +27,82 @@ export interface ModelOutputVerdict {
   vendor: AIProviderAdapter["vendor"];
   model: string;
   output: string;
-  confidenceScore: number;
+  confidenceScore: number | null;
   tokensUsed: { prompt: number; completion: number; total: number };
-  estimatedCostInr: number;
-  latencyMs: number;
+  estimatedCostInr: number | null;
+  latencyMs: number | null;
   verifiedFactual: boolean;
   keyInsights: string[];
+  error?: string;
 }
 
 export interface MultiModelConsensusResult {
+  status: "SUCCESS" | "PARTIAL" | "NOT_ENABLED";
   consensusId: string;
   timestamp: string;
   prompt: string;
   verdicts: ModelOutputVerdict[];
-  consensusAgreementScore: number; // 0 - 100%
+  consensusAgreementScore: number | null;
   unifiedExecutiveSummary: string;
-  strongestCandidateModel: string;
+  strongestCandidateModel: string | null;
   totalTokensUsed: number;
-  totalCostInr: number;
+  totalCostInr: number | null;
   auditSignature: string;
   hallucinationFreeVerified: boolean;
   deliveryBasePaise: number;
   surgeMultiplier: number;
 }
 
+const PROVIDER_IDS = ["openai", "anthropic", "gemini", "xai"] as const;
+
 export class LiveOrchestrationEngine {
-  private adapters: Map<string, AIProviderAdapter> = new Map();
-  private monthlyCostAccumulatorInr = 0;
-  private readonly MONTHLY_BUDGET_CAP_INR = 50000; // Hard cost ceiling
+  private monthlyCostAccumulatorUsd = 0;
+  private readonly MONTHLY_BUDGET_CAP_USD = 500;
 
-  constructor() {
-    this.registerStandardAdapters();
-  }
-
-  public registerProviderAdapter(adapter: AIProviderAdapter) {
-    this.adapters.set(adapter.id, adapter);
+  public listRegisteredAdapters(): AIProviderAdapter[] {
+    return PROVIDER_IDS.map((id) => {
+      const provider = this.getProvider(id);
+      return {
+        id,
+        name: provider?.name ?? id,
+        vendor: id === "gemini" ? "Google" : id === "anthropic" ? "Anthropic" : id === "xai" ? "xAI" : "OpenAI",
+        isConfigured: Boolean(provider?.isConfigured),
+        activeModels: provider?.supportedModels ?? [],
+        async executePrompt(params) {
+          if (!provider) throw new Error("Provider unavailable");
+          return provider.chat({
+            messages: [{ role: "user", content: params.prompt }],
+            systemPrompt: params.systemPrompt,
+            model: params.model,
+            temperature: params.temperature,
+            maxTokens: params.maxTokens,
+          });
+        },
+      } as AIProviderAdapter;
+    });
   }
 
   public getAdapter(id: string): AIProviderAdapter | undefined {
-    return this.adapters.get(id);
+    return this.listRegisteredAdapters().find((adapter) => adapter.id === id);
   }
 
-  public listRegisteredAdapters(): AIProviderAdapter[] {
-    return Array.from(this.adapters.values());
+  private getProvider(id: (typeof PROVIDER_IDS)[number]): AIProvider | undefined {
+    try {
+      return modelRouter.getProvider(id);
+    } catch {
+      return undefined;
+    }
   }
 
   public getBudgetStatus() {
     return {
-      monthlyBudgetCapInr: this.MONTHLY_BUDGET_CAP_INR,
-      accumulatedSpendInr: parseFloat(this.monthlyCostAccumulatorInr.toFixed(2)),
-      remainingBudgetInr: parseFloat((this.MONTHLY_BUDGET_CAP_INR - this.monthlyCostAccumulatorInr).toFixed(2)),
-      isBudgetExhausted: this.monthlyCostAccumulatorInr >= this.MONTHLY_BUDGET_CAP_INR,
+      monthlyBudgetCapUsd: this.MONTHLY_BUDGET_CAP_USD,
+      accumulatedSpendUsd: Number(this.monthlyCostAccumulatorUsd.toFixed(6)),
+      remainingBudgetUsd: Number(Math.max(0, this.MONTHLY_BUDGET_CAP_USD - this.monthlyCostAccumulatorUsd).toFixed(6)),
+      isBudgetExhausted: this.monthlyCostAccumulatorUsd >= this.MONTHLY_BUDGET_CAP_USD,
     };
   }
 
-  private registerStandardAdapters() {
-    // 1. Google Gemini 2.5 / 3.8 Ultra Adapter
-    this.registerProviderAdapter({
-      id: "gemini",
-      name: "Google Gemini",
-      vendor: "Google",
-      isConfigured: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
-      activeModels: ["gemini-2.5-pro", "gemini-2.0-flash", "gemini-3.8-ultra"],
-      costPer1kTokensUsd: { input: 0.00125, output: 0.005 },
-      maxContextTokens: 1000000,
-      async executePrompt({ model, prompt }) {
-        const start = performance.now();
-        // Deterministic high-speed semantic generation fallback if API key is not supplied in dev
-        const latencyMs = Math.round(performance.now() - start + 45);
-        return {
-          text: `[Gemini ${model}] Validated operational domain requirements. Context verified with multimodal grounding: "${prompt.slice(0, 100)}..."`,
-          tokensUsed: { prompt: 180, completion: 95, total: 275 },
-          latencyMs,
-          model,
-        };
-      },
-    });
-
-    // 2. Anthropic Claude 3.7 / 4.6 Opus Adapter
-    this.registerProviderAdapter({
-      id: "anthropic",
-      name: "Anthropic Claude",
-      vendor: "Anthropic",
-      isConfigured: Boolean(process.env.ANTHROPIC_API_KEY),
-      activeModels: ["claude-4-6-opus", "claude-3-7-sonnet"],
-      costPer1kTokensUsd: { input: 0.003, output: 0.015 },
-      maxContextTokens: 200000,
-      async executePrompt({ model, prompt }) {
-        const start = performance.now();
-        const latencyMs = Math.round(performance.now() - start + 52);
-        return {
-          text: `[Claude ${model}] Invariant proof verified. Zero architectural regressions identified. Strict compliance guaranteed for: "${prompt.slice(0, 100)}..."`,
-          tokensUsed: { prompt: 195, completion: 110, total: 305 },
-          latencyMs,
-          model,
-        };
-      },
-    });
-
-    // 3. OpenAI GPT-5.6 / o3-mini Adapter
-    this.registerProviderAdapter({
-      id: "openai",
-      name: "OpenAI",
-      vendor: "OpenAI",
-      isConfigured: Boolean(process.env.OPENAI_API_KEY),
-      activeModels: ["gpt-5-6-omni", "gpt-4o", "o3-mini"],
-      costPer1kTokensUsd: { input: 0.0025, output: 0.01 },
-      maxContextTokens: 128000,
-      async executePrompt({ model, prompt }) {
-        const start = performance.now();
-        const latencyMs = Math.round(performance.now() - start + 48);
-        return {
-          text: `[OpenAI ${model}] Task decomposed into structured execution DAG. Tool schemas aligned and authorized: "${prompt.slice(0, 100)}..."`,
-          tokensUsed: { prompt: 175, completion: 105, total: 280 },
-          latencyMs,
-          model,
-        };
-      },
-    });
-
-    // 4. xAI Grok 4.6 SuperGrok Adapter
-    this.registerProviderAdapter({
-      id: "xai",
-      name: "xAI Grok",
-      vendor: "xAI",
-      isConfigured: Boolean(process.env.XAI_API_KEY),
-      activeModels: ["grok-4-6-super", "grok-3"],
-      costPer1kTokensUsd: { input: 0.002, output: 0.008 },
-      maxContextTokens: 131072,
-      async executePrompt({ model, prompt }) {
-        const start = performance.now();
-        const latencyMs = Math.round(performance.now() - start + 40);
-        return {
-          text: `[Grok ${model}] Real-world telemetry cross-referenced. Zero theoretical fluff. Execution path optimized for: "${prompt.slice(0, 100)}..."`,
-          tokensUsed: { prompt: 165, completion: 90, total: 255 },
-          latencyMs,
-          model,
-        };
-      },
-    });
-
-    // 5. Sovereign Deterministic Local Engine Adapter (Zero Dependencies · Always Active)
-    this.registerProviderAdapter({
-      id: "sovereign_local",
-      name: "Sovereign Deterministic Engine",
-      vendor: "Sovereign",
-      isConfigured: true,
-      activeModels: ["sovereign-ultra-deterministic", "codex-supreme"],
-      costPer1kTokensUsd: { input: 0, output: 0 },
-      maxContextTokens: 500000,
-      async executePrompt({ model, prompt }) {
-        const start = performance.now();
-        const latencyMs = Math.round(performance.now() - start + 12);
-        return {
-          text: `[Sovereign ${model}] Formal system state invariant checked against local PostgreSQL/RBAC rules. 100% deterministic safety verified for: "${prompt.slice(0, 100)}..."`,
-          tokensUsed: { prompt: 150, completion: 85, total: 235 },
-          latencyMs,
-          model,
-        };
-      },
-    });
-  }
-
-  /**
-   * Concurrently dispatches prompt across all registered providers, evaluates semantic convergence,
-   * detects and filters hallucinations, and synthesizes a single unified executive result.
-   */
   public async executeMultiModelConsensus(params: {
     prompt: string;
     systemPrompt?: string;
@@ -210,142 +114,121 @@ export class LiveOrchestrationEngine {
       timeOfDayMultiplier?: number;
     };
   }): Promise<MultiModelConsensusResult> {
-    const consensusId = `cons-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-    const systemPrompt = params.systemPrompt || "You are an autonomous executive business partner operating OrderKing with maximum lawful automation and zero fabrication.";
+    const timestamp = new Date().toISOString();
+    const systemPrompt = params.systemPrompt ??
+      "You are an OrderKing executive AI. Use only information provided or retrieved by authorized tools. Never claim an action, payment, provider state, location, or legal outcome that is not evidenced.";
 
-    const targetAdapters = params.preferredProviders?.length
-      ? Array.from(this.adapters.values()).filter((a) => params.preferredProviders?.includes(a.id))
-      : Array.from(this.adapters.values());
+    const selectedIds = (params.preferredProviders?.length
+      ? PROVIDER_IDS.filter((id) => params.preferredProviders?.includes(id))
+      : PROVIDER_IDS);
 
-    // Execute concurrently across all selected adapters
-    const executionPromises = targetAdapters.map(async (adapter) => {
-      const activeModel = adapter.activeModels[0] || "default";
-      try {
-        const res = await adapter.executePrompt({
-          model: activeModel,
-          systemPrompt,
-          prompt: params.prompt,
-        });
-
-        // Calculate real cost in INR (USD -> INR ~ 87.0)
-        const usdRate = 87.0;
-        const promptCost = (res.tokensUsed.prompt / 1000) * adapter.costPer1kTokensUsd.input;
-        const completionCost = (res.tokensUsed.completion / 1000) * adapter.costPer1kTokensUsd.output;
-        const costInr = (promptCost + completionCost) * usdRate;
-
-        const verdict: ModelOutputVerdict = {
-          providerId: adapter.id,
-          providerName: adapter.name,
-          vendor: adapter.vendor,
-          model: res.model,
-          output: res.text,
-          confidenceScore: adapter.vendor === "Sovereign" ? 99.9 : 99.7,
-          tokensUsed: res.tokensUsed,
-          estimatedCostInr: parseFloat(costInr.toFixed(4)),
-          latencyMs: res.latencyMs,
-          verifiedFactual: true,
-          keyInsights: [
-            `Verified via ${adapter.name} weights`,
-            `Zero contradiction identified with platform rules`,
-          ],
-        };
-
-        return verdict;
-      } catch (err) {
-        // Safe fallback verdict
-        return {
-          providerId: adapter.id,
-          providerName: adapter.name,
-          vendor: adapter.vendor,
-          model: "fallback",
-          output: `Adapter ${adapter.name} offline or rate-limited; bypassed gracefully.`,
-          confidenceScore: 0,
-          tokensUsed: { prompt: 0, completion: 0, total: 0 },
-          estimatedCostInr: 0,
-          latencyMs: 1,
-          verifiedFactual: false,
-          keyInsights: ["Fallback triggered"],
-        } as ModelOutputVerdict;
-      }
-    });
-
-    const settledResults = await Promise.allSettled(executionPromises);
-    const validVerdicts: ModelOutputVerdict[] = settledResults
-      .filter((r): r is PromiseFulfilledResult<ModelOutputVerdict> => r.status === "fulfilled" && r.value.verifiedFactual)
-      .map((r) => r.value);
-
-    // If all external failed, ensure at least the sovereign local verdict is available
-    if (validVerdicts.length === 0) {
-      const localAdapter = this.adapters.get("sovereign_local")!;
-      const localRes = await localAdapter.executePrompt({
-        model: "sovereign-ultra-deterministic",
-        systemPrompt,
+    if (this.getBudgetStatus().isBudgetExhausted) {
+      return {
+        status: "NOT_ENABLED",
+        consensusId: "budget-blocked",
+        timestamp,
         prompt: params.prompt,
-      });
-      validVerdicts.push({
-        providerId: localAdapter.id,
-        providerName: localAdapter.name,
-        vendor: localAdapter.vendor,
-        model: localRes.model,
-        output: localRes.text,
-        confidenceScore: 99.9,
-        tokensUsed: localRes.tokensUsed,
-        estimatedCostInr: 0,
-        latencyMs: localRes.latencyMs,
-        verifiedFactual: true,
-        keyInsights: ["Local deterministic invariant verification active"],
-      });
+        verdicts: [],
+        consensusAgreementScore: null,
+        unifiedExecutiveSummary: "Multi-provider orchestration is blocked because the configured monthly AI budget has been exhausted.",
+        strongestCandidateModel: null,
+        totalTokensUsed: 0,
+        totalCostInr: null,
+        auditSignature: "NOT_SIGNED",
+        hallucinationFreeVerified: false,
+        deliveryBasePaise: 4000,
+        surgeMultiplier: 1,
+      };
     }
 
-    const totalTokens = validVerdicts.reduce((sum, v) => sum + v.tokensUsed.total, 0);
-    const totalCost = validVerdicts.reduce((sum, v) => sum + v.estimatedCostInr, 0);
-    this.monthlyCostAccumulatorInr += totalCost;
+    const verdicts: ModelOutputVerdict[] = [];
+    for (const id of selectedIds) {
+      const provider = this.getProvider(id);
+      if (!provider?.isConfigured) continue;
 
-    // Pick strongest candidate (highest confidence score & lowest latency)
-    const strongest = [...validVerdicts].sort((a, b) => b.confidenceScore - a.confidenceScore || a.latencyMs - b.latencyMs)[0]!;
+      try {
+        const response = await provider.chat({
+          messages: [{ role: "user", content: params.prompt }],
+          systemPrompt,
+        });
 
-    // Calculate cross-model consensus score
-    const avgConfidence = validVerdicts.reduce((s, v) => s + v.confidenceScore, 0) / validVerdicts.length;
-    const consensusAgreementScore = parseFloat(avgConfidence.toFixed(1));
+        const usage = response.usage;
+        const costUsd = usage?.estimatedCostUsd;
+        if (typeof costUsd === "number" && Number.isFinite(costUsd)) {
+          this.monthlyCostAccumulatorUsd += costUsd;
+        }
 
-    // Synthesize concise executive result
-    const unifiedExecutiveSummary = `### 👑 Live Multi-Model Consensus (${validVerdicts.length}/${targetAdapters.length} Providers Aligned)
-- **Primary Model**: **${strongest.providerName} (${strongest.model})**
-- **Consensus Agreement**: **${consensusAgreementScore}%** (Zero hallucinations detected)
-- **Cost & Quota**: **₹${totalCost.toFixed(3)}** (~${totalTokens} tokens across models)
-- **Verdict**: Autonomous execution validated across ${validVerdicts.map((v) => v.providerName).join(", ")}.`;
+        verdicts.push({
+          providerId: response.provider || id,
+          providerName: provider.name,
+          vendor: id === "gemini" ? "Google" : id === "anthropic" ? "Anthropic" : id === "xai" ? "xAI" : "OpenAI",
+          model: response.model || "PROVIDER_REPORTED",
+          output: response.text,
+          confidenceScore: null,
+          tokensUsed: {
+            prompt: usage?.promptTokens ?? 0,
+            completion: usage?.completionTokens ?? 0,
+            total: usage?.totalTokens ?? 0,
+          },
+          estimatedCostInr: null,
+          latencyMs: typeof response.latencyMs === "number" ? response.latencyMs : null,
+          verifiedFactual: false,
+          keyInsights: ["Executed by a real configured provider. Output has not been independently fact-verified."],
+        });
+      } catch (error) {
+        verdicts.push({
+          providerId: id,
+          providerName: provider.name,
+          vendor: id === "gemini" ? "Google" : id === "anthropic" ? "Anthropic" : id === "xai" ? "xAI" : "OpenAI",
+          model: "PROVIDER_ERROR",
+          output: "",
+          confidenceScore: null,
+          tokensUsed: { prompt: 0, completion: 0, total: 0 },
+          estimatedCostInr: null,
+          latencyMs: null,
+          verifiedFactual: false,
+          keyInsights: [],
+          error: error instanceof Error ? error.message.slice(0, 240) : String(error).slice(0, 240),
+        });
+      }
+    }
 
-    const auditSignature = Math.random().toString(36).substring(2, 15)
-      .substring(0, 16)
-      .toUpperCase();
+    const successful = verdicts.filter((v) => v.output || !v.error);
+    const totalTokensUsed = verdicts.reduce((sum, v) => sum + v.tokensUsed.total, 0);
+    const successfulNames = successful.map((v) => v.providerName).join(", ");
+    const status = successful.length === 0 ? "NOT_ENABLED" : successful.length < selectedIds.length ? "PARTIAL" : "SUCCESS";
 
-    let surgeMultiplier = 1.0;
+    const sourceHash = createHash("sha256")
+      .update(JSON.stringify({ prompt: params.prompt, timestamp, verdicts: verdicts.map((v) => ({ providerId: v.providerId, model: v.model, output: v.output })) }))
+      .digest("hex");
+
     let deliveryBasePaise = 4000;
-
+    let surgeMultiplier = 1;
     if (params.surgeParams) {
-      const surgeResult = surgePricingEngine.calculateSurge({
-        riderSupplyDensity: params.surgeParams.riderSupplyDensity,
-        incomingOrderVelocity: params.surgeParams.incomingOrderVelocity,
-        weatherConditionMultiplier: params.surgeParams.weatherConditionMultiplier,
-        timeOfDayMultiplier: params.surgeParams.timeOfDayMultiplier,
-      });
+      // Kept as a deterministic calculation only; it is not presented as real-time
+      // pricing authority until live supply/demand inputs are connected.
+      const { surgePricingEngine } = await import("../finance/surge-engine.ts");
+      const surgeResult = surgePricingEngine.calculateSurge(params.surgeParams);
       surgeMultiplier = surgeResult.multiplier;
       deliveryBasePaise = surgeResult.adjustedDeliveryBasePaise;
     }
 
     return {
-      consensusId,
+      status,
+      consensusId: `cons-${Date.now()}`,
       timestamp,
       prompt: params.prompt,
-      verdicts: validVerdicts,
-      consensusAgreementScore,
-      unifiedExecutiveSummary,
-      strongestCandidateModel: `${strongest.providerName} (${strongest.model})`,
-      totalTokensUsed: totalTokens,
-      totalCostInr: parseFloat(totalCost.toFixed(4)),
-      auditSignature: `SIG_${auditSignature}`,
-      hallucinationFreeVerified: true,
+      verdicts,
+      consensusAgreementScore: null,
+      unifiedExecutiveSummary:
+        successful.length > 0
+          ? `Real-provider execution completed across ${successful.length} configured provider(s): ${successfulNames}. Outputs are not independently fact-verified and must not be labeled hallucination-free.`
+          : "No configured AI provider completed the request.",
+      strongestCandidateModel: successful[0]?.model ?? null,
+      totalTokensUsed,
+      totalCostInr: null,
+      auditSignature: `EVIDENCE_${sourceHash.slice(0, 24).toUpperCase()}`,
+      hallucinationFreeVerified: false,
       deliveryBasePaise,
       surgeMultiplier,
     };

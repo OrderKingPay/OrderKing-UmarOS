@@ -54,8 +54,7 @@ function Login() {
     <main className="relative mx-auto flex min-h-dvh w-full flex-col overflow-hidden bg-[#030303] selection:bg-blue-500/30">
       {/* 👑 PREMIUM LOGISTICS ANIMATED BACKGROUND - UMAR OS SUPREME */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden bg-[#030303]">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] mix-blend-overlay"></div>
-        <motion.div
+<motion.div
           animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.3, 0.15], rotate: [0, 90, 0] }}
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
           className="absolute -top-[10%] -left-[10%] h-[70%] w-[70%] rounded-full bg-gradient-to-br from-blue-600/20 via-indigo-600/10 to-transparent blur-[140px]"

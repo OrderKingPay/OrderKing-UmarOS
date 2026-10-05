@@ -26,8 +26,12 @@ function splatOf(params: Record<string, string | undefined>): string {
 
 async function resolveAdminUserId(request: Request): Promise<string> {
   const authorization = request.headers.get("authorization")?.trim();
-  const configuredToken = process.env.ORDERKING_SERVICE_TOKEN?.trim() || "ok_prod_sec_9d8f3b2c1e4a7d6e5f8b9c0a1b2c3d4e5f6a7b8c";
-  const configuredUserId = process.env.ORDERKING_SERVICE_USER_ID?.trim() || "usr_system_service";
+  const configuredToken = process.env.ORDERKING_SERVICE_TOKEN?.trim();
+  const configuredUserId = process.env.ORDERKING_SERVICE_USER_ID?.trim();
+  if (!configuredToken || !configuredUserId) return requireUserId();
+  if (/vercel\.app$/i.test(process.env.HDMASTER_URL?.trim() ?? "")) {
+    throw new Error("Cloudflare-only policy: HDMASTER_URL may not target Vercel.");
+  }
   if (configuredToken && configuredUserId && authorization === `Bearer ${configuredToken}`) return configuredUserId;
   return requireUserId();
 }
@@ -161,7 +165,7 @@ export async function handleAdminHttp(
     const url = new URL(request.url);
     const idempotencyKey = request.headers.get("Idempotency-Key") ?? undefined;
 
-    if (method === "GET" && path === "dashboard") return json({ data: await q.dashboardPayload(ws), label: "ACTUAL" });
+    if (method === "GET" && path === "dashboard") return json({ data: await q.dashboardPayload(ws), label: ws.dataMode === "PRODUCTION" ? "ACTUAL" : "SIMULATED" });
     if (method === "GET" && path === "orders") {
       return json({ data: await q.listOrders(ws.ctx, {
         delayed: url.searchParams.get("delayed") === "1",
@@ -230,6 +234,9 @@ export async function handleAdminHttp(
       const refundSchema = z.object({ reason: z.string().min(1), amountPaise: z.number().optional() });
       let body;
       try { body = refundSchema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
+      if (ws.dataMode !== "PRODUCTION") {
+        return json({ ok: false, status: "NOT_ENABLED", label: "SIMULATED", reason: "Refund execution requires LIVE production data mode and a verified payment ledger." }, 409);
+      }
       await q.interveneOrder(ws, { orderId, action: "refund", reason: body.reason, amountPaise: body.amountPaise, idempotencyKey });
       return json({ ok: true, label: "ACTUAL" });
     }
@@ -238,6 +245,9 @@ export async function handleAdminHttp(
       const cancelSchema = z.object({ reason: z.string().min(1) });
       let body;
       try { body = cancelSchema.parse(await request.json()); } catch (e: any) { return json({ error: "Invalid payload", details: e.errors }, 400); }
+      if (ws.dataMode !== "PRODUCTION") {
+        return json({ ok: false, status: "NOT_ENABLED", label: "SIMULATED", reason: "Cancellation execution requires LIVE production data mode." }, 409);
+      }
       await q.interveneOrder(ws, { orderId, action: "cancel", reason: body.reason, idempotencyKey });
       return json({ ok: true, label: "ACTUAL" });
     }

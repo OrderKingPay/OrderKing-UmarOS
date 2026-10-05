@@ -16,7 +16,7 @@ import Anthropic from "@anthropic-ai/sdk";
 export class AnthropicProvider implements AIProvider {
   readonly id = "anthropic";
   readonly name = "Anthropic Claude";
-  readonly supportedModels = ["claude-3-7-sonnet-20250219", "claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022"];
+  readonly supportedModels = ["PROVIDER_CONFIGURED_MODEL"];
 
   private client: Anthropic;
   private apiKey: string | undefined;
@@ -41,7 +41,8 @@ export class AnthropicProvider implements AIProvider {
   async chat(input: ChatRequest): Promise<ChatResponse> {
     this.ensureConfigured();
     const start = Date.now();
-    const model = input.model || "claude-3-7-sonnet-20250219";
+    const model = input.model || process.env.ANTHROPIC_MODEL?.trim();
+    if (!model) throw new Error("ANTHROPIC_MODEL is required; no default model is assumed.");
 
     const messages = input.messages
       .filter((m) => m.role !== "system")
@@ -89,7 +90,6 @@ export class AnthropicProvider implements AIProvider {
         promptTokens,
         completionTokens,
         totalTokens: promptTokens + completionTokens,
-        estimatedCostUsd: (promptTokens * 0.003 + completionTokens * 0.015) / 1000,
       },
       latencyMs: Date.now() - start,
     };

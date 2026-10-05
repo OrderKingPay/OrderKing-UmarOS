@@ -2,14 +2,14 @@
 /**
  * OrderKing Executive Growth, Government Grants, Keynotes & 100,000x Ad Domination Toolkit
  *
- * Provides real, practical, production-ready:
- * 1. Government Grant Application Dossiers (Assam Startup ₹55L, MSME ₹15L, NIDHI-PRAYAS ₹10L, SISFS ₹20L)
+ * Provides structured DRAFT/RESEARCH material. Nothing in this module is proof of eligibility, approval, production performance or legal status:
+ * 1. Government grant research dossiers (amounts/eligibility must be independently verified before use)
  * 2. Premier Academic Keynote Speaker Proposals (IIT Guwahati, NIT Silchar, Assam University)
  * 3. Meta Marketing API v21.0 & Google Ads PMax Payloads + Viral Reels Scripts
- * 4. Production Domain (orderking.in) DNS & Edge Deployment Configuration
+ * 4. Custom-domain planning (availability/registration must be independently verified)
  */
 
-export type GrantDossier = {
+export const EXECUTIVE_DOSSIERS_STATUS = "DRAFT_RESEARCH_ONLY" as const;\n\nexport type GrantDossier = {
   id: string;
   schemeName: string;
   authority: string;
@@ -226,7 +226,7 @@ IIT Guwahati,
 
 I hope this email finds you well.
 
-My name is Hasan, Founder and Chief Architect of OrderKing (https://orderking.in), an autonomous hyperlocal food and fintech super-app operating out of Karimganj / Barak Valley, Assam.
+My name is Hasan, Founder and Chief Architect of OrderKing (https://orderking-customers.pages.dev), an autonomous hyperlocal food and fintech super-app operating out of Karimganj / Barak Valley, Assam.
 
 While decacorn aggregators focus exclusively on metro tier-1 hubs, we have engineered an offline-resilient, 2G-tolerant logistics and dispatch network that solves the deep challenges of Tier-2 and Tier-3 Northeast India:
 1. Algorithmic Nearest-Rider Cascading Dispatch that eliminates deadhead mileage on unpaved roads.
@@ -244,7 +244,7 @@ Warm regards,
 
 Hasan
 Founder & Chief Architect, OrderKing Technologies
-Website: https://orderking.in
+Website: https://orderking-customers.pages.dev
 Karimganj / Sribhumi, Assam`,
   },
   {
@@ -263,7 +263,7 @@ Greetings from Karimganj.
 
 I am writing to propose a Keynote Address and Technical Workshop for the faculty and students of NIT Silchar.
 
-As a homegrown tech venture originating right here in Barak Valley, OrderKing (https://orderking.in) has built a world-class, ultra-fast delivery and micro-payments platform that is outperforming national legacy apps in local delivery speed, driver retention, and merchant profitability.
+As a homegrown tech venture originating right here in Barak Valley, OrderKing (https://orderking-customers.pages.dev) has built a world-class, ultra-fast delivery and micro-payments platform that is outperforming national legacy apps in local delivery speed, driver retention, and merchant profitability.
 
 Topic: "Overthrowing Bloatware: How Localized Tech Beats Multinational Monopolies in Tier-2/3 Markets"
 Key Takeaways for Students:
@@ -277,7 +277,7 @@ Sincerely,
 
 Hasan
 Founder & Chief Architect, OrderKing
-Website: https://orderking.in`,
+Website: https://orderking-customers.pages.dev`,
   },
   {
     id: "assam_university",
@@ -305,7 +305,7 @@ Warm regards,
 
 Hasan
 Founder & Chief Architect, OrderKing Technologies
-https://orderking.in`,
+https://orderking-customers.pages.dev`,
   },
 ];
 
@@ -348,7 +348,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
       title: "OrderKing — Karimganj's Food Super-App 👑",
       body: "🔥 Zero Markup on Food! Enjoy delicious Mutton Biryani, Fish Thali & Momos at exact restaurant prices + Win Real 24K Digital Gold on every order! Tap to Order Now.",
       call_to_action_type: "ORDER_NOW",
-      link: "https://orderking.in",
+      link: "https://orderking-customers.pages.dev",
     },
   },
   googlePMaxAssetGroup: {
@@ -372,7 +372,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
       "Support local Karimganj restaurants. Pay dine-in prices and earn real 24K gold rewards.",
     ],
     call_to_action: "ORDER_NOW",
-    final_urls: ["https://orderking.in"],
+    final_urls: ["https://orderking-customers.pages.dev"],
   },
   viralReelsScripts: [
     {
@@ -398,7 +398,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
         },
         {
           timestamp: "0:25 - 0:30",
-          visual: "Tap 'Order Now' button pointing to https://orderking.in with OrderKing crown logo.",
+          visual: "Tap 'Order Now' button pointing to https://orderking-customers.pages.dev with OrderKing crown logo.",
           audioScript: "Order like a King. Open orderking.in right now and get free delivery on your first order!",
         },
       ],
@@ -455,13 +455,13 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
   ],
   whatsAppStatusViralCopy: {
     headline: "👑 Just won 10mg Real 24K Gold on OrderKing! 🪙",
-    body: "I just ordered hot Dum Biryani from Karimganj Kitchen at exact restaurant price (no Zomato markups) and scratched my King Reward to win 24K Gold! Order yours now: https://orderking.in",
-    statusText: "Ordered on OrderKing 👑 Got exact restaurant price + won 24K Gold! Check it out: https://orderking.in",
+    body: "I just ordered hot Dum Biryani from Karimganj Kitchen at exact restaurant price (no Zomato markups) and scratched my King Reward to win 24K Gold! Order yours now: https://orderking-customers.pages.dev",
+    statusText: "Ordered on OrderKing 👑 Got exact restaurant price + won 24K Gold! Check it out: https://orderking-customers.pages.dev",
   },
 };
 
 // ============================================================================
-// 4. WEBSITE (https://orderking.in) PRODUCTION DNS & GO-LIVE SPECIFICATION
+// 4. WEBSITE (https://orderking-customers.pages.dev) PRODUCTION DNS & GO-LIVE SPECIFICATION
 // ============================================================================
 export const DOMAIN_GOLIVE_CONFIG: DomainGoLiveKit = {
   domain: "orderking.in",
