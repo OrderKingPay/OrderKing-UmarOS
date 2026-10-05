@@ -2,12 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AutoSettlementEngine } from '../../../../lib/orderking/finance/auto-settlement-engine';
 
 /**
- * 👑 AI ZOMATO-STYLE SETTLEMENT CRON ENDPOINT
- * Triggered automatically by Vercel every Monday at 2:00 AM (0 2 * * 1).
+ * AI settlement server route.
+ * External scheduler/Cloudflare Worker must call it with Authorization: Bearer <CRON_SECRET>.
  */
 // @ts-expect-error TanStack regenerates routeTree.gen.ts during the Vite build; direct tsc runs before that refresh.
 export const Route = createFileRoute("/api/finance/cron/run-settlement")({
-  GET: async ({ request }: { request: Request }) => {
+  server: {
+    // @ts-expect-error TanStack Start server-route type augmentation is not included in direct tsc for this repo version.
+    handlers: {
+      GET: async ({ request }: { request: Request }) => {
     try {
       // Basic security to ensure this is triggered by Vercel Cron or Admin
       const authHeader = request.headers.get('authorization');
