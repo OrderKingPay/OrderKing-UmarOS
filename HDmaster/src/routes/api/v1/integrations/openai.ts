@@ -1,45 +1,20 @@
-// @ts-nocheck
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createFileRoute } from "@tanstack/react-router";
 
-// OPENAI API SCAFFOLDING
-// Drop your production API keys in Netlify Environment Variables:
-// VITE_OPENAI_API_KEY
-
-export const APIRoute = createAPIFileRoute('/api/v1/integrations/openai')({
-  POST: async () => {
-  try {
-    const { prompt } = await request.json();
-    const openAiKey = process.env.VITE_OPENAI_API_KEY;
-
-    if (!openAiKey) {
-      return new Response(JSON.stringify({ 
-        error: "Missing VITE_OPENAI_API_KEY. System is prepared but waiting for Founder to provide the key in Netlify settings." 
-      }), { status: 500 });
-    }
-    
-    // Real API Call to OpenAI will go here:
-    /*
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${openAiKey}`
+export const Route = createFileRoute("/api/v1/integrations/openai")({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        try {
+          const { prompt } = await request.json();
+          if (typeof prompt !== "string" || !prompt.trim()) return Response.json({ error: "prompt is required" }, { status: 400 });
+          if (!process.env.OPENAI_API_KEY?.trim()) {
+            return Response.json({ success: false, status: "PENDING_EXTERNAL_PROVIDER", message: "OpenAI provider is not configured; no AI response is simulated." }, { status: 503 });
+          }
+          return Response.json({ success: false, status: "PENDING_PROVIDER_ADAPTER", message: "OpenAI credentials are present but this endpoint does not expose a verified adapter yet." }, { status: 503 });
+        } catch {
+          return Response.json({ success: false, error: "Invalid AI request" }, { status: 400 });
+        }
       },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [{ role: "system", content: "You are the top OrderKing AI." }, { role: "user", content: prompt }]
-      })
-    });
-    const data = await res.json();
-    return new Response(JSON.stringify({ success: true, ai_response: data.choices[0].message.content }));
-    */
-    
-    return new Response(JSON.stringify({ success: true, message: "OpenAI API scaffolding ready. Waiting for keys." }), {
-      headers: { "Content-Type": "application/json" }
-    });
-
-  } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: "Internal Server Error" }), { status: 500 });
-  }
-  }
+    },
+  },
 });
