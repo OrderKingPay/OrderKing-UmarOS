@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { runAlgorithmicAutoDispatch } from "../../../../lib/orderking/server/auto-dispatch-engine.server";
 
+// @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/dispatch/cron/run-auto-dispatch")({
   server: {
     handlers: {
