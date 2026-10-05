@@ -7,7 +7,7 @@ export type DatabaseProvider =
   | "LOCAL_PGLITE_DEV";
 
 export type HostingProvider = 
-  | "VERCEL" 
+  | "CLOUDFLARE_PAGES" 
   | "RAILWAY" 
   | "AWS_ECS" 
   | "CLOUD_RUN" 
