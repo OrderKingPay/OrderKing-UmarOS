@@ -31,6 +31,7 @@
  * a verified id via `@/lib/auth/middleware`.
  */
 import { betterAuth } from "better-auth";
+import { createServerOnlyFn } from "@tanstack/react-start";
 import { bearer, genericOAuth } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { getCookie } from "@tanstack/react-start/server";
@@ -268,9 +269,9 @@ export const auth = betterAuth({
   ],
 });
 
-export function readSessionToken(): string | null {
-  return getCookie(SESSION_TOKEN_COOKIE) ?? null;
-}
+export const readSessionToken = createServerOnlyFn(() =>
+  getCookie(SESSION_TOKEN_COOKIE) ?? null,
+);
 
 // Re-exported for convenience; the array lives in the dependency-free
 // `providers.ts` so the client can import it too.
