@@ -20,7 +20,8 @@ const priorityFor = (severity: EscalationPayload["severity"]): string => {
   return "MEDIUM";
 };
 
-export const Route = createFileRoute("/api/internal/partner-escalations" as any)({
+// @ts-expect-error TanStack regenerates routeTree.gen.ts during the Vite build; direct tsc runs before that refresh.
+export const Route = createFileRoute("/api/internal/partner-escalations")({
   // @ts-expect-error
   server: {
     handlers: {
