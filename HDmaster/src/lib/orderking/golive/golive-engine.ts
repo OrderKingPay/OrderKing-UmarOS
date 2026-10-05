@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { Client } from "pg";
 import type {
   MasterGoLiveConfig,
   GoLiveReadinessReport,
@@ -84,7 +85,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     lastTestedAt: null,
   },
   endpoints: {
-    hostingProvider: "VERCEL",
+    hostingProvider: "CLOUDFLARE_PAGES",
     customerAppUrl: process.env.CUSTOMER_APP_URL ?? "",
     partnerAppUrl: process.env.PARTNER_APP_URL ?? "",
     riderAppUrl: process.env.RIDER_APP_URL ?? "",
@@ -92,7 +93,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     apiGatewayUrl: process.env.API_GATEWAY_URL ?? "",
     sslEnforced: true,
     customDomainVerified: false,
-    dnsCnameTarget: process.env.VERCEL_DNS_CNAME_TARGET ?? "",
+    dnsCnameTarget: process.env.CLOUDFLARE_DNS_CNAME_TARGET ?? "",
   },
   paymentGateway: {
     provider: "RAZORPAY",
@@ -201,7 +202,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
     infraScore += 7;
   } else {
     infraWarnings.push("SSL enforcement or custom domain DNS verification is pending.");
-    recommendedActions.push("Verify CNAME records for orderking.in on Vercel/Cloudflare.");
+    recommendedActions.push("Verify the registered custom-domain CNAME/target in Cloudflare DNS and Pages.");
   }
 
   const infraPillar: GoLivePillarScore = {
@@ -262,7 +263,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   if (config.smsGateway.apiKey && config.smsGateway.senderId) {
     commScore += 6;
   } else {
-    commWarnings.push("SMS Gateway API key missing. Operating in fallback simulation mode.");
+    commWarnings.push("SMS Gateway API key is not configured; real OTP delivery is unavailable.");
   }
 
   if (config.smsGateway.dltEntityId && config.smsGateway.dltTemplateIdOtp) {
@@ -275,7 +276,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   if (config.maps.apiKey) {
     commScore += 6;
   } else {
-    commWarnings.push("Google Maps API key missing. Using Haversine 1.35x distance matrix fallback.");
+    commWarnings.push("Maps API key is not configured; live geocoding/navigation is unavailable.");
   }
 
   if (config.maps.roadWindingFactor >= 1.2 && config.maps.roadWindingFactor <= 1.5) {
@@ -401,47 +402,72 @@ export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ o
   if (!validatePostgresUrl(config.connectionString)) {
     return { ok: false, message: "Malformed PostgreSQL connection string.", latencyMs: 0 };
   }
-  // Simulated handshake or connection pool ping
-  const latencyMs = Math.floor(Math.random() * 25) + 15;
-  return {
-    ok: true,
-    message: `Connected successfully to ${config.provider} (${config.sslMode} SSL, PgBouncer pool active).`,
-    latencyMs,
-  };
+  const client = new Client({
+    connectionString: config.connectionString,
+    ssl: config.sslMode === "disable" ? undefined : { rejectUnauthorized: false },
+  });
+  try {
+    await client.connect();
+    await client.query("select 1");
+    return {
+      ok: true,
+      message: `Connected successfully to ${config.provider}; live PostgreSQL probe passed.`,
+      latencyMs: Date.now() - start,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? `Database probe failed: ${error.message}` : "Database probe failed.",
+      latencyMs: Date.now() - start,
+    };
+  } finally {
+    await client.end().catch(() => undefined);
+  }
 }
 
 export async function testPgConnection(config: PaymentGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey || !config.secretKey) {
     return { ok: false, message: "Missing API Key or Secret Key.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 40) + 20;
-  return {
-    ok: true,
-    message: `Handshake successful with ${config.provider} in ${config.mode} mode. Webhooks verified.`,
-    latencyMs,
-  };
+  if (config.provider !== "RAZORPAY") {
+    return { ok: false, message: `No live provider health adapter exists for ${config.provider}.`, latencyMs: 0 };
+  }
+  const start = Date.now();
+  try {
+    const auth = Buffer.from(`${config.apiKey}:${config.secretKey}`).toString("base64");
+    const response = await fetch("https://api.razorpay.com/v1/payments?count=1", {
+      headers: { Authorization: `Basic ${auth}`, Accept: "application/json" },
+    });
+    if (!response.ok) {
+      return { ok: false, message: `Razorpay health check returned HTTP ${response.status}.`, latencyMs: Date.now() - start };
+    }
+    return { ok: true, message: `Razorpay API health check passed in ${config.mode} mode.`, latencyMs: Date.now() - start };
+  } catch (error) {
+    return { ok: false, message: error instanceof Error ? error.message : "Razorpay health check failed.", latencyMs: Date.now() - start };
+  }
 }
 
 export async function testSmsConnection(config: SmsGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing SMS Gateway API Key. Operating in local simulation.", latencyMs: 0 };
+    return { ok: false, message: "Missing SMS Gateway API key.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 30) + 15;
-  return {
-    ok: true,
-    message: `SMS Gateway (${config.provider}) active. Sender ID: ${config.senderId}, DLT Entity: ${config.dltEntityId || "Pending"}.`,
-    latencyMs,
-  };
+  return { ok: false, message: `A provider-specific SMS health adapter is required for ${config.provider}; no simulated success is allowed.`, latencyMs: 0 };
 }
 
 export async function testMapsConnection(config: MapsConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing Maps API Key. Falling back to offline Haversine matrix.", latencyMs: 0 };
+    return { ok: false, message: "Missing Maps API key.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 20) + 10;
-  return {
-    ok: true,
-    message: `Maps API (${config.provider}) active. Directions & Geocoding enabled. Winding factor: ${config.roadWindingFactor}x.`,
-    latencyMs,
-  };
+  const start = Date.now();
+  try {
+    if (config.provider === "MAPBOX") {
+      const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/Silchar.json?limit=1&access_token=${encodeURIComponent(config.apiKey)}`, { headers: { Accept: "application/json" } });
+      if (!response.ok) return { ok: false, message: `Mapbox health check returned HTTP ${response.status}.`, latencyMs: Date.now() - start };
+      const body = await response.json() as { features?: unknown[] };
+      return { ok: Array.isArray(body.features), message: Array.isArray(body.features) ? "Mapbox geocoding health check passed." : "Mapbox returned an invalid response.", latencyMs: Date.now() - start };
+    }
+    return { ok: false, message: `No live maps health adapter exists for ${config.provider}.`, latencyMs: Date.now() - start };
+  } catch (error) {
+    return { ok: false, message: error instanceof Error ? error.message : "Maps health check failed.", latencyMs: Date.now() - start };
+  }
 }
