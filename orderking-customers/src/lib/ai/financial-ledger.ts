@@ -44,7 +44,7 @@ export function assertReality(evidence: string[] | undefined): RealityAssertionR
   };
 }
 
-export const IMMUTABLE_FINANCIAL_LEDGER: FinancialEvent[] = [
+const SIMULATED_FINANCIAL_LEDGER: FinancialEvent[] = [
   {
     id: "FEV-101",
     type: "payment_confirmed",
@@ -125,3 +125,8 @@ export function calculateTimeframeRevenue(
     netContributionInr: netContribution,
   };
 }
+
+
+/** Production truth starts empty and can only be populated by verified provider-backed events. */
+export const IMMUTABLE_FINANCIAL_LEDGER: FinancialEvent[] =
+  import.meta.env.VITE_DATA_MODE === "SIMULATED" ? SIMULATED_FINANCIAL_LEDGER : [];
