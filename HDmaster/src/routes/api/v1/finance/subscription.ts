@@ -1,12 +1,16 @@
-import { Request, Response } from 'express';
+import { getSql } from "@/lib/db";
 
-// Utility for SQL template literal (assuming pg or similar driver usage in project)
-const getSql = (strings: TemplateStringsArray, ...values: any[]) => {
-  return strings.reduce((acc, str, i) => acc + str + (values[i] || ''), '');
+type SubscriptionRequest = {
+  customerId?: string;
+  planName?: "KING_PASS_MONTHLY" | "KING_PASS_YEARLY";
 };
 
-// 2. Create the raw SQL queries to build customer_subscriptions table
-export const subscriptionMigrationQuery = getSql`
+const PLANS = {
+  KING_PASS_MONTHLY: { pricePaise: 19900, durationMonths: 1 },
+  KING_PASS_YEARLY: { pricePaise: 199900, durationMonths: 12 },
+} as const;
+
+export const subscriptionMigrationQuery = `
   CREATE TABLE IF NOT EXISTS customer_subscriptions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     customer_id UUID NOT NULL,
@@ -22,82 +26,77 @@ export const subscriptionMigrationQuery = getSql`
   CREATE INDEX IF NOT EXISTS idx_cust_subs_status_valid ON customer_subscriptions(status, valid_until);
 `;
 
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
+
 export class SubscriptionController {
-  
-  /**
-   * Create a King Pass subscription for a user
-   */
-  public static async subscribe(req: Request, res: Response) {
+  static async subscribe(request: Request) {
     try {
-      const { customerId, planName } = req.body;
-      
-      if (!customerId || !planName) {
-        return res.status(400).json({ error: 'customerId and planName are required' });
+      const body = (await request.json()) as SubscriptionRequest;
+      if (!body.customerId || !body.planName) {
+        return json({ success: false, error: "customerId and planName are required" }, 400);
       }
 
-      let pricePaise = 0;
-      let durationMonths = 1;
-
-      // Plan configuration
-      if (planName === 'KING_PASS_MONTHLY') {
-        pricePaise = 19900; // 199 INR
-        durationMonths = 1;
-      } else if (planName === 'KING_PASS_YEARLY') {
-        pricePaise = 199900; // 1999 INR
-        durationMonths = 12;
-      } else {
-        return res.status(400).json({ error: 'Invalid planName' });
+      const plan = PLANS[body.planName];
+      if (!plan) {
+        return json({ success: false, error: "Invalid planName" }, 400);
       }
 
       const validUntil = new Date();
-      validUntil.setMonth(validUntil.getMonth() + durationMonths);
+      validUntil.setUTCMonth(validUntil.getUTCMonth() + plan.durationMonths);
 
-      // 3. Subscription logic inserting to DB
-      const insertQuery = getSql`
-        INSERT INTO customer_subscriptions (customer_id, plan_name, price_paise, status, valid_until)
-        VALUES ('${customerId}', '${planName}', ${pricePaise}, 'ACTIVE', '${validUntil.toISOString()}')
-        RETURNING id;
-      `;
-      // DB Execute Logic goes here...
-      const subscriptionId = "mock-uuid-for-now-until-db-wired";
+      const sql = await getSql();
+      const rows = await sql.query<{ id: string }>(
+        `insert into customer_subscriptions
+          (customer_id, plan_name, price_paise, status, valid_until)
+         values ($1,$2,$3,'ACTIVE',$4)
+         returning id`,
+        [body.customerId, body.planName, plan.pricePaise, validUntil.toISOString()],
+      );
 
-      return res.status(201).json({
+      const subscriptionId = rows[0]?.id;
+      if (!subscriptionId) {
+        return json({ success: false, error: "subscription_not_created" }, 503);
+      }
+
+      return json({
         success: true,
-        message: 'Successfully subscribed to King Pass',
         data: {
           subscriptionId,
-          planName,
-          validUntil,
-          pricePaise
-        }
-      });
+          planName: body.planName,
+          validUntil: validUntil.toISOString(),
+          pricePaise: plan.pricePaise,
+        },
+      }, 201);
     } catch (error) {
-      console.error('Subscription error:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+      console.error("Subscription error:", error);
+      return json({ success: false, error: "subscription_unavailable" }, 503);
     }
   }
 
-  /**
-   * Get active subscription details
-   */
-  public static async getSubscription(req: Request, res: Response) {
+  static async getSubscription(request: Request) {
     try {
-      const { customerId } = req.params;
+      const customerId = new URL(request.url).searchParams.get("customerId");
+      if (!customerId) return json({ success: false, error: "customerId is required" }, 400);
 
-      const selectQuery = getSql`
-        SELECT * FROM customer_subscriptions 
-        WHERE customer_id = '${customerId}' AND status = 'ACTIVE' AND valid_until > NOW()
-        ORDER BY valid_until DESC
-        LIMIT 1;
-      `;
-      // DB Execute Logic goes here...
+      const sql = await getSql();
+      const rows = await sql.query(
+        `select id, customer_id, plan_name, price_paise, status, valid_until, created_at, updated_at
+         from customer_subscriptions
+         where customer_id=$1 and status='ACTIVE' and valid_until > now()
+         order by valid_until desc
+         limit 1`,
+        [customerId],
+      );
 
-      return res.status(200).json({
-        success: true,
-        data: null // Fill with actual DB response
-      });
+      return json({ success: true, data: rows[0] ?? null });
     } catch (error) {
-      return res.status(500).json({ error: 'Internal server error' });
+      console.error("Subscription lookup error:", error);
+      return json({ success: false, error: "subscription_unavailable" }, 503);
     }
   }
 }
