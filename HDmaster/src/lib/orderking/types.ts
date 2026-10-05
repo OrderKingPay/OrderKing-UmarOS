@@ -78,7 +78,7 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   strategicDispatchRadiusKm: 8.0,
   bountyEscalationPaise: 1000,
   sampleCatalogueBanner: false,
-  launchMode: "live",
+  launchMode: "development",
 };
 
 export type BrandingConfig = {
@@ -117,7 +117,7 @@ export const DEFAULT_BRANDING: BrandingConfig = {
   colorAccent: "#c8ccd4",
   fontDisplay: "Newsreader",
   fontBody: "IBM Plex Sans",
-  domain: "orderking.in",
+  domain: null,
   tagline: "Order like a King.",
   appStoreName: "Order King",
   notificationSender: "Order King",
