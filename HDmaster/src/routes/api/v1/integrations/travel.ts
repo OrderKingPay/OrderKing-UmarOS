@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+// @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/v1/integrations/travel")({
   server: {
     handlers: {
