@@ -19,7 +19,7 @@ Cloudflare is the ONLY active deployment target for launch. Historical Vercel/Ne
 Each Pages project must use:
 - repository: `OrderKingPay/OrderKing-UmarOS`
 - correct root directory for the app
-- production branch: `main` after Section 12 launch approval
+- production branch: `main` (verified for all five existing Pages projects on 2026-10-05)
 - build command: the app's existing `pnpm run build`
 - output directory: `dist`
 - Node compatibility flags required by the existing Cloudflare-compatible runtime
@@ -68,19 +68,19 @@ For an apex custom domain, the domain must be a Cloudflare zone with Cloudflare 
 - Existing Customer/Partner/Rider Cloudflare Pages configs preserved.
 
 ### External account work
-The connected Cloudflare browser profile is not currently recorded as signed in to dash.cloudflare.com, so Cloudflare dashboard/project creation and DNS changes cannot be truthfully claimed complete until the account session is saved.
+The existing Cloudflare account was inspected directly. No project creation or duplicate provisioning was required. No custom domain or DNS changes were made.
 
-## Required verification after account access
-1. Confirm Cloudflare account and account ID.
-2. Confirm existing Pages projects and avoid duplicate creation.
-3. Confirm GitHub repository authorization.
-4. Create only missing Pages projects.
-5. Configure each root/build command/output.
-6. Configure required production/preview environment variables.
-7. Deploy a non-production branch first.
-8. Verify Pages deployment status and public `pages.dev` URL.
-9. Run HTTP health/smoke checks.
-10. Only then attach custom domains.
+## Section-2 evidence gate
+1. Cloudflare account ID verified: `fc53b6fd613df944a3a46606cfbf21d0`.
+2. All five existing Pages projects verified; no duplicate project creation performed.
+3. All five projects are connected to `OrderKingPay/OrderKing-UmarOS`.
+4. All five production branches are now `main`.
+5. Build roots and `dist` outputs were inspected and preserved.
+6. HDmaster and Apps-integration use the Cloudflare Pages Nitro target and Wrangler configuration.
+7. GitHub Production Gate completed successfully for the Section-2 branch: 6 workspace typechecks green and all five app builds green.
+8. No custom domains/zones exist yet; `pages.dev` remains the current temporary launch hostname.
+9. No production DNS was changed.
+10. Fresh public HTTP smoke testing through the available web fetch path was not reliable, so no HTTP result is claimed as verified here.
 
 ## No destructive actions
 No existing repository files were deleted in Section 2.
@@ -95,5 +95,25 @@ No production DNS was changed.
 - The repository directory `HDmaster` and `Apps-integration-` are intentional filesystem paths/casing and must not be normalized by renaming.
 - The integration package name is `app-builder-workspace`; its Cloudflare build command may legitimately use that package name.
 - No custom domains/zones were found in the Cloudflare account at inspection time.
-- The production-branch setting was being migrated from the temporary audit branch to `main`; the browser automation timed out before all five projects could be independently confirmed. This is NOT marked complete until verified.
-- Cloudflare project creation and DNS changes were not claimed complete beyond the existing five projects.
+- The production branch was verified as `main` for all five projects after the targeted dashboard update.
+- Cloudflare project creation and DNS changes were not needed/claimed; all five Pages projects already existed and no custom zone was present.
+
+
+## Section-2 final gate — 2026-10-05
+**STATUS: COMPLETE — SOURCE + ACCOUNT CONFIGURATION VERIFIED**
+
+Cloudflare Pages production branches:
+- `orderking-customers` → `main`
+- `orderking-partners` → `main`
+- `orderking-riders` → `main`
+- `orderking-hdmaster` → `main`
+- `apps-integration` → `main`
+
+GitHub Production Gate:
+- Typecheck: PASS
+- Build: PASS
+- Five app surfaces remain intact
+- No existing repository files were deleted for the Section-2 migration
+- Legacy Vercel/Netlify configuration was not used as a deployment target and was not deleted
+
+Section 2 is eligible to merge into `main`. Custom-domain/DNS acquisition remains a later launch configuration item, not a Section-2 blocker.
