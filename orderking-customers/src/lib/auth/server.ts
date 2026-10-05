@@ -100,6 +100,12 @@ export const authConfigured =
 // preview allowlist, which makes the OAuth `redirect_uri` the concrete preview URL
 // the broker's preview client accepts.
 const explicitBaseURL = env("BETTER_AUTH_URL");
+if (productionRuntime && !explicitBaseURL) {
+  throw new Error("BETTER_AUTH_URL is required in production.");
+}
+if (productionRuntime && (!grokIssuer || !grokClientId || !grokClientSecret)) {
+  throw new Error("Production OAuth broker credentials are incomplete.");
+}
 // Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
 // requires a mutable `allowedHosts: string[]`.
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
@@ -149,6 +155,12 @@ const trustedOrigins: string[] = [
 ];
 
 const databaseUrl = env("DATABASE_URL");
+if (productionRuntime && !databaseUrl) {
+  throw new Error("DATABASE_URL is required in production.");
+}
+if (productionRuntime && !env("BETTER_AUTH_SECRET")) {
+  throw new Error("BETTER_AUTH_SECRET is required in production.");
+}
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
