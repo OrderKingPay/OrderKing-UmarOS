@@ -256,14 +256,20 @@ async function createSql(): Promise<Sql> {
         "or a server route loader, never from client code.",
     );
   }
+  if (dbSource === "unconfigured") {
+    throw new Error("DATABASE_URL is required for production server-side database operations.");
+  }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
 
 export function getSql(): Promise<Sql> {
+  if (dbSource === "unconfigured") {
+    return Promise.reject(new Error("DATABASE_URL is required for production server-side database operations."));
+  }
   sqlPromise ??= createSql().catch((err) => {
-    sqlPromise = null; 
+    sqlPromise = null;
     console.error("[db] getSql error:", err);
-    return toSql(async () => []);
+    throw err;
   });
   return sqlPromise;
 }
