@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createFileRoute } from "@tanstack/react-router";
 import { getSql } from "@/lib/db";
 
 export const APIRoute = createAPIFileRoute('/api/finance/escalations')({
