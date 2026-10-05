@@ -8,6 +8,9 @@ const files = [
   "Apps-integration-/vite.config.ts",
   "orderking-customers/src/lib/kingpay/wallet.ts",
   "orderking-partners/src/lib/kingpay/settlement.ts",
+  "orderking-customers/src/lib/db-cloud.ts",
+  "orderking-partners/src/lib/db-cloud.ts",
+  "orderking-riders/src/lib/db-cloud.ts",
 ];
 
 const forbidden = [
@@ -15,6 +18,7 @@ const forbidden = [
   { pattern: /\|\|\s*["']test_secret["']/, label: "Razorpay test_secret fallback" },
   { pattern: /preset\s*:\s*["'](?:vercel|netlify)["']/, label: "non-Cloudflare Nitro production preset" },
   { pattern: /process\.env\.NETLIFY\s*\?/, label: "Netlify production preset selection" },
+  { pattern: /dummy\.supabase\.co|dummy-key/, label: "dummy Supabase production client configuration" },
 ];
 
 const failures = [];
