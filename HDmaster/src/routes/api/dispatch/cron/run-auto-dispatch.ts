@@ -2,12 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { runAlgorithmicAutoDispatch } from '../../../../lib/orderking/server/auto-dispatch-engine.server';
 
 /**
- * 🚀 AI STARLINK-LEVEL DISPATCH CRON ENDPOINT
- * Triggered automatically by Vercel every minute (* * * * *).
+ * AI auto-dispatch server route.
+ * External scheduler/Cloudflare Worker must call it with Authorization: Bearer <CRON_SECRET>.
  */
 // @ts-expect-error TanStack regenerates routeTree.gen.ts during the Vite build; direct tsc runs before that refresh.
 export const Route = createFileRoute("/api/dispatch/cron/run-auto-dispatch")({
-  GET: async ({ request }: { request: Request }) => {
+  server: {
+    // @ts-expect-error TanStack Start server-route type augmentation is not included in direct tsc for this repo version.
+    handlers: {
+      GET: async ({ request }: { request: Request }) => {
     try {
       // Allow internal invocation or authenticated Vercel Cron
       const authHeader = request.headers.get('authorization');
