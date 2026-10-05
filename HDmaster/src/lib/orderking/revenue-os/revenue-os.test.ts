@@ -259,24 +259,23 @@ test('Revenue OS Directives 18 & 19: Universal Connectors & 3-Tier Fallback', as
   const connList = universalConnectors.listConnectors();
   assert.ok(connList.length >= 3);
 
-  // Successful primary execution
+  // Unconfigured providers must fail closed; never return fabricated links or health data.
   const res = await universalConnectors.executeWithFallback({
     primaryConnectorId: 'conn-king-pay-upi',
     action: 'create_payment_link',
     input: { amountInr: 5000, description: 'Milestone Advance' },
   });
-  assert.equal(res.success, true);
-  assert.equal(res.executedBy, 'King Pay UPI Gateway Connector');
+  assert.equal(res.success, false);
+  assert.equal(res.humanNoticeRequired, true);
 
-  // Fallback to secondary when primary invalid
   const fallbackRes = await universalConnectors.executeWithFallback({
     primaryConnectorId: 'non-existent-primary',
     secondaryConnectorId: 'conn-postgres-ledger',
     action: 'query',
     input: {},
   });
-  assert.equal(fallbackRes.success, true);
-  assert.equal(fallbackRes.executedBy, 'PostgreSQL Sovereign Ledger Connector');
+  assert.equal(fallbackRes.success, false);
+  assert.equal(fallbackRes.humanNoticeRequired, true);
 
   // Safe failure + human notice when all fail
   const allFailRes = await universalConnectors.executeWithFallback({
