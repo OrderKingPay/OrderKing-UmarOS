@@ -979,24 +979,8 @@ export class RiderEngine {
   }
 
   async settlements(userId: string) {
-    const rider = await this.requireRider(userId);
-    let rows = await this.store.listSettlements(userId);
-    if (rows.length === 0) {
-      const lines = await this.store.listEarnings(userId);
-      const net = lines.reduce((a, e) => a + e.amountPaise, 0);
-      const s = {
-        id: nid(),
-        riderId: rider.id,
-        periodStart: new Date().toISOString().slice(0, 10),
-        periodEnd: new Date().toISOString().slice(0, 10),
-        amountPaise: net,
-        status: "PAYABLE" as const,
-        confirmedPaidAt: null,
-        dataMode: (await this.cfg()).dataMode,
-      };
-      await this.store.insertSettlement(s, userId);
-      rows = [s];
-    }
+    await this.requireRider(userId);
+    const rows = await this.store.listSettlements(userId);
     return rows;
   }
 
