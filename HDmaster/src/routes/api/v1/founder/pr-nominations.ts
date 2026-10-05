@@ -7,6 +7,7 @@ const nominations = [
   ["ycombinator","Y Combinator Application","Y Combinator","https://www.ycombinator.com/apply"],
 ] as const;
 
+// @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/v1/founder/pr-nominations")({
   server: {
     handlers: {
