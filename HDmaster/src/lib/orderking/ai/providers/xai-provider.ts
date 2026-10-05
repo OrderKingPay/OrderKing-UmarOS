@@ -15,7 +15,7 @@ import type {
 export class XAIProvider implements AIProvider {
   readonly id = "xai";
   readonly name = "xAI Grok";
-  readonly supportedModels = ["grok-3", "grok-2", "grok-beta"];
+  readonly supportedModels = ["PROVIDER_CONFIGURED_MODEL"];
 
   private apiKey: string | undefined;
 
@@ -28,7 +28,8 @@ export class XAIProvider implements AIProvider {
   }
 
   private constructPayload(input: ChatRequest, stream: boolean): Record<string, unknown> {
-    const model = input.model || "grok-3";
+    const model = input.model || process.env.XAI_MODEL?.trim();
+    if (!model) throw new Error("XAI_MODEL is required; no default model is assumed.");
     const messages: Array<Record<string, unknown>> = [];
     if (input.systemPrompt) {
       messages.push({ role: "system", content: input.systemPrompt });
@@ -96,7 +97,6 @@ export class XAIProvider implements AIProvider {
         promptTokens,
         completionTokens,
         totalTokens: promptTokens + completionTokens,
-        estimatedCostUsd: (promptTokens * 0.002 + completionTokens * 0.01) / 1000,
       },
       latencyMs: Date.now() - start,
     };
