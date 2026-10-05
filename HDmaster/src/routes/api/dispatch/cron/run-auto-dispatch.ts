@@ -5,7 +5,8 @@ import { runAlgorithmicAutoDispatch } from '../../../../lib/orderking/server/aut
  * 🚀 AI STARLINK-LEVEL DISPATCH CRON ENDPOINT
  * Triggered automatically by Vercel every minute (* * * * *).
  */
-export const APIRoute = createAPIFileRoute('/api/dispatch/cron/run-auto-dispatch')({
+// @ts-expect-error TanStack regenerates routeTree.gen.ts during the Vite build; direct tsc runs before that refresh.
+export const Route = createFileRoute("/api/dispatch/cron/run-auto-dispatch")({
   GET: async ({ request }: { request: Request }) => {
     try {
       // Allow internal invocation or authenticated Vercel Cron
