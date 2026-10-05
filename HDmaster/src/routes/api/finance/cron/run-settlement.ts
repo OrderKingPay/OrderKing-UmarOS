@@ -3,17 +3,17 @@ import { createAPIFileRoute } from '@tanstack/react-start/api';
 import { AutoSettlementEngine } from '../../../../lib/orderking/finance/auto-settlement-engine';
 
 /**
- * 👑 AI ZOMATO-STYLE SETTLEMENT CRON ENDPOINT
- * Triggered automatically by Vercel every Monday at 2:00 AM (0 2 * * 1).
+ * Cloudflare-safe internal settlement job endpoint.
+ * A Cloudflare Worker Cron Trigger calls this route with CRON_SECRET.
  */
 export const APIRoute = createAPIFileRoute('/api/finance/cron/run-settlement')({
   GET: async ({ request }: { request: Request }) => {
     try {
-      // Basic security to ensure this is triggered by Vercel Cron or Admin
+      // Basic security to ensure this is triggered by Cloudflare Cron or Admin
       const authHeader = request.headers.get('authorization');
-      const isCron = request.headers.get('x-vercel-cron') === '1'; // Vercel Cron injects this
+// Cloudflare Cron injects this
       
-      if (!isCron && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      if (!authHeader || !process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
       }
 
