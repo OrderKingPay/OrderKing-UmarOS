@@ -18,7 +18,8 @@ export const ViralGrowthEngine = {
    * Format: OK-{4 chars from hash}-{3 random chars}
    */
   generateReferralCode(userId: string): string {
-    const secret = typeof process !== "undefined" && process.env.BETTER_AUTH_SECRET ? process.env.BETTER_AUTH_SECRET : "default_secret";
+    const secret = process.env.BETTER_AUTH_SECRET?.trim();
+    if (!secret) throw new Error("BETTER_AUTH_SECRET is not configured.");
     const hash = createHash("sha256").update(userId + secret).digest("hex").substring(0, 4).toUpperCase();
     const entropy = randomBytes(2).toString("hex").substring(0, 3).toUpperCase();
     return `OK-${hash}${entropy}`;
@@ -28,9 +29,7 @@ export const ViralGrowthEngine = {
    * Generates the high-conversion, dynamic deep link for sharing.
    */
   generateDeepLink(referralCode: string): string {
-    const baseUrl = typeof process !== "undefined" && process.env.VERCEL_PROJECT_PRODUCTION_URL 
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` 
-      : "https://orderking.in";
+    const baseUrl = process.env.PUBLIC_APP_ORIGIN?.trim() || "https://orderking-customers.pages.dev";
     return `${baseUrl}/r/${referralCode}`;
   },
 
