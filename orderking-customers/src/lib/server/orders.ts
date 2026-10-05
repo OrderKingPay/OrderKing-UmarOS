@@ -78,7 +78,7 @@ export const listMyOrders = createServerFn({ method: "GET" }).middleware([authMi
     const sql = await getSql(); const rows = await sql<{ id: string; public_id: string; status: OrderStatus; total_paise: number; placed_at: string; data_label: string; restaurant_name: string; restaurant_slug: string; preview: string | null }>`select o.id, o.public_id, o.status, o.total_paise, o.placed_at::text as placed_at, o.data_label, r.name as restaurant_name, r.slug as restaurant_slug, (select string_agg(name_snapshot, ', ') from (select name_snapshot from order_items where order_id = o.id limit 3) s) as preview from orders o join restaurants r on r.id = o.restaurant_id where o.user_id = ${context.userId} order by o.placed_at desc limit 50`; const orders: OrderSummary[] = rows.map((r) => ({ id: r.id, publicId: r.public_id, status: r.status, restaurantName: r.restaurant_name, restaurantSlug: r.restaurant_slug, totalPaise: r.total_paise, placedAt: r.placed_at, itemPreview: r.preview ?? "", dataLabel: r.data_label as OrderSummary["dataLabel"] })); return { orders }; 
   } catch (err) {
     console.error("listMyOrders failed:", err);
-    return { orders: [] };
+    throw new Error("Unable to retrieve orders because the order service is unavailable.");
   }
 });
 export const getMyOrder = createServerFn({ method: "GET" }).middleware([authMiddleware]).// @ts-ignore
