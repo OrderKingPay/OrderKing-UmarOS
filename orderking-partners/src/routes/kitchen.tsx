@@ -23,7 +23,6 @@ const COLS = [
   { state: "RIDER_ASSIGNED", key: "kitchen.pickup" },
 ] as const;
 
-// Global continuous alarm state
 let alarmAudioCtx: AudioContext | null = null;
 let alarmOscillator: OscillatorNode | null = null;
 let alarmGain: GainNode | null = null;
@@ -32,41 +31,34 @@ let isAlarmPlaying = false;
 function startContinuousAlarm() {
   if (isAlarmPlaying) return;
   try {
-    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (!AudioContextClass) return;
-    
-    if (!alarmAudioCtx) {
-      alarmAudioCtx = new AudioContextClass();
-    }
-    
-    if (alarmAudioCtx.state === 'suspended') {
-      alarmAudioCtx.resume();
-    }
-    
+
+    if (!alarmAudioCtx) alarmAudioCtx = new AudioContextClass();
+    if (alarmAudioCtx.state === "suspended") void alarmAudioCtx.resume();
+
     alarmOscillator = alarmAudioCtx.createOscillator();
     alarmGain = alarmAudioCtx.createGain();
-    
     alarmOscillator.type = "square";
+
     const lfo = alarmAudioCtx.createOscillator();
     lfo.type = "square";
-    lfo.frequency.value = 2; // Beeps twice a second
-    
+    lfo.frequency.value = 2;
+
     const lfoGain = alarmAudioCtx.createGain();
-    lfoGain.gain.value = 800; // Modulation depth
-    
+    lfoGain.gain.value = 800;
+
     lfo.connect(lfoGain);
     lfoGain.connect(alarmOscillator.frequency);
-    
-    alarmOscillator.frequency.value = 800; // Base frequency
-    
-    alarmGain.gain.value = 1.0; // Master volume
-    
+
+    alarmOscillator.frequency.value = 800;
+    alarmGain.gain.value = 1.0;
     alarmOscillator.connect(alarmGain);
     alarmGain.connect(alarmAudioCtx.destination);
-    
     alarmOscillator.start();
     lfo.start();
-    
     isAlarmPlaying = true;
   } catch (e) {
     console.error("Failed to start continuous alarm", e);
@@ -76,15 +68,11 @@ function startContinuousAlarm() {
 function stopContinuousAlarm() {
   if (!isAlarmPlaying) return;
   try {
-    if (alarmOscillator) {
-      alarmOscillator.stop();
-      alarmOscillator.disconnect();
-      alarmOscillator = null;
-    }
-    if (alarmGain) {
-      alarmGain.disconnect();
-      alarmGain = null;
-    }
+    alarmOscillator?.stop();
+    alarmOscillator?.disconnect();
+    alarmOscillator = null;
+    alarmGain?.disconnect();
+    alarmGain = null;
     isAlarmPlaying = false;
   } catch (e) {
     console.error("Failed to stop alarm", e);
@@ -101,7 +89,7 @@ function speakKitchenOrder(orderId: string, totalPaise: number) {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
     const amountRs = Math.round(totalPaise / 100);
     const shortId = orderId.slice(-4).toUpperCase();
-    const text = `OrderKing: New order #${shortId} received! Total amount ₹${amountRs} paid via KingPay.`;
+    const text = `OrderKing: New order #${shortId} received. Total amount ₹${amountRs}.`;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1.0;
     utterance.pitch = 1.1;
@@ -124,8 +112,9 @@ function KitchenPage() {
   });
 
   useEffect(() => {
-    if (!vendor.restaurantId) return;
-    const channel = supabaseCloud
+    if (!vendor.restaurantId || !supabaseCloud) return;
+    const client = supabaseCloud;
+    const channel = client
       .channel(`orders-${vendor.restaurantId}`)
       .on(
         "postgres_changes",
@@ -142,28 +131,24 @@ function KitchenPage() {
       .subscribe();
 
     return () => {
-      supabaseCloud.removeChannel(channel);
+      client.removeChannel(channel);
     };
   }, [vendor.restaurantId, qc]);
 
   const pending = q.data?.orders.filter((o: any) => o.state === "PLACED").length ?? 0;
   const prev = useRef(pending);
+
   useEffect(() => {
     if (isFeatureEnabled("new_order_sound") && soundOn && pending > 0) {
       startContinuousAlarm();
-      
-      // Still speak once if a new order arrives
       if (pending > prev.current) {
         const latest = q.data?.orders.find((o: any) => o.state === "PLACED");
-        if (latest) {
-          speakKitchenOrder(latest.id, latest.prices?.customerTotalPaise ?? 0);
-        }
+        if (latest) speakKitchenOrder(latest.id, latest.prices?.customerTotalPaise ?? 0);
       }
     } else {
       stopContinuousAlarm();
     }
     prev.current = pending;
-    
     return () => stopContinuousAlarm();
   }, [pending, soundOn, q.data?.orders]);
 
@@ -175,7 +160,9 @@ function KitchenPage() {
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted">{q.data ? `Updated ${new Date(q.data.serverTime).toLocaleTimeString()}` : t("common.loading")}</p>
+        <p className="text-sm text-muted">
+          {q.data ? `Updated ${new Date(q.data.serverTime).toLocaleTimeString()}` : t("common.loading")}
+        </p>
         <Button
           variant="secondary"
           size="icon"
@@ -186,20 +173,19 @@ function KitchenPage() {
         </Button>
       </div>
 
-      {/* King Pay Merchant Soundbox Software (₹99/mo) */}
       <Card className="border border-primary/30 bg-primary/5 p-4 space-y-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <span className="text-xl">📢</span>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-sm text-foreground">King Pay AI Soundbox Active</h3>
-                <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                  ₹99/mo Active
+                <h3 className="font-semibold text-sm text-foreground">King Pay AI Soundbox</h3>
+                <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300">
+                  Provider integration pending
                 </span>
               </div>
               <p className="text-xs text-muted mt-0.5">
-                Zero physical hardware cost. Announces incoming orders and King Pay UPI payments aloud in Bengali, Hindi, and English.
+                The software capability is retained, but no merchant is charged or marked active until a real billing and entitlement provider is connected.
               </p>
             </div>
           </div>
@@ -212,7 +198,7 @@ function KitchenPage() {
             }}
             className="shrink-0 text-xs font-medium"
           >
-            🔊 Test Voice Announcement
+            🔊 Local Audio Test
           </Button>
         </div>
       </Card>
