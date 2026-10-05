@@ -788,7 +788,7 @@ function ScannerVisualGraphic({ className = "size-20 sm:size-24" }: { className?
         {/* Top row with 2 Large QR Finder Eyes */}
         <div className="flex justify-between items-start">
           {/* Finder Eye Top Left */}
-          <div className="size-6 rounded-md border-2 border-[#111827] p-0.5 flex items-center justify-center bg-white shadow-xs">
+          <div className="size-6 rounded-md border-2 border-[#111827] p-0.5 flex items-center justify-center bg-white shadow-[0_0_15px_rgba(255,255,255,0.05)]">
             <div className="size-3 rounded-[2px] bg-[#111827]" />
           </div>
           {/* Horizontal Timing Pattern */}
@@ -799,7 +799,7 @@ function ScannerVisualGraphic({ className = "size-20 sm:size-24" }: { className?
             <span className="size-1 rounded-[0.5px] bg-emerald-600" />
           </div>
           {/* Finder Eye Top Right */}
-          <div className="size-6 rounded-md border-2 border-[#111827] p-0.5 flex items-center justify-center bg-white shadow-xs">
+          <div className="size-6 rounded-md border-2 border-[#111827] p-0.5 flex items-center justify-center bg-white shadow-[0_0_15px_rgba(255,255,255,0.05)]">
             <div className="size-3 rounded-[2px] bg-[#111827]" />
           </div>
         </div>
@@ -816,7 +816,7 @@ function ScannerVisualGraphic({ className = "size-20 sm:size-24" }: { className?
         {/* Bottom row with 1 Finder Eye & Data Matrix Blocks */}
         <div className="flex justify-between items-end">
           {/* Finder Eye Bottom Left */}
-          <div className="size-6 rounded-md border-2 border-[#111827] p-0.5 flex items-center justify-center bg-white shadow-xs">
+          <div className="size-6 rounded-md border-2 border-[#111827] p-0.5 flex items-center justify-center bg-white shadow-[0_0_15px_rgba(255,255,255,0.05)]">
             <div className="size-3 rounded-[2px] bg-[#111827]" />
           </div>
           {/* Data Matrix Pixels Bottom Right */}
@@ -842,6 +842,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const isDeliveryActive = !isGeofencedFallback && isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
   const waitlistInfo = getCityWaitlistInfo(location.cityName || "Your City");
   const [hasVotedCity, setHasVotedCity] = useState(false);
+  const [features] = useState({
+    enableTutor: true,
+    enableGovtSchemes: true,
+    enableJobs: true,
+    enableTicketing: true,
+  });
   const [walletBalance, setWalletBalance] = useState(750);
   const [activeTab, setActiveTab] = useState<"all" | "fuel" | "recharge" | "bills" | "travel" | "gas">("all");
   const [showAddMoney, setShowAddMoney] = useState(false);
@@ -1738,7 +1744,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 <span className="text-lg">⚡</span>
                 <div>
                   <span className="font-bold">Offline / Low-Network Mode (Auto-Detected)</span>
-                  <p className="text-[11px] text-muted">0-Data USSD &amp; Offline Wallet Active</p>
+                  <p className="text-[11px] text-zinc-400">0-Data USSD &amp; Offline Wallet Active</p>
                 </div>
               </div>
               <span className="text-[10px] font-mono bg-amber-500/20 px-2 py-0.5 rounded font-bold">
@@ -1748,13 +1754,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             <div className="flex items-center gap-2">
               <a
                 href="tel:*99*1*1#"
-                className="flex-1 rounded-xl bg-primary py-1.5 text-center text-xs font-bold text-white shadow-xs"
+                className="flex-1 rounded-xl bg-primary py-1.5 text-center text-xs font-bold text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]"
               >
                 📞 Dial *99# (Zero-Data USSD)
               </a>
               <a
                 href={`sms:9223166166?body=PAY%20ORDERKING%20${walletBalance}`}
-                className="rounded-xl border border-border bg-surface px-3 py-1.5 text-center text-xs font-semibold text-fg"
+                className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-1.5 text-center text-xs font-semibold text-white"
               >
                 💬 SMS Pay
               </a>
@@ -1804,6 +1810,72 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         <EcosystemSwitchBar currentApp="KINGPAY" className="mb-1.5" />
 
         {/* 👑 FULL PHONEPE / PAYTM STYLE FINANCE SEARCH (AUTOPAY, REWARDS, BILLS, LOANS, TRANSFERS, UPI) */}
+
+        {/* 👑 VIP Subscription Banner */}
+        <div className="relative overflow-hidden rounded-2xl border-2 border-amber-500/50 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 p-4 shadow-[0_0_20px_rgba(245,158,11,0.3)] mb-4">
+          <div className="absolute -right-4 -top-4 size-24 rounded-full bg-white/20 blur-2xl"></div>
+          <div className="relative z-10 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-black text-white drop-shadow-md">OrderKing Gold / VIP</h3>
+              <p className="text-xs font-bold text-amber-100 drop-shadow">₹149/mo for Unlimited Free Delivery</p>
+            </div>
+            <button className="rounded-xl bg-white px-4 py-2 text-xs font-black text-amber-700 shadow-lg hover:scale-105 transition-transform cursor-pointer">
+              Join Now
+            </button>
+          </div>
+        </div>
+
+        {/* 💰 Wallet / Coins Balance Dashboard */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 p-4 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+            <p className="text-xs font-semibold text-zinc-400">Wallet Balance</p>
+            <p className="text-2xl font-black text-white">₹{walletBalance}</p>
+            <button onClick={() => setShowAddMoney(true)} className="mt-2 text-[10px] font-bold text-indigo-400 hover:text-indigo-300 cursor-pointer">
+              + Add Money
+            </button>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 p-4 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+            <p className="text-xs font-semibold text-zinc-400">King Coins</p>
+            <p className="text-2xl font-black text-amber-400">{kingCoins} 🪙</p>
+            <button onClick={() => setShowSpinWheel(true)} className="mt-2 text-[10px] font-bold text-amber-500 hover:text-amber-400 cursor-pointer">
+              Spin Wheel
+            </button>
+          </div>
+        </div>
+
+        {/* 🚀 Grid of Affiliates & Tools (Monetization Hub) */}
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-sm font-black text-white">Founder's Super-App Hub</h3>
+            <span className="rounded bg-indigo-500/20 px-2 py-0.5 text-[10px] font-bold text-indigo-400">Earn Rewards</span>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {features.enableTutor && (
+              <button onClick={() => toast.info("AI Tutor Coming Soon!")} className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-white/5 bg-white/5 p-3 hover:bg-white/10 transition shadow-sm cursor-pointer">
+                <span className="text-2xl drop-shadow-md">🧠</span>
+                <span className="text-[10px] font-bold text-white text-center">AI Tutor</span>
+              </button>
+            )}
+            {features.enableTicketing && (
+              <button onClick={() => setActiveSection("travel")} className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-white/5 bg-white/5 p-3 hover:bg-white/10 transition shadow-sm cursor-pointer">
+                <span className="text-2xl drop-shadow-md">✈️</span>
+                <span className="text-[10px] font-bold text-white text-center">Flights</span>
+              </button>
+            )}
+            {features.enableJobs && (
+              <button onClick={() => toast.info("Micro-Tasks Coming Soon!")} className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-white/5 bg-white/5 p-3 hover:bg-white/10 transition shadow-sm cursor-pointer">
+                <span className="text-2xl drop-shadow-md">💼</span>
+                <span className="text-[10px] font-bold text-white text-center">Tasks/Jobs</span>
+              </button>
+            )}
+            {features.enableGovtSchemes && (
+              <button onClick={() => toast.info("Govt Schemes Coming Soon!")} className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-white/5 bg-white/5 p-3 hover:bg-white/10 transition shadow-sm cursor-pointer">
+                <span className="text-2xl drop-shadow-md">🏛️</span>
+                <span className="text-[10px] font-bold text-white text-center">Schemes</span>
+              </button>
+            )}
+          </div>
+        </div>
         <KingPayFinanceSearch
           onOpenScanner={() => {
             setScannerTab("camera");
@@ -1818,13 +1890,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         />
 
         {showAddMoney && (
-          <form onSubmit={handleAddMoney} className="rounded-xl border border-primary/30 bg-surface/90 p-3 shadow-xs">
+          <form onSubmit={handleAddMoney} className="rounded-xl border border-primary/30 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]/90 p-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-semibold text-fg">Enter amount to add via UPI (Zero PG Fee):</p>
+              <p className="text-xs font-semibold text-white">Enter amount to add via UPI (Zero PG Fee):</p>
               <button
                 type="button"
                 onClick={() => setShowAddMoney(false)}
-                className="text-xs text-muted hover:text-fg"
+                className="text-xs text-zinc-400 hover:text-white"
               >
                 ✕
               </button>
@@ -1832,7 +1904,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             <div className="mt-2 flex gap-2">
               <input
                 type="number"
-                className="w-full rounded-md border border-border bg-bg px-2.5 py-1 text-sm font-mono"
+                className="w-full rounded-md border border-white/10 bg-bg px-2.5 py-1 text-sm font-mono"
                 value={addAmount}
                 onChange={(e) => setAddAmount(e.target.value)}
                 placeholder="₹500"
@@ -1858,7 +1930,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               <span className="text-xl">📷</span>
             </div>
             <div className="flex flex-col items-start text-left">
-              <span className="text-xs font-black text-fg">Scan Any QR</span>
+              <span className="text-xs font-black text-white">Scan Any QR</span>
               <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">Pay Instantly</span>
             </div>
             <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-emerald-500/10 to-transparent pointer-events-none" />
@@ -1874,7 +1946,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               <span className="text-xl">📲</span>
             </div>
             <div className="flex flex-col items-start text-left">
-              <span className="text-xs font-black text-fg">My QR Code</span>
+              <span className="text-xs font-black text-white">My QR Code</span>
               <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest">Receive Money</span>
             </div>
             <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-amber-500/10 to-transparent pointer-events-none" />
@@ -1887,39 +1959,39 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           <button
             type="button"
             onClick={() => setActiveUtilityModal("contact")}
-            className="flex flex-col items-center justify-center rounded-2xl border border-blue-500/30 bg-gradient-to-b from-blue-500/10 to-surface p-2.5 sm:p-3 text-center transition hover:border-blue-500 hover:shadow-md active:scale-95 shadow-xs group"
+            className="flex flex-col items-center justify-center rounded-2xl border border-blue-500/30 bg-gradient-to-b from-blue-500/10 to-surface p-2.5 sm:p-3 text-center transition hover:border-blue-500 hover:shadow-md active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.05)] group"
           >
             <span className="flex size-11 items-center justify-center rounded-2xl bg-blue-500 text-white text-xl mb-1.5 shadow-sm group-hover:scale-105 transition">
               👤
             </span>
-            <span className="text-xs font-black text-fg leading-tight">To Mobile</span>
-            <span className="text-[10px] text-muted leading-tight mt-0.5">Phone Number</span>
+            <span className="text-xs font-black text-white leading-tight">To Mobile</span>
+            <span className="text-[10px] text-zinc-400 leading-tight mt-0.5">Phone Number</span>
           </button>
 
           {/* 2. To Bank / UPI ID */}
           <button
             type="button"
             onClick={() => setActiveUtilityModal("upi")}
-            className="flex flex-col items-center justify-center rounded-2xl border border-purple-500/30 bg-gradient-to-b from-purple-500/10 to-surface p-2.5 sm:p-3 text-center transition hover:border-purple-500 hover:shadow-md active:scale-95 shadow-xs group"
+            className="flex flex-col items-center justify-center rounded-2xl border border-purple-500/30 bg-gradient-to-b from-purple-500/10 to-surface p-2.5 sm:p-3 text-center transition hover:border-purple-500 hover:shadow-md active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.05)] group"
           >
             <span className="flex size-11 items-center justify-center rounded-2xl bg-purple-600 text-white text-xl mb-1.5 shadow-sm group-hover:scale-105 transition">
               🏦
             </span>
-            <span className="text-xs font-black text-fg leading-tight">To Bank A/C</span>
-            <span className="text-[10px] text-muted leading-tight mt-0.5">A/C No. &amp; IFSC</span>
+            <span className="text-xs font-black text-white leading-tight">To Bank A/C</span>
+            <span className="text-[10px] text-zinc-400 leading-tight mt-0.5">A/C No. &amp; IFSC</span>
           </button>
 
           {/* 3. Self Transfer Between Own Bank Accounts */}
           <button
             type="button"
             onClick={() => setShowSelfTransferModal(true)}
-            className="flex flex-col items-center justify-center rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 to-surface p-2.5 sm:p-3 text-center transition hover:border-amber-500 hover:shadow-md active:scale-95 shadow-xs group"
+            className="flex flex-col items-center justify-center rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 to-surface p-2.5 sm:p-3 text-center transition hover:border-amber-500 hover:shadow-md active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.05)] group"
           >
             <span className="flex size-11 items-center justify-center rounded-2xl bg-amber-500 text-white text-xl mb-1.5 shadow-sm group-hover:scale-105 transition">
               🔄
             </span>
-            <span className="text-xs font-black text-fg leading-tight">Self Transfer</span>
-            <span className="text-[10px] text-muted leading-tight mt-0.5">Between A/Cs</span>
+            <span className="text-xs font-black text-white leading-tight">Self Transfer</span>
+            <span className="text-[10px] text-zinc-400 leading-tight mt-0.5">Between A/Cs</span>
           </button>
 
           {/* 4. Check Bank Balance */}
@@ -1930,24 +2002,24 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               setUpiPinInput("");
               setShowCheckBalanceModal(true);
             }}
-            className="flex flex-col items-center justify-center rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-emerald-500/10 to-surface p-2.5 sm:p-3 text-center transition hover:border-emerald-500 hover:shadow-md active:scale-95 shadow-xs group"
+            className="flex flex-col items-center justify-center rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-emerald-500/10 to-surface p-2.5 sm:p-3 text-center transition hover:border-emerald-500 hover:shadow-md active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.05)] group"
           >
             <span className="flex size-11 items-center justify-center rounded-2xl bg-emerald-600 text-white text-xl mb-1.5 shadow-sm group-hover:scale-105 transition">
               💳
             </span>
-            <span className="text-xs font-black text-fg leading-tight">Check Balance</span>
+            <span className="text-xs font-black text-white leading-tight">Check Balance</span>
             <span className="text-[10px] text-emerald-600 font-bold leading-tight mt-0.5">Bank &amp; Wallet</span>
           </button>
         </div>
 
         {/* LINKED BANK ACCOUNTS & QUICK BALANCE CARD (DAILY NEEDY) */}
-        <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
-          <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+        <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)] space-y-3">
+          <div className="flex items-center justify-between border-b border-white/10/60 pb-2.5">
             <div className="flex items-center gap-2">
               <span className="text-xl">🏛️</span>
               <div>
-                <h3 className="font-display text-sm font-bold text-fg">Linked Bank Accounts</h3>
-                <p className="text-[11px] text-muted">Direct UPI transfer &amp; real-time balance inquiry</p>
+                <h3 className="font-display text-sm font-bold text-white">Linked Bank Accounts</h3>
+                <p className="text-[11px] text-zinc-400">Direct UPI transfer &amp; real-time balance inquiry</p>
               </div>
             </div>
             <button
@@ -1966,7 +2038,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             {linkedBanks.map((bank) => (
               <div
                 key={bank.id}
-                className="flex items-center justify-between rounded-xl border border-border bg-surface-2/60 p-3 hover:border-primary/40 transition"
+                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5/60 p-3 hover:border-primary/40 transition"
               >
                 <div className="flex items-center gap-2.5">
                   <span className="flex size-9 items-center justify-center rounded-xl bg-primary/15 text-lg">
@@ -1974,14 +2046,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </span>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-fg">{bank.bankName}</span>
+                      <span className="text-xs font-bold text-white">{bank.bankName}</span>
                       {bank.isPrimary && (
                         <span className="rounded bg-emerald-500/15 px-1.5 py-0.2 text-[9px] font-extrabold text-emerald-700 dark:text-emerald-300">
                           PRIMARY
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] font-mono text-muted">{bank.accountType} A/C {bank.accountNumberMasked}</span>
+                    <span className="text-[11px] font-mono text-zinc-400">{bank.accountType} A/C {bank.accountNumberMasked}</span>
                   </div>
                 </div>
 
@@ -1989,7 +2061,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   {balanceRevealed[bank.id] !== undefined ? (
                     <div className="text-right">
                       <span className="text-[10px] text-emerald-600 font-bold block">Available</span>
-                      <span className="font-mono text-sm font-black text-fg">
+                      <span className="font-mono text-sm font-black text-white">
                         ₹{balanceRevealed[bank.id].toLocaleString("en-IN")}.00
                       </span>
                     </div>
@@ -2013,10 +2085,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           </div>
 
           {/* UPI ID Strip */}
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs border-t border-border/40">
-            <div className="flex items-center gap-1.5 text-muted">
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs border-t border-white/10/40">
+            <div className="flex items-center gap-1.5 text-zinc-400">
               <span>My UPI ID:</span>
-              <code className="font-mono font-bold text-fg bg-surface-2 px-2 py-0.5 rounded">
+              <code className="font-mono font-bold text-white bg-white/5 px-2 py-0.5 rounded">
                 user9876@kingpay
               </code>
               <button
@@ -2049,7 +2121,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-display text-sm font-bold text-fg">
+                <h3 className="font-display text-sm font-bold text-white">
                   Vehicle Garage &amp; RTO Compliance
                 </h3>
                 <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
@@ -2061,7 +2133,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </span>
                 )}
               </div>
-              <p className="text-xs text-muted mt-0.5">
+              <p className="text-xs text-zinc-400 mt-0.5">
                 Check traffic e-challans, 0-paperwork insurance renewal, PUC expiry &amp; FASTag
               </p>
             </div>
@@ -2085,7 +2157,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-display text-sm font-bold text-fg">
+                <h3 className="font-display text-sm font-bold text-white">
                   Planet's Lowest Price Flights &amp; Travel
                 </h3>
                 <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
@@ -2095,7 +2167,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   2x Price Match
                 </span>
               </div>
-              <p className="text-xs text-muted mt-0.5">
+              <p className="text-xs text-zinc-400 mt-0.5">
                 Wholesale GDS fares, split-ticketing optimizer, IRCTC tatkal radar, buses &amp; cabs
               </p>
             </div>
@@ -2119,7 +2191,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-display text-sm font-bold text-fg">
+                <h3 className="font-display text-sm font-bold text-white">
                   Sovereign Credit Line &amp; Micro-Loans
                 </h3>
                 <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
@@ -2129,7 +2201,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   ₹50,000 Limit
                 </span>
               </div>
-              <p className="text-xs text-muted mt-0.5">
+              <p className="text-xs text-zinc-400 mt-0.5">
                 Instant ₹1,000 – ₹50,000 pre-approved credit disbursed directly to your King Pay Wallet
               </p>
             </div>
@@ -2141,11 +2213,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         </div>
 
         {/* EVERYDAY NEEDS & UTILITY BILLS (ORGANIZED AT THE TOP) */}
-        <section aria-label="Everyday Needs & Bills" className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
-          <div className="flex items-center justify-between border-b border-border/60 pb-2">
+        <section aria-label="Everyday Needs & Bills" className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)] space-y-3">
+          <div className="flex items-center justify-between border-b border-white/10/60 pb-2">
             <div>
-              <h2 className="font-display text-base font-bold text-fg">Everyday Needs &amp; Utility Bills</h2>
-              <p className="text-xs text-muted">Instant recharge &amp; bill payments with 0 convenience fee</p>
+              <h2 className="font-display text-base font-bold text-white">Everyday Needs &amp; Utility Bills</h2>
+              <p className="text-xs text-zinc-400">Instant recharge &amp; bill payments with 0 convenience fee</p>
             </div>
             <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
               ⚡ Instant BBPS
@@ -2156,103 +2228,103 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             <button
               type="button"
               onClick={() => setActiveUtilityModal("recharge")}
-              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-surface-2 active:scale-95"
+              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-white/5 active:scale-95"
             >
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600 text-2xl mb-1 shadow-xs">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600 text-2xl mb-1 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 📱
               </span>
-              <span className="text-[11px] font-semibold text-fg leading-tight">Mobile Recharge</span>
+              <span className="text-[11px] font-semibold text-white leading-tight">Mobile Recharge</span>
               <span className="text-[9px] text-emerald-600 font-bold mt-0.5">2% Back</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveUtilityModal("electricity")}
-              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-surface-2 active:scale-95"
+              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-white/5 active:scale-95"
             >
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 text-2xl mb-1 shadow-xs">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 text-2xl mb-1 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 ⚡
               </span>
-              <span className="text-[11px] font-semibold text-fg leading-tight">Electricity Bill</span>
-              <span className="text-[9px] text-muted mt-0.5">APDCL</span>
+              <span className="text-[11px] font-semibold text-white leading-tight">Electricity Bill</span>
+              <span className="text-[9px] text-zinc-400 mt-0.5">APDCL</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveUtilityModal("dth")}
-              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-surface-2 active:scale-95"
+              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-white/5 active:scale-95"
             >
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-600 text-2xl mb-1 shadow-xs">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-600 text-2xl mb-1 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 📡
               </span>
-              <span className="text-[11px] font-semibold text-fg leading-tight">DTH / Cable</span>
-              <span className="text-[9px] text-muted mt-0.5">Tata/Airtel</span>
+              <span className="text-[11px] font-semibold text-white leading-tight">DTH / Cable</span>
+              <span className="text-[9px] text-zinc-400 mt-0.5">Tata/Airtel</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveUtilityModal("gas")}
-              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-surface-2 active:scale-95"
+              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-white/5 active:scale-95"
             >
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-orange-500/15 text-orange-600 text-2xl mb-1 shadow-xs">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-orange-500/15 text-orange-600 text-2xl mb-1 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 🛢️
               </span>
-              <span className="text-[11px] font-semibold text-fg leading-tight">LPG Cylinder</span>
-              <span className="text-[9px] text-muted mt-0.5">Indane/HP</span>
+              <span className="text-[11px] font-semibold text-white leading-tight">LPG Cylinder</span>
+              <span className="text-[9px] text-zinc-400 mt-0.5">Indane/HP</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveUtilityModal("fastag")}
-              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-surface-2 active:scale-95"
+              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-white/5 active:scale-95"
             >
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-indigo-500/15 text-indigo-600 text-2xl mb-1 shadow-xs">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-indigo-500/15 text-indigo-600 text-2xl mb-1 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 🚗
               </span>
-              <span className="text-[11px] font-semibold text-fg leading-tight">FASTag</span>
-              <span className="text-[9px] text-muted mt-0.5">All Banks</span>
+              <span className="text-[11px] font-semibold text-white leading-tight">FASTag</span>
+              <span className="text-[9px] text-zinc-400 mt-0.5">All Banks</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveUtilityModal("water")}
-              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-surface-2 active:scale-95"
+              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-white/5 active:scale-95"
             >
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-600 text-2xl mb-1 shadow-xs">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-600 text-2xl mb-1 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 💧
               </span>
-              <span className="text-[11px] font-semibold text-fg leading-tight">Water Tax</span>
-              <span className="text-[9px] text-muted mt-0.5">Municipal</span>
+              <span className="text-[11px] font-semibold text-white leading-tight">Water Tax</span>
+              <span className="text-[9px] text-zinc-400 mt-0.5">Municipal</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveUtilityModal("broadband")}
-              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-surface-2 active:scale-95"
+              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-white/5 active:scale-95"
             >
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-violet-500/15 text-violet-600 text-2xl mb-1 shadow-xs">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-violet-500/15 text-violet-600 text-2xl mb-1 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 🌐
               </span>
-              <span className="text-[11px] font-semibold text-fg leading-tight">Broadband</span>
-              <span className="text-[9px] text-muted mt-0.5">Jio/Airtel</span>
+              <span className="text-[11px] font-semibold text-white leading-tight">Broadband</span>
+              <span className="text-[9px] text-zinc-400 mt-0.5">Jio/Airtel</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveUtilityModal("card")}
-              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-surface-2 active:scale-95"
+              className="flex flex-col items-center justify-center rounded-xl p-2 text-center transition hover:bg-white/5 active:scale-95"
             >
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-600 text-2xl mb-1 shadow-xs">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-600 text-2xl mb-1 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 💳
               </span>
-              <span className="text-[11px] font-semibold text-fg leading-tight">Credit Card</span>
-              <span className="text-[9px] text-muted mt-0.5">Instant Pay</span>
+              <span className="text-[11px] font-semibold text-white leading-tight">Credit Card</span>
+              <span className="text-[9px] text-zinc-400 mt-0.5">Instant Pay</span>
             </button>
           </div>
         </section>
 
         {/* 24K Digital Gold Partner Vault (SafeGold / MMTC-PAMP style) */}
-        <div className="rounded-[var(--radius-xl)] border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-surface to-surface p-4 shadow-xs">
+        <div className="rounded-[var(--radius-xl)] border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-surface to-surface p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-lg">
@@ -2260,13 +2332,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display text-sm font-bold text-fg">24K Digital Gold Vault</h3>
+                  <h3 className="font-display text-sm font-bold text-white">24K Digital Gold Vault</h3>
                   <span className="rounded-full bg-amber-500/15 px-2 py-0.2 text-[10px] font-bold text-amber-800 dark:text-amber-200">
                     Live: ₹7,420/gm · 99.9% Pure
                   </span>
                 </div>
-                <p className="text-xs text-muted">
-                  Vault Balance: <span className="font-semibold text-fg">{goldGrams} gm</span> (Value: ₹{Math.round(goldGrams * 7420)}) · Start from ₹1
+                <p className="text-xs text-zinc-400">
+                  Vault Balance: <span className="font-semibold text-white">{goldGrams} gm</span> (Value: ₹{Math.round(goldGrams * 7420)}) · Start from ₹1
                 </p>
               </div>
             </div>
@@ -2282,15 +2354,15 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         </div>
 
         {/* Split Bill with Friends (Compact Smart Card) */}
-        <div className="rounded-2xl border border-border bg-surface p-3.5 shadow-xs">
+        <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="flex size-8 items-center justify-center rounded-xl bg-primary/10 text-base">
                 👥
               </span>
               <div>
-                <h3 className="font-display text-xs font-bold text-fg">Split Bill with Friends</h3>
-                <p className="text-[10px] text-muted">Instant WhatsApp link with 0 math</p>
+                <h3 className="font-display text-xs font-bold text-white">Split Bill with Friends</h3>
+                <p className="text-[10px] text-zinc-400">Instant WhatsApp link with 0 math</p>
               </div>
             </div>
             <span className="text-[9px] font-bold text-primary bg-primary/10 rounded-full px-2 py-0.5">Instant WhatsApp</span>
@@ -2303,7 +2375,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 value={splitAmount}
                 onChange={(e) => setSplitAmount(e.target.value)}
                 placeholder="₹ Amount"
-                className="w-full rounded-lg border border-border bg-bg px-2.5 py-1 text-xs font-mono"
+                className="w-full rounded-lg border border-white/10 bg-bg px-2.5 py-1 text-xs font-mono"
               />
             </div>
             <div className="flex gap-1 flex-1">
@@ -2312,7 +2384,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   key={cnt}
                   type="button"
                   onClick={() => setSplitCount(cnt)}
-                  className={`flex-1 rounded border py-1 text-[11px] font-semibold transition ${splitCount === cnt ? "bg-primary text-white border-primary" : "border-border bg-surface-2 text-muted"}`}
+                  className={`flex-1 rounded border py-1 text-[11px] font-semibold transition ${splitCount === cnt ? "bg-primary text-white border-primary" : "border-white/10 bg-white/5 text-zinc-400"}`}
                 >
                   {cnt}
                 </button>
@@ -2321,7 +2393,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             <button
               type="button"
               onClick={shareSplitOnWhatsApp}
-              className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 transition flex items-center gap-1 shadow-xs shrink-0"
+              className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 transition flex items-center gap-1 shadow-[0_0_15px_rgba(255,255,255,0.05)] shrink-0"
             >
               <span>💬 Split</span>
               <span>(₹{Math.round((parseInt(splitAmount, 10) || 0) / splitCount)})</span>
@@ -2330,7 +2402,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         </div>
 
         {/* 100x High-Speed Instant Loans & Micro-Credit Engine (Navi / KreditBee / Lendingkart) */}
-        <div className="rounded-[var(--radius-xl)] border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-surface to-surface p-4 sm:p-5 shadow-xs space-y-4">
+        <div className="rounded-[var(--radius-xl)] border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 via-surface to-surface p-4 sm:p-5 shadow-[0_0_15px_rgba(255,255,255,0.05)] space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               <span className="flex size-10 items-center justify-center rounded-xl bg-indigo-500/20 text-xl">
@@ -2338,12 +2410,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display text-base font-bold text-fg">Instant Pre-Approved Loans</h3>
+                  <h3 className="font-display text-base font-bold text-white">Instant Pre-Approved Loans</h3>
                   <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                     CIBIL 785 · Pre-Approved
                   </span>
                 </div>
-                <p className="text-xs text-muted">
+                <p className="text-xs text-zinc-400">
                   2-Minute Digital KYC · Instant UPI/Bank Disbursal · Zero Paperwork · 100% RBI Regulated
                 </p>
               </div>
@@ -2355,16 +2427,16 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           </div>
 
           {/* Interactive Loan EMI & Eligibility Calculator */}
-          <div className="rounded-xl border border-indigo-500/20 bg-surface/80 p-3.5 space-y-3">
+          <div className="rounded-xl border border-indigo-500/20 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]/80 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-fg">🧮 Interactive Loan &amp; EMI Calculator</span>
-              <span className="text-[11px] font-mono text-muted">Estimated Rate: 9.9% p.a.</span>
+              <span className="text-xs font-bold text-white">🧮 Interactive Loan &amp; EMI Calculator</span>
+              <span className="text-[11px] font-mono text-zinc-400">Estimated Rate: 9.9% p.a.</span>
             </div>
 
             {/* Slider 1: Loan Amount */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-muted font-medium">Desired Loan Amount:</span>
+                <span className="text-zinc-400 font-medium">Desired Loan Amount:</span>
                 <span className="font-mono font-extrabold text-sm text-primary">₹{calcAmount.toLocaleString("en-IN")}</span>
               </div>
               <input
@@ -2374,7 +2446,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 step={10000}
                 value={calcAmount}
                 onChange={(e) => setCalcAmount(Number(e.target.value))}
-                className="w-full h-1.5 bg-surface-2 rounded-lg appearance-none cursor-pointer accent-primary"
+                className="w-full h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer accent-primary"
               />
               <div className="flex justify-between gap-1 pt-1">
                 {[50000, 100000, 250000, 500000, 1000000].map((amt) => (
@@ -2382,7 +2454,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                     key={amt}
                     type="button"
                     onClick={() => setCalcAmount(amt)}
-                    className={`rounded px-2 py-0.5 text-[10px] font-mono font-semibold transition ${calcAmount === amt ? "bg-primary text-white" : "bg-surface-2 text-muted hover:bg-accent"}`}
+                    className={`rounded px-2 py-0.5 text-[10px] font-mono font-semibold transition ${calcAmount === amt ? "bg-primary text-white" : "bg-white/5 text-zinc-400 hover:bg-accent"}`}
                   >
                     ₹{amt >= 100000 ? `${amt / 100000}L` : `${amt / 1000}K`}
                   </button>
@@ -2393,8 +2465,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             {/* Slider 2: Tenure */}
             <div className="space-y-1.5 pt-1">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-muted font-medium">Tenure (Months):</span>
-                <span className="font-mono font-extrabold text-sm text-fg">{calcTenure} Months</span>
+                <span className="text-zinc-400 font-medium">Tenure (Months):</span>
+                <span className="font-mono font-extrabold text-sm text-white">{calcTenure} Months</span>
               </div>
               <input
                 type="range"
@@ -2403,7 +2475,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 step={3}
                 value={calcTenure}
                 onChange={(e) => setCalcTenure(Number(e.target.value))}
-                className="w-full h-1.5 bg-surface-2 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                className="w-full h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer accent-indigo-500"
               />
               <div className="flex justify-between gap-1 pt-1">
                 {[3, 6, 12, 24, 36].map((m) => (
@@ -2411,7 +2483,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                     key={m}
                     type="button"
                     onClick={() => setCalcTenure(m)}
-                    className={`rounded px-2.5 py-0.5 text-[10px] font-mono font-semibold transition ${calcTenure === m ? "bg-indigo-600 text-white" : "bg-surface-2 text-muted hover:bg-accent"}`}
+                    className={`rounded px-2.5 py-0.5 text-[10px] font-mono font-semibold transition ${calcTenure === m ? "bg-indigo-600 text-white" : "bg-white/5 text-zinc-400 hover:bg-accent"}`}
                   >
                     {m}m
                   </button>
@@ -2422,14 +2494,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             {/* Live EMI Result Display */}
             <div className="rounded-lg bg-indigo-500/10 border border-indigo-500/20 p-2.5 flex items-center justify-between">
               <div>
-                <p className="text-[10px] text-muted">Estimated Monthly EMI:</p>
+                <p className="text-[10px] text-zinc-400">Estimated Monthly EMI:</p>
                 <p className="font-mono text-base font-extrabold text-indigo-700 dark:text-indigo-300">
                   ₹{calculateEmi(calcAmount, 9.9, calcTenure).toLocaleString("en-IN")} / mo
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[10px] text-muted">Total Repayment:</p>
-                <p className="font-mono text-xs font-bold text-fg">
+                <p className="text-[10px] text-zinc-400">Total Repayment:</p>
+                <p className="font-mono text-xs font-bold text-white">
                   ₹{(calculateEmi(calcAmount, 9.9, calcTenure) * calcTenure).toLocaleString("en-IN")}
                 </p>
               </div>
@@ -2438,7 +2510,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             {/* Slider 3: CIBIL Score & Instant Pre-Approval Dial */}
             <div className="space-y-1.5 pt-1 border-t border-indigo-500/20">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-muted font-medium">Your CIBIL Score Dial:</span>
+                <span className="text-zinc-400 font-medium">Your CIBIL Score Dial:</span>
                 <span className={`font-mono font-extrabold text-sm ${simulatedCibilScore >= 750 ? "text-emerald-600" : simulatedCibilScore >= 650 ? "text-indigo-600" : "text-amber-600"}`}>
                   {simulatedCibilScore} ({simulatedCibilScore >= 750 ? "Super-Prime Pre-Approved" : simulatedCibilScore >= 650 ? "Good Approval Rate" : "100% Guaranteed FD-Backed"})
                 </span>
@@ -2450,9 +2522,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 step={5}
                 value={simulatedCibilScore}
                 onChange={(e) => setSimulatedCibilScore(Number(e.target.value))}
-                className="w-full h-1.5 bg-surface-2 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                className="w-full h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer accent-emerald-500"
               />
-              <div className="flex justify-between text-[10px] text-muted font-mono">
+              <div className="flex justify-between text-[10px] text-zinc-400 font-mono">
                 <span>300 (New to Credit)</span>
                 <span>650 (Average)</span>
                 <span>750+ (Super Prime)</span>
@@ -2494,12 +2566,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 onClick={() => setCalcCategory(tab.id as typeof calcCategory)}
                 className={`flex-shrink-0 rounded-lg border px-3 py-1.5 text-xs font-bold transition flex items-center gap-1.5 ${
                   calcCategory === tab.id
-                    ? "bg-primary text-white border-primary shadow-xs"
-                    : "border-border bg-surface text-muted hover:bg-surface-2"
+                    ? "bg-primary text-white border-primary shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                    : "border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-zinc-400 hover:bg-white/5"
                 }`}
               >
                 <span>{tab.label}</span>
-                <span className={`text-[10px] rounded-full px-1.5 py-0.2 ${calcCategory === tab.id ? "bg-white/20 text-white" : "bg-surface-2 text-muted-foreground"}`}>
+                <span className={`text-[10px] rounded-full px-1.5 py-0.2 ${calcCategory === tab.id ? "bg-white/20 text-white" : "bg-white/5 text-zinc-400-foreground"}`}>
                   {tab.count}
                 </span>
               </button>
@@ -2513,36 +2585,36 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               return (
                 <div
                   key={product.id}
-                  className="rounded-xl border border-border bg-surface p-3.5 flex flex-col justify-between space-y-2 hover:border-primary/50 transition-colors shadow-xs"
+                  className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 flex flex-col justify-between space-y-2 hover:border-primary/50 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                 >
                   <div className="space-y-1.5">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <h4 className="font-display font-bold text-xs text-fg">{product.name}</h4>
+                          <h4 className="font-display font-bold text-xs text-white">{product.name}</h4>
                           <span className="rounded bg-indigo-500/10 px-1.5 py-0.2 text-[9px] font-bold text-indigo-600 dark:text-indigo-400">
                             {product.tag}
                           </span>
                         </div>
-                        <p className="text-[10px] text-muted">{product.partnerNbfc}</p>
+                        <p className="text-[10px] text-zinc-400">{product.partnerNbfc}</p>
                       </div>
                       <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex-shrink-0">
                         {product.speedText}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 rounded-lg bg-surface-2/60 p-2 text-[11px] font-mono">
+                    <div className="grid grid-cols-2 gap-2 rounded-lg bg-white/5/60 p-2 text-[11px] font-mono">
                       <div>
-                        <span className="text-muted block text-[10px]">Max Limit:</span>
-                        <span className="font-bold text-fg">{product.maxLimit}</span>
+                        <span className="text-zinc-400 block text-[10px]">Max Limit:</span>
+                        <span className="font-bold text-white">{product.maxLimit}</span>
                       </div>
                       <div>
-                        <span className="text-muted block text-[10px]">Interest Rate:</span>
+                        <span className="text-zinc-400 block text-[10px]">Interest Rate:</span>
                         <span className="font-bold text-emerald-600">{product.interestRate}</span>
                       </div>
                     </div>
 
-                    <p className="text-[11px] text-muted">{product.benefit}</p>
+                    <p className="text-[11px] text-zinc-400">{product.benefit}</p>
 
                     <div className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-800 dark:text-emerald-300 font-semibold flex items-center justify-between">
                       <span>🎁 Customer Welcome Perk:</span>
@@ -2571,7 +2643,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                         partnerUrl: product.partnerUrl,
                       })
                     }
-                    className="w-full rounded-lg bg-primary py-2 text-xs font-bold text-white hover:bg-primary/90 transition text-center shadow-xs flex items-center justify-center gap-1.5"
+                    className="w-full rounded-lg bg-primary py-2 text-xs font-bold text-white hover:bg-primary/90 transition text-center shadow-[0_0_15px_rgba(255,255,255,0.05)] flex items-center justify-center gap-1.5"
                   >
                     <span>Instant 2-Min Approval</span>
                     <span>↗</span>
@@ -2589,14 +2661,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   <span className="flex size-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-black text-sm">
                     B
                   </span>
-                  <h3 className="font-display font-extrabold text-base text-fg">
+                  <h3 className="font-display font-extrabold text-base text-white">
                     Bajaj Finserv No-Cost EMI &amp; Micro-Credit Hub
                   </h3>
                   <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                     India&apos;s #1 NBFC
                   </span>
                 </div>
-                <p className="text-xs text-muted mt-1">
+                <p className="text-xs text-zinc-400 mt-1">
                   Top 20 pre-approved mutual benefit offers: 0% Interest No-Cost EMI, ₹0 down payment &amp; 60-second activation. Customer gets effortless purchasing power; OrderKing earns top guaranteed affiliate commission.
                 </p>
               </div>
@@ -2605,7 +2677,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   href="https://www.bajajfinserv.in/insta-emi-card?utm_source=orderking_affiliate"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 text-xs font-bold transition shadow-xs"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 text-xs font-bold transition shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                 >
                   <span>⚡ Activate ₹2L Insta EMI Card</span>
                   <span>↗</span>
@@ -2630,8 +2702,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   onClick={() => setSelectedBajajOfferCategory(c.id as typeof selectedBajajOfferCategory)}
                   className={`flex-shrink-0 rounded-lg px-2.5 py-1 font-semibold transition text-[11px] ${
                     selectedBajajOfferCategory === c.id
-                      ? "bg-indigo-600 text-white shadow-xs"
-                      : "bg-surface border border-border text-muted hover:bg-surface-2"
+                      ? "bg-indigo-600 text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                      : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/10 text-zinc-400 hover:bg-white/5"
                   }`}
                 >
                   {c.label}
@@ -2648,13 +2720,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 return (
                   <div
                     key={offer.id}
-                    className="rounded-xl border border-border bg-surface p-3 flex flex-col justify-between space-y-2 hover:border-indigo-500/50 hover:shadow-xs transition"
+                    className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 flex flex-col justify-between space-y-2 hover:border-indigo-500/50 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition"
                   >
                     <div className="space-y-1.5">
                       <div className="flex items-start justify-between gap-1.5">
                         <div className="flex items-center gap-1.5">
                           <span className="text-xl">{offer.icon}</span>
-                          <h4 className="font-display font-bold text-xs text-fg leading-tight">
+                          <h4 className="font-display font-bold text-xs text-white leading-tight">
                             {offer.title}
                           </h4>
                         </div>
@@ -2663,19 +2735,19 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-1 rounded-lg bg-surface-2/60 p-1.5 text-[10px] font-mono">
+                      <div className="grid grid-cols-2 gap-1 rounded-lg bg-white/5/60 p-1.5 text-[10px] font-mono">
                         <div>
-                          <span className="text-muted block">Limit:</span>
-                          <span className="font-bold text-fg">{offer.limitText}</span>
+                          <span className="text-zinc-400 block">Limit:</span>
+                          <span className="font-bold text-white">{offer.limitText}</span>
                         </div>
                         <div>
-                          <span className="text-muted block">Tenure:</span>
+                          <span className="text-zinc-400 block">Tenure:</span>
                           <span className="font-bold text-indigo-600 dark:text-indigo-400">{offer.tenure}</span>
                         </div>
                       </div>
 
-                      <p className="text-[10px] text-muted leading-relaxed">
-                        <span className="font-semibold text-fg">Customer Benefit: </span>
+                      <p className="text-[10px] text-zinc-400 leading-relaxed">
+                        <span className="font-semibold text-white">Customer Benefit: </span>
                         {offer.customerBenefit}
                       </p>
 
@@ -2706,7 +2778,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                           partnerUrl: offer.instantApplyUrl,
                         })
                       }
-                      className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 py-1.5 text-xs font-bold text-white transition text-center shadow-xs flex items-center justify-center gap-1"
+                      className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 py-1.5 text-xs font-bold text-white transition text-center shadow-[0_0_15px_rgba(255,255,255,0.05)] flex items-center justify-center gap-1"
                     >
                       <span>Check 1-Tap Eligibility</span>
                       <span>↗</span>
@@ -2718,41 +2790,41 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           </div>
 
           {/* 🛡️ Statutory RBI Digital Lending LSP Disclaimer (Zero Liability Guarantee) */}
-          <div className="rounded-xl border border-border bg-surface-2/40 p-3 text-[11px] text-muted space-y-1">
-            <div className="flex items-center gap-1.5 font-bold text-fg">
+          <div className="rounded-xl border border-white/10 bg-white/5/40 p-3 text-[11px] text-zinc-400 space-y-1">
+            <div className="flex items-center gap-1.5 font-bold text-white">
               <span>🛡️</span>
               <span>RBI Digital Lending Guidelines (2022/2023) Compliance &amp; Non-Liability Disclosure</span>
             </div>
             <p>
               OrderKing operates strictly as an RBI-compliant Technology Service Provider / Lending Service Provider (LSP) and affiliate aggregator. OrderKing is NOT a Non-Banking Financial Company (NBFC) or Bank. All loans, credit lines, interest rates, underwriting, KYC validation, fund disbursals, and loan repayments are handled directly and exclusively by our RBI-registered NBFC and Scheduled Commercial Bank partners (Bajaj Finance Ltd, Navi Finserv, Krazybee Services, Lendingkart, Hero FinCorp, HDFC Bank, SBI Cards, IDFC FIRST Bank).
             </p>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-[10px] text-zinc-400-foreground">
               OrderKing does not underwrite loans, does not collect debt or EMIs, and bears ZERO financial or legal liability for customer defaults, late repayments, or credit outcomes.
             </p>
           </div>
         </div>
 
         {/* Smart Bill Due Reminders & UPI Autopay (PhonePe / Paytm style) */}
-        <div className="rounded-[var(--radius-xl)] border border-border bg-surface p-4 shadow-xs">
+        <div className="rounded-[var(--radius-xl)] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-lg">
                 🔔
               </span>
               <div>
-                <h3 className="font-display text-sm font-bold text-fg">Upcoming Bill Due Alerts</h3>
-                <p className="text-xs text-muted">Never miss a due date · 1-Tap Autopay with King Coins reward</p>
+                <h3 className="font-display text-sm font-bold text-white">Upcoming Bill Due Alerts</h3>
+                <p className="text-xs text-zinc-400">Never miss a due date · 1-Tap Autopay with King Coins reward</p>
               </div>
             </div>
             <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 rounded-full px-2 py-0.5">2 Bills Pending</span>
           </div>
 
           <div className="mt-3 space-y-2">
-            <div className="flex items-center justify-between rounded-lg bg-surface-2/60 p-2.5">
+            <div className="flex items-center justify-between rounded-lg bg-white/5/60 p-2.5">
               <div className="flex items-center gap-2.5">
                 <span className="text-xl">⚡</span>
                 <div>
-                  <p className="text-xs font-bold text-fg">APDCL Electricity Bill (Consumer #7890124)</p>
+                  <p className="text-xs font-bold text-white">APDCL Electricity Bill (Consumer #7890124)</p>
                   <p className="text-[11px] text-amber-600 font-semibold">Due in 3 days · ₹840.00</p>
                 </div>
               </div>
@@ -2769,12 +2841,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               </Button>
             </div>
 
-            <div className="flex items-center justify-between rounded-lg bg-surface-2/60 p-2.5">
+            <div className="flex items-center justify-between rounded-lg bg-white/5/60 p-2.5">
               <div className="flex items-center gap-2.5">
                 <span className="text-xl">📶</span>
                 <div>
-                  <p className="text-xs font-bold text-fg">Airtel Xstream Fiber Wi-Fi (Acct #984102)</p>
-                  <p className="text-[11px] text-muted">Due in 6 days · ₹799.00</p>
+                  <p className="text-xs font-bold text-white">Airtel Xstream Fiber Wi-Fi (Acct #984102)</p>
+                  <p className="text-[11px] text-zinc-400">Due in 6 days · ₹799.00</p>
                 </div>
               </div>
               <Button
@@ -2793,15 +2865,15 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         </div>
 
         {/* Multi-Bank Account Interoperability (BHIM / PhonePe style) */}
-        <div className="rounded-[var(--radius-xl)] border border-border bg-surface p-4 shadow-xs">
+        <div className="rounded-[var(--radius-xl)] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-surface-2 text-lg">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-white/5 text-lg">
                 🏦
               </span>
               <div>
-                <h3 className="font-display text-sm font-bold text-fg">Linked Bank Accounts</h3>
-                <p className="text-xs text-muted">NPCI UPI Interoperable · Direct Bank-to-Bank Transfer</p>
+                <h3 className="font-display text-sm font-bold text-white">Linked Bank Accounts</h3>
+                <p className="text-xs text-zinc-400">NPCI UPI Interoperable · Direct Bank-to-Bank Transfer</p>
               </div>
             </div>
             <span className="text-[10px] font-bold text-primary bg-primary/10 rounded-full px-2 py-0.5">3 Accounts Active</span>
@@ -2813,18 +2885,18 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               { bank: "HDFC Bank", acct: "****7741", bal: "₹52,450.00", icon: "🏢" },
               { bank: "Assam Gramin Vikash", acct: "****8820", bal: "₹18,900.00", icon: "🌾" },
             ].map((b) => (
-              <div key={b.acct} className="rounded-lg border border-border bg-surface-2/40 p-2.5 flex items-center justify-between">
+              <div key={b.acct} className="rounded-lg border border-white/10 bg-white/5/40 p-2.5 flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-1.5">
                     <span>{b.icon}</span>
-                    <span className="text-xs font-bold text-fg">{b.bank}</span>
+                    <span className="text-xs font-bold text-white">{b.bank}</span>
                   </div>
-                  <p className="text-[11px] text-muted font-mono">{b.acct}</p>
+                  <p className="text-[11px] text-zinc-400 font-mono">{b.acct}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => toast.info(`${b.bank} (${b.acct}) Balance: ${b.bal}`)}
-                  className="rounded border border-border bg-surface px-2 py-1 text-[10px] font-bold text-primary hover:bg-surface-2 transition"
+                  className="rounded border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-2 py-1 text-[10px] font-bold text-primary hover:bg-white/5 transition"
                 >
                   Check Bal
                 </button>
@@ -2834,7 +2906,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         </div>
 
         {/* Navi-Style "KingPay Later" Card */}
-        <div className="rounded-[var(--radius-xl)] border border-primary/25 bg-gradient-to-r from-primary/10 via-surface to-surface p-4 shadow-xs">
+        <div className="rounded-[var(--radius-xl)] border border-primary/25 bg-gradient-to-r from-primary/10 via-surface to-surface p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="flex size-9 items-center justify-center rounded-xl bg-primary/15 text-lg">
@@ -2842,12 +2914,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display text-sm font-bold text-fg">KingPay Later</h3>
+                  <h3 className="font-display text-sm font-bold text-white">KingPay Later</h3>
                   <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                     0% Interest for 15 Days
                   </span>
                 </div>
-                <p className="text-xs text-muted">
+                <p className="text-xs text-zinc-400">
                   {payLaterActive
                     ? `Approved Credit Limit: ₹${payLaterLimit.toLocaleString("en-IN")}.00 | 1-Tap Ready`
                     : "Instant ₹2,500 credit limit. No bank documents. Zero interest."}
@@ -2866,16 +2938,16 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         </div>
 
         {/* CRED-Style 7-Day Habit Streak & Dopamine Coins */}
-        <div className="rounded-[var(--radius-xl)] border border-border bg-surface p-4 shadow-xs">
+        <div className="rounded-[var(--radius-xl)] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display text-sm font-bold text-fg">👑 Daily Check-in Streak</span>
+                <span className="font-display text-sm font-bold text-white">👑 Daily Check-in Streak</span>
                 <span className="rounded-full bg-amber-500/20 px-2 py-0.2 text-[10px] font-bold text-amber-800 dark:text-amber-200">
                   {kingCoins} King Coins
                 </span>
               </div>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-zinc-400">
                 Check in daily to earn coins & unlock Mystery Scratch Cards!
               </p>
             </div>
@@ -2901,8 +2973,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                     isPast
                       ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                       : isCurrent
-                        ? "border-primary bg-primary text-white font-bold shadow-xs"
-                        : "border-border bg-surface-2/40 text-muted"
+                        ? "border-primary bg-primary text-white font-bold shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                        : "border-white/10 bg-white/5/40 text-zinc-400"
                   }`}
                 >
                   <span className="block text-[10px]">D{day}</span>
@@ -2917,17 +2989,17 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         <div className="rounded-[var(--radius-xl)] border-2 border-purple-500/30 bg-gradient-to-br from-purple-500/15 via-surface to-indigo-500/10 p-4 sm:p-5 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-500/20 pb-3">
             <div className="flex items-center gap-3">
-              <span className="flex size-10 items-center justify-center rounded-xl bg-purple-600 text-white text-xl shadow-xs">
+              <span className="flex size-10 items-center justify-center rounded-xl bg-purple-600 text-white text-xl shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 🎰
               </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display text-base font-bold text-fg">Lucky Jackpot &amp; VIP Club</h3>
+                  <h3 className="font-display text-base font-bold text-white">Lucky Jackpot &amp; VIP Club</h3>
                   <span className="rounded-full bg-purple-500/20 px-2 py-0.5 text-[10px] font-bold text-purple-700 dark:text-purple-300">
                     Dopamine Rewards
                   </span>
                 </div>
-                <p className="text-xs text-muted">
+                <p className="text-xs text-zinc-400">
                   Spin daily for guaranteed cash, burn coins for instant food discounts, and climb VIP tiers!
                 </p>
               </div>
@@ -2937,7 +3009,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               <button
                 type="button"
                 onClick={() => setShowSpinWheel(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-xs font-bold transition shadow-xs active:scale-98"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-xs font-bold transition shadow-[0_0_15px_rgba(255,255,255,0.05)] active:scale-98"
               >
                 <span>🎰 Spin Lucky Jackpot</span>
                 <span className="text-[10px] bg-white/20 px-1.5 py-0.2 rounded">Free / 100 🪙</span>
@@ -2962,13 +3034,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 </div>
 
                 {/* Coin Burn Option 1 */}
-                <div className="rounded-xl border border-border bg-surface p-3 flex flex-col justify-between space-y-2">
+                <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 flex flex-col justify-between space-y-2">
                   <div>
-                    <div className="flex items-center justify-between text-xs font-bold text-fg">
+                    <div className="flex items-center justify-between text-xs font-bold text-white">
                       <span>🔥 Fast Food Burn</span>
                       <span className="font-mono text-emerald-600 font-extrabold">-₹10.00</span>
                     </div>
-                    <p className="text-[10px] text-muted">Redeem 100 King Coins for instant ₹10 food wallet credit.</p>
+                    <p className="text-[10px] text-zinc-400">Redeem 100 King Coins for instant ₹10 food wallet credit.</p>
                   </div>
                   <button
                     type="button"
@@ -2980,13 +3052,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 </div>
 
                 {/* Coin Burn Option 2 */}
-                <div className="rounded-xl border border-border bg-surface p-3 flex flex-col justify-between space-y-2">
+                <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 flex flex-col justify-between space-y-2">
                   <div>
-                    <div className="flex items-center justify-between text-xs font-bold text-fg">
+                    <div className="flex items-center justify-between text-xs font-bold text-white">
                       <span>👑 Royal Feast Burn</span>
                       <span className="font-mono text-emerald-600 font-extrabold">-₹50.00</span>
                     </div>
-                    <p className="text-[10px] text-muted">Redeem 500 King Coins for instant ₹50 food wallet credit.</p>
+                    <p className="text-[10px] text-zinc-400">Redeem 500 King Coins for instant ₹50 food wallet credit.</p>
                   </div>
                   <button
                     type="button"
@@ -3005,19 +3077,19 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         <div className="rounded-[var(--radius-xl)] border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/15 via-surface to-orange-500/10 p-4 sm:p-5 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/20 pb-3">
             <div className="flex items-center gap-3">
-              <span className="flex size-10 items-center justify-center rounded-xl bg-amber-500 text-black text-xl shadow-xs font-bold">
+              <span className="flex size-10 items-center justify-center rounded-xl bg-amber-500 text-black text-xl shadow-[0_0_15px_rgba(255,255,255,0.05)] font-bold">
                 ⛽
               </span>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display text-base font-bold text-fg">
+                  <h3 className="font-display text-base font-bold text-white">
                     Fuel &amp; Petro Alliances (HPCL · IndianOil · BPCL)
                   </h3>
                   <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-200">
                     Up to 8.25% Savings
                   </span>
                 </div>
-                <p className="text-xs text-muted">
+                <p className="text-xs text-zinc-400">
                   Official co-branded fuel cards, instant digital vouchers, and delivery fleet rebates (Zero Platform Markup)
                 </p>
               </div>
@@ -3031,14 +3103,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           </div>
 
           {/* 1. Interactive Annual Fuel Savings Calculator */}
-          <div className="rounded-xl border border-border bg-surface p-3.5 space-y-3">
+          <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-xs font-bold text-fg flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
                   <span>📊 Fuel Savings &amp; Cashback Calculator</span>
                   <span className="text-[10px] text-emerald-600 font-semibold">(Annual Projection)</span>
                 </h4>
-                <p className="text-[11px] text-muted">Calculate how much you save using partner fuel cards &amp; KingPay vouchers</p>
+                <p className="text-[11px] text-zinc-400">Calculate how much you save using partner fuel cards &amp; KingPay vouchers</p>
               </div>
               <span className="font-mono text-sm font-extrabold text-primary">₹{monthlyFuelSpend.toLocaleString("en-IN")} / mo</span>
             </div>
@@ -3053,7 +3125,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 onChange={(e) => setMonthlyFuelSpend(parseInt(e.target.value, 10))}
                 className="w-full accent-primary cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-muted font-mono">
+              <div className="flex justify-between text-[10px] text-zinc-400 font-mono">
                 <span>₹1,000 (Bike)</span>
                 <span>₹5,000 (Car/Rider)</span>
                 <span>₹10,000 (SUV)</span>
@@ -3062,10 +3134,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-              <div className="rounded-lg bg-surface-2/60 p-2.5 border border-border">
-                <span className="text-[10px] text-muted block uppercase font-bold">Annual Fuel Spend</span>
-                <span className="font-mono text-sm font-extrabold text-fg">₹{(monthlyFuelSpend * 12).toLocaleString("en-IN")}</span>
-                <span className="text-[10px] text-muted block mt-0.5">Across all pumps</span>
+              <div className="rounded-lg bg-white/5/60 p-2.5 border border-white/10">
+                <span className="text-[10px] text-zinc-400 block uppercase font-bold">Annual Fuel Spend</span>
+                <span className="font-mono text-sm font-extrabold text-white">₹{(monthlyFuelSpend * 12).toLocaleString("en-IN")}</span>
+                <span className="text-[10px] text-zinc-400 block mt-0.5">Across all pumps</span>
               </div>
               <div className="rounded-lg bg-emerald-500/10 p-2.5 border border-emerald-500/30">
                 <span className="text-[10px] text-emerald-700 dark:text-emerald-300 block uppercase font-bold">Cashback &amp; Surcharge Saved</span>
@@ -3085,11 +3157,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           </div>
 
           {/* 2. Instant Digital Fuel Vouchers Simulator */}
-          <div className="rounded-xl border border-border bg-surface p-3.5 space-y-3">
+          <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <div>
-                <h4 className="text-xs font-bold text-fg">⚡ Instant Digital Fuel Vouchers (2% King Coins Back)</h4>
-                <p className="text-[11px] text-muted">Generate instant barcode / QR voucher redeemable at pump POS in 5 seconds</p>
+                <h4 className="text-xs font-bold text-white">⚡ Instant Digital Fuel Vouchers (2% King Coins Back)</h4>
+                <p className="text-[11px] text-zinc-400">Generate instant barcode / QR voucher redeemable at pump POS in 5 seconds</p>
               </div>
               <div className="flex gap-1">
                 {(["HPCL (HP Pay)", "IndianOil (IOCL ONE)", "BPCL (SmartDrive)"] as const).map((brand) => (
@@ -3099,8 +3171,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                     onClick={() => setSelectedVoucherBrand(brand)}
                     className={`text-[10px] font-bold px-2 py-1 rounded transition ${
                       selectedVoucherBrand === brand
-                        ? "bg-amber-500 text-black shadow-xs"
-                        : "bg-surface-2 text-muted hover:bg-surface-2/80"
+                        ? "bg-amber-500 text-black shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                        : "bg-white/5 text-zinc-400 hover:bg-white/5/80"
                     }`}
                   >
                     {brand.split(" ")[0]}
@@ -3115,9 +3187,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   key={amt}
                   type="button"
                   onClick={() => handleBuyFuelVoucher(selectedVoucherBrand, amt)}
-                  className="rounded-lg border border-border bg-surface-2/40 hover:bg-surface-2 p-2.5 text-center transition flex flex-col items-center justify-between gap-1 hover:border-amber-500/50"
+                  className="rounded-lg border border-white/10 bg-white/5/40 hover:bg-white/5 p-2.5 text-center transition flex flex-col items-center justify-between gap-1 hover:border-amber-500/50"
                 >
-                  <span className="text-xs font-bold text-fg font-mono">₹{amt} Voucher</span>
+                  <span className="text-xs font-bold text-white font-mono">₹{amt} Voucher</span>
                   <span className="text-[10px] font-semibold text-emerald-600">+{Math.round(amt * 0.02 * 10)} Coins Back</span>
                   <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.2 rounded font-bold mt-1">1-Tap Generate</span>
                 </button>
@@ -3126,44 +3198,44 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           </div>
 
           {/* 3. Partner Petrol Pumps & EV Stations Near You */}
-          <div className="rounded-xl border border-border bg-surface p-3.5 space-y-2.5">
+          <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 space-y-2.5">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold text-fg flex items-center gap-1.5">
+              <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
                 <span>📍 Partner Stations in Karimganj &amp; Silchar</span>
                 <span className="text-[10px] bg-emerald-500/10 text-emerald-600 font-bold px-1.5 py-0.2 rounded">Live Radar</span>
               </h4>
-              <span className="text-[10px] text-muted">Zero Surcharge Network</span>
+              <span className="text-[10px] text-zinc-400">Zero Surcharge Network</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-              <div className="rounded-lg bg-surface-2/40 p-2.5 border border-border space-y-1">
+              <div className="rounded-lg bg-white/5/40 p-2.5 border border-white/10 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-fg">HPCL City Center</span>
+                  <span className="font-bold text-white">HPCL City Center</span>
                   <span className="text-[10px] font-mono text-emerald-600 font-semibold">0.8 km</span>
                 </div>
-                <p className="text-[10px] text-muted">Station Road, Karimganj</p>
+                <p className="text-[10px] text-zinc-400">Station Road, Karimganj</p>
                 <div className="flex items-center gap-1 text-[9px] text-emerald-600 font-semibold">
                   <span>⚡ 60kW EV DC Fast Charger Available</span>
                 </div>
               </div>
 
-              <div className="rounded-lg bg-surface-2/40 p-2.5 border border-border space-y-1">
+              <div className="rounded-lg bg-white/5/40 p-2.5 border border-white/10 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-fg">IndianOil Jubilee Auto</span>
+                  <span className="font-bold text-white">IndianOil Jubilee Auto</span>
                   <span className="text-[10px] font-mono text-emerald-600 font-semibold">1.4 km</span>
                 </div>
-                <p className="text-[10px] text-muted">Trunk Road, Silchar</p>
+                <p className="text-[10px] text-zinc-400">Trunk Road, Silchar</p>
                 <div className="flex items-center gap-1 text-[9px] text-primary font-semibold">
                   <span>🛢️ XTRAPOWER Fleet Card Accepted</span>
                 </div>
               </div>
 
-              <div className="rounded-lg bg-surface-2/40 p-2.5 border border-border space-y-1">
+              <div className="rounded-lg bg-white/5/40 p-2.5 border border-white/10 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-fg">BPCL Highway Oasis</span>
+                  <span className="font-bold text-white">BPCL Highway Oasis</span>
                   <span className="text-[10px] font-mono text-emerald-600 font-semibold">3.2 km</span>
                 </div>
-                <p className="text-[10px] text-muted">NH-37 Bypass, Silchar</p>
+                <p className="text-[10px] text-zinc-400">NH-37 Bypass, Silchar</p>
                 <div className="flex items-center gap-1 text-[9px] text-amber-600 font-semibold">
                   <span>💨 Free Nitrogen Air + 24/7 Rest Stop</span>
                 </div>
@@ -3176,8 +3248,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             <div className="flex items-center gap-2.5">
               <span className="text-2xl">🛵</span>
               <div>
-                <h5 className="text-xs font-bold text-fg">OrderKing Rider &amp; Restaurant Delivery Fleet Alliance</h5>
-                <p className="text-[11px] text-muted">
+                <h5 className="text-xs font-bold text-white">OrderKing Rider &amp; Restaurant Delivery Fleet Alliance</h5>
+                <p className="text-[11px] text-zinc-400">
                   HPCL DriveTrack Plus &amp; IOCL XTRAPOWER gives riders ₹1.50 - ₹2.50/L cashback + Free ₹2,00,000 Insurance cover!
                 </p>
               </div>
@@ -3192,10 +3264,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-display text-lg font-bold text-fg">
+              <h2 className="font-display text-lg font-bold text-white">
                 Recharges & Bill Payments
               </h2>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-zinc-400">
                 Powered by official national biller alliances & affiliate partners
               </p>
             </div>
@@ -3220,8 +3292,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 onClick={() => setActiveTab(tab.id)}
                 className={`whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition ${
                   activeTab === tab.id
-                    ? "bg-primary text-white shadow-xs"
-                    : "bg-surface text-muted hover:bg-surface-2"
+                    ? "bg-primary text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                    : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-zinc-400 hover:bg-white/5"
                 }`}
               >
                 {tab.label}
@@ -3234,16 +3306,16 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             {filteredServices.map((service) => (
               <div
                 key={service.id}
-                className="rounded-[var(--radius-xl)] border border-border bg-surface p-4 shadow-xs flex flex-col justify-between"
+                className="rounded-[var(--radius-xl)] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)] flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5">
-                      <span className="flex size-10 items-center justify-center rounded-xl bg-surface-2 text-xl">
+                      <span className="flex size-10 items-center justify-center rounded-xl bg-white/5 text-xl">
                         {service.icon}
                       </span>
                       <div>
-                        <h3 className="font-semibold text-sm text-fg">
+                        <h3 className="font-semibold text-sm text-white">
                           {service.name}
                         </h3>
                         {service.badge && (
@@ -3254,7 +3326,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                       </div>
                     </div>
                   </div>
-                  <p className="mt-2 text-xs text-muted">
+                  <p className="mt-2 text-xs text-zinc-400">
                     {service.description}
                   </p>
                   <p className="mt-1 text-[11px] font-medium text-amber-600 dark:text-amber-400">
@@ -3262,8 +3334,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between">
-                  <span className="text-[10px] text-muted">Official Affiliate Gateway</span>
+                <div className="mt-4 pt-3 border-t border-white/10/50 flex items-center justify-between">
+                  <span className="text-[10px] text-zinc-400">Official Affiliate Gateway</span>
                   <a
                     href={service.affiliateUrl}
                     target="_blank"
@@ -3271,7 +3343,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                     onClick={() => {
                       toast.success(`Redirecting to ${service.name} secure portal...`);
                     }}
-                    className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-primary/90 transition"
+                    className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:bg-primary/90 transition"
                   >
                     <span>Proceed</span>
                     <span>↗</span>
@@ -3283,16 +3355,16 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         </div>
 
         {/* E-Commerce & Shopping Affiliate Banner */}
-        <div className="rounded-[var(--radius-xl)] border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-surface to-amber-500/5 p-4 shadow-xs">
+        <div className="rounded-[var(--radius-xl)] border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-surface to-amber-500/5 p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
           <div className="flex items-center justify-between">
             <div>
               <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-200">
                 Affiliate Shopping Rewards
               </span>
-              <h3 className="mt-1 font-display font-bold text-base text-fg">
+              <h3 className="mt-1 font-display font-bold text-base text-white">
                 Shop on Amazon, Flipkart & Meesho
               </h3>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-zinc-400">
                 Save with exclusive promo codes while supporting OrderKing
               </p>
             </div>
@@ -3307,8 +3379,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         </div>
 
         {/* Security & Financial Statutory Footnote */}
-        <div className="rounded-lg bg-surface-2/40 p-3 text-center text-xs text-muted">
-          <div className="flex items-center justify-center gap-3 font-semibold text-fg">
+        <div className="rounded-lg bg-white/5/40 p-3 text-center text-xs text-zinc-400">
+          <div className="flex items-center justify-center gap-3 font-semibold text-white">
             <span>🔒 Sovereign AI Security</span>
             <span>•</span>
             <span>🏛️ RBI PPI Compliant</span>
@@ -3323,8 +3395,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {/* MODAL 1: Interactive Scan & Pay Scanner */}
         {showScanner && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-xs">
-            <div className="w-full max-w-sm rounded-[var(--radius-xl)] border border-border bg-surface p-5 shadow-xl">
-              <div className="flex items-center justify-between pb-3 border-b border-border">
+            <div className="w-full max-w-sm rounded-[var(--radius-xl)] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-xl">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">📷</span>
                   <h3 className="font-display font-bold text-base">Scan & Pay Any UPI QR</h3>
@@ -3332,7 +3404,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 <button
                   type="button"
                   onClick={() => setShowScanner(false)}
-                  className="rounded-full p-1 text-muted hover:bg-surface-2"
+                  className="rounded-full p-1 text-zinc-400 hover:bg-white/5"
                 >
                   ✕
                 </button>
@@ -3348,22 +3420,22 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
               <form onSubmit={handleScanPaySubmit} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1">Paying To (UPI ID / Mobile):</label>
+                  <label className="block text-xs font-semibold text-zinc-400 mb-1">Paying To (UPI ID / Mobile):</label>
                   <input
                     type="text"
                     value={scanRecipient}
                     onChange={(e) => setScanRecipient(e.target.value)}
-                    className="w-full rounded-md border border-border bg-bg px-2.5 py-1.5 text-xs font-mono"
+                    className="w-full rounded-md border border-white/10 bg-bg px-2.5 py-1.5 text-xs font-mono"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1">Amount (₹):</label>
+                  <label className="block text-xs font-semibold text-zinc-400 mb-1">Amount (₹):</label>
                   <input
                     type="number"
                     value={scanAmount}
                     onChange={(e) => setScanAmount(e.target.value)}
-                    className="w-full rounded-md border border-border bg-bg px-2.5 py-1.5 text-sm font-mono font-bold"
+                    className="w-full rounded-md border border-white/10 bg-bg px-2.5 py-1.5 text-sm font-mono font-bold"
                     required
                   />
                 </div>
@@ -3385,8 +3457,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-xs">
             <div className="w-full max-w-sm rounded-[var(--radius-xl)] border-2 border-amber-500/50 bg-gradient-to-br from-amber-500/10 via-surface to-surface p-6 shadow-2xl text-center">
               <span className="text-4xl">👑</span>
-              <h3 className="mt-2 font-display text-xl font-bold text-fg">OrderKing Mystery Scratch Card</h3>
-              <p className="text-xs text-muted">You unlocked a guaranteed reward!</p>
+              <h3 className="mt-2 font-display text-xl font-bold text-white">OrderKing Mystery Scratch Card</h3>
+              <p className="text-xs text-zinc-400">You unlocked a guaranteed reward!</p>
 
               <div
                 onClick={() => setScratched(true)}
@@ -3406,9 +3478,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   <>
                     <span className="text-3xl">🎉</span>
                     <h4 className="font-bold text-lg text-emerald-600 dark:text-emerald-400">{scratchReward.title}</h4>
-                    <p className="text-2xl font-black font-mono mt-1 text-fg">+₹{scratchReward.amount}</p>
+                    <p className="text-2xl font-black font-mono mt-1 text-white">+₹{scratchReward.amount}</p>
                     <p className="text-xs text-amber-600 font-semibold mt-0.5">+{scratchReward.coins} King Coins</p>
-                    <p className="text-[10px] text-muted mt-1">{scratchReward.desc}</p>
+                    <p className="text-[10px] text-zinc-400 mt-1">{scratchReward.desc}</p>
                   </>
                 )}
               </div>
@@ -3418,7 +3490,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   Claim & Add to Wallet Float
                 </Button>
               ) : (
-                <p className="text-xs text-muted">Tap on the card above to reveal your reward!</p>
+                <p className="text-xs text-zinc-400">Tap on the card above to reveal your reward!</p>
               )}
             </div>
           </div>
@@ -3427,8 +3499,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {/* MODAL 3: 24K Digital Gold Buy Modal */}
         {showGoldModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-xs">
-            <div className="w-full max-w-sm rounded-[var(--radius-xl)] border border-amber-500/40 bg-surface p-5 shadow-xl">
-              <div className="flex items-center justify-between pb-3 border-b border-border">
+            <div className="w-full max-w-sm rounded-[var(--radius-xl)] border border-amber-500/40 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-xl">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🪙</span>
                   <h3 className="font-display font-bold text-base">Buy 24K 99.9% Digital Gold</h3>
@@ -3436,7 +3508,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 <button
                   type="button"
                   onClick={() => setShowGoldModal(false)}
-                  className="rounded-full p-1 text-muted hover:bg-surface-2"
+                  className="rounded-full p-1 text-zinc-400 hover:bg-white/5"
                 >
                   ✕
                 </button>
@@ -3447,17 +3519,17 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   <span>Live Gold Rate</span>
                   <span>₹7,420 / gm</span>
                 </div>
-                <p className="text-[10px] text-muted mt-0.5">100% Insured Bank-Grade Physical Vault · Partnered with MMTC-PAMP & SafeGold</p>
+                <p className="text-[10px] text-zinc-400 mt-0.5">100% Insured Bank-Grade Physical Vault · Partnered with MMTC-PAMP & SafeGold</p>
               </div>
 
               <form onSubmit={handleBuyGold} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1">Buy Amount (₹):</label>
+                  <label className="block text-xs font-semibold text-zinc-400 mb-1">Buy Amount (₹):</label>
                   <input
                     type="number"
                     value={goldAmount}
                     onChange={(e) => setGoldAmount(e.target.value)}
-                    className="w-full rounded-md border border-border bg-bg px-2.5 py-1.5 text-sm font-mono font-bold"
+                    className="w-full rounded-md border border-white/10 bg-bg px-2.5 py-1.5 text-sm font-mono font-bold"
                     required
                   />
                   <div className="mt-2 flex gap-1.5">
@@ -3466,7 +3538,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                         key={v}
                         type="button"
                         onClick={() => setGoldAmount(v)}
-                        className={`flex-1 rounded border py-1 text-xs font-semibold transition ${goldAmount === v ? "bg-amber-500 text-white border-amber-500" : "border-border bg-surface-2 text-muted"}`}
+                        className={`flex-1 rounded border py-1 text-xs font-semibold transition ${goldAmount === v ? "bg-amber-500 text-white border-amber-500" : "border-white/10 bg-white/5 text-zinc-400"}`}
                       >
                         ₹{v}
                       </button>
@@ -3474,9 +3546,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </div>
                 </div>
 
-                <div className="rounded-lg bg-surface-2/60 p-2.5 text-xs flex justify-between items-center">
-                  <span className="text-muted">Estimated Gold Received:</span>
-                  <span className="font-mono font-bold text-fg">
+                <div className="rounded-lg bg-white/5/60 p-2.5 text-xs flex justify-between items-center">
+                  <span className="text-zinc-400">Estimated Gold Received:</span>
+                  <span className="font-mono font-bold text-white">
                     {((parseInt(goldAmount, 10) || 0) / 7420).toFixed(4)} gm
                   </span>
                 </div>
@@ -3497,7 +3569,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {/* MODAL 4: Biometric 1-Tap WebAuthn Authentication Modal */}
         {showBiometricModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-            <div className="w-full max-w-sm rounded-[var(--radius-xl)] border border-indigo-500/40 bg-surface p-6 shadow-2xl text-center">
+            <div className="w-full max-w-sm rounded-[var(--radius-xl)] border border-indigo-500/40 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6 shadow-2xl text-center">
               <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-indigo-500/10 border border-indigo-500/30 relative">
                 {biometricScanning && (
                   <div className="absolute inset-0 rounded-full border-2 border-indigo-500 animate-ping opacity-60" />
@@ -3507,21 +3579,21 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 </span>
               </div>
 
-              <h3 className="mt-4 font-display text-lg font-bold text-fg">
+              <h3 className="mt-4 font-display text-lg font-bold text-white">
                 {biometricSuccess
                   ? "Biometric Verified!"
                   : biometricScanning
                   ? "Scanning WebAuthn Sensor..."
                   : "Touch ID / Face ID"}
               </h3>
-              <p className="mt-1 text-xs text-muted">
+              <p className="mt-1 text-xs text-zinc-400">
                 {biometricSuccess
                   ? "1-Tap deduction successful · Instant soundbox confirmation triggered."
                   : "Hold your fingerprint on the sensor or glance at the camera to authenticate with 0 OTP."}
               </p>
 
-              <div className="mt-4 rounded-lg bg-surface-2/60 p-3 text-xs flex justify-between items-center font-mono">
-                <span className="text-muted">Security Protocol:</span>
+              <div className="mt-4 rounded-lg bg-white/5/60 p-3 text-xs flex justify-between items-center font-mono">
+                <span className="text-zinc-400">Security Protocol:</span>
                 <span className="font-bold text-indigo-600 dark:text-indigo-400">FIDO2 WebAuthn · 256-Bit AES</span>
               </div>
 
@@ -3544,21 +3616,21 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {/* MODAL 5: Pre-Approved Loan & Credit Card Lead Modal */}
         {selectedLoanProduct && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-            <div className="w-full max-w-lg rounded-[var(--radius-xl)] border border-indigo-500/40 bg-surface p-5 sm:p-6 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-start justify-between pb-3 border-b border-border">
+            <div className="w-full max-w-lg rounded-[var(--radius-xl)] border border-indigo-500/40 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 sm:p-6 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-start justify-between pb-3 border-b border-white/10">
                 <div className="flex items-center gap-2.5">
                   <span className="flex size-10 items-center justify-center rounded-xl bg-indigo-500/20 text-xl">
                     ⚡
                   </span>
                   <div>
-                    <h3 className="font-display font-bold text-sm sm:text-base text-fg">{selectedLoanProduct.name}</h3>
-                    <p className="text-[11px] text-muted font-medium">{selectedLoanProduct.partnerNbfc}</p>
+                    <h3 className="font-display font-bold text-sm sm:text-base text-white">{selectedLoanProduct.name}</h3>
+                    <p className="text-[11px] text-zinc-400 font-medium">{selectedLoanProduct.partnerNbfc}</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedLoanProduct(null)}
-                  className="rounded-full p-1 text-muted hover:bg-surface-2"
+                  className="rounded-full p-1 text-zinc-400 hover:bg-white/5"
                 >
                   ✕
                 </button>
@@ -3567,45 +3639,45 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               {/* Approval Status & Speed Badge */}
               <div className="rounded-xl bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-surface p-3 border border-emerald-500/20 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] text-muted font-semibold">Pre-Approved Credit Standing:</span>
+                  <span className="text-[10px] text-zinc-400 font-semibold">Pre-Approved Credit Standing:</span>
                   <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                     CIBIL 785 · 100% Eligible (Zero Paperwork)
                   </p>
                 </div>
-                <span className="rounded bg-indigo-600 px-2 py-1 text-[10px] font-bold text-white shadow-xs">
+                <span className="rounded bg-indigo-600 px-2 py-1 text-[10px] font-bold text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                   {selectedLoanProduct.speedText}
                 </span>
               </div>
 
               {/* Loan Terms Matrix */}
-              <div className="grid grid-cols-3 gap-2 rounded-xl bg-surface-2/60 p-3 text-xs font-mono">
+              <div className="grid grid-cols-3 gap-2 rounded-xl bg-white/5/60 p-3 text-xs font-mono">
                 <div>
-                  <span className="text-[10px] text-muted block">Max Limit:</span>
+                  <span className="text-[10px] text-zinc-400 block">Max Limit:</span>
                   <span className="font-extrabold text-sm text-primary">{selectedLoanProduct.maxLimit}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted block">Interest Rate:</span>
-                  <span className="font-extrabold text-sm text-fg">{selectedLoanProduct.interestRate}</span>
+                  <span className="text-[10px] text-zinc-400 block">Interest Rate:</span>
+                  <span className="font-extrabold text-sm text-white">{selectedLoanProduct.interestRate}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted block">Tenure:</span>
-                  <span className="font-extrabold text-sm text-fg">{selectedLoanProduct.tenureRange}</span>
+                  <span className="text-[10px] text-zinc-400 block">Tenure:</span>
+                  <span className="font-extrabold text-sm text-white">{selectedLoanProduct.tenureRange}</span>
                 </div>
               </div>
 
-              <div className="rounded-lg bg-surface-2/40 p-2.5 text-xs text-muted">
-                <span className="font-bold text-fg block mb-0.5">Product Benefits:</span>
+              <div className="rounded-lg bg-white/5/40 p-2.5 text-xs text-zinc-400">
+                <span className="font-bold text-white block mb-0.5">Product Benefits:</span>
                 {selectedLoanProduct.benefit}
               </div>
 
               {/* Unique Cryptographic Lead ID */}
               <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/5 p-2.5 text-xs flex items-center justify-between font-mono">
                 <div>
-                  <span className="text-[10px] text-muted block">Unique Lead Tracking ID:</span>
+                  <span className="text-[10px] text-zinc-400 block">Unique Lead Tracking ID:</span>
                   <span className="font-bold text-indigo-700 dark:text-indigo-300">{selectedLoanProduct.leadId}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-muted block">Processing Fee:</span>
+                  <span className="text-[10px] text-zinc-400 block">Processing Fee:</span>
                   <span className="font-bold text-emerald-600">₹0 (Zero Fee Waiver)</span>
                 </div>
               </div>
@@ -3616,7 +3688,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   href={selectedLoanProduct.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full rounded-lg bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-bold py-2.5 text-center transition flex items-center justify-center gap-2 shadow-xs"
+                  className="w-full rounded-lg bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-bold py-2.5 text-center transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                 >
                   <span>💬 Disburse via VIP WhatsApp Desk</span>
                   <span className="text-[10px] opacity-80">(Auto-Verified Lead)</span>
@@ -3626,7 +3698,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   href={selectedLoanProduct.partnerUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-bold py-2.5 text-center transition flex items-center justify-center gap-2 shadow-xs"
+                  className="w-full rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-bold py-2.5 text-center transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                 >
                   <span>🌐 Direct Partner NBFC Instant KYC Portal</span>
                   <span>↗</span>
@@ -3643,7 +3715,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               </div>
 
               {/* RBI Statutory Non-Liability Disclaimer */}
-              <p className="text-[10px] text-muted text-center pt-1 border-t border-border">
+              <p className="text-[10px] text-zinc-400 text-center pt-1 border-t border-white/10">
                 🛡️ All loans are issued directly by RBI-registered NBFCs and Banks. OrderKing operates strictly as an LSP technology provider and bears zero financial liability for loan defaults.
               </p>
             </div>
@@ -3654,15 +3726,15 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {showSpinWheel && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
             <div className="w-full max-w-sm rounded-[var(--radius-xl)] border-2 border-purple-500/50 bg-gradient-to-br from-purple-900/40 via-surface to-surface p-6 shadow-2xl text-center space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-2">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🎰</span>
-                  <h3 className="font-display font-bold text-base text-fg">Lucky Jackpot Spin Wheel</h3>
+                  <h3 className="font-display font-bold text-base text-white">Lucky Jackpot Spin Wheel</h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowSpinWheel(false)}
-                  className="rounded-full p-1 text-muted hover:bg-surface-2"
+                  className="rounded-full p-1 text-zinc-400 hover:bg-white/5"
                 >
                   ✕
                 </button>
@@ -3678,20 +3750,20 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 ) : spinResult ? (
                   <div className="flex flex-col items-center justify-center p-2">
                     <span className="text-4xl animate-bounce">{spinResult.icon}</span>
-                    <span className="font-bold text-xs text-fg mt-1 text-center line-clamp-1">{spinResult.prize}</span>
+                    <span className="font-bold text-xs text-white mt-1 text-center line-clamp-1">{spinResult.prize}</span>
                     <span className="text-[9px] text-emerald-600 font-semibold">{spinResult.sub}</span>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center p-2 text-center">
                     <span className="text-4xl">👑</span>
-                    <span className="font-bold text-xs text-fg mt-1">Ready to Win!</span>
-                    <span className="text-[10px] text-muted">Tap Spin below</span>
+                    <span className="font-bold text-xs text-white mt-1">Ready to Win!</span>
+                    <span className="text-[10px] text-zinc-400">Tap Spin below</span>
                   </div>
                 )}
               </div>
 
-              <div className="rounded-lg bg-surface-2/60 p-2.5 text-xs flex justify-between items-center font-mono">
-                <span className="text-muted">King Coins Balance:</span>
+              <div className="rounded-lg bg-white/5/60 p-2.5 text-xs flex justify-between items-center font-mono">
+                <span className="text-zinc-400">King Coins Balance:</span>
                 <span className="font-bold text-amber-600">{kingCoins} 🪙</span>
               </div>
 
@@ -3714,32 +3786,32 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {showFuelVoucherModal && generatedFuelVoucher && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
             <div className="w-full max-w-sm rounded-[var(--radius-xl)] border-2 border-amber-500/50 bg-gradient-to-br from-amber-900/30 via-surface to-surface p-6 shadow-2xl space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-2">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">⛽</span>
                   <div>
-                    <h3 className="font-display font-bold text-base text-fg">{generatedFuelVoucher.brand}</h3>
-                    <p className="text-[10px] text-muted">Digital Fuel Card · Instant Pump POS Redeem</p>
+                    <h3 className="font-display font-bold text-base text-white">{generatedFuelVoucher.brand}</h3>
+                    <p className="text-[10px] text-zinc-400">Digital Fuel Card · Instant Pump POS Redeem</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowFuelVoucherModal(false)}
-                  className="rounded-full p-1 text-muted hover:bg-surface-2"
+                  className="rounded-full p-1 text-zinc-400 hover:bg-white/5"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="rounded-xl border border-amber-500/30 bg-surface p-4 text-center space-y-2 shadow-inner">
-                <span className="text-[10px] uppercase font-bold text-muted block tracking-wider">Voucher Value</span>
-                <span className="font-mono text-3xl font-black text-fg">₹{generatedFuelVoucher.amount}.00</span>
-                <div className="my-2 rounded-lg bg-surface-2 p-2 border border-dashed border-primary/50">
-                  <span className="text-[10px] uppercase font-bold text-muted block">Voucher Code (Show at Pump)</span>
+              <div className="rounded-xl border border-amber-500/30 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 text-center space-y-2 shadow-inner">
+                <span className="text-[10px] uppercase font-bold text-zinc-400 block tracking-wider">Voucher Value</span>
+                <span className="font-mono text-3xl font-black text-white">₹{generatedFuelVoucher.amount}.00</span>
+                <div className="my-2 rounded-lg bg-white/5 p-2 border border-dashed border-primary/50">
+                  <span className="text-[10px] uppercase font-bold text-zinc-400 block">Voucher Code (Show at Pump)</span>
                   <code className="font-mono text-base font-extrabold text-primary tracking-widest">{generatedFuelVoucher.code}</code>
                 </div>
                 <p className="text-[11px] text-emerald-600 font-semibold">+{generatedFuelVoucher.coinsReward} King Coins Credited to your wallet!</p>
-                <p className="text-[10px] text-muted">{generatedFuelVoucher.expiry}</p>
+                <p className="text-[10px] text-zinc-400">{generatedFuelVoucher.expiry}</p>
               </div>
 
               <div className="space-y-2">
@@ -3768,7 +3840,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {/* MODAL: Receive Money & Custom QR Studio */}
         {showReceiveQrModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 backdrop-blur-md overflow-y-auto">
-            <div className="w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border-2 border-amber-500/40 bg-surface p-4 sm:p-6 shadow-2xl">
+            <div className="w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border-2 border-amber-500/40 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 sm:p-6 shadow-2xl">
               <ReceiveMoneyQrStudio
                 isModal
                 onClose={() => setShowReceiveQrModal(false)}
@@ -3821,8 +3893,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {/* MODAL 9: Everyday Needs Utility & Payment Modals */}
         {activeUtilityModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-sm rounded-2xl border-2 border-primary/40 bg-surface p-5 shadow-2xl space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-2.5">
+            <div className="w-full max-w-sm rounded-2xl border-2 border-primary/40 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">
                     {activeUtilityModal === "recharge" && "📱"}
@@ -3837,7 +3909,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                     {activeUtilityModal === "upi" && "🏦"}
                   </span>
                   <div>
-                    <h3 className="font-display font-black text-base text-fg">
+                    <h3 className="font-display font-black text-base text-white">
                       {activeUtilityModal === "recharge" && "Mobile Recharge"}
                       {activeUtilityModal === "electricity" && "Electricity Bill (APDCL)"}
                       {activeUtilityModal === "dth" && "DTH & Cable Recharge"}
@@ -3849,13 +3921,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                       {activeUtilityModal === "contact" && "Pay to Contact"}
                       {activeUtilityModal === "upi" && "Pay to UPI / Bank"}
                     </h3>
-                    <p className="text-[10px] text-muted">Zero Convenience Fee · Instant BBPS Settlement</p>
+                    <p className="text-[10px] text-zinc-400">Zero Convenience Fee · Instant BBPS Settlement</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setActiveUtilityModal(null)}
-                  className="rounded-full p-1 text-muted hover:bg-surface-2 transition text-lg"
+                  className="rounded-full p-1 text-zinc-400 hover:bg-white/5 transition text-lg"
                 >
                   ✕
                 </button>
@@ -3870,7 +3942,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                         key={op}
                         type="button"
                         onClick={() => setUtilityOperator(op)}
-                        className={`rounded-lg border py-1.5 text-xs font-bold transition ${utilityOperator === op ? "bg-primary text-white border-primary shadow-xs" : "border-border bg-surface-2 text-muted"}`}
+                        className={`rounded-lg border py-1.5 text-xs font-bold transition ${utilityOperator === op ? "bg-primary text-white border-primary shadow-[0_0_15px_rgba(255,255,255,0.05)]" : "border-white/10 bg-white/5 text-zinc-400"}`}
                       >
                         {op}
                       </button>
@@ -3878,10 +3950,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">10-Digit Mobile Number:</label>
+                    <label className="block text-xs font-semibold text-white mb-1">10-Digit Mobile Number:</label>
                     <input
                       type="tel"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono"
                       value={utilityInput}
                       onChange={(e) => setUtilityInput(e.target.value)}
                       placeholder="e.g. 9876543210"
@@ -3889,7 +3961,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">Select Popular Plan:</label>
+                    <label className="block text-xs font-semibold text-white mb-1">Select Popular Plan:</label>
                     <div className="space-y-1.5">
                       {[
                         { price: 299, desc: "2 GB/day · 28 Days · Unlimited 5G" },
@@ -3900,11 +3972,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                           key={plan.price}
                           type="button"
                           onClick={() => setUtilityAmount(String(plan.price))}
-                          className={`w-full flex items-center justify-between rounded-xl border p-2.5 text-left transition ${utilityAmount === String(plan.price) ? "border-primary bg-primary/10" : "border-border bg-surface"}`}
+                          className={`w-full flex items-center justify-between rounded-xl border p-2.5 text-left transition ${utilityAmount === String(plan.price) ? "border-primary bg-primary/10" : "border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"}`}
                         >
                           <div>
-                            <span className="font-mono font-bold text-xs text-fg">₹{plan.price}</span>
-                            <p className="text-[10px] text-muted">{plan.desc}</p>
+                            <span className="font-mono font-bold text-xs text-white">₹{plan.price}</span>
+                            <p className="text-[10px] text-zinc-400">{plan.desc}</p>
                           </div>
                           <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded">
                             +2% Back
@@ -3928,11 +4000,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               {activeUtilityModal === "electricity" && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">APDCL Consumer Number:</label>
+                    <label className="block text-xs font-semibold text-white mb-1">APDCL Consumer Number:</label>
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono flex-1"
+                        className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono flex-1"
                         value={utilityInput}
                         onChange={(e) => {
                           setUtilityInput(e.target.value);
@@ -3955,18 +4027,18 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   {fetchedBill && (
                     <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 space-y-1 mt-3 animate-in fade-in zoom-in-95">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-muted">Consumer Name:</span>
-                        <span className="font-bold text-fg">{fetchedBill.customerName}</span>
+                        <span className="text-zinc-400">Consumer Name:</span>
+                        <span className="font-bold text-white">{fetchedBill.customerName}</span>
                       </div>
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-muted">Bill Due Date:</span>
+                        <span className="text-zinc-400">Bill Due Date:</span>
                         <span className="font-semibold text-amber-700 dark:text-amber-300">
                           {new Date(fetchedBill.dueDate).toLocaleDateString()}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center text-xs pt-1 border-t border-border font-mono mt-1">
-                        <span className="text-muted">Bill Amount:</span>
-                        <span className="font-extrabold text-sm text-fg">₹{fetchedBill.billAmount.toLocaleString("en-IN")}</span>
+                      <div className="flex justify-between items-center text-xs pt-1 border-t border-white/10 font-mono mt-1">
+                        <span className="text-zinc-400">Bill Amount:</span>
+                        <span className="font-extrabold text-sm text-white">₹{fetchedBill.billAmount.toLocaleString("en-IN")}</span>
                       </div>
                       
                       <Button
@@ -3986,11 +4058,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               {activeUtilityModal === "gas" && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">LPG Consumer ID or Registered Mobile:</label>
+                    <label className="block text-xs font-semibold text-white mb-1">LPG Consumer ID or Registered Mobile:</label>
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono flex-1"
+                        className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono flex-1"
                         value={utilityInput}
                         onChange={(e) => {
                           setUtilityInput(e.target.value);
@@ -4013,12 +4085,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   {fetchedBill && (
                     <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 space-y-1 mt-3 animate-in fade-in zoom-in-95">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-muted">Consumer Name:</span>
-                        <span className="font-bold text-fg">{fetchedBill.customerName}</span>
+                        <span className="text-zinc-400">Consumer Name:</span>
+                        <span className="font-bold text-white">{fetchedBill.customerName}</span>
                       </div>
-                      <div className="flex justify-between items-center text-xs pt-1 border-t border-border font-mono mt-1">
-                        <span className="text-muted">Booking Amount:</span>
-                        <span className="font-extrabold text-sm text-fg">₹{fetchedBill.billAmount.toLocaleString("en-IN")}</span>
+                      <div className="flex justify-between items-center text-xs pt-1 border-t border-white/10 font-mono mt-1">
+                        <span className="text-zinc-400">Booking Amount:</span>
+                        <span className="font-extrabold text-sm text-white">₹{fetchedBill.billAmount.toLocaleString("en-IN")}</span>
                       </div>
                       
                       <Button
@@ -4038,11 +4110,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               {activeUtilityModal === "fastag" && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">Vehicle Registration Number (FASTag):</label>
+                    <label className="block text-xs font-semibold text-white mb-1">Vehicle Registration Number (FASTag):</label>
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono flex-1 uppercase"
+                        className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono flex-1 uppercase"
                         value={utilityInput}
                         onChange={(e) => {
                           setUtilityInput(e.target.value.toUpperCase());
@@ -4065,19 +4137,19 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   {fetchedBill && (
                     <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 space-y-1 mt-3 animate-in fade-in zoom-in-95">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-muted">Customer Name:</span>
-                        <span className="font-bold text-fg">{fetchedBill.customerName}</span>
+                        <span className="text-zinc-400">Customer Name:</span>
+                        <span className="font-bold text-white">{fetchedBill.customerName}</span>
                       </div>
-                      <div className="flex justify-between items-center text-xs pt-1 border-t border-border font-mono mt-1">
-                        <span className="text-muted">Current Balance:</span>
-                        <span className="font-extrabold text-sm text-fg">₹{fetchedBill.billAmount.toLocaleString("en-IN")}</span>
+                      <div className="flex justify-between items-center text-xs pt-1 border-t border-white/10 font-mono mt-1">
+                        <span className="text-zinc-400">Current Balance:</span>
+                        <span className="font-extrabold text-sm text-white">₹{fetchedBill.billAmount.toLocaleString("en-IN")}</span>
                       </div>
                       
                       <div className="mt-3">
-                        <label className="block text-xs font-semibold text-fg mb-1">Recharge Amount (₹):</label>
+                        <label className="block text-xs font-semibold text-white mb-1">Recharge Amount (₹):</label>
                         <input
                           type="number"
-                          className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono"
+                          className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono"
                           value={utilityAmount}
                           onChange={(e) => setUtilityAmount(e.target.value)}
                           placeholder="e.g. 500"
@@ -4101,10 +4173,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               {activeUtilityModal === "contact" && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">Recipient Mobile Number or Name:</label>
+                    <label className="block text-xs font-semibold text-white mb-1">Recipient Mobile Number or Name:</label>
                     <input
                       type="text"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono"
                       value={utilityInput}
                       onChange={(e) => setUtilityInput(e.target.value)}
                       placeholder="e.g. 9876543210 or Rahul Sharma"
@@ -4112,10 +4184,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">Amount to Transfer (₹):</label>
+                    <label className="block text-xs font-semibold text-white mb-1">Amount to Transfer (₹):</label>
                     <input
                       type="number"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono font-bold"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono font-bold"
                       value={utilityAmount}
                       onChange={(e) => setUtilityAmount(e.target.value)}
                       placeholder="₹200"
@@ -4123,7 +4195,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </div>
 
                   <div>
-                    <label className="block text-[10px] text-muted font-semibold uppercase mb-1.5">Recent Contacts:</label>
+                    <label className="block text-[10px] text-zinc-400 font-semibold uppercase mb-1.5">Recent Contacts:</label>
                     <div className="space-y-1">
                       {[
                         { name: "Station Biryani House", phone: "9876540001", role: "Restaurant Partner" },
@@ -4136,11 +4208,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                           onClick={() => {
                             setUtilityInput(`${c.name} (${c.phone})`);
                           }}
-                          className="w-full flex items-center justify-between rounded-lg border border-border p-2 text-left hover:bg-surface-2 transition text-xs"
+                          className="w-full flex items-center justify-between rounded-lg border border-white/10 p-2 text-left hover:bg-white/5 transition text-xs"
                         >
                           <div>
-                            <span className="font-semibold text-fg">{c.name}</span>
-                            <span className="text-[10px] text-muted block">{c.phone}</span>
+                            <span className="font-semibold text-white">{c.name}</span>
+                            <span className="text-[10px] text-zinc-400 block">{c.phone}</span>
                           </div>
                           <span className="text-[10px] text-primary font-medium">{c.role}</span>
                         </button>
@@ -4161,18 +4233,18 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
               {activeUtilityModal === "upi" && (
                 <div className="space-y-3">
-                  <div className="flex rounded-xl bg-surface-2 p-1 text-xs font-bold">
+                  <div className="flex rounded-xl bg-white/5 p-1 text-xs font-bold">
                     <button
                       type="button"
                       onClick={() => setUtilityOperator("upi_id")}
-                      className={`flex-1 rounded-lg py-1.5 transition ${utilityOperator !== "bank_ac" ? "bg-primary text-white shadow-xs" : "text-muted hover:text-fg"}`}
+                      className={`flex-1 rounded-lg py-1.5 transition ${utilityOperator !== "bank_ac" ? "bg-primary text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]" : "text-zinc-400 hover:text-white"}`}
                     >
                       @ UPI ID
                     </button>
                     <button
                       type="button"
                       onClick={() => setUtilityOperator("bank_ac")}
-                      className={`flex-1 rounded-lg py-1.5 transition ${utilityOperator === "bank_ac" ? "bg-primary text-white shadow-xs" : "text-muted hover:text-fg"}`}
+                      className={`flex-1 rounded-lg py-1.5 transition ${utilityOperator === "bank_ac" ? "bg-primary text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]" : "text-zinc-400 hover:text-white"}`}
                     >
                       🏛️ Bank A/C &amp; IFSC
                     </button>
@@ -4181,10 +4253,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   {utilityOperator === "bank_ac" ? (
                     <div className="space-y-2.5">
                       <div>
-                        <label className="block text-xs font-semibold text-fg mb-1">Bank Account Number:</label>
+                        <label className="block text-xs font-semibold text-white mb-1">Bank Account Number:</label>
                         <input
                           type="text"
-                          className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono"
+                          className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono"
                           value={utilityInput}
                           onChange={(e) => setUtilityInput(e.target.value)}
                           placeholder="e.g. 200481920194"
@@ -4192,28 +4264,28 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-fg mb-1">IFSC Code:</label>
+                        <label className="block text-xs font-semibold text-white mb-1">IFSC Code:</label>
                         <input
                           type="text"
-                          className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono uppercase"
+                          className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono uppercase"
                           placeholder="e.g. SBIN0000185 (SBI Silchar/Karimganj)"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-fg mb-1">Account Holder Name:</label>
+                        <label className="block text-xs font-semibold text-white mb-1">Account Holder Name:</label>
                         <input
                           type="text"
-                          className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm"
+                          className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm"
                           placeholder="e.g. Rahul Sharma"
                         />
                       </div>
                     </div>
                   ) : (
                     <div>
-                      <label className="block text-xs font-semibold text-fg mb-1">Recipient UPI ID:</label>
+                      <label className="block text-xs font-semibold text-white mb-1">Recipient UPI ID:</label>
                       <input
                         type="text"
-                        className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono"
+                        className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono"
                         value={utilityInput}
                         onChange={(e) => setUtilityInput(e.target.value)}
                         placeholder="e.g. merchant@icici or 9876543210@upi"
@@ -4223,10 +4295,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   )}
 
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">Amount to Transfer (₹):</label>
+                    <label className="block text-xs font-semibold text-white mb-1">Amount to Transfer (₹):</label>
                     <input
                       type="number"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono font-bold"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono font-bold"
                       value={utilityAmount}
                       onChange={(e) => setUtilityAmount(e.target.value)}
                       placeholder="₹500"
@@ -4235,11 +4307,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">Pay From Account:</label>
+                    <label className="block text-xs font-semibold text-white mb-1">Pay From Account:</label>
                     <select
                       value={paymentSource}
                       onChange={(e) => setPaymentSource(e.target.value)}
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-xs font-semibold text-fg"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-xs font-semibold text-white"
                     >
                       <option value="wallet">👑 KingPay Wallet (₹{walletBalance}.00)</option>
                       {linkedBanks.map((b) => (
@@ -4264,10 +4336,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               {activeUtilityModal !== "recharge" && activeUtilityModal !== "electricity" && activeUtilityModal !== "contact" && activeUtilityModal !== "upi" && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">Enter Account / ID / Number:</label>
+                    <label className="block text-xs font-semibold text-white mb-1">Enter Account / ID / Number:</label>
                     <input
                       type="text"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono"
                       value={utilityInput}
                       onChange={(e) => setUtilityInput(e.target.value)}
                       placeholder="e.g. Account Number / Customer ID"
@@ -4275,10 +4347,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">Amount to Pay (₹):</label>
+                    <label className="block text-xs font-semibold text-white mb-1">Amount to Pay (₹):</label>
                     <input
                       type="number"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono font-bold"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono font-bold"
                       value={utilityAmount}
                       onChange={(e) => setUtilityAmount(e.target.value)}
                       placeholder="₹500"
@@ -4302,13 +4374,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {/* MODAL 10: Check Bank Balance & Secure UPI PIN Verification */}
         {showCheckBalanceModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-sm rounded-2xl border-2 border-emerald-500/50 bg-surface p-5 shadow-2xl space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-2.5">
+            <div className="w-full max-w-sm rounded-2xl border-2 border-emerald-500/50 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">💳</span>
                   <div>
-                    <h3 className="font-display font-black text-base text-fg">Check Bank Balance</h3>
-                    <p className="text-[10px] text-muted">100% Encrypted &amp; Secured via NPCI UPI</p>
+                    <h3 className="font-display font-black text-base text-white">Check Bank Balance</h3>
+                    <p className="text-[10px] text-zinc-400">100% Encrypted &amp; Secured via NPCI UPI</p>
                   </div>
                 </div>
                 <button
@@ -4318,7 +4390,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                     setSelectedBankForBalance(null);
                     setUpiPinInput("");
                   }}
-                  className="rounded-full p-1 text-muted hover:bg-surface-2 transition text-lg"
+                  className="rounded-full p-1 text-zinc-400 hover:bg-white/5 transition text-lg"
                 >
                   ✕
                 </button>
@@ -4326,20 +4398,20 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
               {!selectedBankForBalance ? (
                 <div className="space-y-3">
-                  <p className="text-xs text-muted">Select an account to check your live available balance:</p>
+                  <p className="text-xs text-zinc-400">Select an account to check your live available balance:</p>
                   <div className="space-y-2">
                     {/* KingPay Wallet */}
                     <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/5 p-3">
                       <div className="flex items-center gap-2.5">
-                        <KingPayMark className="size-8 rounded-lg shadow-xs" />
+                        <KingPayMark className="size-8 rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.05)]" />
                         <div>
-                          <span className="text-xs font-bold text-fg block">KingPay 1-Tap Wallet</span>
-                          <span className="text-[10px] text-muted font-mono">Instant Float</span>
+                          <span className="text-xs font-bold text-white block">KingPay 1-Tap Wallet</span>
+                          <span className="text-[10px] text-zinc-400 font-mono">Instant Float</span>
                         </div>
                       </div>
                       <div className="text-right">
-                        <span className="text-[10px] text-muted block">Balance</span>
-                        <span className="font-mono text-sm font-black text-fg">₹{walletBalance}.00</span>
+                        <span className="text-[10px] text-zinc-400 block">Balance</span>
+                        <span className="font-mono text-sm font-black text-white">₹{walletBalance}.00</span>
                       </div>
                     </div>
 
@@ -4347,15 +4419,15 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                     {linkedBanks.map((b) => (
                       <div
                         key={b.id}
-                        className="flex items-center justify-between rounded-xl border border-border bg-surface-2/60 p-3 hover:border-emerald-500/50 transition"
+                        className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5/60 p-3 hover:border-emerald-500/50 transition"
                       >
                         <div className="flex items-center gap-2.5">
                           <span className="flex size-9 items-center justify-center rounded-xl bg-primary/15 text-lg">
                             {b.icon}
                           </span>
                           <div>
-                            <span className="text-xs font-bold text-fg block">{b.bankName}</span>
-                            <span className="text-[10px] text-muted font-mono">{b.accountType} A/C {b.accountNumberMasked}</span>
+                            <span className="text-xs font-bold text-white block">{b.bankName}</span>
+                            <span className="text-[10px] text-zinc-400 font-mono">{b.accountType} A/C {b.accountNumberMasked}</span>
                           </div>
                         </div>
 
@@ -4363,7 +4435,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                           {balanceRevealed[b.id] !== undefined ? (
                             <div className="text-right">
                               <span className="text-[10px] text-emerald-600 font-bold block">Available</span>
-                              <span className="font-mono text-sm font-black text-fg">
+                              <span className="font-mono text-sm font-black text-white">
                                 ₹{balanceRevealed[b.id].toLocaleString("en-IN")}.00
                               </span>
                             </div>
@@ -4372,7 +4444,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                               size="sm"
                               variant="primary"
                               onClick={() => setSelectedBankForBalance(b)}
-                              className="text-xs font-bold py-1 px-3 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+                              className="text-xs font-bold py-1 px-3 bg-emerald-600 hover:bg-emerald-700 text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                             >
                               Check Balance
                             </Button>
@@ -4397,12 +4469,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               ) : (
                 <div className="space-y-4">
                   {/* Account Header */}
-                  <div className="rounded-xl border border-border bg-surface-2 p-3 flex items-center justify-between">
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-3 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       <span className="text-2xl">{selectedBankForBalance.icon}</span>
                       <div>
-                        <span className="text-xs font-bold text-fg block">{selectedBankForBalance.bankName}</span>
-                        <span className="text-[10px] text-muted font-mono">{selectedBankForBalance.accountType} {selectedBankForBalance.accountNumberMasked}</span>
+                        <span className="text-xs font-bold text-white block">{selectedBankForBalance.bankName}</span>
+                        <span className="text-[10px] text-zinc-400 font-mono">{selectedBankForBalance.accountType} {selectedBankForBalance.accountNumberMasked}</span>
                       </div>
                     </div>
                     <button
@@ -4420,8 +4492,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   {/* Secret UPI PIN Input View */}
                   <div className="rounded-2xl border-2 border-emerald-500/40 bg-emerald-500/5 p-4 text-center space-y-3">
                     <div className="space-y-0.5">
-                      <span className="text-xs font-bold text-fg block">Enter 4-Digit UPI PIN</span>
-                      <p className="text-[10px] text-muted">Never share your UPI PIN with anyone</p>
+                      <span className="text-xs font-bold text-white block">Enter 4-Digit UPI PIN</span>
+                      <p className="text-[10px] text-zinc-400">Never share your UPI PIN with anyone</p>
                     </div>
 
                     {/* PIN Masked Dots */}
@@ -4431,8 +4503,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                           key={idx}
                           className={`size-4 rounded-full border-2 transition-all ${
                             upiPinInput.length > idx
-                              ? "bg-emerald-600 border-emerald-600 scale-110 shadow-xs"
-                              : "border-border bg-surface"
+                              ? "bg-emerald-600 border-emerald-600 scale-110 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                              : "border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
                           }`}
                         />
                       ))}
@@ -4459,7 +4531,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                                 }
                               }
                             }}
-                            className="rounded-xl border border-border bg-surface py-2.5 text-base font-bold text-fg hover:bg-surface-2 active:scale-95 transition shadow-xs"
+                            className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] py-2.5 text-base font-bold text-white hover:bg-white/5 active:scale-95 transition shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                           >
                             {num}
                           </button>
@@ -4467,7 +4539,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                         <button
                           type="button"
                           onClick={() => setUpiPinInput("")}
-                          className="rounded-xl border border-border bg-surface-2 py-2.5 text-xs font-bold text-muted hover:text-fg active:scale-95 transition"
+                          className="rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-bold text-zinc-400 hover:text-white active:scale-95 transition"
                         >
                           Clear
                         </button>
@@ -4482,14 +4554,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                               }
                             }
                           }}
-                          className="rounded-xl border border-border bg-surface py-2.5 text-base font-bold text-fg hover:bg-surface-2 active:scale-95 transition shadow-xs"
+                          className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] py-2.5 text-base font-bold text-white hover:bg-white/5 active:scale-95 transition shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                         >
                           0
                         </button>
                         <button
                           type="button"
                           onClick={() => setUpiPinInput((p) => p.slice(0, -1))}
-                          className="rounded-xl border border-border bg-surface-2 py-2.5 text-base font-bold text-muted hover:text-fg active:scale-95 transition"
+                          className="rounded-xl border border-white/10 bg-white/5 py-2.5 text-base font-bold text-zinc-400 hover:text-white active:scale-95 transition"
                         >
                           ⌫
                         </button>
@@ -4497,7 +4569,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                     )}
                   </div>
 
-                  <p className="text-[10px] text-muted text-center">
+                  <p className="text-[10px] text-zinc-400 text-center">
                     🛡️ Protected by Sovereign Strategic Power Engine.
                   </p>
                 </div>
@@ -4509,19 +4581,19 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {/* MODAL 11: Add Bank Account & UPI Setup Flow */}
         {showAddBankModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-md rounded-2xl border-2 border-primary/50 bg-surface p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between border-b border-border pb-2.5">
+            <div className="w-full max-w-md rounded-2xl border-2 border-primary/50 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🏛️</span>
                   <div>
-                    <h3 className="font-display font-black text-base text-fg">Add Bank Account</h3>
-                    <p className="text-[10px] text-muted">Link via SIM verification to send &amp; receive money</p>
+                    <h3 className="font-display font-black text-base text-white">Add Bank Account</h3>
+                    <p className="text-[10px] text-zinc-400">Link via SIM verification to send &amp; receive money</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowAddBankModal(false)}
-                  className="rounded-full p-1 text-muted hover:bg-surface-2 transition text-lg"
+                  className="rounded-full p-1 text-zinc-400 hover:bg-white/5 transition text-lg"
                 >
                   ✕
                 </button>
@@ -4530,10 +4602,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               {addBankStep === "select" && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-semibold text-fg mb-1">Search Your Bank:</label>
+                    <label className="block text-xs font-semibold text-white mb-1">Search Your Bank:</label>
                     <input
                       type="text"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm"
                       value={bankSearchQuery}
                       onChange={(e) => setBankSearchQuery(e.target.value)}
                       placeholder="e.g. SBI, HDFC, Assam Gramin, PNB..."
@@ -4541,7 +4613,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   </div>
 
                   <div>
-                    <span className="block text-[11px] uppercase font-bold text-muted mb-2 tracking-wider">
+                    <span className="block text-[11px] uppercase font-bold text-zinc-400 mb-2 tracking-wider">
                       Popular Indian Banks
                     </span>
                     <div className="grid grid-cols-2 gap-2">
@@ -4552,10 +4624,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                           key={b.code}
                           type="button"
                           onClick={() => handleStartAddBank(b.name)}
-                          className="flex items-center gap-2.5 rounded-xl border border-border bg-surface p-2.5 text-left hover:border-primary/60 hover:bg-primary/5 active:scale-95 transition"
+                          className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-2.5 text-left hover:border-primary/60 hover:bg-primary/5 active:scale-95 transition"
                         >
                           <span className="text-xl">{b.icon}</span>
-                          <span className="text-xs font-bold text-fg line-clamp-1">{b.name}</span>
+                          <span className="text-xs font-bold text-white line-clamp-1">{b.name}</span>
                         </button>
                       ))}
                     </div>
@@ -4565,38 +4637,38 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
               {addBankStep === "sim" && (
                 <div className="space-y-4">
-                  <div className="rounded-xl border border-border bg-surface-2 p-3 text-center space-y-1">
-                    <span className="text-xs text-muted block">Selected Bank:</span>
-                    <span className="font-display font-bold text-sm text-fg">{selectedBankToAdd}</span>
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center space-y-1">
+                    <span className="text-xs text-zinc-400 block">Selected Bank:</span>
+                    <span className="font-display font-bold text-sm text-white">{selectedBankToAdd}</span>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-fg">
+                    <label className="block text-xs font-semibold text-white">
                       Select SIM Card Linked with this Bank:
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
                         onClick={() => setSelectedSim(1)}
-                        className={`rounded-xl border p-3 text-left transition ${selectedSim === 1 ? "border-primary bg-primary/10 shadow-xs" : "border-border bg-surface"}`}
+                        className={`rounded-xl border p-3 text-left transition ${selectedSim === 1 ? "border-primary bg-primary/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]" : "border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"}`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-fg">SIM 1</span>
+                          <span className="text-xs font-bold text-white">SIM 1</span>
                           <span className="text-[10px] text-emerald-600 font-bold">Jio 5G</span>
                         </div>
-                        <span className="text-[11px] font-mono text-muted mt-1 block">98765 43210</span>
+                        <span className="text-[11px] font-mono text-zinc-400 mt-1 block">98765 43210</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => setSelectedSim(2)}
-                        className={`rounded-xl border p-3 text-left transition ${selectedSim === 2 ? "border-primary bg-primary/10 shadow-xs" : "border-border bg-surface"}`}
+                        className={`rounded-xl border p-3 text-left transition ${selectedSim === 2 ? "border-primary bg-primary/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]" : "border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"}`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-fg">SIM 2</span>
+                          <span className="text-xs font-bold text-white">SIM 2</span>
                           <span className="text-[10px] text-red-600 font-bold">Airtel</span>
                         </div>
-                        <span className="text-[11px] font-mono text-muted mt-1 block">87654 32109</span>
+                        <span className="text-[11px] font-mono text-zinc-400 mt-1 block">87654 32109</span>
                       </button>
                     </div>
                   </div>
@@ -4607,7 +4679,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                       <span className="text-xs font-bold text-primary block">
                         Sending Encrypted SMS for Verification...
                       </span>
-                      <p className="text-[10px] text-muted">
+                      <p className="text-[10px] text-zinc-400">
                         Confirming mobile number with {selectedBankToAdd} via NPCI gateway.
                       </p>
                     </div>
@@ -4630,14 +4702,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                     ✓
                   </div>
                   <div className="space-y-1">
-                    <h4 className="font-display font-black text-base text-fg">Bank Account Linked!</h4>
-                    <p className="text-xs text-muted">
+                    <h4 className="font-display font-black text-base text-white">Bank Account Linked!</h4>
+                    <p className="text-xs text-zinc-400">
                       {selectedBankToAdd} is now ready for instant 1-tap UPI payments.
                     </p>
                   </div>
-                  <div className="rounded-xl border border-border bg-surface-2 p-3 font-mono text-xs flex justify-between">
-                    <span className="text-muted">UPI ID:</span>
-                    <span className="font-bold text-fg">user9876@kingpay</span>
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-3 font-mono text-xs flex justify-between">
+                    <span className="text-zinc-400">UPI ID:</span>
+                    <span className="font-bold text-white">user9876@kingpay</span>
                   </div>
                   <Button
                     type="button"
@@ -4656,19 +4728,19 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         {/* MODAL 12: Self Account Transfer Modal */}
         {showSelfTransferModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-sm rounded-2xl border-2 border-amber-500/50 bg-surface p-5 shadow-2xl space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-2.5">
+            <div className="w-full max-w-sm rounded-2xl border-2 border-amber-500/50 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🔄</span>
                   <div>
-                    <h3 className="font-display font-black text-base text-fg">Self Account Transfer</h3>
-                    <p className="text-[10px] text-muted">Transfer between your own linked bank accounts</p>
+                    <h3 className="font-display font-black text-base text-white">Self Account Transfer</h3>
+                    <p className="text-[10px] text-zinc-400">Transfer between your own linked bank accounts</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowSelfTransferModal(false)}
-                  className="rounded-full p-1 text-muted hover:bg-surface-2 transition text-lg"
+                  className="rounded-full p-1 text-zinc-400 hover:bg-white/5 transition text-lg"
                 >
                   ✕
                 </button>
@@ -4676,11 +4748,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
               <form onSubmit={handleSelfTransferSubmit} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-fg mb-1">Transfer From (Debited):</label>
+                  <label className="block text-xs font-semibold text-white mb-1">Transfer From (Debited):</label>
                   <select
                     value={selfFromBank}
                     onChange={(e) => setSelfFromBank(e.target.value)}
-                    className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-xs font-semibold text-fg"
+                    className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-xs font-semibold text-white"
                   >
                     {linkedBanks.map((b) => (
                       <option key={b.id} value={b.id}>
@@ -4691,11 +4763,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-fg mb-1">Transfer To (Credited):</label>
+                  <label className="block text-xs font-semibold text-white mb-1">Transfer To (Credited):</label>
                   <select
                     value={selfToBank}
                     onChange={(e) => setSelfToBank(e.target.value)}
-                    className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-xs font-semibold text-fg"
+                    className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-xs font-semibold text-white"
                   >
                     {linkedBanks.map((b) => (
                       <option key={b.id} value={b.id}>
@@ -4706,10 +4778,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-fg mb-1">Amount to Transfer (₹):</label>
+                  <label className="block text-xs font-semibold text-white mb-1">Amount to Transfer (₹):</label>
                   <input
                     type="number"
-                    className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-base font-mono font-bold"
+                    className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-base font-mono font-bold"
                     value={selfTransferAmount}
                     onChange={(e) => setSelfTransferAmount(e.target.value)}
                     placeholder="₹1,000"
@@ -4717,8 +4789,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                   />
                 </div>
 
-                <div className="rounded-lg bg-surface-2 p-2.5 text-xs flex justify-between items-center font-mono">
-                  <span className="text-muted">Transaction Fee:</span>
+                <div className="rounded-lg bg-white/5 p-2.5 text-xs flex justify-between items-center font-mono">
+                  <span className="text-zinc-400">Transaction Fee:</span>
                   <span className="font-bold text-emerald-600">₹0 (Free UPI)</span>
                 </div>
 
@@ -4738,7 +4810,58 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         )}
 
         {/* Multilingual Royal AI Assistant with Sweet Native Girl Voice across 12 Indian Languages */}
-        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        
+        {/* Supreme Spark AI Copilot */}
+        <section aria-label="Supreme AI Assistant" className="rounded-[var(--radius-3xl)] border-2 border-fuchsia-500/40 bg-gradient-to-br from-black via-fuchsia-950/20 to-black p-6 shadow-[0_0_30px_rgba(217,70,239,0.15)] backdrop-blur-xl relative overflow-hidden group">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-fuchsia-500/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
+          <div className="relative z-10 flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-fuchsia-500/20 text-fuchsia-400 text-2xl shadow-[0_0_15px_rgba(217,70,239,0.3)] border border-fuchsia-500/30">
+                🤖
+              </span>
+              <div>
+                <h2 className="font-display text-xl font-black tracking-tight text-white drop-shadow-sm">
+                  Supreme Spark AI Copilot
+                </h2>
+                <p className="text-sm font-medium text-fuchsia-400">
+                  Powered by 1000x Advanced OpenAI Engine
+                </p>
+              </div>
+            </div>
+            
+            <p className="text-xs leading-relaxed text-zinc-300">
+              Zero headache financial guidance. Ask any question about your transactions, credit score, or instant loans. Our AI natively speaks in all 12 Indian Languages with seamless voice synthesis.
+            </p>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Ask Spark anything about your money..."
+                className="flex-1 rounded-xl border border-white/10 bg-white/5/50 px-4 py-2.5 text-sm text-white placeholder:text-zinc-400 focus:border-fuchsia-500/50 focus:outline-none focus:ring-1 focus:ring-fuchsia-500/50 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => alert("OpenAI Spark Engine initializing...")}
+                className="inline-flex items-center justify-center rounded-xl bg-fuchsia-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-fuchsia-500 active:scale-95 border border-fuchsia-500/50"
+              >
+                Ask AI ✨
+              </button>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 pt-2">
+              <button type="button" className="rounded-full border border-white/10 bg-white/5/30 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-white/5 transition">
+                "Where is my ₹500 refund?"
+              </button>
+              <button type="button" className="rounded-full border border-white/10 bg-white/5/30 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-white/5 transition">
+                "How to boost credit score?"
+              </button>
+              <button type="button" className="rounded-full border border-white/10 bg-white/5/30 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-white/5 transition">
+                "Apply for instant loan"
+              </button>
+            </div>
+          </div>
+        </section>
+
       </div>
     </KingPayShell>
     </>
