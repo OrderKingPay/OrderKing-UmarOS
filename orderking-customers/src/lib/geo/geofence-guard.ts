@@ -66,11 +66,9 @@ export function isDeliveryActiveInLocation(lat?: number, lng?: number, cityId?: 
     }
   }
 
-  // Backup verification by city identifier
-  if (cityId === "city_sribhumi") {
-    return true;
-  }
-
+  // City labels alone are never sufficient evidence of live food coverage.
+  // Actual serviceability must come from an enabled zone/provider state.
+  void cityId;
   return false;
 }
 
