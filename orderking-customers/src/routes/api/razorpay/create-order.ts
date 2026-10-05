@@ -3,11 +3,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 
+const kingPayWalletEnabled = process.env.KINGPAY_WALLET_ENABLED === "true";
+
 export const Route = createFileRoute("/api/razorpay/create-order")({
   // @ts-expect-error
   server: {
     handlers: {
       POST: async ({ request }: any) => {
+        if (!kingPayWalletEnabled) {
+          return new Response(
+            JSON.stringify({
+              error: "KingPay wallet top-up is disabled until a real wallet/regulated payment ledger is connected.",
+              state: "DISABLED",
+            }),
+            { status: 503, headers: { "Content-Type": "application/json" } },
+          );
+        }
         try {
           const body = await request.json();
           const { amount, currency = "INR" } = body;
