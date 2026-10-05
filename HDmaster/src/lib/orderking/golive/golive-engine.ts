@@ -181,7 +181,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   const infraBlockers: string[] = [];
   const infraWarnings: string[] = [];
 
-  if (validatePostgresUrl(config.database.connectionString)) {
+  if (validatePostgresUrl(config.database.connectionString) && config.database.status === "CONNECTED" && !!config.database.lastTestedAt) {
     infraScore += 12;
   } else {
     infraBlockers.push("Invalid PostgreSQL connection string format.");
@@ -195,7 +195,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   }
 
   if (config.database.offlineFallbackEnabled) {
-    infraScore += 3;
+    infraWarnings.push("Offline database fallback is enabled; production readiness requires this to remain disabled.");
   }
 
   if (config.endpoints.sslEnforced && config.endpoints.customDomainVerified) {
