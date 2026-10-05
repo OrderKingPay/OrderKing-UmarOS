@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-start';
+import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/v1/admin/settlement-escalations')({
