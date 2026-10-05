@@ -6,3 +6,4 @@ compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
 
 [env.production.vars]
 ORDERKING_RUNTIME = "production"
+KINGPAY_WALLET_ENABLED = "false"
