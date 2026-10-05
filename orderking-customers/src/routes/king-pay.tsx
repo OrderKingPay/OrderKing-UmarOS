@@ -21,6 +21,10 @@ import { PaidRestaurantAdZone } from "@/components/market/paid-restaurant-ad-zon
 import { KingPayFinanceSearch } from "@/components/fintech/kingpay-finance-search";
 import { isDeliveryActiveInLocation, getCityWaitlistInfo } from "@/lib/geo/geofence-guard";
 
+const KINGPAY_WALLET_ENABLED = import.meta.env.VITE_KINGPAY_WALLET_ENABLED === "true";
+const KINGPAY_PUBLIC_UPI_ENABLED = import.meta.env.VITE_KINGPAY_PUBLIC_UPI_ENABLED === "true";
+const KINGPAY_BANK_LINKING_ENABLED = import.meta.env.VITE_KINGPAY_BANK_LINKING_ENABLED === "true";
+
 export const Route = createFileRoute('/king-pay')({ component: KingPayPage, head: () => ({ meta: [{ property: 'og:title', content: '👑 King Pay - Zero Credit Score, 100% Approval. Earn 7.5% Interest.' }, { property: 'og:description', content: 'The #1 FinTech App in India. Send money, pay bills, and get instant loans.' }, { name: 'twitter:title', content: '👑 King Pay - Zero Credit Score, 100% Approval.' }, { name: 'twitter:description', content: 'The #1 FinTech App in India.' }] }) });
 
 type UtilityService = {
@@ -842,7 +846,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const isDeliveryActive = !isGeofencedFallback && isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
   const waitlistInfo = getCityWaitlistInfo(location.cityName || "Your City");
   const [hasVotedCity, setHasVotedCity] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(750);
+  const [walletBalance, setWalletBalance] = useState(0);
   const [activeTab, setActiveTab] = useState<"all" | "fuel" | "recharge" | "bills" | "travel" | "gas">("all");
   const [showAddMoney, setShowAddMoney] = useState(false);
   const [addAmount, setAddAmount] = useState("500");
@@ -867,8 +871,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      const savedBal = localStorage.getItem("ok_king_pay_wallet_balance");
-      if (savedBal) setWalletBalance(parseInt(savedBal, 10));
+      if (KINGPAY_WALLET_ENABLED) {
+        const savedBal = localStorage.getItem("ok_king_pay_wallet_balance");
+        if (savedBal) setWalletBalance(parseInt(savedBal, 10));
+      }
 
       const savedLater = localStorage.getItem("ok_king_pay_later_active");
       if (savedLater) setPayLaterActive(savedLater === "true");
@@ -876,10 +882,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
       const savedGold = localStorage.getItem("ok_king_pay_gold_grams");
       if (savedGold) setGoldGrams(parseFloat(savedGold));
 
-      const savedBanks = localStorage.getItem("ok_kingpay_linked_banks");
-      if (savedBanks) {
-        const parsed = JSON.parse(savedBanks);
-        if (Array.isArray(parsed) && parsed.length > 0) setLinkedBanks(parsed);
+      if (KINGPAY_BANK_LINKING_ENABLED) {
+        const savedBanks = localStorage.getItem("ok_kingpay_linked_banks");
+        if (savedBanks) {
+          const parsed = JSON.parse(savedBanks);
+          if (Array.isArray(parsed) && parsed.length > 0) setLinkedBanks(parsed);
+        }
       }
     } catch {
       // ignore
@@ -930,7 +938,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   // 10x Low-Bandwidth & Offline 2G Mode
   const [isOffline, setIsOffline] = useState(false);
   const [force2GMode, setForce2GMode] = useState(false);
-  const [offlineToken, setOfflineToken] = useState("OKPAY-OFFLINE-7841");
+  const [offlineToken, setOfflineToken] = useState("");
 
   // Navi-style KingPay Later Micro-Credit
   const [payLaterActive, setPayLaterActive] = useState(false);
@@ -939,7 +947,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   // CRED-style 7-Day Check-in Streak
   const [streakDay, setStreakDay] = useState(3);
   const [claimedToday, setClaimedToday] = useState(false);
-  const [kingCoins, setKingCoins] = useState(4250);
+  const [kingCoins, setKingCoins] = useState(0);
 
   // Interactive Scan & Pay Simulator
   const [showScanner, setShowScanner] = useState(false);
@@ -949,15 +957,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [flashlightOn, setFlashlightOn] = useState(false);
 
   // Bank Accounts & Check Balance State
-  const [linkedBanks, setLinkedBanks] = useState<BankAccount[]>(DEFAULT_BANKS);
+  const [linkedBanks, setLinkedBanks] = useState<BankAccount[]>([]);
 
   const [showCheckBalanceModal, setShowCheckBalanceModal] = useState(false);
   const [selectedBankForBalance, setSelectedBankForBalance] = useState<BankAccount | null>(null);
   const [upiPinInput, setUpiPinInput] = useState("");
   const [pinVerifying, setPinVerifying] = useState(false);
-  const [balanceRevealed, setBalanceRevealed] = useState<{ [bankId: string]: number }>({
-    bank_sbi_1: 24850,
-  });
+  const [balanceRevealed, setBalanceRevealed] = useState<{ [bankId: string]: number }>({});
 
   // Add Bank Account Flow State
   const [showAddBankModal, setShowAddBankModal] = useState(false);
@@ -969,9 +975,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   // Self Transfer Flow State
   const [showSelfTransferModal, setShowSelfTransferModal] = useState(false);
-  const [selfFromBank, setSelfFromBank] = useState("bank_sbi_1");
-  const [selfToBank, setSelfToBank] = useState("bank_hdfc_1");
-  const [selfTransferAmount, setSelfTransferAmount] = useState("1000");
+  const [selfFromBank, setSelfFromBank] = useState("");
+  const [selfToBank, setSelfToBank] = useState("");
+  const [selfTransferAmount, setSelfTransferAmount] = useState("");
 
   // How to Make a Transaction / Payment Guide State
   const [showHowToPayModal, setShowHowToPayModal] = useState(false);
@@ -1309,6 +1315,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   const handleAddMoney = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!KINGPAY_WALLET_ENABLED) {
+      toast.info("KingPay wallet top-up is not enabled yet. A verified payment-provider integration is required.");
+      return;
+    }
     const val = parseInt(addAmount, 10);
     if (isNaN(val) || val <= 0) {
       toast.error("Please enter a valid amount");
@@ -1398,6 +1408,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   const handleScanPaySubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!KINGPAY_PUBLIC_UPI_ENABLED) {
+      toast.info("KingPay public Scan & Pay is not enabled yet. A regulated payment/UPI integration is required.");
+      return;
+    }
     const amt = parseInt(scanAmount, 10);
     if (isNaN(amt) || amt <= 0) {
       toast.error("Please enter a valid amount");
@@ -1448,25 +1462,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     setShowScratchCard(true);
   };
 
-  const handleVerifyUpiPin = (pin: string) => {
-    if (!selectedBankForBalance) return;
-    if (pin.length < 4) {
-      toast.error("Please enter your 4-digit UPI PIN");
-      return;
-    }
-    setPinVerifying(true);
-    setTimeout(() => {
-      setPinVerifying(false);
-      const randomBal = selectedBankForBalance.balance || Math.floor(12000 + Math.random() * 85000);
-      setBalanceRevealed((prev) => ({
-        ...prev,
-        [selectedBankForBalance.id]: randomBal,
-      }));
-      playSoundboxChime(100);
-      toast.success(`✅ ${selectedBankForBalance.bankName} balance verified via NPCI UPI!`);
+  const handleVerifyUpiPin = (_pin: string) => {
+    if (!KINGPAY_BANK_LINKING_ENABLED) {
+      toast.info("Bank balance verification is not enabled. It requires a real bank/UPI provider integration.");
       setSelectedBankForBalance(null);
       setUpiPinInput("");
-    }, 850);
+      return;
+    }
   };
 
   const handleStartAddBank = (bankName: string) => {
@@ -1475,31 +1477,12 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleSimVerification = () => {
-    setSimVerifying(true);
-    setTimeout(() => {
-      setSimVerifying(false);
-      const newAccNumber = `•••• ${Math.floor(1000 + Math.random() * 9000)}`;
-      const newBank: BankAccount = {
-        id: `bank_${Date.now()}`,
-        bankName: selectedBankToAdd,
-        bankCode: selectedBankToAdd.toLowerCase().replace(/[^a-z]/g, "").slice(0, 5),
-        accountNumberMasked: newAccNumber,
-        accountType: "Savings",
-        isPrimary: false,
-        balance: Math.floor(15000 + Math.random() * 50000),
-        balanceCheckedAt: "Just now",
-        color: "from-emerald-700 to-teal-900",
-        icon: "🏛️",
-      };
-      const updated = [...linkedBanks, newBank];
-      setLinkedBanks(updated);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("ok_kingpay_linked_banks", JSON.stringify(updated));
-      }
-      setAddBankStep("success");
-      playSoundboxChime(500);
-      toast.success(`🎉 ${selectedBankToAdd} linked successfully to KingPay UPI!`);
-    }, 1200);
+    if (!KINGPAY_BANK_LINKING_ENABLED) {
+      toast.info("Bank linking is disabled until a real regulated banking/UPI integration is connected.");
+      return;
+    }
+    setSimVerifying(false);
+    setAddBankStep("select");
   };
 
   const handleSelfTransferSubmit = (e: React.FormEvent) => {
