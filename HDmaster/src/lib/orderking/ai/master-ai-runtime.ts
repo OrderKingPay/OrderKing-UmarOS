@@ -213,6 +213,30 @@ export async function executeTool(
   const limit = typeof args.limit === "number" ? Math.min(100, Math.max(1, args.limit)) : 25;
   const repo = args.repo;
 
+  // Preserve advanced capabilities without allowing unverifiable success claims.
+  // These tool implementations currently return hard-coded/placeholder operational
+  // results instead of committing or reading authoritative production state.
+  const blockedUntilEvidence = new Set([
+    "orchestrate_universal_pos_printer_sync",
+    "autonomous_hotpatch_engine",
+    "run_hyper_cognitive_diagnostic_and_healing",
+    "autonomous_workforce_replacement_orchestrator",
+    "autonomous_mind_reader_telemetry",
+    "restaurant_hardware_telemetry",
+    "founder_private_cash_vault_telemetry",
+    "onboard_restaurant",
+    "generate_menu",
+    "onboard_rider",
+    "create_support_case",
+  ]);
+  if (blockedUntilEvidence.has(name)) {
+    return {
+      status: "NOT_ENABLED",
+      reason: "This capability is preserved but cannot claim a live result until its real provider/database execution path and evidence are connected.",
+      evidence: [],
+    };
+  }
+
   switch (name) {
     // -----------------------------------------------------------------------
     // Orders
