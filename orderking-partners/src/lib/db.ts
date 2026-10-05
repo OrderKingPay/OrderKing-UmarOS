@@ -229,6 +229,9 @@ async function createSql(): Promise<Sql> {
         "or a server route loader, never from client code.",
     );
   }
+  if (dbSource === "unconfigured") {
+    throw new Error("DATABASE_URL is required for production server-side database operations.");
+  }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
 
@@ -240,6 +243,9 @@ async function createSql(): Promise<Sql> {
  * both backends — define tables there, never inline in server functions.
  */
 export function getSql(): Promise<Sql> {
+  if (dbSource === "unconfigured") {
+    return Promise.reject(new Error("DATABASE_URL is required for production server-side database operations."));
+  }
   sqlPromise ??= createSql().catch((err) => {
     sqlPromise = null; // don't memoize failures — let the next call retry
     throw err;
