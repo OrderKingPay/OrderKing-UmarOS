@@ -13,12 +13,11 @@ import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { quoteCart, trackAnalytics } from "@/lib/server/quote";
 import { placeOrder } from "@/lib/server/orders";
-import { placeOrderViaHDmaster } from "@/lib/server/hdmaster-orders";
+import { createRazorpayPaymentOrder, placeOrderViaHDmaster, verifyRazorpayCheckout } from "@/lib/server/hdmaster-orders";
 import { loadConfig } from "@/lib/server/load-config";
 import { useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { newId } from "@/lib/ids";
-import { createRazorpayOrder } from "@/lib/server/razorpay-order";
 
 export const Route = createFileRoute("/checkout")({ component: CheckoutPage });
 
@@ -28,7 +27,7 @@ function CheckoutPage() {
   const { user, isPending } = useCurrentUserState();
   const { restaurantId, items, coupon, clear } = useCartStore();
   const location = useLocationStore((s) => s.location);
-  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY">("KING_PAY");
+  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY">("COD");
   const [notes, setNotes] = useState("");
   const [forSomeoneElse, setForSomeoneElse] = useState(false);
   const [recipientName, setRecipientName] = useState("");
@@ -103,17 +102,58 @@ function CheckoutPage() {
       };
 
       if (method === "RAZORPAY_ONLINE") {
-        const rzpOrder = await createRazorpayOrder({ data: { amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey } });
+        if (cfg.marketplace.launchMode !== "live") {
+          throw new Error("Online payment is available only after the live Razorpay integration is enabled.");
+        }
+
+        const created = await placeOrderViaHDmaster({
+          data: {
+            restaurantId,
+            zoneId: location.zoneId,
+            lat: location.lat,
+            lng: location.lng,
+            coupon,
+            tipPaise,
+            lines: items,
+            address: { line1: location.line1, area: location.zoneName, label: location.label },
+            paymentMethod: "RAZORPAY_ONLINE",
+            notes: orderNotes,
+            idempotencyKey,
+          },
+        });
+
+        const gatewayOrder = await createRazorpayPaymentOrder({
+          data: { orderId: created.orderId, idempotencyKey: `${idempotencyKey}:gateway` },
+        });
+
         const options = {
-          key: rzpOrder.keyId,
-          amount: rzpOrder.amountPaise,
-          currency: rzpOrder.currency,
+          key: gatewayOrder.keyId,
+          amount: gatewayOrder.amountPaise,
+          currency: gatewayOrder.currency,
           name: cfg.brand.appName,
           description: "OrderKing Food Delivery",
           image: cfg.brand.logoUrl,
-          order_id: rzpOrder.orderId,
+          order_id: gatewayOrder.gatewayOrderId,
           handler: async function (response: any) {
-            await placeFinalOrder("UPI_SANDBOX");
+            try {
+              const verified = await verifyRazorpayCheckout({
+                data: {
+                  orderId: created.orderId,
+                  razorpayOrderId: response.razorpay_order_id,
+                  paymentId: response.razorpay_payment_id,
+                  signature: response.razorpay_signature,
+                },
+              });
+              if (verified.status !== "CAPTURED") {
+                throw new Error("Payment was not captured by Razorpay.");
+              }
+              clear();
+              toast.success(t("orders.placed"));
+              void navigate({ to: "/orders/$id", params: { id: created.orderId } });
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "Payment verification failed.");
+              setBusy(false);
+            }
           },
           prefill: {
             name: (user as any).name ?? "",
@@ -329,16 +369,16 @@ function CheckoutPage() {
                       </span>
                     </div>
                     <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                      Balance: ₹750.00
+                      Unavailable
                     </span>
                   </div>
-                  <span className="block text-xs text-muted mt-0.5">Direct RBI escrow deduction. Saves 2% gateway surcharge.</span>
+                  <span className="block text-xs text-muted mt-0.5">KingPay consumer wallet is currently unavailable; use a supported online payment method.</span>
                 </div>
               </label>
 
               {method === "KING_PAY" && (
                 <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs">
-                  <span className="text-muted">Available Escrow Wallet: <strong className="text-foreground">₹750.00</strong></span>
+                  <span className="text-muted">Wallet unavailable until regulated KingPay wallet integration is enabled</span>
                   <Link
                     to="/king-pay"
                     className="font-semibold text-primary hover:underline"
