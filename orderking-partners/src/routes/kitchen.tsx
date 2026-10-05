@@ -124,7 +124,7 @@ function KitchenPage() {
   });
 
   useEffect(() => {
-    if (!vendor.restaurantId) return;
+    if (!vendor.restaurantId || !supabaseCloud) return;
     const channel = supabaseCloud
       .channel(`orders-${vendor.restaurantId}`)
       .on(
