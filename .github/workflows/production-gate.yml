@@ -29,6 +29,9 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Production Policy Gate
+        run: node scripts/production-policy-gate.mjs
+
       - name: Run Typecheck across 5 apps
         run: pnpm run typecheck
 
