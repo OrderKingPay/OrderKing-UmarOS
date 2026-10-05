@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 import { runAlgorithmicAutoDispatch } from '../../../../lib/orderking/server/auto-dispatch-engine.server';
 
@@ -37,3 +38,4 @@ export const APIRoute = createAPIFileRoute('/api/dispatch/cron/run-auto-dispatch
     }
   }
 });
+

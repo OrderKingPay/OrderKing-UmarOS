@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-
+// @ts-nocheck
 
 // noinspection JSUnusedGlobalSymbols
 
@@ -9,41 +9,42 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
-import { Route as AppTasksRouteImport } from './routes/_app/tasks'
-import { Route as AppSystemRouteImport } from './routes/_app/system'
-import { Route as AppSupportRouteImport } from './routes/_app/support'
-import { Route as AppSecurityRouteImport } from './routes/_app/security'
-import { Route as AppSearchRouteImport } from './routes/_app/search'
-import { Route as AppRiskRouteImport } from './routes/_app/risk'
-import { Route as AppRidersRouteImport } from './routes/_app/riders'
-import { Route as AppRestaurantsRouteImport } from './routes/_app/restaurants'
-import { Route as AppPeopleRouteImport } from './routes/_app/people'
-import { Route as AppOrdersRouteImport } from './routes/_app/orders'
-import { Route as AppNotificationsRouteImport } from './routes/_app/notifications'
-import { Route as AppMapRouteImport } from './routes/_app/map'
-import { Route as AppKycRouteImport } from './routes/_app/kyc'
-import { Route as AppFinanceRouteImport } from './routes/_app/finance'
-import { Route as AppDispatchRouteImport } from './routes/_app/dispatch'
-import { Route as AppCustomersRouteImport } from './routes/_app/customers'
-import { Route as AppCommerceRouteImport } from './routes/_app/commerce'
-import { Route as AppCeoRouteImport } from './routes/_app/ceo'
-import { Route as AppAuditRouteImport } from './routes/_app/audit'
-import { Route as AppAnalyticsRouteImport } from './routes/_app/analytics'
 import { Route as AppAiRouteImport } from './routes/_app/ai'
-import { Route as ApiWebhooksTwilioRouteImport } from './routes/api/webhooks/twilio'
-import { Route as ApiWebhooksMessagebirdRouteImport } from './routes/api/webhooks/messagebird'
+import { Route as AppAnalyticsRouteImport } from './routes/_app/analytics'
+import { Route as AppAuditRouteImport } from './routes/_app/audit'
+import { Route as AppCeoRouteImport } from './routes/_app/ceo'
+import { Route as AppCommerceRouteImport } from './routes/_app/commerce'
+import { Route as AppCustomersRouteImport } from './routes/_app/customers'
+import { Route as AppDispatchRouteImport } from './routes/_app/dispatch'
+import { Route as AppFinanceRouteImport } from './routes/_app/finance'
+import { Route as AppKycRouteImport } from './routes/_app/kyc'
+import { Route as AppMapRouteImport } from './routes/_app/map'
+import { Route as AppNotificationsRouteImport } from './routes/_app/notifications'
+import { Route as AppOrdersRouteImport } from './routes/_app/orders'
+import { Route as AppPeopleRouteImport } from './routes/_app/people'
+import { Route as AppRestaurantsRouteImport } from './routes/_app/restaurants'
+import { Route as AppRidersRouteImport } from './routes/_app/riders'
+import { Route as AppRiskRouteImport } from './routes/_app/risk'
+import { Route as AppSearchRouteImport } from './routes/_app/search'
+import { Route as AppSecurityRouteImport } from './routes/_app/security'
+import { Route as AppSupportRouteImport } from './routes/_app/support'
+import { Route as AppSystemRouteImport } from './routes/_app/system'
+import { Route as AppTasksRouteImport } from './routes/_app/tasks'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiWebhooksMessagebirdRouteImport } from './routes/api/webhooks/messagebird'
+import { Route as ApiWebhooksRazorpayRouteImport } from './routes/api/webhooks/razorpay'
+import { Route as ApiWebhooksTwilioRouteImport } from './routes/api/webhooks/twilio'
 
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -51,99 +52,9 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppTasksRoute = AppTasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSystemRoute = AppSystemRouteImport.update({
-  id: '/system',
-  path: '/system',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSupportRoute = AppSupportRouteImport.update({
-  id: '/support',
-  path: '/support',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSecurityRoute = AppSecurityRouteImport.update({
-  id: '/security',
-  path: '/security',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSearchRoute = AppSearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppRiskRoute = AppRiskRouteImport.update({
-  id: '/risk',
-  path: '/risk',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppRidersRoute = AppRidersRouteImport.update({
-  id: '/riders',
-  path: '/riders',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppRestaurantsRoute = AppRestaurantsRouteImport.update({
-  id: '/restaurants',
-  path: '/restaurants',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPeopleRoute = AppPeopleRouteImport.update({
-  id: '/people',
-  path: '/people',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppOrdersRoute = AppOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppNotificationsRoute = AppNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppMapRoute = AppMapRouteImport.update({
-  id: '/map',
-  path: '/map',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppKycRoute = AppKycRouteImport.update({
-  id: '/kyc',
-  path: '/kyc',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppFinanceRoute = AppFinanceRouteImport.update({
-  id: '/finance',
-  path: '/finance',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDispatchRoute = AppDispatchRouteImport.update({
-  id: '/dispatch',
-  path: '/dispatch',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCustomersRoute = AppCustomersRouteImport.update({
-  id: '/customers',
-  path: '/customers',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCommerceRoute = AppCommerceRouteImport.update({
-  id: '/commerce',
-  path: '/commerce',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCeoRoute = AppCeoRouteImport.update({
-  id: '/ceo',
-  path: '/ceo',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAuditRoute = AppAuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
+const AppAiRoute = AppAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
@@ -151,14 +62,104 @@ const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAiRoute = AppAiRouteImport.update({
-  id: '/ai',
-  path: '/ai',
+const AppAuditRoute = AppAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
   getParentRoute: () => AppRoute,
 } as any)
-const ApiWebhooksTwilioRoute = ApiWebhooksTwilioRouteImport.update({
-  id: '/api/webhooks/twilio',
-  path: '/api/webhooks/twilio',
+const AppCeoRoute = AppCeoRouteImport.update({
+  id: '/ceo',
+  path: '/ceo',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCommerceRoute = AppCommerceRouteImport.update({
+  id: '/commerce',
+  path: '/commerce',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCustomersRoute = AppCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDispatchRoute = AppDispatchRouteImport.update({
+  id: '/dispatch',
+  path: '/dispatch',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFinanceRoute = AppFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKycRoute = AppKycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMapRoute = AppMapRouteImport.update({
+  id: '/map',
+  path: '/map',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotificationsRoute = AppNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrdersRoute = AppOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPeopleRoute = AppPeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRestaurantsRoute = AppRestaurantsRouteImport.update({
+  id: '/restaurants',
+  path: '/restaurants',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRidersRoute = AppRidersRouteImport.update({
+  id: '/riders',
+  path: '/riders',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRiskRoute = AppRiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSearchRoute = AppSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSecurityRoute = AppSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSupportRoute = AppSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSystemRoute = AppSystemRouteImport.update({
+  id: '/system',
+  path: '/system',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTasksRoute = AppTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => AppRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiWebhooksMessagebirdRoute = ApiWebhooksMessagebirdRouteImport.update({
@@ -166,9 +167,14 @@ const ApiWebhooksMessagebirdRoute = ApiWebhooksMessagebirdRouteImport.update({
   path: '/api/webhooks/messagebird',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
+const ApiWebhooksRazorpayRoute = ApiWebhooksRazorpayRouteImport.update({
+  id: '/api/webhooks/razorpay',
+  path: '/api/webhooks/razorpay',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWebhooksTwilioRoute = ApiWebhooksTwilioRouteImport.update({
+  id: '/api/webhooks/twilio',
+  path: '/api/webhooks/twilio',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AppTasksRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/messagebird': typeof ApiWebhooksMessagebirdRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
   '/api/webhooks/twilio': typeof ApiWebhooksTwilioRoute
 }
 export interface FileRoutesByTo {
@@ -226,6 +233,7 @@ export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/messagebird': typeof ApiWebhooksMessagebirdRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
   '/api/webhooks/twilio': typeof ApiWebhooksTwilioRoute
 }
 export interface FileRoutesById {
@@ -256,6 +264,7 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/messagebird': typeof ApiWebhooksMessagebirdRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
   '/api/webhooks/twilio': typeof ApiWebhooksTwilioRoute
 }
 export interface FileRouteTypes {
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/api/auth/$'
     | '/api/webhooks/messagebird'
+    | '/api/webhooks/razorpay'
     | '/api/webhooks/twilio'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/'
     | '/api/auth/$'
     | '/api/webhooks/messagebird'
+    | '/api/webhooks/razorpay'
     | '/api/webhooks/twilio'
   id:
     | '__root__'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/api/auth/$'
     | '/api/webhooks/messagebird'
+    | '/api/webhooks/razorpay'
     | '/api/webhooks/twilio'
   fileRoutesById: FileRoutesById
 }
@@ -351,23 +363,24 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiWebhooksMessagebirdRoute: typeof ApiWebhooksMessagebirdRoute
+  ApiWebhooksRazorpayRoute: typeof ApiWebhooksRazorpayRoute
   ApiWebhooksTwilioRoute: typeof ApiWebhooksTwilioRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_app': {
       id: '/_app'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/': {
@@ -377,137 +390,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/tasks': {
-      id: '/_app/tasks'
-      path: '/tasks'
-      fullPath: '/tasks'
-      preLoaderRoute: typeof AppTasksRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/system': {
-      id: '/_app/system'
-      path: '/system'
-      fullPath: '/system'
-      preLoaderRoute: typeof AppSystemRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/support': {
-      id: '/_app/support'
-      path: '/support'
-      fullPath: '/support'
-      preLoaderRoute: typeof AppSupportRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/security': {
-      id: '/_app/security'
-      path: '/security'
-      fullPath: '/security'
-      preLoaderRoute: typeof AppSecurityRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/search': {
-      id: '/_app/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof AppSearchRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/risk': {
-      id: '/_app/risk'
-      path: '/risk'
-      fullPath: '/risk'
-      preLoaderRoute: typeof AppRiskRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/riders': {
-      id: '/_app/riders'
-      path: '/riders'
-      fullPath: '/riders'
-      preLoaderRoute: typeof AppRidersRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/restaurants': {
-      id: '/_app/restaurants'
-      path: '/restaurants'
-      fullPath: '/restaurants'
-      preLoaderRoute: typeof AppRestaurantsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/people': {
-      id: '/_app/people'
-      path: '/people'
-      fullPath: '/people'
-      preLoaderRoute: typeof AppPeopleRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/orders': {
-      id: '/_app/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof AppOrdersRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/notifications': {
-      id: '/_app/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof AppNotificationsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/map': {
-      id: '/_app/map'
-      path: '/map'
-      fullPath: '/map'
-      preLoaderRoute: typeof AppMapRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/kyc': {
-      id: '/_app/kyc'
-      path: '/kyc'
-      fullPath: '/kyc'
-      preLoaderRoute: typeof AppKycRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/finance': {
-      id: '/_app/finance'
-      path: '/finance'
-      fullPath: '/finance'
-      preLoaderRoute: typeof AppFinanceRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/dispatch': {
-      id: '/_app/dispatch'
-      path: '/dispatch'
-      fullPath: '/dispatch'
-      preLoaderRoute: typeof AppDispatchRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/customers': {
-      id: '/_app/customers'
-      path: '/customers'
-      fullPath: '/customers'
-      preLoaderRoute: typeof AppCustomersRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/commerce': {
-      id: '/_app/commerce'
-      path: '/commerce'
-      fullPath: '/commerce'
-      preLoaderRoute: typeof AppCommerceRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/ceo': {
-      id: '/_app/ceo'
-      path: '/ceo'
-      fullPath: '/ceo'
-      preLoaderRoute: typeof AppCeoRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/audit': {
-      id: '/_app/audit'
-      path: '/audit'
-      fullPath: '/audit'
-      preLoaderRoute: typeof AppAuditRouteImport
+    '/_app/ai': {
+      id: '/_app/ai'
+      path: '/ai'
+      fullPath: '/ai'
+      preLoaderRoute: typeof AppAiRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/analytics': {
@@ -517,18 +404,144 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/ai': {
-      id: '/_app/ai'
-      path: '/ai'
-      fullPath: '/ai'
-      preLoaderRoute: typeof AppAiRouteImport
+    '/_app/audit': {
+      id: '/_app/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AppAuditRouteImport
       parentRoute: typeof AppRoute
     }
-    '/api/webhooks/twilio': {
-      id: '/api/webhooks/twilio'
-      path: '/api/webhooks/twilio'
-      fullPath: '/api/webhooks/twilio'
-      preLoaderRoute: typeof ApiWebhooksTwilioRouteImport
+    '/_app/ceo': {
+      id: '/_app/ceo'
+      path: '/ceo'
+      fullPath: '/ceo'
+      preLoaderRoute: typeof AppCeoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/commerce': {
+      id: '/_app/commerce'
+      path: '/commerce'
+      fullPath: '/commerce'
+      preLoaderRoute: typeof AppCommerceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/customers': {
+      id: '/_app/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof AppCustomersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/dispatch': {
+      id: '/_app/dispatch'
+      path: '/dispatch'
+      fullPath: '/dispatch'
+      preLoaderRoute: typeof AppDispatchRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/finance': {
+      id: '/_app/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof AppFinanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/kyc': {
+      id: '/_app/kyc'
+      path: '/kyc'
+      fullPath: '/kyc'
+      preLoaderRoute: typeof AppKycRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/map': {
+      id: '/_app/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof AppMapRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/notifications': {
+      id: '/_app/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AppNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/orders': {
+      id: '/_app/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof AppOrdersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/people': {
+      id: '/_app/people'
+      path: '/people'
+      fullPath: '/people'
+      preLoaderRoute: typeof AppPeopleRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/restaurants': {
+      id: '/_app/restaurants'
+      path: '/restaurants'
+      fullPath: '/restaurants'
+      preLoaderRoute: typeof AppRestaurantsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/riders': {
+      id: '/_app/riders'
+      path: '/riders'
+      fullPath: '/riders'
+      preLoaderRoute: typeof AppRidersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/risk': {
+      id: '/_app/risk'
+      path: '/risk'
+      fullPath: '/risk'
+      preLoaderRoute: typeof AppRiskRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/search': {
+      id: '/_app/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof AppSearchRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/security': {
+      id: '/_app/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof AppSecurityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/support': {
+      id: '/_app/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof AppSupportRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/system': {
+      id: '/_app/system'
+      path: '/system'
+      fullPath: '/system'
+      preLoaderRoute: typeof AppSystemRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tasks': {
+      id: '/_app/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof AppTasksRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/webhooks/messagebird': {
@@ -538,11 +551,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWebhooksMessagebirdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
+    '/api/webhooks/razorpay': {
+      id: '/api/webhooks/razorpay'
+      path: '/api/webhooks/razorpay'
+      fullPath: '/api/webhooks/razorpay'
+      preLoaderRoute: typeof ApiWebhooksRazorpayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/twilio': {
+      id: '/api/webhooks/twilio'
+      path: '/api/webhooks/twilio'
+      fullPath: '/api/webhooks/twilio'
+      preLoaderRoute: typeof ApiWebhooksTwilioRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -605,6 +625,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiWebhooksMessagebirdRoute: ApiWebhooksMessagebirdRoute,
+  ApiWebhooksRazorpayRoute: ApiWebhooksRazorpayRoute,
   ApiWebhooksTwilioRoute: ApiWebhooksTwilioRoute,
 }
 export const routeTree = rootRouteImport

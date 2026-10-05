@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { executeFounderAiChat, type AiChatRequest, type StreamEvent } from "@/lib/server/ai-chat-service.server";
 
 export const Route = createFileRoute("/api/ai/chat")({
-  // @ts-expect-error
+  
   server: {
     handlers: {
       POST: async ({ request }: any) => {
@@ -66,3 +66,4 @@ export const Route = createFileRoute("/api/ai/chat")({
     },
   },
 });
+
