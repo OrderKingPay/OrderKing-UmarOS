@@ -17,6 +17,7 @@ export type PresignedUploadResponse = {
   method: "PUT" | "POST";
   headers: Record<string, string>;
   isMock: boolean;
+  visibility: "public" | "private";
 };
 
 function sha256Hex(value: string): string {
@@ -128,6 +129,19 @@ export async function createPresignedUpload(
 
   const ext = req.fileName.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
   const safeTargetId = req.targetId.replace(/[^a-zA-Z0-9_-]/g, "_");
+  const allowedPrefixes: Record<UploadTarget, string[]> = {
+    menu_item: ["image/"],
+    restaurant_banner: ["image/"],
+    rider_avatar: ["image/"],
+    kyc_document: ["image/", "application/pdf"],
+  };
+  const allowed = allowedPrefixes[req.target].some((prefix) =>
+    req.contentType.toLowerCase().startsWith(prefix),
+  );
+  if (!allowed) {
+    throw new Error("Unsupported content type for " + req.target + ": " + req.contentType);
+  }
+
   const uniqueKey = `${req.target}/${safeTargetId}/${Date.now()}_${randomBytes(8).toString("hex")}.${ext}`;
 
   const endpoint =
@@ -144,12 +158,17 @@ export async function createPresignedUpload(
     contentType: req.contentType,
   });
 
-  const publicUrl = `${config.publicBaseUrl.replace(/\/$/, "")}/${uniqueKey}`;
+  const isPrivate = req.target === "kyc_document";
+  const basePublicUrl = config.publicBaseUrl.endsWith("/")
+    ? config.publicBaseUrl.slice(0, -1)
+    : config.publicBaseUrl;
+  const publicUrl = isPrivate ? "" : basePublicUrl + "/" + uniqueKey;
 
   return {
     uploadUrl,
     publicUrl,
     key: uniqueKey,
+    visibility: isPrivate ? "private" : "public",
     method: "PUT",
     headers: { "Content-Type": req.contentType },
     isMock: false,
