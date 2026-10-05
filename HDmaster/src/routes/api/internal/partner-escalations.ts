@@ -73,8 +73,7 @@ export const Route = createAPIFileRoute("/api/internal/partner-escalations")({
             `Details: ${body.details.slice(0, 6000)}`,
             body.geographicContext ? `Geographic context: ${body.geographicContext.slice(0, 300)}` : "",
             body.createdByUserId ? `Created by partner user: ${body.createdByUserId}` : "",
-          ].filter(Boolean).join("
-"),
+          ].filter(Boolean).join("\n"),
         ],
       );
       return new Response(JSON.stringify({ ok: true, ticketId, status: "OPEN", queue: "partner", dataMode: "ACTUAL" }), {
