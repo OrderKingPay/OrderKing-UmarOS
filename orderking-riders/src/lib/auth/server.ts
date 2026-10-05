@@ -70,16 +70,25 @@ const env = (key: string): string | undefined => {
   return value ? value : undefined;
 };
 
+const isProductionRuntime =
+  (typeof process !== "undefined" && process.env.NODE_ENV === "production") ||
+  (typeof process !== "undefined" && process.env.CF_PAGES === "1") ||
+  (typeof process !== "undefined" && process.env.CF_WORKERS === "1");
+
+if (isProductionRuntime) {
+  void 0;
+}
+
 // Explicit off-switch. The deployer sets `VITE_AUTH_ENABLED=true` when it
 // provisions auth; set it to "false" to force auth off everywhere (dev user).
-const authDisabled = env("VITE_AUTH_ENABLED") === "false";
+const authDisabled = !isProductionRuntime && env("VITE_AUTH_ENABLED") === "false";
 
 // Broker federation creds: the deployer injects a per-app client when deployed;
 // otherwise fall back to the shared live-preview client, which the broker accepts
 // for any `*.grok-sandbox.com` callback (see `./preview`).
 const grokIssuer = env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
-const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
-const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
+const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? (isProductionRuntime ? undefined : PREVIEW_CLIENT_ID);
+const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? (isProductionRuntime ? undefined : PREVIEW_CLIENT_SECRET);
 
 /** True when federated sign-in is active (real auth is enforced). */
 export const authConfigured =
@@ -91,7 +100,7 @@ export const authConfigured =
 // it derives the origin per-request from the (proxied) host, validated against the
 // preview allowlist, which makes the OAuth `redirect_uri` the concrete preview URL
 // the broker's preview client accepts.
-const explicitBaseURL = undefined;
+const explicitBaseURL = env("BETTER_AUTH_URL");
 // Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
 // requires a mutable `allowedHosts: string[]`.
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
@@ -123,11 +132,6 @@ const baseURL = explicitBaseURL ?? {
       "[::1]",
       ...(process.env.VERCEL_URL ? [process.env.VERCEL_URL] : []),
       ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [process.env.VERCEL_PROJECT_PRODUCTION_URL] : []),
-      "hdmaster.vercel.app",
-      "orderking-customers.vercel.app",
-      "orderking-partners.vercel.app",
-      "orderking-riders.vercel.app",
-      "apps-integration.vercel.app", "orderking.netlify.app", "orderking-hdmaster.netlify.app", "orderking-partners.netlify.app", "orderking-riders.netlify.app"
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
@@ -137,21 +141,31 @@ const baseURL = explicitBaseURL ?? {
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = [ 'https://orderking-hdmaster.netlify.app', 'https://orderking.netlify.app', 'https://orderking-partners.netlify.app', 'https://orderking-riders.netlify.app', 
+const trustedOrigins: string[] = isProductionRuntime && explicitBaseURL
+  ? [explicitBaseURL]
+  : [ 'https://orderking-hdmaster.netlify.app', 'https://orderking.netlify.app', 'https://orderking-partners.netlify.app', 'https://orderking-riders.netlify.app', 
   ...(explicitBaseURL ? [explicitBaseURL] : []),
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
   ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
   ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
-  'https://hdmaster.vercel.app',
-  'https://orderking-customers.vercel.app',
-  'https://orderking-partners.vercel.app',
-  'https://orderking-riders.vercel.app',
-  'https://apps-integration.vercel.app'
 ];
 
 const databaseUrl = env("DATABASE_URL");
+const betterAuthSecret = env("BETTER_AUTH_SECRET");
+if (isProductionRuntime) {
+  const missing = [
+    !databaseUrl ? "DATABASE_URL" : null,
+    !grokClientId ? "GROK_AUTH_CLIENT_ID" : null,
+    !grokClientSecret ? "GROK_AUTH_CLIENT_SECRET" : null,
+    !betterAuthSecret ? "BETTER_AUTH_SECRET" : null,
+    !explicitBaseURL ? "BETTER_AUTH_URL" : null,
+  ].filter(Boolean);
+  if (missing.length) {
+    throw new Error("OrderKing Rider: production auth configuration missing " + missing.join(", "));
+  }
+}
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
@@ -168,14 +182,11 @@ const grokUserInfoUrl = `${issuerBase}/api/auth/oauth2/userinfo`;
 // schema from `migrations/auth/0001_auth.sql`, copied into `migrations/` when
 // the app turns sign-in on.
 let database;
-try {
-  if (databaseUrl && !databaseUrl.includes("your_supabase_pooler")) {
-    database = new Pool({ connectionString: databaseUrl });
-  } else {
-    database = { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
-  }
-} catch (err) {
-  console.error("Auth DB Init Error:", err);
+if (isProductionRuntime) {
+  database = new Pool({ connectionString: databaseUrl });
+} else if (databaseUrl && !databaseUrl.includes("your_supabase_pooler")) {
+  database = new Pool({ connectionString: databaseUrl });
+} else {
   database = { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
 }
 
@@ -210,7 +221,7 @@ export const auth = betterAuth({
   baseURL,
   // Deployed apps inject BETTER_AUTH_SECRET. Preview: process-stable secret on
   // globalThis so HMR doesn't invalidate PGLite-backed sessions (see above).
-  secret: env("BETTER_AUTH_SECRET") ?? previewAuthSecret(),
+  secret: betterAuthSecret ?? previewAuthSecret(),
   database,
 
   // CSRF / origin check for credentialed auth POSTs (email sign-up/sign-in, …).
