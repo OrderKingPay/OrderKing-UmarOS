@@ -1,4 +1,4 @@
-import { readdir } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const roots = [
@@ -33,7 +33,7 @@ async function walk(dir) {
 const violations = [];
 for (const root of roots) {
   for (const file of await walk(root)) {
-    const text = await Bun.file(file).text().catch(async () => "");
+    const text = await readFile(file, "utf8");
     if (!text) continue;
     for (const rule of forbidden) {
       if (rule.pattern.test(text)) violations.push({ file, rule: rule.label });
