@@ -1,46 +1,31 @@
-// @ts-nocheck
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createFileRoute } from "@tanstack/react-router";
 
-// TRAVEL API SCAFFOLDING (Amadeus / IRCTC / Skyscanner)
-// Drop your production API keys in Netlify Environment Variables:
-// VITE_TRAVEL_API_KEY, VITE_IRCTC_MERCHANT_KEY
-
-export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
-  POST: async () => {
-  try {
-    const { origin, destination, date, type } = await request.json();
-
-    // SCENARIO 1: FLIGHTS (Amadeus or Skyscanner B2B)
-    if (type === "FLIGHT") {
-      const travelApiKey = process.env.VITE_TRAVEL_API_KEY;
-      if (!travelApiKey) {
-        return new Response(JSON.stringify({ error: "Missing VITE_TRAVEL_API_KEY for lowest priced flights." }), { status: 500 });
-      }
-      
-      // Real API Call to Aggregator will go here:
-      // const res = await fetch(`https://api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${date}`, {
-      //   headers: { Authorization: `Bearer ${travelApiKey}` }
-      // });
-      // const data = await res.json();
-      
-      return new Response(JSON.stringify({ success: true, message: "Travel API scaffolding ready. Waiting for keys." }), {
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
-    // SCENARIO 2: IRCTC INDIAN TRAINS
-    if (type === "TRAIN") {
-      const irctcKey = process.env.VITE_IRCTC_MERCHANT_KEY;
-      if (!irctcKey) {
-        return new Response(JSON.stringify({ error: "Missing VITE_IRCTC_MERCHANT_KEY for lowest priced trains." }), { status: 500 });
-      }
-      return new Response(JSON.stringify({ success: true, message: "IRCTC API scaffolding ready." }));
-    }
-
-    return new Response(JSON.stringify({ error: "Invalid travel type" }), { status: 400 });
-
-  } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: "Internal Server Error" }), { status: 500 });
-  }
-  }
+// @ts-ignore: Router tree is generated during build
+export const Route = createFileRoute("/api/v1/integrations/travel")({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        try {
+          const { origin, destination, date, type } = await request.json();
+          if (type !== "FLIGHT" && type !== "TRAIN") return Response.json({ error: "Invalid travel type" }, { status: 400 });
+          const configured = type === "FLIGHT"
+            ? process.env.TRAVEL_PROVIDER_ENABLED === "true" && Boolean(process.env.TRAVEL_API_KEY)
+            : process.env.IRCTC_PROVIDER_ENABLED === "true" && Boolean(process.env.IRCTC_MERCHANT_KEY);
+          if (!configured) {
+            return Response.json({
+              success: false, status: "PENDING_EXTERNAL_PROVIDER",
+              origin, destination, date, type,
+              message: "Travel provider is not connected; no itinerary or booking is simulated."
+            }, { status: 503 });
+          }
+          return Response.json({
+            success: false, status: "PENDING_PROVIDER_ADAPTER",
+            message: "Provider credentials exist but verified live search/booking adapter is not connected."
+          }, { status: 503 });
+        } catch {
+          return Response.json({ success: false, error: "Invalid travel request" }, { status: 400 });
+        }
+      },
+    },
+  },
 });
