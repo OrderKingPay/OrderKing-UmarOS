@@ -24,14 +24,18 @@ export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpda
       onUpdate?.(pos);
 
       if (riderId) {
-        await postLocationFn({
-          data: {
-            lat: pos.lat,
-            lng: pos.lng,
-            accuracyM: Number.isFinite(pos.accuracy) ? pos.accuracy : null,
-            deliveryId: null,
-          },
-        });
+        try {
+          await postLocationFn({
+            data: {
+              lat: pos.lat,
+              lng: pos.lng,
+              accuracyM: Number.isFinite(pos.accuracy) ? pos.accuracy : null,
+              deliveryId: null,
+            },
+          });
+        } catch {
+          // Location delivery is retried by the next heartbeat; never surface an unhandled promise rejection.
+        }
       }
     }
 
