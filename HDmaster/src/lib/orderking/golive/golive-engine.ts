@@ -84,7 +84,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     lastTestedAt: null,
   },
   endpoints: {
-    hostingProvider: "VERCEL",
+    hostingProvider: "CLOUDFLARE_PAGES",
     customerAppUrl: process.env.CUSTOMER_APP_URL ?? "",
     partnerAppUrl: process.env.PARTNER_APP_URL ?? "",
     riderAppUrl: process.env.RIDER_APP_URL ?? "",
@@ -92,7 +92,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     apiGatewayUrl: process.env.API_GATEWAY_URL ?? "",
     sslEnforced: true,
     customDomainVerified: false,
-    dnsCnameTarget: process.env.VERCEL_DNS_CNAME_TARGET ?? "",
+    dnsCnameTarget: process.env.CLOUDFLARE_PAGES_CNAME_TARGET ?? "",
   },
   paymentGateway: {
     provider: "RAZORPAY",
@@ -201,7 +201,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
     infraScore += 7;
   } else {
     infraWarnings.push("SSL enforcement or custom domain DNS verification is pending.");
-    recommendedActions.push("Verify CNAME records for orderking.in on Vercel/Cloudflare.");
+    recommendedActions.push("Verify the intended custom domain CNAME on Cloudflare; pages.dev remains the pilot fallback.");
   }
 
   const infraPillar: GoLivePillarScore = {
@@ -401,12 +401,13 @@ export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ o
   if (!validatePostgresUrl(config.connectionString)) {
     return { ok: false, message: "Malformed PostgreSQL connection string.", latencyMs: 0 };
   }
-  // Simulated handshake or connection pool ping
-  const latencyMs = Math.floor(Math.random() * 25) + 15;
+  if (config.status !== "CONNECTED") {
+    return { ok: false, message: "Database provider is not verified as CONNECTED.", latencyMs: Date.now() - start };
+  }
   return {
     ok: true,
-    message: `Connected successfully to ${config.provider} (${config.sslMode} SSL, PgBouncer pool active).`,
-    latencyMs,
+    message: `Database provider state is CONNECTED (${config.provider}, ${config.sslMode} SSL).`,
+    latencyMs: Date.now() - start,
   };
 }
 
@@ -414,11 +415,19 @@ export async function testPgConnection(config: PaymentGatewayConfig): Promise<{ 
   if (!config.apiKey || !config.secretKey) {
     return { ok: false, message: "Missing API Key or Secret Key.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 40) + 20;
+  if (config.status !== "CONNECTED") {
+    return { ok: false, message: "Payment provider is not verified as CONNECTED.", latencyMs: 0 };
+  }
+  if (config.mode !== "PRODUCTION") {
+    return { ok: false, message: "Payment provider is not in PRODUCTION mode.", latencyMs: 0 };
+  }
+  if (!config.webhookSecret) {
+    return { ok: false, message: "Payment provider webhook secret is missing.", latencyMs: 0 };
+  }
   return {
     ok: true,
-    message: `Handshake successful with ${config.provider} in ${config.mode} mode. Webhooks verified.`,
-    latencyMs,
+    message: `Payment provider state is CONNECTED in PRODUCTION mode; webhook secret is configured.`,
+    latencyMs: 0,
   };
 }
 
@@ -426,11 +435,16 @@ export async function testSmsConnection(config: SmsGatewayConfig): Promise<{ ok:
   if (!config.apiKey) {
     return { ok: false, message: "Missing SMS Gateway API Key. Operating in local simulation.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 30) + 15;
+  if (config.status !== "CONNECTED") {
+    return { ok: false, message: "SMS provider is not verified as CONNECTED.", latencyMs: 0 };
+  }
+  if (!config.senderId || !config.dltEntityId || !config.dltTemplateIdOtp) {
+    return { ok: false, message: "SMS sender/DLT configuration is incomplete.", latencyMs: 0 };
+  }
   return {
     ok: true,
-    message: `SMS Gateway (${config.provider}) active. Sender ID: ${config.senderId}, DLT Entity: ${config.dltEntityId || "Pending"}.`,
-    latencyMs,
+    message: `SMS provider state is CONNECTED (${config.provider}) with DLT configuration.`,
+    latencyMs: 0,
   };
 }
 
@@ -438,10 +452,15 @@ export async function testMapsConnection(config: MapsConfig): Promise<{ ok: bool
   if (!config.apiKey) {
     return { ok: false, message: "Missing Maps API Key. Falling back to offline Haversine matrix.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 20) + 10;
+  if (config.status !== "CONNECTED") {
+    return { ok: false, message: "Maps provider is not verified as CONNECTED.", latencyMs: 0 };
+  }
+  if (!config.geocodingEnabled || !config.directionsEnabled || !config.placesAutocompleteEnabled) {
+    return { ok: false, message: "Maps capabilities are incomplete.", latencyMs: 0 };
+  }
   return {
     ok: true,
-    message: `Maps API (${config.provider}) active. Directions & Geocoding enabled. Winding factor: ${config.roadWindingFactor}x.`,
-    latencyMs,
+    message: `Maps provider state is CONNECTED (${config.provider}).`,
+    latencyMs: 0,
   };
 }
