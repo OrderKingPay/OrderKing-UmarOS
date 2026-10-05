@@ -13,12 +13,12 @@ export interface MaskedIdentityConfig {
 }
 
 export const DEFAULT_PUBLIC_IDENTITY: MaskedIdentityConfig = {
-  publicEntityName: "OrderKing Sovereign Operations",
-  publicLegalEntity: "King Pay Network Technologies (Section 79 IT Act Compliant Intermediary)",
-  publicSupportEmail: "support@orderking.in",
-  publicNodalPhone: "+91 1800-KING-PAY",
-  publicUpiVpa: "orderking@okhdfcbank",
-  intermediaryStatus: "SECTION_79_INTERMEDIARY_SHIELD_ACTIVE",
+  publicEntityName: "OrderKing",
+  publicLegalEntity: "LEGAL ENTITY CONFIGURATION REQUIRED",
+  publicSupportEmail: "",
+  publicNodalPhone: "",
+  publicUpiVpa: "",
+  intermediaryStatus: "COUNSEL_REVIEW_REQUIRED",
 };
 
 export class FounderPrivacyShield {
