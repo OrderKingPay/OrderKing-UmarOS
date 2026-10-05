@@ -139,7 +139,10 @@ export async function seedIfNeeded(): Promise<void> {
     select seed_version from workspace_meta where org_id = ${DEFAULT_ORG_ID}
   `;
   const version = existing[0]?.seed_version ?? 0;
-  if (version >= SEED_VERSION) return;
+  const businessRows = await sql<{ n: number }>`
+    select count(*)::int as n from restaurants where org_id = ${DEFAULT_ORG_ID}
+  `;
+  if (version >= SEED_VERSION && Number(businessRows[0]?.n ?? 0) > 0) return;
   if (version < 1) {
     await seedV1();
   }
