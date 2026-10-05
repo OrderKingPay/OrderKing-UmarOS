@@ -84,7 +84,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     lastTestedAt: null,
   },
   endpoints: {
-    hostingProvider: "VERCEL",
+    hostingProvider: "CLOUDFLARE_PAGES",
     customerAppUrl: process.env.CUSTOMER_APP_URL ?? "",
     partnerAppUrl: process.env.PARTNER_APP_URL ?? "",
     riderAppUrl: process.env.RIDER_APP_URL ?? "",
@@ -92,7 +92,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     apiGatewayUrl: process.env.API_GATEWAY_URL ?? "",
     sslEnforced: true,
     customDomainVerified: false,
-    dnsCnameTarget: process.env.VERCEL_DNS_CNAME_TARGET ?? "",
+    dnsCnameTarget: process.env.CLOUDFLARE_PAGES_CNAME_TARGET ?? "",
   },
   paymentGateway: {
     provider: "RAZORPAY",
@@ -201,7 +201,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
     infraScore += 7;
   } else {
     infraWarnings.push("SSL enforcement or custom domain DNS verification is pending.");
-    recommendedActions.push("Verify CNAME records for orderking.in on Vercel/Cloudflare.");
+    recommendedActions.push("Verify the registered custom domain and Cloudflare DNS/CNAME records before enabling public launch.");
   }
 
   const infraPillar: GoLivePillarScore = {
@@ -262,7 +262,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   if (config.smsGateway.apiKey && config.smsGateway.senderId) {
     commScore += 6;
   } else {
-    commWarnings.push("SMS Gateway API key missing. Operating in fallback simulation mode.");
+    commWarnings.push("SMS Gateway API key missing. SMS delivery is unavailable until a real provider is configured.");
   }
 
   if (config.smsGateway.dltEntityId && config.smsGateway.dltTemplateIdOtp) {
@@ -275,7 +275,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   if (config.maps.apiKey) {
     commScore += 6;
   } else {
-    commWarnings.push("Google Maps API key missing. Using Haversine 1.35x distance matrix fallback.");
+    commWarnings.push("Maps API key missing. Live geocoding/directions are unavailable until a real maps provider is configured.");
   }
 
   if (config.maps.roadWindingFactor >= 1.2 && config.maps.roadWindingFactor <= 1.5) {
@@ -401,12 +401,10 @@ export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ o
   if (!validatePostgresUrl(config.connectionString)) {
     return { ok: false, message: "Malformed PostgreSQL connection string.", latencyMs: 0 };
   }
-  // Simulated handshake or connection pool ping
-  const latencyMs = Math.floor(Math.random() * 25) + 15;
   return {
-    ok: true,
-    message: `Connected successfully to ${config.provider} (${config.sslMode} SSL, PgBouncer pool active).`,
-    latencyMs,
+    ok: false,
+    message: "Database configuration format is valid, but no live connection was verified by this diagnostic function.",
+    latencyMs: Date.now() - start,
   };
 }
 
@@ -414,34 +412,31 @@ export async function testPgConnection(config: PaymentGatewayConfig): Promise<{ 
   if (!config.apiKey || !config.secretKey) {
     return { ok: false, message: "Missing API Key or Secret Key.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 40) + 20;
   return {
-    ok: true,
-    message: `Handshake successful with ${config.provider} in ${config.mode} mode. Webhooks verified.`,
-    latencyMs,
+    ok: false,
+    message: "Payment credentials are present, but no live provider handshake was verified by this diagnostic function.",
+    latencyMs: 0,
   };
 }
 
 export async function testSmsConnection(config: SmsGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing SMS Gateway API Key. Operating in local simulation.", latencyMs: 0 };
+    return { ok: false, message: "Missing SMS Gateway API key; real SMS health check is unavailable.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 30) + 15;
   return {
-    ok: true,
-    message: `SMS Gateway (${config.provider}) active. Sender ID: ${config.senderId}, DLT Entity: ${config.dltEntityId || "Pending"}.`,
-    latencyMs,
+    ok: false,
+    message: "SMS provider configuration is present, but no live provider message was sent by this diagnostic function.",
+    latencyMs: 0,
   };
 }
 
 export async function testMapsConnection(config: MapsConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing Maps API Key. Falling back to offline Haversine matrix.", latencyMs: 0 };
+    return { ok: false, message: "Missing Maps API key; live maps health check is unavailable.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 20) + 10;
   return {
-    ok: true,
-    message: `Maps API (${config.provider}) active. Directions & Geocoding enabled. Winding factor: ${config.roadWindingFactor}x.`,
-    latencyMs,
+    ok: false,
+    message: "Maps provider configuration is present, but no live provider request was verified by this diagnostic function.",
+    latencyMs: 0,
   };
 }
