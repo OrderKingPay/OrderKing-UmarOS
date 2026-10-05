@@ -124,8 +124,9 @@ function KitchenPage() {
   });
 
   useEffect(() => {
-    if (!vendor.restaurantId || !supabaseCloud) return;
-    const channel = supabaseCloud
+    const client = supabaseCloud;
+    if (!vendor.restaurantId || !client) return;
+    const channel = client
       .channel(`orders-${vendor.restaurantId}`)
       .on(
         "postgres_changes",
@@ -142,7 +143,7 @@ function KitchenPage() {
       .subscribe();
 
     return () => {
-      supabaseCloud.removeChannel(channel);
+      client.removeChannel(channel);
     };
   }, [vendor.restaurantId, qc]);
 
