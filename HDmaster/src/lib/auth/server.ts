@@ -92,13 +92,13 @@ export const authConfigured =
 // it derives the origin per-request from the (proxied) host, validated against the
 // preview allowlist, which makes the OAuth `redirect_uri` the concrete preview URL
 // the broker's preview client accepts.
-const explicitBaseURL = undefined;
-// Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
-// requires a mutable `allowedHosts: string[]`.
+const explicitBaseURL = env("BETTER_AUTH_URL") ?? env("ORDERKING_PUBLIC_ORIGIN") ?? env("CF_PAGES_URL");
+const explicitHost = explicitBaseURL ? new URL(explicitBaseURL).hostname : undefined;
+if (env("ORDERKING_RUNTIME") === "production" && !explicitBaseURL) {
+  throw new Error("BETTER_AUTH_URL or ORDERKING_PUBLIC_ORIGIN is required for production auth.");
+}
+// Explicit `string[]` (not a readonly tuple) — Better Auth requires a mutable allowedHosts array.
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
-// Local `npm run dev` (port 8080 contract). Browsers may send Origin as any of
-// these for the same server — trusting only `localhost` rejects `127.0.0.1` and
-// breaks email/password with "Invalid origin".
 const LOCAL_DEV_ORIGINS: string[] = [
   "http://localhost:8080",
   "http://127.0.0.1:8080",
@@ -115,44 +115,28 @@ const LOCAL_DEV_ORIGINS: string[] = [
   "http://127.0.0.1:8085",
 ];
 const baseURL = explicitBaseURL ?? {
-  // Include loopback hosts so dynamic baseURL resolves for local email/password
-  // (not only the preview wildcard).
   allowedHosts: [
-      ...previewAllowedHosts, 
-      "localhost", 
-      "127.0.0.1", 
-      "[::1]",
-      ...(process.env.VERCEL_URL ? [process.env.VERCEL_URL] : []),
-      ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [process.env.VERCEL_PROJECT_PRODUCTION_URL] : []),
-      "hdmaster.vercel.app",
-      "orderking-customers.vercel.app",
-      "orderking-partners.vercel.app",
-      "orderking-riders.vercel.app",
-      "apps-integration.vercel.app", "orderking.netlify.app", "orderking-hdmaster.netlify.app", "orderking-partners.netlify.app", "orderking-riders.netlify.app"
-    ],
-  // `auto` → trust both http:// and https:// expansions of allowedHosts
-  // (preview is https; local dev is http).
+    ...previewAllowedHosts,
+    "localhost",
+    "127.0.0.1",
+    "[::1]",
+    ...(explicitHost ? [explicitHost] : []),
+  ],
   protocol: "auto" as const,
-  fallback: process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:8080",
+  fallback: "http://localhost:8080",
 };
 
-// Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
-// Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = [ 'https://orderking-hdmaster.netlify.app', 'https://orderking.netlify.app', 'https://orderking-partners.netlify.app', 'https://orderking-riders.netlify.app', 
+const trustedOrigins: string[] = [
   ...(explicitBaseURL ? [explicitBaseURL] : []),
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
-  ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-  ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
-  'https://hdmaster.vercel.app',
-  'https://orderking-customers.vercel.app',
-  'https://orderking-partners.vercel.app',
-  'https://orderking-riders.vercel.app',
-  'https://apps-integration.vercel.app'
 ];
 
 const databaseUrl = env("DATABASE_URL");
+if (env("ORDERKING_RUNTIME") === "production" && (!databaseUrl || databaseUrl.includes("your_supabase_pooler"))) {
+  throw new Error("DATABASE_URL is required for production auth.");
+}
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
@@ -172,10 +156,13 @@ let database;
 try {
   if (databaseUrl && !databaseUrl.includes("your_supabase_pooler")) {
     database = new Pool({ connectionString: databaseUrl });
+  } else if (env("ORDERKING_RUNTIME") === "production") {
+    throw new Error("DATABASE_URL is required for production auth.");
   } else {
     database = { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
   }
 } catch (err) {
+  if (env("ORDERKING_RUNTIME") === "production") throw err;
   console.error("Auth DB Init Error:", err);
   database = { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
 }
