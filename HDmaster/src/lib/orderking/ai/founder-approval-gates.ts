@@ -81,7 +81,7 @@ export class FounderApprovalGates {
     const id = `gate-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const createdAt = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
-    const auditHash = Math.random().toString(36).substring(2, 15);
+    const auditHash = crypto.createHash("sha256").update(JSON.stringify({ id, domain: params.domain, targetEntity: params.targetEntity, payload: params.payload, previousHash: this.lastHash })).digest("hex");
 
     const req: PendingApprovalRequest = {
       id,
@@ -129,7 +129,7 @@ export class FounderApprovalGates {
       details: `Founder authorized execution for: "${req.title}".`,
     });
 
-    return { success: true, message: `Action "${req.title}" approved and executed.`, request: req };
+    return { success: true, message: `Action "${req.title}" approved. Execution remains subject to the action-specific executor and provider gates.`, request: req };
   }
 
   public rejectRequest(id: string, reason = "Rejected by Founder"): { success: boolean; message: string } {
