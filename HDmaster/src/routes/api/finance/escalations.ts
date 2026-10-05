@@ -3,7 +3,10 @@ import { getSql } from "@/lib/db";
 
 // @ts-expect-error TanStack regenerates routeTree.gen.ts during the Vite build; direct tsc runs before that refresh.
 export const Route = createFileRoute("/api/finance/escalations")({
-  GET: async ({ request }: { request: Request }) => {
+  server: {
+    // @ts-expect-error TanStack Start server-route type augmentation is not included in direct tsc for this repo version.
+    handlers: {
+      GET: async ({ request }: { request: Request }) => {
     try {
       const sql = await getSql();
       
