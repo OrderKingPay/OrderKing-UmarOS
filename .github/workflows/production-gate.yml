@@ -29,8 +29,20 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Run production truth gate
+        run: node scripts/production-truth-gate.mjs
+
       - name: Run Typecheck across 5 apps
         run: pnpm run typecheck
+
+      - name: Run lint across apps
+        run: pnpm -r --if-present lint
+
+      - name: Run auth invariant checks
+        run: pnpm -r --if-present check:auth
+
+      - name: Run app tests
+        run: pnpm -r --if-present test
 
       - name: Build all 5 apps
         run: pnpm run build
