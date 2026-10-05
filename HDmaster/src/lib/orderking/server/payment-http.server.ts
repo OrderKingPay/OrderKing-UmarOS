@@ -243,7 +243,9 @@ export async function handlePaymentHttp(request: Request, params: Record<string,
       const payment = await fetchRazorpayPayment(body.paymentId);
       if (payment.order_id !== body.razorpayOrderId) return json({ error: "Payment order mismatch" }, 400);
       if (payment.status !== "captured") return json({ ok: false, status: payment.status });
-      return json({ ok: true, status: "CAPTURED", paymentId: payment.id, orderId: body.orderId });
+      const captured = await markPaymentCaptured(payment.id, body.razorpayOrderId, payment.amount, payment.method);
+      if (captured.orderId !== body.orderId) return json({ error: "Payment order does not match OrderKing order" }, 409);
+      return json({ ok: true, status: "CAPTURED", paymentId: payment.id, orderId: captured.orderId, paymentIntentId: captured.paymentIntentId });
     }
 
     return json({ error: "Not found" }, 404);
