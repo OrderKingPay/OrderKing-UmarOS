@@ -26,28 +26,21 @@ export function LiveDeliveryMap({
   riderProgressOverride,
   etaOverride,
 }: LiveDeliveryMapProps) {
-  const [riderProgress, setRiderProgress] = useState(0.35);
 
   const isActiveDelivery = ["RIDER_ASSIGNED", "PICKED_UP", "ON_THE_WAY"].includes(status);
   const isDelivered = status === "DELIVERED";
 
-  // Simulate smooth GPS heartbeat movement along route
-  useEffect(() => {
-    if (!isActiveDelivery || riderProgressOverride !== undefined) return;
-    const interval = setInterval(() => {
-      setRiderProgress((prev) => (prev >= 0.95 ? 0.95 : prev + 0.05));
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [isActiveDelivery, riderProgressOverride]);
-
-  const currentProgress = riderProgressOverride !== undefined ? Math.min(0.95, riderProgressOverride) : riderProgress;
+  // Never synthesize rider movement. Progress is shown only when supplied by the
+  // server-authoritative tracking pipeline.
+  const currentProgress =
+    riderProgressOverride !== undefined ? Math.max(0, Math.min(0.95, riderProgressOverride)) : null;
 
   if (!isActiveDelivery && !isDelivered) {
     return null;
   }
 
   // Estimated arrival based on status & progress
-  const etaMinutes = isDelivered ? 0 : (etaOverride ?? Math.max(2, Math.round((1 - currentProgress) * 22)));
+  const etaMinutes = isDelivered ? 0 : etaOverride ?? null;
 
   return (
     <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border border-primary/20 bg-surface shadow-sm">
@@ -61,7 +54,7 @@ export function LiveDeliveryMap({
           <span className="text-sm font-semibold text-fg">Live GPS Tracking</span>
         </div>
         <span className="text-xs font-medium text-muted">
-          {isDelivered ? "Delivered" : `ETA: ~${etaMinutes} mins`}
+          {isDelivered ? "Delivered" : etaMinutes != null ? `ETA: ~${etaMinutes} mins` : "Live ETA pending"}
         </span>
       </div>
 
@@ -71,7 +64,7 @@ export function LiveDeliveryMap({
         <div className="absolute left-8 right-8 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-zinc-700">
           <div
             className="h-full rounded-full bg-gradient-to-r from-primary to-success transition-all duration-1000 ease-out"
-            style={{ width: `${isDelivered ? 100 : currentProgress * 100}%` }}
+            style={{ width: `${isDelivered ? 100 : currentProgress != null ? currentProgress * 100 : 0}%` }}
           />
         </div>
 
@@ -86,7 +79,7 @@ export function LiveDeliveryMap({
         </div>
 
         {/* Rider Live Moving Marker */}
-        {!isDelivered && (
+        {!isDelivered && currentProgress != null && (
           <div
             className="absolute top-1/2 -translate-y-1/2 transition-all duration-1000 ease-out"
             style={{ left: `calc(2rem + ${currentProgress * 75}%)` }}
@@ -109,6 +102,11 @@ export function LiveDeliveryMap({
             You
           </span>
         </div>
+        {!isDelivered && currentProgress == null && (
+          <div className="absolute inset-x-0 bottom-3 text-center text-xs text-zinc-400">
+            Waiting for verified rider location
+          </div>
+        )}
       </div>
 
       {/* Rider Partner Contact Card */}
