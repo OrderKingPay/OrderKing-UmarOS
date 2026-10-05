@@ -20,6 +20,18 @@ const files = [
   "Apps-integration-/src/lib/auth/client.ts",
   "HDmaster/src/routes/api/dispatch/cron/run-auto-dispatch.ts",
   "HDmaster/src/routes/api/finance/cron/run-settlement.ts",
+  "HDmaster/src/lib/orderking/server/payment-http.server.ts",
+  "HDmaster/src/lib/orderking/server/customer-order-http.server.ts",
+  "orderking-customers/src/lib/server/orders.ts",
+  "orderking-customers/src/lib/server/hdmaster-orders.ts",
+  "orderking-customers/src/lib/server/hdmaster-order-read.ts",
+  "orderking-partners/src/lib/server/hdmaster-order-transition.ts",
+  "orderking-riders/src/lib/server/hdmaster-order-transition.ts",
+  "orderking-customers/src/routes/login.tsx",
+  "orderking-partners/src/routes/login.tsx",
+  "orderking-riders/src/routes/login.tsx",
+  "HDmaster/src/routes/login.tsx",
+  "Apps-integration-/src/routes/login.tsx",
 ];
 
 const banned = [
