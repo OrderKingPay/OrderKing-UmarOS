@@ -13,7 +13,7 @@ const plans = {
 } as const;
 
 function authorized(request: Request): boolean {
-  const secret = process.env.CR0N_SECRET ?? process.env.CRON_SECRET;
+  const secret = process.env.CRON_SECRET;
   return Boolean(secret && request.headers.get('authorization') === `Bearer ${secret}`);
 }
 
