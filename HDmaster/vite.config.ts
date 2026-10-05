@@ -52,10 +52,8 @@ function pgliteBootstrapPlugin(): Plugin {
 }
 
 /**
- * Nitro's Vercel bundle inlines `@electric-sql/pglite` but does not copy the
- * sibling WASM/data blobs the WASM loader resolves next to the chunk
- * (`pglite.data`, `pglite.wasm`). Local `vite preview` (no DATABASE_URL) needs
- * them; a deployed Neon app never loads PGLite. Copy after the nitro emit.
+ * Local `vite preview` can still use the bundled PGlite assets when no real
+ * DATABASE_URL exists. Keep those assets outside the production server bundle.
  */
 function pglitePreviewAssetsPlugin(): Plugin {
   return {
@@ -64,7 +62,7 @@ function pglitePreviewAssetsPlugin(): Plugin {
     closeBundle() {
       const destDir = join(
         process.cwd(),
-        ".vercel/output/functions/__server.func/_libs",
+        "dist/_pglite",
       );
       const srcDir = join(
         process.cwd(),
