@@ -1718,27 +1718,34 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             }}
           />
         ) : activeSection === "travel" ? (
-          <TravelBookingHub
-            walletBalance={walletBalance}
-            onDeductWallet={handleDeductWallet}
-          />
+          KINGPAY_AFFILIATES_ENABLED ? (
+            <TravelBookingHub
+              walletBalance={walletBalance}
+              onDeductWallet={handleDeductWallet}
+            />
+          ) : (
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-sm text-amber-800 dark:text-amber-200">
+              Travel affiliate booking is preserved but disabled until a verified provider contract, credentials and commission terms are connected.
+            </div>
+          )
         ) : activeSection === "loan" ? (
-          <MicroLoanHub
-            walletBalance={walletBalance}
-            onDisburseToWallet={(amount) => {
-              if (!KINGPAY_CREDIT_ENABLED || !KINGPAY_WALLET_ENABLED) {
-                toast.info("Loan disbursal is disabled until a real regulated credit provider and wallet ledger are connected.");
-                return;
-              }
-              const newBal = walletBalance + amount;
-              setWalletBalance(newBal);
-              if (typeof window !== "undefined") {
-                localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-              }
-              addTransaction(amount, "Verified loan disbursement", "credit");
-              playSoundboxChime(amount);
-            }}
-          />
+          KINGPAY_CREDIT_ENABLED ? (
+            <MicroLoanHub
+              walletBalance={walletBalance}
+              onDisburseToWallet={(amount) => {
+                if (!KINGPAY_WALLET_ENABLED) {
+                  toast.info("Loan disbursal is disabled until a real wallet ledger is connected.");
+                  return;
+                }
+                const newBal = walletBalance + amount;
+                setWalletBalance(newBal);
+                if (typeof window !== "undefined") {
+                  localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
+                }
+                addTransaction(amount, "Verified loan disbursement", "credit");
+                playSoundboxChime(amount);
+              }}
+            />
           ) : (
             <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-sm text-amber-800 dark:text-amber-200">
               Credit products are preserved but disabled until a verified regulated lender integration is connected.
