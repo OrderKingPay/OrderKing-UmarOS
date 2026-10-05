@@ -121,6 +121,7 @@ const baseURL = explicitBaseURL ?? {
       ...previewAllowedHosts, 
       "localhost", 
       "127.0.0.1", 
+      "orderking-hdmaster.pages.dev",
       "[::1]",
       ...(process.env.VERCEL_URL ? [process.env.VERCEL_URL] : []),
       ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [process.env.VERCEL_PROJECT_PRODUCTION_URL] : []),
@@ -138,7 +139,8 @@ const baseURL = explicitBaseURL ?? {
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = [ 'https://orderking-hdmaster.netlify.app', 'https://orderking.netlify.app', 'https://orderking-partners.netlify.app', 'https://orderking-riders.netlify.app', 
+const trustedOrigins: string[] = [
+  "https://orderking-hdmaster.pages.dev", 'https://orderking-hdmaster.netlify.app', 'https://orderking.netlify.app', 'https://orderking-partners.netlify.app', 'https://orderking-riders.netlify.app', 
   ...(explicitBaseURL ? [explicitBaseURL] : []),
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,

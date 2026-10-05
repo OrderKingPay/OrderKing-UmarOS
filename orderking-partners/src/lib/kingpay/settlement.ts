@@ -2,23 +2,38 @@ import { getSql } from "../db.ts";
 import Razorpay from "razorpay";
 import { z } from "zod";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "test_key",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "test_secret",
-});
+function getRazorpayClient() {
+  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+
+  if (!keyId || !keySecret) {
+    throw new Error(
+      "Razorpay settlement is not configured. RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are required.",
+    );
+  }
+
+  if (keyId.startsWith("rzp_test_")) {
+    throw new Error("Test Razorpay credentials are not permitted in live settlement flows.");
+  }
+
+  return new Razorpay({
+    key_id: keyId,
+    key_secret: keySecret,
+  });
+}
 
 export const SettlementSchema = z.object({
   restaurantId: z.string().uuid(),
   amountPaise: z.number().int().positive(),
-  idempotencyKey: z.string(),
+  idempotencyKey: z.string().min(16),
 });
 
 export const settlementEngine = {
   async getPendingBalance(restaurantId: string): Promise<number> {
     const sql = await getSql();
     const result = await sql<{ balance_paise: number }>`
-      SELECT balance_paise 
-      FROM partner_ledgers 
+      SELECT balance_paise
+      FROM partner_ledgers
       WHERE restaurant_id = ${restaurantId}
     `;
     return result[0]?.balance_paise || 0;
@@ -27,32 +42,36 @@ export const settlementEngine = {
   async triggerSettlement(input: z.infer<typeof SettlementSchema>) {
     const data = SettlementSchema.parse(input);
     const sql = await getSql();
-    
+    const razorpay = getRazorpayClient();
+
     return await sql.transaction(async (tx) => {
       const existing = await tx`
-        SELECT 1 FROM settlement_history 
+        SELECT 1 FROM settlement_history
         WHERE idempotency_key = ${data.idempotencyKey}
       `;
-      if (existing.length > 0) return { status: "already_processed" };
+      if (existing.length > 0) return { status: "already_processed" as const };
 
-      const ledgers = await tx<{ balance_paise: number, fund_account_id: string }>`
-        SELECT balance_paise, fund_account_id 
-        FROM partner_ledgers 
+      const ledgers = await tx<{ balance_paise: number; fund_account_id: string }>`
+        SELECT balance_paise, fund_account_id
+        FROM partner_ledgers
         WHERE restaurant_id = ${data.restaurantId} FOR UPDATE
       `;
 
       if (ledgers.length === 0) {
         throw new Error("Ledger not found for restaurant");
       }
-      
+
       const ledger = ledgers[0];
+      if (!ledger.fund_account_id) {
+        throw new Error("Razorpay fund account is not configured for restaurant");
+      }
       if (ledger.balance_paise < data.amountPaise) {
         throw new Error("Insufficient balance for settlement");
       }
 
       await tx`
-        UPDATE partner_ledgers 
-        SET balance_paise = balance_paise - ${data.amountPaise}, 
+        UPDATE partner_ledgers
+        SET balance_paise = balance_paise - ${data.amountPaise},
             updated_at = NOW()
         WHERE restaurant_id = ${data.restaurantId}
       `;
@@ -69,10 +88,10 @@ export const settlementEngine = {
         notes: {
           restaurantId: data.restaurantId,
           idempotencyKey: data.idempotencyKey,
-        }
+        },
       });
 
-      return { status: "processing", transferId: transfer.id };
+      return { status: "processing" as const, transferId: transfer.id };
     });
-  }
+  },
 };

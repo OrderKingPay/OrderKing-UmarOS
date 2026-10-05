@@ -45,10 +45,9 @@ export async function processDlqBatch() {
     try {
       // In a real system, you'd route this back into the specific system.
       // For now, we simulate executing the retry block.
-      console.log(`[DLQ] Retrying ${item.target_system} for org ${item.org_id}...`);
-      
-      // Update as successful
-      await sql.query(`UPDATE dead_letter_queue SET status = 'RESOLVED', updated_at = now() WHERE id = $1`, [item.id]);
+      throw new Error(
+        `Retry adapter is not connected for ${item.target_system}; item remains unresolved.`,
+      );
     } catch (err) {
       const errorStr = err instanceof Error ? err.message : "Unknown retry error";
       const nextRetryCount = item.retry_count + 1;

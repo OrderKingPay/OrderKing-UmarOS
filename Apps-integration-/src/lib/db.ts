@@ -1,7 +1,7 @@
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
 /** Which database backend is active. */
-export type DbSource = "neon" | "pglite";
+export type DbSource = "neon" | "pglite" | "unconfigured";
 
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
@@ -18,7 +18,13 @@ if (databaseUrl && databaseUrl.includes("your_supabase_pooler")) {
  * the app has a working database even with nothing configured — the live preview
  * included. Swap in Neon later by just setting `DATABASE_URL`; no code changes.
  */
-export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
+const productionRuntime =
+  typeof process !== "undefined" && process.env.ORDERKING_RUNTIME === "production";
+export const dbSource: DbSource = databaseUrl
+  ? "neon"
+  : productionRuntime
+    ? "unconfigured"
+    : "pglite";
 
 /**
  * Minimal shared SQL surface, satisfied by both Neon and PGLite. Both the
@@ -180,6 +186,9 @@ async function createSql(): Promise<Sql> {
         "or a server route loader, never from client code.",
     );
   }
+  if (dbSource === "unconfigured") {
+    throw new Error("DATABASE_URL is required for production server-side database operations.");
+  }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
 
@@ -205,7 +214,7 @@ export function getSql(): Promise<Sql> {
  */
 export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite> {
   if (dbSource !== "pglite") {
-    throw new Error("getPglite() is only available on the PGLite fallback (no DATABASE_URL)");
+    throw new Error("getPglite() is only available on the PGLite fallback.");
   }
   await getSql();
   const pg = await globalRef.__pgliteInstance__;
