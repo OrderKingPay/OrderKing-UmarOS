@@ -1676,6 +1676,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleDeductWallet = (amount: number, description: string): boolean => {
+    if (!KINGPAY_WALLET_ENABLED) {
+      toast.info("KingPay wallet spending is disabled until a real wallet ledger is connected.");
+      return false;
+    }
     if (walletBalance < amount) return false;
     const newBal = walletBalance - amount;
     setWalletBalance(newBal);
@@ -1721,12 +1725,16 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           <MicroLoanHub
             walletBalance={walletBalance}
             onDisburseToWallet={(amount) => {
+              if (!KINGPAY_CREDIT_ENABLED || !KINGPAY_WALLET_ENABLED) {
+                toast.info("Loan disbursal is disabled until a real regulated credit provider and wallet ledger are connected.");
+                return;
+              }
               const newBal = walletBalance + amount;
               setWalletBalance(newBal);
               if (typeof window !== "undefined") {
                 localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
               }
-              addTransaction(amount, "Loan Disbursement", "credit");
+              addTransaction(amount, "Verified loan disbursement", "credit");
               playSoundboxChime(amount);
             }}
           />
@@ -1744,32 +1752,13 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           <>
             {/* Automatic 100% Zero-Risk Offline / 2G Assist (Only displays when connection is genuinely offline or 2G) */}
             {effective2G && (
-          <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200 space-y-2.5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">⚡</span>
-                <div>
-                  <span className="font-bold">Offline / Low-Network Mode (Auto-Detected)</span>
-                  <p className="text-[11px] text-muted">0-Data USSD &amp; Offline Wallet Active</p>
-                </div>
-              </div>
-              <span className="text-[10px] font-mono bg-amber-500/20 px-2 py-0.5 rounded font-bold">
-                Token: {offlineToken}
-              </span>
-            </div>
+          <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200 space-y-2 shadow-sm">
             <div className="flex items-center gap-2">
-              <a
-                href="tel:*99*1*1#"
-                className="flex-1 rounded-xl bg-primary py-1.5 text-center text-xs font-bold text-white shadow-xs"
-              >
-                📞 Dial *99# (Zero-Data USSD)
-              </a>
-              <a
-                href={`sms:9223166166?body=PAY%20ORDERKING%20${walletBalance}`}
-                className="rounded-xl border border-border bg-surface px-3 py-1.5 text-center text-xs font-semibold text-fg"
-              >
-                💬 SMS Pay
-              </a>
+              <span className="text-lg">⚡</span>
+              <div>
+                <span className="font-bold">Offline / Low-Network Mode (Auto-Detected)</span>
+                <p className="text-[11px] text-muted">Browsing and cached app functions remain available. Financial actions require a verified connection.</p>
+              </div>
             </div>
           </div>
         )}
