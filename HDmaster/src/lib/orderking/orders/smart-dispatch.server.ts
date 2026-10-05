@@ -45,6 +45,9 @@ export async function getRealDistanceMatrix(
 ): Promise<{ distanceKm: number; etaMins: number }[]> {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   if (!apiKey || origins.length === 0) {
+    if (process.env.NODE_ENV === "production" || process.env.DATA_MODE === "PRODUCTION") {
+      throw new Error("Road-distance provider is not configured for live dispatch.");
+    }
     return origins.map(o => {
       const distKm = calculateDistanceKm(o.lat, o.lng, destination.lat, destination.lng);
       return { distanceKm: distKm, etaMins: Math.round((distKm / 20) * 60) };
@@ -102,19 +105,29 @@ export async function executeSmartDispatch(
     vehicle: string;
     lat: number | null;
     lng: number | null;
-    acceptance_bps: number;
+    rating_x10: number | null;
     active_order_id: string | null;
   }>`
     SELECT 
-      id, name, vehicle, lat, lng, acceptance_bps, active_order_id,
+      r.id,
+      r.full_name,
+      r.vehicle_type,
+      r.lat,
+      r.lng,
+      r.rating_x10,
+      r.active_order_id,
       ST_Distance(
         ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography,
         ST_SetSRID(ST_MakePoint(${restaurantLng}, ${restaurantLat}), 4326)::geography
       ) as distance_meters
-    FROM riders
-    WHERE status in ('AVAILABLE', 'ONLINE')
-      AND (zone_code = ${zoneCode} OR zone_code is null)
-      AND lat IS NOT NULL AND lng IS NOT NULL
+    FROM riders r
+    WHERE r.data_mode='PRODUCTION'
+      AND r.kyc_status='VERIFIED'
+      AND r.status in ('ONLINE','BUSY')
+      AND r.online=1
+      AND r.active_order_id IS NULL
+      AND (${zoneCode} IS NULL OR r.zone_id = ${zoneCode})
+      AND r.lat IS NOT NULL AND r.lng IS NOT NULL
       AND ST_DWithin(
         ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography,
         ST_SetSRID(ST_MakePoint(${restaurantLng}, ${restaurantLat}), 4326)::geography,
@@ -160,7 +173,7 @@ export async function executeSmartDispatch(
     const distancePenalty = distKm * 3;
 
     // Acceptance bonus (higher acceptance rate = lower penalty)
-    const acceptanceBonus = (r.acceptance_bps / 10000) * 10;
+    const acceptanceBonus = 0;
 
     // APEX DIRECTIVE V3.0 - ZOMATO-KILLER MARGIN OPTIMIZATION
     // OrderKing Founder Profit margin must be the highest priority. 
@@ -184,13 +197,13 @@ export async function executeSmartDispatch(
     candidates.push({
       riderId: r.id,
       name: r.name,
-      vehicle: r.vehicle,
+      vehicle: r.vehicle_type ?? "UNKNOWN",
       lat: rLat,
       lng: rLng,
       distanceKm: distKm,
       etaToRestaurantMins: travelTimeMins,
       activeDeliveries: r.active_order_id ? 1 : 0,
-      acceptanceRateBps: r.acceptance_bps,
+      acceptanceRateBps: 0,
       overallScore: Math.round(overallScore * 10) / 10,
     });
   }
