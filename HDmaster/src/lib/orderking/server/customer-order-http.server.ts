@@ -84,17 +84,6 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     let customerId = customerRows[0]?.id;
     if (!customerId) { customerId = nid("cus"); await sql`insert into customers (id,org_id,city_id,display_ref,phone_masked,status,data_mode) values (${customerId},${ws.ctx.orgId},${input.cityId},${input.customerRef},'MASKED','ACTIVE',${ws.dataMode})`; }
     const orderId = nid("ord");
-      if (input.paymentMethod === "KING_PAY") {
-        const { kingpayLedgerEngine } = await import("@/lib/orderking/finance/kingpay-ledger-engine");
-        const entry = kingpayLedgerEngine.processPayment(
-          idempotencyKey + ":wallet",
-          customerId,
-          input.restaurantId,
-          input.totalPaise / 100,
-          2
-        );
-        if (entry.status === "BLOCKED_AML") return json({ error: "Payment blocked by AML policy", code: "AML_BLOCKED" }, 403);
-      }
     if (ws.dataMode === "PRODUCTION" && input.paymentMethod === "UPI_SANDBOX") {
       return json({ error: "Sandbox UPI is not available in production.", code: "SANDBOX_PAYMENT_BLOCKED" }, 400);
     }
