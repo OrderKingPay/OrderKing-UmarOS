@@ -8,16 +8,17 @@ export interface UserOrderHistory {
   mostFrequentHour: number; // 0-23
   mostFrequentDay: number; // 0-6 (Sunday-Saturday)
   pushEndpoint: WebPushPayload;
+  marketingOptIn?: boolean;
 }
 
 export class PredictiveLoyaltyEngine {
   /**
-   * VIP Addiction Engine.
-   * Analyzes order history to find exact biological craving times.
-   * Dispatches a highly personalized discount 15 minutes before they usually order.
+   * VIP Personalized Loyalty Engine.
+   * Analyzes order history to find recurring order-time patterns.
+   * Dispatches relevant offers only for explicitly opted-in users.
    * Also checks for expiring KING_PASS subscriptions and sends renewal offers.
    */
-  public static async calculateAndDispatchCravingOffers(
+  public static async calculateAndDispatchLoyaltyOffers(
     users: UserOrderHistory[],
     vapidPublicKey: string,
     vapidPrivateKey: string
@@ -31,6 +32,7 @@ export class PredictiveLoyaltyEngine {
     const sql = await getSql();
 
     for (const user of users) {
+      if (user.marketingOptIn !== true) continue;
       // 1. KING_PASS Renewal Check
       // Check if user has an active KING_PASS expiring in the next 3 days
       const subscriptions = await sql.query<{ id: string; plan_name: string; valid_until: Date }>(
@@ -60,16 +62,16 @@ export class PredictiveLoyaltyEngine {
 
         if (success) dispatchedRenewals++;
       } else {
-        // 2. Margin-Maximized Upsells
-        // If not renewing, check biological craving times
+        // 2. Relevant loyalty offers
+        // If not renewing, check the user's recurring order-time pattern
         if (user.mostFrequentDay === currentDay && user.mostFrequentHour === (currentHour + 1) % 24) {
           
-          // Construct the VIP Push Notification with a high-margin add-on
+          // Construct the VIP Push Notification with a relevant add-on
           const pushSubject = 'mailto:founder@orderking.in';
           const offerPush: WebPushPayload = {
             ...user.pushEndpoint,
             title: '👑 VIP Secret Offer',
-            body: `Craving ${user.favoriteItemName}? Order in the next 30 mins and add a cold beverage for just ₹10!`,
+            body: `Craving ${user.favoriteItemName}? A personalized VIP offer is available now.`,
             url: '/vip-checkout',
           };
 
