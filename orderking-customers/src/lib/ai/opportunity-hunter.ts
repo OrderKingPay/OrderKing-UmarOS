@@ -73,7 +73,7 @@ export function calculateFrictionMetrics(
   };
 }
 
-export const VERIFIED_OPPORTUNITIES: Opportunity[] = [
+const SIMULATED_VERIFIED_OPPORTUNITIES: Opportunity[] = [
   {
     id: "OPP-001",
     source: "Direct Local Field Engagement (Karimganj / Silchar)",
@@ -143,3 +143,7 @@ export const VERIFIED_OPPORTUNITIES: Opportunity[] = [
     frictionMetrics: calculateFrictionMetrics(399999, 48, 3, 4, true),
   },
 ];
+
+
+export const VERIFIED_OPPORTUNITIES: Opportunity[] =
+  import.meta.env.VITE_DATA_MODE === "SIMULATED" ? SIMULATED_VERIFIED_OPPORTUNITIES : [];
