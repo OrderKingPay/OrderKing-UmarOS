@@ -7,7 +7,7 @@ import type { CartLineInput } from "@/lib/market-types";
 
 export function hdmasterConfig() {
   const baseUrl = process.env.HDMASTER_URL?.replace(/\/$/, "");
-  const token = process.env.ORDERKING_SERVICE_TOKEN?.trim() || process.env.ORDERKING_SERVICE_TOKEN?.trim();
+  const token = process.env.ORDERKING_SERVICE_TOKEN?.trim();
   if (!baseUrl || !token) throw new Error("HDmaster integration is not configured.");
   return { baseUrl, token };
 }
