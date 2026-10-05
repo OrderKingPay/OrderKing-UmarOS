@@ -13,18 +13,10 @@ import { ACTIVE_DELIVERY_ZONES, isDeliveryActiveInLocation } from "../geo/geofen
 export type AiModelId =
   | "auto-supreme-orchestrator"
   | "ensemble-consensus"
-  | "sovereign-ultra"
-  | "claude-4-6-opus"
-  | "gpt-5-6-omni"
-  | "grok-4-6-super"
-  | "spacex-orbital"
-  | "codex-supreme"
-  | "gemini-3-8-ultra"
-  | "deepseek-r1-sovereign"
-  | "claude-3-7-sonnet"
-  | "gpt-4o"
-  | "gemini-2-5-pro"
-  | "grok-3";
+  | "openai-configured"
+  | "anthropic-configured"
+  | "gemini-configured"
+  | "xai-configured";
 
 /**
  * Autonomously selects the best AI model engine based on prompt domain, complexity, and latency requirements.
@@ -35,18 +27,18 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
     return { model: "ensemble-consensus", reason: "Auto-routed to Ensemble Multi-Model Consensus: Running all strongest models simultaneously." };
   }
   if (q.includes("code") || q.includes("schema") || q.includes("api") || q.includes("scaffold") || q.includes("react") || q.includes("sql") || q.includes("git")) {
-    return { model: "codex-supreme", reason: "Auto-routed to Codex Supreme Architect for maximum precision code synthesis." };
+    return { model: "openai-configured", reason: "Auto-routed to the configured OpenAI provider; exact model selection is provider-controlled." };
   }
   if (q.includes("live") || q.includes("score") || q.includes("news") || q.includes("trending") || q.includes("cricket") || q.includes("match")) {
-    return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 SuperGrok Ultra for real-time live telemetric intelligence." };
+    return { model: "xai-configured", reason: "Auto-routed to the configured xAI provider; live-search capabilities depend on the selected provider model." };
   }
   if (q.includes("video") || q.includes("image") || q.includes("render") || q.includes("4k") || q.includes("reel")) {
-    return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra for photorealistic multimodal & 4K video generation." };
+    return { model: "auto-supreme-orchestrator", reason: "No bundled local multimodal model is claimed; route to a configured external provider." };
   }
   if (q.includes("invoice") || q.includes("client") || q.includes("contract") || q.includes("legal") || q.includes("upwork") || q.includes("pitch")) {
-    return { model: "claude-4-6-opus", reason: "Auto-routed to Claude 4.6 Opus for enterprise contractual & high-ticket negotiation excellence." };
+    return { model: "anthropic-configured", reason: "Auto-routed to the configured Anthropic provider; exact model selection is provider-controlled." };
   }
-  return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra flagship executive reasoning engine." };
+  return { model: "auto-supreme-orchestrator", reason: "Auto-routed across genuinely configured external providers." };
 }
 
 export interface ChatAttachment { content?: string;
@@ -296,14 +288,16 @@ export function generateFounderClientInvoice(params: {
   description: string;
   founderUpiVpa?: string;
 }): ClientInvoice {
-  const vpa = params.founderUpiVpa || "orderking@okhdfcbank";
+  const vpa =
+    params.founderUpiVpa?.trim() ||
+    (typeof process !== "undefined" ? process.env.FOUNDER_UPI_VPA?.trim() : undefined);
+
+  if (!vpa) {
+    throw new Error("Founder payment rail is not configured. Configure a verified business payment provider/VPA before generating a payment link.");
+  }
+
   const invNum = `INV-${Date.now().toString().slice(-6)}`;
   const advance = Math.round(params.amountInr * 0.5);
-  const upiLink = `upi://pay?pa=${encodeURIComponent(vpa)}&pn=OrderKingSovereign&am=${advance}&tn=${encodeURIComponent(
-    `Advance-${invNum}`
-  )}&cu=INR`;
-  const qrPayload = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiLink)}`;
-
   const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
@@ -316,11 +310,11 @@ export function generateFounderClientInvoice(params: {
     amountInr: params.amountInr,
     advanceRequiredInr: advance,
     description: params.description,
-    upiPaymentLink: upiLink,
-    qrPayload,
+    upiPaymentLink: "",
+    qrPayload: "",
     dueDate,
-    status: "SENT",
-    payoutAccount: `Founder Direct Private Escrow (UPI: ${vpa})`,
+    status: "DRAFT",
+    payoutAccount: "PAYMENT_PROVIDER_CONFIGURATION_REQUIRED",
   };
 }
 
