@@ -3783,38 +3783,23 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           onClose={() => setShowScanner(false)}
           onScanSuccess={(res: ParsedUpiResult) => {
             setScanRecipient(res.upiId || res.raw);
-            const amt = res.amount ? parseInt(res.amount, 10) : 250;
-            setScanAmount(String(amt));
+            const amt = res.amount ? parseInt(res.amount, 10) : 0;
+            setScanAmount(amt > 0 ? String(amt) : "");
             setShowScanner(false);
 
-            if (res.amount) {
-              if (amt > walletBalance) {
-                toast.error(`Scanned ₹${amt} for ${res.payeeName || res.upiId}, but wallet has ₹${walletBalance}. Please add money.`);
-                setShowAddMoney(true);
-                return;
+            if (!KINGPAY_PUBLIC_UPI_ENABLED) {
+              toast.info("QR scanned successfully. KingPay public payment is disabled until a regulated UPI/payment integration is connected.");
+              if (amt > 0) setShowScanner(false);
+              else {
+                setScannerTab("manual");
+                setShowScanner(true);
               }
-              const newBal = walletBalance - amt;
-              setWalletBalance(newBal);
-              if (typeof window !== "undefined") {
-                localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
-              }
-              addTransaction(amt, `Paid ${res.payeeName || res.upiId}`, "debit");
-              playSoundboxChime(amt);
-              toast.success(`⚡ Paid ₹${amt} to ${res.payeeName || res.upiId} via KingPay!`);
-
-              setScratched(false);
-              setScratchReward({
-                title: "🎉 Instant Cashback Won!",
-                desc: `Rewarded for paying ${res.payeeName || res.upiId}!`,
-                amount: Math.floor(5 + Math.random() * 20),
-                coins: Math.floor(50 + Math.random() * 150),
-              });
-              setShowScratchCard(true);
-            } else {
-              toast.info(`Scanned ${res.payeeName || res.upiId}. Enter amount to pay.`);
-              setScannerTab("manual");
-              setShowScanner(true);
+              return;
             }
+
+            toast.info("QR scanned. Payment requires the connected payment provider to authorize and confirm the transaction.");
+            setScannerTab("manual");
+            setShowScanner(true);
           }}
         />
 
