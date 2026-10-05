@@ -1,9 +1,22 @@
-import { Request, Response } from "express";
-import { randomUUID } from "node:crypto";
 import { getSql } from "@/lib/db";
 
+type LegacyRequest = {
+  body?: Record<string, unknown> | undefined;
+  params?: Record<string, string | undefined> | undefined;
+};
+
+type LegacyResponse = {
+  status: (code: number) => LegacyResponse;
+  json: (body: unknown) => unknown;
+};
+
+const plans: Record<string, { pricePaise: number; durationMonths: number }> = {
+  KING_PASS_MONTHLY: { pricePaise: 19900, durationMonths: 1 },
+  KING_PASS_YEARLY: { pricePaise: 199900, durationMonths: 12 },
+};
+
 export class SubscriptionController {
-  public static async subscribe(req: Request, res: Response) {
+  public static async subscribe(req: LegacyRequest, res: LegacyResponse) {
     try {
       const customerId = String(req.body?.customerId ?? "").trim();
       const planName = String(req.body?.planName ?? "").trim();
@@ -12,41 +25,37 @@ export class SubscriptionController {
         return res.status(400).json({ error: "customerId and planName are required" });
       }
 
-      const plans: Record<string, { pricePaise: number; durationMonths: number }> = {
-        KING_PASS_MONTHLY: { pricePaise: 19900, durationMonths: 1 },
-        KING_PASS_YEARLY: { pricePaise: 199900, durationMonths: 12 },
-      };
-
       const plan = plans[planName];
       if (!plan) {
         return res.status(400).json({ error: "Invalid planName" });
       }
 
-      const validUntil = new Date();
-      validUntil.setMonth(validUntil.getMonth() + plan.durationMonths);
+      const providerEnabled = process.env.KINGPASS_PAYMENT_PROVIDER_ENABLED === "true";
+      const providerConfigured =
+        Boolean(process.env.KINGPASS_PAYMENT_PROVIDER) &&
+        Boolean(process.env.KINGPASS_PAYMENT_PROVIDER_MERCHANT_ID);
 
-      const sql = await getSql();
-      const subscriptionId = randomUUID();
-      const result = await sql<{ id: string }>`
-        INSERT INTO customer_subscriptions
-          (id, customer_id, plan_name, price_paise, status, valid_until)
-        VALUES
-          (${subscriptionId}, ${customerId}, ${planName}, ${plan.pricePaise}, 'ACTIVE', ${validUntil.toISOString()})
-        RETURNING id
-      `;
-
-      if (result.length !== 1 || result[0]?.id !== subscriptionId) {
-        throw new Error("Subscription persistence failed");
+      if (!providerEnabled || !providerConfigured) {
+        return res.status(503).json({
+          success: false,
+          status: "PENDING_EXTERNAL_PROVIDER",
+          planName,
+          pricePaise: plan.pricePaise,
+          message:
+            "King Pass payment provider is not connected. No subscription was activated and no money was recorded.",
+        });
       }
 
-      return res.status(201).json({
-        success: true,
-        data: {
-          subscriptionId,
-          planName,
-          validUntil,
-          pricePaise: plan.pricePaise,
-        },
+      // Payment creation, webhook verification and idempotent entitlement
+      // activation must be implemented by the provider adapter before this
+      // controller can activate a subscription.
+      return res.status(503).json({
+        success: false,
+        status: "PENDING_PAYMENT_WEBHOOK",
+        planName,
+        pricePaise: plan.pricePaise,
+        message:
+          "A verified payment webhook is required before King Pass can become ACTIVE.",
       });
     } catch (error) {
       console.error("Subscription error:", error);
@@ -54,7 +63,7 @@ export class SubscriptionController {
     }
   }
 
-  public static async getSubscription(req: Request, res: Response) {
+  public static async getSubscription(req: LegacyRequest, res: LegacyResponse) {
     try {
       const customerId = String(req.params?.customerId ?? "").trim();
       if (!customerId) {
