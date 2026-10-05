@@ -10,11 +10,8 @@ export const Route = createFileRoute('/api/finance/cron/run-settlement')({
     handlers: {
       GET: async ({ request }: { request: Request }) => {
     try {
-      // Basic security to ensure this is triggered by Vercel Cron or Admin
       const authHeader = request.headers.get('authorization');
-      const isCron = request.headers.get('x-vercel-cron') === '1'; // Vercel Cron injects this
-      
-      if (!isCron && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
       }
 
@@ -34,6 +31,8 @@ export const Route = createFileRoute('/api/finance/cron/run-settlement')({
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+      }
     }
   }
 });
