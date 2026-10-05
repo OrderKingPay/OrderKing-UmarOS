@@ -19,6 +19,8 @@ if (databaseUrl && databaseUrl.includes("your_supabase_pooler")) {
  * included. Swap in Neon later by just setting `DATABASE_URL`; no code changes.
  */
 export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
+const isProductionRuntime =
+  typeof process !== "undefined" && process.env.ORDERKING_RUNTIME === "production";
 
 /**
  * Minimal shared SQL surface, satisfied by both Neon and PGLite. Both the
@@ -177,6 +179,9 @@ async function createSql(): Promise<Sql> {
       "@/lib/db is server-only — call getSql() from a createServerFn handler " +
         "or a server route loader, never from client code.",
     );
+  }
+  if (isProductionRuntime && dbSource === "pglite") {
+    throw new Error("DATABASE_URL is required for production database operations.");
   }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
