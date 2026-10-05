@@ -20,7 +20,7 @@
 | **Dispatch Intelligence** | HDMaster dispatch algorithm | Cron/Task simulation | Pending Execution | | IMPLEMENTED / UNVERIFIED | Waiting on e2e test execution. |
 | **Operations AI (SLA)** | `ai-sla-tracker.server.ts` | Manual / Code Audit | Success | Real DB queries formulated. | VERIFIED REAL | None |
 | **Finance AI (Anomalies)** | `ai-financial-anomaly.server.ts` | Manual / Code Audit | Success | Real DB queries formulated. | VERIFIED REAL | None |
-| **Vite Production Build** | Full `npx vite build` | Build test | Success (exit 0) | Built in 1.33s. All modules bundled to `.vercel/output/`. | VERIFIED REAL | None |
+| **Vite Production Build** | Full `npx vite build` | Build test | Success (exit 0) | Built in 1.33s. All modules bundled to `dist/`. | VERIFIED REAL | None |
 
 ## CRITICAL UNRESOLVED BLOCKER
 
@@ -50,3 +50,12 @@ executeFounderAiChat()
   ├── Ensemble consensus (modelId=ensemble-consensus) → Multi-model
   └── Standard AI chat → Provider auto-select → Real API call → Tool loop → Stream
 ```
+
+## Current production truth — 2026-10-05
+
+This matrix is historical evidence only unless a row has a current primary artifact.
+The active launch program is Cloudflare-only. Vercel/Netlify checks, build artifacts and URLs are not production evidence.
+
+Current blockers remain: secret rotation, Cloudflare production-branch verification, live provider contracts/credentials, rider /login runtime retest, legal approval, real pilot onboarding, and the final 12-section gate.
+
+Never mark a payment integration VERIFIED REAL from code presence alone. A real provider dashboard, verified webhook/reconciliation trace, and end-to-end transaction evidence are required.
