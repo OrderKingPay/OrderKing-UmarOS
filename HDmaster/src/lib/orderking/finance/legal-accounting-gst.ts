@@ -136,7 +136,7 @@ export class LegalAccountingGstEngine {
   }> {
     return {
       isShieldActive: false,
-      personalDataExposed: null as never,
+      personalDataExposed: false,
       statutoryNotice:
         "Legal/accounting posture is NOT VERIFIED. Tax, e-commerce intermediary, payment and founder-liability treatment require counsel/CA review for the actual operating entity and contracts.",
     };
