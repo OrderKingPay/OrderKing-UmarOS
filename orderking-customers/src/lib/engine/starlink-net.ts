@@ -6,7 +6,7 @@
  * algorithm to guarantee delivery even in sub-optimal cellular zones.
  */
 
-interface FetchOptions extends RequestInit {
+interface FetchOptions extends Omit<RequestInit, "priority"> {
   retries?: number;
   backoffDelay?: number;
   priority?: 'critical' | 'standard' | 'background';
