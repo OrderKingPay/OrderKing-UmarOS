@@ -65,6 +65,35 @@ for (const p of dbFiles) {
   }
 }
 
+const authFiles = apps.map(([dir]) => `${dir}/src/lib/auth/server.ts`);
+for (const p of authFiles) {
+  if (!exists(p)) continue;
+  const c = read(p);
+  if (/https:\/\/(?:[\w-]+\.)*(?:vercel\.app|netlify\.app)\b/.test(c)) {
+    failures.push(`${p}: legacy Vercel/Netlify origin remains in active auth trust config`);
+  }
+  if (c.includes("process.env.VERCEL_URL") || c.includes("process.env.VERCEL_PROJECT_PRODUCTION_URL")) {
+    failures.push(`${p}: Vercel runtime origin fallback remains active`);
+  }
+}
+
+const legacyCronFiles = [
+  "HDmaster/src/routes/api/dispatch/cron/run-auto-dispatch.ts",
+  "HDmaster/src/routes/api/finance/cron/run-settlement.ts",
+];
+for (const p of legacyCronFiles) {
+  if (!exists(p)) continue;
+  const c = read(p);
+  if (c.includes("x-vercel-cron") || c.includes("process.env.VERCEL")) {
+    failures.push(`${p}: legacy Vercel cron authentication remains`);
+  }
+}
+
+const crypto = "HDmaster/src/lib/orderking/finance/crypto-treasury.ts";
+if (exists(crypto) && !read(crypto).includes("FUTURE/DISABLED")) {
+  failures.push("crypto treasury: unverified production payment path is not explicitly gated");
+}
+
 const workflow = read(".github/workflows/production-gate.yml");
 if (!workflow.includes("version: 12.8.1")) failures.push("production-gate.yml: pnpm 12.8.1 not pinned");
 
