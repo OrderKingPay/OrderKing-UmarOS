@@ -24,6 +24,10 @@ import { isDeliveryActiveInLocation, getCityWaitlistInfo } from "@/lib/geo/geofe
 const KINGPAY_WALLET_ENABLED = import.meta.env.VITE_KINGPAY_WALLET_ENABLED === "true";
 const KINGPAY_PUBLIC_UPI_ENABLED = import.meta.env.VITE_KINGPAY_PUBLIC_UPI_ENABLED === "true";
 const KINGPAY_BANK_LINKING_ENABLED = import.meta.env.VITE_KINGPAY_BANK_LINKING_ENABLED === "true";
+const KINGPAY_BBPS_ENABLED = import.meta.env.VITE_KINGPAY_BBPS_ENABLED === "true";
+const KINGPAY_DIGITAL_GOLD_ENABLED = import.meta.env.VITE_KINGPAY_DIGITAL_GOLD_ENABLED === "true";
+const KINGPAY_CREDIT_ENABLED = import.meta.env.VITE_KINGPAY_CREDIT_ENABLED === "true";
+const KINGPAY_REWARDS_ENABLED = import.meta.env.VITE_KINGPAY_REWARDS_ENABLED === "true";
 
 export const Route = createFileRoute('/king-pay')({ component: KingPayPage, head: () => ({ meta: [{ property: 'og:title', content: '👑 King Pay - Zero Credit Score, 100% Approval. Earn 7.5% Interest.' }, { property: 'og:description', content: 'The #1 FinTech App in India. Send money, pay bills, and get instant loans.' }, { name: 'twitter:title', content: '👑 King Pay - Zero Credit Score, 100% Approval.' }, { name: 'twitter:description', content: 'The #1 FinTech App in India.' }] }) });
 
@@ -856,15 +860,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const handleVoteCity = () => {
     if (hasVotedCity) return;
     setHasVotedCity(true);
-    const bonus = 50;
-    const newBal = walletBalance + bonus;
-    setWalletBalance(newBal);
     if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
       localStorage.setItem(`voted_expansion_${location.cityName}`, "true");
     }
-    playSoundboxChime(bonus);
-    toast.success(`🎉 Vote Registered for ${location.cityName || "your city"}! ₹50 bonus credits added to your King Pay wallet!`);
+    toast.success(`Vote registered for ${location.cityName || "your city"}.`);
   };
 
   // Hydrate client storage safely after SSR mount (prevents React hydration mismatch)
@@ -906,7 +905,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   }, []);
 
   // ⛽ Fuel & Petro Hub State
-  const [monthlyFuelSpend, setMonthlyFuelSpend] = useState(4000);
+  const [monthlyFuelSpend, setMonthlyFuelSpend] = useState(0);
   const [selectedVoucherBrand, setSelectedVoucherBrand] = useState<"HPCL (HP Pay)" | "IndianOil (IOCL ONE)" | "BPCL (SmartDrive)">("HPCL (HP Pay)");
   const [showFuelVoucherModal, setShowFuelVoucherModal] = useState(false);
   const [generatedFuelVoucher, setGeneratedFuelVoucher] = useState<{
@@ -917,22 +916,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     expiry: string;
   } | null>(null);
 
-  const handleBuyFuelVoucher = (brand: "HPCL (HP Pay)" | "IndianOil (IOCL ONE)" | "BPCL (SmartDrive)", amt: number) => {
-    const coinsReward = Math.round(amt * 0.02 * 10); // 2% value in coins (10 coins = ₹1)
-    const randomHex = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const prefix = brand.includes("HPCL") ? "HP" : brand.includes("IndianOil") ? "IOCL" : "BP";
-    const code = `${prefix}-${amt}-${randomHex}`;
-    
-    setGeneratedFuelVoucher({
-      code,
-      brand,
-      amount: amt,
-      coinsReward,
-      expiry: "Valid for 90 days at all retail stations across India",
-    });
-    setKingCoins((c) => c + coinsReward);
-    setShowFuelVoucherModal(true);
-    toast.success(`🎉 ${brand} ₹${amt} fuel voucher generated! +${coinsReward} King Coins credited.`);
+  const handleBuyFuelVoucher = (_brand: "HPCL (HP Pay)" | "IndianOil (IOCL ONE)" | "BPCL (SmartDrive)", _amt: number) => {
+    toast.info("Fuel vouchers are not enabled yet. A verified fuel-provider integration is required.");
   };
   
   // 10x Low-Bandwidth & Offline 2G Mode
@@ -945,7 +930,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const payLaterLimit = 2500;
 
   // CRED-style 7-Day Check-in Streak
-  const [streakDay, setStreakDay] = useState(3);
+  const [streakDay, setStreakDay] = useState(0);
   const [claimedToday, setClaimedToday] = useState(false);
   const [kingCoins, setKingCoins] = useState(0);
 
@@ -1022,6 +1007,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handlePayBBPSBill = async () => {
+    if (!KINGPAY_BBPS_ENABLED) {
+      toast.info("BBPS bill payment is disabled until a real BBPS provider and payment ledger are connected.");
+      return;
+    }
     if (!fetchedBill) return;
     if (fetchedBill.billAmount > walletBalance) {
       toast.error(`Insufficient wallet balance. Need ₹${fetchedBill.billAmount}`);
@@ -1068,6 +1057,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
 
   const handleUtilityPayment = (title: string, amount: number) => {
+    if (!KINGPAY_BBPS_ENABLED) {
+      toast.info(`${title} is not enabled until a real bill/recharge provider and payment ledger are connected.`);
+      return;
+    }
     if (amount > walletBalance) {
       toast.error(`Insufficient KingPay balance (₹${walletBalance}). Please add money.`);
       return;
@@ -1130,6 +1123,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleSpinWheel = () => {
+    if (!KINGPAY_REWARDS_ENABLED) {
+      toast.info("Rewards are disabled until a real promotional/rewards ledger is connected.");
+      return;
+    }
     if (kingCoins < 100 && claimedToday) {
       toast.error("You need at least 100 King Coins to spin the Lucky Jackpot Wheel!");
       return;
@@ -1177,6 +1174,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const handleBurnCoinsForFood = (coinsToBurn: number, rupeeDiscount: number) => {
+    if (!KINGPAY_REWARDS_ENABLED) {
+      toast.info("Food rewards are disabled until the real rewards ledger is connected.");
+      return;
+    }
     if (kingCoins < coinsToBurn) {
       toast.error(`You need at least ${coinsToBurn} King Coins for a ₹${rupeeDiscount} food discount!`);
       return;
@@ -1216,7 +1217,11 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     return Math.round(emi);
   };
 
-  const handleBiometricPay = (amount: number, recipient: string) => {
+  const handleBiometricPay = (_amount: number, _recipient: string) => {
+    if (!KINGPAY_PUBLIC_UPI_ENABLED) {
+      toast.info("Biometric public payment is disabled until regulated payment integration is connected.");
+      return;
+    }
     setShowBiometricModal(true);
     setBiometricScanning(true);
     setBiometricSuccess(false);
@@ -1303,7 +1308,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
     // Refresh offline token every 60s
     const interval = setInterval(() => {
-      setOfflineToken(`OKPAY-OFFLINE-${Math.floor(1000 + Math.random() * 9000)}`);
+      if (KINGPAY_PUBLIC_UPI_ENABLED) {
+        setOfflineToken("");
+      }
     }, 60000);
 
     return () => {
@@ -1487,6 +1494,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   const handleSelfTransferSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!KINGPAY_BANK_LINKING_ENABLED || !KINGPAY_PUBLIC_UPI_ENABLED) {
+      toast.info("Self-transfer is disabled until real bank-linking and regulated UPI integration are connected.");
+      return;
+    }
     const amt = parseInt(selfTransferAmount, 10);
     if (isNaN(amt) || amt <= 0) {
       toast.error("Please enter a valid amount");
@@ -1505,6 +1516,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   const handleBuyGold = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!KINGPAY_DIGITAL_GOLD_ENABLED) {
+      toast.info("Digital gold is disabled until a verified gold provider and custody/ledger integration are connected.");
+      return;
+    }
     const val = parseInt(goldAmount, 10);
     if (isNaN(val) || val <= 0) {
       toast.error("Please enter a valid amount");
@@ -1529,6 +1544,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const claimScratchReward = () => {
+    if (!KINGPAY_REWARDS_ENABLED) {
+      toast.info("Cashback rewards are disabled until a real rewards ledger is connected.");
+      return;
+    }
     const newBal = walletBalance + scratchReward.amount;
     const newCoins = kingCoins + scratchReward.coins;
     setWalletBalance(newBal);
@@ -1551,6 +1570,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const togglePayLater = () => {
+    if (!KINGPAY_CREDIT_ENABLED) {
+      toast.info("KingPay Later is disabled until a real regulated credit partner approves and funds the facility.");
+      return;
+    }
     const next = !payLaterActive;
     setPayLaterActive(next);
     if (typeof window !== "undefined") {
@@ -1564,6 +1587,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   };
 
   const claimStreak = () => {
+    if (!KINGPAY_REWARDS_ENABLED) {
+      toast.info("Loyalty rewards are disabled until a real rewards ledger is connected.");
+      return;
+    }
     if (claimedToday) return;
     const bonus = streakDay * 50;
     setKingCoins((prev) => prev + bonus);
@@ -1586,7 +1613,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const effective2G = isOffline || force2GMode;
 
   const [activeSection, setActiveSection] = useState<KingPaySection>("pay");
-  const [garageAlertsCount, setGarageAlertsCount] = useState<number>(2);
+  const [garageAlertsCount, setGarageAlertsCount] = useState<number>(0);
   const [transactions, setTransactions] = useState<
     Array<{
       id: string;
