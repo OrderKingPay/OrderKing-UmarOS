@@ -1856,6 +1856,9 @@ export async function liveBoard(ctx: AccessContext) {
 
 export async function tickSimulation(ws: Workspace) {
   requirePermission(ws.ctx, "modify_orders");
+  if (ws.dataMode === "PRODUCTION") {
+    throw new Error("Simulation is disabled in production data mode.");
+  }
   const flags = await loadRuntimeFlags(ws.ctx.orgId);
   const sql = await getSql();
   const advancing = await sql.query<{ id: string; status: string }>(
