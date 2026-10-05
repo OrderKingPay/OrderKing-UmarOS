@@ -2,15 +2,27 @@ import { getSql } from "../db.ts";
 import Razorpay from "razorpay";
 import { z } from "zod";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "test_key",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "test_secret",
-});
+function getRazorpayClient(): Razorpay {
+  const mode = (process.env.RAZORPAY_MODE ?? "live").trim().toLowerCase();
+  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+
+  if (!keyId || !keySecret) throw new Error("Razorpay is not configured.");
+  if (keyId === "test_key" || keySecret === "test_secret") {
+    throw new Error("Placeholder Razorpay credentials are forbidden.");
+  }
+
+  const isTestKey = keyId.startsWith("rzp_test_");
+  if (mode === "live" && isTestKey) throw new Error("Live Razorpay mode refuses test credentials.");
+  if (mode === "sandbox" && !isTestKey) throw new Error("Sandbox Razorpay mode requires an rzp_test_ key.");
+
+  return new Razorpay({ key_id: keyId, key_secret: keySecret });
+}
 
 export const SettlementSchema = z.object({
   restaurantId: z.string().uuid(),
   amountPaise: z.number().int().positive(),
-  idempotencyKey: z.string(),
+  idempotencyKey: z.string().min(1),
 });
 
 export const settlementEngine = {
@@ -26,6 +38,7 @@ export const settlementEngine = {
 
   async triggerSettlement(input: z.infer<typeof SettlementSchema>) {
     const data = SettlementSchema.parse(input);
+    const razorpay = getRazorpayClient();
     const sql = await getSql();
     
     return await sql.transaction(async (tx) => {
