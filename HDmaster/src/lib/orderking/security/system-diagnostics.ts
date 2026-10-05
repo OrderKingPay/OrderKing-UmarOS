@@ -485,5 +485,6 @@ export class SystemDiagnosticsEngine {
       };
     }
   }
+}
 
 export const systemDiagnostics = SystemDiagnosticsEngine;
