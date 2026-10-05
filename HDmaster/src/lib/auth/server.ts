@@ -138,6 +138,10 @@ const trustedOrigins: string[] = [
 ];
 
 const databaseUrl = env("DATABASE_URL");
+const productionRuntime = env("ORDERKING_RUNTIME") === "production";
+if (productionRuntime && authConfigured && !databaseUrl) {
+  throw new Error("DATABASE_URL is required when production authentication is enabled.");
+}
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
