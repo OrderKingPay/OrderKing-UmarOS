@@ -6,7 +6,7 @@ import { AutoSettlementEngine } from '../../../../lib/orderking/finance/auto-set
  * Triggered automatically by Vercel every Monday at 2:00 AM (0 2 * * 1).
  */
 export const APIRoute = createAPIFileRoute('/api/finance/cron/run-settlement')({
-  GET: async ({ request }) => {
+  GET: async ({ request }: { request: Request }) => {
     try {
       // Basic security to ensure this is triggered by Vercel Cron or Admin
       const authHeader = request.headers.get('authorization');
