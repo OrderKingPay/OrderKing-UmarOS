@@ -60,19 +60,26 @@ export async function getRealDistanceMatrix(
     const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${originsStr}&destinations=${destStr}&key=${apiKey}`;
     const res = await fetch(url);
     const data = await res.json() as any;
+    const production = process.env.NODE_ENV === "production" || process.env.DATA_MODE === "PRODUCTION";
 
     return origins.map((o, i) => {
       const element = data.rows?.[i]?.elements?.[0];
-      if (element?.status === 'OK') {
+      if (element?.status === "OK") {
         return {
           distanceKm: element.distance.value / 1000,
           etaMins: Math.round(element.duration.value / 60),
         };
       }
+      if (production) {
+        throw new Error("Road-distance provider returned no route for a live dispatch candidate.");
+      }
       const distKm = calculateDistanceKm(o.lat, o.lng, destination.lat, destination.lng);
       return { distanceKm: distKm, etaMins: Math.round((distKm / 20) * 60) };
     });
   } catch (err) {
+    if (process.env.NODE_ENV === "production" || process.env.DATA_MODE === "PRODUCTION") {
+      throw err instanceof Error ? err : new Error("Road-distance provider failed during live dispatch.");
+    }
     return origins.map(o => {
       const distKm = calculateDistanceKm(o.lat, o.lng, destination.lat, destination.lng);
       return { distanceKm: distKm, etaMins: Math.round((distKm / 20) * 60) };
@@ -101,8 +108,8 @@ export async function executeSmartDispatch(
   // 1. Fetch all available/online riders in or adjacent to the zone
   const riders = await sql<{
     id: string;
-    name: string;
-    vehicle: string;
+    full_name: string;
+    vehicle_type: string | null;
     lat: number | null;
     lng: number | null;
     rating_x10: number | null;
@@ -150,7 +157,7 @@ export async function executeSmartDispatch(
   // 2. Score each candidate
   const candidates: DispatchCandidate[] = [];
   
-  const origins = riders.map(r => ({ lat: r.lat ?? restaurantLat + 0.01, lng: r.lng ?? restaurantLng + 0.01 }));
+  const origins = riders.map(r => ({ lat: Number(r.lat), lng: Number(r.lng) }));
   const realMatrix = await getRealDistanceMatrix(origins, { lat: restaurantLat, lng: restaurantLng });
 
   for (let i = 0; i < riders.length; i++) {
@@ -179,24 +186,25 @@ export async function executeSmartDispatch(
     // OrderKing Founder Profit margin must be the highest priority. 
     // EVs and Bicycles cost OrderKing 0 fuel surcharge. Petrol costs more.
     let vehicleCostPenalty = 0;
-    if (r.vehicle.toLowerCase().includes("petrol") || r.vehicle.toLowerCase().includes("motorcycle")) {
+    const vehicleType = (r.vehicle_type ?? "UNKNOWN").toLowerCase();
+    if (vehicleType.includes("petrol") || vehicleType.includes("motorcycle")) {
       vehicleCostPenalty = 25; // High cost to OrderKing
-    } else if (r.vehicle.toLowerCase().includes("ev") || r.vehicle.toLowerCase().includes("electric")) {
+    } else if (vehicleType.includes("ev") || vehicleType.includes("electric")) {
       vehicleCostPenalty = -10; // High Profit Margin for OrderKing (Zero fuel cost)
-    } else if (r.vehicle.toLowerCase().includes("bicycle")) {
+    } else if (vehicleType.includes("bicycle")) {
       vehicleCostPenalty = -15; // Highest Profit Margin
     }
 
     // Active load penalty (batching allows 1 existing delivery with small penalty)
     // Batching actually SAVES money for OrderKing (one rider, two orders).
-    const loadPenalty = r.active_order_id ? -5 : 0; // Negative penalty = bonus for batching (More Profit!)
+    const loadPenalty = 0; // Active-order riders are excluded from this live candidate query.
 
     // Lower overall score = better candidate (cheaper for Founder, faster for customer)
     const overallScore = distancePenalty + syncPenalty + loadPenalty + vehicleCostPenalty - acceptanceBonus;
 
     candidates.push({
       riderId: r.id,
-      name: r.name,
+      name: r.full_name,
       vehicle: r.vehicle_type ?? "UNKNOWN",
       lat: rLat,
       lng: rLng,
