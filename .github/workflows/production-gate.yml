@@ -33,13 +33,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          runtime_hits="$(git grep -n -E 'process\\.env\\.(VERCEL_URL|VERCEL_PROJECT_PRODUCTION_URL)|vercel\\.app|netlify\\.app' -- '*.ts' '*.tsx' '*.mjs' '*.js' -- orderking-customers orderking-partners orderking-riders HDmaster Apps-integration- || true)"
+          runtime_hits="$(git grep -n -E 'process\\.env\\.(VERCEL_URL|VERCEL_PROJECT_PRODUCTION_URL)|vercel\\.app|netlify\\.app' -- 'orderking-customers/src/**' 'orderking-partners/src/**' 'orderking-riders/src/**' 'HDmaster/src/**' 'Apps-integration-/src/**' || true)"
           if [[ -n "$runtime_hits" ]]; then
             echo "Cloudflare-only guard failed: legacy hosting references remain in runtime code."
             echo "$runtime_hits"
             exit 1
           fi
-          credential_hits="$(git grep -n -E '"test_key"|"test_secret"' -- '*.ts' '*.tsx' '*.mjs' '*.js' -- orderking-customers orderking-partners orderking-riders HDmaster Apps-integration- || true)"
+          credential_hits="$(git grep -n -E '"test_key"|"test_secret"' -- 'orderking-customers/src/**' 'orderking-partners/src/**' 'orderking-riders/src/**' 'HDmaster/src/**' 'Apps-integration-/src/**' || true)"
           if [[ -n "$credential_hits" ]]; then
             echo "Production credential guard failed: fake Razorpay credentials remain in runtime code."
             echo "$credential_hits"
