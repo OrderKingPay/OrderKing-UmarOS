@@ -120,6 +120,7 @@ const baseURL = explicitBaseURL ?? {
       ...previewAllowedHosts, 
       "localhost", 
       "127.0.0.1", 
+      "apps-integration.pages.dev",
       "[::1]",
       ...(process.env.VERCEL_URL ? [process.env.VERCEL_URL] : []),
       ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [process.env.VERCEL_PROJECT_PRODUCTION_URL] : []),
