@@ -22,7 +22,7 @@ export function coreUrl(): string {
 }
 
 export function serviceToken(): string {
-  const value = process.env.ORDERKING_SERVICE_TOKEN?.trim() || process.env.ORDERKING_SERVICE_TOKEN?.trim();
+  const value = process.env.ORDERKING_SERVICE_TOKEN?.trim();
   if (!value) throw new Error("ORDERKING_SERVICE_TOKEN is not configured");
   return value;
 }
