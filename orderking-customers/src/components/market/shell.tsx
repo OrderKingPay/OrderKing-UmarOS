@@ -141,35 +141,41 @@ export function CustomerShell({
       ) : null}
       <nav
         aria-label={brand.appName}
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
+        className="fixed bottom-4 left-4 right-4 z-40 rounded-3xl border border-black/5 bg-white/80 pb-0 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden"
       >
-        {isDeliveryActive ? (
-          <ul className="mx-auto grid max-w-lg grid-cols-6 items-center md:max-w-5xl relative">
-            <NavItem to="/" icon={House} label={t("common.home")} active={path === "/"} />
-            <NavItem to="/king-pay" icon={Zap} label="King Pay" active={path.startsWith("/king-pay")} highlight={true} />
-            <NavItem to="/tutor" icon={GraduationCap} label="Tutor" active={path.startsWith("/tutor")} highlight={true} badge="Free" />
-            <NavItem
-              to="/cart"
-              icon={ShoppingBag}
-              label={t("common.cart")}
-              active={path.startsWith("/cart")}
-              badge={count > 0 ? count : undefined}
-            />
-            <NavItem to="/orders" icon={ClipboardList} label={t("common.orders")} active={path.startsWith("/orders")} />
-            <NavItem to="/account" icon={UserRound} label={t("common.account")} active={path.startsWith("/account")} />
-          </ul>
-        ) : (
-          <ul className="mx-auto grid max-w-lg grid-cols-5 items-center md:max-w-5xl relative">
-            <NavItem to="/king-pay" icon={Wallet} label="King Pay" active={path === "/" || path === "/king-pay"} highlight={true} />
-            <NavItem to="/tutor" icon={GraduationCap} label="Tutor" active={path.startsWith("/tutor")} highlight={true} badge="Free" />
-            <NavItem to="/king-pay?scan=true" icon={QrCode} label="Scan & Pay" active={false} />
-            <NavItem to="/orders" icon={ClipboardList} label="Passbook" active={path.startsWith("/orders")} />
-            <NavItem to="/account" icon={UserRound} label={t("common.account")} active={path.startsWith("/account")} />
-          </ul>
-        )}
+        <ul className="mx-auto grid grid-cols-5 items-center justify-items-center relative px-2">
+          <NavItem to="/" icon={House} label="Home" active={path === "/"} />
+          <NavItem to="/search" icon={Search} label="Search" active={path.startsWith("/search")} />
+          <NavItem
+            to="/cart"
+            icon={ShoppingBag}
+            label="Cart"
+            active={path.startsWith("/cart")}
+            badge={count > 0 ? count : undefined}
+          />
+          {/* 👑 Glowing KingPay Tab */}
+          <li className="relative -top-2 flex w-full justify-center">
+            <Link
+              to="/king-pay"
+              className={cn(
+                "group relative flex h-14 w-14 flex-col items-center justify-center gap-0.5 rounded-full border-2 text-xs no-underline shadow-lg transition-all active:scale-95",
+                path.startsWith("/king-pay")
+                  ? "border-amber-400 bg-gradient-to-br from-amber-400 to-yellow-600 text-white shadow-[0_0_20px_rgba(251,191,36,0.4)]"
+                  : "border-transparent bg-gradient-to-br from-amber-100 to-amber-200 text-amber-900 shadow-[0_0_15px_rgba(251,191,36,0.2)] hover:border-amber-300"
+              )}
+            >
+              <span className="text-xl leading-none">👑</span>
+              <span className="text-[9px] font-black tracking-tight leading-none">KingPay</span>
+              {!path.startsWith("/king-pay") && (
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white shadow-sm">
+                  1
+                </span>
+              )}
+            </Link>
+          </li>
+          <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} />
+        </ul>
       </nav>
-      {/* Floating Assistive Food AI Voice Concierge (Only when delivery active) */}
-      
       <LocationDialog open={locOpen} onOpenChange={setLocOpen} />
       <LanguageSelectorModal
         isOpen={langOpen}
@@ -188,41 +194,32 @@ function NavItem({
   icon: Icon,
   label,
   active,
-  highlight,
   badge,
 }: {
   to: string;
   icon: typeof House;
   label: string;
   active: boolean;
-  highlight?: boolean;
   badge?: number | string;
 }) {
   return (
-    <li>
+    <li className="w-full flex justify-center py-2">
       <Link
         to={to}
         className={cn(
-          "flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs no-underline relative",
-          active
-            ? "text-primary font-semibold"
-            : highlight
-              ? "text-primary/90 font-medium"
-              : "text-muted",
+          "flex flex-col items-center justify-center gap-1 text-[10px] sm:text-xs no-underline relative transition-colors",
+          active ? "text-primary font-bold" : "text-slate-500 hover:text-slate-700 font-medium",
         )}
       >
-        <div className="relative">
-          <Icon className={cn("size-5", highlight && "text-primary")} aria-hidden />
+        <div className="relative flex items-center justify-center h-6 w-6">
+          <Icon className={cn("size-5 sm:size-5.5 transition-transform", active && "scale-110")} aria-hidden />
           {badge !== undefined && (
-            <span className="absolute -right-2.5 -top-1.5 flex min-size-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white shadow-xs">
+            <span className="absolute -right-2 -top-1 flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white shadow-xs">
               {badge}
             </span>
           )}
-          {highlight && badge === undefined && (
-            <span className="absolute -right-2 -top-1 size-2 rounded-full bg-emerald-500 ring-2 ring-surface animate-pulse" />
-          )}
         </div>
-        <span className="text-center break-words text-wrap px-0.5 leading-tight">{label}</span>
+        <span className="text-center truncate w-full px-0.5">{label}</span>
       </Link>
     </li>
   );

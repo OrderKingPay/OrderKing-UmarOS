@@ -154,10 +154,10 @@ export function HomeFeed({
       ) : null}
 
       {/* 👑 SPONSORED PAID RESTAURANT AD ZONE (AUTO-SCALING & AD-SPEND RANKED) */}
-      <PaidRestaurantAdZone className="mb-0.5" />
+      {/* <PaidRestaurantAdZone /> */}
 
       {/* 👑 3D GLOWING SWITCH BUTTON + SAME-LEVEL AI SUPPORT */}
-      <EcosystemSwitchBar currentApp="FOODS" className="mb-1.5" />
+      {/* <EcosystemSwitchBar /> */}
 
       {/* 1-Tap Quick Re-Order (Zero-Friction Simplicity) */}
       {pastOrders.data?.orders?.[0] && !q && !veg && !openNow && !category ? (
