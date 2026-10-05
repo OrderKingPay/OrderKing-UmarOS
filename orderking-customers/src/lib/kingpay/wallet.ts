@@ -31,6 +31,7 @@ export const walletEngine = {
 
   async createTopUpOrder(input: z.infer<typeof TopUpSchema>) {
     const data = TopUpSchema.parse(input);
+    const razorpay = getRazorpayClient();
     const order = await razorpay.orders.create({
       amount: data.amountPaise,
       currency: "INR",
