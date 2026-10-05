@@ -1,12 +1,14 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createFileRoute } from '@tanstack/react-router';
 import { runAlgorithmicAutoDispatch } from '../../../../lib/orderking/server/auto-dispatch-engine.server';
 
 /**
- * 🚀 AI STARLINK-LEVEL DISPATCH CRON ENDPOINT
- * Triggered automatically by Vercel every minute (* * * * *).
+ * Dispatch cron endpoint. Cloudflare should invoke this route through its
+ * configured scheduler/Worker trigger; no Vercel-specific headers are used.
  */
-export const APIRoute = createAPIFileRoute('/api/dispatch/cron/run-auto-dispatch')({
-  GET: async ({ request }) => {
+export const Route = createFileRoute('/api/dispatch/cron/run-auto-dispatch')({
+  server: {
+    handlers: {
+      GET: async ({ request }: { request: Request }) => {
     try {
       // Allow internal invocation or authenticated Vercel Cron
       const authHeader = request.headers.get('authorization');
