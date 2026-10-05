@@ -111,6 +111,43 @@ if (exists(kingpay)) {
   if (!c.includes("VITE_KINGPAY_WALLET_ENABLED") || !c.includes("VITE_KINGPAY_PUBLIC_UPI_ENABLED") || !c.includes("VITE_KINGPAY_BANK_LINKING_ENABLED")) {
     failures.push(kingpay + ": real-money KingPay feature gates are missing");
   }
+  for (const phrase of [
+    "CIBIL 785 · Pre-Approved",
+    "Instant Disbursal Active",
+    "100% Guaranteed Approval",
+    "RBI escrow deduction",
+    "Offline Payment Cleared!",
+  ]) {
+    if (c.includes(phrase)) failures.push(kingpay + ": unverified financial claim remains: " + phrase);
+  }
+}
+
+const checkout = "orderking-customers/src/routes/checkout.tsx";
+if (exists(checkout)) {
+  const c = read(checkout);
+  if (c.includes("createRazorpayOrder")) failures.push(checkout + ": direct browser-side Razorpay order creation remains");
+  if (!c.includes("createRazorpayPaymentOrder") || !c.includes("verifyRazorpayCheckout")) {
+    failures.push(checkout + ": server-authenticated payment lifecycle is missing");
+  }
+  if (c.includes('placeFinalOrder("UPI_SANDBOX")')) {
+    failures.push(checkout + ": browser callback still places a sandbox-paid order");
+  }
+}
+
+const kingpayWrangler = "orderking-customers/wrangler.toml";
+if (exists(kingpayWrangler)) {
+  const c = read(kingpayWrangler);
+  for (const name of [
+    "KINGPAY_WALLET_ENABLED",
+    "KINGPAY_PUBLIC_UPI_ENABLED",
+    "KINGPAY_BANK_LINKING_ENABLED",
+    "KINGPAY_BBPS_ENABLED",
+    "KINGPAY_DIGITAL_GOLD_ENABLED",
+    "KINGPAY_CREDIT_ENABLED",
+    "KINGPAY_REWARDS_ENABLED",
+  ]) {
+    if (!c.includes(name + ' = "false"')) failures.push(kingpayWrangler + ": " + name + " must be false until real provider/ledger configuration exists");
+  }
 }
 
 const customerWrangler = "orderking-customers/wrangler.toml";
