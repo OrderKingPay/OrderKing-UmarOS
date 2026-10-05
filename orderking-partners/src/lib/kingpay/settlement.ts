@@ -2,10 +2,13 @@ import { getSql } from "../db.ts";
 import Razorpay from "razorpay";
 import { z } from "zod";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "test_key",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "test_secret",
-});
+function getRazorpayClient() {
+  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+  if (!keyId || !keySecret) throw new Error("Razorpay settlement is not configured.");
+  if (keyId.startsWith("rzp_test_")) throw new Error("Test Razorpay credentials are not permitted in live settlement.");
+  return new Razorpay({ key_id: keyId, key_secret: keySecret });
+}
 
 export const SettlementSchema = z.object({
   restaurantId: z.string().uuid(),
@@ -28,6 +31,7 @@ export const settlementEngine = {
     const data = SettlementSchema.parse(input);
     const sql = await getSql();
     
+    const razorpay = getRazorpayClient();
     return await sql.transaction(async (tx) => {
       const existing = await tx`
         SELECT 1 FROM settlement_history 
@@ -43,6 +47,9 @@ export const settlementEngine = {
 
       if (ledgers.length === 0) {
         throw new Error("Ledger not found for restaurant");
+      }
+      if (!ledgers[0]?.fund_account_id) {
+        throw new Error("Razorpay fund account is not configured for restaurant");
       }
       
       const ledger = ledgers[0];
