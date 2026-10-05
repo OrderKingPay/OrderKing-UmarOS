@@ -16,12 +16,10 @@ import { ConfirmDialog } from "./confirm-dialog";
 export function DeliveryActions({
   delivery,
   cash,
-  simulatedOtp,
   onChanged,
 }: {
   delivery: Delivery;
   cash: CashReconciliation | null;
-  simulatedOtp: string | null;
   onChanged: () => void;
 }) {
   const { t } = useI18n();
