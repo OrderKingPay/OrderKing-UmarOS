@@ -153,11 +153,11 @@ export async function dashboardPayload(ws: Workspace) {
 
   return {
     dataMode: ws.dataMode,
-    label: "ACTUAL" as const,
+    label: ws.dataMode === "PRODUCTION" ? "ACTUAL" : "SIMULATED" as const,
     today: {
-      orders: { value: n(k.orders), label: "ACTUAL" as const },
-      gmv: { value: n(k.gmv), label: "ACTUAL" as const },
-      platformRevenue: canFinance ? { value: n(k.revenue), label: "ACTUAL" as const } : null,
+      orders: { value: n(k.orders), label: ws.dataMode === "PRODUCTION" ? "ACTUAL" : "SIMULATED" as const },
+      gmv: { value: n(k.gmv), label: ws.dataMode === "PRODUCTION" ? "ACTUAL" : "SIMULATED" as const },
+      platformRevenue: canFinance ? { value: n(k.revenue), label: ws.dataMode === "PRODUCTION" ? "ACTUAL" : "SIMULATED" as const } : null,
       restaurantSettlements: canFinance ? { value: n(k.settlements), label: "ACTUAL" as const } : null,
       riderPayoutExposure: canFinance ? { value: n(k.rider_pay), label: "ACTUAL" as const } : null,
       refunds: { value: n(k.refunds), label: "ACTUAL" as const },
