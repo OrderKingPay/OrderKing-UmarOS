@@ -66,6 +66,7 @@ export const settlementEngine = {
         VALUES (${data.restaurantId}, ${data.amountPaise}, ${data.idempotencyKey}, 'PROCESSING')
       `;
 
+      const razorpay = getRazorpayClient();
       const transfer = await razorpay.transfers.create({
         account: ledger.fund_account_id,
         amount: data.amountPaise,
