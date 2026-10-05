@@ -17,10 +17,15 @@ function authorized(request: Request): boolean {
   return Boolean(secret && request.headers.get('authorization') === `Bearer ${secret}`);
 }
 
+const kingPassEnabled = process.env.KINGPASS_ENABLED === 'true';
+
 export const Route = createFileRoute('/api/v1/finance/subscription')({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        if (!kingPassEnabled) {
+          return Response.json({ success: false, state: 'DISABLED', message: 'KingPass subscription is disabled until its payment provider and production subscription ledger are configured.' }, { status: 503 });
+        }
         if (!authorized(request)) {
           return Response.json({ success: false, message: 'Unauthorized' }, { status: 401 });
         }
@@ -59,6 +64,9 @@ export const Route = createFileRoute('/api/v1/finance/subscription')({
       },
 
       GET: async ({ request }) => {
+        if (!kingPassEnabled) {
+          return Response.json({ success: false, state: 'DISABLED', message: 'KingPass subscription is disabled until its payment provider and production subscription ledger are configured.' }, { status: 503 });
+        }
         if (!authorized(request)) {
           return Response.json({ success: false, message: 'Unauthorized' }, { status: 401 });
         }
