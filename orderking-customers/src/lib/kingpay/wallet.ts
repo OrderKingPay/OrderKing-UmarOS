@@ -23,7 +23,7 @@ function getRazorpayClient(): Razorpay {
 export const TopUpSchema = z.object({
   customerId: z.string().uuid(),
   amountPaise: z.number().int().positive(),
-  idempotencyKey: z.string(),
+  idempotencyKey: z.string().min(1),
 });
 
 export const walletEngine = {
