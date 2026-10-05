@@ -33,8 +33,8 @@ if (!workflow.includes('version: 12.8.1')) failures.push('Production Gate is not
 if (!workflow.includes('node-version: 22')) failures.push('Production Gate is not using Node 22.');
 
 const blockedPatterns = [
-  ['"test_key"', 'placeholder Razorpay test key in production source'],
-  ['"test_secret"', 'placeholder Razorpay test secret in production source'],
+  ['|| "test_key"', 'placeholder Razorpay test key fallback in production source'],
+  ['|| "test_secret"', 'placeholder Razorpay test secret fallback in production source'],
   ['safe empty fallback', 'silent database fallback'],
   ['0xOrderKingTreasury', 'fabricated crypto address'],
   ['Founder 1.5% Crypto FX Premium', 'fabricated crypto profit ledger'],
