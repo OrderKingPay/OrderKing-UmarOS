@@ -81,10 +81,6 @@ const isProductionRuntime =
   (typeof process !== "undefined" && process.env.CF_PAGES === "1") ||
   (typeof process !== "undefined" && process.env.CF_WORKERS === "1");
 
-if (isProductionRuntime) {
-  void 0;
-}
-
 // Explicit off-switch. The deployer sets `VITE_AUTH_ENABLED=true` when it
 // provisions auth; set it to "false" to force auth off everywhere (dev user).
 const authDisabled = !isProductionRuntime && env("VITE_AUTH_ENABLED") === "false";
@@ -136,14 +132,12 @@ const baseURL = explicitBaseURL ?? {
       "localhost", 
       "127.0.0.1", 
       "[::1]",
-      ...(process.env.VERCEL_URL ? [process.env.VERCEL_URL] : []),
-      ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [process.env.VERCEL_PROJECT_PRODUCTION_URL] : []),
-      "apps-integration.vercel.app"
+          "apps-integration.vercel.app"
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
   protocol: "auto" as const,
-  fallback: process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:8080",
+  fallback: "http://localhost:8080",
 };
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
@@ -164,6 +158,7 @@ const betterAuthSecret = env("BETTER_AUTH_SECRET");
 if (isProductionRuntime) {
   const missing = [
     !databaseUrl ? "DATABASE_URL" : null,
+    !grokIssuer ? "GROK_AUTH_ISSUER" : null,
     !grokClientId ? "GROK_AUTH_CLIENT_ID" : null,
     !grokClientSecret ? "GROK_AUTH_CLIENT_SECRET" : null,
     !betterAuthSecret ? "BETTER_AUTH_SECRET" : null,
