@@ -30,12 +30,13 @@ export const Route = createFileRoute("/api/dispatch/cron/run-auto-dispatch")({
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
-    } catch (error: any) {
-      console.error("[CRON FATAL] AI Dispatch Engine crashed:", error);
-      return new Response(JSON.stringify({ success: false, message: 'CRON Error', error: error?.message }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-  }
+      } catch (error: any) {
+        console.error("[CRON FATAL] AI Dispatch Engine crashed:", error);
+        return new Response(JSON.stringify({ success: false, message: "CRON Error", error: error?.message }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" }
+        });
+      }
+    },
+  },
 });
