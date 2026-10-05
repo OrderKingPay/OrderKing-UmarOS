@@ -355,7 +355,7 @@ export const uploadDocument = createServerFn({ method: "POST" })
       const stored = await storageAdapter.put({
         key: `${ctx.restaurantId}/${data.kind}/${data.fileName}`,
         contentType: data.contentType,
-        bytes: new Uint8Array(byteSize),
+        bytes: Buffer.from(b64, "base64"),
       });
       const id = newId("doc");
       await sql`
