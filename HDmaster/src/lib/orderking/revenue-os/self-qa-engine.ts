@@ -47,71 +47,45 @@ export interface QaSuiteRun {
 export class SelfQaEngine {
   private runs: QaSuiteRun[] = [];
 
-  runVerificationSuite(projectId: string, simulateFailureKey?: QaCheckType): QaSuiteRun {
-    const runId = `QA-${Date.now().toString().slice(-4)}`;
-    const results: QaCheckResult[] = [];
-
+  runVerificationSuite(projectId: string, _simulateFailureKey?: QaCheckType): QaSuiteRun {
+    const runId = `QA-${Date.now().toString().slice(-8)}`;
     const standardChecks: Array<{ type: QaCheckType; label: string }> = [
       { type: "BUILD", label: "TypeScript compilation & bundle build" },
       { type: "UNIT_TESTS", label: "Component & utility unit tests" },
       { type: "INTEGRATION_TESTS", label: "Database query & state machine tests" },
-      { type: "API_TESTS", label: "REST & Webhook endpoint status tests" },
-      { type: "E2E_TESTS", label: "Critical customer checkout flow simulation" },
-      { type: "RESPONSIVE_CHECKS", label: "Mobile (375px), Tablet (768px), Desktop (1440px) viewports" },
-      { type: "ACCESSIBILITY_CHECKS", label: "WCAG 2.1 AA compliance & ARIA contrast" },
-      { type: "SECURITY_CHECKS", label: "OWASP Top 10, SQL injection prevention, CORS headers" },
-      { type: "LINK_CHECKS", label: "Zero 404 broken links or dead anchors" },
-      { type: "FORM_CHECKS", label: "Input sanitization, validation errors, and empty submissions" },
-      { type: "PAYMENT_FLOW_CHECKS", label: "King Pay UPI QR generation, UTR idempotency & fee 0%" },
-      { type: "AUTHENTICATION_CHECKS", label: "JWT session expiry, role-based route guard checks" },
-      { type: "ERROR_STATE_CHECKS", label: "Offline network banner, 500 boundary error recovery" },
-      { type: "PERFORMANCE_CHECKS", label: "Lighthouse LCP < 1.2s, FID < 50ms, CLS < 0.05" },
+      { type: "API_TESTS", label: "REST & webhook endpoint status tests" },
+      { type: "E2E_TESTS", label: "Critical customer checkout flow" },
+      { type: "RESPONSIVE_CHECKS", label: "Mobile/tablet/desktop layout checks" },
+      { type: "ACCESSIBILITY_CHECKS", label: "WCAG/ARIA/accessibility checks" },
+      { type: "SECURITY_CHECKS", label: "OWASP/security checks" },
+      { type: "LINK_CHECKS", label: "Broken-link checks" },
+      { type: "FORM_CHECKS", label: "Validation/error-state checks" },
+      { type: "PAYMENT_FLOW_CHECKS", label: "Payment and reconciliation checks" },
+      { type: "AUTHENTICATION_CHECKS", label: "Authentication/session/role checks" },
+      { type: "ERROR_STATE_CHECKS", label: "Offline and error recovery checks" },
+      { type: "PERFORMANCE_CHECKS", label: "Measured performance budgets" },
     ];
 
-    let healedAny = false;
+    const results: QaCheckResult[] = standardChecks.map((check) => ({
+      checkType: check.type,
+      label: check.label,
+      passed: false,
+      durationMs: 0,
+      diagnosticDetail: "NOT_VERIFIED: this runtime has no authoritative test adapter for this check. No simulated pass is permitted.",
+      attemptCount: 0,
+    }));
 
-    for (const check of standardChecks) {
-      const isSimulatedFail = simulateFailureKey === check.type;
-      if (isSimulatedFail) {
-        // FAIL → DIAGNOSE → FIX → TEST loop
-        results.push({
-          checkType: check.type,
-          label: check.label,
-          passed: true, // Successfully resolved after heal
-          durationMs: 420,
-          diagnosticDetail: `Initial check failed: assertion mismatch in ${check.type}. Diagnosed root cause.`,
-          fixApplied: `Self-healing applied: patched handler and re-tested successfully.`,
-          attemptCount: 2,
-        });
-        healedAny = true;
-      } else {
-        results.push({
-          checkType: check.type,
-          label: check.label,
-          passed: true,
-          durationMs: Math.floor(Math.random() * 180) + 40,
-          attemptCount: 1,
-        });
-      }
-    }
-
-    const passedCount = results.filter((r) => r.passed).length;
-    const failedCount = results.filter((r) => !r.passed).length;
-
-    const suiteRun: QaSuiteRun = {
+    return {
       runId,
       projectId,
       totalChecks: results.length,
-      passedCount,
-      failedCount,
+      passedCount: 0,
+      failedCount: results.length,
       results,
-      overallStatus: failedCount > 0 ? "FAILED" : healedAny ? "HEALED_AND_PASSED" : "PASSED",
-      timestamp: new Date().toISOString().replace("T", " ").slice(0, 16),
-      canDeliverToClient: failedCount === 0,
+      overallStatus: "FAILED",
+      timestamp: new Date().toISOString(),
+      canDeliverToClient: false,
     };
-
-    this.runs.push(suiteRun);
-    return suiteRun;
   }
 
   getLatestRun(projectId: string): QaSuiteRun | undefined {
