@@ -281,7 +281,6 @@ export function HomeView() {
           <DeliveryActions
             delivery={home.active}
             cash={home.cash}
-            simulatedOtp={home.simulatedOtp}
             onChanged={() => void load()}
           />
         </section>
