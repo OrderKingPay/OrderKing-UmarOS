@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { GROK_PROVIDERS, authClient, authEnabled, signIn } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { Button } from "@/components/ui/button";
@@ -51,37 +50,27 @@ function Login() {
         {/* Background Effects */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:32px_32px] opacity-70" />
-          <motion.div
-            animate={{ scale: [1, 1.05, 1], opacity: [0.1, 0.15, 0.1] }}
-            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          <div
             className="absolute -top-[30%] -left-[10%] h-[80%] w-[80%] rounded-full bg-gradient-to-br from-rose-600/30 to-orange-600/10 blur-[150px]"
           />
-          <motion.div
-            animate={{ scale: [1, 1.1, 1], opacity: [0.05, 0.1, 0.05] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          <div
             className="absolute -bottom-[20%] right-[0%] h-[70%] w-[70%] rounded-full bg-gradient-to-tl from-purple-600/20 to-rose-900/20 blur-[140px]"
           />
         </div>
 
         <div className="relative z-10">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+          <div
             className="flex items-center gap-3"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600/30 to-orange-600/30 border border-rose-500/20 shadow-[0_0_20px_rgba(225,29,72,0.2)]">
                <OrderKingMark className="size-7 text-rose-400" />
             </div>
             <p className="font-display text-2xl font-bold tracking-tight text-white">OrderKing <span className="text-rose-400 font-light">Global</span></p>
-          </motion.div>
+          </div>
         </div>
         
         <div className="relative z-10 max-w-xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+          <div
           >
             <h1 className="font-display text-5xl leading-[1.1] tracking-tight font-semibold bg-gradient-to-br from-white via-white to-white/60 bg-clip-text text-transparent mb-6">
               Command the ecosystem with absolute clarity.
@@ -89,14 +78,11 @@ function Login() {
             <p className="text-lg text-zinc-400 leading-relaxed font-light">
               The master control plane for orders, restaurants, riders, and capital flows. A unified architecture separating the signal from the noise.
             </p>
-          </motion.div>
+          </div>
         </div>
         
         <div className="relative z-10">
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.6 }}
+          <p
             className="flex items-center gap-2 text-xs font-mono text-zinc-500 tracking-wider uppercase"
           >
             <span className="relative flex h-2 w-2">
@@ -115,10 +101,7 @@ function Login() {
            <div className="absolute top-1/4 right-0 h-[50%] w-[50%] bg-rose-900/10 blur-[120px]" />
         </div>
 
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.96, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+        <div
           className="relative z-10 w-full max-w-[420px]"
         >
           <div className="mb-8">
@@ -158,13 +141,9 @@ function Login() {
             </div>
 
             <form className="space-y-4" onSubmit={onEmail}>
-              <AnimatePresence mode="popLayout">
+              <div>
                 {mode === "up" && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
+                  <div
                     className="space-y-1.5"
                   >
                     <Label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 ml-1">Full Legal Name</Label>
@@ -174,9 +153,9 @@ function Login() {
                       onChange={(e) => setName(e.target.value)} 
                       required 
                     />
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              </div>
 
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 ml-1">Official Email</Label>
@@ -202,18 +181,15 @@ function Login() {
                 />
               </div>
 
-              <AnimatePresence>
+              <div>
                 {error && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -5 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    exit={{ opacity: 0, y: -5 }}
+                  <p
                     className="rounded-lg bg-red-500/10 p-3 text-center text-sm font-medium text-red-400 border border-red-500/20"
                   >
                     {error}
                   </motion.p>
                 )}
-              </AnimatePresence>
+              </div>
 
               <Button 
                 type="submit" 
@@ -221,7 +197,7 @@ function Login() {
                 disabled={busy}
               >
                 {busy ? (
-                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="h-5 w-5 rounded-full border-2 border-black/20 border-t-black" />
+                  <div className="h-5 w-5 rounded-full border-2 border-black/20 border-t-black" />
                 ) : mode === "up" ? "INITIALIZE CLEARANCE" : "AUTHENTICATE SESSION"}
               </Button>
             </form>
@@ -236,7 +212,7 @@ function Login() {
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
       </section>
     </main>
   );
