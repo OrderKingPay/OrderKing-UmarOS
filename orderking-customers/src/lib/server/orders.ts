@@ -18,7 +18,7 @@ export const placeOrder = createServerFn({ method: "POST" }).middleware([authMid
   if (!data.address.line1.trim()) throw new Error("Delivery address is required.");
   if (data.lines.length === 0) throw new Error("Cart is empty.");
   const cfg = await loadConfig();
-  const production = process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production";
+  const production = process.env.NODE_ENV === "production";
   if (production && cfg.marketplace.launchMode !== "live") {
     throw new Error("Order placement is unavailable until HDmaster live mode is connected.");
   }
