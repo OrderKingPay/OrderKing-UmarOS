@@ -10,11 +10,8 @@ export const Route = createFileRoute('/api/dispatch/cron/run-auto-dispatch')({
     handlers: {
       GET: async ({ request }: { request: Request }) => {
     try {
-      // Allow internal invocation or authenticated Vercel Cron
       const authHeader = request.headers.get('authorization');
-      const isCron = request.headers.get('x-vercel-cron') === '1';
-      
-      if (!isCron && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
       }
 
@@ -36,6 +33,8 @@ export const Route = createFileRoute('/api/dispatch/cron/run-auto-dispatch')({
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+      }
     }
   }
 });
