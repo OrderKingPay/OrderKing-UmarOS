@@ -39,27 +39,8 @@ export const getBootstrap = createServerFn({ method: "GET" })
       };
     } catch (error) {
       console.error("[getBootstrap] Failed DB connect:", error);
-      return {
-        userId: context.userId,
-        memberships: [],
-        branding: {
-          appName: platformConfig.brand.appName,
-          tagline: platformConfig.brand.tagline,
-          restaurantFacingBrandName: platformConfig.brand.restaurantFacingBrandName,
-          logo: platformConfig.brand.restaurantFacingLogo,
-          primary: platformConfig.theme.primary,
-          supportEmail: platformConfig.support.email,
-        },
-        featureFlags: platformConfig.featureFlags,
-        adapters: {
-          notifications: notificationChannelStatus(),
-          storage: { connected: storageAdapter.connected, provider: storageAdapter.provider },
-          dispatch: { connected: dispatchAdapter.connected, provider: dispatchAdapter.provider },
-          payments: { connected: false, provider: "NOT_CONNECTED" },
-          ai: { connected: Boolean(process.env.XAI_API_KEY), provider: process.env.XAI_API_KEY ? "xAI" : "NOT_CONNECTED" },
-        },
-        commissionOptionsBps: [...platformConfig.commission.allowedBps],
-      };
+      throw new Error("Partner bootstrap unavailable because the production database is unavailable.");
+
     }
   });
 
