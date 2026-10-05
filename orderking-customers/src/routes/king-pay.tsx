@@ -21,6 +21,8 @@ import { PaidRestaurantAdZone } from "@/components/market/paid-restaurant-ad-zon
 import { KingPayFinanceSearch } from "@/components/fintech/kingpay-finance-search";
 import { isDeliveryActiveInLocation, getCityWaitlistInfo } from "@/lib/geo/geofence-guard";
 
+const KINGPAY_CONSUMER_UPI_ENABLED = import.meta.env.VITE_KINGPAY_CONSUMER_UPI_ENABLED === "true";
+
 export const Route = createFileRoute('/king-pay')({ component: KingPayPage, head: () => ({ meta: [{ property: 'og:title', content: '👑 King Pay - Zero Credit Score, 100% Approval. Earn 7.5% Interest.' }, { property: 'og:description', content: 'The #1 FinTech App in India. Send money, pay bills, and get instant loans.' }, { name: 'twitter:title', content: '👑 King Pay - Zero Credit Score, 100% Approval.' }, { name: 'twitter:description', content: 'The #1 FinTech App in India.' }] }) });
 
 type UtilityService = {
@@ -709,7 +711,7 @@ export type BankAccount = {
   icon: string;
 };
 
-const DEFAULT_BANKS: BankAccount[] = [
+const DEFAULT_BANKS: BankAccount[] = []; // Real bank-linking provider required; no fabricated balances.
   {
     id: "bank_sbi_1",
     bankName: "State Bank of India",
@@ -848,7 +850,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
     enableJobs: true,
     enableTicketing: true,
   });
-  const [walletBalance, setWalletBalance] = useState(750);
+  const [walletBalance, setWalletBalance] = useState(0);
   const [activeTab, setActiveTab] = useState<"all" | "fuel" | "recharge" | "bills" | "travel" | "gas">("all");
   const [showAddMoney, setShowAddMoney] = useState(false);
   const [addAmount, setAddAmount] = useState("500");
@@ -858,15 +860,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const handleVoteCity = () => {
     if (hasVotedCity) return;
     setHasVotedCity(true);
-    const bonus = 50;
-    const newBal = walletBalance + bonus;
-    setWalletBalance(newBal);
     if (typeof window !== "undefined") {
-      localStorage.setItem("ok_king_pay_wallet_balance", String(newBal));
       localStorage.setItem(`voted_expansion_${location.cityName}`, "true");
     }
-    playSoundboxChime(bonus);
-    toast.success(`🎉 Vote Registered for ${location.cityName || "your city"}! ₹50 bonus credits added to your King Pay wallet!`);
+    toast.success(`Vote registered for ${location.cityName || "your city"}. Rewards are unavailable until a funded campaign is active.`);
   };
 
   // Hydrate client storage safely after SSR mount (prevents React hydration mismatch)
@@ -896,7 +893,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("scan") === "true") {
+      if (params.get("scan") === "true" && KINGPAY_CONSUMER_UPI_ENABLED) {
         setScannerTab("camera");
         setShowScanner(true);
       }
@@ -904,7 +901,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   }, []);
 
   // ⛽ Fuel & Petro Hub State
-  const [monthlyFuelSpend, setMonthlyFuelSpend] = useState(4000);
+  const [monthlyFuelSpend, setMonthlyFuelSpend] = useState(0);
   const [selectedVoucherBrand, setSelectedVoucherBrand] = useState<"HPCL (HP Pay)" | "IndianOil (IOCL ONE)" | "BPCL (SmartDrive)">("HPCL (HP Pay)");
   const [showFuelVoucherModal, setShowFuelVoucherModal] = useState(false);
   const [generatedFuelVoucher, setGeneratedFuelVoucher] = useState<{
@@ -936,21 +933,21 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   // 10x Low-Bandwidth & Offline 2G Mode
   const [isOffline, setIsOffline] = useState(false);
   const [force2GMode, setForce2GMode] = useState(false);
-  const [offlineToken, setOfflineToken] = useState("OKPAY-OFFLINE-7841");
+  const [offlineToken, setOfflineToken] = useState("");
 
   // Navi-style KingPay Later Micro-Credit
   const [payLaterActive, setPayLaterActive] = useState(false);
-  const payLaterLimit = 2500;
+  const payLaterLimit = 0;
 
   // CRED-style 7-Day Check-in Streak
-  const [streakDay, setStreakDay] = useState(3);
+  const [streakDay, setStreakDay] = useState(0);
   const [claimedToday, setClaimedToday] = useState(false);
-  const [kingCoins, setKingCoins] = useState(4250);
+  const [kingCoins, setKingCoins] = useState(0);
 
   // Interactive Scan & Pay Simulator
   const [showScanner, setShowScanner] = useState(false);
-  const [scanRecipient, setScanRecipient] = useState("karimganj.store@upi");
-  const [scanAmount, setScanAmount] = useState("150");
+  const [scanRecipient, setScanRecipient] = useState("");
+  const [scanAmount, setScanAmount] = useState("");
   const [scannerTab, setScannerTab] = useState<"camera" | "manual">("camera");
   const [flashlightOn, setFlashlightOn] = useState(false);
 
@@ -975,9 +972,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   // Self Transfer Flow State
   const [showSelfTransferModal, setShowSelfTransferModal] = useState(false);
-  const [selfFromBank, setSelfFromBank] = useState("bank_sbi_1");
-  const [selfToBank, setSelfToBank] = useState("bank_hdfc_1");
-  const [selfTransferAmount, setSelfTransferAmount] = useState("1000");
+  const [selfFromBank, setSelfFromBank] = useState("");
+  const [selfToBank, setSelfToBank] = useState("");
+  const [selfTransferAmount, setSelfTransferAmount] = useState("");
 
   // How to Make a Transaction / Payment Guide State
   const [showHowToPayModal, setShowHowToPayModal] = useState(false);
