@@ -18,9 +18,9 @@ export function MetricCard({
   source?: string;
 }) {
   return (
-    <div className="rounded-[20px] border border-border bg-surface p-4">
+    <div className="rounded-[20px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-xs uppercase tracking-[0.14em] text-muted">{label}</p>
+        <p className="text-xs uppercase tracking-[0.14em] text-zinc-400">{label}</p>
         {source ? (
           <Badge tone={source === "SIMULATED" ? "warning" : source === "ESTIMATE" || source === "MODEL" ? "info" : "default"}>
             {source}
@@ -37,7 +37,7 @@ export function MetricCard({
       >
         {value}
       </p>
-      {hint ? <p className="mt-1 text-xs text-muted">{hint}</p> : null}
+      {hint ? <p className="mt-1 text-xs text-zinc-400">{hint}</p> : null}
     </div>
   );
 }
@@ -59,7 +59,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={cn("rounded-[24px] border border-border bg-surface p-4 sm:p-5", className)}>
+    <section className={cn("rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 sm:p-5", className)}>
       <header className="mb-4 flex items-center justify-between gap-3">
         <h2 className="font-display text-xl">{title}</h2>
         {action}
@@ -79,13 +79,13 @@ export function DataTable({
   onRow?: (row: Record<string, ReactNode>) => void;
 }) {
   if (!rows.length) {
-    return <p className="py-8 text-center text-sm text-muted">Nothing to show.</p>;
+    return <p className="py-8 text-center text-sm text-zinc-400">Nothing to show.</p>;
   }
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[640px] text-left text-sm">
         <thead>
-          <tr className="border-b border-border text-xs uppercase tracking-wider text-muted">
+          <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-zinc-400">
             {columns.map((c) => (
               <th key={c.key} className={cn("px-2 py-2 font-medium", c.className)}>
                 {c.label}
@@ -98,7 +98,7 @@ export function DataTable({
             <tr
               key={i}
               onClick={() => onRow?.(row)}
-              className={cn("border-b border-border/60", onRow && "cursor-pointer hover:bg-elevated")}
+              className={cn("border-b border-white/10/60", onRow && "cursor-pointer hover:bg-elevated")}
             >
               {columns.map((c) => (
                 <td key={c.key} className={cn("px-2 py-2.5 align-middle", c.className)}>
@@ -136,7 +136,7 @@ export function ConfirmBar({
     );
   }
   return (
-    <div className="flex flex-col gap-2 rounded-[16px] border border-border bg-elevated p-3 sm:flex-row sm:items-end">
+    <div className="flex flex-col gap-2 rounded-[16px] border border-white/10 bg-elevated p-3 sm:flex-row sm:items-end">
       <div className="flex-1 space-y-1">
         <Label>Reason (required)</Label>
         <Input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Why this action?" />
@@ -185,7 +185,7 @@ export function Field({
 }) {
   return (
     <label className="block space-y-1 text-sm">
-      <span className="text-muted">{label}</span>
+      <span className="text-zinc-400">{label}</span>
       {children}
     </label>
   );

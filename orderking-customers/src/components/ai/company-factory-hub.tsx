@@ -105,9 +105,9 @@ export function CompanyFactoryHub() {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-surface text-fg rounded-2xl border border-border overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white rounded-2xl border border-white/10 overflow-hidden">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-2/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5/40 p-4">
         <div>
           <div className="flex items-center gap-2">
             <Building className="size-5 text-emerald-500" />
@@ -116,7 +116,7 @@ export function CompanyFactoryHub() {
               Directive §10
             </Badge>
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-zinc-400">
             Autonomous Company Scaffolding · Idea → Research → Business Model → Code → GTM Launch
           </p>
         </div>
@@ -142,9 +142,9 @@ export function CompanyFactoryHub() {
       </div>
 
       {/* Idea Specification Bar */}
-      <div className="p-3 border-b border-border bg-surface flex flex-wrap items-center justify-between gap-3">
+      <div className="p-3 border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex flex-wrap items-center justify-between gap-3">
         <div className="flex-1 min-w-[300px]">
-          <span className="text-[10px] uppercase font-bold text-muted block mb-1">Target Business Concept:</span>
+          <span className="text-[10px] uppercase font-bold text-zinc-400 block mb-1">Target Business Concept:</span>
           <Input
             value={ideaPrompt}
             onChange={(e) => setIdeaPrompt(e.target.value)}
@@ -170,9 +170,9 @@ export function CompanyFactoryHub() {
       {/* Main Workspace (Split: Left Stages, Right Generated Artifacts) */}
       <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
         {/* Left Column: Stage Navigator */}
-        <div className="md:col-span-4 border-r border-border flex flex-col h-full bg-surface">
-          <div className="p-3 border-b border-border bg-surface-2/30">
-            <h4 className="text-[11px] font-black uppercase tracking-wider text-muted">Pipeline Progress</h4>
+        <div className="md:col-span-4 border-r border-white/10 flex flex-col h-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+          <div className="p-3 border-b border-white/10 bg-white/5/30">
+            <h4 className="text-[11px] font-black uppercase tracking-wider text-zinc-400">Pipeline Progress</h4>
           </div>
 
           <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
@@ -185,14 +185,14 @@ export function CompanyFactoryHub() {
                   onClick={() => setCurrentStep(stg.step)}
                   className={`p-3 rounded-xl border transition cursor-pointer ${
                     isActive
-                      ? "bg-primary/10 border-primary shadow-xs"
+                      ? "bg-primary/10 border-primary shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                       : isCompleted
                         ? "bg-emerald-500/5 border-emerald-500/30"
-                        : "bg-surface hover:bg-surface-2/60 border-border"
+                        : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-white/5/60 border-white/10"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-xs text-fg flex items-center gap-1.5">
+                    <span className="font-bold text-xs text-white flex items-center gap-1.5">
                       <span>{stg.icon}</span>
                       <span>{stg.name}</span>
                     </span>
@@ -200,7 +200,7 @@ export function CompanyFactoryHub() {
                       <CheckCircle2 className="size-4 text-emerald-500" />
                     )}
                   </div>
-                  <p className="text-[11px] text-muted line-clamp-2">{stg.artifactSummary}</p>
+                  <p className="text-[11px] text-zinc-400 line-clamp-2">{stg.artifactSummary}</p>
                 </div>
               );
             })}
@@ -208,13 +208,13 @@ export function CompanyFactoryHub() {
         </div>
 
         {/* Right Column: Generated Artifact Inspector */}
-        <div className="md:col-span-8 flex flex-col h-full overflow-hidden bg-surface">
-          <div className="flex items-center justify-between border-b border-border px-4 py-2.5 bg-surface-2/20">
+        <div className="md:col-span-8 flex flex-col h-full overflow-hidden bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5 bg-white/5/20">
             <div className="flex items-center gap-2">
               <span className="text-lg">{activeStage.icon}</span>
               <div>
-                <h3 className="font-bold text-xs text-fg">{activeStage.artifactTitle}</h3>
-                <span className="text-[10px] text-muted">{activeStage.name}</span>
+                <h3 className="font-bold text-xs text-white">{activeStage.artifactTitle}</h3>
+                <span className="text-[10px] text-zinc-400">{activeStage.name}</span>
               </div>
             </div>
 
@@ -232,7 +232,7 @@ export function CompanyFactoryHub() {
           </div>
 
           <div className="flex-1 overflow-auto p-4">
-            <pre className="font-mono text-xs text-fg leading-relaxed whitespace-pre-wrap bg-surface-2/30 p-4 rounded-xl border border-border">
+            <pre className="font-mono text-xs text-white leading-relaxed whitespace-pre-wrap bg-white/5/30 p-4 rounded-xl border border-white/10">
               {activeStage.artifactContent}
             </pre>
           </div>

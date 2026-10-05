@@ -188,19 +188,19 @@ export function OrderCard({
               <button
                 type="button"
                 onClick={printKOT}
-                className="rounded-md border border-line bg-surface-2 px-1.5 py-0.5 text-[11px] font-medium text-muted hover:bg-surface hover:text-fg"
+                className="rounded-md border border-line bg-white/5 px-1.5 py-0.5 text-[11px] font-medium text-zinc-400 hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:text-white"
                 title="Print Kitchen Order Ticket (KOT)"
               >
                 🖨️ KOT
               </button>
             </div>
-            <div className="text-xs text-muted">
+            <div className="text-xs text-zinc-400">
               {t("orders.received")} {mins} {t("common.minutes")} · {order.customerArea ?? "Area hidden"}
             </div>
           </div>
         </div>
         <div className="text-right">
-          <div className="text-xs uppercase tracking-wide text-muted">{t(`status.${order.state}`)}</div>
+          <div className="text-xs uppercase tracking-wide text-zinc-400">{t(`status.${order.state}`)}</div>
           <MoneyText paise={order.prices.customerTotalPaise} className="text-lg font-semibold" />
         </div>
       </div>
@@ -213,7 +213,7 @@ export function OrderCard({
               {line.variantName ? ` · ${line.variantName}` : ""}
               {line.addons?.length ? ` + ${line.addons.map((a) => a.name).join(", ")}` : ""}
             </span>
-            <span className="tabular text-muted">{formatINR(line.unitPricePaise * line.quantity)}</span>
+            <span className="tabular text-zinc-400">{formatINR(line.unitPricePaise * line.quantity)}</span>
           </li>
         ))}
       </ul>
@@ -224,7 +224,7 @@ export function OrderCard({
         </p>
       ) : null}
 
-      <div className="flex flex-wrap gap-2 text-xs text-muted">
+      <div className="flex flex-wrap gap-2 text-xs text-zinc-400">
         <span className="rounded-full border border-line px-2 py-1">{order.isCod ? t("orders.cod") : t("orders.paid")}</span>
         <span className="rounded-full border border-line px-2 py-1">
           {t("orders.prepTime")} {order.prepMinutes} {t("common.minutes")}
@@ -244,9 +244,9 @@ export function OrderCard({
       {error ? <p className="text-sm text-danger">{error}</p> : null}
 
       {rejectOpen ? (
-        <div className="space-y-2 rounded-[16px] bg-surface-2 p-3">
+        <div className="space-y-2 rounded-[16px] bg-white/5 p-3">
           <p className="text-sm font-medium">{t("orders.rejectTitle")}</p>
-          <p className="text-xs text-muted">{t("orders.rejectHint")}</p>
+          <p className="text-xs text-zinc-400">{t("orders.rejectHint")}</p>
           <div className="grid gap-2">
             {REJECT_REASONS.map((r) => (
               <label key={r} className="flex min-h-11 items-center gap-2 text-sm">

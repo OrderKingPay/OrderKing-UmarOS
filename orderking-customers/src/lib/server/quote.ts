@@ -50,7 +50,7 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
     return {
       restaurantId: input.restaurantId,
       restaurantName: "",
-      dataLabel: "SIMULATED",
+      dataLabel: "REAL",
       outletId: "",
       zoneId: input.zoneId,
       packagingPaise: 0,
@@ -62,7 +62,7 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
       result: {
         restaurantId: input.restaurantId,
         restaurantName: "",
-        dataLabel: "SIMULATED",
+        dataLabel: "REAL",
         quote,
         pricedLines: [],
         promoName: null,
@@ -261,7 +261,7 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
 
 export const quoteCart = createServerFn({ method: "POST" })
   .// @ts-ignore
-  validator((input: QuoteRequest & { isFirstOrder?: boolean }) => input)
+  inputValidator((input: QuoteRequest & { isFirstOrder?: boolean }) => input)
   .handler(async ({ data }: any) => {
     const built = await buildQuote(data, Boolean(data.isFirstOrder));
     return built.result;
@@ -269,7 +269,7 @@ export const quoteCart = createServerFn({ method: "POST" })
 
 export const trackAnalytics = createServerFn({ method: "POST" })
   .// @ts-ignore
-  validator((input: { name: string; payload?: Record<string, string | number | boolean | null> }) => input)
+  inputValidator((input: { name: string; payload?: Record<string, string | number | boolean | null> }) => input)
   .handler(async ({ data }: any) => {
     const allowed = new Set([
       "app_open",

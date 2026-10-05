@@ -368,14 +368,14 @@ export function KingPayFinanceSearch({
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
           placeholder="Search 'electricity bill', 'autopay', 'loans', 'rewards', 'transfer'..."
-          className="flex-1 bg-transparent px-3 py-1.5 text-xs sm:text-sm font-semibold text-foreground placeholder:text-muted/60 focus:outline-none"
+          className="flex-1 bg-transparent px-3 py-1.5 text-xs sm:text-sm font-semibold text-white placeholder:text-zinc-400/60 focus:outline-none"
         />
 
         {query ? (
           <button
             type="button"
             onClick={() => setQuery("")}
-            className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted hover:bg-muted/20 hover:text-foreground transition-colors"
+            className="flex size-7 shrink-0 items-center justify-center rounded-full text-zinc-400 hover:bg-muted/20 hover:text-white transition-colors"
           >
             <X className="size-4" />
           </button>
@@ -401,7 +401,7 @@ export function KingPayFinanceSearch({
             className={`flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold transition-all ${
               selectedCategory === cat.id
                 ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm ring-1 ring-emerald-300"
-                : "bg-surface/80 border border-border/80 text-muted hover:text-foreground hover:bg-surface"
+                : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]/80 border border-white/10/80 text-zinc-400 hover:text-white hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
             }`}
           >
             <span>{cat.icon}</span>
@@ -412,9 +412,9 @@ export function KingPayFinanceSearch({
 
       {/* QUICK SUGGESTIONS OR LIVE SEARCH RESULTS */}
       {(isFocused || query.trim().length > 0) && (
-        <div className="mt-2 max-h-72 overflow-y-auto rounded-2xl border-2 border-emerald-500/30 bg-surface/98 p-2 shadow-2xl backdrop-blur-md">
-          <div className="flex items-center justify-between px-2 py-1 border-b border-border/50">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted">
+        <div className="mt-2 max-h-72 overflow-y-auto rounded-2xl border-2 border-emerald-500/30 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]/98 p-2 shadow-2xl backdrop-blur-md">
+          <div className="flex items-center justify-between px-2 py-1 border-b border-white/10/50">
+            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400">
               {query ? `Found ${filteredItems.length} results for "${query}"` : "Popular Finance Services"}
             </span>
             <button
@@ -428,7 +428,7 @@ export function KingPayFinanceSearch({
 
           <div className="divide-y divide-border/40">
             {filteredItems.length === 0 ? (
-              <div className="p-4 text-center text-xs text-muted">
+              <div className="p-4 text-center text-xs text-zinc-400">
                 No matching finance services found. Try searching "bills", "loan", "autopay" or "UPI".
               </div>
             ) : (
@@ -442,12 +442,12 @@ export function KingPayFinanceSearch({
                   className="group flex cursor-pointer items-center justify-between gap-3 p-2 rounded-xl transition-all hover:bg-emerald-500/10 active:scale-[0.99]"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-surface border border-border/60 text-base group-hover:scale-110 transition-transform">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/10/60 text-base group-hover:scale-110 transition-transform">
                       {item.icon}
                     </span>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <h4 className="text-xs font-bold text-foreground truncate group-hover:text-emerald-400 transition-colors">
+                        <h4 className="text-xs font-bold text-white truncate group-hover:text-emerald-400 transition-colors">
                           {item.title}
                         </h4>
                         {item.badge && (
@@ -456,11 +456,11 @@ export function KingPayFinanceSearch({
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-muted truncate">{item.subtitle}</p>
+                      <p className="text-[11px] text-zinc-400 truncate">{item.subtitle}</p>
                     </div>
                   </div>
 
-                  <ArrowRight className="size-4 shrink-0 text-muted opacity-40 group-hover:opacity-100 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                  <ArrowRight className="size-4 shrink-0 text-zinc-400 opacity-40 group-hover:opacity-100 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
                 </div>
               ))
             )}

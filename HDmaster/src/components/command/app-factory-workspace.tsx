@@ -91,7 +91,7 @@ export function AppFactoryWorkspace() {
   return (
     <div className="rounded-2xl border border-purple-500/40 bg-[#070D12] text-slate-100 p-5 space-y-4 shadow-2xl">
       {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border/70">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10/70">
         <div>
           <div className="flex items-center gap-2">
             <h3 className="font-display font-black text-lg text-white tracking-wide">
@@ -101,7 +101,7 @@ export function AppFactoryWorkspace() {
               PRODUCTION CODING ENGINE
             </Badge>
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-zinc-400">
             Isolated code generation, PostgreSQL schema DDL, interactive previews, and client handoffs.
           </p>
         </div>
@@ -116,7 +116,7 @@ export function AppFactoryWorkspace() {
               if (bp && bp.files.length > 0) setActiveFile(bp.files[0].filename);
               toast.info(`Switched project to ${bp?.title}`);
             }}
-            className="rounded-lg bg-surface-2 border border-purple-500/30 px-3 py-1.5 text-xs font-bold text-purple-300 focus:outline-none"
+            className="rounded-lg bg-white/5 border border-purple-500/30 px-3 py-1.5 text-xs font-bold text-purple-300 focus:outline-none"
           >
             {blueprintList.map((b: EnterpriseProjectBlueprint) => (
               <option key={b.id} value={b.id}>
@@ -150,13 +150,13 @@ export function AppFactoryWorkspace() {
       {/* Main Workspace Split: Left File Tree, Right Editor/Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* Left Column: File Tree & Project Meta */}
-        <div className="rounded-xl bg-black/60 border border-border/70 p-3 space-y-3">
-          <div className="flex items-center justify-between text-xs pb-2 border-b border-border/60">
-            <span className="font-bold text-muted uppercase text-[10px] flex items-center gap-1.5">
+        <div className="rounded-xl bg-black/60 border border-white/10/70 p-3 space-y-3">
+          <div className="flex items-center justify-between text-xs pb-2 border-b border-white/10/60">
+            <span className="font-bold text-zinc-400 uppercase text-[10px] flex items-center gap-1.5">
               <FolderTree className="size-3.5 text-purple-400" />
               File Tree
             </span>
-            <Badge className="bg-surface-2 text-slate-300 text-[10px] font-mono">
+            <Badge className="bg-white/5 text-slate-300 text-[10px] font-mono">
               {currentBlueprint.files.length} Files
             </Badge>
           </div>
@@ -170,29 +170,29 @@ export function AppFactoryWorkspace() {
                 className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-mono flex items-center justify-between transition ${
                   activeFile === f.filename
                     ? "bg-purple-600/30 text-purple-300 border border-purple-500/50 font-bold"
-                    : "text-slate-400 hover:text-white hover:bg-surface-2"
+                    : "text-slate-400 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <div className="flex items-center gap-2 truncate">
                   <FileCode className="size-3.5 shrink-0" />
                   <span className="truncate">{f.filename}</span>
                 </div>
-                <span className="text-[10px] text-muted uppercase">{f.language}</span>
+                <span className="text-[10px] text-zinc-400 uppercase">{f.language}</span>
               </button>
             ))}
           </div>
 
           {/* Project Details */}
-          <div className="pt-3 border-t border-border/60 text-xs space-y-2">
-            <span className="font-bold text-muted uppercase text-[10px] block">Commercial Value:</span>
-            <div className="rounded bg-surface-2 p-2 font-mono text-emerald-400 font-bold">
+          <div className="pt-3 border-t border-white/10/60 text-xs space-y-2">
+            <span className="font-bold text-zinc-400 uppercase text-[10px] block">Commercial Value:</span>
+            <div className="rounded bg-white/5 p-2 font-mono text-emerald-400 font-bold">
               ₹{currentBlueprint.commercialValueInr.toLocaleString("en-IN")}
             </div>
 
-            <span className="font-bold text-muted uppercase text-[10px] block pt-1">Tech Stack:</span>
+            <span className="font-bold text-zinc-400 uppercase text-[10px] block pt-1">Tech Stack:</span>
             <div className="flex flex-wrap gap-1">
               {currentBlueprint.techStack.map((t: string) => (
-                <span key={t} className="rounded bg-surface-2 px-2 py-0.5 text-[10px] font-mono text-slate-300">
+                <span key={t} className="rounded bg-white/5 px-2 py-0.5 text-[10px] font-mono text-slate-300">
                   {t}
                 </span>
               ))}
@@ -201,9 +201,9 @@ export function AppFactoryWorkspace() {
         </div>
 
         {/* Right Column: Editor / Preview / Terminal / Tests */}
-        <div className="lg:col-span-3 rounded-xl bg-black/60 border border-border/70 overflow-hidden flex flex-col h-[520px]">
+        <div className="lg:col-span-3 rounded-xl bg-black/60 border border-white/10/70 overflow-hidden flex flex-col h-[520px]">
           {/* Editor Header & Tabs */}
-          <div className="bg-surface-2/90 border-b border-border/70 px-3 py-2 flex items-center justify-between">
+          <div className="bg-white/5/90 border-b border-white/10/70 px-3 py-2 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <Button
                 size="sm"
@@ -277,7 +277,7 @@ export function AppFactoryWorkspace() {
 
             {activeTab === "preview" && (
               <div className="font-sans space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-border/50 text-xs text-muted">
+                <div className="flex items-center justify-between pb-2 border-b border-white/10/50 text-xs text-zinc-400">
                   <span className="text-emerald-400 font-bold flex items-center gap-1.5">
                     <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
                     Blueprint Preview · No Runtime Claim
@@ -285,7 +285,7 @@ export function AppFactoryWorkspace() {
                   <span>React 19 · PostgreSQL · King Pay UPI</span>
                 </div>
 
-                <div className="rounded-xl bg-surface-2 p-4 border border-border space-y-3">
+                <div className="rounded-xl bg-white/5 p-4 border border-white/10 space-y-3">
                   <div className="flex justify-between items-center">
                     <h4 className="text-sm font-bold text-white">{currentBlueprint.title}</h4>
                     <Badge className="bg-emerald-500/20 text-emerald-400 text-[10px]">
@@ -296,19 +296,19 @@ export function AppFactoryWorkspace() {
 
                   <div className="grid grid-cols-3 gap-2 text-center text-xs pt-2">
                     <div className="bg-black/40 p-2 rounded">
-                      <span className="text-muted block text-[10px]">Database Schema</span>
+                      <span className="text-zinc-400 block text-[10px]">Database Schema</span>
                       <span className="font-bold text-white font-mono">
                         {currentBlueprint.databaseSchema.length} Tables
                       </span>
                     </div>
                     <div className="bg-black/40 p-2 rounded">
-                      <span className="text-muted block text-[10px]">API Endpoints</span>
+                      <span className="text-zinc-400 block text-[10px]">API Endpoints</span>
                       <span className="font-bold text-cyan-400 font-mono">
                         {currentBlueprint.apiEndpoints.length} Routes
                       </span>
                     </div>
                     <div className="bg-black/40 p-2 rounded">
-                      <span className="text-muted block text-[10px]">Turnkey Delivery</span>
+                      <span className="text-zinc-400 block text-[10px]">Turnkey Delivery</span>
                       <span className="font-bold text-amber-400 font-mono">
                         {currentBlueprint.estimatedBuildTime}
                       </span>
@@ -341,7 +341,7 @@ export function AppFactoryWorkspace() {
                 ].map((testName, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between bg-surface-2 p-2 rounded text-xs"
+                    className="flex items-center justify-between bg-white/5 p-2 rounded text-xs"
                   >
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="size-3.5 text-emerald-400" />

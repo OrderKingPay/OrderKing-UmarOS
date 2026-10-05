@@ -39,22 +39,22 @@ export function SearchableSelect({
         <button
           type="button"
           disabled={disabled}
-          className="flex w-full items-center justify-between rounded-xl border border-border bg-bg px-3 py-2 text-sm font-bold text-fg focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-bold text-white focus:border-primary focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span className="truncate">{selected ? selected.label : placeholder}</span>
           <ChevronDown className="h-4 w-4 opacity-50 shrink-0 ml-2" />
         </button>
       </Popover.Trigger>
       <Popover.Content
-        className="z-50 w-[300px] sm:w-[400px] rounded-xl border border-border bg-surface p-1 shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+        className="z-50 w-[300px] sm:w-[400px] rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-1 shadow-2xl outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
         align="start"
         sideOffset={4}
       >
-        <div className="flex items-center border-b border-border px-3 pb-2 pt-2">
-          <Search className="mr-2 h-4 w-4 shrink-0 text-muted" />
+        <div className="flex items-center border-b border-white/10 px-3 pb-2 pt-2">
+          <Search className="mr-2 h-4 w-4 shrink-0 text-zinc-400" />
           <input
             autoFocus
-            className="flex h-8 w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted disabled:cursor-not-allowed disabled:opacity-50 text-fg"
+            className="flex h-8 w-full bg-transparent py-3 text-sm outline-none placeholder:text-zinc-400 disabled:cursor-not-allowed disabled:opacity-50 text-white"
             placeholder="Search city, code or name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -69,7 +69,7 @@ export function SearchableSelect({
         </div>
         <div className="max-h-[300px] overflow-y-auto overflow-x-hidden p-1">
           {filtered.length === 0 ? (
-            <div className="py-6 text-center text-sm text-muted">No results found.</div>
+            <div className="py-6 text-center text-sm text-zinc-400">No results found.</div>
           ) : (
             filtered.map((opt) => (
               <div
@@ -79,14 +79,14 @@ export function SearchableSelect({
                   setOpen(false);
                   setSearch("");
                 }}
-                className="relative flex cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm outline-none hover:bg-surface-2 hover:text-fg data-[disabled]:pointer-events-none data-[disabled]:opacity-50 transition-colors"
+                className="relative flex cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm outline-none hover:bg-white/5 hover:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50 transition-colors"
               >
                 <Check
                   className={`mr-2 h-4 w-4 shrink-0 text-primary ${
                     value === opt.value ? "opacity-100" : "opacity-0"
                   }`}
                 />
-                <span className="truncate text-fg">{opt.label}</span>
+                <span className="truncate text-white">{opt.label}</span>
               </div>
             ))
           )}

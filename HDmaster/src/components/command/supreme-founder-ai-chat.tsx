@@ -493,7 +493,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
   return (
     <div className="rounded-xl border border-purple-500/40 bg-black/60 overflow-hidden shadow-2xl mt-3">
       {/* Top Header & Navigation Tabs */}
-      <div className="border-b border-border/70 bg-surface-2/80 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <div className="border-b border-white/10/70 bg-white/5/80 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Badge className="bg-purple-500/20 text-purple-300 border-purple-400/40 text-[10px] font-bold">
             {blueprint.category.toUpperCase()}
@@ -546,217 +546,14 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
       {/* TAB 1: LIVE INTERACTIVE APP PREVIEW */}
       {activeTab === "preview" && (
         <div className="p-3.5 bg-slate-950/90 text-slate-200">
-          <div className="flex items-center justify-between pb-2 mb-3 border-b border-border/50 text-[11px] text-muted">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
-              <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-              Live Interactive Sandbox Mockup (Fully Functional Simulation)
-            </span>
-            <span className="font-mono text-[10px]">React 19 · Next.js · Node.js · PostgreSQL</span>
+          <div className="flex flex-col items-center justify-center p-8 text-center space-y-4">
+             <AlertCircle className="size-8 text-amber-500 mb-2 mx-auto" />
+             <span className="text-sm font-bold text-white block">Live Preview Unavailable</span>
+             <p className="text-xs text-slate-400 max-w-sm mx-auto">
+               Interactive sandboxes have been disabled to comply with the Zero-Fake policy. 
+               This blueprint requires a real verified database backend connection to preview.
+             </p>
           </div>
-
-          {/* Hospital ERP Interactive Mockup */}
-          {blueprint.category === "erp" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Active OPD Queue</span>
-                  <span className="text-base font-black text-emerald-400 font-mono">{hospitalQueue.length} Patients</span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Doctors On-Duty</span>
-                  <span className="text-base font-black text-amber-400 font-mono">8 Specialists</span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">ABDM Sync Status</span>
-                  <span className="text-base font-black text-cyan-400 font-mono">100% Online</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
-                  <span className="text-xs font-bold text-white block">Fast-Track Patient Triage</span>
-                  <div className="flex gap-2">
-                    <Input
-                      value={newPatient}
-                      onChange={(e) => setNewPatient(e.target.value)}
-                      placeholder="Patient name (e.g. Joya Das)..."
-                      className="h-8 text-xs bg-black/40"
-                    />
-                    <Button
-                      size="sm"
-                      className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shrink-0"
-                      onClick={() => {
-                        if (!newPatient.trim()) return;
-                        const nextTok = hospitalTokens + 1;
-                        setHospitalTokens(nextTok);
-                        setHospitalQueue((prev) => [
-                          ...prev,
-                          { token: nextTok, name: newPatient.trim(), doctor: "General OPD", status: "WAITING" },
-                        ]);
-                        setNewPatient("");
-                        playAudioTone("chime");
-                        toast.success(`Token #${nextTok} generated with ABDM Health ID!`);
-                      }}
-                    >
-                      Issue Token
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
-                  <span className="text-xs font-bold text-white block">OPD Live Queue Monitor</span>
-                  <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
-                    {hospitalQueue.map((item) => (
-                      <div
-                        key={item.token}
-                        className="flex items-center justify-between text-[11px] bg-black/40 px-2 py-1 rounded border border-border/50"
-                      >
-                        <span className="font-mono font-bold text-emerald-400">#{item.token}</span>
-                        <span className="font-medium text-slate-200">{item.name}</span>
-                        <Badge
-                          className={`text-[9px] ${
-                            item.status === "IN_CONSULTATION"
-                              ? "bg-amber-500/20 text-amber-300"
-                              : "bg-slate-800 text-slate-400"
-                          }`}
-                        >
-                          {item.status}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Multi-Vendor Marketplace Interactive Mockup */}
-          {blueprint.category === "marketplace" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Registered Merchants</span>
-                  <span className="text-base font-black text-purple-400 font-mono">142 Stores</span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Fleet Active Riders</span>
-                  <span className="text-base font-black text-amber-400 font-mono">36 Drivers</span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Aggregator Fee Cut</span>
-                  <span className="text-base font-black text-emerald-400 font-mono">0% Direct UPI</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
-                  <span className="text-xs font-bold text-white block">Add Demo Items to Cart</span>
-                  <div className="space-y-1.5">
-                    {[
-                      { name: "Special Chicken Dum Biryani", price: 280 },
-                      { name: "Sylheti Style Kacchi & Borhani", price: 340 },
-                      { name: "Paneer Butter Masala + Naan", price: 210 },
-                    ].map((food) => (
-                      <div key={food.name} className="flex items-center justify-between text-xs bg-black/40 p-2 rounded">
-                        <span>{food.name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-emerald-400 font-bold">₹{food.price}</span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-6 px-2 text-[10px] font-bold"
-                            onClick={() => {
-                              setCartTotal((prev) => prev + food.price);
-                              setCartItems((prev) => [...prev, { name: food.name, price: food.price, qty: 1 }]);
-                              playAudioTone("ping");
-                              toast.success(`Added ${food.name} to cart!`);
-                            }}
-                          >
-                            + Add
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-3 flex flex-col justify-between">
-                  <div>
-                    <span className="text-xs font-bold text-white block">Cart &amp; Direct UPI Checkout</span>
-                    <div className="mt-2 text-xs space-y-1">
-                      <div className="flex justify-between text-muted">
-                        <span>Selected Items:</span>
-                        <span>{cartItems.length}</span>
-                      </div>
-                      <div className="flex justify-between text-muted">
-                        <span>Platform Commission:</span>
-                        <span className="text-emerald-400 font-bold font-mono">₹0 (100% to Merchant)</span>
-                      </div>
-                      <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-border">
-                        <span>Total Payable:</span>
-                        <span className="text-emerald-400 font-mono">₹{cartTotal}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button
-                    size="sm"
-                    disabled={cartTotal === 0}
-                    className="w-full h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
-                    onClick={() => {
-                      playAudioTone("chime");
-                      toast.success(`₹${cartTotal} Order Placed! WhatsApp notification dispatched to merchant & rider.`);
-                      setCartTotal(0);
-                      setCartItems([]);
-                    }}
-                  >
-                    1-Tap King Pay UPI Checkout
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* FinTech Ledger Interactive Mockup */}
-          {blueprint.category === "fintech" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Verified Vault Reserve</span>
-                  <span className="text-base font-black text-emerald-400 font-mono">
-                    ₹{ledgerBalance.toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Instant Disbursals</span>
-                  <span className="text-base font-black text-cyan-400 font-mono">{disbursedCount} Completed</span>
-                </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Ledger Integrity</span>
-                  <span className="text-base font-black text-amber-400 font-mono">Double-Entry OK</span>
-                </div>
-              </div>
-
-              <div className="rounded-lg bg-surface-2 p-3 border border-border flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-bold text-white block">Instant ₹50,000 Vendor Disbursal Test</span>
-                  <p className="text-[10px] text-muted">Atomic transaction with double-entry cryptographic debit &amp; credit</p>
-                </div>
-                <Button
-                  size="sm"
-                  className="h-8 text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white"
-                  onClick={() => {
-                    setLedgerBalance((prev) => prev - 50000);
-                    setDisbursedCount((prev) => prev + 1);
-                    playAudioTone("chime");
-                    toast.success("₹50,000 disbursed atomically! SHA-256 block hash recorded.");
-                  }}
-                >
-                  Test Disbursal
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       )}
 
@@ -764,7 +561,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
       {activeTab === "code" && (
         <div className="flex flex-col bg-slate-950">
           {/* File Picker Ribbon */}
-          <div className="flex items-center gap-1 overflow-x-auto border-b border-border/60 bg-black/60 px-3 py-1.5 text-xs scrollbar-none">
+          <div className="flex items-center gap-1 overflow-x-auto border-b border-white/10/60 bg-black/60 px-3 py-1.5 text-xs scrollbar-none">
             {blueprint.files.map((f) => (
               <button
                 key={f.filename}
@@ -773,7 +570,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono transition shrink-0 ${
                   selectedFile === f.filename
                     ? "bg-purple-600/30 text-purple-300 border border-purple-500/50 font-bold"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-surface-2"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
                 }`}
               >
                 <FileCode className="size-3" />
@@ -815,10 +612,10 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
       {/* TAB 3: CLIENT HANDOFF & CONTRACT PACKAGE */}
       {activeTab === "handoff" && (
         <div className="p-4 bg-slate-950/90 text-xs space-y-3.5">
-          <div className="flex items-center justify-between pb-2 border-b border-border/50">
+          <div className="flex items-center justify-between pb-2 border-b border-white/10/50">
             <div>
               <span className="text-xs font-bold text-white block">Commercial Turnkey Delivery Package</span>
-              <p className="text-[10px] text-muted">Ready to deliver to client with zero technical debt</p>
+              <p className="text-[10px] text-zinc-400">Ready to deliver to client with zero technical debt</p>
             </div>
             <Badge className="bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">
               Ready for Production Deploy
@@ -826,7 +623,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
+            <div className="rounded-lg bg-white/5 p-3 border border-white/10 space-y-2">
               <span className="text-[11px] font-bold text-amber-300 block">Deliverable Checklist:</span>
               <ul className="space-y-1 text-[11px] text-slate-300">
                 <li className="flex items-center gap-1.5">
@@ -848,19 +645,19 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
               </ul>
             </div>
 
-            <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
+            <div className="rounded-lg bg-white/5 p-3 border border-white/10 space-y-2">
               <span className="text-[11px] font-bold text-cyan-300 block">Client Handoff Credentials:</span>
               <div className="space-y-1 text-[10px] font-mono text-slate-300">
                 <div className="flex justify-between">
-                  <span className="text-muted">Admin User:</span>
+                  <span className="text-zinc-400">Admin User:</span>
                   <span>{blueprint.handoffCredentials.adminEmail}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">Temp Pass:</span>
+                  <span className="text-zinc-400">Temp Pass:</span>
                   <span>{blueprint.handoffCredentials.temporaryPass}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">Database URL:</span>
+                  <span className="text-zinc-400">Database URL:</span>
                   <span className="truncate max-w-[140px]">{blueprint.handoffCredentials.databaseUrl}</span>
                 </div>
               </div>
@@ -940,28 +737,16 @@ function PlatformConnectorCard({
 
   const handleForceAction = (actionId: string, label: string, _defaultPayload: string) => {
     setExecutingActionId(actionId);
-    playAudioTone("ping");
-    toast.info(`⚡ Enforcing "${label}" on ${activePlatform.name}...`);
-
+    toast.error(`Integration Pending: Cannot enforce "${label}" without real verified platform credentials.`);
     setTimeout(() => {
       setExecutingActionId(null);
-      const newLog = {
-        id: `log-${Date.now()}`,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
-        action: label,
-        status: "SUCCESS" as const,
-        message: `Task enforced successfully. Sandbox verified, 0% data leak, results piped to founder.`,
-      };
-      setExecutionLogs((prev) => [newLog, ...prev.slice(0, 4)]);
-      playAudioTone("chime");
-      toast.success(`✅ ${activePlatform.name} enforced: "${label}" completed without error!`);
-    }, 750);
+    }, 500);
   };
 
   return (
     <div className="rounded-xl border border-cyan-500/40 bg-black/60 p-3.5 space-y-3.5 shadow-xl">
       {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10/60 pb-2.5">
         <div className="flex items-center gap-2">
           <div className="size-7 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300">
             <Globe2 className="size-4" />
@@ -1000,7 +785,7 @@ function PlatformConnectorCard({
             className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
               p.id === activePlatform.id
                 ? "bg-cyan-600 text-white shadow-sm"
-                : "bg-surface-2 text-slate-400 hover:text-slate-200 hover:bg-surface-2/80"
+                : "bg-white/5 text-slate-400 hover:text-slate-200 hover:bg-white/5/80"
             }`}
           >
             <span className="size-1.5 rounded-full bg-emerald-400" />
@@ -1009,25 +794,25 @@ function PlatformConnectorCard({
         ))}
       </div>
 
-      <p className="text-[11px] text-slate-300 leading-relaxed bg-surface-2/60 p-2 rounded-lg border border-border/40">
+      <p className="text-[11px] text-slate-300 leading-relaxed bg-white/5/60 p-2 rounded-lg border border-white/10/40">
         {activePlatform.description}
       </p>
 
       {/* Safety Guardrails Checklist */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
-        <div className="rounded bg-surface-2 p-1.5 border border-border/50 flex items-center gap-1.5 text-slate-300">
+        <div className="rounded bg-white/5 p-1.5 border border-white/10/50 flex items-center gap-1.5 text-slate-300">
           <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
           <span>HMAC-SHA256 Auth</span>
         </div>
-        <div className="rounded bg-surface-2 p-1.5 border border-border/50 flex items-center gap-1.5 text-slate-300">
+        <div className="rounded bg-white/5 p-1.5 border border-white/10/50 flex items-center gap-1.5 text-slate-300">
           <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
           <span>Zero Token Leak</span>
         </div>
-        <div className="rounded bg-surface-2 p-1.5 border border-border/50 flex items-center gap-1.5 text-slate-300">
+        <div className="rounded bg-white/5 p-1.5 border border-white/10/50 flex items-center gap-1.5 text-slate-300">
           <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
           <span>Rollback Armed</span>
         </div>
-        <div className="rounded bg-surface-2 p-1.5 border border-border/50 flex items-center gap-1.5 text-slate-300">
+        <div className="rounded bg-white/5 p-1.5 border border-white/10/50 flex items-center gap-1.5 text-slate-300">
           <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
           <span>Rate Throttle Safe</span>
         </div>
@@ -1042,7 +827,7 @@ function PlatformConnectorCard({
           {activePlatform.supportedActions.map((act) => (
             <div
               key={act.id}
-              className="p-2.5 rounded-xl bg-surface-2/80 border border-border/60 hover:border-cyan-500/40 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+              className="p-2.5 rounded-xl bg-white/5/80 border border-white/10/60 hover:border-cyan-500/40 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2"
             >
               <div>
                 <div className="flex items-center gap-2">
@@ -1126,28 +911,11 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
   const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
 
   const handleDownloadMaster = () => {
-    playAudioTone("chime");
-    const a = document.createElement("a");
-    a.href = config.videoUrl;
-    a.download = `orderking-master-${aspectRatio.replace(":", "x")}-${Date.now()}.mp4`;
-    a.target = "_blank";
-    a.click();
-    toast.success(`📥 4K Master Video download started (${aspectRatio} · ${resolution})!`);
+    toast.error("Action Pending: Real video rendering engine is not connected.");
   };
 
   const handleSaveToVault = () => {
-    mediaStorageVault.addItem({
-      type: "video",
-      title: `[${aspectRatio} ${resolution}] ${config.title}`,
-      prompt: config.prompt,
-      url: config.videoUrl,
-      thumbnailUrl: config.thumbnailUrl,
-      sizeBytes: duration === "10m" || duration === "30m" ? 48000000 : 9500000,
-      mimeType: "video/mp4",
-    });
-    setIsSavedToVault(true);
-    playAudioTone("ping");
-    toast.success("🎬 Saved to Sovereign Media Vault with 100% immutable backup!");
+    toast.error("Action Pending: Real sovereign media vault is not connected.");
   };
 
   const handleTurboRender = () => {
@@ -1174,7 +942,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
   return (
     <div className="rounded-xl border border-purple-500/40 bg-black/70 p-3.5 space-y-3.5 shadow-2xl">
       {/* Top Studio Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10/60 pb-2.5">
         <div className="flex items-center gap-2">
           <div className="size-7 rounded-lg bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300">
             <Film className="size-4" />
@@ -1229,7 +997,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
               className={`p-1.5 rounded-lg text-center transition flex flex-col items-center justify-center border ${
                 aspectRatio === item.id
                   ? "bg-purple-600/30 border-purple-400 text-white shadow-sm"
-                  : "bg-surface-2 border-border/50 text-slate-400 hover:text-slate-200"
+                  : "bg-white/5 border-white/10/50 text-slate-400 hover:text-slate-200"
               }`}
             >
               <span className="text-[11px] font-bold">{item.label}</span>
@@ -1250,7 +1018,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
                 type="button"
                 onClick={() => setDuration(d)}
                 className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition shrink-0 ${
-                  duration === d ? "bg-amber-500 text-black" : "bg-surface-2 text-slate-400 hover:text-slate-200"
+                  duration === d ? "bg-amber-500 text-black" : "bg-white/5 text-slate-400 hover:text-slate-200"
                 }`}
               >
                 {d}
@@ -1276,7 +1044,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
                 className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition flex-1 text-center ${
                   resolution === res.id
                     ? "bg-cyan-600 text-white"
-                    : "bg-surface-2 text-slate-400 hover:text-slate-200"
+                    : "bg-white/5 text-slate-400 hover:text-slate-200"
                 }`}
               >
                 {res.label}
@@ -1287,7 +1055,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
       </div>
 
       {/* 3. Live Video Canvas & Subtitles Simulation */}
-      <div className="flex flex-col items-center justify-center bg-black/90 p-3 rounded-xl border border-border/80 overflow-hidden relative min-h-[200px]">
+      <div className="flex flex-col items-center justify-center bg-black/90 p-3 rounded-xl border border-white/10/80 overflow-hidden relative min-h-[200px]">
         <div className={`relative rounded-lg overflow-hidden border border-white/20 bg-black flex items-center justify-center ${getAspectClasses()}`}>
           <video
             ref={setVideoRef}
@@ -1329,7 +1097,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
                 if (videoRef) videoRef.playbackRate = s;
               }}
               className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold ${
-                speed === s ? "bg-white text-black" : "bg-surface-2 text-slate-400 hover:text-white"
+                speed === s ? "bg-white text-black" : "bg-white/5 text-slate-400 hover:text-white"
               }`}
             >
               {s}x
@@ -1340,7 +1108,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
 
       {/* 4. Voiceover & Color Grade Controls */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-        <div className="p-2 rounded-lg bg-surface-2/70 border border-border/50 space-y-1">
+        <div className="p-2 rounded-lg bg-white/5/70 border border-white/10/50 space-y-1">
           <span className="text-[10px] text-slate-400 font-semibold block">Realistic AI Voiceover:</span>
           <div className="grid grid-cols-2 gap-1 text-[10px]">
             <button
@@ -1364,7 +1132,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
           </div>
         </div>
 
-        <div className="p-2 rounded-lg bg-surface-2/70 border border-border/50 space-y-1">
+        <div className="p-2 rounded-lg bg-white/5/70 border border-white/10/50 space-y-1">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-slate-400 font-semibold">Dynamic Auto-Subtitles:</span>
             <label className="flex items-center gap-1 cursor-pointer">
@@ -1384,7 +1152,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
       </div>
 
       {/* Prompt summary */}
-      <div className="text-[10.5px] text-slate-300 bg-surface-2/40 p-2 rounded border border-border/40 italic">
+      <div className="text-[10.5px] text-slate-300 bg-white/5/40 p-2 rounded border border-white/10/40 italic">
         "{config.prompt}"
       </div>
 
@@ -1440,16 +1208,13 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
   };
 
   const handleSave = () => {
-    setHasSaved(true);
-    playAudioTone("ping");
-    toast.success("⚙️ System configuration saved to Sovereign Storage!");
-    setTimeout(() => setHasSaved(false), 2000);
+    toast.error("Action Pending: Real system configuration backend is not connected.");
   };
 
   return (
     <div className="rounded-xl border border-amber-500/40 bg-black/70 p-3.5 space-y-3.5 shadow-2xl">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10/60 pb-2.5">
         <div className="flex items-center gap-2">
           <div className="size-7 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300">
             <Settings className="size-4" />
@@ -1493,7 +1258,7 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
       {/* Manual Customization Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
         {/* Model & Thinking Depth */}
-        <div className="p-2.5 rounded-lg bg-surface-2/70 border border-border/50 space-y-2">
+        <div className="p-2.5 rounded-lg bg-white/5/70 border border-white/10/50 space-y-2">
           <span className="text-[10px] text-slate-400 font-semibold block uppercase">AI Model &amp; Reasoning:</span>
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[11px]">
@@ -1521,7 +1286,7 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
         </div>
 
         {/* Audio & Speech Tuning */}
-        <div className="p-2.5 rounded-lg bg-surface-2/70 border border-border/50 space-y-2">
+        <div className="p-2.5 rounded-lg bg-white/5/70 border border-white/10/50 space-y-2">
           <span className="text-[10px] text-slate-400 font-semibold block uppercase">Acoustic Speech Tuning:</span>
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[11px]">
@@ -1544,7 +1309,7 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
         </div>
 
         {/* Security & Isolation */}
-        <div className="p-2.5 rounded-lg bg-surface-2/70 border border-border/50 space-y-2">
+        <div className="p-2.5 rounded-lg bg-white/5/70 border border-white/10/50 space-y-2">
           <span className="text-[10px] text-slate-400 font-semibold block uppercase">Security &amp; Sandboxing:</span>
           <div className="space-y-1 text-[11px]">
             <label className="flex items-center justify-between cursor-pointer">
@@ -1569,7 +1334,7 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
         </div>
 
         {/* Storage & Edge Region */}
-        <div className="p-2.5 rounded-lg bg-surface-2/70 border border-border/50 space-y-2">
+        <div className="p-2.5 rounded-lg bg-white/5/70 border border-white/10/50 space-y-2">
           <span className="text-[10px] text-slate-400 font-semibold block uppercase">Storage &amp; Edge Route:</span>
           <div className="space-y-1 text-[11px]">
             <div className="flex items-center justify-between">
@@ -1643,7 +1408,7 @@ function SmartCleanerCard({
 
   return (
     <div className="rounded-xl border border-emerald-500/40 bg-black/70 p-3.5 space-y-3.5 shadow-xl">
-      <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+      <div className="flex items-center justify-between border-b border-white/10/60 pb-2.5">
         <div className="flex items-center gap-2">
           <div className="size-7 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300">
             <Zap className="size-4" />
@@ -1668,19 +1433,19 @@ function SmartCleanerCard({
 
       {/* Suggested Items Breakdown */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-        <div className="p-2.5 rounded-lg bg-surface-2/70 border border-border/50">
+        <div className="p-2.5 rounded-lg bg-white/5/70 border border-white/10/50">
           <span className="text-[10px] text-slate-400 uppercase font-semibold block">Duplicate Media</span>
           <span className="text-base font-bold text-amber-400 font-mono mt-0.5 block">{data.duplicateCount} Items</span>
           <span className="text-[10px] text-slate-400">Identical prompts &amp; renders</span>
         </div>
 
-        <div className="p-2.5 rounded-lg bg-surface-2/70 border border-border/50">
+        <div className="p-2.5 rounded-lg bg-white/5/70 border border-white/10/50">
           <span className="text-[10px] text-slate-400 uppercase font-semibold block">Temporary Junk</span>
           <span className="text-base font-bold text-cyan-400 font-mono mt-0.5 block">{data.suggestedItemsCount} Blobs</span>
           <span className="text-[10px] text-slate-400">Expired keyframes &amp; caches</span>
         </div>
 
-        <div className="p-2.5 rounded-lg bg-surface-2/70 border border-border/50">
+        <div className="p-2.5 rounded-lg bg-white/5/70 border border-white/10/50">
           <span className="text-[10px] text-slate-400 uppercase font-semibold block">Glitches Auto-Fixed</span>
           <span className="text-base font-bold text-emerald-400 font-mono mt-0.5 block">{data.mistakesFixedCount} Fixed</span>
           <span className="text-[10px] text-slate-400">Stale audio nodes &amp; buffers</span>
@@ -1769,7 +1534,7 @@ function ModuleSeparatorCard({ data }: { data: { modules?: SeparableModule[] } }
 
   return (
     <div className="rounded-xl border border-indigo-500/40 bg-black/70 p-3.5 space-y-3.5 shadow-2xl">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10/60 pb-2.5">
         <div className="flex items-center gap-2">
           <div className="size-7 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300">
             <Layers className="size-4" />
@@ -1802,7 +1567,7 @@ function ModuleSeparatorCard({ data }: { data: { modules?: SeparableModule[] } }
             className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition ${
               m.id === activeModule.id
                 ? "bg-indigo-600 text-white shadow-sm"
-                : "bg-surface-2 text-slate-400 hover:text-slate-200"
+                : "bg-white/5 text-slate-400 hover:text-slate-200"
             }`}
           >
             {m.name.split(" ")[0]} {m.name.split(" ")[1] || ""}
@@ -1811,7 +1576,7 @@ function ModuleSeparatorCard({ data }: { data: { modules?: SeparableModule[] } }
       </div>
 
       {/* Selected Module Detail */}
-      <div className="p-3 rounded-xl bg-surface-2/80 border border-border/60 space-y-2">
+      <div className="p-3 rounded-xl bg-white/5/80 border border-white/10/60 space-y-2">
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-xs font-bold text-white">{activeModule.name}</h4>
@@ -2058,27 +1823,27 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Location:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Location:</span>
             <span className="font-bold text-white">{lead.location}</span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Monthly Revenue:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Monthly Revenue:</span>
             <span className="font-bold text-white font-mono">{lead.monthlyRevenueEst}</span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Total Contract:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Total Contract:</span>
             <span className="font-bold text-emerald-400 font-mono">₹{lead.projectBudget.toLocaleString("en-IN")}</span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">50% Advance Lock:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">50% Advance Lock:</span>
             <span className="font-bold text-amber-400 font-mono">
               ₹{invoice.advanceRequiredInr.toLocaleString("en-IN")}
             </span>
           </div>
         </div>
 
-        <div className="rounded bg-surface-2/80 p-2.5 text-xs text-slate-300 border border-border/60">
+        <div className="rounded bg-white/5/80 p-2.5 text-xs text-slate-300 border border-white/10/60">
           <span className="font-bold text-amber-400 block mb-1">Pain Point &amp; High-Margin Pitch:</span>
           <p className="text-[11px] leading-relaxed">{lead.painPoint}</p>
           <p className="text-[11px] text-emerald-400 font-semibold mt-1">Solution: {lead.suggestedSolution}</p>
@@ -2138,31 +1903,31 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
             <span className="text-xs font-bold text-emerald-400">💵 Invoice: {invoice.invoiceNumber}</span>
             <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px]">0% Gateway Cut</Badge>
           </div>
-          <span className="text-[10px] text-muted">Due: {invoice.dueDate}</span>
+          <span className="text-[10px] text-zinc-400">Due: {invoice.dueDate}</span>
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Total Contract Value:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Total Contract Value:</span>
             <span className="font-bold text-white font-mono text-sm">
               ₹{invoice.amountInr.toLocaleString("en-IN")}
             </span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">50% Advance Required:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">50% Advance Required:</span>
             <span className="font-bold text-emerald-400 font-mono text-sm">
               ₹{invoice.advanceRequiredInr.toLocaleString("en-IN")}
             </span>
           </div>
         </div>
 
-        <div className="rounded-lg bg-surface-2 p-2.5 text-[11px] text-slate-300 space-y-1 border border-border/50">
+        <div className="rounded-lg bg-white/5 p-2.5 text-[11px] text-slate-300 space-y-1 border border-white/10/50">
           <div className="flex justify-between">
-            <span className="text-muted">Payout Account:</span>
+            <span className="text-zinc-400">Payout Account:</span>
             <span className="font-mono text-emerald-400 font-bold">{invoice.payoutAccount}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted">Legal Compliance:</span>
+            <span className="text-zinc-400">Legal Compliance:</span>
             <span className="text-slate-300">Section 79 IT Act (Direct Intermediary Exemption)</span>
           </div>
         </div>
@@ -2217,25 +1982,25 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Hourly Rate:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Hourly Rate:</span>
             <span className="font-bold text-emerald-400 font-mono text-sm">${gig.hourlyRateUsd}/hr</span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Estimated Budget:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Estimated Budget:</span>
             <span className="font-bold text-white font-mono text-sm">
               ${gig.fixedBudgetUsd?.toLocaleString() || "Hourly"}
             </span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Client Location:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Client Location:</span>
             <span className="font-bold text-white">{gig.clientLocation}</span>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-1">
           {gig.skillsRequired.map((s) => (
-            <span key={s} className="rounded bg-surface-2 px-2 py-0.5 text-[10px] font-mono text-sky-300">
+            <span key={s} className="rounded bg-white/5 px-2 py-0.5 text-[10px] font-mono text-sky-300">
               {s}
             </span>
           ))}
@@ -2275,13 +2040,13 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
           <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">100% Free &amp; Unlimited</Badge>
         </div>
         
-        <div className="rounded-lg bg-surface-2 p-2 border border-border flex items-center justify-center min-h-[160px] overflow-hidden bg-black">
+        <div className="rounded-lg bg-white/5 p-2 border border-white/10 flex items-center justify-center min-h-[160px] overflow-hidden bg-black">
           {data.type === "image" && mediaUrl ? (
              <img loading="lazy" src={mediaUrl} alt={promptText} className="max-w-full max-h-[260px] object-contain rounded" />
           ) : data.type === "video" && mediaUrl ? (
              <video src={mediaUrl} controls loop muted autoPlay className="w-full max-h-[260px] rounded" />
           ) : (
-             <div className="flex flex-col items-center gap-2 text-muted">
+             <div className="flex flex-col items-center gap-2 text-zinc-400">
                <Film className="size-10 text-purple-400" />
                <span className="text-[10px]">Asset rendered and cached in Media Vault</span>
              </div>
@@ -2334,21 +2099,21 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
         </div>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Total Cache Footprint:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Total Cache Footprint:</span>
             <span className="font-bold text-amber-400 font-mono text-sm">{inspection.formattedTotalSize}</span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Speed Optimization:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Speed Optimization:</span>
             <span className="font-bold text-emerald-400 font-mono text-sm">{inspection.speedOptimizationScore}% Optimal</span>
           </div>
-          <div className="rounded bg-surface-2 p-2 col-span-2 sm:col-span-1">
-            <span className="text-muted block text-[10px]">Protected Core Assets:</span>
+          <div className="rounded bg-white/5 p-2 col-span-2 sm:col-span-1">
+            <span className="text-zinc-400 block text-[10px]">Protected Core Assets:</span>
             <span className="font-bold text-white font-mono text-sm">{inspection.immutableCoreProtection.clientLeadsCount} Leads Safe</span>
           </div>
         </div>
 
-        <div className="rounded bg-surface-2/80 p-2 text-[10px] text-slate-300 border border-border/60">
+        <div className="rounded bg-white/5/80 p-2 text-[10px] text-slate-300 border border-white/10/60">
            <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
              <ShieldCheck className="size-3"/> Core Guarantee Active:
            </span>
@@ -4018,7 +3783,7 @@ export function SupremeFounderAiChat({
                   const settingsEvent = new CustomEvent('openChatSettings');
                   window.dispatchEvent(settingsEvent);
                 }}
-                className="p-1.5 rounded-lg hover:bg-white/10 transition text-muted hover:text-white"
+                className="p-1.5 rounded-lg hover:bg-white/10 transition text-zinc-400 hover:text-white"
                 title="Chat Settings"
               >
                 <Settings className="size-4" />
@@ -4037,7 +3802,7 @@ export function SupremeFounderAiChat({
                     }]);
                   }
                 }}
-                className="p-1.5 rounded-lg hover:bg-white/10 transition text-muted hover:text-white"
+                className="p-1.5 rounded-lg hover:bg-white/10 transition text-zinc-400 hover:text-white"
                 title="Clear Chat"
               >
                 <Trash2 className="size-4" />
@@ -4623,7 +4388,7 @@ export function SupremeFounderAiChat({
                                       src={m.mediaCard.url}
                                       controls
                                       className="w-full h-full object-contain"
-                                      poster="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"
+                                      poster=""
                                     />
                                   )}
                                   <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[11px] font-semibold text-purple-300">

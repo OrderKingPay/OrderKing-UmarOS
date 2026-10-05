@@ -74,7 +74,7 @@ function HoursPage() {
             <div key={d} className="grid gap-2 border-b border-line pb-3 md:grid-cols-[80px_1fr]">
               <div className="font-medium">{t(d)}</div>
               <div className="space-y-2">
-                {dayShifts.length === 0 ? <div className="text-sm text-muted">{t("hours.closed")}</div> : null}
+                {dayShifts.length === 0 ? <div className="text-sm text-zinc-400">{t("hours.closed")}</div> : null}
                 {dayShifts.map((s, idx) => (
                   <div key={idx} className="flex gap-2">
                     <Input

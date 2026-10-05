@@ -10,11 +10,11 @@ const buttonVariants = cva(
       variant: {
         primary: "bg-primary text-primary-fg hover:opacity-90 shadow-sm",
         default: "bg-primary text-primary-fg hover:opacity-90 shadow-sm",
-        secondary: "bg-elevated text-fg border border-border hover:bg-surface shadow-sm",
-        ghost: "text-fg hover:bg-elevated",
-        danger: "bg-danger text-fg hover:opacity-90 shadow-sm",
-        outline: "border border-border text-fg hover:bg-elevated",
-        glass: "bg-white/10 backdrop-blur-md border border-white/20 text-fg hover:bg-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
+        secondary: "bg-elevated text-white border border-white/10 hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-sm",
+        ghost: "text-white hover:bg-elevated",
+        danger: "bg-danger text-white hover:opacity-90 shadow-sm",
+        outline: "border border-white/10 text-white hover:bg-elevated",
+        glass: "bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
       },
       size: {
         sm: "h-8 px-3 text-sm rounded-[8px]",

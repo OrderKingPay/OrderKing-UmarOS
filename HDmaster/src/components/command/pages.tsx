@@ -165,9 +165,9 @@ export function DashboardPage() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.16em] text-muted">Today</p>
+          <p className="text-xs uppercase tracking-[0.16em] text-zinc-400">Today</p>
           <h1 className="font-display text-3xl">Marketplace pulse</h1>
-          <p className="mt-1 text-sm text-muted">What happened. Is it normal. Does it need action.</p>
+          <p className="mt-1 text-sm text-zinc-400">What happened. Is it normal. Does it need action.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" size="sm" onClick={() => { void q.refetch(); void zq.refetch(); inv(); }}>
@@ -179,7 +179,7 @@ export function DashboardPage() {
         </div>
       </header>
       {!data ? (
-        <p className="text-muted">{q.data && !q.data.ok ? q.data.error : "Loading…"}</p>
+        <p className="text-zinc-400">{q.data && !q.data.ok ? q.data.error : "Loading…"}</p>
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -211,18 +211,18 @@ export function DashboardPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <Panel title="Live City Zones & Surge Pulse">
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs text-muted">
+                <div className="flex items-center justify-between text-xs text-zinc-400">
                   <span>ZONE / REGION</span>
                   <span>BASE FEE · ETA · SURGE</span>
                 </div>
                 {(zq.data && zq.data.ok ? zq.data.data.zones : []).slice(0, 6).map((z) => (
                   <div
                     key={z.id}
-                    className="flex items-center justify-between rounded-[12px] border border-border bg-elevated/50 p-3"
+                    className="flex items-center justify-between rounded-[12px] border border-white/10 bg-elevated/50 p-3"
                   >
                     <div>
                       <p className="text-sm font-semibold">{z.name}</p>
-                      <p className="text-xs text-muted">
+                      <p className="text-xs text-zinc-400">
                         Max {z.maxRadiusKm} km radius · Karimganj Hub
                       </p>
                     </div>
@@ -242,13 +242,13 @@ export function DashboardPage() {
             <Panel title="Critical Operations & Alerts">
               <ul className="space-y-2">
                 {data.alerts.map((a) => (
-                  <li key={a.id} className="flex items-start justify-between gap-3 rounded-[16px] border border-border bg-elevated p-3">
+                  <li key={a.id} className="flex items-start justify-between gap-3 rounded-[16px] border border-white/10 bg-elevated p-3">
                     <div>
                       <div className="flex items-center gap-2">
                         <StatusBadge value={a.severity} />
                         <p className="text-sm font-medium">{a.title}</p>
                       </div>
-                      <p className="mt-1 text-xs text-muted">{a.body}</p>
+                      <p className="mt-1 text-xs text-zinc-400">{a.body}</p>
                     </div>
                   </li>
                 ))}
@@ -287,14 +287,14 @@ function LivePage() {
       <h1 className="font-display text-3xl">Live control</h1>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
         {ACTIVE_FLOW.concat(["DELIVERED", "CANCELLED"]).map((s) => (
-          <div key={s} className="rounded-[16px] border border-border bg-surface p-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted">{s.replaceAll("_", " ")}</p>
+          <div key={s} className="rounded-[16px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3">
+            <p className="text-[10px] uppercase tracking-wider text-zinc-400">{s.replaceAll("_", " ")}</p>
             <p className="font-display text-2xl tabular">{counts[s] ?? 0}</p>
           </div>
         ))}
       </div>
       <Panel title={data?.trackingEnabled ? "Rider positions (SIMULATED)" : "Live tracking flag is OFF"}>
-        <div className="relative h-64 overflow-hidden rounded-[16px] border border-border bg-elevated">
+        <div className="relative h-64 overflow-hidden rounded-[16px] border border-white/10 bg-elevated">
           {riders.filter((r) => r.lat != null && r.lng != null).map((r) => {
             const x = ((r.lng! - minLng) / (maxLng - minLng)) * 100;
             const y = (1 - (r.lat! - minLat) / (maxLat - minLat)) * 100;
@@ -307,7 +307,7 @@ function LivePage() {
               />
             );
           })}
-          <p className="absolute bottom-2 left-3 text-[10px] uppercase tracking-wider text-muted">
+          <p className="absolute bottom-2 left-3 text-[10px] uppercase tracking-wider text-zinc-400">
             GPS last-fix · SIMULATED · not a street map
           </p>
         </div>
@@ -315,7 +315,7 @@ function LivePage() {
           {riders.slice(0, 8).map((r) => (
             <li key={r.id} className="flex justify-between gap-2">
               <span>{r.name}</span>
-              <span className="text-muted">{r.status}{r.lat != null ? ` · ${r.lat.toFixed(3)}, ${r.lng?.toFixed(3)}` : ""}</span>
+              <span className="text-zinc-400">{r.status}{r.lat != null ? ` · ${r.lat.toFixed(3)}, ${r.lng?.toFixed(3)}` : ""}</span>
             </li>
           ))}
         </ul>
@@ -373,13 +373,13 @@ function OrderTable() {
       action={
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={q} onChange={setQ} placeholder="ID or restaurant" />
-          <select className="h-10 rounded-[10px] border border-border bg-elevated px-2 text-sm" value={status} onChange={(e) => setStatus(e.target.value)}>
+          <select className="h-10 rounded-[10px] border border-white/10 bg-elevated px-2 text-sm" value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="">All statuses</option>
             {ACTIVE_FLOW.concat(["DELIVERED", "CANCELLED", "REFUNDED"]).map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
-          <select className="h-10 rounded-[10px] border border-border bg-elevated px-2 text-sm" value={city} onChange={(e) => setCity(e.target.value)}>
+          <select className="h-10 rounded-[10px] border border-white/10 bg-elevated px-2 text-sm" value={city} onChange={(e) => setCity(e.target.value)}>
             <option value="">All cities</option>
             <option value="karimganj">Karimganj</option>
             <option value="silchar">Silchar</option>
@@ -433,14 +433,14 @@ function OrderDetail({ id }: { id: string }) {
   });
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const o = q.data && q.data.ok ? q.data.data : null;
-  if (!o) return <p className="text-muted">Loading order…</p>;
+  if (!o) return <p className="text-zinc-400">Loading order…</p>;
   const riderList = riders.data && riders.data.ok ? riders.data.data : [];
   return (
     <div className="space-y-4">
-      <Link to="/app/$module" params={{ module: "orders" }} className="text-sm text-muted">← Orders</Link>
+      <Link to="/app/$module" params={{ module: "orders" }} className="text-sm text-zinc-400">← Orders</Link>
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="font-mono text-xs text-muted">{o.id}</p>
+          <p className="font-mono text-xs text-zinc-400">{o.id}</p>
           <h1 className="font-display text-3xl">{o.restaurantName}</h1>
         </div>
         <StatusBadge value={o.status} />
@@ -461,7 +461,7 @@ function OrderDetail({ id }: { id: string }) {
         </ul>
       </Panel>
       <Panel title="Financial breakdown">
-        {o.commissionPaise == null ? <p className="text-sm text-muted">Finance fields hidden by role.</p> : (
+        {o.commissionPaise == null ? <p className="text-sm text-zinc-400">Finance fields hidden by role.</p> : (
           <dl className="grid grid-cols-2 gap-2 text-sm">
             <dt>Food</dt><dd className="tabular text-right">{money(o.foodPaise)}</dd>
             <dt>Restaurant discount</dt><dd className="tabular text-right">{money(o.restaurantDiscountPaise)}</dd>
@@ -475,7 +475,7 @@ function OrderDetail({ id }: { id: string }) {
         )}
         {o.ledger.length ? (
           <div className="mt-4">
-            <p className="text-xs uppercase tracking-wider text-muted">Ledger</p>
+            <p className="text-xs uppercase tracking-wider text-zinc-400">Ledger</p>
             <ul className="mt-2 space-y-1 text-xs">
               {o.ledger.map((l, i) => (
                 <li key={i} className="flex justify-between gap-2 font-mono">
@@ -491,12 +491,12 @@ function OrderDetail({ id }: { id: string }) {
         <div className="flex flex-col gap-3">
           <ConfirmBar title="Cancel order" onConfirm={(reason) => act.mutate({ orderId: o.id, action: "cancel", reason })} />
           <ConfirmBar title="Issue refund" onConfirm={(reason) => act.mutate({ orderId: o.id, action: "refund", reason, amountPaise: o.totalPaise })} />
-          <p className="text-xs text-muted">Refunds are allowed from DELIVERED / CANCELLED / failed states. Live orders must be cancelled first. Reassign is a request to the dispatcher, applied locally only in simulation.</p>
+          <p className="text-xs text-zinc-400">Refunds are allowed from DELIVERED / CANCELLED / failed states. Live orders must be cancelled first. Reassign is a request to the dispatcher, applied locally only in simulation.</p>
           <ConfirmBar title="Escalate to support" onConfirm={(reason) => act.mutate({ orderId: o.id, action: "escalate", reason })} />
           <div className="flex flex-wrap items-end gap-2">
             <Field label="Reassign rider">
               <select
-                className="h-10 rounded-[10px] border border-border bg-elevated px-2 text-sm"
+                className="h-10 rounded-[10px] border border-white/10 bg-elevated px-2 text-sm"
                 defaultValue=""
                 onChange={(e) => {
                   const riderId = e.target.value;
@@ -521,7 +521,7 @@ function OrderDetail({ id }: { id: string }) {
           {o.events.map((e, i) => (
             <li key={i} className="flex justify-between gap-3">
               <span>{e.action} {e.from ? `${e.from} → ${e.to}` : ""}</span>
-              <span className="text-muted">{relativeTime(e.at ?? undefined)}</span>
+              <span className="text-zinc-400">{relativeTime(e.at ?? undefined)}</span>
             </li>
           ))}
         </ol>
@@ -576,16 +576,16 @@ function RestaurantDetail({ id }: { id: string }) {
   });
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const r = q.data && q.data.ok ? q.data.data : null;
-  if (!r) return <p className="text-muted">Loading…</p>;
+  if (!r) return <p className="text-zinc-400">Loading…</p>;
   return (
     <div className="space-y-4">
-      <Link to="/app/$module" params={{ module: "restaurants" }} className="text-sm text-muted">← Restaurants</Link>
+      <Link to="/app/$module" params={{ module: "restaurants" }} className="text-sm text-zinc-400">← Restaurants</Link>
       <h1 className="font-display text-3xl">{String(r.name)}</h1>
       <div className="flex flex-wrap gap-2">
         <StatusBadge value={String(r.status)} />
         <StatusBadge value={String(r.kycStatus)} />
       </div>
-      <p className="text-sm text-muted">{String(r.address)} · {String(r.phoneMasked)}</p>
+      <p className="text-sm text-zinc-400">{String(r.address)} · {String(r.phoneMasked)}</p>
       <div className="grid gap-3 sm:grid-cols-4">
         <MetricCard label="Orders" value={formatNumber(r.performance.orders)} source="SIMULATED" />
         <MetricCard label="GMV" value={money(r.performance.gmv)} source="SIMULATED" />
@@ -654,14 +654,14 @@ function RiderDetail({ id }: { id: string }) {
   });
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const r = q.data && q.data.ok ? q.data.data : null;
-  if (!r) return <p className="text-muted">Loading…</p>;
+  if (!r) return <p className="text-zinc-400">Loading…</p>;
   return (
     <div className="space-y-4">
-      <Link to="/app/$module" params={{ module: "riders" }} className="text-sm text-muted">← Riders</Link>
+      <Link to="/app/$module" params={{ module: "riders" }} className="text-sm text-zinc-400">← Riders</Link>
       <h1 className="font-display text-3xl">{r.name}</h1>
       <StatusBadge value={r.status} />
-      <p className="text-sm text-muted">{r.vehicle} · {r.phoneMasked} · rating {r.rating.toFixed(1)}</p>
-      {r.lat != null ? <p className="text-xs text-muted">Last operational fix {r.lat.toFixed(3)}, {r.lng?.toFixed(3)} (SIMULATED)</p> : null}
+      <p className="text-sm text-zinc-400">{r.vehicle} · {r.phoneMasked} · rating {r.rating.toFixed(1)}</p>
+      {r.lat != null ? <p className="text-xs text-zinc-400">Last operational fix {r.lat.toFixed(3)}, {r.lng?.toFixed(3)} (SIMULATED)</p> : null}
       <Panel title="Recent deliveries">
         <ul className="text-sm">
           {r.deliveries.map((d) => (
@@ -687,7 +687,7 @@ function CustomersPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Customers</h1>
-      <p className="text-sm text-muted">Only references required for operations. No full numbers or credentials.</p>
+      <p className="text-sm text-zinc-400">Only references required for operations. No full numbers or credentials.</p>
       {q.data && !q.data.ok ? <Denied error={q.data.error} /> : (
         <DataTable
           columns={[
@@ -716,11 +716,11 @@ function CustomerDetail({ id }: { id: string }) {
   const q = useQuery({ queryKey: ["customer", id], queryFn: () => loadCustomer({ data: id }) });
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const c = q.data && q.data.ok ? q.data.data : null;
-  if (!c) return <p className="text-muted">Loading…</p>;
+  if (!c) return <p className="text-zinc-400">Loading…</p>;
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">{c.displayRef}</h1>
-      <p className="text-sm text-muted">{c.phoneMasked} · {c.loyaltyTier} · risk {c.riskScore}</p>
+      <p className="text-sm text-zinc-400">{c.phoneMasked} · {c.loyaltyTier} · risk {c.riskScore}</p>
       <Panel title="Orders">
         <ul className="text-sm">
           {c.orders.map((o) => (
@@ -751,7 +751,7 @@ function DispatchPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Dispatch monitor</h1>
-      <p className="text-sm text-muted">{d?.note}</p>
+      <p className="text-sm text-zinc-400">{d?.note}</p>
       <div className="grid gap-4 lg:grid-cols-3">
         <Panel title="Unassigned">
           <ul className="space-y-2 text-sm">
@@ -780,13 +780,13 @@ function DispatchPage() {
       </div>
       <Panel title="Reassignment requests (to core matcher)">
         {(d?.requests?.length ?? 0) === 0 ? (
-          <p className="text-sm text-muted">No dispatch requests yet. Reassign from an order — this never runs a second matcher.</p>
+          <p className="text-sm text-zinc-400">No dispatch requests yet. Reassign from an order — this never runs a second matcher.</p>
         ) : (
           <ul className="space-y-2 text-sm">
             {d?.requests.map((r) => (
               <li key={r.id} className="flex justify-between gap-3">
                 <span className="font-mono text-xs">{r.orderId} → {r.riderId ?? "any"}</span>
-                <span className="text-muted">{r.status} · {r.reason}</span>
+                <span className="text-zinc-400">{r.status} · {r.reason}</span>
               </li>
             ))}
           </ul>
@@ -824,7 +824,7 @@ function ZonesPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Delivery zones</h1>
-      <p className="text-sm text-muted">Boundaries are configurable. Karimganj is not hard-coded into business logic.</p>
+      <p className="text-sm text-zinc-400">Boundaries are configurable. Karimganj is not hard-coded into business logic.</p>
       <DataTable
         columns={[
           { key: "name", label: "Zone" },
@@ -846,9 +846,9 @@ function ZonesPage() {
       <Panel title="Coverage (radius model)">
         <div className="flex flex-wrap gap-3">
           {(data?.zones ?? []).map((z) => (
-            <div key={z.id} className="grid size-28 place-items-center rounded-full border border-border bg-elevated text-center text-[10px] leading-tight">
+            <div key={z.id} className="grid size-28 place-items-center rounded-full border border-white/10 bg-elevated text-center text-[10px] leading-tight">
               {z.name}
-              <span className="block text-muted">{z.maxRadiusKm} km</span>
+              <span className="block text-zinc-400">{z.maxRadiusKm} km</span>
             </div>
           ))}
         </div>
@@ -856,7 +856,7 @@ function ZonesPage() {
       <Panel title="Add zone">
         <div className="flex flex-wrap gap-2">
           <Input placeholder="Zone name" value={name} onChange={(e) => setName(e.target.value)} />
-          <select className="h-10 rounded-[10px] border border-border bg-elevated px-2" value={selectedCity} onChange={(e) => setCityId(e.target.value)}>
+          <select className="h-10 rounded-[10px] border border-white/10 bg-elevated px-2" value={selectedCity} onChange={(e) => setCityId(e.target.value)}>
             {(data?.cities ?? []).map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -921,7 +921,7 @@ function TicketDetail({ id }: { id: string }) {
   });
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const t = q.data && q.data.ok ? q.data.data : null;
-  if (!t) return <p className="text-muted">Loading…</p>;
+  if (!t) return <p className="text-zinc-400">Loading…</p>;
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">{String(t.subject)}</h1>
@@ -933,8 +933,8 @@ function TicketDetail({ id }: { id: string }) {
       <Panel title="Thread">
         <ul className="space-y-3">
           {t.messages.map((m) => (
-            <li key={m.id} className="rounded-[16px] border border-border bg-elevated p-3 text-sm">
-              <div className="flex justify-between text-xs text-muted">
+            <li key={m.id} className="rounded-[16px] border border-white/10 bg-elevated p-3 text-sm">
+              <div className="flex justify-between text-xs text-zinc-400">
                 <span>{m.authorType} · {m.visibility === "internal" ? "internal note" : "visible"}</span>
                 <span>{relativeTime(m.at ?? undefined)}</span>
               </div>
@@ -959,12 +959,12 @@ function FinancePage() {
   const q = useQuery({ queryKey: ["finance"], queryFn: () => loadFinance() });
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const d = q.data && q.data.ok ? q.data.data : null;
-  if (!d) return <p className="text-muted">Loading…</p>;
+  if (!d) return <p className="text-zinc-400">Loading…</p>;
   const s = d.summary;
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Finance command</h1>
-      <p className="text-sm text-muted">Contribution = legitimate platform revenue − variable platform costs. Labelled ESTIMATE when derived.</p>
+      <p className="text-sm text-zinc-400">Contribution = legitimate platform revenue − variable platform costs. Labelled ESTIMATE when derived.</p>
       <div className="grid gap-3 sm:grid-cols-3">
         <MetricCard label="Commissions" value={money(s.revenue.commissions)} source={s.label} />
         <MetricCard label="Delivery revenue" value={money(s.revenue.delivery)} source={s.label} />
@@ -978,28 +978,28 @@ function FinancePage() {
       <Panel title="KingPay Autonomous Escrow & Double-Entry Ledger (100% Invariant)">
         <div className="space-y-3 text-xs">
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">Total Customer Wallet Float:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-fg">₹4,85,250.00</p>
-              <p className="mt-0.5 text-[11px] text-muted">Customer pre-funded balances</p>
+            <div className="rounded-xl border border-white/10 bg-elevated p-3">
+              <span className="text-zinc-400">Total Customer Wallet Float:</span>
+              <p className="mt-1 font-mono text-xl font-bold text-white">₹4,85,250.00</p>
+              <p className="mt-0.5 text-[11px] text-zinc-400">Customer pre-funded balances</p>
             </div>
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">Escrow Bank Trust Account:</span>
+            <div className="rounded-xl border border-white/10 bg-elevated p-3">
+              <span className="text-zinc-400">Escrow Bank Trust Account:</span>
               <p className="mt-1 font-mono text-xl font-bold text-emerald-600">₹4,85,250.00</p>
-              <p className="mt-0.5 text-[11px] text-muted">Verified 1:1 backed in bank escrow</p>
+              <p className="mt-0.5 text-[11px] text-zinc-400">Verified 1:1 backed in bank escrow</p>
             </div>
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">Double-Entry Match:</span>
+            <div className="rounded-xl border border-white/10 bg-elevated p-3">
+              <span className="text-zinc-400">Double-Entry Match:</span>
               <p className="mt-1 font-mono text-xl font-bold text-emerald-600">100% MATCH</p>
               <p className="mt-0.5 text-[11px] text-emerald-600 font-semibold">Zero Float Leakage (₹0.00)</p>
             </div>
           </div>
-          <div className="rounded-lg border border-border bg-surface p-2.5 flex items-center justify-between">
+          <div className="rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-2.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-base">🤖</span>
               <div>
-                <p className="font-semibold text-fg">Autonomous CFO Agent Status</p>
-                <p className="text-muted text-[11px]">Continuous double-entry ledger audits active. Reconciles every PG webhook with 0 math errors.</p>
+                <p className="font-semibold text-white">Autonomous CFO Agent Status</p>
+                <p className="text-zinc-400 text-[11px]">Continuous double-entry ledger audits active. Reconciles every PG webhook with 0 math errors.</p>
               </div>
             </div>
             <Button size="sm" variant="secondary" onClick={() => toast.success("Ledger invariant verified: All 4,852 wallet entries 100% balanced with bank escrow!")}>
@@ -1051,7 +1051,7 @@ function SettlementsPage() {
           <Button size="sm" variant={party === "RIDER" ? "primary" : "secondary"} onClick={() => setParty("RIDER")}>Riders</Button>
         </div>
       </header>
-      <p className="text-sm text-muted">Visibility and approval only. Actual payout execution belongs to a licensed payment integration.</p>
+      <p className="text-sm text-zinc-400">Visibility and approval only. Actual payout execution belongs to a licensed payment integration.</p>
       {q.data && !q.data.ok ? <Denied error={q.data.error} /> : (
         <DataTable
           columns={[
@@ -1100,7 +1100,7 @@ function EconomicsPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Economics & profit simulator</h1>
-      <p className="text-sm text-muted">All outputs are MODEL / ESTIMATE. 10% commission is not assumed profitable.</p>
+      <p className="text-sm text-zinc-400">All outputs are MODEL / ESTIMATE. 10% commission is not assumed profitable.</p>
       <div className="flex flex-wrap items-center gap-3">
         <label className="text-sm">Commission {bps / 100}%</label>
         <input type="range" min={0} max={1500} step={100} value={bps} onChange={(e) => setBps(Number(e.target.value))} />
@@ -1168,7 +1168,7 @@ function PromosPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Promotions</h1>
-      <p className="text-sm text-muted">Unlimited ACTIVE discounts are blocked. Cost figures are ESTIMATE. Target first-order, category, and cap before going live.</p>
+      <p className="text-sm text-zinc-400">Unlimited ACTIVE discounts are blocked. Cost figures are ESTIMATE. Target first-order, category, and cap before going live.</p>
       <DataTable
         columns={[
           { key: "name", label: "Name" },
@@ -1192,7 +1192,7 @@ function PromosPage() {
           <Input value={name} onChange={(e) => setName(e.target.value)} />
           <Input placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} />
           <Input type="number" value={cap} onChange={(e) => setCap(Number(e.target.value))} />
-          <select className="h-10 rounded-[10px] border border-border bg-elevated px-2 text-sm" value={status} onChange={(e) => setStatus(e.target.value)}>
+          <select className="h-10 rounded-[10px] border border-white/10 bg-elevated px-2 text-sm" value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="DRAFT">Draft</option>
             <option value="ACTIVE">Active</option>
           </select>
@@ -1224,7 +1224,7 @@ function LoyaltyPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Loyalty</h1>
-      <p className="text-sm text-muted">Earn rate, rupee cap, and abuse cap. Feature flag <code>loyalty</code> must be ON.</p>
+      <p className="text-sm text-zinc-400">Earn rate, rupee cap, and abuse cap. Feature flag <code>loyalty</code> must be ON.</p>
       <DataTable
         columns={[
           { key: "name", label: "Program" },
@@ -1274,7 +1274,7 @@ function MarketingPage() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl">Strategic Marketing & Growth Command</h1>
-          <p className="mt-1 text-sm text-muted">100x Growth Engine with zero-loss unit economics and viral customer loops.</p>
+          <p className="mt-1 text-sm text-zinc-400">100x Growth Engine with zero-loss unit economics and viral customer loops.</p>
         </div>
       </header>
 
@@ -1289,23 +1289,23 @@ function MarketingPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Panel title="Viral Referral Engine Performance">
           <div className="space-y-3 text-xs">
-            <div className="flex justify-between border-b border-border pb-2">
-              <span className="text-muted">Total Referral Invites Sent:</span>
+            <div className="flex justify-between border-b border-white/10 pb-2">
+              <span className="text-zinc-400">Total Referral Invites Sent:</span>
               <span className="font-semibold font-mono">1,842</span>
             </div>
-            <div className="flex justify-between border-b border-border pb-2">
-              <span className="text-muted">Friend Signup & Order Conversion:</span>
+            <div className="flex justify-between border-b border-white/10 pb-2">
+              <span className="text-zinc-400">Friend Signup & Order Conversion:</span>
               <span className="font-semibold text-emerald-600 font-mono">68.4%</span>
             </div>
-            <div className="flex justify-between border-b border-border pb-2">
-              <span className="text-muted">Average Basket Size on Referral Orders:</span>
+            <div className="flex justify-between border-b border-white/10 pb-2">
+              <span className="text-zinc-400">Average Basket Size on Referral Orders:</span>
               <span className="font-semibold font-mono">₹385</span>
             </div>
-            <div className="flex justify-between border-b border-border pb-2">
-              <span className="text-muted">Net Contribution Margin per Referral Order:</span>
+            <div className="flex justify-between border-b border-white/10 pb-2">
+              <span className="text-zinc-400">Net Contribution Margin per Referral Order:</span>
               <span className="font-semibold text-emerald-600 font-mono">+₹42.50 (Safe Profit)</span>
             </div>
-            <p className="text-[11px] text-muted italic">
+            <p className="text-[11px] text-zinc-400 italic">
               *All referral vouchers require ₹299 minimum cart value, guaranteeing the platform never loses money.
             </p>
           </div>
@@ -1313,19 +1313,19 @@ function MarketingPage() {
 
         <Panel title="Off-Peak Flash Drops & Happy Hours">
           <div className="space-y-3 text-xs">
-            <div className="rounded-lg bg-elevated p-2.5 border border-border">
+            <div className="rounded-lg bg-elevated p-2.5 border border-white/10">
               <div className="flex justify-between font-semibold">
                 <span>Snack Rush (2 PM - 6 PM)</span>
                 <span className="text-emerald-600 font-mono">+142% Order Lift</span>
               </div>
-              <p className="mt-1 text-muted text-[11px]">Drives afternoon cafe orders without cannibalizing prime dinner traffic.</p>
+              <p className="mt-1 text-zinc-400 text-[11px]">Drives afternoon cafe orders without cannibalizing prime dinner traffic.</p>
             </div>
-            <div className="rounded-lg bg-elevated p-2.5 border border-border">
+            <div className="rounded-lg bg-elevated p-2.5 border border-white/10">
               <div className="flex justify-between font-semibold">
                 <span>Midnight Feast (10 PM - 2 AM)</span>
                 <span className="text-emerald-600 font-mono">+88% Order Lift</span>
               </div>
-              <p className="mt-1 text-muted text-[11px]">Free delivery threshold subsidized by night-owl partner kitchen volume.</p>
+              <p className="mt-1 text-zinc-400 text-[11px]">Free delivery threshold subsidized by night-owl partner kitchen volume.</p>
             </div>
           </div>
         </Panel>
@@ -1335,32 +1335,32 @@ function MarketingPage() {
       <Panel title="Brand Alliance & King Club Rewards Vault (Zero Cash Burn)">
         <div className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-4 text-xs">
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">Active Partners:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-fg">8 Brands</p>
+            <div className="rounded-xl border border-white/10 bg-elevated p-3">
+              <span className="text-zinc-400">Active Partners:</span>
+              <p className="mt-1 font-mono text-xl font-bold text-white">8 Brands</p>
               <p className="mt-0.5 text-[11px] text-emerald-600 font-semibold">Amazon, Flipkart, Meesho, HP, IOCL, Vishal</p>
             </div>
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">King Coins Multiplier:</span>
+            <div className="rounded-xl border border-white/10 bg-elevated p-3">
+              <span className="text-zinc-400">King Coins Multiplier:</span>
               <p className="mt-1 font-mono text-xl font-bold text-amber-500">10 Coins / ₹1</p>
-              <p className="mt-0.5 text-[11px] text-muted">100% brand-sponsored (₹0 liability)</p>
+              <p className="mt-0.5 text-[11px] text-zinc-400">100% brand-sponsored (₹0 liability)</p>
             </div>
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">KingPay Fintech Hub:</span>
+            <div className="rounded-xl border border-white/10 bg-elevated p-3">
+              <span className="text-zinc-400">KingPay Fintech Hub:</span>
               <p className="mt-1 font-mono text-xl font-bold text-primary">Active</p>
-              <p className="mt-0.5 text-[11px] text-muted">Recharges, BBPS & Travel</p>
+              <p className="mt-0.5 text-[11px] text-zinc-400">Recharges, BBPS & Travel</p>
             </div>
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">Location Algorithm:</span>
+            <div className="rounded-xl border border-white/10 bg-elevated p-3">
+              <span className="text-zinc-400">Location Algorithm:</span>
               <p className="mt-1 font-mono text-xl font-bold text-emerald-600">Geo-Filtered</p>
-              <p className="mt-0.5 text-[11px] text-muted">Hides out-of-zone perks</p>
+              <p className="mt-0.5 text-[11px] text-zinc-400">Hides out-of-zone perks</p>
             </div>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-border text-muted">
+                <tr className="border-b border-white/10 text-zinc-400">
                   <th className="pb-2 font-medium">Alliance Partner</th>
                   <th className="pb-2 font-medium">Category</th>
                   <th className="pb-2 font-medium">Coupon / Link</th>
@@ -1372,79 +1372,79 @@ function MarketingPage() {
               <tbody className="divide-y divide-border/50">
                 <tr>
                   <td className="py-2.5 font-semibold">📦 Amazon India</td>
-                  <td className="py-2.5 text-muted">E-Commerce</td>
+                  <td className="py-2.5 text-zinc-400">E-Commerce</td>
                   <td className="py-2.5 font-mono text-primary font-bold">AMAZONKING</td>
                   <td className="py-2.5 font-mono text-emerald-600 font-bold">Up to 8% Commission</td>
-                  <td className="py-2.5 text-muted">Pan-India (ALL)</td>
+                  <td className="py-2.5 text-zinc-400">Pan-India (ALL)</td>
                   <td className="py-2.5 flex items-center gap-1.5">
                     <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Amazon Affiliate paused")}>Pause</button>
+                    <button className="rounded border border-white/10 px-1.5 py-0.5 text-[10px] hover:bg-white/5" onClick={() => toast.success("Amazon Affiliate paused")}>Pause</button>
                   </td>
                 </tr>
                 <tr>
                   <td className="py-2.5 font-semibold">🛍️ Flipkart</td>
-                  <td className="py-2.5 text-muted">E-Commerce</td>
+                  <td className="py-2.5 text-zinc-400">E-Commerce</td>
                   <td className="py-2.5 font-mono text-primary font-bold">FLIPKARTKING</td>
                   <td className="py-2.5 font-mono text-emerald-600 font-bold">Up to 7% Commission</td>
-                  <td className="py-2.5 text-muted">Pan-India (ALL)</td>
+                  <td className="py-2.5 text-zinc-400">Pan-India (ALL)</td>
                   <td className="py-2.5 flex items-center gap-1.5">
                     <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Flipkart Affiliate paused")}>Pause</button>
+                    <button className="rounded border border-white/10 px-1.5 py-0.5 text-[10px] hover:bg-white/5" onClick={() => toast.success("Flipkart Affiliate paused")}>Pause</button>
                   </td>
                 </tr>
                 <tr>
                   <td className="py-2.5 font-semibold">🛒 Meesho</td>
-                  <td className="py-2.5 text-muted">E-Commerce</td>
+                  <td className="py-2.5 text-zinc-400">E-Commerce</td>
                   <td className="py-2.5 font-mono text-primary font-bold">MEESHOKING</td>
                   <td className="py-2.5 font-mono text-emerald-600 font-bold">Flat 10% Commission</td>
-                  <td className="py-2.5 text-muted">Pan-India (ALL)</td>
+                  <td className="py-2.5 text-zinc-400">Pan-India (ALL)</td>
                   <td className="py-2.5 flex items-center gap-1.5">
                     <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Meesho Affiliate paused")}>Pause</button>
+                    <button className="rounded border border-white/10 px-1.5 py-0.5 text-[10px] hover:bg-white/5" onClick={() => toast.success("Meesho Affiliate paused")}>Pause</button>
                   </td>
                 </tr>
                 <tr>
                   <td className="py-2.5 font-semibold">⛽ HPCL & IndianOil</td>
-                  <td className="py-2.5 text-muted">Fuel</td>
+                  <td className="py-2.5 text-zinc-400">Fuel</td>
                   <td className="py-2.5 font-mono text-primary font-bold">HPFUEL50 (₹50 Off)</td>
                   <td className="py-2.5 font-mono text-emerald-600 font-bold">₹0 Cost (Co-Promo)</td>
-                  <td className="py-2.5 text-muted">Karimganj, Silchar, Sribhumi</td>
+                  <td className="py-2.5 text-zinc-400">Karimganj, Silchar, Sribhumi</td>
                   <td className="py-2.5 flex items-center gap-1.5">
                     <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Fuel alliance paused")}>Pause</button>
+                    <button className="rounded border border-white/10 px-1.5 py-0.5 text-[10px] hover:bg-white/5" onClick={() => toast.success("Fuel alliance paused")}>Pause</button>
                   </td>
                 </tr>
                 <tr>
                   <td className="py-2.5 font-semibold">🔥 IndianOil (Indane Gas)</td>
-                  <td className="py-2.5 text-muted">LPG Utility</td>
+                  <td className="py-2.5 text-zinc-400">LPG Utility</td>
                   <td className="py-2.5 font-mono text-primary font-bold">INDANE50</td>
                   <td className="py-2.5 font-mono text-emerald-600 font-bold">₹15 / booking</td>
-                  <td className="py-2.5 text-muted">Karimganj, Silchar, Sribhumi</td>
+                  <td className="py-2.5 text-zinc-400">Karimganj, Silchar, Sribhumi</td>
                   <td className="py-2.5 flex items-center gap-1.5">
                     <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Indane LPG paused")}>Pause</button>
+                    <button className="rounded border border-white/10 px-1.5 py-0.5 text-[10px] hover:bg-white/5" onClick={() => toast.success("Indane LPG paused")}>Pause</button>
                   </td>
                 </tr>
                 <tr>
                   <td className="py-2.5 font-semibold">🛒 Vishal Mega Mart</td>
-                  <td className="py-2.5 text-muted">Retail</td>
+                  <td className="py-2.5 text-zinc-400">Retail</td>
                   <td className="py-2.5 font-mono text-primary font-bold">VISHAL100 (₹100 Off)</td>
                   <td className="py-2.5 font-mono text-emerald-600 font-bold">Cross-Promo (₹0)</td>
-                  <td className="py-2.5 text-muted">Karimganj & Silchar Outlets</td>
+                  <td className="py-2.5 text-zinc-400">Karimganj & Silchar Outlets</td>
                   <td className="py-2.5 flex items-center gap-1.5">
                     <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Vishal Mega Mart paused")}>Pause</button>
+                    <button className="rounded border border-white/10 px-1.5 py-0.5 text-[10px] hover:bg-white/5" onClick={() => toast.success("Vishal Mega Mart paused")}>Pause</button>
                   </td>
                 </tr>
                 <tr>
                   <td className="py-2.5 font-semibold">💳 KingPay Fintech Hub</td>
-                  <td className="py-2.5 text-muted">Wallet & BBPS</td>
+                  <td className="py-2.5 text-zinc-400">Wallet & BBPS</td>
                   <td className="py-2.5 font-mono text-primary font-bold">/king-pay</td>
                   <td className="py-2.5 font-mono text-emerald-600 font-bold">Float + 1.8% PG Savings</td>
-                  <td className="py-2.5 text-muted">Pan-India (ALL)</td>
+                  <td className="py-2.5 text-zinc-400">Pan-India (ALL)</td>
                   <td className="py-2.5 flex items-center gap-1.5">
                     <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("KingPay paused")}>Pause</button>
+                    <button className="rounded border border-white/10 px-1.5 py-0.5 text-[10px] hover:bg-white/5" onClick={() => toast.success("KingPay paused")}>Pause</button>
                   </td>
                 </tr>
               </tbody>
@@ -1452,12 +1452,12 @@ function MarketingPage() {
           </div>
 
           {/* Location-Aware Diagnostics Section */}
-          <div className="rounded-lg border border-border bg-elevated p-3 text-xs space-y-2">
+          <div className="rounded-lg border border-white/10 bg-elevated p-3 text-xs space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-fg">🛡️ Location-Aware Smart Filter & Internal Diagnostics</span>
+              <span className="font-semibold text-white">🛡️ Location-Aware Smart Filter & Internal Diagnostics</span>
               <span className="text-[11px] text-emerald-600 font-semibold">Zero Customer Rejection Friction</span>
             </div>
-            <p className="text-muted text-[11px]">
+            <p className="text-zinc-400 text-[11px]">
               The smart algorithm dynamically matches active pin codes. If a physical merchant (like Vishal or local petrol pump) is outside the user's coverage, it is marked <span className="font-mono text-amber-600">OUT_OF_ZONE</span> internally and completely hidden from the customer. Customers only see 100% redeemable offers.
             </p>
           </div>
@@ -1469,24 +1469,24 @@ function MarketingPage() {
         <div className="space-y-5">
           <div className="grid gap-3 sm:grid-cols-4 text-xs">
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
-              <span className="text-muted">Total Grants Vault:</span>
+              <span className="text-zinc-400">Total Grants Vault:</span>
               <p className="mt-1 font-mono text-xl font-bold text-amber-600 dark:text-amber-300">₹3,74,50,000+</p>
-              <p className="mt-0.5 text-[11px] text-muted">8 Non-Dilutive Subsidies &amp; Cloud Credits</p>
+              <p className="mt-0.5 text-[11px] text-zinc-400">8 Non-Dilutive Subsidies &amp; Cloud Credits</p>
             </div>
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
-              <span className="text-muted">Direct Cash Grants:</span>
+              <span className="text-zinc-400">Direct Cash Grants:</span>
               <p className="mt-1 font-mono text-xl font-bold text-emerald-600 dark:text-emerald-300">₹1,05,00,000</p>
-              <p className="mt-0.5 text-[11px] text-muted">Assam MAS + DPIIT SISFS + Tax Holiday</p>
+              <p className="mt-0.5 text-[11px] text-zinc-400">Assam MAS + DPIIT SISFS + Tax Holiday</p>
             </div>
             <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-3">
-              <span className="text-muted">Academic Keynotes:</span>
+              <span className="text-zinc-400">Academic Keynotes:</span>
               <p className="mt-1 font-mono text-xl font-bold text-purple-600 dark:text-purple-300">4 Premier Tiers</p>
-              <p className="mt-0.5 text-[11px] text-muted">IIT Guwahati, NIT Silchar, Assam Univ, IIM CIP</p>
+              <p className="mt-0.5 text-[11px] text-zinc-400">IIT Guwahati, NIT Silchar, Assam Univ, IIM CIP</p>
             </div>
             <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3">
-              <span className="text-muted">Meta Geofenced Reach:</span>
+              <span className="text-zinc-400">Meta Geofenced Reach:</span>
               <p className="mt-1 font-mono text-xl font-bold text-blue-600 dark:text-blue-300">3,200/day @ ₹150</p>
-              <p className="mt-0.5 text-[11px] text-muted">Pins 788710, 788711, 788712 (100% Focused)</p>
+              <p className="mt-0.5 text-[11px] text-zinc-400">Pins 788710, 788711, 788712 (100% Focused)</p>
             </div>
           </div>
 
@@ -1499,7 +1499,7 @@ function MarketingPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-muted">
+                  <tr className="border-b border-white/10 text-zinc-400">
                     <th className="pb-2 font-medium">Grant / Subsidy Program</th>
                     <th className="pb-2 font-medium">Issuing Authority</th>
                     <th className="pb-2 font-medium">Cash / Credit Value</th>
@@ -1511,9 +1511,9 @@ function MarketingPage() {
                 <tbody className="divide-y divide-border/50">
                   <tr>
                     <td className="py-2.5 font-semibold">Assam Startup MAS Matching Grant</td>
-                    <td className="py-2.5 text-muted">Govt of Assam (Industries &amp; Commerce)</td>
+                    <td className="py-2.5 text-zinc-400">Govt of Assam (Industries &amp; Commerce)</td>
                     <td className="py-2.5 font-mono text-emerald-600 font-bold">₹50,00,000 Cash</td>
-                    <td className="py-2.5 text-muted">Direct Bank RTGS (Escrow)</td>
+                    <td className="py-2.5 text-zinc-400">Direct Bank RTGS (Escrow)</td>
                     <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">READY TO CLAIM</span></td>
                     <td className="py-2.5">
                       <button className="rounded bg-primary px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => toast.success("DPIIT Recognition dossier opened for Assam MAS application")}>Apply MAS</button>
@@ -1521,9 +1521,9 @@ function MarketingPage() {
                   </tr>
                   <tr>
                     <td className="py-2.5 font-semibold">DPIIT Startup India Seed Fund (SISFS)</td>
-                    <td className="py-2.5 text-muted">Ministry of Commerce &amp; Industry (DPIIT)</td>
+                    <td className="py-2.5 text-zinc-400">Ministry of Commerce &amp; Industry (DPIIT)</td>
                     <td className="py-2.5 font-mono text-emerald-600 font-bold">₹20,00,000 Cash</td>
-                    <td className="py-2.5 text-muted">Incubator Milestone Release</td>
+                    <td className="py-2.5 text-zinc-400">Incubator Milestone Release</td>
                     <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">INCUBATOR LINKED</span></td>
                     <td className="py-2.5">
                       <button className="rounded bg-primary px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => toast.success("SISFS application via IIM Calcutta Innovation Park prepared")}>Apply SISFS</button>
@@ -1531,29 +1531,29 @@ function MarketingPage() {
                   </tr>
                   <tr>
                     <td className="py-2.5 font-semibold">Section 80-IAC 3-Year 100% Tax Holiday</td>
-                    <td className="py-2.5 text-muted">Central Board of Direct Taxes (CBDT)</td>
+                    <td className="py-2.5 text-zinc-400">Central Board of Direct Taxes (CBDT)</td>
                     <td className="py-2.5 font-mono text-emerald-600 font-bold">₹35,00,000+ Savings</td>
-                    <td className="py-2.5 text-muted">100% Retained Net Profit</td>
+                    <td className="py-2.5 text-zinc-400">100% Retained Net Profit</td>
                     <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">DPIIT PRE-REQUISITE</span></td>
                     <td className="py-2.5">
-                      <button className="rounded border border-border px-2 py-1 text-[10px] hover:bg-surface-2" onClick={() => toast.info("Form 1 Section 80-IAC filing template downloaded")}>View Form</button>
+                      <button className="rounded border border-white/10 px-2 py-1 text-[10px] hover:bg-white/5" onClick={() => toast.info("Form 1 Section 80-IAC filing template downloaded")}>View Form</button>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-2.5 font-semibold">MeitY Digital Payments Subsidy</td>
-                    <td className="py-2.5 text-muted">Ministry of Electronics &amp; IT (MeitY)</td>
+                    <td className="py-2.5 text-zinc-400">Ministry of Electronics &amp; IT (MeitY)</td>
                     <td className="py-2.5 font-mono text-emerald-600 font-bold">₹0.30 / ₹2K+ Txn</td>
-                    <td className="py-2.5 text-muted">Direct PG Monthly Credit</td>
+                    <td className="py-2.5 text-zinc-400">Direct PG Monthly Credit</td>
                     <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">AUTOMATIC</span></td>
                     <td className="py-2.5">
-                      <button className="rounded border border-border px-2 py-1 text-[10px] hover:bg-surface-2" onClick={() => toast.success("MeitY PG auto-reimbursement verified")}>Verify PG</button>
+                      <button className="rounded border border-white/10 px-2 py-1 text-[10px] hover:bg-white/5" onClick={() => toast.success("MeitY PG auto-reimbursement verified")}>Verify PG</button>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-2.5 font-semibold">Google for Startups Cloud Program</td>
-                    <td className="py-2.5 text-muted">Google Cloud Platform (GCP)</td>
+                    <td className="py-2.5 text-zinc-400">Google Cloud Platform (GCP)</td>
                     <td className="py-2.5 font-mono text-blue-600 font-bold">$200,000 (₹1.66 Cr)</td>
-                    <td className="py-2.5 text-muted">GCP Billing Credit Offset</td>
+                    <td className="py-2.5 text-zinc-400">GCP Billing Credit Offset</td>
                     <td className="py-2.5"><span className="rounded bg-blue-500/20 px-2 py-0.5 text-[10px] font-bold text-blue-600">DPIIT ELIGIBLE</span></td>
                     <td className="py-2.5">
                       <button className="rounded bg-blue-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => toast.success("Google for Startups application payload generated")}>Claim GCP</button>
@@ -1561,9 +1561,9 @@ function MarketingPage() {
                   </tr>
                   <tr>
                     <td className="py-2.5 font-semibold">AWS Activate Portfolio Credits</td>
-                    <td className="py-2.5 text-muted">Amazon Web Services (AWS)</td>
+                    <td className="py-2.5 text-zinc-400">Amazon Web Services (AWS)</td>
                     <td className="py-2.5 font-mono text-amber-600 font-bold">$100,000 (₹83 Lakhs)</td>
-                    <td className="py-2.5 text-muted">AWS Compute / DB Credits</td>
+                    <td className="py-2.5 text-zinc-400">AWS Compute / DB Credits</td>
                     <td className="py-2.5"><span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-600">INCUBATOR ORG CODE</span></td>
                     <td className="py-2.5">
                       <button className="rounded bg-amber-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => toast.success("AWS Activate org package linked")}>Claim AWS</button>
@@ -1571,9 +1571,9 @@ function MarketingPage() {
                   </tr>
                   <tr>
                     <td className="py-2.5 font-semibold">Microsoft for Startups Founders Hub</td>
-                    <td className="py-2.5 text-muted">Microsoft Azure &amp; OpenAI</td>
+                    <td className="py-2.5 text-zinc-400">Microsoft Azure &amp; OpenAI</td>
                     <td className="py-2.5 font-mono text-purple-600 font-bold">$150,000 (₹1.25 Cr)</td>
-                    <td className="py-2.5 text-muted">Azure + OpenAI GPT API Credits</td>
+                    <td className="py-2.5 text-zinc-400">Azure + OpenAI GPT API Credits</td>
                     <td className="py-2.5"><span className="rounded bg-purple-500/20 px-2 py-0.5 text-[10px] font-bold text-purple-600">OPEN APPLICATION</span></td>
                     <td className="py-2.5">
                       <button className="rounded bg-purple-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => toast.success("Microsoft Founders Hub LinkedIn verification opened")}>Claim Azure</button>
@@ -1590,9 +1590,9 @@ function MarketingPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="inline-block h-2 w-2 rounded-full bg-teal-500 animate-ping" />
-                  <h3 className="font-semibold text-sm text-foreground">🛰️ Master AI Opportunity Radar (25+ Government, Trust &amp; University Calls Scanned)</h3>
+                  <h3 className="font-semibold text-sm text-white">🛰️ Master AI Opportunity Radar (25+ Government, Trust &amp; University Calls Scanned)</h3>
                 </div>
-                <p className="mt-0.5 text-muted text-[11px]">
+                <p className="mt-0.5 text-zinc-400 text-[11px]">
                   Autonomous radar auto-reserves earliest registration slots and compiles legally-audited application dossiers for direct bank payout.
                 </p>
               </div>
@@ -1633,7 +1633,7 @@ function MarketingPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-border text-muted">
+                  <tr className="border-b border-white/10 text-zinc-400">
                     <th className="pb-2 font-medium">Opportunity / Scheme</th>
                     <th className="pb-2 font-medium">Organization</th>
                     <th className="pb-2 font-medium">Direct Cash Payout</th>
@@ -1645,90 +1645,90 @@ function MarketingPage() {
                 <tbody className="divide-y divide-border/50">
                   <tr>
                     <td className="py-2 font-semibold">Assam Startup MAS Matching Scale Grant</td>
-                    <td className="py-2 text-muted">Govt of Assam &amp; IIMCIP</td>
+                    <td className="py-2 text-zinc-400">Govt of Assam &amp; IIMCIP</td>
                     <td className="py-2 font-mono text-emerald-600 font-bold">₹50,00,000 Cash</td>
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">98 / 100</Badge></td>
-                    <td className="py-2 text-muted">Rolling Quarterly</td>
+                    <td className="py-2 text-zinc-400">Rolling Quarterly</td>
                     <td className="py-2">
                       <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("Assam MAS ₹50L Dossier Generated & Ready for RTGS")}>⚡ Auto-Book</button>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-2 font-semibold">Tata Trusts Rural Livelihoods Grant</td>
-                    <td className="py-2 text-muted">Tata Trusts CSR</td>
+                    <td className="py-2 text-zinc-400">Tata Trusts CSR</td>
                     <td className="py-2 font-mono text-emerald-600 font-bold">₹35,00,000 Cash</td>
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">96 / 100</Badge></td>
-                    <td className="py-2 text-muted">Quarterly Board</td>
+                    <td className="py-2 text-zinc-400">Quarterly Board</td>
                     <td className="py-2">
                       <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("Tata Trusts ₹35L Dossier Generated")}>⚡ Auto-Book</button>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-2 font-semibold">MeitY TIDE 2.0 Scale Grant</td>
-                    <td className="py-2 text-muted">Ministry of Electronics &amp; IT</td>
+                    <td className="py-2 text-zinc-400">Ministry of Electronics &amp; IT</td>
                     <td className="py-2 font-mono text-emerald-600 font-bold">₹30,00,000 Cash</td>
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">94 / 100</Badge></td>
-                    <td className="py-2 text-muted">Quarterly Review</td>
+                    <td className="py-2 text-zinc-400">Quarterly Review</td>
                     <td className="py-2">
                       <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("MeitY TIDE ₹30L Dossier Generated")}>⚡ Auto-Book</button>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-2 font-semibold">HDFC Bank Parivartan SmartUp Grant</td>
-                    <td className="py-2 text-muted">HDFC Bank CSR</td>
+                    <td className="py-2 text-zinc-400">HDFC Bank CSR</td>
                     <td className="py-2 font-mono text-emerald-600 font-bold">₹25,00,000 Cash</td>
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">93 / 100</Badge></td>
-                    <td className="py-2 text-muted">Annual Window</td>
+                    <td className="py-2 text-zinc-400">Annual Window</td>
                     <td className="py-2">
                       <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("HDFC Parivartan ₹25L Dossier Generated")}>⚡ Auto-Book</button>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-2 font-semibold">Startup India Seed Fund Scheme (SISFS)</td>
-                    <td className="py-2 text-muted">DPIIT / Ministry of Commerce</td>
+                    <td className="py-2 text-zinc-400">DPIIT / Ministry of Commerce</td>
                     <td className="py-2 font-mono text-emerald-600 font-bold">₹20,00,000 Cash</td>
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">95 / 100</Badge></td>
-                    <td className="py-2 text-muted">Open All Year</td>
+                    <td className="py-2 text-zinc-400">Open All Year</td>
                     <td className="py-2">
                       <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("DPIIT SISFS ₹20L Dossier Generated")}>⚡ Auto-Book</button>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-2 font-semibold">MSME Innovative Idea Hackathon</td>
-                    <td className="py-2 text-muted">Ministry of MSME</td>
+                    <td className="py-2 text-zinc-400">Ministry of MSME</td>
                     <td className="py-2 font-mono text-emerald-600 font-bold">₹15,00,000 Cash</td>
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">90 / 100</Badge></td>
-                    <td className="py-2 text-muted">Annual Call</td>
+                    <td className="py-2 text-zinc-400">Annual Call</td>
                     <td className="py-2">
                       <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("MSME Hackathon ₹15L Dossier Generated")}>⚡ Auto-Book</button>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-2 font-semibold">DST NIDHI-PRAYAS Prototype Grant</td>
-                    <td className="py-2 text-muted">Dept of Science &amp; Technology</td>
+                    <td className="py-2 text-zinc-400">Dept of Science &amp; Technology</td>
                     <td className="py-2 font-mono text-emerald-600 font-bold">₹10,00,000 Cash</td>
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">92 / 100</Badge></td>
-                    <td className="py-2 text-muted">Bi-Annual Call</td>
+                    <td className="py-2 text-zinc-400">Bi-Annual Call</td>
                     <td className="py-2">
                       <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("DST NIDHI-PRAYAS ₹10L Dossier Generated")}>⚡ Auto-Book</button>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-2 font-semibold">National Startup Awards Cash Prize</td>
-                    <td className="py-2 text-muted">DPIIT / Ministry of Commerce</td>
+                    <td className="py-2 text-zinc-400">DPIIT / Ministry of Commerce</td>
                     <td className="py-2 font-mono text-emerald-600 font-bold">₹10,00,000 Cash</td>
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">99 / 100</Badge></td>
-                    <td className="py-2 text-muted">Annual Cycle</td>
+                    <td className="py-2 text-zinc-400">Annual Cycle</td>
                     <td className="py-2">
                       <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("National Startup Awards Nomination Dossier Ready")}>⚡ Auto-Book</button>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-2 font-semibold">National MSME Award for Innovation</td>
-                    <td className="py-2 text-muted">Ministry of MSME</td>
+                    <td className="py-2 text-zinc-400">Ministry of MSME</td>
                     <td className="py-2 font-mono text-emerald-600 font-bold">₹3,00,000 Cash</td>
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">97 / 100</Badge></td>
-                    <td className="py-2 text-muted">Annual Cycle</td>
+                    <td className="py-2 text-zinc-400">Annual Cycle</td>
                     <td className="py-2">
                       <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("National MSME Award Nomination Ready")}>⚡ Auto-Book</button>
                     </td>
@@ -1740,28 +1740,28 @@ function MarketingPage() {
 
           {/* Academic Keynotes & Prestige Dossier Section */}
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-xl border border-border bg-elevated p-4 text-xs space-y-3">
+            <div className="rounded-xl border border-white/10 bg-elevated p-4 text-xs space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-sm">🎓 University Keynotes &amp; Founder Prestige</h4>
                 <span className="text-[10px] font-bold uppercase text-purple-600">High Media Impact</span>
               </div>
-              <ul className="space-y-2 text-muted">
+              <ul className="space-y-2 text-zinc-400">
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">1.</span>
                   <div>
-                    <strong className="text-foreground">IIT Guwahati (E-Cell Summit):</strong> Keynote Speaker on "Decentralized Hyperlocal Food Supply Chains in Tier-2/3 India".
+                    <strong className="text-white">IIT Guwahati (E-Cell Summit):</strong> Keynote Speaker on "Decentralized Hyperlocal Food Supply Chains in Tier-2/3 India".
                   </div>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">2.</span>
                   <div>
-                    <strong className="text-foreground">NIT Silchar (TechFest Conclave):</strong> Guest of Honour on "Building 2G Offline Resilience &amp; Real-Time Dispatch in Assam".
+                    <strong className="text-white">NIT Silchar (TechFest Conclave):</strong> Guest of Honour on "Building 2G Offline Resilience &amp; Real-Time Dispatch in Assam".
                   </div>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">3.</span>
                   <div>
-                    <strong className="text-foreground">Assam University (Commerce Dept):</strong> Guest Lecture on "Zero-Loss Unit Economics vs Cash-Burning Giants".
+                    <strong className="text-white">Assam University (Commerce Dept):</strong> Guest Lecture on "Zero-Loss Unit Economics vs Cash-Burning Giants".
                   </div>
                 </li>
               </ul>
@@ -1782,12 +1782,12 @@ function MarketingPage() {
               </Button>
             </div>
 
-            <div className="rounded-xl border border-border bg-elevated p-4 text-xs space-y-3">
+            <div className="rounded-xl border border-white/10 bg-elevated p-4 text-xs space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-sm">📍 100,000x Meta &amp; Google Local Ad Engine</h4>
                 <span className="text-[10px] font-bold uppercase text-blue-600">100% Geofenced</span>
               </div>
-              <div className="space-y-1.5 text-muted">
+              <div className="space-y-1.5 text-zinc-400">
                 <p><strong>Target Pin Codes:</strong> <span className="font-mono text-primary font-bold">788710, 788711, 788712</span> (Karimganj &amp; Barak Valley Core)</p>
                 <p><strong>Daily Budget:</strong> <span className="font-mono text-emerald-600 font-bold">₹150 / day</span> (Estimated 3,200 targeted local views/day)</p>
                 <p><strong>Social Virality Loop:</strong> WhatsApp Status 24K Gold scratch cards drive 15,000+ local views at ₹0 cost.</p>
@@ -1890,7 +1890,7 @@ function CmsPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">CMS</h1>
-      <p className="text-sm text-muted">Customer, restaurant, rider, and admin surfaces. Sponsored slots are labelled and require the advertising flag.</p>
+      <p className="text-sm text-zinc-400">Customer, restaurant, rider, and admin surfaces. Sponsored slots are labelled and require the advertising flag.</p>
       <DataTable
         columns={[
           { key: "surface", label: "Surface" },
@@ -1907,7 +1907,7 @@ function CmsPage() {
       />
       <div className="flex flex-wrap gap-2">
         <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="New banner title" />
-        <select className="h-10 rounded-[10px] border border-border bg-elevated px-2 text-sm" value={surface} onChange={(e) => setSurface(e.target.value)}>
+        <select className="h-10 rounded-[10px] border border-white/10 bg-elevated px-2 text-sm" value={surface} onChange={(e) => setSurface(e.target.value)}>
           <option value="customer">Customer</option>
           <option value="restaurant">Restaurant</option>
           <option value="rider">Rider</option>
@@ -1942,7 +1942,7 @@ function AnalyticsPage() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl">Analytics</h1>
-          <p className="text-sm text-muted">Aggregated from source orders. Grain: {d?.grain}. Label: {d?.label}.</p>
+          <p className="text-sm text-zinc-400">Aggregated from source orders. Grain: {d?.grain}. Label: {d?.label}.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {(["orders", "restaurants", "riders", "finance"] as const).map((k) => (
@@ -1950,8 +1950,8 @@ function AnalyticsPage() {
           ))}
         </div>
       </header>
-      <div className="h-72 rounded-[24px] border border-border bg-surface p-4 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-muted mb-2">
+      <div className="h-72 rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-zinc-400 mb-2">
           <span>Daily Order Volume</span>
           <span>Grain: {d?.grain ?? "daily"}</span>
         </div>
@@ -1965,8 +1965,8 @@ function AnalyticsPage() {
                   className="w-full rounded-t bg-primary/80 group-hover:bg-primary transition-all cursor-pointer"
                   style={{ height: `${heightPct}%` }}
                 />
-                <span className="text-[10px] text-muted truncate max-w-full">{pt.day?.slice(5) || `D${idx + 1}`}</span>
-                <div className="absolute -top-7 opacity-0 group-hover:opacity-100 transition-opacity bg-elevated text-fg border border-border px-1.5 py-0.5 rounded text-[10px] whitespace-nowrap pointer-events-none z-10">
+                <span className="text-[10px] text-zinc-400 truncate max-w-full">{pt.day?.slice(5) || `D${idx + 1}`}</span>
+                <div className="absolute -top-7 opacity-0 group-hover:opacity-100 transition-opacity bg-elevated text-white border border-white/10 px-1.5 py-0.5 rounded text-[10px] whitespace-nowrap pointer-events-none z-10">
                   {pt.orders} orders
                 </div>
               </div>
@@ -1985,7 +1985,7 @@ function ReportsPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Reports</h1>
-      <p className="text-sm text-muted">City and status breakdowns. Grain {d?.grain}. Label {d?.label}.</p>
+      <p className="text-sm text-zinc-400">City and status breakdowns. Grain {d?.grain}. Label {d?.label}.</p>
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="By city">
           <DataTable
@@ -2018,7 +2018,7 @@ function RiskPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Fraud / risk</h1>
-      <p className="text-sm text-muted">Signals only. Do not auto-punish because a score exists.</p>
+      <p className="text-sm text-zinc-400">Signals only. Do not auto-punish because a score exists.</p>
       <DataTable
         columns={[
           { key: "subject", label: "Subject" },
@@ -2049,21 +2049,21 @@ function KycPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">KYC operations</h1>
-      <p className="text-sm text-muted">Window 4 never claims identity is verified by a third party unless a real verifier is connected. Documents are not publicly accessible.</p>
+      <p className="text-sm text-zinc-400">Window 4 never claims identity is verified by a third party unless a real verifier is connected. Documents are not publicly accessible.</p>
       {rows.map((k) => (
-        <div key={k.id} className="rounded-[20px] border border-border bg-surface p-4">
+        <div key={k.id} className="rounded-[20px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm font-medium">{k.subjectType} · {k.subjectId}</p>
             <StatusBadge value={k.status} />
           </div>
-          <p className="mt-1 text-xs text-muted">{k.notes}</p>
+          <p className="mt-1 text-xs text-zinc-400">{k.notes}</p>
           {k.documentRefs?.length ? (
-            <ul className="mt-2 text-xs text-muted">
+            <ul className="mt-2 text-xs text-zinc-400">
               {k.documentRefs.map((d) => (
                 <li key={d.ref}>Vault ref {d.ref} · {d.label} (not publicly accessible)</li>
               ))}
             </ul>
-          ) : <p className="mt-2 text-xs text-muted">No documents in vault.</p>}
+          ) : <p className="mt-2 text-xs text-zinc-400">No documents in vault.</p>}
           <div className="mt-3 flex gap-2">
             <ConfirmBar title="Mark under review" onConfirm={(notes) => act.mutate({ id: k.id, status: "UNDER_REVIEW", notes })} />
             <ConfirmBar title="Record operator review" onConfirm={(notes) => act.mutate({ id: k.id, status: "VERIFIED", notes })} />
@@ -2187,48 +2187,48 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
   return (
     <div className="space-y-6">
       {/* Executive Command Header */}
-      <header className="rounded-[24px] border border-border bg-surface p-5 shadow-xs">
+      <header className="rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <p className="text-xs uppercase tracking-[0.16em] text-muted">
+              <p className="text-xs uppercase tracking-[0.16em] text-zinc-400">
                 Order King Central Intelligence
               </p>
             </div>
             <h1 className="mt-1 font-display text-2xl sm:text-3xl">
               Master AI Command Center
             </h1>
-            <p className="mt-1 text-xs text-muted sm:text-sm">
+            <p className="mt-1 text-xs text-zinc-400 sm:text-sm">
               Governed engineering, multi-repository orchestration & operations control layer.
             </p>
           </div>
 
           {/* Quick Ecosystem & Engine Status Pill */}
           <div className="flex flex-wrap items-center gap-2">
-            <div className="rounded-[14px] border border-border bg-elevated px-3 py-1.5 text-xs">
-              <span className="text-muted">Data Mode: </span>
+            <div className="rounded-[14px] border border-white/10 bg-elevated px-3 py-1.5 text-xs">
+              <span className="text-zinc-400">Data Mode: </span>
               <span className="font-semibold text-primary">{ecosystem?.dataMode ?? "SIMULATED"}</span>
             </div>
-            <div className="rounded-[14px] border border-border bg-elevated px-3 py-1.5 text-xs">
-              <span className="text-muted">Active Engine: </span>
+            <div className="rounded-[14px] border border-white/10 bg-elevated px-3 py-1.5 text-xs">
+              <span className="text-zinc-400">Active Engine: </span>
               <span className="font-mono text-emerald-400">{provider === "auto" ? "Auto Router" : provider}</span>
             </div>
-            <div className="rounded-[14px] border border-border bg-elevated px-3 py-1.5 text-xs">
-              <span className="text-muted">Connected Repos: </span>
+            <div className="rounded-[14px] border border-white/10 bg-elevated px-3 py-1.5 text-xs">
+              <span className="text-zinc-400">Connected Repos: </span>
               <span className="font-semibold">{ecosystem?.repos?.filter((r) => r.existsOnDisk).length ?? 5} / 5</span>
             </div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-4 text-xs font-medium">
+        <div className="mt-5 flex flex-wrap gap-2 border-t border-white/10 pt-4 text-xs font-medium">
           <button
             type="button"
             onClick={() => setActiveTab("console")}
             className={cn(
               "rounded-xl px-3 py-1.5 transition-colors",
-              activeTab === "console" ? "bg-primary text-primary-foreground font-semibold" : "bg-elevated text-muted hover:text-foreground"
+              activeTab === "console" ? "bg-primary text-primary-foreground font-semibold" : "bg-elevated text-zinc-400 hover:text-white"
             )}
           >
             Engineering & Ops Console
@@ -2238,7 +2238,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
             onClick={() => setActiveTab("ecosystem")}
             className={cn(
               "rounded-xl px-3 py-1.5 transition-colors",
-              activeTab === "ecosystem" ? "bg-primary text-primary-foreground font-semibold" : "bg-elevated text-muted hover:text-foreground"
+              activeTab === "ecosystem" ? "bg-primary text-primary-foreground font-semibold" : "bg-elevated text-zinc-400 hover:text-white"
             )}
           >
             5-Repository Workspace
@@ -2248,7 +2248,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
             onClick={() => setActiveTab("backlog")}
             className={cn(
               "rounded-xl px-3 py-1.5 transition-colors",
-              activeTab === "backlog" ? "bg-primary text-primary-foreground font-semibold" : "bg-elevated text-muted hover:text-foreground"
+              activeTab === "backlog" ? "bg-primary text-primary-foreground font-semibold" : "bg-elevated text-zinc-400 hover:text-white"
             )}
           >
             Zomato-Parity Backlog
@@ -2258,7 +2258,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
             onClick={() => setActiveTab("governance")}
             className={cn(
               "rounded-xl px-3 py-1.5 transition-colors",
-              activeTab === "governance" ? "bg-primary text-primary-foreground font-semibold" : "bg-elevated text-muted hover:text-foreground"
+              activeTab === "governance" ? "bg-primary text-primary-foreground font-semibold" : "bg-elevated text-zinc-400 hover:text-white"
             )}
           >
             Governance & Audit
@@ -2268,7 +2268,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
             onClick={() => setActiveTab("growth")}
             className={cn(
               "rounded-xl px-3 py-1.5 transition-colors flex items-center gap-1.5",
-              activeTab === "growth" ? "bg-amber-500 text-black font-semibold shadow-xs" : "bg-elevated text-muted hover:text-foreground"
+              activeTab === "growth" ? "bg-amber-500 text-black font-semibold shadow-[0_0_15px_rgba(255,255,255,0.05)]" : "bg-elevated text-zinc-400 hover:text-white"
             )}
           >
             <span>🏛️</span> 10,000x Executive Growth &amp; Grants Vault
@@ -2281,9 +2281,9 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
           {/* Left Column: Specialist Selector & Presets */}
           <div className="space-y-4 lg:col-span-1">
             <Panel title="Specialist Delegation">
-              <label className="block text-xs font-medium text-muted">Active Specialist Persona</label>
+              <label className="block text-xs font-medium text-zinc-400">Active Specialist Persona</label>
               <select
-                className="mt-1.5 w-full rounded-[12px] border border-border bg-elevated px-3 py-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+                className="mt-1.5 w-full rounded-[12px] border border-white/10 bg-elevated px-3 py-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
                 value={specialistId}
                 onChange={(e) => setSpecialistId(e.target.value)}
               >
@@ -2295,12 +2295,12 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
               </select>
 
               {currentSpecialist && (
-                <div className="mt-3 rounded-[16px] border border-border bg-surface p-3 text-xs space-y-2">
+                <div className="mt-3 rounded-[16px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 text-xs space-y-2">
                   <p className="font-semibold text-primary">{currentSpecialist.title}</p>
-                  <p className="text-muted leading-relaxed">{currentSpecialist.description}</p>
+                  <p className="text-zinc-400 leading-relaxed">{currentSpecialist.description}</p>
                   <div>
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-muted">Primary Capabilities:</span>
-                    <ul className="mt-1 list-disc pl-4 space-y-0.5 text-muted">
+                    <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-400">Primary Capabilities:</span>
+                    <ul className="mt-1 list-disc pl-4 space-y-0.5 text-zinc-400">
                       {currentSpecialist.capabilities.slice(0, 3).map((cap, idx) => (
                         <li key={idx}>{cap}</li>
                       ))}
@@ -2309,10 +2309,10 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                 </div>
               )}
 
-              <div className="mt-4 pt-3 border-t border-border">
-                <label className="block text-xs font-medium text-muted">Model Engine & AI Provider</label>
+              <div className="mt-4 pt-3 border-t border-white/10">
+                <label className="block text-xs font-medium text-zinc-400">Model Engine & AI Provider</label>
                 <select
-                  className="mt-1.5 w-full rounded-[12px] border border-border bg-elevated px-3 py-2 text-xs font-medium"
+                  className="mt-1.5 w-full rounded-[12px] border border-white/10 bg-elevated px-3 py-2 text-xs font-medium"
                   value={provider}
                   onChange={(e) => setProvider(e.target.value)}
                 >
@@ -2330,43 +2330,43 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
               <div className="space-y-1.5 text-xs">
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-elevated hover:bg-surface border border-transparent hover:border-border transition-all"
+                  className="w-full text-left rounded-lg p-2 bg-elevated hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-transparent hover:border-white/10 transition-all"
                   onClick={() => runPreset("Diagnose delayed orders and analyze dispatch capacity.", "dispatch")}
                 >
                   <span className="font-medium">1. Delayed Orders & Dispatch</span>
-                  <p className="text-[11px] text-muted">Inspect active bottleneck orders and rider matching.</p>
+                  <p className="text-[11px] text-zinc-400">Inspect active bottleneck orders and rider matching.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-elevated hover:bg-surface border border-transparent hover:border-border transition-all"
+                  className="w-full text-left rounded-lg p-2 bg-elevated hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-transparent hover:border-white/10 transition-all"
                   onClick={() => runPreset("Audit financial ledger integrity, payouts and double-entry balance.", "payments")}
                 >
                   <span className="font-medium">2. Financial Ledger Audit</span>
-                  <p className="text-[11px] text-muted">Verify double-entry balance and refund limits.</p>
+                  <p className="text-[11px] text-zinc-400">Verify double-entry balance and refund limits.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-elevated hover:bg-surface border border-transparent hover:border-border transition-all"
+                  className="w-full text-left rounded-lg p-2 bg-elevated hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-transparent hover:border-white/10 transition-all"
                   onClick={() => runPreset("Inspect cross-repository git status across all 5 Order King apps.", "architect")}
                 >
                   <span className="font-medium">3. Cross-Repo Sync Inspection</span>
-                  <p className="text-[11px] text-muted">Check working tree, branch health, and recent commits.</p>
+                  <p className="text-[11px] text-zinc-400">Check working tree, branch health, and recent commits.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-elevated hover:bg-surface border border-transparent hover:border-border transition-all"
+                  className="w-full text-left rounded-lg p-2 bg-elevated hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-transparent hover:border-white/10 transition-all"
                   onClick={() => runPreset("Analyze restaurant rejection rates, offline outlets and KDS prep SLA.", "restaurant_ops")}
                 >
                   <span className="font-medium">4. Restaurant Rejection & KDS</span>
-                  <p className="text-[11px] text-muted">Examine kitchen display wait times and partner health.</p>
+                  <p className="text-[11px] text-zinc-400">Examine kitchen display wait times and partner health.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-elevated hover:bg-surface border border-transparent hover:border-border transition-all"
+                  className="w-full text-left rounded-lg p-2 bg-elevated hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-transparent hover:border-white/10 transition-all"
                   onClick={() => runPreset("Audit client identity binding: ensure riderId and customerId cannot be forged.", "security")}
                 >
                   <span className="font-medium">5. Security & Invariant Audit</span>
-                  <p className="text-[11px] text-muted">Verify RBAC boundary and untrusted input defense.</p>
+                  <p className="text-[11px] text-zinc-400">Verify RBAC boundary and untrusted input defense.</p>
                 </button>
               </div>
             </Panel>
@@ -2379,7 +2379,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("onboard_restaurant: Onboard 'Royal Biryani House' in Karimganj Central with North Indian & Biryani cuisine, 10% commission, 10:00-23:00 hours, phone 9876543210, address Main Road", "restaurant_ops")}
                 >
                   <span className="font-semibold">🏪 1-Click Onboard Restaurant</span>
-                  <p className="text-[11px] text-muted">Instantly activate new kitchen with commission & hours.</p>
+                  <p className="text-[11px] text-zinc-400">Instantly activate new kitchen with commission & hours.</p>
                 </button>
                 <button
                   type="button"
@@ -2387,7 +2387,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("onboard_rider: Onboard and KYC-verify delivery partner 'Kabir Ahmed', motorcycle, Karimganj Central, phone 9876501234, upi kabir@okaxis", "rider_ops")}
                 >
                   <span className="font-semibold">🛵 1-Click Onboard & Verify Rider</span>
-                  <p className="text-[11px] text-muted">Approve KYC, vehicle, and weekly Wednesday payouts.</p>
+                  <p className="text-[11px] text-zinc-400">Approve KYC, vehicle, and weekly Wednesday payouts.</p>
                 </button>
                 <button
                   type="button"
@@ -2395,7 +2395,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("generate_menu: Generate full menu for Royal Biryani House with authentic culinary dish images, FSSAI diet tags, and realistic market pricing", "product")}
                 >
                   <span className="font-semibold">📋 1-Click Generate AI Menu (Realistic Dish Images)</span>
-                  <p className="text-[11px] text-muted">Categorized dishes, authentic dish photos, and diet tags.</p>
+                  <p className="text-[11px] text-zinc-400">Categorized dishes, authentic dish photos, and diet tags.</p>
                 </button>
                 <button
                   type="button"
@@ -2403,7 +2403,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("auto_diagnose_and_prepare_fix: Scan delayed orders and dispatch bottlenecks, and prepare remedial fixes with owner turn-on/off approval controls", "debugger")}
                 >
                   <span className="font-semibold">🛠️ 1-Click Auto-Diagnose & Prepare Fixes</span>
-                  <p className="text-[11px] text-muted">Self-healing diagnosis with owner turn-on/off approval.</p>
+                  <p className="text-[11px] text-zinc-400">Self-healing diagnosis with owner turn-on/off approval.</p>
                 </button>
                 <button
                   type="button"
@@ -2411,7 +2411,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("generate_scheduled_report: Generate Wednesday weekly settlement statement with statutory GST, TCS, TDS, and strict tenant data isolation", "payments")}
                 >
                   <span className="font-semibold">📊 1-Click Wednesday Settlement Report</span>
-                  <p className="text-[11px] text-muted">Statutory GST/TCS/TDS reconciliation & payout statement.</p>
+                  <p className="text-[11px] text-zinc-400">Statutory GST/TCS/TDS reconciliation & payout statement.</p>
                 </button>
                 <button
                   type="button"
@@ -2419,7 +2419,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("launch_viral_referral_engine: Launch 100x viral referral booster with ₹100 friend discount (min ₹299 cart) and ₹50 referrer wallet reward with zero platform loss", "growth")}
                 >
                   <span className="font-semibold">🎁 1-Click Viral Referral Engine</span>
-                  <p className="text-[11px] text-muted">Zero-loss customer acquisition loop with ₹299 cart guardrail.</p>
+                  <p className="text-[11px] text-zinc-400">Zero-loss customer acquisition loop with ₹299 cart guardrail.</p>
                 </button>
                 <button
                   type="button"
@@ -2427,7 +2427,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("boost_fast_prep_kitchens: Reward kitchens preparing orders in <12 minutes with +35% organic ranking boost and fair 10% commission spotlight", "restaurant_ops")}
                 >
                   <span className="font-semibold">⚡ 1-Click Fast-Track Kitchen Boost</span>
-                  <p className="text-[11px] text-muted">Drive kitchens to cook OrderKing orders first before Zomato.</p>
+                  <p className="text-[11px] text-zinc-400">Drive kitchens to cook OrderKing orders first before Zomato.</p>
                 </button>
                 <button
                   type="button"
@@ -2435,7 +2435,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("reconcile_wallet_ledger: Autonomously audit double-entry ledger invariant, escrow float, and UPI deposits without human accountants", "payments")}
                 >
                   <span className="font-semibold">🤖 1-Click Autonomous CFO: Audit Wallet Ledger</span>
-                  <p className="text-[11px] text-muted">Verify 1:1 escrow match and zero float leakage across all wallets.</p>
+                  <p className="text-[11px] text-zinc-400">Verify 1:1 escrow match and zero float leakage across all wallets.</p>
                 </button>
                 <button
                   type="button"
@@ -2443,7 +2443,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("analyze_fintech_risk: Autonomously evaluate user velocity, multi-accounting, and referral loop abuse to shield platform capital", "security")}
                 >
                   <span className="font-semibold">🛡️ 1-Click Autonomous Risk: Fraud Velocity Scan</span>
-                  <p className="text-[11px] text-muted">Shield platform capital from referral abusers and velocity attacks.</p>
+                  <p className="text-[11px] text-zinc-400">Shield platform capital from referral abusers and velocity attacks.</p>
                 </button>
                 <button
                   type="button"
@@ -2451,7 +2451,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("optimize_affiliate_alliances: Autonomously evaluate click-through rates and commission yields across Amazon, Flipkart, Meesho, HPCL, and IndianOil", "growth")}
                 >
                   <span className="font-semibold">📈 1-Click Autonomous Growth: Optimize Affiliate Yields</span>
-                  <p className="text-[11px] text-muted">Maximize passive commission from Amazon, Flipkart, Meesho, and fuel partners.</p>
+                  <p className="text-[11px] text-zinc-400">Maximize passive commission from Amazon, Flipkart, Meesho, and fuel partners.</p>
                 </button>
                 <button
                   type="button"
@@ -2459,7 +2459,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("audit_customer_grievance_compliance: Autonomously audit customer complaints, SLA breaches, and statutory ombudsman escalations", "support")}
                 >
                   <span className="font-semibold">⚖️ 1-Click Autonomous Support: Customer Grievance Audit</span>
-                  <p className="text-[11px] text-muted">Auto-audit 30-min SLA breaches, disburse late compensation, and monitor statutory portals.</p>
+                  <p className="text-[11px] text-zinc-400">Auto-audit 30-min SLA breaches, disburse late compensation, and monitor statutory portals.</p>
                 </button>
                 <button
                   type="button"
@@ -2467,7 +2467,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("audit_merchant_and_rider_grievance_compliance: Autonomously audit restaurant and rider statutory grievances, insurance claims, and ombudsman escalations", "support")}
                 >
                   <span className="font-semibold">🤝 1-Click Merchant &amp; Rider Grievance Audit</span>
-                  <p className="text-[11px] text-muted">Monitor FSSAI, MSME Samadhaan, MoLE e-Shram, and TPA accident insurance claims.</p>
+                  <p className="text-[11px] text-zinc-400">Monitor FSSAI, MSME Samadhaan, MoLE e-Shram, and TPA accident insurance claims.</p>
                 </button>
                 <button
                   type="button"
@@ -2475,7 +2475,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("audit_offline_2g_settlement_sync: Autonomously verify offline 2G transaction queue, cryptographic tokens, and batch settlement integrity", "finance")}
                 >
                   <span className="font-semibold">📶 1-Click 2G &amp; Offline Batch Settlement Sync</span>
-                  <p className="text-[11px] text-muted">Verify cryptographic token queue, collision avoidance, and zero double-spend clearing.</p>
+                  <p className="text-[11px] text-zinc-400">Verify cryptographic token queue, collision avoidance, and zero double-spend clearing.</p>
                 </button>
                 <button
                   type="button"
@@ -2483,7 +2483,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("audit_loan_and_card_affiliate_commissions: Autonomously audit pre-approved loan and credit card lead conversions, tracking IDs, and partner commission payouts", "finance")}
                 >
                   <span className="font-semibold">💰 1-Click Autonomous Loan &amp; Card Commission Audit</span>
-                  <p className="text-[11px] text-muted">Reconcile Navi, Lendingkart, Hero FinCorp, and bank card lead payouts with zero leakage.</p>
+                  <p className="text-[11px] text-zinc-400">Reconcile Navi, Lendingkart, Hero FinCorp, and bank card lead payouts with zero leakage.</p>
                 </button>
                 <button
                   type="button"
@@ -2491,7 +2491,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("audit_bajaj_finance_affiliate_and_emi_leads: Autonomously audit Bajaj Finserv Insta EMI card conversions, personal loans, and commercial equipment financing leads with zero commission leakage", "finance")}
                 >
                   <span className="font-semibold">💳 1-Click Bajaj Finserv Affiliate &amp; No-Cost EMI Audit</span>
-                  <p className="text-[11px] text-muted">Reconcile 284 Bajaj leads, Insta EMI cards, equipment loans &amp; zero-leakage commission.</p>
+                  <p className="text-[11px] text-zinc-400">Reconcile 284 Bajaj leads, Insta EMI cards, equipment loans &amp; zero-leakage commission.</p>
                 </button>
                 <button
                   type="button"
@@ -2499,7 +2499,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("orchestrate_universal_pos_printer_sync: Autonomously audit and orchestrate universal POS/KOT connectors (Petpooja, UrbanPiper, POSist) and thermal printer hardware health across all restaurants", "operations")}
                 >
                   <span className="font-semibold">🖨️ 1-Click Universal POS &amp; Thermal Printer Health Audit</span>
-                  <p className="text-[11px] text-muted">Monitor 48 kitchen POS nodes (Petpooja, UrbanPiper, POSist) &amp; ESC/POS thermal printers.</p>
+                  <p className="text-[11px] text-zinc-400">Monitor 48 kitchen POS nodes (Petpooja, UrbanPiper, POSist) &amp; ESC/POS thermal printers.</p>
                 </button>
                 <button
                   type="button"
@@ -2507,7 +2507,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("run_hyper_cognitive_diagnostic_and_healing: Execute world-class autonomous self-healing, anomaly detection, real-time load balancing, and multi-model neural orchestration across all 5 OrderKing applications", "engineering")}
                 >
                   <span className="font-semibold">🧠 1-Click Hyper-Cognitive Autonomous Diagnostic &amp; Self-Healing Loop</span>
-                  <p className="text-[11px] text-muted">16-thread quantum parallel orchestration, neural fraud telemetry &amp; self-healing runtime.</p>
+                  <p className="text-[11px] text-zinc-400">16-thread quantum parallel orchestration, neural fraud telemetry &amp; self-healing runtime.</p>
                 </button>
                 <button
                   type="button"
@@ -2515,7 +2515,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("autonomous_workforce_replacement_orchestrator: Orchestrate 100% autonomous replacement of human operations staff across CFO, COO, Support, Kitchens, Menu Engineering, and Marketing", "engineering")}
                 >
                   <span className="font-semibold">🤖 1-Click Autonomous Workforce Replacement Audit</span>
-                  <p className="text-[11px] text-muted">Verify 87 replaced human staff, ₹43.5L/mo saved payroll, and 100% autonomous operations.</p>
+                  <p className="text-[11px] text-zinc-400">Verify 87 replaced human staff, ₹43.5L/mo saved payroll, and 100% autonomous operations.</p>
                 </button>
                 <button
                   type="button"
@@ -2523,7 +2523,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("autonomous_mind_reader_telemetry: Real-time telemetry monitoring of 10,000x customer mind-reader craving accuracy, conversion uplift, and click-through rates", "operations")}
                 >
                   <span className="font-semibold">🎯 1-Click Mind-Reader Craving Telemetry &amp; Accuracy Audit</span>
-                  <p className="text-[11px] text-muted">Monitor 99.1% craving accuracy, +28.4% quick-add conversion uplift &amp; cart drop-off reduction.</p>
+                  <p className="text-[11px] text-zinc-400">Monitor 99.1% craving accuracy, +28.4% quick-add conversion uplift &amp; cart drop-off reduction.</p>
                 </button>
                 <button
                   type="button"
@@ -2531,7 +2531,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("autonomous_revenue_and_affiliate_maximizer: Autonomously audit and tune all affiliate funnels (loans, fuel cards, insurance, bill payments) to maximize owner revenue with zero liability", "finance")}
                 >
                   <span className="font-semibold">💸 1-Click 1000x Affiliate Revenue Maximization Audit</span>
-                  <p className="text-[11px] text-muted">Audit ₹4.41L/mo projected yield, Bajaj + HPCL/IOCL/BPCL alliances, and 100% zero-liability LSP compliance.</p>
+                  <p className="text-[11px] text-zinc-400">Audit ₹4.41L/mo projected yield, Bajaj + HPCL/IOCL/BPCL alliances, and 100% zero-liability LSP compliance.</p>
                 </button>
                 <button
                   type="button"
@@ -2539,7 +2539,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("autonomous_revenue_and_affiliate_maximizer: Autonomously audit HPCL DriveTrack Plus, IndianOil XTRAPOWER fleet volume rebates, and co-branded fuel card CPAs", "finance")}
                 >
                   <span className="font-semibold">⛽ 1-Click Fuel &amp; Petro Alliances Telemetry Audit</span>
-                  <p className="text-[11px] text-muted">Track ₹95K/mo fuel yield, 380 active rider fleet cards, ₹7.6 Cr insurance cover, and fuel card CPAs.</p>
+                  <p className="text-[11px] text-zinc-400">Track ₹95K/mo fuel yield, 380 active rider fleet cards, ₹7.6 Cr insurance cover, and fuel card CPAs.</p>
                 </button>
                 <button
                   type="button"
@@ -2547,7 +2547,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("autonomous_customer_addiction_and_gamification_director: Control King Coins burn rates, jackpot prize distributions, streak incentives, and user retention loops", "operations")}
                 >
                   <span className="font-semibold">🎰 1-Click Customer Addiction &amp; Gamification Telemetry</span>
-                  <p className="text-[11px] text-muted">Monitor 3,840 daily streaks, jackpot spins, King Coins food burns, and VIP tier lifts.</p>
+                  <p className="text-[11px] text-zinc-400">Monitor 3,840 daily streaks, jackpot spins, King Coins food burns, and VIP tier lifts.</p>
                 </button>
                 <button
                   type="button"
@@ -2555,7 +2555,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("autonomous_universal_hardware_and_pos_director: Orchestrate cross-restaurant printer connectivity, POS health, and automated self-healing across all partner kitchens", "operations")}
                 >
                   <span className="font-semibold">🖨️ 1-Click Universal Hardware &amp; POS Auto-Orchestrator</span>
-                  <p className="text-[11px] text-muted">Verify 48 kitchens, Petpooja/UrbanPiper sync, and auto-reconnecting socket self-healing.</p>
+                  <p className="text-[11px] text-zinc-400">Verify 48 kitchens, Petpooja/UrbanPiper sync, and auto-reconnecting socket self-healing.</p>
                 </button>
                 <button
                   type="button"
@@ -2563,7 +2563,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("founder_private_cash_vault_telemetry: Audit gross customer bank inflows, restaurant and rider payouts, statutory tax reserves, and net retained cash float", "finance")}
                 >
                   <span className="font-semibold">🔒 1-Click Founder Private Cash Vault &amp; Retained Float Audit</span>
-                  <p className="text-[11px] text-muted">Confidential: Audit ₹24.25L gross bank inflow, partner disbursements, tax reserves, and net owner cash float.</p>
+                  <p className="text-[11px] text-zinc-400">Confidential: Audit ₹24.25L gross bank inflow, partner disbursements, tax reserves, and net owner cash float.</p>
                 </button>
                 <button
                   type="button"
@@ -2571,7 +2571,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("founder_profit_maximizer_and_tax_arbitrage: Optimize GST Input Tax Credit (ITC) offsetting, retain 100% of breakage and glitch float, and benchmark Zomato-beating partner take-rates", "finance")}
                 >
                   <span className="font-semibold">💎 1-Click AI Profit Maximizer &amp; GST Working Capital Arbitrage</span>
-                  <p className="text-[11px] text-muted">Confidential: Audit breakage float retention, zero net cash GST via Section 16 &amp; 17 ITC, and +13.3% Zomato partner profit moat.</p>
+                  <p className="text-[11px] text-zinc-400">Confidential: Audit breakage float retention, zero net cash GST via Section 16 &amp; 17 ITC, and +13.3% Zomato partner profit moat.</p>
                 </button>
                 <button
                   type="button"
@@ -2579,115 +2579,115 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("autonomous_legal_income_discovery_engine: Screen and model 12-stream legal revenue architecture, autonomous income discovery, and mutual participant financial advantage", "finance")}
                 >
                   <span className="font-semibold">⚡ 1-Click Autonomous Legal Income Discovery &amp; Profit Maximizer</span>
-                  <p className="text-[11px] text-muted">Confidential: Audit 12-stream revenue engine, EV swapping, APMC spice procurement, and 85x competitor free cash flow multiplier.</p>
+                  <p className="text-[11px] text-zinc-400">Confidential: Audit 12-stream revenue engine, EV swapping, APMC spice procurement, and 85x competitor free cash flow multiplier.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/15 via-primary/15 to-amber-500/15 hover:opacity-90 border-2 border-primary/30 text-foreground transition-all"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/15 via-primary/15 to-amber-500/15 hover:opacity-90 border-2 border-primary/30 text-white transition-all"
                   onClick={() => runPreset("autonomous_maximum_force_profit_orchestrator: Execute maximum force 10x-100x legal profit generation, 14 revenue streams synchronization, 2G resilience verification, and mutual participant advantage auditing", "finance")}
                 >
                   <span className="font-semibold text-primary">🚀 1-Click Maximum Force 10x Profit &amp; 2G Resilience Orchestrator</span>
-                  <p className="text-[11px] text-muted">Confidential: 14 synchronized revenue streams, 100x higher free cash flow than Zomato, 0ms 2G cache, and zero legal liability.</p>
+                  <p className="text-[11px] text-zinc-400">Confidential: 14 synchronized revenue streams, 100x higher free cash flow than Zomato, 0ms 2G cache, and zero legal liability.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-primary/20 to-purple-500/20 hover:opacity-90 border-2 border-amber-500/40 text-foreground transition-all shadow-xs"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-primary/20 to-purple-500/20 hover:opacity-90 border-2 border-amber-500/40 text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   onClick={() => runPreset("autonomous_100x_profit_and_addiction_director: Master director orchestrating 100x legal profit generation across 18 revenue streams, viral bill-splits, Soundbox SaaS, 2G resilience, and user addiction loops", "finance")}
                 >
                   <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
                     <span>👑</span> 1-Click Autonomous 100x Profit &amp; Addiction Director
                   </span>
-                  <p className="text-[11px] text-muted">Confidential: 18 synchronized revenue streams, viral UPI bill splits, Soundbox SaaS, and 100x free cash flow moat.</p>
+                  <p className="text-[11px] text-zinc-400">Confidential: 18 synchronized revenue streams, viral UPI bill splits, Soundbox SaaS, and 100x free cash flow moat.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-primary/20 hover:opacity-90 border-2 border-emerald-500/40 text-foreground transition-all shadow-xs"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-primary/20 hover:opacity-90 border-2 border-emerald-500/40 text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   onClick={() => runPreset("autonomous_go_live_production_director: Master director evaluating 0-100% Go-Live readiness, auditing Cloud DB, Payment Gateway, SMS OTP DLT, Google Maps, Legal/Banking/GST/FSSAI, and enforcing capacity controls", "settings")}
                 >
                   <span className="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
                     <span>🎯</span> 1-Click Autonomous Go-Live Production Director
                   </span>
-                  <p className="text-[11px] text-muted">Evaluate 0-100% Go-Live Readiness, audit Cloud DB, PG, SMS, Maps, GST/FSSAI, and manage Pilot vs Pan-India capacity.</p>
+                  <p className="text-[11px] text-zinc-400">Evaluate 0-100% Go-Live Readiness, audit Cloud DB, PG, SMS, Maps, GST/FSSAI, and manage Pilot vs Pan-India capacity.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-indigo-500/20 via-blue-500/20 to-primary/20 hover:opacity-90 border-2 border-indigo-500/40 text-foreground transition-all shadow-xs"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-indigo-500/20 via-blue-500/20 to-primary/20 hover:opacity-90 border-2 border-indigo-500/40 text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   onClick={() => runPreset("autonomous_night_safety_and_long_distance_director: Master director managing 5-18 km long-distance delivery tiers, night safety curfew (11 PM - 6 AM), town center locking, and rider incentive protection", "settings")}
                 >
                   <span className="font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5">
                     <span>🌙</span> 1-Click Autonomous Night Safety &amp; Long-Distance Director
                   </span>
-                  <p className="text-[11px] text-muted">Govern 5-18 km long-distance tiers, enforce 11 PM - 6 AM night curfew (3.5 km lock), and verify rider safety &amp; payout gates.</p>
+                  <p className="text-[11px] text-zinc-400">Govern 5-18 km long-distance tiers, enforce 11 PM - 6 AM night curfew (3.5 km lock), and verify rider safety &amp; payout gates.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-rose-500/20 via-pink-500/20 to-primary/20 hover:opacity-90 border-2 border-rose-500/40 text-foreground transition-all shadow-xs"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-rose-500/20 via-pink-500/20 to-primary/20 hover:opacity-90 border-2 border-rose-500/40 text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   onClick={() => runPreset("autonomous_prestige_subsidies_and_viral_growth_director: Master director orchestrating Assam/Govt of India startup subsidies, cloud grants ($350K), national founder awards, and 100x location-forced viral social loops", "promotions")}
                 >
                   <span className="font-bold text-rose-900 dark:text-rose-200 flex items-center gap-1.5">
                     <span>🏆</span> 1-Click Autonomous Prestige, Subsidies &amp; Viral Growth Director
                   </span>
-                  <p className="text-[11px] text-muted">Claim ₹3.74 Cr in cloud/Govt subsidies, apply for National/Assam awards, and trigger 100x location-forced social media virality.</p>
+                  <p className="text-[11px] text-zinc-400">Claim ₹3.74 Cr in cloud/Govt subsidies, apply for National/Assam awards, and trigger 100x location-forced social media virality.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-rose-500/20 to-purple-500/20 hover:opacity-90 border-2 border-amber-500/40 text-foreground transition-all shadow-xs"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-rose-500/20 to-purple-500/20 hover:opacity-90 border-2 border-amber-500/40 text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   onClick={() => runPreset("autonomous_omni_prestige_grant_and_hyper_growth_director: Master director orchestrating ₹3.74 Cr+ government grants, university keynote invitations (IIT/NIT), national awards, and 100,000x Meta/Google local geofence domination", "promotions")}
                 >
                   <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
                     <span>👑</span> 1-Click Omni-Prestige, ₹3.74 Cr Grants &amp; 100,000x Hyper-Growth Director
                   </span>
-                  <p className="text-[11px] text-muted">Claim ₹3.74 Cr+ in non-dilutive government &amp; cloud cash, university keynote invitations (IIT Guwahati, NIT Silchar), and 100,000x Meta/Google ad domination.</p>
+                  <p className="text-[11px] text-zinc-400">Claim ₹3.74 Cr+ in non-dilutive government &amp; cloud cash, university keynote invitations (IIT Guwahati, NIT Silchar), and 100,000x Meta/Google ad domination.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-teal-500/20 via-cyan-500/20 to-primary/20 hover:opacity-90 border-2 border-teal-500/40 text-foreground transition-all shadow-xs"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-teal-500/20 via-cyan-500/20 to-primary/20 hover:opacity-90 border-2 border-teal-500/40 text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   onClick={() => runPreset("autonomous_opportunity_radar_and_auto_booking_director: Master AI Opportunity Radar scanning 25+ real Indian Government, University, NGO, Trust grants & awards, auto-generating application dossiers and early-bird reservations", "promotions")}
                 >
                   <span className="font-bold text-teal-900 dark:text-teal-200 flex items-center gap-1.5">
                     <span>🛰️</span> 1-Click Master AI Opportunity Radar &amp; Auto-Booking Director
                   </span>
-                  <p className="text-[11px] text-muted">Scan 25+ real schemes (DST NIDHI, MSME Idea, MeitY TIDE, Tata Trusts), auto-reserve early slots, and generate ready-to-disburse application dossiers.</p>
+                  <p className="text-[11px] text-zinc-400">Scan 25+ real schemes (DST NIDHI, MSME Idea, MeitY TIDE, Tata Trusts), auto-reserve early slots, and generate ready-to-disburse application dossiers.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 hover:opacity-90 border-2 border-blue-500/40 text-foreground transition-all shadow-xs"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 hover:opacity-90 border-2 border-blue-500/40 text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   onClick={() => runPreset("autonomous_meta_and_google_ad_domination_orchestrator: Master AI Ad Domination Engine orchestrating Meta Marketing API v21.0 campaigns, Google Local PMax, WhatsApp 24K Gold status loops, and hyper-local geofenced reach", "promotions")}
                 >
                   <span className="font-bold text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
                     <span>🚀</span> 1-Click Meta &amp; Google 100,000x Ad Domination Orchestrator
                   </span>
-                  <p className="text-[11px] text-muted">Direct Meta v21.0 &amp; Google PMax API payloads, 5 km geofencing @ ₹150/day, 3 viral reels scripts, and 50,000 daily WhatsApp status views.</p>
+                  <p className="text-[11px] text-zinc-400">Direct Meta v21.0 &amp; Google PMax API payloads, 5 km geofencing @ ₹150/day, 3 viral reels scripts, and 50,000 daily WhatsApp status views.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-green-500/20 hover:opacity-90 border-2 border-emerald-500/40 text-foreground transition-all shadow-xs"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-green-500/20 hover:opacity-90 border-2 border-emerald-500/40 text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   onClick={() => runPreset("autonomous_strategic_nearest_rider_and_fleet_orchestrator: 1000x Strategic Nearest-Rider Proximity Engine: Calibrate GPS proximity matrix, execute sequential cascading dispatch with escalated bounty (+₹10, +₹20), and optimize fleet load balancing", "dispatch")}
                 >
                   <span className="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
                     <span>🎯</span> 1-Click 1000x Strategic Nearest-Rider &amp; Fleet Dispatch Engine
                   </span>
-                  <p className="text-[11px] text-muted">Dispatches exclusively to the single closest online rider via GPS distance. Cascades decline fallbacks with dynamic bounty surge, eliminating random allocation.</p>
+                  <p className="text-[11px] text-zinc-400">Dispatches exclusively to the single closest online rider via GPS distance. Cascades decline fallbacks with dynamic bounty surge, eliminating random allocation.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-yellow-500/20 hover:opacity-90 border-2 border-amber-500/40 text-foreground transition-all shadow-xs"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-yellow-500/20 hover:opacity-90 border-2 border-amber-500/40 text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   onClick={() => runPreset("autonomous_off_peak_demand_stimulator_and_revenue_multiplier: 1000x Dynamic Off-Peak Demand Stimulator: Activate 2-5:30 PM and late-night low-sales stimulator, prioritize under ₹99/₹149 high-demand items, and maximize kitchen order volume", "pricing")}
                 >
                   <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
                     <span>⚡</span> 1-Click 1000x Dynamic Off-Peak Demand &amp; Revenue Multiplier
                   </span>
-                  <p className="text-[11px] text-muted">Analyzes hourly order velocity in Karimganj, dynamically promotes dishes under ₹99/₹149 during low-sales hours, and doubles kitchen conversion.</p>
+                  <p className="text-[11px] text-zinc-400">Analyzes hourly order velocity in Karimganj, dynamically promotes dishes under ₹99/₹149 during low-sales hours, and doubles kitchen conversion.</p>
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-indigo-500/20 hover:opacity-90 border-2 border-violet-500/40 text-foreground transition-all shadow-xs"
+                  className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-indigo-500/20 hover:opacity-90 border-2 border-violet-500/40 text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   onClick={() => runPreset("autonomous_planetary_multi_repo_watchdog_and_self_healing_core: 1000x Autonomous Multi-Repo Self-Healing Watchdog: Scan all 5 physical repositories, verify schema parity, enforce canonical contracts, and maintain 100% planetary uptime", "engineers")}
                 >
                   <span className="font-bold text-violet-900 dark:text-violet-200 flex items-center gap-1.5">
                     <span>🪐</span> 1-Click Planetary Multi-Repo Watchdog &amp; Self-Healing Core
                   </span>
-                  <p className="text-[11px] text-muted">Scans all 5 ecosystem repositories (HDmaster, orderking-customers, orderking-riders, OrderKing-partners, Apps-integration), self-heals contract drifts, and guarantees planetary-grade stability.</p>
+                  <p className="text-[11px] text-zinc-400">Scans all 5 ecosystem repositories (HDmaster, orderking-customers, orderking-riders, OrderKing-partners, Apps-integration), self-heals contract drifts, and guarantees planetary-grade stability.</p>
                 </button>
               </div>
             </Panel>
@@ -2707,7 +2707,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                     className="w-full text-sm font-sans"
                   />
                   <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-[11px] text-muted">
+                    <p className="text-[11px] text-zinc-400">
                       Operating under governed least-privilege. High-risk writes require confirmation.
                     </p>
                     <Button
@@ -2722,32 +2722,32 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
 
                 {/* Conversation & Execution Log */}
                 {log.length === 0 ? (
-                  <div className="rounded-[16px] border border-dashed border-border py-12 text-center text-muted">
+                  <div className="rounded-[16px] border border-dashed border-white/10 py-12 text-center text-zinc-400">
                     <p className="text-sm font-medium">Ready for Command</p>
                     <p className="text-xs mt-1">Select a specialist and dispatch an investigation or engineering task.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {log.map((entry) => (
-                      <div key={entry.id} className="rounded-[20px] border border-border bg-surface p-4 space-y-3">
+                      <div key={entry.id} className="rounded-[20px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3">
                         {/* Entry Header */}
-                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2">
                           <div className="flex items-center gap-2">
                             <Badge tone="default">{entry.specialist?.name ?? "Specialist"}</Badge>
-                            <span className="font-mono text-[11px] text-muted">{entry.provider} / {entry.model}</span>
+                            <span className="font-mono text-[11px] text-zinc-400">{entry.provider} / {entry.model}</span>
                           </div>
-                          <span className="text-[11px] text-muted">{entry.timestamp}</span>
+                          <span className="text-[11px] text-zinc-400">{entry.timestamp}</span>
                         </div>
 
                         {/* Prompt */}
-                        <div className="rounded-lg bg-elevated p-2.5 text-xs text-muted font-medium">
-                          <span className="text-foreground">Command:</span> {entry.q}
+                        <div className="rounded-lg bg-elevated p-2.5 text-xs text-zinc-400 font-medium">
+                          <span className="text-white">Command:</span> {entry.q}
                         </div>
 
                         {/* Tool Executions Badge Strip */}
                         {entry.toolCalls && entry.toolCalls.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 items-center">
-                            <span className="text-[10px] uppercase font-mono text-muted mr-1">Tools:</span>
+                            <span className="text-[10px] uppercase font-mono text-zinc-400 mr-1">Tools:</span>
                             {entry.toolCalls.map((t, idx) => (
                               <span
                                 key={idx}
@@ -2776,8 +2776,8 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                             {entry.pendingApprovals.map((app, idx) => (
                               <div key={idx} className="text-xs flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-amber-500/20">
                                 <div>
-                                  <p className="font-mono font-medium text-foreground">{app.toolName} ({app.risk})</p>
-                                  <p className="text-[11px] text-muted">{app.description}</p>
+                                  <p className="font-mono font-medium text-white">{app.toolName} ({app.risk})</p>
+                                  <p className="text-[11px] text-zinc-400">{app.description}</p>
                                   <pre className="mt-1 text-[10px] font-mono bg-elevated p-1.5 rounded">
                                     {JSON.stringify(app.arguments)}
                                   </pre>
@@ -2795,15 +2795,15 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                         )}
 
                         {/* Structured Output Body */}
-                        <div className="text-sm leading-relaxed whitespace-pre-wrap font-sans text-foreground">
+                        <div className="text-sm leading-relaxed whitespace-pre-wrap font-sans text-white">
                           {entry.a}
                         </div>
 
                         {/* Evidence Tags */}
                         {entry.evidence && entry.evidence.length > 0 && (
-                          <div className="flex flex-wrap gap-1 pt-2 border-t border-border">
+                          <div className="flex flex-wrap gap-1 pt-2 border-t border-white/10">
                             {entry.evidence.map((ev, idx) => (
-                              <span key={idx} className="rounded-full bg-elevated px-2 py-0.5 text-[10px] font-mono text-muted">
+                              <span key={idx} className="rounded-full bg-elevated px-2 py-0.5 text-[10px] font-mono text-zinc-400">
                                 #{ev}
                               </span>
                             ))}
@@ -2823,20 +2823,20 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
       {activeTab === "ecosystem" && (
         <div className="space-y-4">
           <Panel title="Connected Order King Repositories">
-            <p className="text-xs text-muted mb-4">
+            <p className="text-xs text-zinc-400 mb-4">
               Master AI coordinates across all 5 physical repositories in the ecosystem, maintaining canonical contract integrity.
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {(ecosystem?.repos ?? []).map((repo) => (
-                <div key={repo.repo} className="rounded-[16px] border border-border bg-surface p-4 space-y-2">
+                <div key={repo.repo} className="rounded-[16px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-sm font-semibold">{repo.repo}</span>
                     <Badge tone={repo.existsOnDisk ? "success" : "danger"}>
                       {repo.existsOnDisk ? "on-disk" : "missing"}
                     </Badge>
                   </div>
-                  <div className="text-xs text-muted space-y-1">
-                    <p>Branch: <span className="font-mono text-foreground">{repo.branch}</span></p>
+                  <div className="text-xs text-zinc-400 space-y-1">
+                    <p>Branch: <span className="font-mono text-white">{repo.branch}</span></p>
                     <p>Working Tree: <span className="font-mono">{repo.isClean ? "clean" : "modified"}</span></p>
                     {repo.changedFiles && repo.changedFiles.length > 0 && (
                       <p className="text-[11px] text-amber-400">
@@ -2866,15 +2866,15 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
       {activeTab === "backlog" && (
         <div className="space-y-4">
           <Panel title="Order King Zomato-Parity Engineering Roadmap">
-            <p className="text-xs text-muted mb-4">
+            <p className="text-xs text-zinc-400 mb-4">
               Canonical engineering milestones tracked by the Master AI. Every item requires verified implementation, automated test passes, and runtime evidence.
             </p>
-            <div className="divide-y divide-border rounded-[16px] border border-border bg-surface overflow-hidden">
+            <div className="divide-y divide-border rounded-[16px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] overflow-hidden">
               {ZOMATO_PARITY_ITEMS.map((item, idx) => (
                 <div key={idx} className="flex flex-wrap items-center justify-between gap-3 p-3 text-xs">
                   <div className="flex items-center gap-2.5">
                     <span className="font-mono font-bold text-primary">{item.tier}</span>
-                    <span className="font-medium text-foreground">{item.title}</span>
+                    <span className="font-medium text-white">{item.title}</span>
                   </div>
                   <Badge
                     tone={
@@ -2899,21 +2899,21 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
         <div className="space-y-4">
           <Panel title="Master AI Operating Governance">
             <div className="grid gap-4 sm:grid-cols-3 text-xs">
-              <div className="rounded-[16px] border border-border bg-surface p-4 space-y-2">
-                <h4 className="font-semibold text-foreground">1. Least Privilege Boundary</h4>
-                <p className="text-muted leading-relaxed">
+              <div className="rounded-[16px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-2">
+                <h4 className="font-semibold text-white">1. Least Privilege Boundary</h4>
+                <p className="text-zinc-400 leading-relaxed">
                   Master AI respects the caller&apos;s workspace role. Read actions run freely; write/modify operations require elevated permissions and high-risk confirmation.
                 </p>
               </div>
-              <div className="rounded-[16px] border border-border bg-surface p-4 space-y-2">
-                <h4 className="font-semibold text-foreground">2. Financial Immutability</h4>
-                <p className="text-muted leading-relaxed">
+              <div className="rounded-[16px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-2">
+                <h4 className="font-semibold text-white">2. Financial Immutability</h4>
+                <p className="text-zinc-400 leading-relaxed">
                   Commission bps, payment fee bps, and rider base pay can never be altered by CEO or AI personas without <code>modify_financial_settings</code> grant.
                 </p>
               </div>
-              <div className="rounded-[16px] border border-border bg-surface p-4 space-y-2">
-                <h4 className="font-semibold text-foreground">3. Append-Only Audit Trail</h4>
-                <p className="text-muted leading-relaxed">
+              <div className="rounded-[16px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-2">
+                <h4 className="font-semibold text-white">3. Append-Only Audit Trail</h4>
+                <p className="text-zinc-400 leading-relaxed">
                   All AI queries, tool executions, approval decisions, and errors are permanently recorded to <code>audit_log</code>. There is no edit or delete API.
                 </p>
               </div>
@@ -2983,7 +2983,7 @@ function EmployeesPage() {
           email: e.email,
           role: (
             <select
-              className="h-9 max-w-[10rem] rounded-[8px] border border-border bg-elevated px-1 text-xs"
+              className="h-9 max-w-[10rem] rounded-[8px] border border-white/10 bg-elevated px-1 text-xs"
               defaultValue={e.roleKey}
               onChange={(ev) => {
                 const reason = window.prompt("Reason to change role");
@@ -2997,7 +2997,7 @@ function EmployeesPage() {
           ),
           city: (
             <select
-              className="h-9 max-w-[9rem] rounded-[8px] border border-border bg-elevated px-1 text-xs"
+              className="h-9 max-w-[9rem] rounded-[8px] border border-white/10 bg-elevated px-1 text-xs"
               defaultValue={e.cityId ?? ""}
               onChange={(ev) => {
                 const reason = window.prompt("Reason to change city scope");
@@ -3039,12 +3039,12 @@ function EmployeesPage() {
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
           <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <select className="h-10 rounded-[10px] border border-border bg-elevated px-2" value={role} onChange={(e) => setRole(e.target.value)}>
+          <select className="h-10 rounded-[10px] border border-white/10 bg-elevated px-2" value={role} onChange={(e) => setRole(e.target.value)}>
             {SYSTEM_ROLES.map((r) => (
               <option key={r} value={r}>{ROLE_LABELS[r] ?? r}</option>
             ))}
           </select>
-          <select className="h-10 rounded-[10px] border border-border bg-elevated px-2" value={cityId} onChange={(e) => setCityId(e.target.value)}>
+          <select className="h-10 rounded-[10px] border border-white/10 bg-elevated px-2" value={cityId} onChange={(e) => setCityId(e.target.value)}>
             <option value="">All cities</option>
             {cityRows.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
@@ -3057,7 +3057,7 @@ function EmployeesPage() {
               <button
                 key={p}
                 type="button"
-                className={`rounded-full border px-2 py-1 text-[10px] ${custom.includes(p) ? "border-primary bg-elevated" : "border-border text-muted"}`}
+                className={`rounded-full border px-2 py-1 text-[10px] ${custom.includes(p) ? "border-primary bg-elevated" : "border-white/10 text-zinc-400"}`}
                 onClick={() => setCustom((c) => (c.includes(p) ? c.filter((x) => x !== p) : [...c, p]))}
               >
                 {p}
@@ -3066,7 +3066,7 @@ function EmployeesPage() {
           </div>
         ) : null}
         <Button className="mt-3" disabled={!email || !name} onClick={() => invite.mutate()}>Send invite</Button>
-        <p className="mt-2 text-xs text-muted">They sign in with the same email. You are {emp?.email}. {PERMISSIONS.length} permissions in catalog. MFA is an operator record until an authenticator is connected.</p>
+        <p className="mt-2 text-xs text-zinc-400">They sign in with the same email. You are {emp?.email}. {PERMISSIONS.length} permissions in catalog. MFA is an operator record until an authenticator is connected.</p>
       </Panel>
     </div>
   );
@@ -3104,7 +3104,7 @@ function BrandingPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Central branding</h1>
-      <p className="text-sm text-muted">Change identity without rebuilding business logic.</p>
+      <p className="text-sm text-zinc-400">Change identity without rebuilding business logic.</p>
       <div className="grid gap-3 sm:grid-cols-2">
         {fields.map(([k, label]) => (
           <Field key={k} label={label}>
@@ -3134,7 +3134,7 @@ function FlagsPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Feature flags</h1>
-      <ul className="divide-y divide-border rounded-[24px] border border-border bg-surface">
+      <ul className="divide-y divide-border rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         {keys.map((key) => {
           const row = rows.find((r) => r.key === key);
           const on = row?.state === "ON";
@@ -3142,7 +3142,7 @@ function FlagsPage() {
             <li key={key} className="flex items-center justify-between gap-3 px-4 py-3">
               <div>
                 <p className="font-mono text-sm">{key}</p>
-                <p className="text-xs text-muted">{row?.notes ?? "Central flag"}</p>
+                <p className="text-xs text-zinc-400">{row?.notes ?? "Central flag"}</p>
               </div>
               <Button
                 size="sm"
@@ -3170,7 +3170,7 @@ function SettingsPage() {
   const data = q.data && q.data.ok ? q.data.data : null;
   const cur = s ?? data;
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
-  if (!cur) return <p className="text-muted">Loading…</p>;
+  if (!cur) return <p className="text-zinc-400">Loading…</p>;
   const set = (k: keyof PlatformSettings, v: number | boolean) =>
     setS({ ...cur, [k]: v });
   return (
@@ -3215,7 +3215,7 @@ function SettingsPage() {
             Autonomous 24/7 Radius Control
           </span>
         </div>
-        <p className="text-xs text-muted">
+        <p className="text-xs text-zinc-400">
           Dynamic radius schedule: <strong>Day (04:00–18:00)</strong> up to 25 km · <strong>Evening (18:00–23:00)</strong> restricted to 7–8 km · <strong>Night Curfew (23:00–04:00)</strong> restricted to 3–4 km town center for rider safety &amp; hot food delivery.
         </p>
         <div className="grid gap-3 sm:grid-cols-3">
@@ -3231,14 +3231,14 @@ function SettingsPage() {
           <Field label="Day Window (Start - End Hour)">
             <div className="flex items-center gap-2">
               <Input type="number" placeholder="Start (4)" value={cur.dayModeStartHour ?? 4} onChange={(e) => set("dayModeStartHour", Number(e.target.value))} />
-              <span className="text-xs text-muted">to</span>
+              <span className="text-xs text-zinc-400">to</span>
               <Input type="number" placeholder="End (18)" value={cur.eveningModeStartHour ?? 18} onChange={(e) => set("eveningModeStartHour", Number(e.target.value))} />
             </div>
           </Field>
           <Field label="Night Curfew (Start - End Hour)">
             <div className="flex items-center gap-2">
               <Input type="number" placeholder="Start (23)" value={cur.nightModeStartHour ?? 23} onChange={(e) => set("nightModeStartHour", Number(e.target.value))} />
-              <span className="text-xs text-muted">to</span>
+              <span className="text-xs text-zinc-400">to</span>
               <Input type="number" placeholder="End (4)" value={cur.nightModeEndHour ?? 4} onChange={(e) => set("nightModeEndHour", Number(e.target.value))} />
             </div>
           </Field>
@@ -3267,7 +3267,7 @@ function SettingsPage() {
             10,000x Algorithmic Revenue Booster
           </span>
         </div>
-        <p className="text-xs text-muted">
+        <p className="text-xs text-zinc-400">
           Automatically boosts order volume during low-sales windows (2:00 PM – 5:30 PM and 10:30 PM – 6:00 AM) by prioritizing high-demand dishes priced under the budget ceiling (under ₹99 / ₹149) to keep kitchens active and riders earning.
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -3305,7 +3305,7 @@ function SettingsPage() {
             10x Precision GPS Proximity
           </span>
         </div>
-        <p className="text-xs text-muted">
+        <p className="text-xs text-zinc-400">
           Dispatches offers exclusively to the <strong>single closest online rider</strong> first via GPS distance. If declined or timed out, cascades sequentially to the <strong>next nearest rider</strong> with dynamic bounty escalation, ensuring zero wasted broadcast pings.
         </p>
         <div className="grid gap-3 sm:grid-cols-3">
@@ -3343,7 +3343,7 @@ function SettingsPage() {
             OrderKing Live Mode
           </span>
         </div>
-        <p className="text-xs text-muted">
+        <p className="text-xs text-zinc-400">
           Toggle live verification mode to strip all "Sample" tags across customer apps for verified kitchens and display genuine operational hours and real GPS kitchen locations.
         </p>
         <div className="flex flex-wrap items-center gap-4">
@@ -3355,7 +3355,7 @@ function SettingsPage() {
             Sample Banner: {cur.sampleCatalogueBanner === false ? "DISABLED (Live Clean)" : "ENABLED (Sample)"}
           </Button>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted">Launch Mode:</span>
+            <span className="text-xs text-zinc-400">Launch Mode:</span>
             {(["development", "pilot", "live"] as const).map((mode) => (
               <Button
                 key={mode}
@@ -3378,7 +3378,7 @@ function SettingsPage() {
           COD {cur.codEnabled ? "ON" : "OFF"}
         </Button>
       </div>
-      <p className="text-xs text-muted">Commission, fees, and rider pay require <code>modify_financial_settings</code>. CEO cannot change them.</p>
+      <p className="text-xs text-zinc-400">Commission, fees, and rider pay require <code>modify_financial_settings</code>. CEO cannot change them.</p>
       <Button onClick={() => save.mutate()}>Save high-risk settings</Button>
     </div>
   );
@@ -3426,7 +3426,7 @@ function GoLivePage() {
   });
 
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
-  if (!data) return <p className="text-muted">Loading Go-Live switchboard…</p>;
+  if (!data) return <p className="text-zinc-400">Loading Go-Live switchboard…</p>;
 
   const updateDb = (patch: Partial<typeof cur.database>) =>
     setCfg({ ...cur, database: { ...cur.database, ...patch } });
@@ -3453,7 +3453,7 @@ function GoLivePage() {
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl">Go-Live & Production Switchboard</h1>
-          <p className="text-sm text-muted">
+          <p className="text-sm text-zinc-400">
             100% Granular, 1-by-1 production controls, live API test runners, compliance vault & capacity switchboard.
           </p>
         </div>
@@ -3468,10 +3468,10 @@ function GoLivePage() {
       </header>
 
       {/* Readiness Banner */}
-      <section className="rounded-[24px] border border-border bg-surface p-5 space-y-4">
+      <section className="rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <span className="text-xs uppercase tracking-wider text-muted">Go-Live Readiness Meter</span>
+            <span className="text-xs uppercase tracking-wider text-zinc-400">Go-Live Readiness Meter</span>
             <div className="flex items-center gap-3">
               <span className="text-4xl font-semibold">{score}%</span>
               <Badge variant={isProd ? "success" : isPilot ? "warning" : "danger"}>
@@ -3479,7 +3479,7 @@ function GoLivePage() {
               </Badge>
             </div>
           </div>
-          <div className="text-right text-xs text-muted">
+          <div className="text-right text-xs text-zinc-400">
             Last Evaluated: {relativeTime(report?.evaluatedAt ?? new Date().toISOString())}
           </div>
         </div>
@@ -3498,8 +3498,8 @@ function GoLivePage() {
         {/* 4 Pillars Summary */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
           {report && Object.entries(report.pillars).map(([key, pillar]) => (
-            <div key={key} className="rounded-xl border border-border bg-surface-raised p-3">
-              <p className="text-xs text-muted truncate">{pillar.pillarName}</p>
+            <div key={key} className="rounded-xl border border-white/10 bg-surface-raised p-3">
+              <p className="text-xs text-zinc-400 truncate">{pillar.pillarName}</p>
               <div className="flex items-center justify-between mt-1">
                 <span className="text-lg font-semibold">{pillar.earnedScore}/{pillar.maxScore}</span>
                 <Badge variant={pillar.status === "READY" ? "success" : pillar.status === "ATTENTION" ? "warning" : "danger"}>
@@ -3535,7 +3535,7 @@ function GoLivePage() {
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Database Provider">
             <select
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-2 text-sm"
               value={cur.database.provider}
               onChange={(e) => updateDb({ provider: e.target.value as any })}
             >
@@ -3548,7 +3548,7 @@ function GoLivePage() {
           </Field>
           <Field label="SSL Mode">
             <select
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-2 text-sm"
               value={cur.database.sslMode}
               onChange={(e) => updateDb({ sslMode: e.target.value as any })}
             >
@@ -3602,11 +3602,11 @@ function GoLivePage() {
         </div>
 
         {/* App Endpoints & Domains */}
-        <div className="mt-4 pt-4 border-t border-border space-y-4">
+        <div className="mt-4 pt-4 border-t border-white/10 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h3 className="font-semibold text-sm">App Endpoints, Live Domains & Hosting Deployment</h3>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-zinc-400">
                 Connect your custom domain (<code>orderking.in</code>) or use Google Cloud Run free tier with your $300 active credits.
               </p>
             </div>
@@ -3654,13 +3654,13 @@ function GoLivePage() {
               <h4 className="text-xs font-semibold uppercase tracking-wider text-primary">
                 🌐 How to Make https://orderking.in Live Right Now
               </h4>
-              <span className="text-[11px] text-muted">Estimated time: 3–5 minutes</span>
+              <span className="text-[11px] text-zinc-400">Estimated time: 3–5 minutes</span>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 text-xs">
-              <div className="rounded-lg border border-border bg-surface p-3 space-y-1.5">
-                <p className="font-semibold text-foreground">Step 1: Get Domain "orderking.in" (~₹399/yr)</p>
-                <p className="text-muted leading-relaxed">
+              <div className="rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 space-y-1.5">
+                <p className="font-semibold text-white">Step 1: Get Domain "orderking.in" (~₹399/yr)</p>
+                <p className="text-zinc-400 leading-relaxed">
                   Purchase <code>orderking.in</code> from any registrar in 1 minute:
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
@@ -3668,7 +3668,7 @@ function GoLivePage() {
                     href="https://www.hostinger.in/domain-name-search?domain=orderking.in"
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center rounded-md bg-surface-raised px-2.5 py-1 text-[11px] font-medium text-foreground hover:bg-surface-elevated border border-border"
+                    className="inline-flex items-center rounded-md bg-surface-raised px-2.5 py-1 text-[11px] font-medium text-white hover:bg-surface-elevated border border-white/10"
                   >
                     Hostinger (₹399/yr) ↗
                   </a>
@@ -3676,31 +3676,31 @@ function GoLivePage() {
                     href="https://www.godaddy.com/en-in/domainsearch/find?checkAvail=1&domainToCheck=orderking.in"
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center rounded-md bg-surface-raised px-2.5 py-1 text-[11px] font-medium text-foreground hover:bg-surface-elevated border border-border"
+                    className="inline-flex items-center rounded-md bg-surface-raised px-2.5 py-1 text-[11px] font-medium text-white hover:bg-surface-elevated border border-white/10"
                   >
                     GoDaddy (₹499/yr) ↗
                   </a>
                 </div>
               </div>
 
-              <div className="rounded-lg border border-border bg-surface p-3 space-y-1.5">
-                <p className="font-semibold text-foreground">Step 2: DNS Records for orderking.in</p>
-                <p className="text-muted leading-relaxed">
+              <div className="rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 space-y-1.5">
+                <p className="font-semibold text-white">Step 2: DNS Records for orderking.in</p>
+                <p className="text-zinc-400 leading-relaxed">
                   In your domain DNS manager, add these 2 standard records:
                 </p>
-                <div className="rounded bg-surface-raised p-2 font-mono text-[10px] space-y-0.5 border border-border">
+                <div className="rounded bg-surface-raised p-2 font-mono text-[10px] space-y-0.5 border border-white/10">
                   <div><strong>Type:</strong> A | <strong>Host:</strong> @ | <strong>Value:</strong> 76.76.21.21</div>
                   <div><strong>Type:</strong> CNAME | <strong>Host:</strong> www | <strong>Value:</strong> cname.vercel-dns.com</div>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-border bg-surface p-3 space-y-2 text-xs">
-              <p className="font-semibold text-foreground">⚡ Instant Free Live Hosting via Google Cloud Run (Using your $300 credit)</p>
-              <p className="text-muted leading-relaxed">
+            <div className="rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 space-y-2 text-xs">
+              <p className="font-semibold text-white">⚡ Instant Free Live Hosting via Google Cloud Run (Using your $300 credit)</p>
+              <p className="text-zinc-400 leading-relaxed">
                 If you haven't bought the domain yet, deploy to Google Cloud Run in 1 command to get an instant live HTTPS link (<code>https://orderking-web-xxxx.a.run.app</code>) that you can use immediately in applications:
               </p>
-              <div className="rounded bg-surface-raised p-2 font-mono text-[11px] text-foreground border border-border overflow-x-auto">
+              <div className="rounded bg-surface-raised p-2 font-mono text-[11px] text-white border border-white/10 overflow-x-auto">
                 <code>gcloud run deploy orderking-web --source . --region asia-south1 --allow-unauthenticated</code>
               </div>
             </div>
@@ -3731,7 +3731,7 @@ function GoLivePage() {
           <div className="grid gap-3 sm:grid-cols-3">
             <Field label="Active Provider">
               <select
-                className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-2 text-sm"
                 value={cur.paymentGateway.provider}
                 onChange={(e) => updatePg({ provider: e.target.value as any })}
               >
@@ -3745,7 +3745,7 @@ function GoLivePage() {
             </Field>
             <Field label="Gateway Mode">
               <select
-                className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-2 text-sm"
                 value={cur.paymentGateway.mode}
                 onChange={(e) => updatePg({ mode: e.target.value as any })}
               >
@@ -3800,12 +3800,12 @@ function GoLivePage() {
         </div>
 
         {/* SMS Gateway */}
-        <div className="mt-4 pt-4 border-t border-border space-y-3">
+        <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
           <h3 className="font-semibold text-sm">SMS & OTP Gateway (TRAI DLT Compliant)</h3>
           <div className="grid gap-3 sm:grid-cols-3">
             <Field label="SMS Provider">
               <select
-                className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-2 text-sm"
                 value={cur.smsGateway.provider}
                 onChange={(e) => updateSms({ provider: e.target.value as any })}
               >
@@ -3856,12 +3856,12 @@ function GoLivePage() {
         </div>
 
         {/* Maps & GIS */}
-        <div className="mt-4 pt-4 border-t border-border space-y-3">
+        <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
           <h3 className="font-semibold text-sm">Maps & Real-Time Navigation</h3>
           <div className="grid gap-3 sm:grid-cols-3">
             <Field label="Maps Provider">
               <select
-                className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-2 text-sm"
                 value={cur.maps.provider}
                 onChange={(e) => updateMaps({ provider: e.target.value as any })}
               >
@@ -3902,7 +3902,7 @@ function GoLivePage() {
           </Field>
           <Field label="Entity Type">
             <select
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-2 text-sm"
               value={cur.legal.entityType}
               onChange={(e) => updateLegal({ entityType: e.target.value as any })}
             >
@@ -3992,7 +3992,7 @@ function GoLivePage() {
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Operation Scale Mode">
             <select
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm font-medium"
+              className="w-full rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-2 text-sm font-medium"
               value={cur.capacity.mode}
               onChange={(e) => updateCapacity({ mode: e.target.value as any })}
             >
@@ -4077,10 +4077,10 @@ function NotificationsPage() {
       <header className="flex items-end justify-between">
         <div>
           <h1 className="font-display text-3xl">Notifications</h1>
-          <p className="text-sm text-muted">Adapter statuses. Delivery is never claimed without provider confirmation.</p>
+          <p className="text-sm text-zinc-400">Adapter statuses. Delivery is never claimed without provider confirmation.</p>
         </div>
         <div className="flex items-center gap-2">
-          <select className="h-10 rounded-[10px] border border-border bg-elevated px-2 text-sm" value={channel} onChange={(e) => setChannel(e.target.value)}>
+          <select className="h-10 rounded-[10px] border border-white/10 bg-elevated px-2 text-sm" value={channel} onChange={(e) => setChannel(e.target.value)}>
             <option value="push">Push</option>
             <option value="sms">SMS</option>
             <option value="whatsapp">WhatsApp</option>
@@ -4114,16 +4114,16 @@ function AuditPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Audit log</h1>
-      <p className="text-sm text-muted">Append-only. There is no edit or delete API.</p>
+      <p className="text-sm text-zinc-400">Append-only. There is no edit or delete API.</p>
       <SearchBox value={qtext} onChange={setQtext} placeholder="Action or target id" />
       <ul className="space-y-2">
         {rows.map((a) => (
-          <li key={a.id} className="rounded-[16px] border border-border bg-surface p-3 text-sm">
+          <li key={a.id} className="rounded-[16px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 text-sm">
             <div className="flex justify-between gap-3">
               <span className="font-mono text-xs">{a.action}</span>
-              <span className="text-xs text-muted">{relativeTime(a.at ?? undefined)}</span>
+              <span className="text-xs text-zinc-400">{relativeTime(a.at ?? undefined)}</span>
             </div>
-            <p className="text-xs text-muted">{a.roleKey} · {a.targetType} {a.targetId} {a.reason ? `· ${a.reason}` : ""}</p>
+            <p className="text-xs text-zinc-400">{a.roleKey} · {a.targetType} {a.targetId} {a.reason ? `· ${a.reason}` : ""}</p>
           </li>
         ))}
       </ul>
@@ -4135,7 +4135,7 @@ function HealthPage() {
   const q = useQuery({ queryKey: ["health"], queryFn: () => loadHealth() });
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const d = q.data && q.data.ok ? q.data.data : null;
-  if (!d) return <p className="text-muted">Loading…</p>;
+  if (!d) return <p className="text-zinc-400">Loading…</p>;
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">System health</h1>
@@ -4146,7 +4146,7 @@ function HealthPage() {
             <MetricCard key={k} label={k} value={String(v)} source={d.label} />
           ))}
       </div>
-      <p className="text-xs text-muted">DB latency {d.databaseLatencyMs}ms. Secrets are not exposed.</p>
+      <p className="text-xs text-zinc-400">DB latency {d.databaseLatencyMs}ms. Secrets are not exposed.</p>
     </div>
   );
 }
@@ -4215,7 +4215,7 @@ export function ApprovalsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-border/40 pb-5">
+      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10/40 pb-5">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -4226,7 +4226,7 @@ export function ApprovalsPage() {
           <h1 className="font-display text-3xl font-semibold tracking-tight">
             Founder Approval Center & AI Workforce
           </h1>
-          <p className="mt-1 text-sm text-muted">
+          <p className="mt-1 text-sm text-zinc-400">
             Deterministic ledgers, money-sensitive approval gates, and autonomous agent orchestration.
           </p>
         </div>
@@ -4240,22 +4240,22 @@ export function ApprovalsPage() {
           >
             <RefreshCw className="h-3.5 w-3.5" /> Refresh Ledger
           </Button>
-          <div className="inline-flex rounded-lg bg-surface border border-border p-1 text-xs">
+          <div className="inline-flex rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/10 p-1 text-xs">
             <button
               onClick={() => setActiveTab("pending")}
-              className={cn("px-3 py-1 rounded-md font-medium transition", activeTab === "pending" ? "bg-accent text-accent-foreground shadow-sm" : "text-muted hover:text-foreground")}
+              className={cn("px-3 py-1 rounded-md font-medium transition", activeTab === "pending" ? "bg-accent text-accent-foreground shadow-sm" : "text-zinc-400 hover:text-white")}
             >
               Approvals ({items.length})
             </button>
             <button
               onClick={() => setActiveTab("workforce")}
-              className={cn("px-3 py-1 rounded-md font-medium transition", activeTab === "workforce" ? "bg-accent text-accent-foreground shadow-sm" : "text-muted hover:text-foreground")}
+              className={cn("px-3 py-1 rounded-md font-medium transition", activeTab === "workforce" ? "bg-accent text-accent-foreground shadow-sm" : "text-zinc-400 hover:text-white")}
             >
               AI Workforce
             </button>
             <button
               onClick={() => setActiveTab("console")}
-              className={cn("px-3 py-1 rounded-md font-medium transition", activeTab === "console" ? "bg-accent text-accent-foreground shadow-sm" : "text-muted hover:text-foreground")}
+              className={cn("px-3 py-1 rounded-md font-medium transition", activeTab === "console" ? "bg-accent text-accent-foreground shadow-sm" : "text-zinc-400 hover:text-white")}
             >
               Direct Engine Console
             </button>
@@ -4306,16 +4306,16 @@ export function ApprovalsPage() {
           </div>
 
           {approvalsQ.isLoading ? (
-            <div className="rounded-[20px] border border-border bg-surface p-12 text-center text-muted">
+            <div className="rounded-[20px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-12 text-center text-zinc-400">
               Loading pending approvals ledger...
             </div>
           ) : items.length === 0 ? (
             <div className="rounded-[24px] border border-emerald-500/20 bg-emerald-500/5 p-12 text-center">
               <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-500/80 mb-3" />
-              <h3 className="font-display text-xl font-medium text-foreground">
+              <h3 className="font-display text-xl font-medium text-white">
                 All Ledgers Reconciled
               </h3>
-              <p className="mt-1 text-sm text-muted max-w-md mx-auto">
+              <p className="mt-1 text-sm text-zinc-400 max-w-md mx-auto">
                 There are no pending actions requiring your sign-off. All automated actions, payouts, and commissions are verified and up to date.
               </p>
             </div>
@@ -4329,7 +4329,7 @@ export function ApprovalsPage() {
                 return (
                   <div
                     key={item.id}
-                    className="rounded-[20px] border border-border bg-surface p-5 shadow-sm hover:border-border/80 transition"
+                    className="rounded-[20px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-sm hover:border-white/10/80 transition"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div className="space-y-1.5">
@@ -4337,38 +4337,38 @@ export function ApprovalsPage() {
                           <Badge variant="secondary" className="font-mono text-[11px] font-semibold">
                             {item.module}
                           </Badge>
-                          <span className="font-mono text-xs text-muted">#{item.id}</span>
-                          <span className="text-xs text-muted flex items-center gap-1">
+                          <span className="font-mono text-xs text-zinc-400">#{item.id}</span>
+                          <span className="text-xs text-zinc-400 flex items-center gap-1">
                             <Clock className="h-3 w-3" /> {relativeTime(reqAt)}
                           </span>
                         </div>
-                        <h3 className="font-display text-lg font-semibold text-foreground">
+                        <h3 className="font-display text-lg font-semibold text-white">
                           {item.action}
                         </h3>
-                        {item.notes && <p className="text-sm text-muted">{item.notes}</p>}
+                        {item.notes && <p className="text-sm text-zinc-400">{item.notes}</p>}
                       </div>
 
                       <div className="text-right">
                         {amt != null ? (
-                          <div className="font-mono text-2xl font-bold text-foreground">
+                          <div className="font-mono text-2xl font-bold text-white">
                             {formatInrExact(amt)}
                           </div>
                         ) : (
-                          <span className="text-xs text-muted font-mono">Non-Financial Action</span>
+                          <span className="text-xs text-zinc-400 font-mono">Non-Financial Action</span>
                         )}
-                        <p className="text-[11px] text-muted mt-0.5">
-                          Requested by: <span className="font-medium text-foreground">{reqBy}</span>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                          Requested by: <span className="font-medium text-white">{reqBy}</span>
                         </p>
                       </div>
                     </div>
 
                     {det && (
-                      <div className="mt-4 rounded-xl bg-subtle/40 p-3 font-mono text-xs text-muted overflow-x-auto max-h-36">
+                      <div className="mt-4 rounded-xl bg-subtle/40 p-3 font-mono text-xs text-zinc-400 overflow-x-auto max-h-36">
                         <pre>{typeof det === "string" ? det : JSON.stringify(det, null, 2)}</pre>
                       </div>
                     )}
 
-                    <div className="mt-5 flex items-center justify-end gap-3 pt-3 border-t border-border/40">
+                    <div className="mt-5 flex items-center justify-end gap-3 pt-3 border-t border-white/10/40">
                       <Button
                         variant="outline"
                         size="sm"
@@ -4398,14 +4398,14 @@ export function ApprovalsPage() {
       {/* Tab 2: Autonomous AI Workforce Overview */}
       {activeTab === "workforce" && (
         <div className="space-y-6">
-          <div className="rounded-[24px] border border-border bg-surface p-6">
+          <div className="rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6">
             <h2 className="font-display text-xl font-medium mb-1">Active AI Workforce Deployment</h2>
-            <p className="text-sm text-muted mb-6">
+            <p className="text-sm text-zinc-400 mb-6">
               Coordinated digital workforce operating with 10,000x accuracy and zero human payroll overhead.
             </p>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-xl border border-border/60 bg-subtle/20 p-5 space-y-3">
+              <div className="rounded-xl border border-white/10/60 bg-subtle/20 p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
@@ -4413,23 +4413,23 @@ export function ApprovalsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-base">Autonomous Finance Manager</h3>
-                      <p className="text-xs text-muted">Role: Financial Auditor & Settlement Reconciler</p>
+                      <p className="text-xs text-zinc-400">Role: Financial Auditor & Settlement Reconciler</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-emerald-500 border-emerald-500/30">
                     ONLINE
                   </Badge>
                 </div>
-                <p className="text-xs text-muted leading-relaxed">
+                <p className="text-xs text-zinc-400 leading-relaxed">
                   Performs deterministic order aggregation, gross margin calculation, commission deduplication, and settlement discrepancy checks. High-impact payouts route directly to your approval queue.
                 </p>
-                <div className="text-[11px] font-mono text-muted pt-2 border-t border-border/30 flex justify-between">
+                <div className="text-[11px] font-mono text-zinc-400 pt-2 border-t border-white/10/30 flex justify-between">
                   <span>Engine: Deterministic SQL</span>
                   <span>Human Equivalent: 15 Analysts</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border/60 bg-subtle/20 p-5 space-y-3">
+              <div className="rounded-xl border border-white/10/60 bg-subtle/20 p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
@@ -4437,23 +4437,23 @@ export function ApprovalsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-base">Restaurant Growth Manager</h3>
-                      <p className="text-xs text-muted">Role: Partner Scaling & Menu Optimizer</p>
+                      <p className="text-xs text-zinc-400">Role: Partner Scaling & Menu Optimizer</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-blue-500 border-blue-500/30">
                     ONLINE
                   </Badge>
                 </div>
-                <p className="text-xs text-muted leading-relaxed">
+                <p className="text-xs text-zinc-400 leading-relaxed">
                   Analyzes restaurant ratings, order volumes, cuisine popularity, and dynamic demand. Synthesizes quality improvement steps and first-time promo scaling plans.
                 </p>
-                <div className="text-[11px] font-mono text-muted pt-2 border-t border-border/30 flex justify-between">
+                <div className="text-[11px] font-mono text-zinc-400 pt-2 border-t border-white/10/30 flex justify-between">
                   <span>Engine: Growth Planner</span>
                   <span>Human Equivalent: 40 Field Reps</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border/60 bg-subtle/20 p-5 space-y-3">
+              <div className="rounded-xl border border-white/10/60 bg-subtle/20 p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500">
@@ -4461,23 +4461,23 @@ export function ApprovalsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-base">Risk & Fraud Controller</h3>
-                      <p className="text-xs text-muted">Role: Transaction Behavioral Analyst</p>
+                      <p className="text-xs text-zinc-400">Role: Transaction Behavioral Analyst</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-amber-500 border-amber-500/30">
                     ONLINE
                   </Badge>
                 </div>
-                <p className="text-xs text-muted leading-relaxed">
+                <p className="text-xs text-zinc-400 leading-relaxed">
                   Monitors velocity limits, suspicious customer behavior, multi-account refund exploitation, and payment gateway anomalies with sub-millisecond response.
                 </p>
-                <div className="text-[11px] font-mono text-muted pt-2 border-t border-border/30 flex justify-between">
+                <div className="text-[11px] font-mono text-zinc-400 pt-2 border-t border-white/10/30 flex justify-between">
                   <span>Engine: Real-time Rule Check</span>
                   <span>Human Equivalent: 20 Fraud Ops</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border/60 bg-subtle/20 p-5 space-y-3">
+              <div className="rounded-xl border border-white/10/60 bg-subtle/20 p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500">
@@ -4485,17 +4485,17 @@ export function ApprovalsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-base">Supreme Dispatch Coordinator</h3>
-                      <p className="text-xs text-muted">Role: Fleet Orchestration (Zomato-level)</p>
+                      <p className="text-xs text-zinc-400">Role: Fleet Orchestration (Zomato-level)</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-purple-500 border-purple-500/30">
                     ONLINE
                   </Badge>
                 </div>
-                <p className="text-xs text-muted leading-relaxed">
+                <p className="text-xs text-zinc-400 leading-relaxed">
                   Evaluates driver proximity, delivery time windows, traffic constraints, and order states to optimize multi-drop dispatch routes instantly.
                 </p>
-                <div className="text-[11px] font-mono text-muted pt-2 border-t border-border/30 flex justify-between">
+                <div className="text-[11px] font-mono text-zinc-400 pt-2 border-t border-white/10/30 flex justify-between">
                   <span>Engine: Spatial Dispatch</span>
                   <span>Human Equivalent: 60 Dispatchers</span>
                 </div>
@@ -4509,13 +4509,13 @@ export function ApprovalsPage() {
       {activeTab === "console" && (
         <div className="grid gap-6 md:grid-cols-2">
           {/* Restaurant Growth Tester */}
-          <div className="rounded-[24px] border border-border bg-surface p-6 space-y-4">
+          <div className="rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6 space-y-4">
             <h3 className="font-display text-lg font-semibold flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-blue-500" />
               Generate Restaurant Growth Plan
             </h3>
-            <p className="text-xs text-muted">
-              Trigger the AI Restaurant Growth Manager on a specific restaurant to analyze metrics and store a persistent strategy in <code className="font-mono text-foreground">restaurant_growth_plans</code>.
+            <p className="text-xs text-zinc-400">
+              Trigger the AI Restaurant Growth Manager on a specific restaurant to analyze metrics and store a persistent strategy in <code className="font-mono text-white">restaurant_growth_plans</code>.
             </p>
             <div className="flex gap-2">
               <Input
@@ -4535,18 +4535,18 @@ export function ApprovalsPage() {
             {growthMut.data && growthMut.data.ok && (
               <div className="rounded-xl bg-subtle/30 p-3 font-mono text-xs space-y-1">
                 <p className="font-bold text-emerald-500">Plan Generated: {growthMut.data.data.id}</p>
-                <pre className="text-muted overflow-x-auto max-h-40">{JSON.stringify(growthMut.data.data.plan, null, 2)}</pre>
+                <pre className="text-zinc-400 overflow-x-auto max-h-40">{JSON.stringify(growthMut.data.data.plan, null, 2)}</pre>
               </div>
             )}
           </div>
 
           {/* Deterministic Payout Tester */}
-          <div className="rounded-[24px] border border-border bg-surface p-6 space-y-4">
+          <div className="rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6 space-y-4">
             <h3 className="font-display text-lg font-semibold flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-emerald-500" />
               Calculate Deterministic Payout
             </h3>
-            <p className="text-xs text-muted">
+            <p className="text-xs text-zinc-400">
               Audit delivered, paid orders strictly from the database without any LLM approximation. Computes gross, commission, and net payout.
             </p>
             <div className="flex gap-2">
@@ -4566,22 +4566,22 @@ export function ApprovalsPage() {
             </div>
             {payoutMut.data && payoutMut.data.ok && (
               <div className="rounded-xl bg-subtle/30 p-3 font-mono text-xs space-y-1">
-                <p className="text-foreground">Orders Included: {payoutMut.data.data.ordersIncluded}</p>
-                <p className="text-muted">Gross: {formatInrExact(payoutMut.data.data.totalGrossPaise)}</p>
-                <p className="text-muted">Commission: {formatInrExact(payoutMut.data.data.totalCommissionPaise)}</p>
+                <p className="text-white">Orders Included: {payoutMut.data.data.ordersIncluded}</p>
+                <p className="text-zinc-400">Gross: {formatInrExact(payoutMut.data.data.totalGrossPaise)}</p>
+                <p className="text-zinc-400">Commission: {formatInrExact(payoutMut.data.data.totalCommissionPaise)}</p>
                 <p className="font-bold text-emerald-500">Net Payout: {formatInrExact(payoutMut.data.data.netPayoutPaise)}</p>
               </div>
             )}
           </div>
 
           {/* Settlement Batch Reconciliation */}
-          <div className="rounded-[24px] border border-border bg-surface p-6 space-y-4 md:col-span-2">
+          <div className="rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6 space-y-4 md:col-span-2">
             <h3 className="font-display text-lg font-semibold flex items-center gap-2">
               <ShieldAlert className="h-5 w-5 text-amber-500" />
               Reconcile Settlement Batch
             </h3>
-            <p className="text-xs text-muted">
-              Verify a settlement batch against raw order rows and persist audit discrepancy in <code className="font-mono text-foreground">finance_reconciliations</code>.
+            <p className="text-xs text-zinc-400">
+              Verify a settlement batch against raw order rows and persist audit discrepancy in <code className="font-mono text-white">finance_reconciliations</code>.
             </p>
             <div className="flex gap-2 max-w-md">
               <Input
@@ -4603,7 +4603,7 @@ export function ApprovalsPage() {
                 <p className={verifyMut.data.data.verified ? "text-emerald-500 font-bold" : "text-rose-500 font-bold"}>
                   {verifyMut.data.data.verified ? "✅ Verification PASSED: Zero Discrepancy" : `⚠️ Verification FAILED: Discrepancy of ${verifyMut.data.data.discrepancyPaise} paise`}
                 </p>
-                <p className="text-muted">Reconciliation Record ID: {verifyMut.data.data.id}</p>
+                <p className="text-zinc-400">Reconciliation Record ID: {verifyMut.data.data.id}</p>
               </div>
             )}
           </div>
@@ -4615,9 +4615,9 @@ export function ApprovalsPage() {
 
 function Denied({ error }: { error: string }) {
   return (
-    <div className="rounded-[24px] border border-border bg-surface p-6">
+    <div className="rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6">
       <h2 className="font-display text-2xl">Not permitted</h2>
-      <p className="mt-2 text-sm text-muted">{error}</p>
+      <p className="mt-2 text-sm text-zinc-400">{error}</p>
     </div>
   );
 }
@@ -4654,10 +4654,10 @@ function TravelPage() {
     <div className="space-y-6">
       <header>
         <h1 className="font-display text-3xl">King Pay Travel Center</h1>
-        <p className="mt-1 text-sm text-muted">Universal Extensible Booking Platform (Flights & Rail)</p>
+        <p className="mt-1 text-sm text-zinc-400">Universal Extensible Booking Platform (Flights & Rail)</p>
       </header>
 
-      <div className="flex gap-2 border-b border-border pb-4">
+      <div className="flex gap-2 border-b border-white/10 pb-4">
         <Button variant={mode === "FLIGHT" ? "primary" : "secondary"} onClick={() => setMode("FLIGHT")}>
           Flights
         </Button>
@@ -4700,15 +4700,15 @@ function TravelPage() {
       {!error && search.data ? (
         <Panel title="Search Results">
           {search.data.length === 0 ? (
-            <p className="text-muted text-sm">No inventory found for this route/date.</p>
+            <p className="text-zinc-400 text-sm">No inventory found for this route/date.</p>
           ) : (
             <ul className="space-y-3">
               {search.data.map((r: any, idx: number) => (
-                <li key={idx} className="flex justify-between items-center rounded-[12px] border border-border p-4 bg-elevated/50">
+                <li key={idx} className="flex justify-between items-center rounded-[12px] border border-white/10 p-4 bg-elevated/50">
                   <div>
                     <p className="font-semibold">{r.carrier.name} ({r.carrier.code})</p>
-                    <p className="text-sm text-muted">{r.origin.code} → {r.destination.code}</p>
-                    <p className="text-xs text-muted mt-1">{new Date(r.departureTime).toLocaleString()} - {new Date(r.arrivalTime).toLocaleString()}</p>
+                    <p className="text-sm text-zinc-400">{r.origin.code} → {r.destination.code}</p>
+                    <p className="text-xs text-zinc-400 mt-1">{new Date(r.departureTime).toLocaleString()} - {new Date(r.arrivalTime).toLocaleString()}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-mono font-bold text-lg">{r.price.currency} {r.price.amount}</p>

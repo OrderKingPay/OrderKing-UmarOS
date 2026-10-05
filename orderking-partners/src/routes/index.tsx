@@ -27,13 +27,13 @@ function Home() {
         <div className="flex flex-1 flex-col justify-center py-12">
           <p className="text-sm font-medium uppercase tracking-[0.18em] text-chili">{t("landing.kicker")}</p>
           <h1 className="mt-3 max-w-xl font-display text-4xl leading-[1.1] md:text-5xl">{t("landing.title")}</h1>
-          <p className="mt-4 max-w-lg text-lg text-muted">{t("landing.body")}</p>
+          <p className="mt-4 max-w-lg text-lg text-zinc-400">{t("landing.body")}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
               <Link to="/login">{t("landing.cta")}</Link>
             </Button>
           </div>
-          <p className="mt-10 max-w-md text-sm text-muted">{t("landing.forOwners")}</p>
+          <p className="mt-10 max-w-md text-sm text-zinc-400">{t("landing.forOwners")}</p>
         </div>
       </div>
     </main>

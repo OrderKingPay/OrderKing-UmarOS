@@ -14,14 +14,14 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
     <Link
       to="/r/$slug"
       params={{ slug: restaurant.slug }}
-      className="block overflow-hidden rounded-[var(--radius-xl)] bg-surface text-fg no-underline shadow-[0_1px_0_var(--color-border)]"
+      className="block overflow-hidden rounded-[var(--radius-2xl)] bg-[#0a0a0a]/80 backdrop-blur-2xl text-white no-underline border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition hover:border-white/20 hover:shadow-[0_12px_40px_rgba(0,0,0,0.6)] group"
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-surface-2">
+      <div className="relative aspect-[16/10] overflow-hidden bg-white/5 border-b border-white/10">
         {restaurant.coverImage ? (
           <img
             src={restaurant.coverImage}
             alt=""
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover group-hover:scale-105 transition duration-500"
             loading="lazy"
           />
         ) : null}
@@ -35,15 +35,15 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
       </div>
       <div className="space-y-1 p-3">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-lg leading-tight">{restaurant.name}</h3>
+          <h3 className="font-display text-lg font-bold leading-tight tracking-tight text-white">{restaurant.name}</h3>
           {restaurant.vegOnly ? (
-            <span className="mt-1 text-success" aria-label={t("common.veg")}>
+            <span className="mt-1 text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" aria-label={t("common.veg")}>
               <Leaf className="size-4" />
             </span>
           ) : null}
         </div>
-        <p className="text-sm text-muted">{restaurant.cuisineSummary}</p>
-        <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted">
+        <p className="text-sm font-medium text-zinc-400 truncate">{restaurant.cuisineSummary}</p>
+        <p className="flex flex-wrap items-center gap-x-2 text-[11px] font-semibold text-zinc-500 mt-0.5">
           <span className="inline-flex items-center gap-1">
             <Clock3 className="size-3.5" aria-hidden />
             {t("home.etaMin", { n: restaurant.etaMinutes })}
@@ -54,14 +54,24 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
           <span>{t("home.minOrder", { amount: formatPaiseCompact(restaurant.minOrderPaise, locale) })}</span>
         </p>
         {restaurant.hasOffer && restaurant.offerLabel ? (
-          <p className="text-xs text-primary">{restaurant.offerLabel}</p>
+          <p className="mt-2 text-xs font-bold text-fuchsia-400 drop-shadow-[0_0_8px_rgba(217,70,239,0.5)]">{restaurant.offerLabel}</p>
         ) : null}
         {restaurant.ratingAvg == null ? (
-          <p className="text-xs text-subtle">{t("common.new")}</p>
+          <div className="mt-2 flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+              {t("common.new")}
+            </span>
+          </div>
         ) : (
-          <p className="text-xs tabular-nums text-muted">
-            {restaurant.ratingAvg.toFixed(1)} ({restaurant.ratingCount})
-          </p>
+          <div className="mt-2 flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1.5 py-0.5 text-[11px] font-black text-amber-400 border border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+              <span className="text-[10px]">★</span>
+              {restaurant.ratingAvg.toFixed(1)}
+            </span>
+            <span className="text-[10px] font-semibold text-zinc-500">
+              ({restaurant.ratingCount}+)
+            </span>
+          </div>
         )}
         <span className="sr-only">{business.currency}</span>
       </div>

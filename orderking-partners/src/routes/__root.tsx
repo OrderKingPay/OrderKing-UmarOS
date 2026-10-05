@@ -1,3 +1,4 @@
+﻿import { globalLogger } from '@/lib/logger';
 import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -151,3 +152,4 @@ function Root() {
     </html>
   );
 }
+

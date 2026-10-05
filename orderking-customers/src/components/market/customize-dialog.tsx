@@ -76,9 +76,9 @@ export function CustomizeDialog({
     >
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-fg/40" />
-        <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 max-h-[90dvh] overflow-y-auto rounded-t-[var(--radius-2xl)] bg-surface p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 max-h-[90dvh] overflow-y-auto rounded-t-[var(--radius-2xl)] bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           <Dialog.Title className="font-display text-2xl">{item.name}</Dialog.Title>
-          <p className="mt-1 text-sm text-muted">{item.description}</p>
+          <p className="mt-1 text-sm text-zinc-400">{item.description}</p>
           {item.variants.length ? (
             <fieldset className="mt-4">
               <legend className="text-sm font-medium">{t("customize.size")}</legend>
@@ -132,7 +132,7 @@ export function CustomizeDialog({
               value={note}
               onChange={(e) => setNote(e.target.value.slice(0, 180))}
               placeholder={t("customize.instructionsPlaceholder")}
-              className="mt-1 min-h-20 w-full rounded-[var(--radius-md)] border border-border bg-bg p-3 text-base"
+              className="mt-1 min-h-20 w-full rounded-[var(--radius-md)] border border-white/10 bg-bg p-3 text-base"
             />
           </label>
           <div className="mt-4 flex items-center justify-between">

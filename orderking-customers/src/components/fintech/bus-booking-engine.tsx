@@ -18,7 +18,7 @@ export function BusBookingEngine() {
   };
 
   return (
-    <div className="space-y-6 text-fg p-4 md:p-6">
+    <div className="space-y-6 text-white p-4 md:p-6">
       <div className="relative overflow-hidden rounded-3xl border-2 border-rose-500/20 bg-gradient-to-br from-rose-500/10 via-surface to-bg p-6 sm:p-10 shadow-xl">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
@@ -35,24 +35,24 @@ export function BusBookingEngine() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-           <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-rose-500/50 transition-colors">
-              <label htmlFor="bus-from" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> LEAVING FROM</label>
-              <input id="bus-from" type="text" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Origin City" />
+           <div className="bg-white/5 p-3 rounded-2xl border-2 border-white/10 focus-within:border-rose-500/50 transition-colors">
+              <label htmlFor="bus-from" className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> LEAVING FROM</label>
+              <input id="bus-from" type="text" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-white" placeholder="Enter Origin City" />
            </div>
-           <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-rose-500/50 transition-colors">
-              <label htmlFor="bus-to" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> GOING TO</label>
-              <input id="bus-to" type="text" value={to} onChange={(e) => setTo(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Destination City" />
+           <div className="bg-white/5 p-3 rounded-2xl border-2 border-white/10 focus-within:border-rose-500/50 transition-colors">
+              <label htmlFor="bus-to" className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> GOING TO</label>
+              <input id="bus-to" type="text" value={to} onChange={(e) => setTo(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-white" placeholder="Enter Destination City" />
            </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-           <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-rose-500/50 transition-colors">
-              <label htmlFor="bus-date" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Calendar className="size-3" /> DATE OF JOURNEY</label>
-              <input id="bus-date" type="date" className="w-full bg-transparent text-base font-bold outline-none text-fg" defaultValue={new Date().toISOString().split('T')[0]} />
+           <div className="bg-white/5 p-3 rounded-2xl border-2 border-white/10 focus-within:border-rose-500/50 transition-colors">
+              <label htmlFor="bus-date" className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 mb-1"><Calendar className="size-3" /> DATE OF JOURNEY</label>
+              <input id="bus-date" type="date" className="w-full bg-transparent text-base font-bold outline-none text-white" defaultValue={new Date().toISOString().split('T')[0]} />
            </div>
-           <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-rose-500/50 transition-colors">
-              <label htmlFor="bus-type" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Tag className="size-3" /> BUS TYPE</label>
-              <select id="bus-type" className="w-full bg-transparent text-base font-bold outline-none text-fg">
+           <div className="bg-white/5 p-3 rounded-2xl border-2 border-white/10 focus-within:border-rose-500/50 transition-colors">
+              <label htmlFor="bus-type" className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 mb-1"><Tag className="size-3" /> BUS TYPE</label>
+              <select id="bus-type" className="w-full bg-transparent text-base font-bold outline-none text-white">
                 <option value="all">All Buses</option>
                 <option value="ac">AC Sleeper</option>
                 <option value="non_ac">Non-AC Sleeper</option>
@@ -68,7 +68,7 @@ export function BusBookingEngine() {
           Search Buses (₹0 Fee) <ArrowRight className="ml-2 size-5" />
         </Button>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm font-bold text-muted">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm font-bold text-zinc-400">
           <span className="flex items-center gap-2">
              <ShieldCheck className="size-5 text-emerald-500" /> Secure Booking
           </span>

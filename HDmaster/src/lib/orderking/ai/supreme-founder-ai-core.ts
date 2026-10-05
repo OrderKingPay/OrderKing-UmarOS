@@ -90,6 +90,17 @@ export type ProjectFileArtifact = {
   code: string;
 };
 
+export type PaidProduct = {
+  id: string;
+  title: string;
+  priceInr: number;
+  category: "software" | "consulting" | "digital_asset" | "license" | "website";
+  salesCount: number;
+  totalEarnedInr: number;
+  checkoutLink: string;
+  status: "ACTIVE" | "PAUSED";
+};
+
 export type EnterpriseProjectBlueprint = {
   id: string;
   title: string;
@@ -920,7 +931,7 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
       colorGrade: "cinematic_hdr",
       fps: 60,
       videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4",
-      thumbnailUrl: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1080&auto=format&fit=crop",
+      thumbnailUrl: "",
       isLongForm,
       exportFormat: "MP4_H265",
       renderSpeedMultiplier: "100,000x Realtime WebCodecs Turbo (World's #1 Fastest)",
@@ -985,7 +996,7 @@ Your studio controls, aspect ratio switcher, timeline duration, and instant 4K p
     ];
 
     const promptText = query.replace(/generate image of/i, "").replace(/generate video of/i, "").replace(/create image of/i, "").trim() || "A hyper-realistic futuristic cyberpunk cityscape with neon lights and flying cars";
-    const imageUrl = "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop";
+    const imageUrl = "";
 
     const responseMarkdown = `### 🎨 Supreme AI ${isVideo ? "Video" : "Image"} Studio Execution
 - **Asset Type**: ${isVideo ? "Video Generation" : "Image Synthesis"}

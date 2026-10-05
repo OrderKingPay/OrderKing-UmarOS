@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 
 const tones: Record<string, string> = {
-  default: "bg-elevated text-muted border-border",
-  outline: "bg-transparent text-muted border-border",
-  secondary: "bg-elevated text-muted border-border",
+  default: "bg-elevated text-zinc-400 border-white/10",
+  outline: "bg-transparent text-zinc-400 border-white/10",
+  secondary: "bg-elevated text-zinc-400 border-white/10",
   success: "bg-success/15 text-success border-success/30",
   warning: "bg-warning/15 text-warning border-warning/30",
   danger: "bg-danger/15 text-danger border-danger/30",

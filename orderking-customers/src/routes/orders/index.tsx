@@ -44,7 +44,7 @@ function OrdersPage() {
   if (isPending) {
     return (
       <CustomerShell>
-        <div className="p-6 text-muted">{t("common.loading")}</div>
+        <div className="p-6 text-zinc-400">{t("common.loading")}</div>
       </CustomerShell>
     );
   }
@@ -65,7 +65,7 @@ function OrdersPage() {
         ) : !list.length ? (
           <div className="mt-8">
             <p>{t("orders.empty")}</p>
-            <p className="text-sm text-muted">{t("orders.emptyHint")}</p>
+            <p className="text-sm text-zinc-400">{t("orders.emptyHint")}</p>
             <Button className="mt-4" asChild>
               <Link to="/">{t("cart.browse")}</Link>
             </Button>
@@ -74,13 +74,13 @@ function OrdersPage() {
           <>
             {active.length ? (
               <section className="mt-6">
-                <h2 className="text-sm font-medium text-muted">{t("orders.active")}</h2>
+                <h2 className="text-sm font-medium text-zinc-400">{t("orders.active")}</h2>
                 <ul className="mt-2 space-y-3">
                   {active.map((o) => (
                     <li key={o.id}>
-                      <Link to="/orders/$id" params={{ id: o.id }} className="block rounded-[var(--radius-lg)] bg-surface p-3 text-fg no-underline">
+                      <Link to="/orders/$id" params={{ id: o.id }} className="block rounded-[var(--radius-lg)] bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 text-white no-underline">
                         <p className="font-medium">{o.restaurantName}</p>
-                        <p className="text-sm text-muted">{t(statusKey(o.status))}</p>
+                        <p className="text-sm text-zinc-400">{t(statusKey(o.status))}</p>
                         <p className="text-sm tabular-nums">{formatPaise(o.totalPaise, { locale })}</p>
                       </Link>
                     </li>
@@ -90,13 +90,13 @@ function OrdersPage() {
             ) : null}
             {past.length ? (
               <section className="mt-6">
-                <h2 className="text-sm font-medium text-muted">{t("orders.past")}</h2>
+                <h2 className="text-sm font-medium text-zinc-400">{t("orders.past")}</h2>
                 <ul className="mt-2 space-y-3">
                   {past.map((o) => (
                     <li key={o.id}>
-                      <Link to="/orders/$id" params={{ id: o.id }} className="block rounded-[var(--radius-lg)] bg-surface p-3 text-fg no-underline">
+                      <Link to="/orders/$id" params={{ id: o.id }} className="block rounded-[var(--radius-lg)] bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 text-white no-underline">
                         <p className="font-medium">{o.restaurantName}</p>
-                        <p className="text-sm text-muted">{o.itemPreview}</p>
+                        <p className="text-sm text-zinc-400">{o.itemPreview}</p>
                         <p className="text-sm tabular-nums">{formatPaise(o.totalPaise, { locale })}</p>
                       </Link>
                     </li>

@@ -77,7 +77,7 @@ function Page() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle>🎯 Daily Target Incentives</CardTitle>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-xs text-zinc-400-foreground mt-0.5">
                   {nextMilestone
                     ? `Complete ${nextMilestone.orders - completedTrips} more trip${
                         nextMilestone.orders - completedTrips > 1 ? "s" : ""
@@ -91,7 +91,7 @@ function Page() {
             </div>
 
             {/* Progress bar */}
-            <div className="h-2 w-full overflow-hidden rounded-full bg-surface-2">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-white/5">
               <div
                 className="h-full bg-primary transition-all duration-500"
                 style={{
@@ -119,7 +119,7 @@ function Page() {
                         ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-900 dark:text-emerald-200"
                         : isCurrent
                           ? "border-primary bg-primary/10 text-primary font-semibold"
-                          : "border-border bg-surface-2 text-muted-foreground"
+                          : "border-white/10 bg-white/5 text-zinc-400-foreground"
                     }`}
                   >
                     <p className="text-xs font-medium">
@@ -144,7 +144,7 @@ function Page() {
         {error ? <p className="text-sm text-offline">{error}</p> : null}
         {data ? (
           <Card>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{t("netPayable")}</p>
+            <p className="text-xs uppercase tracking-widest text-zinc-400-foreground">{t("netPayable")}</p>
             <p className="font-display text-4xl tabular-nums">{formatPaise(data.totals.netPayable)}</p>
             <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
               <Row k={t("payout")} v={formatPaise(data.totals.payout)} />
@@ -155,7 +155,6 @@ function Page() {
               <Row k={t("cashCollectedLabel")} v={formatPaise(data.totals.cashCollected)} />
               <Row k={t("cashReconciled")} v={formatPaise(data.totals.cashReconciled)} />
             </dl>
-            <CardMeta className="mt-3">{t("simulatedBanner")}</CardMeta>
           </Card>
         ) : null}
 
@@ -166,10 +165,10 @@ function Page() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-lg">⚡</span>
-                  <p className="font-bold text-foreground text-sm">1-Tap Instant Daily UPI Cashout</p>
+                  <p className="font-bold text-white text-sm">1-Tap Instant Daily UPI Cashout</p>
                   <Badge tone="online">Instant IMPS/UPI</Badge>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-zinc-400-foreground mt-1">
                   Need your earnings today instead of Wednesday payout? Transfer {formatPaise(data.totals.netPayable - 500)} immediately to your linked UPI ID (<span className="font-mono font-semibold">rider@okaxis</span>) for a flat ₹5 instant transfer fee.
                 </p>
               </div>
@@ -191,44 +190,44 @@ function Page() {
         ) : null}
 
         {/* HPCL DriveTrack Plus & IOCL XTRAPOWER Fleet Hub */}
-        <div className="rounded-xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/15 via-surface to-teal-500/10 p-4 text-xs space-y-3 shadow-xs">
+        <div className="rounded-xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/15 via-surface to-teal-500/10 p-4 text-xs space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
           <div className="flex items-center justify-between border-b border-emerald-500/20 pb-2.5">
             <div className="flex items-center gap-2.5">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-500 text-black text-lg font-bold shadow-xs">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-500 text-black text-lg font-bold shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 ⛽
               </span>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <p className="font-bold text-foreground text-sm">HPCL DriveTrack &amp; IOCL XTRAPOWER Fleet Hub</p>
+                  <p className="font-bold text-white text-sm">HPCL DriveTrack &amp; IOCL XTRAPOWER Fleet Hub</p>
                   <Badge tone="online">Active Fleet ID</Badge>
                 </div>
-                <p className="text-muted-foreground text-[11px]">Official OrderKing Delivery Fleet Partnership</p>
+                <p className="text-zinc-400-foreground text-[11px]">Official OrderKing Delivery Fleet Partnership</p>
               </div>
             </div>
             <div className="text-right font-mono">
-              <span className="text-[10px] text-muted-foreground block">Monthly Fuel Saved</span>
+              <span className="text-[10px] text-zinc-400-foreground block">Monthly Fuel Saved</span>
               <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">~₹1,650 / mo</span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
-            <div className="rounded-lg bg-surface/80 p-2.5 border border-border space-y-1">
-              <p className="font-bold text-foreground flex items-center gap-1">
+            <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]/80 p-2.5 border border-white/10 space-y-1">
+              <p className="font-bold text-white flex items-center gap-1">
                 <span>⛽ 2.5% Fuel Cashback</span>
               </p>
-              <p className="text-muted-foreground">Direct cashback into HP Pay / IndianOil ONE wallet on every petrol refill.</p>
+              <p className="text-zinc-400-foreground">Direct cashback into HP Pay / IndianOil ONE wallet on every petrol refill.</p>
             </div>
-            <div className="rounded-lg bg-surface/80 p-2.5 border border-border space-y-1">
+            <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]/80 p-2.5 border border-white/10 space-y-1">
               <p className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                 <span>🛡️ ₹2,00,000 Free Cover</span>
               </p>
-              <p className="text-muted-foreground">Complimentary Accidental Death &amp; Disability Insurance provided by HPCL/IOCL.</p>
+              <p className="text-zinc-400-foreground">Complimentary Accidental Death &amp; Disability Insurance provided by HPCL/IOCL.</p>
             </div>
-            <div className="rounded-lg bg-surface/80 p-2.5 border border-border space-y-1">
-              <p className="font-bold text-foreground flex items-center gap-1">
+            <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]/80 p-2.5 border border-white/10 space-y-1">
+              <p className="font-bold text-white flex items-center gap-1">
                 <span>💨 Free Air &amp; Priority Lane</span>
               </p>
-              <p className="text-muted-foreground">Zero waiting at partner stations in Karimganj, Silchar, and Hailakandi.</p>
+              <p className="text-zinc-400-foreground">Zero waiting at partner stations in Karimganj, Silchar, and Hailakandi.</p>
             </div>
           </div>
 
@@ -236,8 +235,8 @@ function Page() {
             <div className="flex items-center gap-2">
               <span className="text-base">📱</span>
               <div>
-                <span className="font-mono font-bold text-foreground text-[11px]">FLEET CARD: OK-RIDER-HP-8421</span>
-                <span className="block text-[10px] text-muted-foreground">Show this Fleet ID or QR at partner pump POS for instant discount</span>
+                <span className="font-mono font-bold text-white text-[11px]">FLEET CARD: OK-RIDER-HP-8421</span>
+                <span className="block text-[10px] text-zinc-400-foreground">Show this Fleet ID or QR at partner pump POS for instant discount</span>
               </div>
             </div>
             <button
@@ -256,8 +255,8 @@ function Page() {
         </div>
 
         {/* Wednesday Settlement Notice & Statutory Gig Partner Protection */}
-        <div className="rounded-xl border border-border bg-surface p-3.5 text-xs text-muted-foreground space-y-2">
-          <div className="flex items-center justify-between font-medium text-foreground">
+        <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 text-xs text-zinc-400-foreground space-y-2">
+          <div className="flex items-center justify-between font-medium text-white">
             <div className="flex items-center gap-1.5">
               <span>🗓️ Wednesday Weekly Settlement</span>
               <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/20 px-1.5 py-0.2 rounded">
@@ -269,9 +268,9 @@ function Page() {
           <p className="leading-relaxed">
             Direct NEFT/UPI bank deposit every Wednesday at 06:00 AM IST. Payout formula: Base delivery pay + Distance pay + Dynamic surge + Daily milestone bonuses + 100% customer tips − Cash on delivery (COD) collected − statutory TDS (1% u/s 194-O).
           </p>
-          <div className="border-t border-border/50 pt-1.5 text-[10px] flex items-center justify-between">
+          <div className="border-t border-white/10/50 pt-1.5 text-[10px] flex items-center justify-between">
             <span>🛡️ Independent Gig Partner Agreement · 100% Transparent Itemization</span>
-            <span className="text-muted-foreground">Arbitration Act 1996 Protected</span>
+            <span className="text-zinc-400-foreground">Arbitration Act 1996 Protected</span>
           </div>
         </div>
 
@@ -287,7 +286,7 @@ function Page() {
               </li>
             ))}
             {data && data.lines.length === 0 ? (
-              <li className="text-sm text-muted-foreground">{t("noHistory")}</li>
+              <li className="text-sm text-zinc-400-foreground">{t("noHistory")}</li>
             ) : null}
           </ul>
         </Card>
@@ -318,7 +317,7 @@ function Page() {
 function Row({ k, v }: { k: string; v: string }) {
   return (
     <div>
-      <dt className="text-muted-foreground">{k}</dt>
+      <dt className="text-zinc-400-foreground">{k}</dt>
       <dd className="tabular-nums">{v}</dd>
     </div>
   );

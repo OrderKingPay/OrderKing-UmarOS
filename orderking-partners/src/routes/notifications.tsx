@@ -43,13 +43,13 @@ function NotificationsPage() {
         {t("notifications.markRead")}
       </Button>
       {(q.data?.notifications.length ?? 0) === 0 ? (
-        <Card className="text-sm text-muted">{t("notifications.empty")}</Card>
+        <Card className="text-sm text-zinc-400">{t("notifications.empty")}</Card>
       ) : (
         q.data?.notifications.map((n) => (
           <Card key={n.id} className={n.isRead ? "opacity-70" : ""}>
-            <div className="text-xs uppercase text-muted">{n.type}</div>
+            <div className="text-xs uppercase text-zinc-400">{n.type}</div>
             <div className="font-medium">{n.title}</div>
-            <p className="text-sm text-muted">{n.body}</p>
+            <p className="text-sm text-zinc-400">{n.body}</p>
           </Card>
         ))
       )}

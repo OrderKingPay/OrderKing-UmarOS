@@ -72,7 +72,7 @@ export function AppFactoryWorkspace({
         {
           filename: "routes/index.tsx",
           language: "typescript",
-          code: `// ${customPrompt} - Main Landing\nexport function Index() {\n  return (\n    <div className="p-8 font-sans">\n      <h1 className="text-3xl font-black">${customPrompt}</h1>\n      <p className="text-muted mt-2">Engineered autonomously by HDmaster App Factory.</p>\n    </div>\n  );\n}`,
+          code: `// ${customPrompt} - Main Landing\nexport function Index() {\n  return (\n    <div className="p-8 font-sans">\n      <h1 className="text-3xl font-black">${customPrompt}</h1>\n      <p className="text-zinc-400 mt-2">Engineered autonomously by HDmaster App Factory.</p>\n    </div>\n  );\n}`,
         },
         {
           filename: "schema.sql",
@@ -95,9 +95,9 @@ export function AppFactoryWorkspace({
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-surface text-fg rounded-2xl border border-border overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white rounded-2xl border border-white/10 overflow-hidden">
       {/* Workspace Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-2/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5/40 p-4">
         <div>
           <div className="flex items-center gap-2">
             <Code2 className="size-5 text-emerald-500" />
@@ -106,7 +106,7 @@ export function AppFactoryWorkspace({
               Directive §11 &amp; §12
             </Badge>
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-zinc-400">
             End-to-End Generation · Architecture, DB, Backend, Frontend, Tests &amp; Production Handover
           </p>
         </div>
@@ -132,7 +132,7 @@ export function AppFactoryWorkspace({
       </div>
 
       {/* Blueprint Selector Bar & Custom Prompt Input */}
-      <div className="p-3 border-b border-border bg-surface flex flex-wrap items-center justify-between gap-3">
+      <div className="p-3 border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
           {blueprints.map((bp) => (
             <button
@@ -141,8 +141,8 @@ export function AppFactoryWorkspace({
               onClick={() => handleSelectBlueprint(bp)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${
                 selectedBlueprint.id === bp.id
-                  ? "bg-primary text-white shadow-xs"
-                  : "bg-surface-2 text-muted hover:text-fg border border-border"
+                  ? "bg-primary text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                  : "bg-white/5 text-zinc-400 hover:text-white border border-white/10"
               }`}
             >
               {bp.title}
@@ -166,13 +166,13 @@ export function AppFactoryWorkspace({
       {/* Main Coding & Preview Environment (Split: Left File Tree, Right Editor/Preview) */}
       <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
         {/* Left Column: Project File Tree & Specs */}
-        <div className="md:col-span-3 border-r border-border flex flex-col h-full bg-surface">
-          <div className="p-3 border-b border-border bg-surface-2/30">
-            <h4 className="text-[11px] font-black uppercase tracking-wider text-muted flex items-center gap-1.5">
+        <div className="md:col-span-3 border-r border-white/10 flex flex-col h-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+          <div className="p-3 border-b border-white/10 bg-white/5/30">
+            <h4 className="text-[11px] font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
               <Folder className="size-3.5 text-amber-500" />
               <span>Project Artifacts</span>
             </h4>
-            <p className="text-xs font-bold text-fg truncate mt-0.5">{selectedBlueprint.title}</p>
+            <p className="text-xs font-bold text-white truncate mt-0.5">{selectedBlueprint.title}</p>
           </div>
 
           <div className="flex-1 overflow-y-auto p-2 space-y-1">
@@ -189,7 +189,7 @@ export function AppFactoryWorkspace({
                   className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono transition text-left ${
                     isActive
                       ? "bg-primary/10 text-primary font-bold border border-primary/30"
-                      : "text-muted hover:bg-surface-2 hover:text-fg"
+                      : "text-zinc-400 hover:bg-white/5 hover:text-white"
                   }`}
                 >
                   <FileCode className="size-3.5 shrink-0" />
@@ -200,29 +200,29 @@ export function AppFactoryWorkspace({
           </div>
 
           {/* Handoff Credentials Box */}
-          <div className="p-3 border-t border-border bg-surface-2/40 text-[11px] space-y-1">
+          <div className="p-3 border-t border-white/10 bg-white/5/40 text-[11px] space-y-1">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-muted">Handoff Ready:</span>
+              <span className="font-bold text-zinc-400">Handoff Ready:</span>
               <span className="font-bold text-amber-600 dark:text-amber-400">Blueprint only · not deployed</span>
             </div>
-            <p className="text-muted">
-              Value: <span className="font-bold text-fg">₹{selectedBlueprint.commercialValueInr.toLocaleString("en-IN")}</span>
+            <p className="text-zinc-400">
+              Value: <span className="font-bold text-white">₹{selectedBlueprint.commercialValueInr.toLocaleString("en-IN")}</span>
             </p>
           </div>
         </div>
 
         {/* Right Column: Code Editor, Architecture, or Live Preview */}
-        <div className="md:col-span-9 flex flex-col h-full overflow-hidden bg-surface">
+        <div className="md:col-span-9 flex flex-col h-full overflow-hidden bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           {/* Sub-Tabs */}
-          <div className="flex items-center justify-between border-b border-border px-4 py-2 bg-surface-2/20">
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2 bg-white/5/20">
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setActiveTab("code")}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
                   activeTab === "code"
-                    ? "bg-surface text-fg shadow-2xs border border-border"
-                    : "text-muted hover:text-fg"
+                    ? "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white shadow-2xs border border-white/10"
+                    : "text-zinc-400 hover:text-white"
                 }`}
               >
                 Code Editor ({activeFile.filename})
@@ -232,8 +232,8 @@ export function AppFactoryWorkspace({
                 onClick={() => setActiveTab("architecture")}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
                   activeTab === "architecture"
-                    ? "bg-surface text-fg shadow-2xs border border-border"
-                    : "text-muted hover:text-fg"
+                    ? "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white shadow-2xs border border-white/10"
+                    : "text-zinc-400 hover:text-white"
                 }`}
               >
                 Architecture &amp; DB Spec
@@ -243,8 +243,8 @@ export function AppFactoryWorkspace({
                 onClick={() => setActiveTab("preview")}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
                   activeTab === "preview"
-                    ? "bg-surface text-fg shadow-2xs border border-border"
-                    : "text-muted hover:text-fg"
+                    ? "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white shadow-2xs border border-white/10"
+                    : "text-zinc-400 hover:text-white"
                 }`}
               >
                 Live Preview
@@ -267,15 +267,15 @@ export function AppFactoryWorkspace({
           {/* View Container */}
           <div className="flex-1 overflow-auto p-4">
             {activeTab === "code" && (
-              <pre className="font-mono text-xs text-fg leading-relaxed whitespace-pre-wrap bg-surface-2/30 p-4 rounded-xl border border-border">
+              <pre className="font-mono text-xs text-white leading-relaxed whitespace-pre-wrap bg-white/5/30 p-4 rounded-xl border border-white/10">
                 {activeFile.code}
               </pre>
             )}
 
             {activeTab === "architecture" && (
               <div className="space-y-4 text-xs">
-                <div className="rounded-xl border border-border p-4 space-y-2">
-                  <h4 className="font-bold text-fg uppercase tracking-wider text-[11px]">Technology Stack</h4>
+                <div className="rounded-xl border border-white/10 p-4 space-y-2">
+                  <h4 className="font-bold text-white uppercase tracking-wider text-[11px]">Technology Stack</h4>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedBlueprint.techStack.map((t) => (
                       <Badge key={t} tone="neutral">
@@ -286,18 +286,18 @@ export function AppFactoryWorkspace({
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-border p-4 space-y-2">
-                    <h4 className="font-bold text-fg uppercase tracking-wider text-[11px]">Database Tables</h4>
-                    <ul className="list-disc list-inside space-y-1 text-muted font-mono">
+                  <div className="rounded-xl border border-white/10 p-4 space-y-2">
+                    <h4 className="font-bold text-white uppercase tracking-wider text-[11px]">Database Tables</h4>
+                    <ul className="list-disc list-inside space-y-1 text-zinc-400 font-mono">
                       {selectedBlueprint.databaseSchema.map((tbl) => (
                         <li key={tbl}>{tbl}</li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="rounded-xl border border-border p-4 space-y-2">
-                    <h4 className="font-bold text-fg uppercase tracking-wider text-[11px]">API Endpoints</h4>
-                    <ul className="list-disc list-inside space-y-1 text-muted font-mono">
+                  <div className="rounded-xl border border-white/10 p-4 space-y-2">
+                    <h4 className="font-bold text-white uppercase tracking-wider text-[11px]">API Endpoints</h4>
+                    <ul className="list-disc list-inside space-y-1 text-zinc-400 font-mono">
                       {selectedBlueprint.apiEndpoints.map((ep) => (
                         <li key={ep}>{ep}</li>
                       ))}
@@ -308,12 +308,12 @@ export function AppFactoryWorkspace({
             )}
 
             {activeTab === "preview" && (
-              <div className="flex flex-col h-full rounded-xl border border-border bg-surface-2/40 p-6 items-center justify-center text-center space-y-3">
-                <Rocket className="size-10 text-muted" />
-                <h3 className="font-display font-black text-base text-fg">
+              <div className="flex flex-col h-full rounded-xl border border-white/10 bg-white/5/40 p-6 items-center justify-center text-center space-y-3">
+                <Rocket className="size-10 text-zinc-400" />
+                <h3 className="font-display font-black text-base text-white">
                   No live preview is claimed
                 </h3>
-                <p className="text-xs text-muted max-w-md">
+                <p className="text-xs text-zinc-400 max-w-md">
                   This workspace produces a blueprint for review. A live URL, successful build, database migration, and handoff credentials must come from a real deployment pipeline before they are displayed as operational.
                 </p>
               </div>

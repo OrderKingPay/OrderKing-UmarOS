@@ -36,7 +36,7 @@ export function getRazorpayConfig() {
  */
 export const createRazorpayOrder = createServerFn({ method: "POST" })
   .// @ts-ignore
-  validator((data: RazorpayOrderRequest) => data)
+  inputValidator((data: RazorpayOrderRequest) => data)
   .handler(async ({ data }: { data: RazorpayOrderRequest }): Promise<RazorpayOrderResponse> => {
     const config = getRazorpayConfig();
 
@@ -92,7 +92,14 @@ export function verifyRazorpaySignature(params: {
     .update(`${params.razorpayOrderId}|${params.razorpayPaymentId}`)
     .digest("hex");
 
-  return generatedSignature === params.razorpaySignature;
+  const expectedBuffer = Buffer.from(generatedSignature, "hex");
+  const signatureBuffer = Buffer.from(params.razorpaySignature, "hex");
+
+  if (expectedBuffer.length !== signatureBuffer.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(expectedBuffer, signatureBuffer);
 }
 
 /**
@@ -109,5 +116,12 @@ export function verifyWebhookSignature(payload: string, signature: string): bool
     .update(payload)
     .digest("hex");
 
-  return expectedSignature === signature;
+  const expectedBuffer = Buffer.from(expectedSignature, "hex");
+  const signatureBuffer = Buffer.from(signature, "hex");
+
+  if (expectedBuffer.length !== signatureBuffer.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(expectedBuffer, signatureBuffer);
 }

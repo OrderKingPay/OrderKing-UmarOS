@@ -53,7 +53,7 @@ function Page() {
   if (!rider) {
     return (
       <AppShell>
-        <p className="text-sm text-muted-foreground">{error ?? "…"}</p>
+        <p className="text-sm text-zinc-400-foreground">{error ?? "…"}</p>
       </AppShell>
     );
   }
@@ -78,7 +78,7 @@ function Page() {
           <h1 className="font-display text-3xl">{t("kyc")}</h1>
           <Badge tone={rider.kycStatus === "VERIFIED" ? "online" : "busy"}>{rider.kycStatus}</Badge>
         </div>
-        <p className="text-sm text-muted-foreground">{t("kycHint")}</p>
+        <p className="text-sm text-zinc-400-foreground">{t("kycHint")}</p>
         {error ? <p className="text-sm text-offline">{error}</p> : null}
         <Card className="space-y-3">
           <CardTitle>{t("profile")}</CardTitle>
@@ -95,7 +95,7 @@ function Page() {
           <CardTitle>{t("vehicle")}</CardTitle>
           <Label>{t("vehicleType")}</Label>
           <select
-            className="h-11 w-full rounded-md border border-border bg-surface px-3"
+            className="h-11 w-full rounded-md border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3"
             value={rider.vehicleType}
             onChange={(e) => {
               const vehicleType = e.target.value as VehicleType;
@@ -113,7 +113,7 @@ function Page() {
           {field("insuranceRef", t("insurance"))}
           <Label>{t("brandTag")}</Label>
           <select
-            className="h-11 w-full rounded-md border border-border bg-surface px-3"
+            className="h-11 w-full rounded-md border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3"
             value={rider.riderType}
             onChange={(e) => {
               const riderType = e.target.value as RiderType;

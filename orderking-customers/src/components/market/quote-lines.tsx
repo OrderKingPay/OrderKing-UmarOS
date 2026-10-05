@@ -17,19 +17,19 @@ export function QuoteLines({ lines, locale }: { lines: QuoteLine[]; locale: stri
       {visible.map((line) => (
         <div key={line.code} className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-fg">{label(line.code, line.name)}</p>
-            <p className="text-xs text-muted">{line.reason}</p>
+            <p className="text-white">{label(line.code, line.name)}</p>
+            <p className="text-xs text-zinc-400">{line.reason}</p>
           </div>
-          <p className="tabular-nums text-fg">{formatPaise(line.amountPaise, { locale })}</p>
+          <p className="tabular-nums text-white">{formatPaise(line.amountPaise, { locale })}</p>
         </div>
       ))}
       {total ? (
-        <div className="flex items-center justify-between border-t border-border pt-2 font-medium">
+        <div className="flex items-center justify-between border-t border-white/10 pt-2 font-medium">
           <span>{t("cart.toPay")}</span>
           <span className="tabular-nums">{formatPaise(total.amountPaise, { locale })}</span>
         </div>
       ) : null}
-      <p className="text-xs text-muted">{t("cart.includesTax")}</p>
+      <p className="text-xs text-zinc-400">{t("cart.includesTax")}</p>
     </div>
   );
 }

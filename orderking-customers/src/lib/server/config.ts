@@ -14,7 +14,7 @@ export const getPublicConfig = createServerFn({ method: "GET" }).handler(async (
 export const updateBrandConfig = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .// @ts-ignore
-  validator((input: { brand: Partial<BrandConfig> }) => input)
+  inputValidator((input: { brand: Partial<BrandConfig> }) => input)
   .handler(async ({ context, data }: any) => {
     const current = await loadConfig();
     if (!current.marketplace.allowDevTools) {

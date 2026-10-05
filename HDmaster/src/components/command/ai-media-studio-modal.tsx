@@ -236,7 +236,7 @@ export function AiMediaStudioModal({
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex rounded-lg bg-surface-2 p-1 border border-border">
+            <div className="flex rounded-lg bg-white/5 p-1 border border-white/10">
               <button
                 type="button"
                 onClick={() => setActiveTab("image")}
@@ -302,7 +302,7 @@ export function AiMediaStudioModal({
                 </span>
                 <span className="font-mono text-amber-400">{generationProgress}%</span>
               </div>
-              <div className="h-2 w-full rounded-full bg-surface-2 overflow-hidden">
+              <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-400 transition-all duration-300"
                   style={{ width: `${generationProgress}%` }}
@@ -317,7 +317,7 @@ export function AiMediaStudioModal({
               <div className="space-y-2">
                 <label className="text-xs font-bold text-amber-300 flex items-center justify-between">
                   <span>Enter Photorealistic Prompt:</span>
-                  <span className="text-[10px] text-muted font-normal">8K UHD · Octane Raytracing · Zero Cost</span>
+                  <span className="text-[10px] text-zinc-400 font-normal">8K UHD · Octane Raytracing · Zero Cost</span>
                 </label>
                 <div className="flex gap-2">
                   <Input
@@ -349,7 +349,7 @@ export function AiMediaStudioModal({
                       className={`p-2 rounded-xl border text-left text-xs font-medium transition ${
                         aspectRatio === ar.id
                           ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold shadow-sm"
-                          : "bg-surface-2 border-border text-slate-400 hover:text-white"
+                          : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
                       }`}
                     >
                       <span className="block font-bold text-[11px] text-white">{ar.id}</span>
@@ -371,7 +371,7 @@ export function AiMediaStudioModal({
                       className={`p-2 rounded-xl border text-left text-xs font-medium transition ${
                         selectedStyle === st.id
                           ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold shadow-sm"
-                          : "bg-black/40 border-border/60 text-slate-400 hover:text-white"
+                          : "bg-black/40 border-white/10/60 text-slate-400 hover:text-white"
                       }`}
                     >
                       <span className="block text-[11px] truncate">{st.label}</span>
@@ -381,7 +381,7 @@ export function AiMediaStudioModal({
               </div>
 
               {/* Advanced Enhancers */}
-              <div className="flex flex-wrap items-center gap-4 p-3 rounded-xl border border-border/70 bg-black/40 text-xs">
+              <div className="flex flex-wrap items-center gap-4 p-3 rounded-xl border border-white/10/70 bg-black/40 text-xs">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -415,7 +415,7 @@ export function AiMediaStudioModal({
                     </Badge>
                   </div>
 
-                  <div className="relative rounded-xl overflow-hidden border border-border/80 max-h-[380px] flex items-center justify-center bg-black">
+                  <div className="relative rounded-xl overflow-hidden border border-white/10/80 max-h-[380px] flex items-center justify-center bg-black">
                     <img loading="lazy"                       src={generatedItem.url}
                       alt={generatedItem.title}
                       style={{
@@ -431,7 +431,7 @@ export function AiMediaStudioModal({
                   </div>
 
                   {/* Real-Time Visual Tuning Sliders */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-lg bg-black/50 border border-border text-[11px]">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-lg bg-black/50 border border-white/10 text-[11px]">
                     <div>
                       <span className="text-slate-400">Brightness ({brightness}%)</span>
                       <input
@@ -520,7 +520,7 @@ export function AiMediaStudioModal({
               <div className="space-y-2">
                 <label className="text-xs font-bold text-amber-300 flex items-center justify-between">
                   <span>Enter Video Motion &amp; Cinematics Prompt:</span>
-                  <span className="text-[10px] text-muted font-normal">Kinetic AI Motion · 60FPS · 100% Realistic</span>
+                  <span className="text-[10px] text-zinc-400 font-normal">Kinetic AI Motion · 60FPS · 100% Realistic</span>
                 </label>
                 <div className="flex gap-2">
                   <Input
@@ -554,7 +554,7 @@ export function AiMediaStudioModal({
                         className={`w-full py-1.5 px-2.5 rounded-lg border text-left text-xs font-medium transition ${
                           videoDuration === d.id
                             ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold"
-                            : "bg-surface-2 border-border text-slate-400 hover:text-white"
+                            : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
                         }`}
                       >
                         {d.label}
@@ -575,7 +575,7 @@ export function AiMediaStudioModal({
                         className={`w-full py-1.5 px-2.5 rounded-lg border text-left text-xs font-medium transition ${
                           aspectRatio === ar.id
                             ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold"
-                            : "bg-surface-2 border-border text-slate-400 hover:text-white"
+                            : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
                         }`}
                       >
                         {ar.id} {ar.label.split(" ")[1]}
@@ -596,7 +596,7 @@ export function AiMediaStudioModal({
                         className={`w-full py-1.5 px-2.5 rounded-lg border text-left text-xs font-medium transition ${
                           cameraMotion === cm.id
                             ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold"
-                            : "bg-surface-2 border-border text-slate-400 hover:text-white"
+                            : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
                         }`}
                       >
                         {cm.label}
@@ -617,7 +617,7 @@ export function AiMediaStudioModal({
                         className={`w-full py-1.5 px-2.5 rounded-lg border text-left text-xs font-medium transition ${
                           voiceoverVoice === vo.id
                             ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold"
-                            : "bg-surface-2 border-border text-slate-400 hover:text-white"
+                            : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
                         }`}
                       >
                         {vo.label}
@@ -627,7 +627,7 @@ export function AiMediaStudioModal({
                       <select
                         value={selectedLang}
                         onChange={(e) => setSelectedLang(e.target.value)}
-                        className="w-full rounded-lg bg-surface-2 border border-border px-2 py-1 text-xs text-white"
+                        className="w-full rounded-lg bg-white/5 border border-white/10 px-2 py-1 text-xs text-white"
                       >
                         {NATIVE_LANGUAGES.map((lang) => (
                           <option key={lang} value={lang}>
@@ -650,7 +650,7 @@ export function AiMediaStudioModal({
                     </Badge>
                   </div>
 
-                  <div className="rounded-xl overflow-hidden border border-border/80 bg-black">
+                  <div className="rounded-xl overflow-hidden border border-white/10/80 bg-black">
                     <video
                       src={generatedItem.url}
                       controls
@@ -718,7 +718,7 @@ export function AiMediaStudioModal({
                 {multiScenes.map((scene, idx) => (
                   <div
                     key={idx}
-                    className="rounded-xl border border-border/70 bg-black/60 p-3 space-y-2 relative"
+                    className="rounded-xl border border-white/10/70 bg-black/60 p-3 space-y-2 relative"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-xs text-white flex items-center gap-1.5">
@@ -727,7 +727,7 @@ export function AiMediaStudioModal({
                         </span>
                         {scene.title}
                       </span>
-                      <Badge className="bg-surface-2 text-slate-300 text-[10px] font-mono">
+                      <Badge className="bg-white/5 text-slate-300 text-[10px] font-mono">
                         {scene.duration}s
                       </Badge>
                     </div>
@@ -738,7 +738,7 @@ export function AiMediaStudioModal({
                         updated[idx].prompt = e.target.value;
                         setMultiScenes(updated);
                       }}
-                      className="bg-black/80 border-border/80 text-xs text-slate-200"
+                      className="bg-black/80 border-white/10/80 text-xs text-slate-200"
                     />
                   </div>
                 ))}
@@ -770,7 +770,7 @@ export function AiMediaStudioModal({
                     controls
                     autoPlay
                     loop
-                    className="w-full max-h-[380px] object-cover rounded-xl border border-border"
+                    className="w-full max-h-[380px] object-cover rounded-xl border border-white/10"
                   />
                   <div className="flex gap-2">
                     <Button
@@ -805,10 +805,10 @@ export function AiMediaStudioModal({
           {/* TAB 4: MEDIA VAULT ARCHIVE */}
           {activeTab === "vault" && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-border/60">
+              <div className="flex items-center justify-between pb-2 border-b border-white/10/60">
                 <div>
                   <h4 className="text-xs font-bold text-white">HD Master Media Vault Storage</h4>
-                  <p className="text-[11px] text-muted">
+                  <p className="text-[11px] text-zinc-400">
                     Persistent repository of all generated 8K images, cinematic videos, and stitched commercials.
                   </p>
                 </div>
@@ -821,7 +821,7 @@ export function AiMediaStudioModal({
                 {vaultItems.map((item) => (
                   <div
                     key={item.id}
-                    className="rounded-xl border border-border/60 bg-black/50 p-3 space-y-2 hover:border-amber-500/50 transition group"
+                    className="rounded-xl border border-white/10/60 bg-black/50 p-3 space-y-2 hover:border-amber-500/50 transition group"
                   >
                     <div className="relative aspect-video rounded-lg overflow-hidden bg-black flex items-center justify-center">
                       {item.type === "video" ? (
@@ -843,7 +843,7 @@ export function AiMediaStudioModal({
 
                     <div className="flex justify-between items-start text-xs">
                       <span className="font-bold text-white truncate max-w-[170px]">{item.title}</span>
-                      <span className="text-[10px] text-muted font-mono">
+                      <span className="text-[10px] text-zinc-400 font-mono">
                         {(item.sizeBytes / (1024 * 1024)).toFixed(1)} MB
                       </span>
                     </div>

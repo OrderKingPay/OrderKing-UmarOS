@@ -370,7 +370,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
   return (
     <div className="rounded-xl border border-purple-500/40 bg-black/60 overflow-hidden shadow-2xl mt-3">
       {/* Top Header & Navigation Tabs */}
-      <div className="border-b border-border/70 bg-surface-2/80 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <div className="border-b border-white/10/70 bg-white/5/80 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Badge className="bg-purple-500/20 text-purple-300 border-purple-400/40 text-[10px] font-bold">
             {blueprint.category.toUpperCase()}
@@ -435,7 +435,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
       {/* TAB 1: LIVE INTERACTIVE APP PREVIEW */}
       {activeTab === "preview" && (
         <div className="p-3.5 bg-slate-950/90 text-slate-200">
-          <div className="flex items-center justify-between pb-2 mb-3 border-b border-border/50 text-[11px] text-muted">
+          <div className="flex items-center justify-between pb-2 mb-3 border-b border-white/10/50 text-[11px] text-zinc-400">
             <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
               <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
               Live Interactive Sandbox Environment (Fully Functional Prototype)
@@ -447,22 +447,22 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
           {blueprint.category === "erp" && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Active OPD Queue</span>
+                <div className="rounded-lg bg-white/5 p-2 border border-white/10">
+                  <span className="text-zinc-400 block text-[10px]">Active OPD Queue</span>
                   <span className="text-base font-black text-emerald-400 font-mono">{hospitalQueue.length} Patients</span>
                 </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Doctors On-Duty</span>
+                <div className="rounded-lg bg-white/5 p-2 border border-white/10">
+                  <span className="text-zinc-400 block text-[10px]">Doctors On-Duty</span>
                   <span className="text-base font-black text-amber-400 font-mono">8 Specialists</span>
                 </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">ABDM Sync Status</span>
+                <div className="rounded-lg bg-white/5 p-2 border border-white/10">
+                  <span className="text-zinc-400 block text-[10px]">ABDM Sync Status</span>
                   <span className="text-base font-black text-cyan-400 font-mono">STATUS PENDING</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
+                <div className="rounded-lg bg-white/5 p-3 border border-white/10 space-y-2">
                   <span className="text-xs font-bold text-white block">Fast-Track Patient Triage</span>
                   <div className="flex gap-2">
                     <Input
@@ -492,7 +492,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                   </div>
                 </div>
 
-                <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
+                <div className="rounded-lg bg-white/5 p-3 border border-white/10 space-y-2">
                   <span className="text-xs font-bold text-white block">Live OPD Call Board</span>
                   <div className="space-y-1 max-h-24 overflow-y-auto pr-1">
                     {hospitalQueue.map((item) => (
@@ -502,10 +502,10 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                       >
                         <span className="font-mono text-emerald-400 font-bold">#{item.token}</span>
                         <span className="font-semibold">{item.name}</span>
-                        <span className="text-muted text-[10px]">{item.doctor}</span>
+                        <span className="text-zinc-400 text-[10px]">{item.doctor}</span>
                         <Badge
                           className={`text-[9px] ${
-                            item.status === "IN_CONSULTATION" ? "bg-amber-500/20 text-amber-300" : "bg-surface text-slate-300"
+                            item.status === "IN_CONSULTATION" ? "bg-amber-500/20 text-amber-300" : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-slate-300"
                           }`}
                         >
                           {item.status}
@@ -522,16 +522,16 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
           {blueprint.category === "marketplace" && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Verified Merchants</span>
+                <div className="rounded-lg bg-white/5 p-2 border border-white/10">
+                  <span className="text-zinc-400 block text-[10px]">Verified Merchants</span>
                   <span className="text-base font-black text-emerald-400 font-mono">148 Stores</span>
                 </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Cart Value</span>
+                <div className="rounded-lg bg-white/5 p-2 border border-white/10">
+                  <span className="text-zinc-400 block text-[10px]">Cart Value</span>
                   <span className="text-base font-black text-amber-400 font-mono">₹{cartTotal}</span>
                 </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Direct UPI Fee</span>
+                <div className="rounded-lg bg-white/5 p-2 border border-white/10">
+                  <span className="text-zinc-400 block text-[10px]">Direct UPI Fee</span>
                   <span className="text-base font-black text-cyan-400 font-mono">0% Flat</span>
                 </div>
               </div>
@@ -545,7 +545,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                         key={item}
                         size="sm"
                         variant="outline"
-                        className="flex-1 h-8 text-[11px] bg-surface-2"
+                        className="flex-1 h-8 text-[11px] bg-white/5"
                         onClick={() => {
                           setCartTotal((prev) => prev + price);
                           supremeAudioDsp.playTone("interruption_ping");
@@ -565,26 +565,26 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
           {blueprint.category === "fintech" && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Escrow Vault</span>
+                <div className="rounded-lg bg-white/5 p-2 border border-white/10">
+                  <span className="text-zinc-400 block text-[10px]">Escrow Vault</span>
                   <span className="text-base font-black text-emerald-400 font-mono">
                     ₹{ledgerBalance.toLocaleString("en-IN")}
                   </span>
                 </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Atomic Disbursals</span>
+                <div className="rounded-lg bg-white/5 p-2 border border-white/10">
+                  <span className="text-zinc-400 block text-[10px]">Atomic Disbursals</span>
                   <span className="text-base font-black text-cyan-400 font-mono">{disbursedCount} Settled</span>
                 </div>
-                <div className="rounded-lg bg-surface-2 p-2 border border-border">
-                  <span className="text-muted block text-[10px]">Ledger Audit</span>
+                <div className="rounded-lg bg-white/5 p-2 border border-white/10">
+                  <span className="text-zinc-400 block text-[10px]">Ledger Audit</span>
                   <span className="text-base font-black text-amber-400 font-mono">Double-Entry OK</span>
                 </div>
               </div>
 
-              <div className="rounded-lg bg-surface-2 p-3 border border-border flex items-center justify-between">
+              <div className="rounded-lg bg-white/5 p-3 border border-white/10 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-white block">Instant ₹50,000 Vendor Disbursal Test</span>
-                  <p className="text-[10px] text-muted">Atomic transaction with double-entry cryptographic debit &amp; credit</p>
+                  <p className="text-[10px] text-zinc-400">Atomic transaction with double-entry cryptographic debit &amp; credit</p>
                 </div>
                 <Button
                   size="sm"
@@ -607,7 +607,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
       {/* TAB 2: MULTI-FILE CODEBASE VIEWER */}
       {activeTab === "code" && (
         <div className="flex flex-col bg-slate-950">
-          <div className="flex items-center gap-1 overflow-x-auto border-b border-border/60 bg-black/60 px-3 py-1.5 text-xs scrollbar-none">
+          <div className="flex items-center gap-1 overflow-x-auto border-b border-white/10/60 bg-black/60 px-3 py-1.5 text-xs scrollbar-none">
             {blueprint.files.map((f) => (
               <button
                 key={f.filename}
@@ -616,7 +616,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono transition shrink-0 ${
                   selectedFile === f.filename
                     ? "bg-purple-600/30 text-purple-300 border border-purple-500/50 font-bold"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-surface-2"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
                 }`}
               >
                 <FileCode className="size-3" />
@@ -657,14 +657,14 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
       {/* TAB 3: IN-CHAT LIVE CODE EDITOR */}
       {activeTab === "edit" && (
         <div className="flex flex-col bg-slate-950 p-3 space-y-2.5">
-          <div className="flex items-center justify-between border-b border-border/60 pb-2 text-xs">
+          <div className="flex items-center justify-between border-b border-white/10/60 pb-2 text-xs">
             <div className="flex items-center gap-2">
               <FileEdit className="size-3.5 text-amber-400" />
               <span className="font-bold text-white">Live Editing:</span>
               <select
                 value={selectedFile}
                 onChange={(e) => setSelectedFile(e.target.value)}
-                className="bg-surface-2 border border-border px-2 py-0.5 rounded text-amber-300 font-mono text-xs"
+                className="bg-white/5 border border-white/10 px-2 py-0.5 rounded text-amber-300 font-mono text-xs"
               >
                 {blueprint.files.map((f) => (
                   <option key={f.filename} value={f.filename}>
@@ -679,7 +679,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                 size="sm"
                 variant="outline"
                 onClick={handleResetFileCode}
-                className="h-6 px-2 text-[10px] text-muted hover:text-white"
+                className="h-6 px-2 text-[10px] text-zinc-400 hover:text-white"
               >
                 <RotateCcw className="size-3 mr-1" />
                 Reset File
@@ -705,10 +705,10 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
               setFileCodes((prev) => ({ ...prev, [selectedFile]: val }));
             }}
             rows={12}
-            className="w-full rounded-lg bg-black/90 border border-border p-3 font-mono text-xs text-amber-100 focus:outline-none focus:border-amber-500/70 resize-y leading-relaxed"
+            className="w-full rounded-lg bg-black/90 border border-white/10 p-3 font-mono text-xs text-amber-100 focus:outline-none focus:border-amber-500/70 resize-y leading-relaxed"
             placeholder="Write or modify TypeScript, SQL or JSON code here..."
           />
-          <div className="flex justify-between items-center text-[10px] text-muted font-mono">
+          <div className="flex justify-between items-center text-[10px] text-zinc-400 font-mono">
             <span>Lines: {currentCode.split("\n").length} · Characters: {currentCode.length}</span>
             <span>Edits persist in session memory and client export</span>
           </div>
@@ -718,10 +718,10 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
       {/* TAB 4: CLIENT HANDOFF & CONTRACT PACKAGE */}
       {activeTab === "handoff" && (
         <div className="p-4 bg-slate-950/90 text-xs space-y-3.5">
-          <div className="flex items-center justify-between pb-2 border-b border-border/50">
+          <div className="flex items-center justify-between pb-2 border-b border-white/10/50">
             <div>
               <span className="text-xs font-bold text-white block">Commercial Turnkey Delivery Package</span>
-              <p className="text-[10px] text-muted">Ready to deliver to client with zero technical debt</p>
+              <p className="text-[10px] text-zinc-400">Ready to deliver to client with zero technical debt</p>
             </div>
             <Badge className="bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">
               Ready for Production Deploy
@@ -729,7 +729,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
+            <div className="rounded-lg bg-white/5 p-3 border border-white/10 space-y-2">
               <span className="text-[11px] font-bold text-amber-300 block">Deliverable Checklist:</span>
               <ul className="space-y-1 text-[11px] text-slate-300">
                 <li className="flex items-center gap-1.5">
@@ -751,19 +751,19 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
               </ul>
             </div>
 
-            <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
+            <div className="rounded-lg bg-white/5 p-3 border border-white/10 space-y-2">
               <span className="text-[11px] font-bold text-cyan-300 block">Client Handoff Credentials:</span>
               <div className="space-y-1 text-[10px] font-mono text-slate-300">
                 <div className="flex justify-between">
-                  <span className="text-muted">Admin User:</span>
+                  <span className="text-zinc-400">Admin User:</span>
                   <span>{blueprint.handoffCredentials.adminEmail}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">Temp Pass:</span>
+                  <span className="text-zinc-400">Temp Pass:</span>
                   <span>{blueprint.handoffCredentials.temporaryPass}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">Database URL:</span>
+                  <span className="text-zinc-400">Database URL:</span>
                   <span className="truncate max-w-[140px]">{blueprint.handoffCredentials.databaseUrl}</span>
                 </div>
               </div>
@@ -815,8 +815,8 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
           </span>
         </div>
 
-        <div className="rounded-lg bg-surface-2 p-2.5 text-xs space-y-1">
-          <p className="text-[11px] text-muted">Client Pain Point:</p>
+        <div className="rounded-lg bg-white/5 p-2.5 text-xs space-y-1">
+          <p className="text-[11px] text-zinc-400">Client Pain Point:</p>
           <p className="text-[11px] leading-relaxed">{lead.painPoint}</p>
           <p className="text-[11px] text-emerald-400 font-semibold mt-1">Solution: {lead.suggestedSolution}</p>
         </div>
@@ -875,31 +875,31 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
             <span className="text-xs font-bold text-emerald-400">💵 Invoice: {invoice.invoiceNumber}</span>
             <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px]">0% Gateway Cut</Badge>
           </div>
-          <span className="text-[10px] text-muted">Due: {invoice.dueDate}</span>
+          <span className="text-[10px] text-zinc-400">Due: {invoice.dueDate}</span>
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Total Contract Value:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Total Contract Value:</span>
             <span className="font-bold text-white font-mono text-sm">
               ₹{invoice.amountInr.toLocaleString("en-IN")}
             </span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">50% Advance Required:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">50% Advance Required:</span>
             <span className="font-bold text-emerald-400 font-mono text-sm">
               ₹{invoice.advanceRequiredInr.toLocaleString("en-IN")}
             </span>
           </div>
         </div>
 
-        <div className="rounded-lg bg-surface-2 p-2.5 text-[11px] text-slate-300 space-y-1 border border-border/50">
+        <div className="rounded-lg bg-white/5 p-2.5 text-[11px] text-slate-300 space-y-1 border border-white/10/50">
           <div className="flex justify-between">
-            <span className="text-muted">Payout Account:</span>
+            <span className="text-zinc-400">Payout Account:</span>
             <span className="font-mono text-emerald-400 font-bold">{invoice.payoutAccount}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted">Legal Compliance:</span>
+            <span className="text-zinc-400">Legal Compliance:</span>
             <span className="text-slate-300">Section 79 IT Act (Direct Intermediary Exemption)</span>
           </div>
         </div>
@@ -954,25 +954,25 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Hourly Rate:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Hourly Rate:</span>
             <span className="font-bold text-emerald-400 font-mono text-sm">${gig.hourlyRateUsd}/hr</span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Estimated Budget:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Estimated Budget:</span>
             <span className="font-bold text-white font-mono text-sm">
               ${gig.fixedBudgetUsd?.toLocaleString() || "Hourly"}
             </span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Client Location:</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Client Location:</span>
             <span className="font-bold text-white">{gig.clientLocation}</span>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-1">
           {gig.skillsRequired.map((s) => (
-            <span key={s} className="rounded bg-surface-2 px-2 py-0.5 text-[10px] font-mono text-sky-300">
+            <span key={s} className="rounded bg-white/5 px-2 py-0.5 text-[10px] font-mono text-sky-300">
               {s}
             </span>
           ))}
@@ -1015,20 +1015,20 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         </div>
 
         <div className="grid grid-cols-3 gap-2 text-center text-xs">
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Tests Verified</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Tests Verified</span>
             <span className="font-bold text-emerald-400 font-mono text-sm">
               {report.passedTests} / {report.totalTests} PASS
             </span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Voice Latency</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Voice Latency</span>
             <span className="font-bold text-cyan-400 font-mono text-sm">
               {voiceLatency.toFixed(0)} ms
             </span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Software Gen</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Software Gen</span>
             <span className="font-bold text-amber-400 font-mono text-sm">
               {softwareLatency.toFixed(0)} ms
             </span>
@@ -1039,11 +1039,11 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
           {report.results.map((r) => (
             <div
               key={r.testId}
-              className="flex items-center justify-between text-[11px] bg-surface-2/60 p-1.5 rounded border border-border/40"
+              className="flex items-center justify-between text-[11px] bg-white/5/60 p-1.5 rounded border border-white/10/40"
             >
               <span className="font-bold text-white">{r.name}</span>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-muted text-[10px]">{r.latencyMs.toFixed(0)}ms</span>
+                <span className="font-mono text-zinc-400 text-[10px]">{r.latencyMs.toFixed(0)}ms</span>
                 <Badge className="bg-emerald-500/20 text-emerald-300 text-[9px] font-mono">
                   {r.score}/100
                 </Badge>
@@ -1086,14 +1086,14 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Current Spend</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Current Spend</span>
             <span className="font-bold text-rose-400 font-mono text-sm">
               ₹{rep.totalMonthlySpendInr.toLocaleString("en-IN")}
             </span>
           </div>
-          <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Optimized Spend</span>
+          <div className="rounded bg-white/5 p-2">
+            <span className="text-zinc-400 block text-[10px]">Optimized Spend</span>
             <span className="font-bold text-emerald-400 font-mono text-sm">
               ₹{(rep.totalMonthlySpendInr - rep.totalProjectedSavingsInr).toLocaleString("en-IN")}
             </span>
@@ -1102,7 +1102,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
 
         <div className="space-y-1.5 text-[11px]">
           {rep.optimizationRecommendations.slice(0, 3).map((rec, i) => (
-            <div key={i} className="flex items-start gap-1.5 text-slate-300 bg-surface-2/60 p-1.5 rounded">
+            <div key={i} className="flex items-start gap-1.5 text-slate-300 bg-white/5/60 p-1.5 rounded">
               <Check className="size-3 text-emerald-400 shrink-0 mt-0.5" />
               <span>{rec}</span>
             </div>
@@ -1136,10 +1136,10 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
           {graph.stages.map((s: SupremeStageNode, idx: number) => (
             <div
               key={s.id || s.stage}
-              className="flex items-center justify-between text-[11px] bg-surface-2/60 p-1.5 rounded border border-border/40"
+              className="flex items-center justify-between text-[11px] bg-white/5/60 p-1.5 rounded border border-white/10/40"
             >
               <div className="flex items-center gap-1.5 min-w-0">
-                <span className="font-mono text-muted text-[10px] shrink-0">{idx + 1}.</span>
+                <span className="font-mono text-zinc-400 text-[10px] shrink-0">{idx + 1}.</span>
                 <span className="font-bold text-slate-200 truncate">{s.title}</span>
               </div>
               <Badge
@@ -1148,7 +1148,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
                     ? "bg-emerald-500/20 text-emerald-300"
                     : s.status === "PAUSED_FOR_HUMAN"
                     ? "bg-amber-500/20 text-amber-300 animate-pulse"
-                    : "bg-surface text-muted"
+                    : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-zinc-400"
                 }`}
               >
                 {s.status}
@@ -1393,42 +1393,42 @@ function InChatCredentialCard({ onSave }: { onSave?: (keys: FounderCredentials) 
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
         <div>
-          <label className="text-[10px] text-muted block mb-0.5">OPENAI_API_KEY</label>
+          <label className="text-[10px] text-zinc-400 block mb-0.5">OPENAI_API_KEY</label>
           <Input
             type="password"
             value={keys.openAiKey}
             onChange={(e) => setKeys({ ...keys, openAiKey: e.target.value })}
             placeholder="sk-..."
-            className="h-7 text-xs bg-surface-2"
+            className="h-7 text-xs bg-white/5"
           />
         </div>
         <div>
-          <label className="text-[10px] text-muted block mb-0.5">ANTHROPIC_API_KEY</label>
+          <label className="text-[10px] text-zinc-400 block mb-0.5">ANTHROPIC_API_KEY</label>
           <Input
             type="password"
             value={keys.anthropicKey}
             onChange={(e) => setKeys({ ...keys, anthropicKey: e.target.value })}
             placeholder="sk-ant-..."
-            className="h-7 text-xs bg-surface-2"
+            className="h-7 text-xs bg-white/5"
           />
         </div>
         <div>
-          <label className="text-[10px] text-muted block mb-0.5">STRIPE_SECRET_KEY</label>
+          <label className="text-[10px] text-zinc-400 block mb-0.5">STRIPE_SECRET_KEY</label>
           <Input
             type="password"
             value={keys.stripeKey}
             onChange={(e) => setKeys({ ...keys, stripeKey: e.target.value })}
             placeholder="sk_live_..."
-            className="h-7 text-xs bg-surface-2"
+            className="h-7 text-xs bg-white/5"
           />
         </div>
         <div>
-          <label className="text-[10px] text-muted block mb-0.5">FOUNDER_UPI_VPA</label>
+          <label className="text-[10px] text-zinc-400 block mb-0.5">FOUNDER_UPI_VPA</label>
           <Input
             value={keys.founderUpiVpa}
             onChange={(e) => setKeys({ ...keys, founderUpiVpa: e.target.value })}
             placeholder="e.g. orderking@okhdfcbank"
-            className="h-7 text-xs bg-surface-2"
+            className="h-7 text-xs bg-white/5"
           />
         </div>
       </div>

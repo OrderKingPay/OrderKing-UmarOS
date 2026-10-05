@@ -102,13 +102,13 @@ function RestaurantPage() {
           </button>
         </p>
       ) : !restaurant ? (
-        <p className="p-4 text-muted">{t("common.empty")}</p>
+        <p className="p-4 text-zinc-400">{t("common.empty")}</p>
       ) : (
         <article>
           {jsonLd ? (
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
           ) : null}
-          <div className="relative aspect-[16/9] bg-surface-2">
+          <div className="relative aspect-[16/9] bg-white/5">
             {restaurant.card.coverImage ? (
               <img loading="lazy" src={restaurant.card.coverImage} alt="" className="h-full w-full object-cover" />
             ) : null}
@@ -121,12 +121,12 @@ function RestaurantPage() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h1 className="font-display text-3xl">{restaurant.card.name}</h1>
-                <p className="mt-1 text-sm text-muted">{restaurant.card.cuisineSummary}</p>
+                <p className="mt-1 text-sm text-zinc-400">{restaurant.card.cuisineSummary}</p>
               </div>
               {user ? (
                 <button
                   type="button"
-                  className="grid size-11 place-items-center rounded-full bg-surface"
+                  className="grid size-11 place-items-center rounded-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
                   aria-label={t("account.favourites")}
                   onClick={() => void toggleFavourite({ data: { restaurantId: restaurant.card.id } })}
                 >
@@ -134,13 +134,13 @@ function RestaurantPage() {
                 </button>
               ) : null}
             </div>
-            <p className="mt-2 text-sm text-muted">{restaurant.description}</p>
-            <p className="mt-2 text-sm text-muted">
+            <p className="mt-2 text-sm text-zinc-400">{restaurant.description}</p>
+            <p className="mt-2 text-sm text-zinc-400">
               {t("restaurant.eta", { n: restaurant.card.etaMinutes })} ·{" "}
               {t("restaurant.delivery", { fee: formatPaise(restaurant.card.deliveryFeePaise, { locale }) })} ·{" "}
               {t("restaurant.minOrder", { amount: formatPaise(restaurant.card.minOrderPaise, { locale }) })}
             </p>
-            <p className="text-sm text-muted">
+            <p className="text-sm text-zinc-400">
               {restaurant.area} · {restaurant.hoursLabel}
             </p>
             {restaurant.card.dataLabel !== "REAL" ? (
@@ -149,7 +149,7 @@ function RestaurantPage() {
             {!restaurant.card.open ? <p className="mt-2 text-sm text-danger">{t("restaurant.closedNotice")}</p> : null}
 
             {/* OrderKing VIP Gold Pass Banner (Zomato Gold / Swiggy One equivalent) */}
-            <div className="mt-3 rounded-[var(--radius-xl)] border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-surface to-amber-500/5 p-3.5 shadow-xs">
+            <div className="mt-3 rounded-[var(--radius-xl)] border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-surface to-amber-500/5 p-3.5 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="flex size-8 items-center justify-center rounded-lg bg-amber-500/20 text-base">
@@ -157,12 +157,12 @@ function RestaurantPage() {
                   </span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-display text-sm font-bold text-fg">OrderKing VIP Member</span>
+                      <span className="font-display text-sm font-bold text-white">OrderKing VIP Member</span>
                       <span className="rounded-full bg-amber-500/20 px-2 py-0.2 text-[10px] font-bold text-amber-800 dark:text-amber-200">
                         Active Perks
                       </span>
                     </div>
-                    <p className="text-xs text-muted">
+                    <p className="text-xs text-zinc-400">
                       Free Delivery on orders above ₹199 + Extra 15% OFF (use code <span className="font-mono font-bold text-primary">VIPGOLD</span>)
                     </p>
                   </div>
@@ -172,20 +172,20 @@ function RestaurantPage() {
             </div>
 
             {/* FSSAI Hygiene & Kitchen Safety Audit Card */}
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-surface-2/60 px-3 py-2 text-xs">
-              <div className="flex items-center gap-2 text-muted">
-                <span className="font-semibold text-fg">🛡️ FSSAI Lic: 10321999000124</span>
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/5/60 px-3 py-2 text-xs">
+              <div className="flex items-center gap-2 text-zinc-400">
+                <span className="font-semibold text-white">🛡️ FSSAI Lic: 10321999000124</span>
                 <span>•</span>
                 <span className="text-emerald-600 font-medium">⭐ 4.8/5 Clean Kitchen Verified</span>
               </div>
-              <span className="text-[11px] text-muted">🌡️ Chef Temp: 98.4°F (Checked Today)</span>
+              <span className="text-[11px] text-zinc-400">🌡️ Chef Temp: 98.4°F (Checked Today)</span>
             </div>
 
             <input
               value={menuQ}
               onChange={(e) => setMenuQ(e.target.value)}
               placeholder={t("restaurant.searchMenu")}
-              className="mt-4 min-h-11 w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 text-sm"
+              className="mt-4 min-h-11 w-full rounded-[var(--radius-md)] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 text-sm"
             />
             {/* Zomato-style Diet Filter Pills & Group Order */}
             <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
@@ -195,7 +195,7 @@ function RestaurantPage() {
                 className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition ${
                   dietFilter === "VEG"
                     ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
-                    : "border-border bg-surface text-muted hover:border-emerald-500"
+                    : "border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-zinc-400 hover:border-emerald-500"
                 }`}
               >
                 <span className="flex size-3.5 items-center justify-center rounded-sm border border-emerald-600 bg-white">
@@ -210,7 +210,7 @@ function RestaurantPage() {
                 className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition ${
                   dietFilter === "NON_VEG"
                     ? "border-rose-600 bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-200"
-                    : "border-border bg-surface text-muted hover:border-rose-500"
+                    : "border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-zinc-400 hover:border-rose-500"
                 }`}
               >
                 <span className="flex size-3.5 items-center justify-center rounded-sm border border-rose-600 bg-white">
@@ -225,7 +225,7 @@ function RestaurantPage() {
                 className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition ${
                   dietFilter === "BESTSELLER"
                     ? "border-amber-500 bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200"
-                    : "border-border bg-surface text-muted hover:border-amber-500"
+                    : "border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-zinc-400 hover:border-amber-500"
                 }`}
               >
                 <span>⭐</span>
@@ -248,9 +248,9 @@ function RestaurantPage() {
               </button>
             </div>
           </div>
-          <nav className="flex gap-2 overflow-x-auto border-y border-border bg-bg px-4 py-2">
+          <nav className="flex gap-2 overflow-x-auto border-y border-white/10 bg-bg px-4 py-2">
             {restaurant.categories.map((c: any) => (
-              <a key={c.id} href={`#${c.id}`} className="shrink-0 rounded-full bg-surface px-3 py-2 text-sm text-fg no-underline">
+              <a key={c.id} href={`#${c.id}`} className="shrink-0 rounded-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-2 text-sm text-white no-underline">
                 {c.name}
               </a>
             ))}
@@ -269,11 +269,11 @@ function RestaurantPage() {
                 <h2 className="mb-3 font-display text-xl">{c.name} ({filteredItems.length})</h2>
                 <ul className="space-y-3">
                   {filteredItems.map((it: any) => (
-                    <li key={it.id} className="flex gap-3 rounded-[var(--radius-lg)] bg-surface p-3">
+                    <li key={it.id} className="flex gap-3 rounded-[var(--radius-lg)] bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3">
                       {it.imageUrl ? (
                         <img loading="lazy" src={it.imageUrl} alt="" className="size-20 rounded-[var(--radius-sm)] object-cover" />
                       ) : (
-                        <div className="size-20 rounded-[var(--radius-sm)] bg-surface-2" />
+                        <div className="size-20 rounded-[var(--radius-sm)] bg-white/5" />
                       )}
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
@@ -290,12 +290,12 @@ function RestaurantPage() {
                           <p className="font-medium">{it.name}</p>
                           {it.bestseller ? <Badge>{t("restaurant.bestseller")}</Badge> : null}
                         </div>
-                        <p className="line-clamp-2 text-sm text-muted">{it.description}</p>
-                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted">
-                          <span className="rounded bg-surface-2 px-1.5 py-0.5 font-medium">
+                        <p className="line-clamp-2 text-sm text-zinc-400">{it.description}</p>
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-zinc-400">
+                          <span className="rounded bg-white/5 px-1.5 py-0.5 font-medium">
                             🔥 {it.veg ? "320-380 kcal" : "420-520 kcal"}
                           </span>
-                          <span className="rounded bg-surface-2 px-1.5 py-0.5 font-medium">
+                          <span className="rounded bg-white/5 px-1.5 py-0.5 font-medium">
                             💪 {it.veg ? "12g Protein" : "26g Protein"}
                           </span>
                           <span className="text-[10px] text-emerald-600 font-semibold">
@@ -309,7 +309,7 @@ function RestaurantPage() {
                           {it.variants.length || it.addonGroups.length ? t("restaurant.customise") : t("restaurant.add")}
                         </Button>
                       ) : (
-                        <span className="text-xs text-muted">{t("restaurant.unavailable")}</span>
+                        <span className="text-xs text-zinc-400">{t("restaurant.unavailable")}</span>
                       )}
                     </li>
                   ))}
@@ -318,23 +318,23 @@ function RestaurantPage() {
             );
           })}
           {/* Zomato-standard FSSAI License & Food Safety Regulatory Card */}
-          <div className="mx-4 my-8 rounded-[var(--radius-lg)] border border-border bg-surface p-4 text-xs text-muted space-y-3 shadow-sm">
-            <div className="flex items-center gap-3 border-b border-border pb-3">
-              <div className="flex h-8 w-14 items-center justify-center rounded border border-border bg-white px-1 text-slate-800 font-extrabold tracking-tight text-[11px] shadow-sm">
+          <div className="mx-4 my-8 rounded-[var(--radius-lg)] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 text-xs text-zinc-400 space-y-3 shadow-sm">
+            <div className="flex items-center gap-3 border-b border-white/10 pb-3">
+              <div className="flex h-8 w-14 items-center justify-center rounded border border-white/10 bg-white px-1 text-slate-800 font-extrabold tracking-tight text-[11px] shadow-sm">
                 fssai
               </div>
               <div>
-                <p className="font-semibold text-fg text-xs">
+                <p className="font-semibold text-white text-xs">
                   License No. {restaurant.card.id.slice(0, 4).replace(/\D/g, "1") || "10"}321001000{restaurant.card.id.slice(-3).replace(/\D/g, "9") || "452"}
                 </p>
-                <p className="text-[11px] text-muted">Registered FSSAI Kitchen Partner</p>
+                <p className="text-[11px] text-zinc-400">Registered FSSAI Kitchen Partner</p>
               </div>
             </div>
             <div className="space-y-1">
-              <p className="font-medium text-fg">{restaurant.card.name}</p>
+              <p className="font-medium text-white">{restaurant.card.name}</p>
               <p>{restaurant.addressLine || restaurant.area || "Authorized Commercial Kitchen"}</p>
             </div>
-            <div className="border-t border-border pt-2 text-[11px] leading-relaxed text-muted">
+            <div className="border-t border-white/10 pt-2 text-[11px] leading-relaxed text-zinc-400">
               OrderKing acts as a technology platform connecting customers with verified restaurants. Food preparation, hygiene standards, packaging integrity, and statutory licenses are managed directly by the licensed food business operator.
             </div>
           </div>
@@ -353,9 +353,9 @@ function RestaurantPage() {
       )}
       {replaceWith && restaurant ? (
         <div className="fixed inset-0 z-50 grid place-items-end bg-fg/40 p-4 md:place-items-center">
-          <div className="w-full max-w-md rounded-[var(--radius-xl)] bg-surface p-5">
+          <div className="w-full max-w-md rounded-[var(--radius-xl)] bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5">
             <h2 className="font-display text-xl">{t("cart.replaceTitle")}</h2>
-            <p className="mt-2 text-sm text-muted">{t("cart.replaceBody", { name: replaceWith.name })}</p>
+            <p className="mt-2 text-sm text-zinc-400">{t("cart.replaceBody", { name: replaceWith.name })}</p>
             <div className="mt-4 flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setReplaceWith(null)}>
                 {t("cart.keep")}

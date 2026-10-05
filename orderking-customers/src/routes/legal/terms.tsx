@@ -10,8 +10,8 @@ function TermsPage() {
   const { brand, marketplace } = useBrand();
   return (
     <CustomerShell>
-      <article className="px-4 py-5 text-sm text-muted">
-        <h1 className="font-display text-3xl text-fg">{t("legal.terms")}</h1>
+      <article className="px-4 py-5 text-sm text-zinc-400">
+        <h1 className="font-display text-3xl text-white">{t("legal.terms")}</h1>
         <p className="mt-4">
           {brand.companyName} is a local marketplace. Sample kitchens are not live vendors. Prices, delivery fees and
           commissions are calculated on the server. Default kitchen commission is {marketplace.defaultCommissionBps / 100}

@@ -56,9 +56,9 @@ function SettingsPage() {
         {vendor.role && can(vendor.role, "settings.financial") ? (
           <p className="tabular text-2xl">{(vendor.selected?.commissionBps ?? 1000) / 100}%</p>
         ) : (
-          <p className="text-sm text-muted">{t("settings.financialLocked")}</p>
+          <p className="text-sm text-zinc-400">{t("settings.financialLocked")}</p>
         )}
-        <p className="text-xs text-muted">
+        <p className="text-xs text-zinc-400">
           {t("settings.snapshotHint")} {platformConfig.commission.targetBps / 100}%.
         </p>
       </Card>
@@ -69,7 +69,7 @@ function SettingsPage() {
             {staffQ.data?.staff.map((s) => (
               <li key={s.id} className="flex justify-between border-b border-line py-2">
                 <span>{s.email ?? s.user_id}</span>
-                <span className="text-muted">{s.role}</span>
+                <span className="text-zinc-400">{s.role}</span>
               </li>
             ))}
           </ul>
@@ -81,7 +81,7 @@ function SettingsPage() {
             <div>
               <Label>{t("settings.role")}</Label>
               <select
-                className="h-11 w-full rounded-[12px] border border-line bg-surface px-2"
+                className="h-11 w-full rounded-[12px] border border-line bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-2"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
               >
@@ -112,10 +112,10 @@ function SettingsPage() {
               {t("settings.add")}
             </Button>
           </div>
-          {msg ? <p className="text-sm text-muted">{msg}</p> : null}
+          {msg ? <p className="text-sm text-zinc-400">{msg}</p> : null}
         </Card>
       ) : null}
-      <Card className="text-sm text-muted">
+      <Card className="text-sm text-zinc-400">
         {t("settings.adapters")}: AI {vendor.adapters?.ai.provider}, SMS{" "}
         {vendor.adapters?.notifications.find((n) => n.channel === "sms")?.provider}, storage{" "}
         {vendor.adapters?.storage.provider}, dispatch {vendor.adapters?.dispatch.provider}.

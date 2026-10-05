@@ -162,9 +162,9 @@ export function FounderCrmHub({
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-surface text-fg rounded-2xl border border-border overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white rounded-2xl border border-white/10 overflow-hidden">
       {/* CRM Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-2/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5/40 p-4">
         <div>
           <div className="flex items-center gap-2">
             <Briefcase className="size-5 text-amber-500" />
@@ -173,9 +173,9 @@ export function FounderCrmHub({
               Directive §8 &amp; §9
             </Badge>
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-zinc-400">
             12-Stage Verifiable Pipeline · Total Active Value:{" "}
-            <span className="font-bold text-fg">₹{totalPipelineValue.toLocaleString("en-IN")}</span>
+            <span className="font-bold text-white">₹{totalPipelineValue.toLocaleString("en-IN")}</span>
           </p>
         </div>
 
@@ -193,11 +193,11 @@ export function FounderCrmHub({
       {/* Main CRM Workspace (Split: Left List, Right Detail) */}
       <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
         {/* Left Column: Leads Filter & List */}
-        <div className="md:col-span-5 border-r border-border flex flex-col h-full bg-surface">
+        <div className="md:col-span-5 border-r border-white/10 flex flex-col h-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           {/* Search & Category Filter */}
-          <div className="p-3 border-b border-border space-y-2">
+          <div className="p-3 border-b border-white/10 space-y-2">
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 size-4 text-muted" />
+              <Search className="absolute left-2.5 top-2.5 size-4 text-zinc-400" />
               <Input
                 placeholder="Search prospects by name or city..."
                 value={searchQuery}
@@ -215,7 +215,7 @@ export function FounderCrmHub({
                   className={`px-2.5 py-1 rounded-lg font-bold capitalize transition shrink-0 ${
                     filterCategory === cat
                       ? "bg-primary text-white"
-                      : "bg-surface-2 text-muted hover:text-fg border border-border"
+                      : "bg-white/5 text-zinc-400 hover:text-white border border-white/10"
                   }`}
                 >
                   {cat}
@@ -235,25 +235,25 @@ export function FounderCrmHub({
                   onClick={() => setSelectedLead(lead)}
                   className={`p-3 rounded-xl border transition cursor-pointer ${
                     isSelected
-                      ? "bg-primary/10 border-primary shadow-xs"
-                      : "bg-surface hover:bg-surface-2/60 border-border"
+                      ? "bg-primary/10 border-primary shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                      : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-white/5/60 border-white/10"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <h4 className="font-bold text-xs text-fg leading-tight">{lead.businessName}</h4>
+                    <h4 className="font-bold text-xs text-white leading-tight">{lead.businessName}</h4>
                     <span className="font-mono font-black text-xs text-emerald-600 dark:text-emerald-400 shrink-0">
                       ₹{lead.projectBudget.toLocaleString("en-IN")}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-[11px] text-muted mb-2">
+                  <div className="flex items-center gap-2 text-[11px] text-zinc-400 mb-2">
                     <span className="capitalize">{lead.category}</span>
                     <span>•</span>
                     <span>{lead.location}</span>
                   </div>
 
                   <div className="flex items-center justify-between text-[10px]">
-                    <span className="flex items-center gap-1 rounded-md bg-surface-2 px-2 py-0.5 font-semibold text-fg border border-border">
+                    <span className="flex items-center gap-1 rounded-md bg-white/5 px-2 py-0.5 font-semibold text-white border border-white/10">
                       <span>{stageObj.icon}</span>
                       <span>{stageObj.label}</span>
                     </span>
@@ -276,26 +276,26 @@ export function FounderCrmHub({
         </div>
 
         {/* Right Column: Active Prospect Dossier & Action Deck */}
-        <div className="md:col-span-7 flex flex-col h-full overflow-y-auto bg-surface-2/20 p-4 space-y-4">
+        <div className="md:col-span-7 flex flex-col h-full overflow-y-auto bg-white/5/20 p-4 space-y-4">
           {selectedLead ? (
             <>
               {/* Dossier Header */}
-              <div className="rounded-2xl border border-border bg-surface p-4 space-y-3 shadow-xs">
+              <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-base font-black text-fg">{selectedLead.businessName}</h3>
+                      <h3 className="text-base font-black text-white">{selectedLead.businessName}</h3>
                       <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-bold">
                         {selectedLead.category.toUpperCase()}
                       </Badge>
                     </div>
-                    <p className="text-xs text-muted">
+                    <p className="text-xs text-zinc-400">
                       {selectedLead.location} · Estimated Monthly Rev: {selectedLead.monthlyRevenueEst}
                     </p>
                   </div>
 
                   <div className="text-right">
-                    <p className="text-[10px] uppercase font-black tracking-wider text-muted">Project Value</p>
+                    <p className="text-[10px] uppercase font-black tracking-wider text-zinc-400">Project Value</p>
                     <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">
                       ₹{selectedLead.projectBudget.toLocaleString("en-IN")}
                     </p>
@@ -303,9 +303,9 @@ export function FounderCrmHub({
                 </div>
 
                 {/* 12-Stage Visual Progress Bar */}
-                <div className="pt-2 border-t border-border space-y-1.5">
+                <div className="pt-2 border-t border-white/10 space-y-1.5">
                   <div className="flex items-center justify-between text-[11px] font-bold">
-                    <span className="text-muted">Pipeline Progress:</span>
+                    <span className="text-zinc-400">Pipeline Progress:</span>
                     <span className="text-primary font-black">
                       {CRM_STAGES.find((s) => s.id === selectedLead.crmStage)?.label}
                     </span>
@@ -320,7 +320,7 @@ export function FounderCrmHub({
                           key={stg.id}
                           title={stg.label}
                           className={`h-2 rounded-sm transition-all ${
-                            isDone ? "bg-emerald-500 shadow-xs" : "bg-border"
+                            isDone ? "bg-emerald-500 shadow-[0_0_15px_rgba(255,255,255,0.05)]" : "bg-border"
                           }`}
                         />
                       );
@@ -335,14 +335,14 @@ export function FounderCrmHub({
                   <span className="text-[10px] font-black uppercase text-rose-600 tracking-wider">
                     Client Pain Point
                   </span>
-                  <p className="text-xs font-medium text-fg">{selectedLead.painPoint}</p>
+                  <p className="text-xs font-medium text-white">{selectedLead.painPoint}</p>
                 </div>
 
                 <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-1">
                   <span className="text-[10px] font-black uppercase text-emerald-600 tracking-wider">
                     Tailored Solution &amp; ROI
                   </span>
-                  <p className="text-xs font-medium text-fg">{selectedLead.suggestedSolution}</p>
+                  <p className="text-xs font-medium text-white">{selectedLead.suggestedSolution}</p>
                   <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
                     Projected Impact: {selectedLead.potentialGmvGrowth}
                   </p>
@@ -350,8 +350,8 @@ export function FounderCrmHub({
               </div>
 
               {/* Action Operations Deck */}
-              <div className="rounded-2xl border border-border bg-surface p-4 space-y-3 shadow-xs">
-                <h4 className="text-xs font-black uppercase tracking-wider text-muted flex items-center gap-1.5">
+              <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                <h4 className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                   <Sparkles className="size-3.5 text-amber-500" />
                   <span>Founder Action Deck (1-Tap Execution)</span>
                 </h4>
@@ -398,8 +398,8 @@ export function FounderCrmHub({
                   </Button>
                 </div>
 
-                <div className="pt-2 border-t border-border flex items-center justify-between">
-                  <span className="text-[11px] text-muted">
+                <div className="pt-2 border-t border-white/10 flex items-center justify-between">
+                  <span className="text-[11px] text-zinc-400">
                     Contact: {selectedLead.contactPerson} ({selectedLead.email})
                   </span>
 
@@ -414,7 +414,7 @@ export function FounderCrmHub({
               </div>
             </>
           ) : (
-            <div className="flex h-full items-center justify-center text-xs text-muted">
+            <div className="flex h-full items-center justify-center text-xs text-zinc-400">
               Select a prospect from the left to view complete dossier and actions.
             </div>
           )}
@@ -424,13 +424,13 @@ export function FounderCrmHub({
       {/* New Lead Modal */}
       {showNewLeadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-border pb-2">
-              <h3 className="font-bold text-sm text-fg">Add New Client Prospect</h3>
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <h3 className="font-bold text-sm text-white">Add New Client Prospect</h3>
               <button
                 type="button"
                 onClick={() => setShowNewLeadModal(false)}
-                className="text-muted hover:text-fg text-sm font-bold"
+                className="text-zinc-400 hover:text-white text-sm font-bold"
               >
                 ✕
               </button>
@@ -453,7 +453,7 @@ export function FounderCrmHub({
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value as any)}
-                    className="w-full rounded-lg border border-border bg-surface p-2 text-xs"
+                    className="w-full rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-2 text-xs"
                   >
                     <option value="restaurant">Restaurant</option>
                     <option value="ecommerce">E-Commerce</option>
@@ -492,7 +492,7 @@ export function FounderCrmHub({
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
                 <Button
                   type="button"
                   variant="outline"

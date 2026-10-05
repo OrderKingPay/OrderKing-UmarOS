@@ -2,8 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { assertSameOrigin, requestRiskFingerprint } from "@/lib/security/request-integrity";
 
 export const Route = createFileRoute("/api/razorpay/create-order")({
-  // @ts-expect-error
-  server: {
+server: {
     handlers: {
       POST: async ({ request }: any) => {
         try {
@@ -25,7 +24,7 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
             return Response.json({ error: "Razorpay keys not configured" }, { status: 503 });
           }
 
-          $Razorpay = (await import("razorpay")).default; const instance = new $Razorpay({ key_id: keyId, key_secret: keySecret });
+          const Razorpay = (await import("razorpay")).default; const instance = new Razorpay({ key_id: keyId, key_secret: keySecret });
           const options = {
             amount: Math.round(amount * 100),
             currency,

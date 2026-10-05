@@ -139,6 +139,8 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     gstin?: string;
     fssaiNumber?: string;
     pan?: string;
+    udyamNumber?: string;
+    dpiitNumber?: string;
     prepMinutes?: number;
     peakPrepMinutes?: number;
     minOrderPaise?: number;
@@ -170,6 +172,8 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         "gstin",
         "fssai_number",
         "pan",
+        "udyam_number",
+        "dpiit_number",
         "prep_minutes",
         "peak_prep_minutes",
         "min_order_paise",
@@ -191,6 +195,8 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         gstin: "gstin",
         fssaiNumber: "fssai_number",
         pan: "pan",
+        udyamNumber: "udyam_number",
+        dpiitNumber: "dpiit_number",
         prepMinutes: "prep_minutes",
         peakPrepMinutes: "peak_prep_minutes",
         minOrderPaise: "min_order_paise",
@@ -275,6 +281,8 @@ export const getRestaurant = createServerFn({ method: "GET" })
         gstin: string;
         fssai_number: string;
         pan: string;
+        udyam_number: string;
+        dpiit_number: string;
         bank_account: string;
         bank_ifsc: string;
         bank_name: string;
@@ -293,7 +301,7 @@ export const getRestaurant = createServerFn({ method: "GET" })
       }>`
         select id, name, display_name, owner_name, phone, email, address, landmark,
                cuisine, diet, description, gstin, fssai_number, pan,
-               bank_account, bank_ifsc, bank_name, verification_status, data_label,
+               udyam_number, dpiit_number, bank_account, bank_ifsc, bank_name, verification_status, data_label,
                commission_bps, packing_paise, prep_minutes, peak_prep_minutes,
                min_order_paise, emergency_closed, vacation_mode, weekly_holidays, lat, lng
         from restaurants where id = ${ctx.restaurantId} limit 1

@@ -52,7 +52,7 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
   const handleKreditBee = () => window.open("https://www.kreditbee.in/?utm_source=orderking_affiliate", "_blank");
 
   return (
-    <div className="space-y-6 text-fg p-4 md:p-6">
+    <div className="space-y-6 text-white p-4 md:p-6">
       
       {/* Native Lending Flow */}
       <div className="relative overflow-hidden rounded-3xl border-2 border-emerald-500/30 bg-emerald-500/5 p-6 sm:p-10 shadow-xl">
@@ -64,7 +64,7 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
             <h2 className="font-display text-3xl sm:text-4xl font-black text-emerald-700 dark:text-emerald-400">
               KingPay Insta-Cash
             </h2>
-            <p className="text-muted text-sm sm:text-base font-medium max-w-sm">
+            <p className="text-zinc-400 text-sm sm:text-base font-medium max-w-sm">
               Get up to ₹2,00,000 disbursed directly to your KingPay Wallet in 30 seconds. Zero paperwork.
             </p>
             <div className="flex items-center justify-center md:justify-start gap-4 text-sm font-semibold pt-2">
@@ -79,9 +79,9 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
 
           <div className="w-full md:w-[400px] shrink-0">
             {!showApply && !result ? (
-              <div className="bg-surface rounded-2xl p-6 border border-border shadow-sm text-center">
+              <div className="bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-2xl p-6 border border-white/10 shadow-sm text-center">
                 <h3 className="text-xl font-bold mb-2">Check Eligibility</h3>
-                <p className="text-sm text-muted mb-6">Takes only 2 minutes. Does not affect your CIBIL score.</p>
+                <p className="text-sm text-zinc-400 mb-6">Takes only 2 minutes. Does not affect your CIBIL score.</p>
                 <Button onClick={() => setShowApply(true)} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl py-6 text-lg font-bold">
                   Start Application
                 </Button>
@@ -94,17 +94,17 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
                 <h3 className="text-2xl font-black text-emerald-600 mb-2">₹{result.disbursedAmount.toLocaleString("en-IN")} Approved!</h3>
                 <p className="text-sm font-medium mb-4">{result.message}</p>
                 
-                <div className="bg-surface rounded-xl p-4 text-left space-y-2 mb-6">
+                <div className="bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-xl p-4 text-left space-y-2 mb-6">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted">Interest Rate</span>
+                    <span className="text-zinc-400">Interest Rate</span>
                     <span className="font-bold">{result.interestRate}% p.a.</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted">EMI ({result.tenureMonths} Months)</span>
-                    <span className="font-bold text-fg">₹{result.emi.toLocaleString("en-IN")}/mo</span>
+                    <span className="text-zinc-400">EMI ({result.tenureMonths} Months)</span>
+                    <span className="font-bold text-white">₹{result.emi.toLocaleString("en-IN")}/mo</span>
                   </div>
-                  <div className="flex justify-between text-sm pt-2 border-t border-border">
-                    <span className="text-muted">Loan ID</span>
+                  <div className="flex justify-between text-sm pt-2 border-t border-white/10">
+                    <span className="text-zinc-400">Loan ID</span>
                     <span className="font-mono text-xs">{result.loanId}</span>
                   </div>
                 </div>
@@ -114,7 +114,7 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleApply} className="bg-surface rounded-2xl p-6 border border-border shadow-sm animate-in slide-in-from-bottom-4">
+              <form onSubmit={handleApply} className="bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-2xl p-6 border border-white/10 shadow-sm animate-in slide-in-from-bottom-4">
                 <h3 className="text-lg font-bold mb-4">Application Details</h3>
                 
                 {error && (
@@ -129,7 +129,7 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
                     <input
                       required
                       type="text"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono uppercase"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono uppercase"
                       placeholder="ABCDE1234F"
                       value={pan}
                       onChange={e => setPan(e.target.value.toUpperCase())}
@@ -140,7 +140,7 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
                     <input
                       required
                       type="number"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono"
                       value={income}
                       onChange={e => setIncome(e.target.value)}
                     />
@@ -150,7 +150,7 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
                     <input
                       required
                       type="number"
-                      className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono"
+                      className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono"
                       value={amount}
                       onChange={e => setAmount(e.target.value)}
                     />
@@ -168,22 +168,22 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
       <div className="pt-6">
         <h3 className="text-lg font-bold mb-4 px-2">Other Pre-Approved Partners</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-border bg-surface p-5 hover:border-emerald-500/50 transition cursor-pointer" onClick={handleNavi}>
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 hover:border-emerald-500/50 transition cursor-pointer" onClick={handleNavi}>
             <div className="flex items-start justify-between">
               <div>
                 <h4 className="font-black text-lg">Navi Loan</h4>
-                <p className="text-xs text-muted mt-1">Up to ₹20 Lakhs in 5 mins</p>
+                <p className="text-xs text-zinc-400 mt-1">Up to ₹20 Lakhs in 5 mins</p>
               </div>
               <div className="text-emerald-500 bg-emerald-500/10 p-2 rounded-xl">
                 <ArrowRight className="size-5" />
               </div>
             </div>
           </div>
-          <div className="rounded-2xl border border-border bg-surface p-5 hover:border-emerald-500/50 transition cursor-pointer" onClick={handleKreditBee}>
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 hover:border-emerald-500/50 transition cursor-pointer" onClick={handleKreditBee}>
             <div className="flex items-start justify-between">
               <div>
                 <h4 className="font-black text-lg">KreditBee</h4>
-                <p className="text-xs text-muted mt-1">Quick loans up to ₹4 Lakhs</p>
+                <p className="text-xs text-zinc-400 mt-1">Quick loans up to ₹4 Lakhs</p>
               </div>
               <div className="text-emerald-500 bg-emerald-500/10 p-2 rounded-xl">
                 <ArrowRight className="size-5" />

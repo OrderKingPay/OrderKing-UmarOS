@@ -50,17 +50,17 @@ export function LiveDeliveryMap({
   const etaMinutes = isDelivered ? 0 : (etaOverride ?? Math.max(2, Math.round((1 - currentProgress) * 22)));
 
   return (
-    <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border border-primary/20 bg-surface shadow-sm">
+    <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border border-primary/20 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-sm">
       {/* Live Map Header */}
-      <div className="flex items-center justify-between border-b border-border bg-primary/5 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-white/10 bg-primary/5 px-4 py-3">
         <div className="flex items-center gap-2">
           <span className="relative flex h-3 w-3">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75"></span>
             <span className="relative inline-flex h-3 w-3 rounded-full bg-success"></span>
           </span>
-          <span className="text-sm font-semibold text-fg">Live GPS Tracking</span>
+          <span className="text-sm font-semibold text-white">Live GPS Tracking</span>
         </div>
-        <span className="text-xs font-medium text-muted">
+        <span className="text-xs font-medium text-zinc-400">
           {isDelivered ? "Delivered" : `ETA: ~${etaMinutes} mins`}
         </span>
       </div>
@@ -118,8 +118,8 @@ export function LiveDeliveryMap({
             👤
           </div>
           <div>
-            <p className="font-semibold text-fg">{riderName}</p>
-            <p className="text-xs text-muted">{riderVehicle} • Verified Partner</p>
+            <p className="font-semibold text-white">{riderName}</p>
+            <p className="text-xs text-zinc-400">{riderVehicle} • Verified Partner</p>
           </div>
         </div>
 

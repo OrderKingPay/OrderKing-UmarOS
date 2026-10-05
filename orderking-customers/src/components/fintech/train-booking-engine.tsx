@@ -18,7 +18,7 @@ export function TrainBookingEngine() {
   };
 
   return (
-    <div className="space-y-6 text-fg p-4 md:p-6">
+    <div className="space-y-6 text-white p-4 md:p-6">
       <div className="relative overflow-hidden rounded-3xl border-2 border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 via-surface to-bg p-6 sm:p-10 shadow-xl">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
@@ -35,24 +35,24 @@ export function TrainBookingEngine() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-           <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-indigo-500/50 transition-colors">
-              <label htmlFor="train-from" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> FROM STATION</label>
-              <input id="train-from" type="text" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Station Name or Code" />
+           <div className="bg-white/5 p-3 rounded-2xl border-2 border-white/10 focus-within:border-indigo-500/50 transition-colors">
+              <label htmlFor="train-from" className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> FROM STATION</label>
+              <input id="train-from" type="text" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-white" placeholder="Enter Station Name or Code" />
            </div>
-           <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-indigo-500/50 transition-colors">
-              <label htmlFor="train-to" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> TO STATION</label>
-              <input id="train-to" type="text" value={to} onChange={(e) => setTo(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-fg" placeholder="Enter Station Name or Code" />
+           <div className="bg-white/5 p-3 rounded-2xl border-2 border-white/10 focus-within:border-indigo-500/50 transition-colors">
+              <label htmlFor="train-to" className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 mb-1"><MapPin className="size-3" /> TO STATION</label>
+              <input id="train-to" type="text" value={to} onChange={(e) => setTo(e.target.value)} className="w-full bg-transparent text-lg font-black outline-none text-white" placeholder="Enter Station Name or Code" />
            </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-           <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-indigo-500/50 transition-colors">
-              <label htmlFor="train-date" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Calendar className="size-3" /> TRAVEL DATE</label>
-              <input id="train-date" type="date" className="w-full bg-transparent text-base font-bold outline-none text-fg" defaultValue={new Date().toISOString().split('T')[0]} />
+           <div className="bg-white/5 p-3 rounded-2xl border-2 border-white/10 focus-within:border-indigo-500/50 transition-colors">
+              <label htmlFor="train-date" className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 mb-1"><Calendar className="size-3" /> TRAVEL DATE</label>
+              <input id="train-date" type="date" className="w-full bg-transparent text-base font-bold outline-none text-white" defaultValue={new Date().toISOString().split('T')[0]} />
            </div>
-           <div className="bg-surface-2 p-3 rounded-2xl border-2 border-border focus-within:border-indigo-500/50 transition-colors">
-              <label htmlFor="train-quota" className="text-xs font-bold text-muted flex items-center gap-1.5 mb-1"><Tag className="size-3" /> QUOTA</label>
-              <select id="train-quota" className="w-full bg-transparent text-base font-bold outline-none text-fg">
+           <div className="bg-white/5 p-3 rounded-2xl border-2 border-white/10 focus-within:border-indigo-500/50 transition-colors">
+              <label htmlFor="train-quota" className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 mb-1"><Tag className="size-3" /> QUOTA</label>
+              <select id="train-quota" className="w-full bg-transparent text-base font-bold outline-none text-white">
                 <option value="GN">General (GN)</option>
                 <option value="TQ">Tatkal (TQ)</option>
                 <option value="PT">Premium Tatkal (PT)</option>
@@ -68,7 +68,7 @@ export function TrainBookingEngine() {
           Search Trains (₹0 PG Fee) <ArrowRight className="ml-2 size-5" />
         </Button>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm font-bold text-muted">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm font-bold text-zinc-400">
           <span className="flex items-center gap-2">
              <ShieldCheck className="size-5 text-emerald-500" /> Authorized IRCTC
           </span>

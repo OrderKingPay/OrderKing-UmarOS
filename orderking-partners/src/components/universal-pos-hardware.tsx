@@ -200,14 +200,14 @@ export function UniversalPosHardwareManager({
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-display text-xl font-bold text-foreground">
+                <h2 className="font-display text-xl font-bold text-white">
                   Universal POS, KOT &amp; Thermal Printer Gateway
                 </h2>
                 <span className="rounded-full bg-leaf-soft px-2.5 py-0.5 text-xs font-bold text-leaf">
                   Active &amp; Ready
                 </span>
               </div>
-              <p className="text-xs text-muted mt-0.5">
+              <p className="text-xs text-zinc-400 mt-0.5">
                 Connect ANY thermal printer (ESC/POS, Bluetooth, USB, Network IP) and ANY restaurant operating system (Petpooja, UrbanPiper, POSist, DotPe, TableCheck, Custom).
               </p>
             </div>
@@ -215,7 +215,7 @@ export function UniversalPosHardwareManager({
           <div className="flex items-center gap-2">
             <a
               href="/assistant"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-primary/40 bg-surface px-3 py-2 text-xs font-bold text-primary hover:bg-primary/10 transition shadow-xs"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-primary/40 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-2 text-xs font-bold text-primary hover:bg-primary/10 transition shadow-[0_0_15px_rgba(255,255,255,0.05)]"
             >
               <span>🤖 AI Hardware Copilot</span>
               <span>↗</span>
@@ -230,17 +230,17 @@ export function UniversalPosHardwareManager({
           <div className="flex items-center gap-2.5">
             <span className="text-xl">🧾</span>
             <div>
-              <h3 className="font-display font-bold text-base text-foreground">
+              <h3 className="font-display font-bold text-base text-white">
                 1. Thermal Bill &amp; Kitchen KOT Printer Setup
               </h3>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-zinc-400">
                 Direct ESC/POS protocol compatible with Epson, TVS, Star Micronics, NGX, Everycom &amp; generic thermal printers.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
             <span className={`h-2.5 w-2.5 rounded-full ${printerConnected ? "bg-leaf animate-pulse" : "bg-warn"}`} />
-            <span className="text-xs font-bold text-foreground">
+            <span className="text-xs font-bold text-white">
               {printerConnected ? "Printer Online" : "Disconnected"}
             </span>
           </div>
@@ -262,12 +262,12 @@ export function UniversalPosHardwareManager({
                 onClick={() => setPrinterInterface(tab.id as PrinterInterface)}
                 className={`rounded-xl border p-2.5 text-left transition ${
                   printerInterface === tab.id
-                    ? "border-primary bg-primary/10 shadow-xs"
-                    : "border-line bg-surface hover:bg-surface-soft"
+                    ? "border-primary bg-primary/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                    : "border-line bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-surface-soft"
                 }`}
               >
-                <div className="font-bold text-xs text-foreground">{tab.label}</div>
-                <div className="text-[10px] text-muted">{tab.desc}</div>
+                <div className="font-bold text-xs text-white">{tab.label}</div>
+                <div className="text-[10px] text-zinc-400">{tab.desc}</div>
               </button>
             ))}
           </div>
@@ -284,7 +284,7 @@ export function UniversalPosHardwareManager({
                 placeholder="192.168.1.100"
                 className="mt-1 font-mono text-xs"
               />
-              <span className="text-[10px] text-muted">Usually printed on printer power-on self-test slip.</span>
+              <span className="text-[10px] text-zinc-400">Usually printed on printer power-on self-test slip.</span>
             </div>
             <div>
               <Label className="text-xs">Port (Standard: 9100)</Label>
@@ -301,8 +301,8 @@ export function UniversalPosHardwareManager({
         {printerInterface === "bluetooth" && (
           <div className="rounded-xl bg-surface-soft p-3.5 border border-line flex items-center justify-between">
             <div>
-              <div className="text-xs font-bold text-foreground">Bluetooth Discovery (Web Bluetooth API)</div>
-              <div className="text-[10px] text-muted">Pair your 58mm or 80mm wireless Bluetooth receipt printer.</div>
+              <div className="text-xs font-bold text-white">Bluetooth Discovery (Web Bluetooth API)</div>
+              <div className="text-[10px] text-zinc-400">Pair your 58mm or 80mm wireless Bluetooth receipt printer.</div>
             </div>
             <Button
               size="sm"
@@ -325,8 +325,8 @@ export function UniversalPosHardwareManager({
         {printerInterface === "usb" && (
           <div className="rounded-xl bg-surface-soft p-3.5 border border-line flex items-center justify-between">
             <div>
-              <div className="text-xs font-bold text-foreground">USB / Serial COM Device (WebUSB)</div>
-              <div className="text-[10px] text-muted">Direct high-speed cable connection to billing terminal.</div>
+              <div className="text-xs font-bold text-white">USB / Serial COM Device (WebUSB)</div>
+              <div className="text-[10px] text-zinc-400">Direct high-speed cable connection to billing terminal.</div>
             </div>
             <Button
               size="sm"
@@ -355,7 +355,7 @@ export function UniversalPosHardwareManager({
                 type="button"
                 onClick={() => setPaperWidth("58mm")}
                 className={`flex-1 rounded-lg border py-1.5 text-xs font-bold transition ${
-                  paperWidth === "58mm" ? "bg-primary text-white border-primary" : "border-line bg-surface"
+                  paperWidth === "58mm" ? "bg-primary text-white border-primary" : "border-line bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
                 }`}
               >
                 58mm (2-inch)
@@ -364,7 +364,7 @@ export function UniversalPosHardwareManager({
                 type="button"
                 onClick={() => setPaperWidth("80mm")}
                 className={`flex-1 rounded-lg border py-1.5 text-xs font-bold transition ${
-                  paperWidth === "80mm" ? "bg-primary text-white border-primary" : "border-line bg-surface"
+                  paperWidth === "80mm" ? "bg-primary text-white border-primary" : "border-line bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
                 }`}
               >
                 80mm (3-inch standard)
@@ -373,7 +373,7 @@ export function UniversalPosHardwareManager({
           </div>
 
           <div className="flex flex-col justify-center space-y-1.5">
-            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-foreground">
+            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-white">
               <input
                 type="checkbox"
                 checked={autoPrintOnOrder}
@@ -382,7 +382,7 @@ export function UniversalPosHardwareManager({
               />
               <span>Auto-Print KOT on New Order</span>
             </label>
-            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-foreground">
+            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-white">
               <input
                 type="checkbox"
                 checked={autoCutPaper}
@@ -394,7 +394,7 @@ export function UniversalPosHardwareManager({
           </div>
 
           <div className="flex flex-col justify-center space-y-1.5">
-            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-foreground">
+            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-white">
               <input
                 type="checkbox"
                 checked={dualKotRouting}
@@ -403,7 +403,7 @@ export function UniversalPosHardwareManager({
               />
               <span>Dual Routing: Kitchen KOT vs. Bar/Counter</span>
             </label>
-            <span className="text-[10px] text-muted">Splits food items and beverages to separate printers.</span>
+            <span className="text-[10px] text-zinc-400">Splits food items and beverages to separate printers.</span>
           </div>
         </div>
 
@@ -435,17 +435,17 @@ export function UniversalPosHardwareManager({
           <div className="flex items-center gap-2.5">
             <span className="text-xl">🏬</span>
             <div>
-              <h3 className="font-display font-bold text-base text-foreground">
+              <h3 className="font-display font-bold text-base text-white">
                 2. Restaurant Operating System (POS) &amp; KOT Synchronizer
               </h3>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-zinc-400">
                 Connect Petpooja, UrbanPiper, Restroworks (POSist), DotPe, TableCheck, or ANY custom billing software.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
             <span className={`h-2.5 w-2.5 rounded-full ${posConnected ? "bg-leaf animate-pulse" : "bg-warn"}`} />
-            <span className="text-xs font-bold text-foreground">
+            <span className="text-xs font-bold text-white">
               {posConnected ? "POS Linked &amp; Syncing" : "Not Linked"}
             </span>
           </div>
@@ -460,13 +460,13 @@ export function UniversalPosHardwareManager({
               onClick={() => setActivePosId(pos.id)}
               className={`rounded-xl border p-3 text-center transition flex flex-col items-center justify-between gap-1.5 ${
                 activePosId === pos.id
-                  ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary"
-                  : "border-line bg-surface hover:bg-surface-soft"
+                  ? "border-primary bg-primary/10 shadow-[0_0_15px_rgba(255,255,255,0.05)] ring-1 ring-primary"
+                  : "border-line bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-surface-soft"
               }`}
             >
               <span className="text-2xl">{pos.icon}</span>
-              <div className="font-bold text-xs text-foreground leading-tight">{pos.name}</div>
-              <span className="text-[9px] rounded-full bg-surface-soft px-1.5 py-0.5 text-muted font-medium">
+              <div className="font-bold text-xs text-white leading-tight">{pos.name}</div>
+              <span className="text-[9px] rounded-full bg-surface-soft px-1.5 py-0.5 text-zinc-400 font-medium">
                 {pos.tag}
               </span>
             </button>
@@ -478,7 +478,7 @@ export function UniversalPosHardwareManager({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xl">{selectedPos.icon}</span>
-              <h4 className="font-display font-bold text-sm text-foreground">
+              <h4 className="font-display font-bold text-sm text-white">
                 Configure {selectedPos.name}
               </h4>
             </div>
@@ -486,7 +486,7 @@ export function UniversalPosHardwareManager({
               Bidirectional Sync
             </span>
           </div>
-          <p className="text-xs text-muted">{selectedPos.description}</p>
+          <p className="text-xs text-zinc-400">{selectedPos.description}</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             {selectedPos.fields.map((field) => (
@@ -507,14 +507,14 @@ export function UniversalPosHardwareManager({
 
           {/* Webhook Ingestion URL (for Petpooja / UrbanPiper / Custom POS) */}
           <div className="border-t border-line/60 pt-3 space-y-1.5">
-            <Label className="text-xs font-bold text-foreground">
+            <Label className="text-xs font-bold text-white">
               OrderKing Inbound Order Webhook Endpoint:
             </Label>
             <div className="flex items-center gap-2">
               <input
                 readOnly
                 value={webhookUrl}
-                className="w-full rounded-lg border border-line bg-surface px-3 py-1.5 font-mono text-xs text-muted-foreground select-all"
+                className="w-full rounded-lg border border-line bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-1.5 font-mono text-xs text-zinc-400-foreground select-all"
               />
               <Button
                 size="sm"
@@ -529,7 +529,7 @@ export function UniversalPosHardwareManager({
                 📋 Copy
               </Button>
             </div>
-            <p className="text-[10px] text-muted">
+            <p className="text-[10px] text-zinc-400">
               Paste this URL in your {selectedPos.name} developer/webhook portal to receive instant order dispatches.
             </p>
           </div>
@@ -564,10 +564,10 @@ export function UniversalPosHardwareManager({
           <div className="flex items-start gap-2.5">
             <span className="text-2xl">🤖</span>
             <div>
-              <h4 className="font-display font-bold text-sm text-foreground">
+              <h4 className="font-display font-bold text-sm text-white">
                 AI Universal Hardware Setup &amp; Self-Healing POS Copilot
               </h4>
-              <p className="text-xs text-muted mt-0.5">
+              <p className="text-xs text-zinc-400 mt-0.5">
                 Stuck with printer baud rates, USB serial COM drivers, or Petpooja API tokens? The AI Kitchen Assistant automatically scans your local subnet, discovers Bluetooth/USB thermal printers, and repairs connection drops with zero human staff required.
               </p>
             </div>
@@ -622,13 +622,13 @@ export function UniversalPosHardwareManager({
                 setPosConnected(true);
                 toast.success("🤖 AI Auto-Setup Complete: Thermal Printer & POS 100% Configured, Tested & Workable!");
               }}
-              className="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs"
+              className="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]"
             >
               🛠️ 1-Click AI Auto-Configure Everything
             </Button>
             <a
               href="/assistant"
-              className="rounded-xl border border-line bg-surface hover:bg-surface-soft px-3 py-2 text-xs font-bold text-foreground transition shadow-xs"
+              className="rounded-xl border border-line bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-surface-soft px-3 py-2 text-xs font-bold text-white transition shadow-[0_0_15px_rgba(255,255,255,0.05)]"
             >
               Open AI Assistant ↗
             </a>
@@ -637,20 +637,20 @@ export function UniversalPosHardwareManager({
 
         {/* Diagnostic Status Indicators */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-          <div className="rounded-lg bg-surface p-2 border border-line text-center">
-            <span className="text-[10px] text-muted block">ESC/POS Printer</span>
+          <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-2 border border-line text-center">
+            <span className="text-[10px] text-zinc-400 block">ESC/POS Printer</span>
             <span className="text-xs font-bold text-leaf font-mono">100% ONLINE</span>
           </div>
-          <div className="rounded-lg bg-surface p-2 border border-line text-center">
-            <span className="text-[10px] text-muted block">Self-Healing Queue</span>
+          <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-2 border border-line text-center">
+            <span className="text-[10px] text-zinc-400 block">Self-Healing Queue</span>
             <span className="text-xs font-bold text-leaf font-mono">ACTIVE (0 DROPS)</span>
           </div>
-          <div className="rounded-lg bg-surface p-2 border border-line text-center">
-            <span className="text-[10px] text-muted block">POS Bidirectional Sync</span>
+          <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-2 border border-line text-center">
+            <span className="text-[10px] text-zinc-400 block">POS Bidirectional Sync</span>
             <span className="text-xs font-bold text-leaf font-mono">PETPOOJA ACTIVE</span>
           </div>
-          <div className="rounded-lg bg-surface p-2 border border-line text-center">
-            <span className="text-[10px] text-muted block">Auto-Cut Paper</span>
+          <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-2 border border-line text-center">
+            <span className="text-[10px] text-zinc-400 block">Auto-Cut Paper</span>
             <span className="text-xs font-bold text-indigo-600 font-mono">ENABLED</span>
           </div>
         </div>
@@ -659,18 +659,18 @@ export function UniversalPosHardwareManager({
       {/* TEST PRINT PREVIEW MODAL */}
       {showTestPrintModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-5 shadow-2xl space-y-4 break-words text-wrap">
+          <div className="w-full max-w-sm rounded-2xl border border-line bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-2xl space-y-4 break-words text-wrap">
             <div className="flex items-center justify-between border-b border-line pb-2">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🖨️</span>
-                <h4 className="font-display font-bold text-sm text-foreground">
+                <h4 className="font-display font-bold text-sm text-white">
                   Thermal Receipt Preview ({paperWidth})
                 </h4>
               </div>
               <button
                 type="button"
                 onClick={() => setShowTestPrintModal(false)}
-                className="text-muted hover:text-foreground text-sm font-bold"
+                className="text-zinc-400 hover:text-white text-sm font-bold"
               >
                 ✕
               </button>

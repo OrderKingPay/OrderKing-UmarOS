@@ -69,7 +69,7 @@ export function KingPayWordmark({ className }: { className?: string }) {
   return (
     <div className={cn("inline-flex items-center gap-2", className)}>
       <KingPayMark className="h-7 w-7" />
-      <span className="font-display text-lg font-black tracking-tight text-fg">
+      <span className="font-display text-lg font-black tracking-tight text-white">
         King<span className="text-amber-500">Pay</span>
       </span>
     </div>

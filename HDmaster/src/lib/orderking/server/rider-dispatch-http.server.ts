@@ -75,6 +75,16 @@ export async function handleRiderOffersHttp(request: Request): Promise<Response>
       const updated = await sql<{ id: string; order_id: string }>`update dispatch_assignments set status='DECLINED', responded_at=now() where id=${body.offerId} and org_id=${ws.ctx.orgId} and rider_id=${riderId} and status='OFFERED' returning id, order_id`;
       if (!updated[0]) return json({ error: "Offer is no longer available", code: "OFFER_GONE" }, 409);
 
+      // SLA Penalty: Deduct 50 INR from the rider for declining an optimal route (Platform Revenue Protection)
+      await sql`
+        INSERT INTO ledger_entries (id, org_id, order_id, party, kind, source, rule_key, amount_paise, note)
+        VALUES (
+          gen_random_uuid(), ${ws.ctx.orgId}, ${updated[0].order_id}, 'RIDER', 'DEBIT', 
+          'SLA_PENALTY', 'DECLINE_OPTIMAL_ROUTE', 5000, 
+          'Penalty for declining optimal AI route'
+        )
+      `;
+
       // Cascading dispatch: immediately route to next nearest rider with escalated bounty
       const { cascadeNextNearestRider } = await import("@/lib/orderking/orders/smart-dispatch.server");
       const cascade = await cascadeNextNearestRider(sql, updated[0].order_id, ws.ctx.orgId);

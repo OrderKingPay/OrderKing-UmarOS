@@ -104,7 +104,7 @@ function MenuPage() {
       ) : null}
 
       {grouped.length === 0 ? (
-        <Card className="text-sm text-muted">{t("menu.noItems")}</Card>
+        <Card className="text-sm text-zinc-400">{t("menu.noItems")}</Card>
       ) : (
         grouped.map((cat) => (
           <section key={cat.id} className="space-y-2">
@@ -149,15 +149,15 @@ function MenuPage() {
                     <div>
                       <div className="font-medium">
                         {item.name}{" "}
-                        <span className="text-xs uppercase text-muted">{item.diet}</span>
+                        <span className="text-xs uppercase text-zinc-400">{item.diet}</span>
                         {item.recommended ? (
-                          <span className="ml-2 text-xs text-chili">{t("menu.recommended")}</span>
+                          <span className="ml-2 text-xs text-fuchsia-400">{t("menu.recommended")}</span>
                         ) : null}
                       </div>
-                      <div className="text-sm text-muted">{item.description}</div>
+                      <div className="text-sm text-zinc-400">{item.description}</div>
                       <div className="mt-1 flex flex-wrap gap-2 text-sm">
                         {item.variants.map((v) => (
-                          <span key={v.id} className="rounded-full bg-surface-2 px-2 py-0.5">
+                          <span key={v.id} className="rounded-full bg-white/10 px-2 py-0.5">
                             {v.name} <MoneyText paise={v.pricePaise} />
                           </span>
                         ))}
@@ -168,8 +168,8 @@ function MenuPage() {
                     {canAvail ? (
                       item.availability === "available" ? (
                         <>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-leaf/10 px-2.5 py-1 text-xs font-semibold text-leaf">
-                            <span className="size-1.5 rounded-full bg-leaf" />
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-400">
+                            <span className="size-1.5 rounded-full bg-emerald-500" />
                             In Stock
                           </span>
                           <Button
@@ -225,8 +225,8 @@ function MenuPage() {
                         </>
                       ) : (
                         <>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-danger/10 px-2.5 py-1 text-xs font-semibold text-danger">
-                            <span className="size-1.5 rounded-full bg-danger" />
+                          <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-400">
+                            <span className="size-1.5 rounded-full bg-red-500" />
                             {item.availability === "temporarily_unavailable"
                               ? item.nextAvailableAt
                                 ? `Off until ${new Date(item.nextAvailableAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
@@ -252,7 +252,7 @@ function MenuPage() {
                         </>
                       )
                     ) : (
-                      <span className="text-xs text-muted">
+                      <span className="text-xs text-zinc-400">
                         {item.availability === "available" ? "In Stock" : t("menu.soldOut")}
                       </span>
                     )}
@@ -303,7 +303,7 @@ function MenuPage() {
         <h3 className="font-display text-lg">{t("menu.addons")}</h3>
         <ul className="text-sm">
           {(menu.data?.addons ?? []).map((a) => (
-            <li key={a.id} className="flex justify-between border-b border-line py-2">
+            <li key={a.id} className="flex justify-between border-b border-white/10 py-2">
               <span>{a.name}</span>
               <MoneyText paise={a.pricePaise} />
             </li>
@@ -349,7 +349,7 @@ function MenuPage() {
           <div>
             <Label>Dish Photo</Label>
             {editor.imageUrl ? (
-              <div className="relative mb-2 mt-1 h-32 w-48 overflow-hidden rounded-lg border border-border">
+              <div className="relative mb-2 mt-1 h-32 w-48 overflow-hidden rounded-lg border border-white/10">
                 <img
                   src={editor.imageUrl}
                   alt={editor.name || "Dish photo"}
@@ -368,7 +368,7 @@ function MenuPage() {
               <input
                 type="file"
                 accept="image/*"
-                className="text-xs file:mr-2 file:rounded-md file:border-0 file:bg-surface-2 file:px-3 file:py-1.5 file:text-xs file:font-medium hover:file:bg-surface-3"
+                className="text-xs file:mr-2 file:rounded-md file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:font-medium hover:file:bg-white/5-3"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
@@ -397,7 +397,7 @@ function MenuPage() {
                   }
                 }}
               />
-              {uploadingImage ? <span className="text-xs text-muted animate-pulse">Uploading photo...</span> : null}
+              {uploadingImage ? <span className="text-xs text-zinc-400 animate-pulse">Uploading photo...</span> : null}
             </div>
           </div>
           <div>
@@ -410,7 +410,7 @@ function MenuPage() {
           <div>
             <Label>{t("onboarding.vegStatus")}</Label>
             <select
-              className="h-11 w-full rounded-[12px] border border-line bg-surface px-3"
+              className="h-11 w-full rounded-[12px] border border-white/10 bg-white/5 px-3"
               value={editor.diet}
               onChange={(e) => setEditor({ ...editor, diet: e.target.value as typeof editor.diet })}
             >

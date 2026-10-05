@@ -1129,9 +1129,9 @@ export function RoyalAiConcierge({
       {/* FULL ROYAL AI VOICE & TEXT CHAT MODAL */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md">
-          <div className="w-full max-w-lg h-[90vh] max-h-[680px] rounded-3xl border-2 border-amber-500/50 bg-surface shadow-2xl flex flex-col overflow-hidden">
+          <div className="w-full max-w-lg h-[90vh] max-h-[680px] rounded-3xl border-2 border-amber-500/50 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-2xl flex flex-col overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-[#0D3B2E] via-emerald-900 to-[#07241C] p-3 sm:p-4 text-white">
+            <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-[#0D3B2E] via-emerald-900 to-[#07241C] p-3 sm:p-4 text-white">
               <div className="flex items-center gap-3">
                 <div className="relative flex size-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-200 text-black shadow-md">
                   <Crown className="size-6 text-amber-950" />
@@ -1236,12 +1236,12 @@ export function RoyalAiConcierge({
             )}
 
             {/* 1-TAP INSTANT ACTION RADAR (ZERO TYPING REQUIRED) */}
-            <div className="border-b border-border bg-gradient-to-r from-surface via-surface-2 to-surface p-2.5">
+            <div className="border-b border-white/10 bg-gradient-to-r from-surface via-surface-2 to-surface p-2.5">
               <div className="flex items-center justify-between px-1 mb-1.5">
                 <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center gap-1">
                   <span>⚡</span> 1-Tap Instant Solutions (No typing needed)
                 </span>
-                <span className="text-[9px] font-semibold text-muted">Tap to execute</span>
+                <span className="text-[9px] font-semibold text-zinc-400">Tap to execute</span>
               </div>
               <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
                 <button
@@ -1325,7 +1325,7 @@ export function RoyalAiConcierge({
             )}
 
             {/* ChatGPT-Style Chat Messages Thread */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-surface/95">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]/95">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -1334,14 +1334,14 @@ export function RoyalAiConcierge({
                   }`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl p-3.5 text-xs shadow-xs space-y-1.5 ${
+                    className={`max-w-[85%] rounded-2xl p-3.5 text-xs shadow-[0_0_15px_rgba(255,255,255,0.05)] space-y-1.5 ${
                       msg.sender === "user"
                         ? "bg-emerald-600 text-white rounded-br-none shadow-sm"
-                        : "bg-surface-2/80 border border-border/80 text-foreground rounded-bl-none shadow-sm"
+                        : "bg-white/5/80 border border-white/10/80 text-white rounded-bl-none shadow-sm"
                     }`}
                   >
                     {msg.imageUrl && (
-                      <div className="mb-2 overflow-hidden rounded-xl border border-border">
+                      <div className="mb-2 overflow-hidden rounded-xl border border-white/10">
                         <img loading="lazy"                           src={msg.imageUrl}
                           alt="Payment receipt proof"
                           className="max-h-48 w-full object-cover rounded-lg"
@@ -1353,15 +1353,15 @@ export function RoyalAiConcierge({
 
                     {/* Consent Routing Card (Safe Harbor - Route to HD Master) */}
                     {msg.consentRequired && !consentGiven && (
-                      <div className="mt-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 p-2.5 text-xs text-foreground space-y-2 shadow-xs">
+                      <div className="mt-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 p-2.5 text-xs text-white space-y-2 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                         <label className="flex items-start gap-2 cursor-pointer select-none">
                           <input
                             type="checkbox"
                             checked={consentGiven}
                             onChange={(e) => setConsentGiven(e.target.checked)}
-                            className="mt-0.5 rounded border-border text-primary focus:ring-primary"
+                            className="mt-0.5 rounded border-white/10 text-primary focus:ring-primary"
                           />
-                          <span className="text-[11px] leading-tight text-foreground/90">
+                          <span className="text-[11px] leading-tight text-white/90">
                             I confirm consent to route this dispute and payment proof to HD Master Founder Review Desk for manual approval &amp; priority resolution.
                           </span>
                         </label>
@@ -1379,7 +1379,7 @@ export function RoyalAiConcierge({
 
                     {/* Action Shortcut Button if suggested by AI */}
                     {msg.actionPayload && !msg.consentRequired && (
-                      <div className="mt-2.5 pt-2 border-t border-border/60">
+                      <div className="mt-2.5 pt-2 border-t border-white/10/60">
                         <Button
                           size="sm"
                           variant="primary"
@@ -1393,7 +1393,7 @@ export function RoyalAiConcierge({
 
                     <span
                       className={`text-[9px] block text-right font-mono ${
-                        msg.sender === "user" ? "text-white/70" : "text-muted"
+                        msg.sender === "user" ? "text-white/70" : "text-zinc-400"
                       }`}
                     >
                       {msg.timestamp}
@@ -1407,7 +1407,7 @@ export function RoyalAiConcierge({
                         type="button"
                         onClick={() => copyMessage(msg.id, msg.text)}
                         title="Copy message"
-                        className="flex size-6 items-center justify-center rounded text-muted hover:bg-surface-2 hover:text-foreground transition-colors"
+                        className="flex size-6 items-center justify-center rounded text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
                       >
                         {copiedMsgId === msg.id ? (
                           <Check className="size-3 text-emerald-500" />
@@ -1419,7 +1419,7 @@ export function RoyalAiConcierge({
                         type="button"
                         onClick={() => speakResponse(msg.text, selectedLang.voiceLang)}
                         title="Listen with young native voice"
-                        className="flex size-6 items-center justify-center rounded text-muted hover:bg-surface-2 hover:text-foreground transition-colors"
+                        className="flex size-6 items-center justify-center rounded text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
                       >
                         <Volume2 className="size-3 text-emerald-500" />
                       </button>
@@ -1440,7 +1440,7 @@ export function RoyalAiConcierge({
                 <button
                   type="button"
                   onClick={stopSpeaking}
-                  className="text-[10px] text-muted hover:text-foreground underline"
+                  className="text-[10px] text-zinc-400 hover:text-white underline"
                 >
                   Stop Audio
                 </button>
@@ -1466,11 +1466,11 @@ export function RoyalAiConcierge({
 
             {/* Multi-File Attachment Preview Bar */}
             {attachedFiles.length > 0 && (
-              <div className="flex items-center gap-2 overflow-x-auto border-t border-border bg-surface-2 px-3.5 py-2 text-xs">
+              <div className="flex items-center gap-2 overflow-x-auto border-t border-white/10 bg-white/5 px-3.5 py-2 text-xs">
                 {attachedFiles.map((file) => (
                   <div
                     key={file.id}
-                    className="flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-surface px-2 py-1 shadow-xs"
+                    className="flex shrink-0 items-center gap-1.5 rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-2 py-1 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   >
                     {file.type === "image" ? (
                       <img loading="lazy" src={file.dataUrl} alt={file.name} className="size-6 rounded object-cover" />
@@ -1479,13 +1479,13 @@ export function RoyalAiConcierge({
                     ) : (
                       <FileText className="size-4 text-amber-500" />
                     )}
-                    <span className="max-w-[100px] truncate text-[10px] font-medium text-foreground">
+                    <span className="max-w-[100px] truncate text-[10px] font-medium text-white">
                       {file.name}
                     </span>
                     <button
                       type="button"
                       onClick={() => setAttachedFiles((prev) => prev.filter((f) => f.id !== file.id))}
-                      className="text-muted hover:text-rose-500 ml-1"
+                      className="text-zinc-400 hover:text-rose-500 ml-1"
                     >
                       <X className="size-3" />
                     </button>
@@ -1495,19 +1495,19 @@ export function RoyalAiConcierge({
             )}
 
             {/* ChatGPT-Style Floating Input Bar */}
-            <div className="p-3 border-t border-border bg-surface">
+            <div className="p-3 border-t border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSendMessage();
                 }}
-                className="flex items-center gap-2 rounded-full border-2 border-border/80 bg-surface-2/60 px-2 py-1.5 shadow-inner focus-within:border-emerald-500/80 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all"
+                className="flex items-center gap-2 rounded-full border-2 border-white/10/80 bg-white/5/60 px-2 py-1.5 shadow-inner focus-within:border-emerald-500/80 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all"
               >
                 {/* Plus / Paperclip File Attachment (Images, Screenshots, Videos, Documents) */}
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex size-9 items-center justify-center rounded-full text-muted hover:bg-surface hover:text-foreground transition shrink-0"
+                  className="flex size-9 items-center justify-center rounded-full text-zinc-400 hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:text-white transition shrink-0"
                   title="Attach Receipt, Screenshot, Video or Document"
                 >
                   <Paperclip className="size-4.5" />
@@ -1527,7 +1527,7 @@ export function RoyalAiConcierge({
                   className={`flex size-9 items-center justify-center rounded-full transition shrink-0 ${
                     isListening
                       ? "bg-red-600 text-white animate-pulse"
-                      : "text-muted hover:bg-surface hover:text-foreground"
+                      : "text-zinc-400 hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:text-white"
                   }`}
                   title={isListening ? "Listening... Tap to stop" : "Speak in your language"}
                 >
@@ -1540,7 +1540,7 @@ export function RoyalAiConcierge({
                   onChange={(e) => setInputText(e.target.value)}
                   onPaste={handlePaste}
                   placeholder={`Ask anything in ${selectedLang.name}...`}
-                  className="flex-1 bg-transparent px-2 text-xs text-foreground placeholder:text-muted/60 focus:outline-none"
+                  className="flex-1 bg-transparent px-2 text-xs text-white placeholder:text-zinc-400/60 focus:outline-none"
                 />
 
                 {/* ChatGPT Circle Send Button with ArrowUp */}

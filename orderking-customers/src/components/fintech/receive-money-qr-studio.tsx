@@ -240,14 +240,14 @@ export function ReceiveMoneyQrStudio({
     <div className={`space-y-6 ${isModal ? "p-4 sm:p-6" : ""}`}>
       {/* Header bar if modal */}
       {isModal && (
-        <div className="flex items-center justify-between border-b border-border pb-3">
+        <div className="flex items-center justify-between border-b border-white/10 pb-3">
           <div className="flex items-center gap-2">
             <span className="text-xl">📲</span>
             <div>
-              <h2 className="font-display font-black text-base sm:text-lg text-fg">
+              <h2 className="font-display font-black text-base sm:text-lg text-white">
                 Receive Money &amp; Custom QR
               </h2>
-              <p className="text-[11px] text-muted">
+              <p className="text-[11px] text-zinc-400">
                 Compatible with all UPI Apps · 0% Fee · Instant Settlement
               </p>
             </div>
@@ -256,7 +256,7 @@ export function ReceiveMoneyQrStudio({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full p-1.5 text-muted hover:bg-surface-2 transition"
+              className="rounded-full p-1.5 text-zinc-400 hover:bg-white/5 transition"
               aria-label="Close"
             >
               <X className="size-5" />
@@ -278,7 +278,7 @@ export function ReceiveMoneyQrStudio({
 
             {/* Top Brand & Tagline */}
             <div className="relative z-10 space-y-1 mb-4">
-              <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold border backdrop-blur-md shadow-xs mx-auto">
+              <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold border backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)] mx-auto">
                 <span>{activeTheme.icon}</span>
                 <span className={activeTheme.accentText}>{activeTheme.tagline}</span>
               </div>
@@ -393,7 +393,7 @@ export function ReceiveMoneyQrStudio({
         <div className="lg:col-span-6 space-y-5">
           {/* 1. Select Luxury / Gifting Style */}
           <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-muted mb-2">
+            <label className="block text-xs font-black uppercase tracking-wider text-zinc-400 mb-2">
               🎨 1. Choose Luxury &amp; Gifting Style
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -405,12 +405,12 @@ export function ReceiveMoneyQrStudio({
                   className={`rounded-2xl p-2.5 text-left border transition-all duration-200 flex flex-col justify-between ${
                     selectedTheme === theme.id
                       ? "border-amber-500 bg-amber-500/15 ring-2 ring-amber-400/40 shadow-sm"
-                      : "border-border bg-surface hover:bg-surface-2"
+                      : "border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-white/5"
                   }`}
                 >
                   <span className="text-xl">{theme.icon}</span>
                   <div className="mt-1">
-                    <span className="block text-xs font-bold text-fg leading-tight">
+                    <span className="block text-xs font-bold text-white leading-tight">
                       {theme.name}
                     </span>
                   </div>
@@ -420,9 +420,9 @@ export function ReceiveMoneyQrStudio({
           </div>
 
           {/* 2. Amount Setup (Optional or Fixed) */}
-          <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-black uppercase tracking-wider text-muted">
+              <label className="text-xs font-black uppercase tracking-wider text-zinc-400">
                 💰 2. Set Amount (Optional)
               </label>
               {amount && (
@@ -437,7 +437,7 @@ export function ReceiveMoneyQrStudio({
             </div>
 
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-lg font-black text-muted">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-lg font-black text-zinc-400">
                 ₹
               </span>
               <input
@@ -445,7 +445,7 @@ export function ReceiveMoneyQrStudio({
                 placeholder="Leave blank for open amount"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full rounded-xl border border-border bg-bg pl-8 pr-4 py-2.5 text-sm font-mono font-bold text-fg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-xl border border-white/10 bg-bg pl-8 pr-4 py-2.5 text-sm font-mono font-bold text-white focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
 
@@ -459,7 +459,7 @@ export function ReceiveMoneyQrStudio({
                   className={`rounded-full px-3 py-1 text-xs font-bold font-mono transition ${
                     amount === amt
                       ? "bg-primary text-white"
-                      : "bg-surface-2 text-fg hover:bg-surface-3"
+                      : "bg-white/5 text-white hover:bg-surface-3"
                   }`}
                 >
                   ₹{amt}
@@ -469,8 +469,8 @@ export function ReceiveMoneyQrStudio({
           </div>
 
           {/* 3. Customizable Notes & Gifting Messages */}
-          <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
-            <label className="block text-xs font-black uppercase tracking-wider text-muted">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3">
+            <label className="block text-xs font-black uppercase tracking-wider text-zinc-400">
               ✍️ 3. Payment Purpose / Gifting Note
             </label>
             <input
@@ -478,12 +478,12 @@ export function ReceiveMoneyQrStudio({
               placeholder="e.g. Birthday Shagun, Dinner Split, Rent"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full rounded-xl border border-border bg-bg px-3.5 py-2.5 text-xs text-fg focus:outline-none focus:ring-2 focus:ring-primary font-medium"
+              className="w-full rounded-xl border border-white/10 bg-bg px-3.5 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-primary font-medium"
             />
 
             {/* Note Presets */}
             <div className="space-y-1.5">
-              <span className="text-[10px] uppercase font-bold text-muted tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">
                 Popular Occasion Presets:
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -492,7 +492,7 @@ export function ReceiveMoneyQrStudio({
                     key={preset.label}
                     type="button"
                     onClick={() => setNote(preset.text)}
-                    className="rounded-lg bg-surface-2 hover:bg-surface-3 border border-border/80 px-2.5 py-1 text-[11px] font-medium text-fg transition"
+                    className="rounded-lg bg-white/5 hover:bg-surface-3 border border-white/10/80 px-2.5 py-1 text-[11px] font-medium text-white transition"
                   >
                     {preset.label}
                   </button>
@@ -502,8 +502,8 @@ export function ReceiveMoneyQrStudio({
           </div>
 
           {/* 4. Display Name / Business Name */}
-          <div className="rounded-2xl border border-border bg-surface p-4 space-y-2">
-            <label className="block text-xs font-black uppercase tracking-wider text-muted">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-2">
+            <label className="block text-xs font-black uppercase tracking-wider text-zinc-400">
               🏷️ 4. Payee Display Name
             </label>
             <input
@@ -511,7 +511,7 @@ export function ReceiveMoneyQrStudio({
               placeholder="Your Name or Shop Name"
               value={payeeName}
               onChange={(e) => setPayeeName(e.target.value)}
-              className="w-full rounded-xl border border-border bg-bg px-3.5 py-2 text-xs text-fg focus:outline-none focus:ring-2 focus:ring-primary font-bold"
+              className="w-full rounded-xl border border-white/10 bg-bg px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-primary font-bold"
             />
           </div>
 
@@ -521,7 +521,7 @@ export function ReceiveMoneyQrStudio({
               <ShieldCheck className="size-4 text-emerald-600" />
               <span>Why Everyone Prefers KingPay Sovereign QR</span>
             </div>
-            <p className="text-[11px] text-muted leading-relaxed">
+            <p className="text-[11px] text-zinc-400 leading-relaxed">
               • 0% convenience fee for payer &amp; receiver<br />
               • Instant bank settlement in 2 seconds<br />
               • 24K pure digital gold cashback awarded on every payment

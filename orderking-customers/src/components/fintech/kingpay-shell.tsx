@@ -27,23 +27,23 @@ export function KingPayShell({
   alertsCount = 0,
 }: Props) {
   return (
-    <div className="min-h-screen bg-bg text-fg flex flex-col antialiased selection:bg-amber-400 selection:text-black">
+    <div className="min-h-screen bg-bg text-white flex flex-col antialiased selection:bg-amber-400 selection:text-black">
       {/* PURE FINTECH DEDICATED KINGPAY TOP APP BAR */}
-      <header className="sticky top-0 z-40 border-b border-border/80 bg-surface/95 px-4 py-3 backdrop-blur-md shadow-xs">
+      <header className="sticky top-0 z-40 border-b border-white/10/80 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]/95 px-4 py-3 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]">
         <div className="mx-auto flex max-w-lg md:max-w-5xl items-center justify-between gap-3">
           {/* KingPay Brand Identity */}
           <div className="flex items-center gap-2.5">
             <KingPayMark className="size-9 rounded-xl shadow-md" />
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-display font-black text-lg tracking-tight text-fg leading-none">
+                <span className="font-display font-black text-lg tracking-tight text-white leading-none">
                   King<span className="text-amber-500">Pay</span>
                 </span>
                 <span className="rounded-full bg-emerald-500/15 px-1.5 py-0.2 text-[9px] font-extrabold text-emerald-700 dark:text-emerald-300">
                   NPCI UPI
                 </span>
               </div>
-              <p className="text-[10px] text-muted leading-tight mt-0.5 flex items-center gap-1">
+              <p className="text-[10px] text-zinc-400 leading-tight mt-0.5 flex items-center gap-1">
                 <ShieldCheck className="size-3 text-emerald-600" />
                 <span>RBI Escrow Protected · 256-Bit</span>
               </p>
@@ -56,10 +56,10 @@ export function KingPayShell({
             <button
               type="button"
               onClick={() => onSelectSection("travel")}
-              className={`hidden sm:flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold transition shadow-xs ${
+              className={`hidden sm:flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold transition shadow-[0_0_15px_rgba(255,255,255,0.05)] ${
                 activeSection === "travel"
                   ? "border-cyan-500/50 bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 ring-1 ring-cyan-500/30"
-                  : "border-border bg-surface-2 text-muted hover:text-fg"
+                  : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
               }`}
             >
               <Plane className="size-3.5 text-cyan-500" />
@@ -70,9 +70,9 @@ export function KingPayShell({
             </button>
 
             {/* Wallet Balance Pill */}
-            <div className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-500/10 px-2.5 py-1 text-xs shadow-xs">
+            <div className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-500/10 px-2.5 py-1 text-xs shadow-[0_0_15px_rgba(255,255,255,0.05)]">
               <Wallet className="size-3.5 text-amber-600 dark:text-amber-400" />
-              <span className="font-mono font-bold text-fg">
+              <span className="font-mono font-bold text-white">
                 ₹{walletBalance.toLocaleString("en-IN")}.00
               </span>
               <button
@@ -88,13 +88,13 @@ export function KingPayShell({
             <button
               type="button"
               onClick={() => onSelectSection("garage")}
-              className="relative rounded-full p-2 text-muted hover:bg-surface-2 transition"
+              className="relative rounded-full p-2 text-zinc-400 hover:bg-white/5 transition"
               title="Alerts & Dues"
               aria-label="View Pending Dues and Alerts"
             >
               <Bell className="size-4.5" />
               {alertsCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-rose-600 text-[9px] font-bold text-white shadow-xs animate-pulse">
+                <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-rose-600 text-[9px] font-bold text-white shadow-[0_0_15px_rgba(255,255,255,0.05)] animate-pulse">
                   {alertsCount}
                 </span>
               )}
@@ -109,7 +109,7 @@ export function KingPayShell({
       {/* PURE FINTECH DEDICATED 7-TAB BALANCED BOTTOM NAVIGATION BAR */}
       <nav
         aria-label="KingPay Navigation"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10/80 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
       >
         <ul className="mx-auto grid max-w-lg grid-cols-7 items-center md:max-w-5xl relative px-0.5">
           {/* 1. Pay / Transfer Hub */}
@@ -120,7 +120,7 @@ export function KingPayShell({
               className={`flex w-full min-h-14 flex-col items-center justify-center gap-0.5 text-[10px] sm:text-xs transition ${
                 activeSection === "pay"
                   ? "text-primary font-bold"
-                  : "text-muted hover:text-fg"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               <Zap className="size-4.5 sm:size-5" />
@@ -136,7 +136,7 @@ export function KingPayShell({
               className={`relative flex w-full min-h-14 flex-col items-center justify-center gap-0.5 text-[10px] sm:text-xs transition ${
                 activeSection === "garage"
                   ? "text-primary font-bold"
-                  : "text-muted hover:text-fg"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               <Car className="size-4.5 sm:size-5" />
@@ -155,7 +155,7 @@ export function KingPayShell({
               className={`relative flex w-full min-h-14 flex-col items-center justify-center gap-0.5 text-[10px] sm:text-xs transition ${
                 activeSection === "loan"
                   ? "text-cyan-600 dark:text-cyan-400 font-bold"
-                  : "text-muted hover:text-fg"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               <CreditCard className="size-4.5 sm:size-5" />
@@ -210,7 +210,7 @@ export function KingPayShell({
               className={`relative flex w-full min-h-14 flex-col items-center justify-center gap-0.5 text-[10px] sm:text-xs transition ${
                 activeSection === "travel"
                   ? "text-cyan-600 dark:text-cyan-400 font-bold"
-                  : "text-muted hover:text-fg"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               <Plane className="size-4.5 sm:size-5" />
@@ -226,7 +226,7 @@ export function KingPayShell({
               className={`flex w-full min-h-14 flex-col items-center justify-center gap-0.5 text-[10px] sm:text-xs transition ${
                 activeSection === "bills"
                   ? "text-primary font-bold"
-                  : "text-muted hover:text-fg"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               <UtilityPole className="size-4.5 sm:size-5" />
@@ -242,7 +242,7 @@ export function KingPayShell({
               className={`flex w-full min-h-14 flex-col items-center justify-center gap-0.5 text-[10px] sm:text-xs transition ${
                 activeSection === "account"
                   ? "text-primary font-bold"
-                  : "text-muted hover:text-fg"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               <User className="size-4.5 sm:size-5" />

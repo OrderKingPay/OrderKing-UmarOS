@@ -261,16 +261,16 @@ function RewardsPage() {
     <CustomerShell>
       <div className="px-4 py-5 space-y-6">
         {/* Header Vault Card */}
-        <div className="relative overflow-hidden rounded-[var(--radius-xl)] border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/20 via-surface to-amber-500/5 p-5 shadow-sm">
+        <div className="relative overflow-hidden rounded-[var(--radius-2xl)] border border-amber-500/30 bg-gradient-to-br from-[#0a0a0a] via-black to-amber-500/10 p-5 shadow-[0_0_20px_rgba(245,158,11,0.15)]">
           <div className="flex items-center justify-between">
             <div>
               <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-bold text-amber-800 dark:text-amber-200">
                 👑 King Club Rewards Vault
               </span>
-              <h1 className="mt-2 font-display text-2xl font-bold text-fg">
+              <h1 className="mt-2 font-display text-2xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
                 Your King Coins
               </h1>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-zinc-400">
                 Earn 10 King Coins for every ₹1 spent on food orders
               </p>
             </div>
@@ -278,7 +278,7 @@ function RewardsPage() {
               <p className="font-mono text-3xl font-black text-amber-600 dark:text-amber-400">
                 {userCoins.toLocaleString()}
               </p>
-              <p className="text-[11px] font-semibold text-muted">
+              <p className="text-[11px] font-semibold text-zinc-400">
                 Coins Available
               </p>
             </div>
@@ -287,37 +287,37 @@ function RewardsPage() {
           <div className="mt-4 flex items-center justify-between border-t border-amber-500/20 pt-3 text-xs">
             <div className="flex items-center gap-1.5">
               <span>📍</span>
-              <span className="font-semibold text-fg">{location.cityName || "Barak Valley"}</span>
-              <span className="text-muted">(Location Verified)</span>
+              <span className="font-semibold text-white">{location.cityName || "Barak Valley"}</span>
+              <span className="text-zinc-500">(Location Verified)</span>
             </div>
-            <Link to="/king-pay" className="font-medium text-primary hover:underline">
+            <Link to="/king-pay" className="font-medium text-amber-400 hover:text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)] transition-colors">
               KingPay Hub →
             </Link>
           </div>
         </div>
 
         {/* KingPay Quick Access Banner */}
-        <div className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary/5 p-3 text-xs">
+        <div className="flex items-center justify-between rounded-[var(--radius-2xl)] border border-cyan-500/30 bg-cyan-500/5 p-3 text-xs shadow-[0_0_15px_rgba(34,211,238,0.1)] backdrop-blur-md">
           <div className="flex items-center gap-2.5">
-            <span className="text-xl">💳</span>
+            <span className="text-xl drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">💳</span>
             <div>
-              <p className="font-semibold text-fg">KingPay Fintech Hub</p>
-              <p className="text-muted">Recharges, Bill Pay, Train & Bus Tickets with extra cashback</p>
+              <p className="font-semibold text-white">KingPay Fintech Hub</p>
+              <p className="text-zinc-400">Recharges, Bill Pay, Train & Bus Tickets with extra cashback</p>
             </div>
           </div>
-          <Button size="sm" variant="primary" asChild>
+          <Button size="sm" className="bg-cyan-500 text-black hover:bg-cyan-400 font-bold shadow-[0_0_10px_rgba(34,211,238,0.3)] border border-cyan-400 transition" asChild>
             <Link to="/king-pay">Open Pay</Link>
           </Button>
         </div>
 
         {/* Mystery Scratch Card Section */}
-        <div className="rounded-[var(--radius-xl)] border border-primary/20 bg-surface p-4 shadow-xs">
+        <div className="rounded-[var(--radius-2xl)] border border-fuchsia-500/20 bg-white/5 p-4 shadow-[0_0_15px_rgba(217,70,239,0.1)] backdrop-blur-md">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-display text-base font-bold text-fg">
+              <h2 className="font-display text-base font-bold text-white drop-shadow-[0_0_8px_rgba(217,70,239,0.3)]">
                 ✨ Mystery Scratch Card
               </h2>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-zinc-400">
                 Scratch to reveal surprise affiliate & brand coupons!
               </p>
             </div>
@@ -332,16 +332,16 @@ function RewardsPage() {
                   setScratchRevealed(true);
                   toast.success("🎉 Mystery Reward Unlocked!");
                 }}
-                className="group relative flex h-28 w-full items-center justify-center overflow-hidden rounded-xl border border-dashed border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-primary/10 to-amber-500/10 p-4 text-center transition hover:border-amber-500 cursor-pointer"
+                className="group relative flex h-28 w-full items-center justify-center overflow-hidden rounded-xl border border-dashed border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-fuchsia-500/10 to-amber-500/10 p-4 text-center transition hover:border-amber-500 hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] cursor-pointer"
               >
                 <div className="space-y-1">
                   <span className="text-3xl transition-transform group-hover:scale-125 inline-block">
                     🎟️
                   </span>
-                  <p className="font-bold text-sm text-fg">
+                  <p className="font-bold text-sm text-white">
                     Tap to Scratch & Reveal
                   </p>
-                  <p className="text-[11px] text-muted">
+                  <p className="text-[11px] text-zinc-400">
                     Win up to 5,000 King Coins or Amazon / Fuel Vouchers
                   </p>
                 </div>
@@ -352,8 +352,8 @@ function RewardsPage() {
                 <h3 className="mt-1 font-bold text-sm text-emerald-800 dark:text-emerald-200">
                   Congratulations! You Won 2,500 King Coins + ₹50 Fuel Voucher!
                 </h3>
-                <p className="mt-0.5 text-xs text-muted">
-                  Use code <span className="font-mono font-bold text-fg">HPFUEL50</span> on HP Pay.
+                <p className="mt-0.5 text-xs text-zinc-400">
+                  Use code <span className="font-mono font-bold text-white">HPFUEL50</span> on HP Pay.
                 </p>
                 <div className="mt-3 flex justify-center gap-2">
                   <Button
@@ -370,7 +370,7 @@ function RewardsPage() {
                     href="https://hppay.in?ref=orderking"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
+                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:bg-emerald-700 transition"
                   >
                     <span>Redeem on HP Pay</span>
                     <span>↗</span>
@@ -399,10 +399,10 @@ function RewardsPage() {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition ${
+              className={`whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition cursor-pointer ${
                 activeTab === tab.id
-                  ? "bg-primary text-white shadow-xs"
-                  : "bg-surface text-muted hover:bg-surface-2"
+                  ? "bg-amber-500 text-black font-bold shadow-[0_0_10px_rgba(245,158,11,0.5)] border border-amber-400"
+                  : "bg-[#0a0a0a] text-zinc-400 border border-white/10 hover:bg-white/5 hover:text-white"
               }`}
             >
               {tab.label}
@@ -417,41 +417,41 @@ function RewardsPage() {
             return (
               <div
                 key={reward.id}
-                className="rounded-[var(--radius-xl)] border border-border bg-surface p-4 shadow-xs transition hover:border-primary/30"
+                className="rounded-[var(--radius-2xl)] border border-white/10 bg-white/5 p-4 shadow-sm transition hover:border-amber-500/30 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)] backdrop-blur-md"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
-                    <span className="flex size-11 items-center justify-center rounded-xl bg-surface-2 text-2xl">
+                    <span className="flex size-11 items-center justify-center rounded-xl bg-white/10 text-2xl border border-white/5">
                       {reward.icon}
                     </span>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-muted">
+                        <span className="text-xs font-semibold text-zinc-400">
                           {reward.brand}
                         </span>
-                        <span className="rounded bg-primary/10 px-1.5 py-0.2 text-[10px] font-bold text-primary">
+                        <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/20">
                           {reward.badge}
                         </span>
                       </div>
-                      <h3 className="mt-0.5 font-semibold text-sm text-fg">
+                      <h3 className="mt-0.5 font-bold text-sm text-white">
                         {reward.title}
                       </h3>
-                      <p className="mt-0.5 text-xs text-muted">
+                      <p className="mt-0.5 text-xs text-zinc-400">
                         {reward.description}
                       </p>
-                      <p className="mt-1 text-[11px] text-muted italic">
+                      <p className="mt-1 text-[11px] text-zinc-500 italic">
                         {reward.terms}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3">
+                <div className="mt-3 flex items-center justify-between border-t border-white/10/60 pt-3">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
                       🪙 {reward.coinsRequired.toLocaleString()} Coins
                     </span>
-                    <span className="text-[11px] text-muted">({reward.valueLabel})</span>
+                    <span className="text-[11px] text-zinc-400">({reward.valueLabel})</span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -462,7 +462,7 @@ function RewardsPage() {
                     ) : (
                       <Button
                         size="sm"
-                        variant="primary"
+                        className="bg-amber-500 hover:bg-amber-400 text-black font-bold border border-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.3)] transition"
                         onClick={() => handleUnlock(reward)}
                       >
                         Unlock Code
@@ -476,7 +476,7 @@ function RewardsPage() {
                       onClick={() => {
                         toast.success(`Opening ${reward.brand} affiliate portal...`);
                       }}
-                      className="inline-flex items-center gap-1 rounded-lg bg-surface-2 px-2.5 py-1.5 text-xs font-medium text-fg hover:bg-surface-3 transition"
+                      className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-medium text-white border border-white/10 hover:bg-white/20 transition"
                     >
                       <span>Shop with Link</span>
                       <span>↗</span>
@@ -489,8 +489,8 @@ function RewardsPage() {
         </div>
 
         {/* Zero-Loss Guardrail Notice */}
-        <div className="rounded-[var(--radius-lg)] border border-border bg-surface-2/40 p-3 text-center text-xs text-muted">
-          <p className="font-semibold text-fg">100% Verified Brand & Affiliate Partnerships</p>
+        <div className="rounded-[var(--radius-lg)] border border-white/10 bg-white/5/40 p-3 text-center text-xs text-zinc-400">
+          <p className="font-semibold text-white">100% Verified Brand & Affiliate Partnerships</p>
           <p className="mt-0.5 text-[11px]">
             OrderKing partners with top national brands & local fuel stations to provide real savings without platform markups or hidden fees.
           </p>

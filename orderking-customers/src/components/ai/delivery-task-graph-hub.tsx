@@ -54,9 +54,9 @@ export function DeliveryTaskGraphHub() {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-surface text-fg rounded-2xl border border-border overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white rounded-2xl border border-white/10 overflow-hidden">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-2/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5/40 p-4">
         <div>
           <div className="flex items-center gap-2">
             <Cpu className="size-5 text-blue-500" />
@@ -65,7 +65,7 @@ export function DeliveryTaskGraphHub() {
               Directive §8 &amp; §9
             </Badge>
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-zinc-400">
             12 Specialized Autonomous Agents · Parallel Execution · Self-QA Before Client Delivery
           </p>
         </div>
@@ -93,10 +93,10 @@ export function DeliveryTaskGraphHub() {
       {/* Main Graph View (Split: Left Tasks List, Right Details & Self-QA Suite) */}
       <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
         {/* Left Column: 10-Task Execution Pipeline */}
-        <div className="md:col-span-6 border-r border-border flex flex-col h-full bg-surface">
-          <div className="p-3 border-b border-border bg-surface-2/30 flex items-center justify-between">
-            <h4 className="text-[11px] font-black uppercase tracking-wider text-muted">Agent Execution Graph</h4>
-            <span className="text-[10px] font-bold text-fg">Project: {projectGraph.title}</span>
+        <div className="md:col-span-6 border-r border-white/10 flex flex-col h-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+          <div className="p-3 border-b border-white/10 bg-white/5/30 flex items-center justify-between">
+            <h4 className="text-[11px] font-black uppercase tracking-wider text-zinc-400">Agent Execution Graph</h4>
+            <span className="text-[10px] font-bold text-white">Project: {projectGraph.title}</span>
           </div>
 
           <div className="flex-1 overflow-y-auto p-2 space-y-2">
@@ -108,14 +108,14 @@ export function DeliveryTaskGraphHub() {
                   onClick={() => setSelectedTask(task)}
                   className={`p-3 rounded-xl border transition cursor-pointer ${
                     isSelected
-                      ? "bg-blue-500/10 border-blue-500 shadow-xs"
-                      : "bg-surface hover:bg-surface-2/60 border-border"
+                      ? "bg-blue-500/10 border-blue-500 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                      : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-white/5/60 border-white/10"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-mono text-xs font-bold text-muted">{task.id}</span>
-                      <h4 className="font-bold text-xs text-fg leading-tight">{task.title}</h4>
+                      <span className="font-mono text-xs font-bold text-zinc-400">{task.id}</span>
+                      <h4 className="font-bold text-xs text-white leading-tight">{task.title}</h4>
                     </div>
                     <Badge
                       tone={task.status === "COMPLETED" ? "primary" : task.status === "RUNNING" ? "warn" : "neutral"}
@@ -125,9 +125,9 @@ export function DeliveryTaskGraphHub() {
                     </Badge>
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-muted mb-1.5">
-                    <span>Agent: <strong className="text-fg">{task.agentRole}</strong></span>
-                    <span>Progress: <strong className="font-mono text-fg">{task.progressPct}%</strong></span>
+                  <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-1.5">
+                    <span>Agent: <strong className="text-white">{task.agentRole}</strong></span>
+                    <span>Progress: <strong className="font-mono text-white">{task.progressPct}%</strong></span>
                   </div>
 
                   {/* Task Progress Bar */}
@@ -146,15 +146,15 @@ export function DeliveryTaskGraphHub() {
         </div>
 
         {/* Right Column: Task Details & Self-QA Suite */}
-        <div className="md:col-span-6 flex flex-col h-full overflow-y-auto bg-surface-2/20 p-4 space-y-4">
+        <div className="md:col-span-6 flex flex-col h-full overflow-y-auto bg-white/5/20 p-4 space-y-4">
           {/* Selected Task Details */}
-          <div className="rounded-2xl border border-border bg-surface p-4 space-y-3 shadow-xs">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <span className="font-mono text-xs font-bold text-muted">{selectedTask.id}</span>
-                <h3 className="text-base font-black text-fg">{selectedTask.title}</h3>
-                <p className="text-xs text-muted mt-0.5">
-                  Assigned Autonomous Agent: <strong className="text-fg">{selectedTask.agentRole}</strong>
+                <span className="font-mono text-xs font-bold text-zinc-400">{selectedTask.id}</span>
+                <h3 className="text-base font-black text-white">{selectedTask.title}</h3>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  Assigned Autonomous Agent: <strong className="text-white">{selectedTask.agentRole}</strong>
                 </p>
               </div>
 
@@ -166,13 +166,13 @@ export function DeliveryTaskGraphHub() {
               </Badge>
             </div>
 
-            <p className="text-xs text-fg leading-relaxed bg-surface-2/40 p-3 rounded-xl border border-border">
+            <p className="text-xs text-white leading-relaxed bg-white/5/40 p-3 rounded-xl border border-white/10">
               {selectedTask.description}
             </p>
 
             {selectedTask.outputArtifact && (
-              <div className="flex items-center justify-between text-xs pt-1 border-t border-border">
-                <span className="text-muted">Output Artifact:</span>
+              <div className="flex items-center justify-between text-xs pt-1 border-t border-white/10">
+                <span className="text-zinc-400">Output Artifact:</span>
                 <span className="font-mono font-bold text-primary">{selectedTask.outputArtifact}</span>
               </div>
             )}
@@ -189,9 +189,9 @@ export function DeliveryTaskGraphHub() {
           </div>
 
           {/* Self-QA Verification Checklist (§9) */}
-          <div className="rounded-2xl border border-border bg-surface p-4 space-y-3 shadow-xs">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-black uppercase tracking-wider text-muted flex items-center gap-1.5">
+              <h4 className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                 <ShieldCheck className="size-4 text-emerald-500" />
                 <span>Self-QA Pre-Delivery Verification Suite (§9)</span>
               </h4>
@@ -204,11 +204,11 @@ export function DeliveryTaskGraphHub() {
               {projectGraph.qaChecks.map((qa) => (
                 <div
                   key={qa.id}
-                  className="rounded-xl border border-border bg-surface-2/30 p-2.5 flex items-center justify-between gap-2 text-xs"
+                  className="rounded-xl border border-white/10 bg-white/5/30 p-2.5 flex items-center justify-between gap-2 text-xs"
                 >
                   <div className="space-y-0.5">
-                    <span className="font-bold text-fg block">{qa.name}</span>
-                    <span className="text-[10px] text-muted">{qa.details}</span>
+                    <span className="font-bold text-white block">{qa.name}</span>
+                    <span className="text-[10px] text-zinc-400">{qa.details}</span>
                   </div>
                   <Badge tone="primary" className="text-[10px] font-bold shrink-0">
                     ✓ {qa.status}

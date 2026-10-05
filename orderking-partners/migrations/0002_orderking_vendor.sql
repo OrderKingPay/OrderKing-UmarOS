@@ -36,6 +36,8 @@ create table if not exists restaurants (
   bank_account text not null default '',
   bank_ifsc text not null default '',
   bank_name text not null default '',
+  udyam_number text not null default '',
+  dpiit_number text not null default '',
   commission_bps integer not null default 1000,
   verification_status text not null default 'DRAFT',
   verification_note text not null default '',
@@ -396,3 +398,14 @@ ALTER TABLE orders ADD CONSTRAINT check_positive_food_value_paise CHECK (food_va
 
 -- Zomato-Killer Mandate: Strict Constraints
 ALTER TABLE orders ADD CONSTRAINT check_positive_food_value CHECK (food_value_paise >= 0);
+
+create table if not exists partner_support_tickets (
+  id text primary key,
+  restaurant_id text not null references restaurants(id) on delete cascade,
+  user_id text not null,
+  topic text not null,
+  message text not null,
+  status text not null default 'OPEN',
+  created_at timestamptz not null default now()
+);
+create index if not exists partner_support_rest_idx on partner_support_tickets (restaurant_id);

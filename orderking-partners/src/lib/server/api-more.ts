@@ -124,3 +124,41 @@ export const askAssistant = createServerFn({ method: "POST" })
       return { ok: true as const, text, snapshot };
     });
   });
+
+export const listTicketsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "settings.view", async (sql, ctx) => {
+      const rows = await sql<{ id: string; topic: string; message: string; status: string; created_at: string }>`
+        select id, topic, message, status, created_at::text as created_at
+        from partner_support_tickets
+        where restaurant_id = ${ctx.restaurantId}
+        order by created_at desc
+        limit 50
+      `;
+      return rows;
+    });
+  });
+
+export const createTicketFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { data: { topic: string; message: string; idempotencyKey: string }; restaurantId?: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "settings.view", async (sql, ctx) => {
+      await sql`
+        insert into partner_support_tickets (id, restaurant_id, user_id, topic, message, status)
+        values (${newId("tick")}, ${ctx.restaurantId}, ${context.userId}, ${data.data.topic}, ${data.data.message}, 'OPEN')
+      `;
+      return { ok: true };
+    });
+  });
+
+export const partnerAiSupportFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { data: { message: string; locale: string }; restaurantId?: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "settings.view", async (sql, ctx) => {
+      return { text: "As your Supreme Spark AI Copilot, I understand you are experiencing an issue regarding: " + data.data.message + ". Please provide more details or use the 'Escalate to Founder Command Ticket' for verified manual intervention." };
+    });
+  });

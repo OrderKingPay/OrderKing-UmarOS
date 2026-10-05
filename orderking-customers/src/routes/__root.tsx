@@ -1,3 +1,4 @@
+﻿import { globalLogger } from '@/lib/logger';
 
 import { createServerFn } from "@tanstack/react-start";
 import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
@@ -46,6 +47,7 @@ export const Route = createRootRoute({
     return { sessionUser, config };
   },
   errorComponent: ({ error }) => {
+    globalLogger.error('Route error caught by boundary', error);
     return <div style={{ padding: '2rem', background: '#111', color: 'white', height: '100vh' }}><h2>OrderKing Initialization Error</h2><p>Please check the database connection strings and environment variables.</p><pre style={{ background: '#222', padding: '1rem', color: '#ff7777', whiteSpace: 'pre-wrap' }}>{(error as Error)?.message || String(error)}</pre></div>;
   },
   head: ({ loaderData, match }) => {
@@ -105,14 +107,14 @@ function Root() {
           <AppProviders config={config}>
             <ErrorBoundary>
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={location.pathname}
-                  initial={{ opacity: 0, scale: 0.98, filter: "blur(5px)" }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 1.02, filter: "blur(5px)" }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-                >
+                  <motion.div
+                    key={location.pathname}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+                  >
                   <Outlet />
                 </motion.div>
               </AnimatePresence>
@@ -126,5 +128,6 @@ function Root() {
     </html>
   );
 }
+
 
 

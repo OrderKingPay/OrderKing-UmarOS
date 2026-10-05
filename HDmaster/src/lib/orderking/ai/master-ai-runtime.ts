@@ -264,13 +264,17 @@ export async function executeTool(
       if (!id) throw new Error("cancel_order requires 'id' or 'orderId'");
       requirePermission(ws.ctx, "cancel_orders");
       const sql = await getSql();
+      const currentOrder = await sql.query<{ status: string }>(`SELECT status FROM orders WHERE id=$1 AND org_id=$2`, [id, ws.ctx.orgId]);
+      if (!currentOrder[0]) throw new Error("Order not found");
+      const { assertTransition } = await import("../orders/state-machine.ts");
+      assertTransition(currentOrder[0].status as any, "CANCELLED", "admin");
       await sql.query(
         `UPDATE orders SET status='CANCELLED' WHERE id=$1 AND org_id=$2`,
         [id, ws.ctx.orgId]
       );
       await sql.query(
-        `INSERT INTO order_events (id, org_id, order_id, actor_employee_id, from_status, to_status, action, note) VALUES ($1, $2, $3, $4, null, 'CANCELLED', 'master_ai.cancel_order', $5)`,
-        [`ev_${Date.now()}`, ws.ctx.orgId, id, ws.ctx.employeeId, String(args.reason || "Cancelled via Master AI")]
+        `INSERT INTO order_events (id, org_id, order_id, actor_employee_id, from_status, to_status, action, note) VALUES ($1, $2, $3, $4, $5, 'CANCELLED', 'master_ai.cancel_order', $6)`,
+        [`ev_${Date.now()}`, ws.ctx.orgId, id, ws.ctx.employeeId, currentOrder[0].status, String(args.reason || "Cancelled via Master AI")]
       );
       return { orderId: id, status: "CANCELLED", cancelledAt: new Date().toISOString() };
     }
@@ -329,7 +333,7 @@ export async function executeTool(
       const address = String(args.address || "Main Road, Karimganj, Assam");
       const coverImage = String(
         args.coverImage ||
-        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80"
+        ""
       );
       const newRestId = `rst_${Date.now()}`;
       const withImages = args.withImages !== false;
@@ -343,7 +347,7 @@ export async function executeTool(
           pricePaise: 24000,
           prepMinutes: 20,
           description: "Slow-cooked aromatic basmati rice layered with spiced tender chicken, saffron, and crispy onions.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80" : null,
+          imageUrl: withImages ? "" : null,
           recommended: true,
           bestSeller: true,
         },
@@ -354,7 +358,7 @@ export async function executeTool(
           pricePaise: 18000,
           prepMinutes: 15,
           description: "Fresh cottage cheese cubes in a rich, buttery tomato cream gravy with fragrant kasuri methi.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80" : null,
+          imageUrl: withImages ? "" : null,
           recommended: true,
           bestSeller: true,
         },
@@ -365,7 +369,7 @@ export async function executeTool(
           pricePaise: 6000,
           prepMinutes: 8,
           description: "Traditional tandoor-baked leavened flatbread brushed with golden farm butter.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=80" : null,
+          imageUrl: withImages ? "" : null,
           recommended: false,
           bestSeller: true,
         },
@@ -376,7 +380,7 @@ export async function executeTool(
           pricePaise: 38000,
           prepMinutes: 25,
           description: "Whole chicken marinated overnight in Greek yogurt, Kashmiri chili, and roasted garam masala.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500&auto=format&fit=crop&q=80" : null,
+          imageUrl: withImages ? "" : null,
           recommended: true,
           bestSeller: false,
         },
@@ -387,7 +391,7 @@ export async function executeTool(
           pricePaise: 12000,
           prepMinutes: 12,
           description: "Delicate dumplings stuffed with seasoned minced chicken, served with spicy red chutney.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=80" : null,
+          imageUrl: withImages ? "" : null,
           recommended: true,
           bestSeller: true,
         },
@@ -398,7 +402,7 @@ export async function executeTool(
           pricePaise: 5000,
           prepMinutes: 5,
           description: "Warm golden milk-solid dumplings soaked in green cardamom and rose water sugar syrup.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1589119908995-c6837fa14d48?w=500&auto=format&fit=crop&q=80" : null,
+          imageUrl: withImages ? "" : null,
           recommended: false,
           bestSeller: false,
         },
@@ -441,7 +445,7 @@ export async function executeTool(
           prepMinutes: 20,
           description: "Slow-cooked aromatic basmati rice layered with spiced tender chicken, saffron, and crispy onions.",
           imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80"
+            ? ""
             : null,
           recommended: true,
           bestSeller: true,
@@ -454,7 +458,7 @@ export async function executeTool(
           prepMinutes: 15,
           description: "Fresh cottage cheese cubes in a rich, buttery tomato cream gravy with fragrant kasuri methi.",
           imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80"
+            ? ""
             : null,
           recommended: true,
           bestSeller: true,
@@ -467,7 +471,7 @@ export async function executeTool(
           prepMinutes: 8,
           description: "Traditional tandoor-baked leavened flatbread brushed with golden farm butter.",
           imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=80"
+            ? ""
             : null,
           recommended: false,
           bestSeller: true,
@@ -480,7 +484,7 @@ export async function executeTool(
           prepMinutes: 25,
           description: "Whole chicken marinated overnight in Greek yogurt, Kashmiri chili, and roasted garam masala.",
           imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500&auto=format&fit=crop&q=80"
+            ? ""
             : null,
           recommended: true,
           bestSeller: false,
@@ -493,7 +497,7 @@ export async function executeTool(
           prepMinutes: 15,
           description: "Slow-simmered black lentils and kidney beans enriched with dairy butter and fresh cream.",
           imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&auto=format&fit=crop&q=80"
+            ? ""
             : null,
           recommended: true,
           bestSeller: false,
@@ -506,7 +510,7 @@ export async function executeTool(
           prepMinutes: 12,
           description: "Delicate dumplings stuffed with seasoned minced chicken, served with spicy red chutney.",
           imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=80"
+            ? ""
             : null,
           recommended: true,
           bestSeller: true,
@@ -519,7 +523,7 @@ export async function executeTool(
           prepMinutes: 5,
           description: "Warm golden milk-solid dumplings soaked in green cardamom and rose water sugar syrup.",
           imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1589119908995-c6837fa14d48?w=500&auto=format&fit=crop&q=80"
+            ? ""
             : null,
           recommended: false,
           bestSeller: false,

@@ -1,3 +1,5 @@
+﻿import { setupGlobalErrorMonitoring } from '@/lib/logger';
+setupGlobalErrorMonitoring();
 import { createRouter } from "@tanstack/react-router";
 import { QueryClient } from "@tanstack/react-query";
 import { AppErrorComponent } from "@/lib/error-component";
@@ -13,3 +15,4 @@ export function getRouter() {
     context: { queryClient },
   });
 }
+

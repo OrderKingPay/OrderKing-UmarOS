@@ -11,11 +11,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "bg-primary text-primary-fg hover:opacity-92 shadow-sm",
-        secondary: "bg-surface-2 text-fg hover:bg-surface shadow-sm",
-        outline: "border border-border bg-surface text-fg hover:bg-surface-2",
-        ghost: "text-fg hover:bg-surface-2",
+        secondary: "bg-white/5 text-white hover:bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-sm",
+        outline: "border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white hover:bg-white/5",
+        ghost: "text-white hover:bg-white/5",
         danger: "bg-danger text-primary-fg hover:opacity-92 shadow-sm",
-        glass: "bg-white/10 backdrop-blur-md border border-white/20 text-fg hover:bg-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
+        glass: "bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
       },
       size: {
         md: "rounded-[var(--radius-md)] px-4 text-sm",

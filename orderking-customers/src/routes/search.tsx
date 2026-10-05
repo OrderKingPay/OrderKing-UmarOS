@@ -40,10 +40,10 @@ function SearchPage() {
       <CustomerShell onSearch={() => undefined}>
         <div className="px-4 py-12 text-center space-y-4">
           <span className="text-4xl block animate-bounce">👑</span>
-          <h1 className="font-display text-2xl font-bold text-fg">
+          <h1 className="font-display text-2xl font-bold text-white">
             Food Search is not active in {location.cityName || "your region"}
           </h1>
-          <p className="text-sm text-muted max-w-sm mx-auto">
+          <p className="text-sm text-zinc-400 max-w-sm mx-auto">
             Order King food catalog is 1,000x strictly geofenced. You can search utilities, FASTag, bills, flights, and UPI on King Pay!
           </p>
           <Button asChild className="bg-primary text-white font-bold px-6 py-2 rounded-xl">
@@ -116,7 +116,7 @@ function FilterChip({ active, onClick, label }: { active: boolean; onClick: () =
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-11 shrink-0 rounded-full px-3 text-sm ${active ? "bg-primary text-primary-fg" : "bg-surface text-fg"}`}
+      className={`min-h-11 shrink-0 rounded-full px-3 text-sm ${active ? "bg-primary text-primary-fg" : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white"}`}
     >
       {label}
     </button>

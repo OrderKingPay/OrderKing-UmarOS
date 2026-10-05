@@ -124,7 +124,7 @@ function KitchenPage() {
   });
 
   useEffect(() => {
-    if (!vendor.restaurantId) return;
+    if (!vendor.restaurantId || !supabaseCloud) return;
     const channel = supabaseCloud
       .channel(`orders-${vendor.restaurantId}`)
       .on(
@@ -142,7 +142,7 @@ function KitchenPage() {
       .subscribe();
 
     return () => {
-      supabaseCloud.removeChannel(channel);
+      supabaseCloud?.removeChannel(channel);
     };
   }, [vendor.restaurantId, qc]);
 
@@ -175,7 +175,7 @@ function KitchenPage() {
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted">{q.data ? `Updated ${new Date(q.data.serverTime).toLocaleTimeString()}` : t("common.loading")}</p>
+        <p className="text-sm text-zinc-400">{q.data ? `Updated ${new Date(q.data.serverTime).toLocaleTimeString()}` : t("common.loading")}</p>
         <Button
           variant="secondary"
           size="icon"
@@ -187,18 +187,18 @@ function KitchenPage() {
       </div>
 
       {/* King Pay Merchant Soundbox Software (₹99/mo) */}
-      <Card className="border border-primary/30 bg-primary/5 p-4 space-y-2">
+      <div className="rounded-[var(--radius-2xl)] border border-fuchsia-500/30 bg-gradient-to-br from-black via-fuchsia-950/20 to-fuchsia-500/10 p-4 space-y-2 shadow-[0_0_15px_rgba(217,70,239,0.15)] backdrop-blur-md">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <span className="text-xl">📢</span>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-sm text-foreground">King Pay AI Soundbox Active</h3>
-                <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                <h3 className="font-semibold text-sm text-white">King Pay AI Soundbox Active</h3>
+                <span className="rounded bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
                   ₹99/mo Active
                 </span>
               </div>
-              <p className="text-xs text-muted mt-0.5">
+              <p className="text-xs text-zinc-400 mt-0.5">
                 Zero physical hardware cost. Announces incoming orders and King Pay UPI payments aloud in Bengali, Hindi, and English.
               </p>
             </div>
@@ -215,7 +215,7 @@ function KitchenPage() {
             🔊 Test Voice Announcement
           </Button>
         </div>
-      </Card>
+      </div>
 
       <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0">
         {COLS.map((col) => {
@@ -227,11 +227,11 @@ function KitchenPage() {
           return (
             <section key={col.state} className="w-[min(86vw,22rem)] shrink-0 snap-start space-y-2 lg:w-auto lg:min-w-0">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold tracking-wide">{t(col.key)}</h2>
-                <span className="tabular text-sm text-muted">{items.length}</span>
+                <h2 className="text-sm font-bold tracking-wide text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">{t(col.key)}</h2>
+                <span className="tabular text-sm text-zinc-400">{items.length}</span>
               </div>
               {items.length === 0 ? (
-                <Card className="text-sm text-muted">{t("kitchen.empty")}</Card>
+                <Card className="text-sm text-zinc-400">{t("kitchen.empty")}</Card>
               ) : (
                 items.map((o: any) => (
                   <OrderCard

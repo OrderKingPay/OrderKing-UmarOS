@@ -34,7 +34,7 @@ function BrandDevPage() {
       <div className="px-4 py-5">
         <p className="text-xs uppercase tracking-wide text-warn">Development configuration</p>
         <h1 className="font-display text-3xl">Brand</h1>
-        <p className="mt-2 text-sm text-muted">
+        <p className="mt-2 text-sm text-zinc-400">
           Change these values in the database. The rest of the app reads them from one config object. Turn off
           allowDevTools before a public launch.
         </p>

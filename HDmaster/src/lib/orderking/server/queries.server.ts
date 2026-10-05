@@ -300,12 +300,12 @@ export async function getOrder(ctx: AccessContext, id: string) {
   const o = orders[0];
   if (!o) throw new ForbiddenError("Order not found");
   const items = await sql.query<{ name: string; qty: number; unit_paise: number }>(
-    `select name, qty, unit_paise from order_items where order_id=$1`,
-    [id],
+    `select name, qty, unit_paise from order_items where order_id=$1 and org_id=$2`,
+    [id, ctx.orgId],
   );
   const events = await sql.query<{ action: string; from_status: string | null; to_status: string | null; note: string | null; created_at: string }>(
-    `select action, from_status, to_status, note, created_at from order_events where order_id=$1 order by created_at`,
-    [id],
+    `select action, from_status, to_status, note, created_at from order_events where order_id=$1 and org_id=$2 order by created_at`,
+    [id, ctx.orgId],
   );
   const financeOk =
     ctx.permissions.includes("view_finance") || ctx.actingRoleKey === "SUPER_ADMIN";
@@ -317,7 +317,7 @@ export async function getOrder(ctx: AccessContext, id: string) {
         amount_paise: number;
         note: string | null;
         created_at: string;
-      }>(`select kind, source, rule_key, amount_paise, note, created_at from ledger_entries where order_id=$1`, [id])
+      }>(`select kind, source, rule_key, amount_paise, note, created_at from ledger_entries where order_id=$1 and org_id=$2`, [id, ctx.orgId])
     : [];
   return {
     id: str(o.id),
@@ -691,8 +691,8 @@ export async function getRider(ctx: AccessContext, id: string) {
   if (!rider) throw new ForbiddenError("Rider not found");
   const sql = await getSql();
   const hist = await sql.query<{ id: string; status: string; total_paise: number; placed_at: string }>(
-    `select id, status, total_paise, placed_at from orders where rider_id=$1 order by placed_at desc limit 20`,
-    [id],
+    `select id, status, total_paise, placed_at from orders where rider_id=$1 and org_id=$2 order by placed_at desc limit 20`,
+    [id, ctx.orgId],
   );
   return {
     ...rider,

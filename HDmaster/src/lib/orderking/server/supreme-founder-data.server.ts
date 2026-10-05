@@ -5,8 +5,38 @@ import type {
   ConnectedPlatform, 
   RemoteContractGig, 
   SeparableModule, 
-  EnterpriseProjectBlueprint 
+  EnterpriseProjectBlueprint,
+  PaidProduct
 } from "../ai/supreme-founder-ai-core";
+
+export async function getFounderIncomeProductsFromDb(orgId: string): Promise<PaidProduct[]> {
+  const sql = await getSql();
+  const rows = await sql`SELECT * FROM founder_income_products WHERE org_id = ${orgId} ORDER BY created_at DESC`;
+  return rows.map(r => ({
+    id: String(r.id),
+    title: String(r.title),
+    priceInr: Number(r.price_paise) / 100,
+    category: String(r.category) as any,
+    salesCount: Number(r.sales_count),
+    totalEarnedInr: Number(r.total_earned_paise) / 100,
+    checkoutLink: String(r.checkout_link),
+    status: String(r.status) as any
+  }));
+}
+
+export async function saveFounderIncomeProductToDb(
+  orgId: string,
+  input: { id: string; title: string; priceInr: number; category: string; checkoutLink: string; status: string; salesCount: number; totalEarnedInr: number }
+): Promise<void> {
+  const sql = await getSql();
+  await sql`
+    INSERT INTO founder_income_products (
+      id, org_id, title, price_paise, category, sales_count, total_earned_paise, checkout_link, status
+    ) VALUES (
+      ${input.id}, ${orgId}, ${input.title}, ${Math.round(input.priceInr * 100)}, ${input.category}, ${input.salesCount}, ${Math.round(input.totalEarnedInr * 100)}, ${input.checkoutLink}, ${input.status}
+    )
+  `;
+}
 
 export async function getCuratedClientLeadsFromDb(): Promise<ClientLead[]> {
   const sql = await getSql();

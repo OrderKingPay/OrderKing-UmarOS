@@ -85,7 +85,7 @@ export function Wordmark({ className }: { className?: string }) {
   return (
     <Link
       to="/"
-      className={cn("flex items-center gap-2.5 text-fg no-underline", className)}
+      className={cn("flex items-center gap-2.5 text-white no-underline", className)}
       aria-label={brand.appName}
     >
       <BrandMark className="h-8 w-8 rounded-lg shadow-sm" />

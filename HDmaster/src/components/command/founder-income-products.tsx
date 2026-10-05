@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { loadFounderIncomeProducts, saveFounderIncomeProductFn } from "@/lib/orderking/actions";
 import {
   Banknote,
   Briefcase,
@@ -36,48 +38,14 @@ export type PaidProduct = {
 };
 
 export function FounderIncomeProducts() {
-  const [products, setProducts] = useState<PaidProduct[]>([
-    {
-      id: "prod-01",
-      title: "OrderKing Restaurant SaaS White-Label License",
-      priceInr: 49999,
-      category: "software",
-      salesCount: 14,
-      totalEarnedInr: 699986,
-      checkoutLink: "https://pay.orderking.in/l/saas-license",
-      status: "ACTIVE",
-    },
-    {
-      id: "prod-02",
-      title: "Sovereign Quick-Commerce Fleet Blueprint & Codebase",
-      priceInr: 19999,
-      category: "digital_asset",
-      salesCount: 28,
-      totalEarnedInr: 559972,
-      checkoutLink: "https://pay.orderking.in/l/fleet-blueprint",
-      status: "ACTIVE",
-    },
-    {
-      id: "prod-03",
-      title: "1-on-1 High-Scale Marketplace Architecture Consulting (1 Hour)",
-      priceInr: 15000,
-      category: "consulting",
-      salesCount: 8,
-      totalEarnedInr: 120000,
-      checkoutLink: "https://pay.orderking.in/l/founder-consulting",
-      status: "ACTIVE",
-    },
-    {
-      id: "prod-04",
-      title: "Turnkey Dark Kitchen Web & Order System",
-      priceInr: 34999,
-      category: "website",
-      salesCount: 9,
-      totalEarnedInr: 314991,
-      checkoutLink: "https://pay.orderking.in/l/turnkey-kitchen",
-      status: "ACTIVE",
-    },
-  ]);
+  const queryClient = useQueryClient();
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["founderIncomeProducts"],
+    queryFn: () => loadFounderIncomeProducts(),
+  });
+
+  const products = response?.ok ? response.data : [];
+
 
   const [newTitle, setNewTitle] = useState("");
   const [newPrice, setNewPrice] = useState("");
@@ -87,6 +55,22 @@ export function FounderIncomeProducts() {
   const totalGrossIncome = products.reduce((acc, p) => acc + p.totalEarnedInr, 0);
   const netFounderTakehome = Math.round(totalGrossIncome * 0.82); // After 18% GST allocation
   const gstAllocated = totalGrossIncome - netFounderTakehome;
+
+  const saveMutation = useMutation({
+    mutationFn: (newProd: PaidProduct) => saveFounderIncomeProductFn({ data: newProd }),
+    onSuccess: (res) => {
+      if (res.ok) {
+        queryClient.invalidateQueries({ queryKey: ["founderIncomeProducts"] });
+        setNewTitle("");
+        setNewPrice("");
+        setShowCreateModal(false);
+        toast.success(`🎉 Paid product "${newTitle}" created! Shareable payment link generated.`);
+      } else {
+        toast.error(res.error || "Failed to create product");
+      }
+    },
+    onError: () => toast.error("An error occurred")
+  });
 
   const handleCreateProduct = (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,12 +92,9 @@ export function FounderIncomeProducts() {
       status: "ACTIVE",
     };
 
-    setProducts([newProd, ...products]);
-    setNewTitle("");
-    setNewPrice("");
-    setShowCreateModal(false);
-    toast.success(`🎉 Paid product "${newTitle}" created! Shareable payment link generated.`);
+    saveMutation.mutate(newProd);
   };
+
 
   const copyLink = (link: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -156,7 +137,7 @@ export function FounderIncomeProducts() {
           <p className="text-2xl font-black text-cyan-400 font-mono">
             ₹{gstAllocated.toLocaleString("en-IN")}
           </p>
-          <span className="text-[10px] text-muted">GSTR-1 &amp; GSTR-3B Ready</span>
+          <span className="text-[10px] text-zinc-400">GSTR-1 &amp; GSTR-3B Ready</span>
         </div>
       </div>
 
@@ -189,7 +170,7 @@ export function FounderIncomeProducts() {
           {products.map((p) => (
             <div
               key={p.id}
-              className="rounded-xl border border-white/10 bg-slate-950/80 p-4 shadow-xs space-y-3 flex flex-col justify-between hover:border-amber-400/40 transition"
+              className="rounded-xl border border-white/10 bg-slate-950/80 p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)] space-y-3 flex flex-col justify-between hover:border-amber-400/40 transition"
             >
               <div>
                 <div className="flex items-center justify-between mb-1.5">

@@ -66,7 +66,7 @@ export function MapPane({
         ) : null}
       </svg>
       <div className="flex items-center justify-between gap-2 px-3 py-2">
-        <p className="flex items-center gap-1 text-xs text-muted-foreground">
+        <p className="flex items-center gap-1 text-xs text-zinc-400-foreground">
           <MapPin className="size-3.5" />
           {pickupLabel} → {dropLabel}
         </p>

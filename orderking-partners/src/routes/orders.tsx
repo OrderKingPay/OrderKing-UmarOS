@@ -150,7 +150,7 @@ function OrdersPage() {
       </div>
       <div className="grid gap-3">
         {(q.data?.orders.length ?? 0) === 0 ? (
-          <Card className="text-sm text-muted">{t("orders.empty")}</Card>
+          <Card className="text-sm text-zinc-400">{t("orders.empty")}</Card>
         ) : (
           q.data?.orders.map((o: any) => (
             <OrderCard

@@ -20,7 +20,7 @@ function MorePage() {
           <Link
             key={item.to}
             to={item.to}
-            className="flex min-h-14 items-center gap-3 rounded-[16px] border border-line bg-surface px-4"
+            className="flex min-h-14 items-center gap-3 rounded-[16px] border border-line bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-4"
           >
             <item.icon className="size-5 text-chili" />
             <span className="font-medium">{t(item.key)}</span>

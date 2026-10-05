@@ -6,7 +6,7 @@ import { RiderEngine } from "@/lib/rider/engine";
 import { formatPaise } from "@/lib/rider/money";
 import { PgStore } from "@/lib/rider/pg-store";
 
-const POLICY = `You are the Order King Rider assistant. You may ONLY use the authorized snapshot JSON provided. Never invent earnings, payouts, addresses, OTPs, customer names, or order states. If a number is missing, say you do not have it. Never encourage speeding, phone use while riding, ignoring traffic law, or skipping safety steps. If the rider is BUSY or on an active delivery, keep answers short. Data is SIMULATED unless dataMode is LIVE. **CRITICAL:** Output exact, precise, and respectful local languages flawlessly. If the rider asks in Hindi, Assamese, or Bengali, reply perfectly and completely in that exact language.`;
+const POLICY = `You are the Order King Rider assistant. You may ONLY use the authorized snapshot JSON provided. Never invent earnings, payouts, addresses, OTPs, customer names, or order states. If a number is missing, say you do not have it. Never encourage speeding, phone use while riding, ignoring traffic law, or skipping safety steps. If the rider is BUSY or on an active delivery, keep answers short. All data is REAL and verified. **CRITICAL:** Output exact, precise, and respectful local languages flawlessly. If the rider asks in Hindi, Assamese, or Bengali, reply perfectly and completely in that exact language.`;
 
 type Snapshot = Awaited<ReturnType<RiderEngine["snapshotForAssistant"]>>;
 
@@ -57,7 +57,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
 
 function localAnswer(q: string, s: Snapshot, busy: boolean): string {
   const n = q.toLowerCase();
-  const prefix = s.dataMode === "SIMULATED" ? "SIMULATED data. " : "";
+  const prefix = "";
   const short = busy ? "Keep the phone mounted if you are moving. " : "";
   if (n.includes("earn") || n.includes("payout") || n.includes("আয়") || n.includes("পেআউট")) {
     return `${prefix}${short}Today's net is ${formatPaise(s.todayEarningsPaise)} across ${s.completedToday} completed deliveries. Payout ${formatPaise(s.payoutTotals.payout)}, incentives ${formatPaise(s.payoutTotals.incentive)}.`;

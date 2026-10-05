@@ -78,7 +78,7 @@ function riderFromRow(row: Record<string, unknown>): RiderProfile {
     locale: (row.locale as RiderProfile["locale"]) ?? "en",
     createdAt: iso(row.created_at),
     updatedAt: iso(row.updated_at),
-    dataMode: (row.data_mode as RiderProfile["dataMode"]) ?? "SIMULATED",
+    dataMode: (row.data_mode as RiderProfile["dataMode"]) ?? "LIVE",
   };
 }
 
@@ -425,7 +425,7 @@ export class PgStore implements RiderStore {
         photoBytes: r.photo_bytes == null ? null : num(r.photo_bytes),
         photoDataUrl: r.photo_data_url ? String(r.photo_data_url) : null,
         capturedAt: iso(r.captured_at),
-        dataMode: (r.data_mode as ProofOfDelivery["dataMode"]) ?? "SIMULATED",
+        dataMode: (r.data_mode as ProofOfDelivery["dataMode"]) ?? "LIVE",
       }),
     );
   }
@@ -507,7 +507,7 @@ export class PgStore implements RiderStore {
         amountPaise: num(r.amount_paise),
         note: String(r.note ?? ""),
         at: iso(r.at),
-        dataMode: (r.data_mode as EarningLine["dataMode"]) ?? "SIMULATED",
+        dataMode: (r.data_mode as EarningLine["dataMode"]) ?? "LIVE",
       }),
     );
   }
@@ -530,7 +530,7 @@ export class PgStore implements RiderStore {
         amountPaise: num(r.amount_paise),
         status: r.status as Settlement["status"],
         confirmedPaidAt: r.confirmed_paid_at ? iso(r.confirmed_paid_at) : null,
-        dataMode: (r.data_mode as Settlement["dataMode"]) ?? "SIMULATED",
+        dataMode: (r.data_mode as Settlement["dataMode"]) ?? "LIVE",
       }),
     );
   }
@@ -772,7 +772,7 @@ function offerFromRow(row: Record<string, unknown>): DispatchOffer {
     status: row.status as DispatchOffer["status"],
     expiresAt: iso(row.expires_at),
     createdAt: iso(row.created_at),
-    dataMode: (row.data_mode as DispatchOffer["dataMode"]) ?? "SIMULATED",
+    dataMode: (row.data_mode as DispatchOffer["dataMode"]) ?? "LIVE",
   };
 }
 
@@ -789,6 +789,6 @@ function deliveryFromRow(row: Record<string, unknown>): Delivery {
     state: row.state as Delivery["state"],
     createdAt: iso(row.created_at),
     updatedAt: iso(row.updated_at),
-    dataMode: (row.data_mode as Delivery["dataMode"]) ?? "SIMULATED",
+    dataMode: (row.data_mode as Delivery["dataMode"]) ?? "LIVE",
   };
 }

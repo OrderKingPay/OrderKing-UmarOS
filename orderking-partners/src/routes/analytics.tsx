@@ -49,19 +49,19 @@ function AnalyticsPage() {
       </div>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Card className="p-3">
-          <div className="text-xs text-muted">{t("analytics.orders")}</div>
+          <div className="text-xs text-zinc-400">{t("analytics.orders")}</div>
           <div className="font-display text-2xl tabular">{s?.orders ?? "—"}</div>
         </Card>
         <Card className="p-3">
-          <div className="text-xs text-muted">{t("dashboard.sales")}</div>
+          <div className="text-xs text-zinc-400">{t("dashboard.sales")}</div>
           <div className="font-display text-2xl">{s ? <MoneyText paise={s.salesPaise} /> : "—"}</div>
         </Card>
         <Card className="p-3">
-          <div className="text-xs text-muted">{t("dashboard.aov")}</div>
+          <div className="text-xs text-zinc-400">{t("dashboard.aov")}</div>
           <div className="font-display text-2xl">{s ? <MoneyText paise={s.aovPaise} /> : "—"}</div>
         </Card>
         <Card className="p-3">
-          <div className="text-xs text-muted">{t("analytics.avgPrep")}</div>
+          <div className="text-xs text-zinc-400">{t("analytics.avgPrep")}</div>
           <div className="font-display text-2xl tabular">{q.data?.avgPrepMinutes ?? "—"}</div>
         </Card>
       </div>
@@ -83,7 +83,7 @@ function AnalyticsPage() {
             {(q.data?.items ?? []).slice(0, 5).map((i) => (
               <li key={i.name} className="flex justify-between">
                 <span>{i.name}</span>
-                <span className="tabular text-muted">{i.qty}</span>
+                <span className="tabular text-zinc-400">{i.qty}</span>
               </li>
             ))}
           </ul>
@@ -98,7 +98,7 @@ function AnalyticsPage() {
               .map((i) => (
                 <li key={i.name} className="flex justify-between">
                   <span>{i.name}</span>
-                  <span className="tabular text-muted">{i.qty}</span>
+                  <span className="tabular text-zinc-400">{i.qty}</span>
                 </li>
               ))}
           </ul>

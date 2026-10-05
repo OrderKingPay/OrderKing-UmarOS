@@ -53,22 +53,22 @@ export function LanguageSelectorModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md rounded-2xl border border-border/80 bg-surface p-5 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-md rounded-2xl border border-white/10/80 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-border/60">
+        <div className="flex items-center justify-between pb-3 border-b border-white/10/60">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/15 text-primary shadow-xs">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/15 text-primary shadow-[0_0_15px_rgba(255,255,255,0.05)]">
               <Globe className="size-5" />
             </div>
             <div>
-              <h3 className="text-base font-black text-fg tracking-tight">Select Language / ভাষা</h3>
-              <p className="text-xs text-muted">12 Sovereign Indian Languages Supported</p>
+              <h3 className="text-base font-black text-white tracking-tight">Select Language / ভাষা</h3>
+              <p className="text-xs text-zinc-400">12 Sovereign Indian Languages Supported</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-muted hover:bg-surface-2 hover:text-fg transition"
+            className="rounded-full p-2 text-zinc-400 hover:bg-white/5 hover:text-white transition"
           >
             <X className="size-5" />
           </button>
@@ -76,19 +76,19 @@ export function LanguageSelectorModal({
 
         {/* Clean Search Input (No side-by-side button clutter) */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search language or state..."
-            className="w-full rounded-xl border border-border bg-surface-2 pl-9 pr-4 py-2 text-xs font-medium text-fg focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
+            className="w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-4 py-2 text-xs font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
           />
           {search && (
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-fg"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white"
             >
               Clear
             </button>
@@ -110,7 +110,7 @@ export function LanguageSelectorModal({
                 className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all duration-150 ${
                   isSelected
                     ? "border-primary bg-primary/10 shadow-sm ring-1 ring-primary/40"
-                    : "border-border/70 bg-surface-2/40 hover:bg-surface-2 hover:border-border"
+                    : "border-white/10/70 bg-white/5/40 hover:bg-white/5 hover:border-white/10"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -118,17 +118,17 @@ export function LanguageSelectorModal({
                     className={`flex size-8 items-center justify-center rounded-lg text-xs font-bold ${
                       isSelected
                         ? "bg-primary text-white"
-                        : "bg-surface-2 border border-border text-muted"
+                        : "bg-white/5 border border-white/10 text-zinc-400"
                     }`}
                   >
                     {lang.code.toUpperCase()}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-fg">{lang.nativeName}</span>
-                      <span className="text-xs text-muted">({lang.name})</span>
+                      <span className="font-bold text-sm text-white">{lang.nativeName}</span>
+                      <span className="text-xs text-zinc-400">({lang.name})</span>
                     </div>
-                    <p className="text-[10px] text-muted">{lang.greeting} · {lang.region}</p>
+                    <p className="text-[10px] text-zinc-400">{lang.greeting} · {lang.region}</p>
                   </div>
                 </div>
 
@@ -144,15 +144,15 @@ export function LanguageSelectorModal({
           })}
 
           {filtered.length === 0 && (
-            <div className="py-8 text-center text-xs text-muted">
+            <div className="py-8 text-center text-xs text-zinc-400">
               No matching languages found for "{search}"
             </div>
           )}
         </div>
 
         {/* Footer info */}
-        <div className="pt-2 border-t border-border/60 text-center">
-          <p className="text-[11px] text-muted flex items-center justify-center gap-1">
+        <div className="pt-2 border-t border-white/10/60 text-center">
+          <p className="text-[11px] text-zinc-400 flex items-center justify-center gap-1">
             <Sparkles className="size-3 text-amber-500" />
             <span>AI Voice Concierge automatically responds in your selected language</span>
           </p>

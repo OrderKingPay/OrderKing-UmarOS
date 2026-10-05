@@ -404,9 +404,9 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 backdrop-blur-md">
-      <div className="w-full max-w-md rounded-3xl border-2 border-amber-400/80 bg-surface shadow-2xl overflow-hidden flex flex-col">
+      <div className="w-full max-w-md rounded-3xl border-2 border-amber-400/80 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-[#0D3B2E] via-emerald-900 to-[#07241C] p-4 text-white">
+        <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-[#0D3B2E] via-emerald-900 to-[#07241C] p-4 text-white">
           <div className="flex items-center gap-2.5">
             <div className="flex size-9 items-center justify-center rounded-xl bg-amber-400 text-slate-950 font-black shadow-sm">
               <Camera className="size-5" />
@@ -440,14 +440,14 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
         </div>
 
         {/* Tab Selector: Live Camera vs Receive / My QR vs Manual UPI */}
-        <div className="flex rounded-xl bg-surface-2 p-1 m-3 text-xs font-bold border border-border gap-1">
+        <div className="flex rounded-xl bg-white/5 p-1 m-3 text-xs font-bold border border-white/10 gap-1">
           <button
             type="button"
             onClick={() => setScanMode("camera")}
             className={`flex-1 rounded-lg py-1.5 transition flex items-center justify-center gap-1.5 ${
               scanMode === "camera"
-                ? "bg-primary text-white shadow-xs"
-                : "text-muted hover:text-fg"
+                ? "bg-primary text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                : "text-zinc-400 hover:text-white"
             }`}
           >
             <Camera className="size-3.5" />
@@ -461,8 +461,8 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
             }}
             className={`flex-1 rounded-lg py-1.5 transition flex items-center justify-center gap-1.5 ${
               scanMode === "receive"
-                ? "bg-amber-500 text-black shadow-xs font-extrabold"
-                : "text-muted hover:text-fg"
+                ? "bg-amber-500 text-black shadow-[0_0_15px_rgba(255,255,255,0.05)] font-extrabold"
+                : "text-zinc-400 hover:text-white"
             }`}
           >
             <span>📲 Receive / My QR</span>
@@ -475,8 +475,8 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
             }}
             className={`flex-1 rounded-lg py-1.5 transition flex items-center justify-center gap-1.5 ${
               scanMode === "manual"
-                ? "bg-primary text-white shadow-xs"
-                : "text-muted hover:text-fg"
+                ? "bg-primary text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                : "text-zinc-400 hover:text-white"
             }`}
           >
             <span>⌨️ Phone / UPI</span>
@@ -604,7 +604,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
               </div>
             </div>
 
-            <p className="text-[11px] text-muted text-center leading-relaxed">
+            <p className="text-[11px] text-zinc-400 text-center leading-relaxed">
               Point camera at any shop, merchant, or banking QR code. Decodes instantly from far distance with 0% fee.
             </p>
           </div>
@@ -612,12 +612,12 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
           /* MANUAL UPI ENTRY MODE */
           <form onSubmit={handleManualSubmit} className="p-4 space-y-3.5">
             <div>
-              <label className="block text-xs font-semibold text-fg mb-1">
+              <label className="block text-xs font-semibold text-white mb-1">
                 Recipient UPI ID or 10-Digit Mobile:
               </label>
               <input
                 type="text"
-                className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary focus:outline-none"
                 value={manualUpi}
                 onChange={(e) => setManualUpi(e.target.value)}
                 placeholder="e.g. merchant@icici or 9876543210"
@@ -626,12 +626,12 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-fg mb-1">
+              <label className="block text-xs font-semibold text-white mb-1">
                 Amount to Transfer (₹) (Optional):
               </label>
               <input
                 type="number"
-                className="w-full rounded-xl border border-border bg-bg px-3 py-2 text-sm font-mono font-bold focus:ring-2 focus:ring-primary focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-bg px-3 py-2 text-sm font-mono font-bold focus:ring-2 focus:ring-primary focus:outline-none"
                 value={manualAmount}
                 onChange={(e) => setManualAmount(e.target.value)}
                 placeholder="₹250"
@@ -639,10 +639,10 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
             </div>
 
             {/* Quick Upload from Gallery Option */}
-            <div className="rounded-xl border border-dashed border-primary/40 bg-surface-2/60 p-3 text-center">
-              <label className="cursor-pointer flex flex-col items-center justify-center gap-1 text-xs text-muted hover:text-primary transition">
+            <div className="rounded-xl border border-dashed border-primary/40 bg-white/5/60 p-3 text-center">
+              <label className="cursor-pointer flex flex-col items-center justify-center gap-1 text-xs text-zinc-400 hover:text-primary transition">
                 <ImageIcon className="size-6 text-primary" />
-                <span className="font-semibold text-fg">Have a QR screenshot or photo?</span>
+                <span className="font-semibold text-white">Have a QR screenshot or photo?</span>
                 <span className="text-[10px] text-primary underline">Upload from Gallery</span>
                 <input
                   type="file"

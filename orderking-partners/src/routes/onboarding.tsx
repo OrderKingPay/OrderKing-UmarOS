@@ -43,6 +43,9 @@ function OnboardingPage() {
     gstin: "",
     fssaiNumber: "",
     pan: "",
+    orgType: "MSME",
+    udyamNumber: "",
+    dpiitNumber: "",
     bankAccount: "",
     bankIfsc: "",
   });
@@ -86,6 +89,8 @@ function OnboardingPage() {
           gstin: form.gstin,
           fssaiNumber: form.fssaiNumber,
           pan: form.pan,
+          udyamNumber: form.udyamNumber,
+          dpiitNumber: form.dpiitNumber,
           bankAccount: form.bankAccount,
           bankIfsc: form.bankIfsc,
           cuisine: form.cuisine,
@@ -121,7 +126,7 @@ function OnboardingPage() {
           
           <Card className="space-y-3">
             <h2 className="font-display text-xl">{t("onboarding.realCta")}</h2>
-            <p className="text-sm text-muted">{t("onboarding.notVerified")}</p>
+            <p className="text-sm text-zinc-400">{t("onboarding.notVerified")}</p>
             <Field label={t("onboarding.name")} value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
             <Field label={t("onboarding.displayName")} value={form.displayName} onChange={(v) => setForm({ ...form, displayName: v })} />
             <Field label={t("onboarding.owner")} value={form.ownerName} onChange={(v) => setForm({ ...form, ownerName: v })} />
@@ -139,15 +144,34 @@ function OnboardingPage() {
       ) : (
         <div className="space-y-4">
           <Card>
-            <div className="text-xs uppercase tracking-wide text-muted">{t("onboarding.status")}</div>
+            <div className="text-xs uppercase tracking-wide text-zinc-400">{t("onboarding.status")}</div>
             <div className="font-display text-2xl">{String(r?.verification_status ?? vendor.selected?.verificationStatus)}</div>
-            <p className="mt-1 text-sm text-muted">{t("onboarding.notVerified")}</p>
+            <p className="mt-1 text-sm text-zinc-400">{t("onboarding.notVerified")}</p>
           </Card>
           <Card className="grid gap-3 md:grid-cols-2">
             <Field label={t("onboarding.cuisine")} value={form.cuisine || String(r?.cuisine ?? "")} onChange={(v) => setForm({ ...form, cuisine: v })} />
             <Field label={t("onboarding.gst")} value={form.gstin || String(r?.gstin ?? "")} onChange={(v) => setForm({ ...form, gstin: v })} />
             <Field label={t("onboarding.fssai")} value={form.fssaiNumber || String(r?.fssai_number ?? "")} onChange={(v) => setForm({ ...form, fssaiNumber: v })} />
             <Field label={t("onboarding.pan")} value={form.pan || String(r?.pan ?? "")} onChange={(v) => setForm({ ...form, pan: v })} />
+            
+            <div className="md:col-span-2">
+              <Label>Organization Type</Label>
+              <select
+                className="mt-1 block w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                value={form.orgType}
+                onChange={(e) => setForm({ ...form, orgType: e.target.value })}
+              >
+                <option value="MSME">MSME (Udyam Registration)</option>
+                <option value="DPIIT">DPIIT Recognized Startup</option>
+              </select>
+            </div>
+            
+            {form.orgType === "MSME" ? (
+              <Field label="Udyam Registration Number" value={form.udyamNumber || String(r?.udyam_number ?? "")} onChange={(v) => setForm({ ...form, udyamNumber: v })} />
+            ) : (
+              <Field label="DPIIT Recognition Number" value={form.dpiitNumber || String(r?.dpiit_number ?? "")} onChange={(v) => setForm({ ...form, dpiitNumber: v })} />
+            )}
+
             <Field label={t("onboarding.bank")} value={form.bankAccount} onChange={(v) => setForm({ ...form, bankAccount: v })} />
             <Field label={t("onboarding.ifsc")} value={form.bankIfsc} onChange={(v) => setForm({ ...form, bankIfsc: v })} />
             <div className="md:col-span-2">
@@ -197,7 +221,7 @@ function DocumentUpload({ restaurantId }: { restaurantId: string }) {
   return (
     <Card className="space-y-2">
       <h3 className="font-medium">{t("onboarding.documents")}</h3>
-      <p className="text-xs text-muted">{t("onboarding.storageHint")}</p>
+      <p className="text-xs text-zinc-400">{t("onboarding.storageHint")}</p>
       <input
         type="file"
         accept="application/pdf,image/jpeg,image/png,image/webp"
@@ -227,7 +251,7 @@ function DocumentUpload({ restaurantId }: { restaurantId: string }) {
           }
         }}
       />
-      {msg ? <p className="text-sm text-muted">{msg}</p> : null}
+      {msg ? <p className="text-sm text-zinc-400">{msg}</p> : null}
       <p className="text-xs text-faint">{t("onboarding.notVerified")}</p>
     </Card>
   );

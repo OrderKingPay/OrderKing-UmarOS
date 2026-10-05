@@ -111,27 +111,27 @@ export function MindReaderWidget() {
   };
 
   return (
-    <section aria-label="What Are You Craving" className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-surface to-surface p-4 sm:p-5 shadow-xs space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border/70 pb-3">
+    <section aria-label="What Are You Craving" className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-surface to-surface p-4 sm:p-5 shadow-[0_0_15px_rgba(255,255,255,0.05)] space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-white/10/70 pb-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-white text-base shadow-xs">
+            <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-white text-base shadow-[0_0_15px_rgba(255,255,255,0.05)]">
               👑
             </span>
-            <h2 className="font-display font-bold text-lg text-fg tracking-tight">
+            <h2 className="font-display font-bold text-lg text-white tracking-tight">
               {market.headline}
             </h2>
             <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-0.5 text-[11px] font-bold text-primary">
               {market.badge}
             </span>
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-zinc-400">
             {market.subheadline}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-3 py-1 text-xs font-semibold text-muted border border-border/60">
+          <span className="inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-zinc-400 border border-white/10/60">
             <span>✨ 0% Menu Markup</span>
           </span>
         </div>
@@ -142,17 +142,17 @@ export function MindReaderWidget() {
         {POPULAR_DISHES.slice(0, 3).map((dish) => (
           <div
             key={dish.id}
-            className="flex flex-col justify-between rounded-xl border border-border bg-surface p-3.5 shadow-xs hover:border-primary/40 hover:shadow-sm transition space-y-2.5"
+            className="flex flex-col justify-between rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:border-primary/40 hover:shadow-sm transition space-y-2.5"
           >
             <div className="space-y-1.5">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{dish.icon}</span>
                   <div>
-                    <h3 className="font-bold text-xs text-fg line-clamp-1 leading-snug">
+                    <h3 className="font-bold text-xs text-white line-clamp-1 leading-snug">
                       {dish.dishName}
                     </h3>
-                    <p className="text-[10px] text-muted">{dish.restaurantName}</p>
+                    <p className="text-[10px] text-zinc-400">{dish.restaurantName}</p>
                   </div>
                 </div>
                 <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary flex-shrink-0">
@@ -160,15 +160,15 @@ export function MindReaderWidget() {
                 </span>
               </div>
 
-              <p className="text-[11px] text-muted line-clamp-2">
+              <p className="text-[11px] text-zinc-400 line-clamp-2">
                 {dish.description}
               </p>
 
               <div className="flex items-center justify-between text-xs font-mono pt-1">
-                <span className="font-bold text-fg">
+                <span className="font-bold text-white">
                   {formatPaise(dish.pricePaise)}
                 </span>
-                <span className="text-[10px] text-muted font-sans">
+                <span className="text-[10px] text-zinc-400 font-sans">
                   ⏱️ {dish.etaMinutes} mins
                 </span>
               </div>
@@ -177,7 +177,7 @@ export function MindReaderWidget() {
             <button
               type="button"
               onClick={() => handleQuickAdd(dish)}
-              className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary hover:bg-primary/90 text-white py-1.5 text-xs font-bold shadow-xs transition active:scale-98"
+              className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary hover:bg-primary/90 text-white py-1.5 text-xs font-bold shadow-[0_0_15px_rgba(255,255,255,0.05)] transition active:scale-98"
             >
               <span>⚡ Quick Add</span>
             </button>

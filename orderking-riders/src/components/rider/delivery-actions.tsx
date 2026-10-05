@@ -145,7 +145,7 @@ export function DeliveryActions({
       </p>
       {d.customer.instructions ? <p className="text-sm">{d.customer.instructions}</p> : null}
       {d.customer.contactAllowed && d.customer.contactMasked ? (
-        <p className="text-sm text-muted-foreground">Contact: {d.customer.contactMasked}</p>
+        <p className="text-sm text-zinc-400-foreground">Contact: {d.customer.contactMasked}</p>
       ) : null}
       {d.cod ? (
         <p>
@@ -156,21 +156,21 @@ export function DeliveryActions({
       ) : null}
 
       {/* Zomato-style Rider Quick-Connect & Safety SOS Bar */}
-      <div className="grid grid-cols-4 gap-2 border-t border-border pt-2">
+      <div className="grid grid-cols-4 gap-2 border-t border-white/10 pt-2">
         {d.customer.contactAllowed ? (
           <a
             href={`tel:${d.customer.contactMasked || "18001000"}`}
-            className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70"
+            className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70"
           >
             <span className="text-base">📞</span>
             <span>Call</span>
-            <span className="text-[10px] text-muted-foreground">Masked</span>
+            <span className="text-[10px] text-zinc-400-foreground">Masked</span>
           </a>
         ) : (
           <button
             type="button"
             disabled
-            className="flex flex-col items-center justify-center rounded-lg border border-border/50 bg-muted/10 p-2 text-center text-xs font-medium text-muted-foreground opacity-50"
+            className="flex flex-col items-center justify-center rounded-lg border border-white/10/50 bg-muted/10 p-2 text-center text-xs font-medium text-zinc-400-foreground opacity-50"
           >
             <span className="text-base">📞</span>
             <span>Call</span>
@@ -191,11 +191,11 @@ export function DeliveryActions({
 
         <a
           href="tel:18001000"
-          className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70"
+          className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70"
         >
           <span className="text-base">🏬</span>
           <span>Kitchen</span>
-          <span className="text-[10px] text-muted-foreground">Direct</span>
+          <span className="text-[10px] text-zinc-400-foreground">Direct</span>
         </a>
 
         <a
@@ -289,7 +289,7 @@ export function DeliveryActions({
         <div className="space-y-3">
           {d.cod && cash && cash.state === "EXPECTED" ? (
             <div>
-              <p className="text-sm text-muted-foreground">{t("cashMustMatch")}</p>
+              <p className="text-sm text-zinc-400-foreground">{t("cashMustMatch")}</p>
               <Button size="lg" className="mt-2 w-full" disabled={pending} onClick={() => void act("COLLECT_CASH")}>
                 {t("cashCollected")} {formatPaise(cash.expectedPaise)}
               </Button>
@@ -329,7 +329,7 @@ export function DeliveryActions({
         <div className="space-y-2 rounded-lg bg-muted p-3">
           <Label>{t("cancelReason")}</Label>
           <select
-            className="h-11 w-full rounded-md border border-border bg-surface px-3"
+            className="h-11 w-full rounded-md border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
           >

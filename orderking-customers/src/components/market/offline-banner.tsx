@@ -17,7 +17,7 @@ export function OfflineBanner() {
   }, []);
   if (!offline) return null;
   return (
-    <p role="status" className="border-b border-border bg-warn/15 px-4 py-2 text-center text-sm text-warn">
+    <p role="status" className="border-b border-white/10 bg-warn/15 px-4 py-2 text-center text-sm text-warn">
       {t("common.offline")}
     </p>
   );

@@ -2,8 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { assertSameOrigin } from "@/lib/security/request-integrity";
 
 export const Route = createFileRoute("/api/razorpay/verify")({
-  // @ts-expect-error
-  server: {
+server: {
     handlers: {
       POST: async ({ request }: any) => {
         try {
@@ -23,13 +22,13 @@ export const Route = createFileRoute("/api/razorpay/verify")({
           const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
           if (!keyId || !keySecret) return Response.json({ error: "Payment provider not configured" }, { status: 503 });
 
-          $crypto = await import("node:crypto"); const generated = $crypto
+          const crypto_module = await import("node:crypto"); const generated = crypto_module
             .createHmac("sha256", keySecret)
             .update(`${razorpay_order_id}|${razorpay_payment_id}`)
             .digest("hex");
           const given = String(razorpay_signature).trim();
           if (given.length !== generated.length ||
-              !$crypto.timingSafeEqual(Buffer.from(given), Buffer.from(generated))) {
+              !crypto_module.timingSafeEqual(Buffer.from(given), Buffer.from(generated))) {
             return Response.json({ error: "Invalid signature" }, { status: 400 });
           }
 
@@ -50,7 +49,7 @@ export const Route = createFileRoute("/api/razorpay/verify")({
 
           await sql.transaction(async (tx) => {
             await tx`INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins) VALUES (${user.id}, 0, 0) ON CONFLICT DO NOTHING`;
-            await tx`UPDATE kingpay_wallets SET balance_paise = balance_paise + ${order.amount}, updated_at = NOW() WHERE user_id = ${user.id}`;
+            await tx`SELECT balance_paise FROM kingpay_wallets WHERE user_id = ${user.id} FOR UPDATE`; await tx`UPDATE kingpay_wallets SET balance_paise = balance_paise + ${order.amount}, updated_at = NOW() WHERE user_id = ${user.id}`;
             await tx`
               INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
               VALUES (${txId}, ${user.id}, ${order.amount}, 'CREDIT', ${"Razorpay wallet top-up " + razorpay_payment_id})

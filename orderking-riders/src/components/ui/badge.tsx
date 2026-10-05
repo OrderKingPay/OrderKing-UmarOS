@@ -9,7 +9,7 @@ export function Badge({
   tone?: "muted" | "online" | "offline" | "busy" | "cod" | "sim";
 }) {
   const tones = {
-    muted: "bg-muted text-muted-foreground",
+    muted: "bg-muted text-zinc-400-foreground",
     online: "bg-online/15 text-online",
     offline: "bg-offline/10 text-offline",
     busy: "bg-busy/15 text-busy",

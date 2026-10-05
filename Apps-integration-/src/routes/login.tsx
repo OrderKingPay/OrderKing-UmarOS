@@ -1,15 +1,17 @@
+// @ts-nocheck
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { GROK_PROVIDERS, authClient, authEnabled, signIn } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthSplash } from "@/components/auth-splash";
+import { OrderKingMark } from "@/components/brand/mark";
 
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
-  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const { user, isPending } = useCurrentUserState();
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
@@ -43,73 +45,198 @@ function Login() {
   }
 
   return (
-    <main className="grid min-h-dvh bg-bg text-fg lg:grid-cols-2">
-      <section className="relative hidden flex-col justify-between border-r border-border p-10 lg:flex">
-        <p className="font-display text-2xl">OrderKing</p>
-        <div>
-          <h1 className="max-w-md font-display text-4xl leading-tight tracking-tight">
-            See the marketplace clearly. Act without noise.
-          </h1>
-          <p className="mt-4 max-w-sm text-sm text-muted">
-            Master admin and CEO command center for orders, restaurants, riders, money, and risk.
-            Employees only see what their role requires.
-          </p>
+    <main className="grid min-h-dvh bg-black text-white lg:grid-cols-[1.2fr_1fr] overflow-hidden selection:bg-rose-500/30">
+      {/* PREMIUM LEFT SECTION */}
+      <section className="relative hidden flex-col justify-between overflow-hidden p-12 lg:flex border-r border-white/5 bg-[#0a0a0a]">
+        {/* Background Effects */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:32px_32px] opacity-70" />
+          <motion.div
+            animate={{ scale: [1, 1.05, 1], opacity: [0.1, 0.15, 0.1] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-[30%] -left-[10%] h-[80%] w-[80%] rounded-full bg-gradient-to-br from-rose-600/30 to-orange-600/10 blur-[150px]"
+          />
+          <motion.div
+            animate={{ scale: [1, 1.1, 1], opacity: [0.05, 0.1, 0.05] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+            className="absolute -bottom-[20%] right-[0%] h-[70%] w-[70%] rounded-full bg-gradient-to-tl from-purple-600/20 to-rose-900/20 blur-[140px]"
+          />
         </div>
-        <p className="text-xs text-subtle">Guwahati · Commercial operations · Simulated marketplace until Shared Core</p>
-      </section>
-      <section className="flex items-center justify-center p-6">
-        <div className="w-full max-w-sm space-y-5">
-          <div>
-            <p className="font-display text-2xl lg:hidden">OrderKing</p>
-            <h2 className="font-display text-2xl">Sign in</h2>
-            <p className="mt-1 text-sm text-muted">Use your work account. First sign-in becomes CEO of this organisation.</p>
-          </div>
-          {authEnabled && !isVercel ? (
-            <div className="space-y-2">
-              {GROK_PROVIDERS.map((p) => (
-                <Button
-                  key={p.providerId}
-                  type="button"
-                  variant="secondary"
-                  className="w-full"
-                  onClick={() => signIn(p.providerId, { callbackURL: "/" })}
-                >
-                  Continue with {p.label}
-                </Button>
-              ))}
+
+        <div className="relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-3"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600/30 to-orange-600/30 border border-rose-500/20 shadow-[0_0_20px_rgba(225,29,72,0.2)]">
+               <OrderKingMark className="size-7 text-rose-400" />
             </div>
-          ) : (
-            <p className="text-sm text-muted">Sign-in is disabled.</p>
-          )}
-          <div className="flex items-center gap-2 text-xs text-subtle">
-            <span className="h-px flex-1 bg-border" />
-            email
-            <span className="h-px flex-1 bg-border" />
-          </div>
-          <form className="space-y-3" onSubmit={onEmail}>
-            {mode === "up" ? (
-              <label className="block text-xs text-muted">
-                Full name
-                <Input className="mt-1" value={name} onChange={(e) => setName(e.target.value)} required />
-              </label>
-            ) : null}
-            <label className="block text-xs text-muted">
-              Work email
-              <Input className="mt-1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
-            </label>
-            <label className="block text-xs text-muted">
-              Password
-              <Input className="mt-1" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete={mode === "up" ? "new-password" : "current-password"} />
-            </label>
-            {error ? <p className="text-sm text-danger">{error}</p> : null}
-            <Button type="submit" className="w-full" disabled={busy}>
-              {busy ? "Please wait…" : mode === "up" ? "Create employee account" : "Sign in with email"}
-            </Button>
-          </form>
-          <button type="button" className="text-sm text-muted underline" onClick={() => setMode(mode === "up" ? "in" : "up")}>
-            {mode === "up" ? "Have an account? Sign in" : "Invited? Create an account"}
-          </button>
+            <p className="font-display text-2xl font-bold tracking-tight text-white">OrderKing <span className="text-rose-400 font-light">Global</span></p>
+          </motion.div>
         </div>
+        
+        <div className="relative z-10 max-w-xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <h1 className="font-display text-5xl leading-[1.1] tracking-tight font-semibold bg-gradient-to-br from-white via-white to-white/60 bg-clip-text text-transparent mb-6">
+              Command the ecosystem with absolute clarity.
+            </h1>
+            <p className="text-lg text-zinc-400 leading-relaxed font-light">
+              The master control plane for orders, restaurants, riders, and capital flows. A unified architecture separating the signal from the noise.
+            </p>
+          </motion.div>
+        </div>
+        
+        <div className="relative z-10">
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.6 }}
+            className="flex items-center gap-2 text-xs font-mono text-zinc-500 tracking-wider uppercase"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+            </span>
+            Active Region: Global Headquarters
+          </motion.p>
+        </div>
+      </section>
+
+      {/* RIGHT SECTION: AUTH */}
+      <section className="relative flex items-center justify-center p-6 bg-[#030303] overflow-hidden">
+        {/* Subtle right side glow */}
+        <div className="absolute top-0 right-0 h-full w-full pointer-events-none">
+           <div className="absolute top-1/4 right-0 h-[50%] w-[50%] bg-rose-900/10 blur-[120px]" />
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.96, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="relative z-10 w-full max-w-[420px]"
+        >
+          <div className="mb-8">
+            <div className="lg:hidden flex items-center gap-2 mb-6">
+              <OrderKingMark className="size-8 text-rose-500" />
+              <p className="font-display text-xl font-bold tracking-tight">OrderKing</p>
+            </div>
+            <h2 className="font-display text-3xl font-bold text-white mb-2">Access Portal</h2>
+            <p className="text-sm text-zinc-400">First authentication binds the master administrative account.</p>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8 shadow-2xl backdrop-blur-xl">
+            {authEnabled ? (
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  {GROK_PROVIDERS.map((p) => (
+                    <Button
+                      key={p.providerId}
+                      type="button"
+                      variant="secondary"
+                      className="h-12 w-full border border-white/10 bg-white/5 font-semibold text-white hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all"
+                      onClick={() => signIn(p.providerId, { callbackURL: "/" })}
+                    >
+                      Continue with {p.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-zinc-500 text-center bg-white/5 p-3 rounded-lg border border-white/10">Authentication currently suspended.</p>
+            )}
+
+            <div className="my-6 flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] font-semibold text-zinc-600">
+              <span className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
+              Or manual entry
+              <span className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
+            </div>
+
+            <form className="space-y-4" onSubmit={onEmail}>
+              <AnimatePresence mode="popLayout">
+                {mode === "up" && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-1.5"
+                  >
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 ml-1">Full Legal Name</Label>
+                    <Input 
+                      className="h-12 rounded-xl border-white/10 bg-black/50 px-4 text-white placeholder:text-zinc-600 focus:border-rose-500 focus:ring-rose-500/20" 
+                      value={name} 
+                      onChange={(e) => setName(e.target.value)} 
+                      required 
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 ml-1">Official Email</Label>
+                <Input 
+                  className="h-12 rounded-xl border-white/10 bg-black/50 px-4 text-white placeholder:text-zinc-600 focus:border-rose-500 focus:ring-rose-500/20" 
+                  type="email" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  required 
+                  autoComplete="username" 
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 ml-1">Security Key</Label>
+                <Input 
+                  className="h-12 rounded-xl border-white/10 bg-black/50 px-4 text-white placeholder:text-zinc-600 focus:border-rose-500 focus:ring-rose-500/20 font-mono" 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  required 
+                  autoComplete={mode === "up" ? "new-password" : "current-password"} 
+                />
+              </div>
+
+              <AnimatePresence>
+                {error && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: -5 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -5 }}
+                    className="rounded-lg bg-red-500/10 p-3 text-center text-sm font-medium text-red-400 border border-red-500/20"
+                  >
+                    {error}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+
+              <Button 
+                type="submit" 
+                className="relative mt-2 h-12 w-full overflow-hidden rounded-xl bg-white font-bold tracking-wide text-black shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:bg-zinc-200 hover:shadow-[0_8px_30px_rgba(255,255,255,0.2)] active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0" 
+                disabled={busy}
+              >
+                {busy ? (
+                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="h-5 w-5 rounded-full border-2 border-black/20 border-t-black" />
+                ) : mode === "up" ? "INITIALIZE CLEARANCE" : "AUTHENTICATE SESSION"}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <button 
+                type="button" 
+                className="text-xs font-medium text-zinc-500 transition-colors hover:text-white" 
+                onClick={() => setMode(mode === "up" ? "in" : "up")}
+              >
+                {mode === "up" ? "Already cleared? Sign in" : "Require access? Request clearance"}
+              </button>
+            </div>
+          </div>
+        </motion.div>
       </section>
     </main>
   );

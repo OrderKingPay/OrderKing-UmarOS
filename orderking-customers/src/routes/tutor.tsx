@@ -7,7 +7,7 @@ import { CustomerShell } from "@/components/market/shell";
 
 const askTutorFn = createServerFn({ method: "POST" })
   .// @ts-ignore
-  validator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => data)
+  inputValidator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => data)
   .handler(async ({ data }: any) => {
     const apiKey = process.env.OPENAI_API_KEY;
 
@@ -93,14 +93,14 @@ function TutorPage() {
 
   return (
     <CustomerShell>
-      <div className="flex flex-col h-[calc(100dvh-60px)] bg-slate-50">
+      <div className="flex flex-col h-[calc(100dvh-60px)] bg-black">
         
         {/* Header Options */}
-        <div className="bg-white px-4 py-3 shadow-sm z-10 flex flex-col gap-3">
+        <div className="border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl px-4 py-4 z-10 shadow-[0_4px_30px_rgba(0,0,0,0.5)] flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-black text-slate-800 flex items-center gap-2">
-              <BrainCircuit className="text-indigo-600 size-6" />
-              AI Super-Tutor
+            <h1 className="text-xl font-black text-white drop-shadow-sm flex items-center gap-2">
+              <BrainCircuit className="text-indigo-400 size-6" />
+              Supreme AI Super-Tutor
             </h1>
             <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">
               100% Free
@@ -111,7 +111,7 @@ function TutorPage() {
              <select 
                 value={board} 
                 onChange={(e) => setBoard(e.target.value)}
-                className="bg-slate-100 border-none text-xs rounded-md p-2 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-white/5/50 text-white border border-white/10 focus:ring-indigo-500/50 focus:border-indigo-500 border-none text-xs rounded-md p-2 font-medium text-zinc-300 outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="CBSE">CBSE Board</option>
                 <option value="ICSE">ICSE Board</option>
@@ -148,7 +148,7 @@ function TutorPage() {
              <select 
                 value={stdClass} 
                 onChange={(e) => setStdClass(e.target.value)}
-                className="bg-slate-100 border-none text-xs rounded-md p-2 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-white/5/50 text-white border border-white/10 focus:ring-indigo-500/50 focus:border-indigo-500 border-none text-xs rounded-md p-2 font-medium text-zinc-300 outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 {[...Array(12)].map((_, i) => (
                   <option key={i+1} value={`Class ${i+1}`}>Class {i+1}</option>
@@ -157,7 +157,7 @@ function TutorPage() {
              <select 
                 value={language} 
                 onChange={(e) => setLanguage(e.target.value)}
-                className="bg-slate-100 border-none text-xs rounded-md p-2 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-white/5/50 text-white border border-white/10 focus:ring-indigo-500/50 focus:border-indigo-500 border-none text-xs rounded-md p-2 font-medium text-zinc-300 outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="English">English</option>
                 <option value="Hindi">हिंदी (Hindi)</option>
@@ -168,22 +168,22 @@ function TutorPage() {
         </div>
 
         {/* Custom Tabs */}
-        <div className="flex px-4 pt-2 bg-white border-b border-slate-200">
+        <div className="flex px-4 pt-2 bg-white/5/80 border-white/10 backdrop-blur-md-b border-slate-200">
            <button 
              onClick={() => setActiveTab('chat')}
-             className={`flex-1 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'chat' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-slate-500'}`}
+             className={`flex-1 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'chat' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-zinc-400'}`}
            >
              <GraduationCap className="size-4 inline-block mr-1 mb-0.5"/> Tutor
            </button>
            <button 
              onClick={() => setActiveTab('schemes')}
-             className={`flex-1 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'schemes' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-slate-500'}`}
+             className={`flex-1 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'schemes' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-zinc-400'}`}
            >
              <Award className="size-4 inline-block mr-1 mb-0.5"/> Govt Schemes
            </button>
            <button 
              onClick={() => setActiveTab('premium')}
-             className={`flex-1 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'premium' ? 'border-amber-500 text-amber-600' : 'border-transparent text-slate-500'}`}
+             className={`flex-1 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'premium' ? 'border-amber-500 text-amber-600' : 'border-transparent text-zinc-400'}`}
            >
              <Sparkles className="size-4 inline-block mr-1 mb-0.5"/> Premium
            </button>
@@ -200,8 +200,8 @@ function TutorPage() {
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap ${
                       msg.role === 'user' 
-                        ? 'bg-indigo-600 text-white rounded-br-none' 
-                        : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-sm'
+                        ? 'bg-indigo-600 hover:bg-indigo-500/10 border-indigo-500/200 shadow-[0_0_15px_rgba(79,70,229,0.3)] text-white rounded-br-none' 
+                        : 'bg-white/5/80 border-white/10 backdrop-blur-md border-slate-200 text-white drop-shadow-sm rounded-bl-none shadow-sm'
                     }`}>
                       {msg.content}
                     </div>
@@ -209,21 +209,21 @@ function TutorPage() {
                 ))}
                 {isLoading && (
                   <div className="flex justify-start">
-                     <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-none px-4 py-3 shadow-sm flex items-center gap-2">
-                        <Loader2 className="size-4 animate-spin text-indigo-600" />
-                        <span className="text-xs text-slate-500 font-medium">Teacher is thinking...</span>
+                     <div className="bg-white/5/80 border-white/10 backdrop-blur-md border-slate-200 rounded-2xl rounded-bl-none px-4 py-3 shadow-sm flex items-center gap-2">
+                        <Loader2 className="size-4 animate-spin text-indigo-400" />
+                        <span className="text-xs text-zinc-400 font-medium">Teacher is thinking...</span>
                      </div>
                   </div>
                 )}
                 <div ref={bottomRef} />
               </div>
-              <div className="p-3 bg-white border-t border-slate-200 pb-24">
-                 <div className="flex items-end gap-2 bg-slate-100 rounded-xl p-2 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all">
+              <div className="p-3 bg-white/5/80 border-white/10 backdrop-blur-md-t border-slate-200 pb-24">
+                 <div className="flex items-end gap-2 bg-white/5/50 text-white border border-white/10 focus:ring-indigo-500/50 focus:border-indigo-500 rounded-xl p-2 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all">
                     <textarea 
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Type your textbook question here..."
-                      className="flex-1 max-h-32 min-h-[40px] bg-transparent resize-none outline-none text-[13px] p-2 text-slate-800 placeholder:text-slate-400"
+                      className="flex-1 max-h-32 min-h-[40px] bg-transparent resize-none outline-none text-[13px] p-2 text-white drop-shadow-sm placeholder:text-zinc-500"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
@@ -234,12 +234,12 @@ function TutorPage() {
                     <button 
                       onClick={() => void handleSend()}
                       disabled={!message.trim() || isLoading}
-                      className="bg-indigo-600 text-white p-2.5 rounded-lg disabled:opacity-50 active:scale-95 transition-transform shrink-0"
+                      className="bg-indigo-600 hover:bg-indigo-500/10 border-indigo-500/200 shadow-[0_0_15px_rgba(79,70,229,0.3)] text-white p-2.5 rounded-lg disabled:opacity-50 active:scale-95 transition-transform shrink-0"
                     >
                       <Send className="size-4" />
                     </button>
                  </div>
-                 <p className="text-center text-[9px] text-slate-400 mt-2 font-medium">
+                 <p className="text-center text-[9px] text-zinc-500 mt-2 font-medium">
                    Step 1: Ask Question • Step 2: Learn Formula • Step 3: Score Max Marks
                  </p>
               </div>
@@ -285,8 +285,8 @@ function TutorPage() {
                   <button className="mt-3 text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg font-bold">Check PMAY List</button>
                </div>
 
-               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center text-center mt-6">
-                  <p className="text-xs text-slate-500">Connecting to National Government Services Portal (india.gov.in) to fetch 300+ more verified schemes tailored for your profile...</p>
+               <div className="bg-black border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center text-center mt-6">
+                  <p className="text-xs text-zinc-400">Connecting to National Government Services Portal (india.gov.in) to fetch 300+ more verified schemes tailored for your profile...</p>
                </div>
             </div>
           )}
@@ -322,7 +322,7 @@ function TutorPage() {
                </div>
                
                <div className="text-center p-4">
-                 <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">100% Verified Partners • Zero Fake Certificates</p>
+                 <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">100% Verified Partners • Zero Fake Certificates</p>
                </div>
             </div>
           )}

@@ -1,5 +1,5 @@
 
-import { Store } from "lucide-react";
+import { Store, Flame, CloudRain, Star, Clock, Sparkles, Filter, Leaf, Percent, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -145,7 +145,7 @@ export function HomeFeed({
           <div className="flex items-center gap-2">
             <span>⚡</span>
             <span className="font-semibold">2G / Low-Network Mode Active</span>
-            <span className="text-[11px] text-muted hidden sm:inline">· Instant 0ms cached browsing &amp; background sync</span>
+            <span className="text-[11px] text-zinc-400 hidden sm:inline">· Instant 0ms cached browsing &amp; background sync</span>
           </div>
           <span className="font-mono text-[10px] uppercase font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">
             {networkSpeed}
@@ -162,15 +162,15 @@ export function HomeFeed({
       {/* 1-Tap Quick Re-Order (Zero-Friction Simplicity) */}
       {pastOrders.data?.orders?.[0] && !q && !veg && !openNow && !category ? (
         <section aria-label="1-Tap Quick Re-Order">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--radius-3xl)] border border-white/20 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--radius-3xl)] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
             <div className="flex items-center gap-3">
               <span className="text-2xl">⚡</span>
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded-full">
                   1-Tap Quick Re-Order
                 </span>
-                <h3 className="font-bold text-foreground mt-0.5">{pastOrders.data.orders[0].restaurantName}</h3>
-                <p className="text-xs text-muted">
+                <h3 className="font-bold text-white mt-0.5">{pastOrders.data.orders[0].restaurantName}</h3>
+                <p className="text-xs text-zinc-400">
                   {pastOrders.data.orders[0].itemPreview || "Past Order"} · {formatPaise(pastOrders.data.orders[0].totalPaise, { locale })}
                 </p>
               </div>
@@ -190,7 +190,7 @@ export function HomeFeed({
       {/* Zomato-style Active Live Order Tracker Banner */}
       {activeOrder && !q && !veg && !openNow && !category ? (
         <section aria-label="Active live order">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--radius-3xl)] border border-white/20 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--radius-3xl)] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
             <div className="flex items-center gap-3">
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -198,8 +198,8 @@ export function HomeFeed({
               </span>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-primary">Live Order Active</p>
-                <h3 className="font-bold text-foreground">{activeOrder.restaurantName} · #{activeOrder.publicId}</h3>
-                <p className="text-xs text-muted">Status: {activeOrder.status.replace(/_/g, " ")}</p>
+                <h3 className="font-bold text-white">{activeOrder.restaurantName} · #{activeOrder.publicId}</h3>
+                <p className="text-xs text-zinc-400">Status: {activeOrder.status.replace(/_/g, " ")}</p>
               </div>
             </div>
             <Link
@@ -219,7 +219,7 @@ export function HomeFeed({
           <div className="flex items-center justify-between mb-3">
             <div>
               <h2 className="font-display text-xl">{t("home.reorder")}</h2>
-              <p className="text-xs text-muted">Repeat your favourite meals in 1 tap</p>
+              <p className="text-xs text-zinc-400">Repeat your favourite meals in 1 tap</p>
             </div>
             <Link to="/orders" className="text-xs font-semibold text-primary hover:underline">
               {t("common.viewAll")}
@@ -229,7 +229,7 @@ export function HomeFeed({
             {pastOrders.data.orders.slice(0, 5).map((o) => (
               <div
                 key={o.id}
-                className="flex w-64 shrink-0 flex-col justify-between rounded-[var(--radius-2xl)] border border-white/20 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-2xl p-4 shadow-lg transition hover:shadow-xl"
+                className="flex w-64 shrink-0 flex-col justify-between rounded-[var(--radius-2xl)] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl p-4 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition hover:border-white/20"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
@@ -238,10 +238,10 @@ export function HomeFeed({
                       {formatPaise(o.totalPaise, { locale: lang === "bn" ? "bn-IN" : "en-IN" })}
                     </span>
                   </div>
-                  <p className="mt-1 line-clamp-2 text-xs text-muted">{o.itemPreview || "Delicious meal"}</p>
+                  <p className="mt-1 line-clamp-2 text-xs text-zinc-400">{o.itemPreview || "Delicious meal"}</p>
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2">
-                  <span className="text-[10px] text-muted">
+                <div className="mt-3 flex items-center justify-between border-t border-white/10/50 pt-2">
+                  <span className="text-[10px] text-zinc-400">
                     {new Date(o.placedAt).toLocaleDateString(lang === "bn" ? "bn-IN" : "en-IN", {
                       month: "short",
                       day: "numeric",
@@ -250,7 +250,7 @@ export function HomeFeed({
                   <button
                     type="button"
                     onClick={() => void handleReorder(o.id)}
-                    className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-primary hover:text-white"
+                    className="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-1 text-xs font-semibold text-cyan-400 transition hover:bg-cyan-500 hover:text-black hover:shadow-[0_0_15px_rgba(34,211,238,0.5)]"
                   >
                     Reorder ➔
                   </button>
@@ -266,16 +266,17 @@ export function HomeFeed({
 
       {/* 100x Viral Marketing: Invite Friends & Both Get Rewarded */}
       {!q && !veg && !openNow && !category ? (
-        <section aria-label="Referral Rewards" className="rounded-[var(--radius-3xl)] border border-white/20 dark:border-white/10 bg-gradient-to-r from-primary/20 via-white/40 to-white/10 dark:via-black/40 dark:to-black/10 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <section aria-label="Referral Rewards" className="rounded-[var(--radius-3xl)] border border-white/10 bg-gradient-to-br from-[#0a0a0a] to-black backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-500/10 to-amber-500/10 opacity-50 group-hover:opacity-100 transition-opacity" />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative z-10">
             <div className="flex items-center gap-3">
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/20 text-2xl shadow-inner">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-fuchsia-500/20 text-2xl shadow-[0_0_15px_rgba(217,70,239,0.2)] border border-fuchsia-500/30">
                 🎁
               </span>
               <div>
-                <h3 className="font-display text-base font-bold text-fg">Give ₹40 + Free Delivery, Get ₹40!</h3>
-                <p className="text-xs text-muted">
-                  Share OrderKing with friends. They get <span className="font-semibold text-primary">₹40 OFF + Free Delivery</span> (min ₹249) and you get <span className="font-semibold text-primary">₹40 wallet cash</span>!
+                <h3 className="font-display text-base font-bold text-white">Give ₹40 + Free Delivery, Get ₹40!</h3>
+                <p className="text-xs text-zinc-400">
+                  Share OrderKing with friends. They get <span className="font-semibold text-fuchsia-400">₹40 OFF + Free Delivery</span> (min ₹249) and you get <span className="font-semibold text-fuchsia-400">₹40 wallet cash</span>!
                 </p>
               </div>
             </div>
@@ -284,7 +285,7 @@ export function HomeFeed({
                 href={`https://wa.me/?text=${encodeURIComponent("Hey! Use my code to get ₹40 OFF + Free Delivery on your first delicious food order on OrderKing: https://orderking.in/?ref=KINGVIP")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700 active:scale-95"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-[0_0_15px_rgba(255,255,255,0.05)] transition hover:bg-emerald-700 active:scale-95"
               >
                 <span>💬</span>
                 <span>Share WhatsApp</span>
@@ -295,7 +296,7 @@ export function HomeFeed({
                   void navigator.clipboard?.writeText("https://orderking.in/?ref=KINGVIP");
                   toast.success("Referral link copied to clipboard!");
                 }}
-                className="inline-flex items-center justify-center rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-fg shadow-xs transition hover:bg-surface-2"
+                className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-[#0a0a0a] px-3 py-2 text-xs font-semibold text-zinc-300 shadow-[0_2px_10px_rgba(0,0,0,0.3)] transition hover:bg-white/5 hover:text-white"
               >
                 Copy Link
               </button>
@@ -305,79 +306,108 @@ export function HomeFeed({
       ) : null}
 
       {marketplace.sampleCatalogueBanner ? (
-        <p className="rounded-[var(--radius-lg)] bg-surface px-3 py-3 text-sm text-muted">{t("home.sampleBanner")}</p>
+        <p className="rounded-[var(--radius-lg)] bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 py-3 text-sm text-zinc-400">{t("home.sampleBanner")}</p>
       ) : null}
 
-      <section aria-label={t("home.categories")}>
-        <h2 className="mb-3 font-display text-xl">{t("home.categories")}</h2>
-        <div className="flex gap-3 overflow-x-auto pb-1">
+      <section aria-label={t("home.categories")} className="my-6">
+        <div className="flex items-center justify-between mb-4 px-1">
+          <h2 className="font-display text-xl font-bold">What's on your mind?</h2>
+        </div>
+        <div className="grid grid-rows-2 grid-flow-col gap-4 overflow-x-auto pb-4 scrollbar-none snap-x">
           {cats.isPending
-            ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 w-24 shrink-0 rounded-[var(--radius-2xl)] bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 animate-pulse shadow-sm" />)
+            ? Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className="flex flex-col items-center gap-2 w-20 shrink-0">
+                  <div className="h-16 w-16 rounded-full bg-white/5 animate-pulse" />
+                  <div className="h-3 w-12 bg-white/5 animate-pulse rounded-full" />
+                </div>
+              ))
             : (cats.data?.categories ?? []).map((c: any) => (
                 <Link
                   key={c.id}
                   to="/search"
                   search={{ category: c.id }}
-                  className="w-24 shrink-0 text-center text-fg no-underline"
+                  className="w-20 shrink-0 text-center text-white no-underline snap-center group"
                 >
-                  <div className="aspect-square overflow-hidden rounded-[var(--radius-2xl)] bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/20 shadow-inner p-1">
+                  <div className="h-20 w-20 mx-auto overflow-hidden rounded-full bg-zinc-900 border border-white/5 shadow-[0_4px_15px_rgba(0,0,0,0.2)] group-hover:scale-105 transition-transform duration-200">
                     {c.imageUrl ? (
-                      <img loading="lazy" src={c.imageUrl} alt="" className="h-full w-full object-cover" />
+                      <img loading="lazy" src={c.imageUrl} alt={c.name} className="h-full w-full object-cover" />
                     ) : null}
                   </div>
-                  <span className="mt-1 block text-xs font-medium">{c.name}</span>
+                  <span className="mt-2 block text-[11px] font-semibold text-zinc-300 group-hover:text-white truncate px-1">
+                    {c.name}
+                  </span>
                 </Link>
               ))}
         </div>
       </section>
 
-      {/* 👑 UNIQUE ENGAGEMENT HOOKS (News, Jobs, AI Tutor) - HIGHEST RETENTION DRIVERS */}
-      <section aria-label="Daily Hub">
-        <h2 className="mb-2.5 font-display text-lg font-bold">Daily Hub</h2>
-        <div className="grid grid-cols-3 gap-2">
-          {/* 1. Govt Schemes News Module (V3.0 APEX DIRECTIVE) */}
-          <Link
-            to="/news"
-            className="group relative flex flex-col items-center overflow-hidden rounded-xl border border-blue-500/20 bg-gradient-to-b from-blue-500/10 to-surface p-2.5 shadow-sm transition hover:border-blue-500 hover:shadow-md active:scale-95 text-center"
-          >
-            <div className="flex size-9 items-center justify-center rounded-full bg-blue-500/20 text-blue-500 mb-1.5 group-hover:scale-110 transition">
-              <span className="text-lg">🇮🇳</span>
+      {/* 🌤️ Intelligent UI State: Weather-based Recommendations */}
+      {!q && !veg && !openNow && !category && (
+        <section aria-label="Weather Recommendations" className="my-4">
+          <div className="rounded-3xl bg-gradient-to-r from-blue-900/40 to-indigo-900/40 border border-blue-500/20 p-4 flex items-center justify-between shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-500/20 p-2.5 rounded-2xl text-blue-400">
+                <CloudRain className="size-6" />
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-base flex items-center gap-2">
+                  It's raining nearby!
+                </h3>
+                <p className="text-zinc-400 text-xs">Perfect time for hot Chai & Samosa</p>
+              </div>
             </div>
-            <span className="text-[10px] font-black uppercase text-fg leading-tight">Govt Schemes</span>
-            <span className="text-[8px] font-bold text-blue-500 mt-0.5 tracking-wider">LIVE 24/7</span>
-          </Link>
+            <Button variant="secondary" size="sm" className="rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/5">
+              Explore ➔
+            </Button>
+          </div>
+        </section>
+      )}
 
-          {/* 2. AI English Tutor */}
-          <Link
-            to="/"
-            className="group relative flex flex-col items-center overflow-hidden rounded-xl border border-purple-500/20 bg-gradient-to-b from-purple-500/10 to-surface p-2.5 shadow-sm transition hover:border-purple-500 hover:shadow-md active:scale-95 text-center"
-          >
-            <div className="absolute top-0 right-0 rounded-bl-lg bg-purple-500 px-1.5 py-0.5 text-[7px] font-black text-white shadow-sm">
-              FREE
-            </div>
-            <div className="flex size-9 items-center justify-center rounded-full bg-purple-500/20 text-purple-500 mb-1.5 group-hover:scale-110 transition">
-              <span className="text-lg">🧠</span>
-            </div>
-            <span className="text-[10px] font-black uppercase text-fg leading-tight">AI Tutor</span>
-            <span className="text-[8px] font-bold text-purple-500 mt-0.5 tracking-wider">LEARN ENGLISH</span>
-          </Link>
-
-          {/* 3. Part-Time Jobs */}
-          <Link
-            to="/"
-            className="group relative flex flex-col items-center overflow-hidden rounded-xl border border-amber-500/20 bg-gradient-to-b from-amber-500/10 to-surface p-2.5 shadow-sm transition hover:border-amber-500 hover:shadow-md active:scale-95 text-center"
-          >
-            <div className="absolute top-0 right-0 rounded-bl-lg bg-amber-500 px-1.5 py-0.5 text-[7px] font-black text-black shadow-sm animate-pulse">
-              NEW
-            </div>
-            <div className="flex size-9 items-center justify-center rounded-full bg-amber-500/20 text-amber-500 mb-1.5 group-hover:scale-110 transition">
-              <span className="text-lg">💼</span>
-            </div>
-            <span className="text-[10px] font-black uppercase text-fg leading-tight">Gigs & Jobs</span>
-            <span className="text-[8px] font-bold text-amber-500 mt-0.5 tracking-wider">EARN DAILY</span>
-          </Link>
-        </div>
-      </section>
+      {/* 🚀 Spotlight / Trending Carousel */}
+      {!q && !veg && !openNow && !category && list.data?.restaurants && (
+        <section aria-label="Spotlight" className="my-6">
+          <div className="flex items-center gap-2 mb-3 px-1">
+            <Flame className="size-5 text-rose-500 fill-rose-500" />
+            <h2 className="font-display text-xl font-bold">Trending in your area</h2>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-none">
+            {list.data.restaurants.slice(0, 5).map((r) => (
+              <div key={`spotlight-${r.id}`} className="snap-center shrink-0 w-[85vw] max-w-[320px] rounded-3xl overflow-hidden relative border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
+                <div className="aspect-[4/3] bg-zinc-900 relative">
+                  {r.imageUrl ? (
+                    <img src={r.imageUrl} alt={r.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-zinc-700 bg-zinc-800"><Store size={48} /></div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                  
+                  {r.hasOffer && (
+                    <div className="absolute top-3 left-3 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-lg flex items-center gap-1 shadow-lg">
+                      <Percent className="size-3" />
+                      Extra 20% OFF
+                    </div>
+                  )}
+                  
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-xl font-bold text-white line-clamp-1">{r.name}</h3>
+                        <p className="text-sm text-zinc-300 line-clamp-1">{r.cuisines?.join(", ") || "Multi-cuisine"}</p>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <div className="bg-green-600/90 backdrop-blur-sm text-white px-1.5 py-0.5 rounded-lg flex items-center gap-1 font-bold text-xs">
+                          {r.ratingAvg || "4.2"} <Star className="size-3 fill-white" />
+                        </div>
+                        <span className="text-[10px] text-zinc-300 mt-1">{r.etaMinutes || "30"} mins</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Zomato-style Quick Filter Pills */}
       {isGeoActive && !q && !category && (
@@ -385,61 +415,61 @@ export function HomeFeed({
           <button
             type="button"
             onClick={() => setActiveFilter(activeFilter === "fast" ? "all" : "fast")}
-            className={`flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 transition shadow-xs cursor-pointer ${
+            className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3.5 py-2 transition cursor-pointer ${
               activeFilter === "fast"
-                ? "bg-primary text-primary-fg font-bold"
-                : "border border-border bg-surface text-fg hover:bg-surface-2"
+                ? "bg-white text-black font-bold border border-white"
+                : "border border-white/15 bg-transparent text-zinc-200 hover:bg-white/10"
             }`}
           >
-            <span>⚡</span>
+            <Clock className="size-3.5" />
             <span>Fast Delivery</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveFilter(activeFilter === "rating" ? "all" : "rating")}
-            className={`flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 transition shadow-xs cursor-pointer ${
+            className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3.5 py-2 transition cursor-pointer ${
               activeFilter === "rating"
-                ? "bg-primary text-primary-fg font-bold"
-                : "border border-border bg-surface text-fg hover:bg-surface-2"
+                ? "bg-white text-black font-bold border border-white"
+                : "border border-white/15 bg-transparent text-zinc-200 hover:bg-white/10"
             }`}
           >
-            <span>⭐</span>
+            <Star className="size-3.5" />
             <span>Rating 4.0+</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveFilter(activeFilter === "veg" ? "all" : "veg")}
-            className={`flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 transition shadow-xs cursor-pointer ${
+            className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3.5 py-2 transition cursor-pointer ${
               activeFilter === "veg"
-                ? "bg-primary text-primary-fg font-bold"
-                : "border border-border bg-surface text-fg hover:bg-surface-2"
+                ? "bg-white text-black font-bold border border-white"
+                : "border border-white/15 bg-transparent text-zinc-200 hover:bg-white/10"
             }`}
           >
-            <span>🥗</span>
+            <Leaf className="size-3.5" />
             <span>Pure Veg</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveFilter(activeFilter === "offers" ? "all" : "offers")}
-            className={`flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 transition shadow-xs cursor-pointer ${
+            className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3.5 py-2 transition cursor-pointer ${
               activeFilter === "offers"
-                ? "bg-primary text-primary-fg font-bold"
-                : "border border-border bg-surface text-fg hover:bg-surface-2"
+                ? "bg-white text-black font-bold border border-white"
+                : "border border-white/15 bg-transparent text-zinc-200 hover:bg-white/10"
             }`}
           >
-            <span>🏷️</span>
-            <span>Great Offers</span>
+            <Percent className="size-3.5" />
+            <span>Offers</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveFilter(activeFilter === "budget" ? "all" : "budget")}
-            className={`flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 transition shadow-xs cursor-pointer ${
+            className={`flex items-center gap-1.5 shrink-0 rounded-xl px-3.5 py-2 transition cursor-pointer ${
               activeFilter === "budget"
-                ? "bg-primary text-primary-fg font-bold"
-                : "border border-border bg-surface text-fg hover:bg-surface-2"
+                ? "bg-white text-black font-bold border border-white"
+                : "border border-white/15 bg-transparent text-zinc-200 hover:bg-white/10"
             }`}
           >
-            <span>💰</span>
+            <Filter className="size-3.5" />
             <span>Under ₹199</span>
           </button>
         </div>
@@ -447,19 +477,19 @@ export function HomeFeed({
 
       {/* RESTAURANT SUGGESTIONS: STRICTLY GATED BY 100% ACCURATE REAL-TIME GEO-LOCATION */}
       {!isGeoActive ? (
-        <div className="rounded-2xl border-2 border-primary/30 bg-surface p-6 text-center space-y-3 shadow-md my-4">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/15 text-primary text-2xl mx-auto shadow-inner">
+        <div className="rounded-2xl border border-rose-500/30 bg-[#0a0a0a]/80 p-6 text-center space-y-3 shadow-[0_0_30px_rgba(225,29,72,0.15)] my-4">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-400 text-2xl mx-auto shadow-inner border border-rose-500/30">
             📍
           </div>
-          <h3 className="font-display text-lg font-black text-fg">Enable Live GPS Location</h3>
-          <p className="text-xs text-muted max-w-sm mx-auto leading-relaxed">
+          <h3 className="font-display text-lg font-black text-white">Enable Live GPS Location</h3>
+          <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
             To guarantee 25-minute royal delivery, 0% food spoilage, and verified kitchen authenticity, restaurant suggestions strictly appear only when 100% real-time accurate GPS tracking is active.
           </p>
           <button
             type="button"
             onClick={requestLiveGps}
             disabled={isRequestingGeo}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/90 px-6 py-2.5 text-xs font-black text-white shadow-md transition active:scale-95"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-500 px-6 py-2.5 text-xs font-black text-white shadow-[0_0_20px_rgba(225,29,72,0.4)] transition active:scale-95 border border-rose-500/50"
           >
             <span>📍</span>
             <span>{isRequestingGeo ? "Verifying Live GPS..." : "Turn On 100% Real-Time GPS"}</span>
@@ -473,7 +503,7 @@ export function HomeFeed({
         <motion.div className="grid gap-4 md:grid-cols-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
           {Array.from({ length: 4 }).map((_, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-              <div className="h-64 w-full rounded-[var(--radius-3xl)] bg-white/30 dark:bg-black/30 backdrop-blur-2xl border border-white/20 shadow-[0_8px_30px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col"><div className="h-40 w-full bg-black/10 dark:bg-white/10 animate-pulse" /><div className="p-4 space-y-3"><div className="h-5 w-2/3 bg-black/10 dark:bg-white/10 rounded-full animate-pulse" /><div className="h-4 w-1/3 bg-black/10 dark:bg-white/10 rounded-full animate-pulse" /></div></div>
+              <div className="h-64 w-full rounded-[var(--radius-3xl)] bg-[#0a0a0a]/80 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col"><div className="h-40 w-full bg-white/5 animate-pulse border-b border-white/10" /><div className="p-4 space-y-3"><div className="h-5 w-2/3 bg-white/10 rounded-full animate-pulse" /><div className="h-4 w-1/3 bg-white/10 rounded-full animate-pulse" /></div></div>
             </motion.div>
           ))}
         </motion.div>
@@ -535,7 +565,7 @@ function Section({ title, items, empty }: { title: string; items: RestaurantCard
   }, [visibleCount, items.length]);
 
   if (!items.length) {
-    return empty ? <p className="text-sm text-muted">{empty}</p> : null;
+    return empty ? <p className="text-sm text-zinc-400">{empty}</p> : null;
   }
   return (
     <section>

@@ -115,7 +115,7 @@ export function FounderAiOsShell() {
   return (
     <div className="flex h-[calc(100vh-8rem)] min-h-[600px] w-full rounded-2xl border-2 border-amber-500/40 bg-[#050E0B] shadow-[0_0_60px_rgba(245,158,11,0.12)] overflow-hidden font-sans text-slate-100">
       {/* 1. Left OS Sidebar Navigation */}
-      <aside className="w-56 shrink-0 border-r border-border/70 bg-black/70 p-3 flex flex-col justify-between">
+      <aside className="w-56 shrink-0 border-r border-white/10/70 bg-black/70 p-3 flex flex-col justify-between">
         <div className="space-y-4">
           {/* Logo & Operating System Label */}
           <div className="flex items-center gap-2.5 px-2 py-1">
@@ -158,7 +158,7 @@ export function FounderAiOsShell() {
                   className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition ${
                     active
                       ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-surface-2"
+                      : "text-slate-400 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   <div className="flex items-center gap-2">
@@ -170,7 +170,7 @@ export function FounderAiOsShell() {
                       className={`text-[9px] px-1.5 py-0.5 rounded font-mono ${
                         active
                           ? "bg-amber-500/30 text-amber-200"
-                          : "bg-surface-2 text-slate-400"
+                          : "bg-white/5 text-slate-400"
                       }`}
                     >
                       {item.badge}
@@ -183,7 +183,7 @@ export function FounderAiOsShell() {
         </div>
 
         {/* Sidebar Footer System Health */}
-        <div className="pt-3 border-t border-border/60 text-[10px] space-y-1 text-slate-400 px-2">
+        <div className="pt-3 border-t border-white/10/60 text-[10px] space-y-1 text-slate-400 px-2">
           <div className="flex items-center justify-between">
             <span>Core Intelligence:</span>
             <span className="text-emerald-400 font-bold font-mono">100% ONLINE</span>
@@ -228,10 +228,10 @@ export function FounderAiOsShell() {
         {/* VIEW 3: CLIENTS CRM PIPELINE */}
         {currentView === "clients" && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border/70">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10/70">
               <div>
                 <h3 className="font-display font-black text-lg text-white">Client Acquisition CRM</h3>
-                <p className="text-xs text-muted">
+                <p className="text-xs text-zinc-400">
                   15-stage lifecycle from Lead qualification to contract, invoice, and repeat business.
                 </p>
               </div>
@@ -257,8 +257,8 @@ export function FounderAiOsShell() {
                     onClick={() => setSelectedLead(lead)}
                     className={`p-3 rounded-xl border cursor-pointer transition ${
                       selectedLead.id === lead.id
-                        ? "bg-surface-2 border-amber-500/50 shadow-md"
-                        : "bg-black/50 border-border/60 hover:bg-surface-2/60"
+                        ? "bg-white/5 border-amber-500/50 shadow-md"
+                        : "bg-black/50 border-white/10/60 hover:bg-white/5/60"
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -268,7 +268,7 @@ export function FounderAiOsShell() {
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center text-[11px] mt-2">
-                      <span className="text-muted">{lead.location}</span>
+                      <span className="text-zinc-400">{lead.location}</span>
                       <span className="font-bold text-emerald-400 font-mono">
                         ₹{lead.dealValueInr.toLocaleString("en-IN")}
                       </span>
@@ -278,11 +278,11 @@ export function FounderAiOsShell() {
               </div>
 
               {/* Right: Selected Lead Details & Actions */}
-              <div className="lg:col-span-2 rounded-xl bg-black/60 border border-border/70 p-4 space-y-4">
-                <div className="flex justify-between items-start pb-2 border-b border-border/60">
+              <div className="lg:col-span-2 rounded-xl bg-black/60 border border-white/10/70 p-4 space-y-4">
+                <div className="flex justify-between items-start pb-2 border-b border-white/10/60">
                   <div>
                     <h4 className="text-sm font-black text-white">{selectedLead.businessName}</h4>
-                    <p className="text-xs text-muted">
+                    <p className="text-xs text-zinc-400">
                       {selectedLead.contactPerson} · {selectedLead.phone} · {selectedLead.email}
                     </p>
                   </div>
@@ -292,25 +292,25 @@ export function FounderAiOsShell() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="rounded bg-surface-2 p-2.5">
-                    <span className="text-muted block text-[10px]">Monthly Revenue:</span>
+                  <div className="rounded bg-white/5 p-2.5">
+                    <span className="text-zinc-400 block text-[10px]">Monthly Revenue:</span>
                     <span className="font-bold text-white font-mono">{selectedLead.monthlyRevenueEst}</span>
                   </div>
-                  <div className="rounded bg-surface-2 p-2.5">
-                    <span className="text-muted block text-[10px]">50% Advance Lock:</span>
+                  <div className="rounded bg-white/5 p-2.5">
+                    <span className="text-zinc-400 block text-[10px]">50% Advance Lock:</span>
                     <span className="font-bold text-amber-400 font-mono">
                       ₹{selectedLead.advanceLockedInr.toLocaleString("en-IN")}
                     </span>
                   </div>
                 </div>
 
-                <div className="rounded bg-surface-2/70 p-3 text-xs space-y-1">
+                <div className="rounded bg-white/5/70 p-3 text-xs space-y-1">
                   <span className="text-amber-400 font-bold block text-[10px]">Identified Pain Point:</span>
                   <p className="text-slate-300">{selectedLead.painPoint}</p>
                 </div>
 
                 {/* Quick Actions */}
-                <div className="flex flex-wrap gap-2 pt-2 border-t border-border/60">
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-white/10/60">
                   <Button
                     size="sm"
                     variant="primary"
@@ -366,10 +366,10 @@ export function FounderAiOsShell() {
         {/* VIEW 4: OPPORTUNITIES (REMOTE WORK RADAR) */}
         {currentView === "opportunities" && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-            <div className="flex justify-between items-center pb-3 border-b border-border/70">
+            <div className="flex justify-between items-center pb-3 border-b border-white/10/70">
               <div>
                 <h3 className="font-display font-black text-lg text-white">High-Paid Remote Work Radar</h3>
-                <p className="text-xs text-muted">Curated $80–$150/hr software contracts matching founder capabilities.</p>
+                <p className="text-xs text-zinc-400">Curated $80–$150/hr software contracts matching founder capabilities.</p>
               </div>
               <Badge className="bg-sky-500/20 text-sky-300 font-mono text-xs">
                 {remoteGigs.length} Active Verified Contracts
@@ -386,18 +386,18 @@ export function FounderAiOsShell() {
                     </Badge>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted">Rate / Budget:</span>
+                    <span className="text-zinc-400">Rate / Budget:</span>
                     <span className="font-mono text-emerald-400 font-bold">
                       ${gig.hourlyRateUsd}/hr (${gig.fixedBudgetUsd?.toLocaleString()})
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted">Platform / Location:</span>
+                    <span className="text-zinc-400">Platform / Location:</span>
                     <span className="text-slate-300">{gig.platform} · {gig.clientLocation}</span>
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {gig.skillsRequired.map((s) => (
-                      <span key={s} className="rounded bg-surface-2 px-2 py-0.5 text-[10px] font-mono text-slate-300">
+                      <span key={s} className="rounded bg-white/5 px-2 py-0.5 text-[10px] font-mono text-slate-300">
                         {s}
                       </span>
                     ))}
@@ -422,10 +422,10 @@ export function FounderAiOsShell() {
         {/* VIEW 5: REVENUE & PAYMENTS STUDIO */}
         {currentView === "revenue" && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-            <div className="flex justify-between items-center pb-3 border-b border-border/70">
+            <div className="flex justify-between items-center pb-3 border-b border-white/10/70">
               <div>
                 <h3 className="font-display font-black text-lg text-white">Revenue &amp; Payout Studio</h3>
-                <p className="text-xs text-muted">Direct founder bank settlements via King Pay UPI with 0% intermediary fee cuts.</p>
+                <p className="text-xs text-zinc-400">Direct founder bank settlements via King Pay UPI with 0% intermediary fee cuts.</p>
               </div>
               <Badge className="bg-emerald-500/20 text-emerald-400 text-xs font-mono">
                 Section 79 IT Act Protected
@@ -434,26 +434,26 @@ export function FounderAiOsShell() {
 
             {/* Metric Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              <div className="rounded-xl bg-surface-2/80 p-3 border border-border">
-                <span className="text-[10px] text-muted block uppercase font-bold">Total Confirmed GMV</span>
+              <div className="rounded-xl bg-white/5/80 p-3 border border-white/10">
+                <span className="text-[10px] text-zinc-400 block uppercase font-bold">Total Confirmed GMV</span>
                 <span className="text-xl font-black text-white font-mono">
                   ₹{revenueMetrics.totalGrossInr.toLocaleString("en-IN")}
                 </span>
               </div>
-              <div className="rounded-xl bg-surface-2/80 p-3 border border-border">
-                <span className="text-[10px] text-muted block uppercase font-bold">Net Founder Deposited</span>
+              <div className="rounded-xl bg-white/5/80 p-3 border border-white/10">
+                <span className="text-[10px] text-zinc-400 block uppercase font-bold">Net Founder Deposited</span>
                 <span className="text-xl font-black text-emerald-400 font-mono">
                   ₹{revenueMetrics.netFounderDepositedInr.toLocaleString("en-IN")}
                 </span>
               </div>
-              <div className="rounded-xl bg-surface-2/80 p-3 border border-border">
-                <span className="text-[10px] text-muted block uppercase font-bold">Saved Gateway Fees</span>
+              <div className="rounded-xl bg-white/5/80 p-3 border border-white/10">
+                <span className="text-[10px] text-zinc-400 block uppercase font-bold">Saved Gateway Fees</span>
                 <span className="text-xl font-black text-amber-400 font-mono">
                   ₹{revenueMetrics.totalSavedGatewayFeesInr.toLocaleString("en-IN")}
                 </span>
               </div>
-              <div className="rounded-xl bg-surface-2/80 p-3 border border-border">
-                <span className="text-[10px] text-muted block uppercase font-bold">Pending Invoices</span>
+              <div className="rounded-xl bg-white/5/80 p-3 border border-white/10">
+                <span className="text-[10px] text-zinc-400 block uppercase font-bold">Pending Invoices</span>
                 <span className="text-xl font-black text-cyan-400 font-mono">
                   {revenueMetrics.pendingInvoicesCount} (₹{revenueMetrics.pendingInvoicesValueInr.toLocaleString("en-IN")})
                 </span>
@@ -461,16 +461,16 @@ export function FounderAiOsShell() {
             </div>
 
             {/* Transactions Table */}
-            <div className="rounded-xl bg-black/60 border border-border/70 p-4 space-y-3">
+            <div className="rounded-xl bg-black/60 border border-white/10/70 p-4 space-y-3">
               <span className="text-xs font-bold text-white block uppercase tracking-wider">
                 Confirmed Transaction Ledger
               </span>
               <div className="space-y-2">
                 {transactions.map((t) => (
-                  <div key={t.id} className="flex items-center justify-between bg-surface-2/70 p-3 rounded-lg border border-border/50 text-xs">
+                  <div key={t.id} className="flex items-center justify-between bg-white/5/70 p-3 rounded-lg border border-white/10/50 text-xs">
                     <div>
                       <span className="font-bold text-white block">{t.clientName}</span>
-                      <span className="text-[10px] text-muted">{t.description} · Ref: {t.referenceNumber}</span>
+                      <span className="text-[10px] text-zinc-400">{t.description} · Ref: {t.referenceNumber}</span>
                     </div>
                     <div className="text-right">
                       <span className="font-bold text-emerald-400 font-mono block">
@@ -490,10 +490,10 @@ export function FounderAiOsShell() {
         {/* VIEW 6: TASKS (DURABLE BACKGROUND JOBS) */}
         {currentView === "tasks" && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-            <div className="flex justify-between items-center pb-3 border-b border-border/70">
+            <div className="flex justify-between items-center pb-3 border-b border-white/10/70">
               <div>
                 <h3 className="font-display font-black text-lg text-white">Durable Job &amp; Task Engine</h3>
-                <p className="text-xs text-muted">Background task graphs, checkpoints, retry workers, and failure recovery.</p>
+                <p className="text-xs text-zinc-400">Background task graphs, checkpoints, retry workers, and failure recovery.</p>
               </div>
               <Badge className="bg-purple-500/20 text-purple-300 font-mono text-xs">
                 {jobs.length} Registered Workers
@@ -502,11 +502,11 @@ export function FounderAiOsShell() {
 
             <div className="space-y-3">
               {jobs.map((job) => (
-                <div key={job.id} className="rounded-xl bg-black/60 border border-border/70 p-4 space-y-3">
+                <div key={job.id} className="rounded-xl bg-black/60 border border-white/10/70 p-4 space-y-3">
                   <div className="flex justify-between items-center">
                     <div>
                       <span className="text-xs font-bold text-white block">{job.title}</span>
-                      <span className="text-[10px] text-muted">ID: {job.id} · Category: {job.category.toUpperCase()}</span>
+                      <span className="text-[10px] text-zinc-400">ID: {job.id} · Category: {job.category.toUpperCase()}</span>
                     </div>
                     <Badge className="bg-emerald-500/20 text-emerald-400 font-mono text-xs">
                       {job.status} ({job.progressPercent}%)
@@ -514,19 +514,19 @@ export function FounderAiOsShell() {
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="w-full bg-surface-2 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
                     <div className="bg-emerald-500 h-2 transition-all duration-500" style={{ width: `${job.progressPercent}%` }} />
                   </div>
 
                   {/* Steps List */}
                   <div className="space-y-1">
                     {job.steps.map((s) => (
-                      <div key={s.id} className="flex items-center justify-between text-[11px] bg-surface-2/40 px-2 py-1 rounded">
+                      <div key={s.id} className="flex items-center justify-between text-[11px] bg-white/5/40 px-2 py-1 rounded">
                         <div className="flex items-center gap-1.5">
                           <CheckCircle2 className="size-3 text-emerald-400" />
                           <span className="text-slate-300">{s.label}</span>
                         </div>
-                        {s.durationMs && <span className="text-[10px] text-muted font-mono">{s.durationMs}ms</span>}
+                        {s.durationMs && <span className="text-[10px] text-zinc-400 font-mono">{s.durationMs}ms</span>}
                       </div>
                     ))}
                   </div>
@@ -539,9 +539,9 @@ export function FounderAiOsShell() {
         {/* VIEW 7: AGENTS (SPECIALIST TEAM) */}
         {currentView === "agents" && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-            <div className="pb-3 border-b border-border/70">
+            <div className="pb-3 border-b border-white/10/70">
               <h3 className="font-display font-black text-lg text-white">Specialist Autonomous AI Team</h3>
-              <p className="text-xs text-muted">Autonomous executive agents governing operations, engineering, growth, and security.</p>
+              <p className="text-xs text-zinc-400">Autonomous executive agents governing operations, engineering, growth, and security.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -554,15 +554,15 @@ export function FounderAiOsShell() {
               ].map((agent) => {
                 const Icon = agent.icon;
                 return (
-                  <div key={agent.title} className="rounded-xl border border-border/70 bg-black/60 p-4 space-y-2">
+                  <div key={agent.title} className="rounded-xl border border-white/10/70 bg-black/60 p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="p-2 rounded-lg bg-surface-2 text-amber-400">
+                        <div className="p-2 rounded-lg bg-white/5 text-amber-400">
                           <Icon className="size-4" />
                         </div>
                         <div>
                           <h4 className="text-xs font-bold text-white">{agent.title}</h4>
-                          <span className="text-[10px] text-muted">{agent.role}</span>
+                          <span className="text-[10px] text-zinc-400">{agent.role}</span>
                         </div>
                       </div>
                       <Badge className="bg-emerald-500/20 text-emerald-400 text-[10px]">
@@ -579,12 +579,12 @@ export function FounderAiOsShell() {
         {/* VIEW 8: FILES (PROJECT BLUEPRINTS & CODE ARTIFACTS) */}
         {currentView === "files" && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-            <div className="pb-3 border-b border-border/70">
+            <div className="pb-3 border-b border-white/10/70">
               <h3 className="font-display font-black text-lg text-white">Project Artifacts &amp; Files</h3>
-              <p className="text-xs text-muted">Generated production source files, database schemas, and client handoffs.</p>
+              <p className="text-xs text-zinc-400">Generated production source files, database schemas, and client handoffs.</p>
             </div>
 
-            <div className="rounded-xl bg-black/60 border border-border/70 p-4 space-y-2 font-mono text-xs">
+            <div className="rounded-xl bg-black/60 border border-white/10/70 p-4 space-y-2 font-mono text-xs">
               {[
                 { name: "Hospital-ERP/App.tsx", type: "React 19 Frontend", size: "14.2 KB" },
                 { name: "Hospital-ERP/schema.sql", type: "PostgreSQL DDL", size: "4.8 KB" },
@@ -593,13 +593,13 @@ export function FounderAiOsShell() {
                 { name: "Multi-Vendor-Food/schema.sql", type: "PostgreSQL DDL", size: "5.2 KB" },
                 { name: "FinTech-Ledger/App.tsx", type: "Double-Entry Ledger", size: "12.0 KB" },
               ].map((f) => (
-                <div key={f.name} className="flex items-center justify-between bg-surface-2/60 p-2.5 rounded border border-border/40">
+                <div key={f.name} className="flex items-center justify-between bg-white/5/60 p-2.5 rounded border border-white/10/40">
                   <div className="flex items-center gap-2">
                     <FileCode className="size-4 text-purple-400" />
                     <span className="text-slate-200">{f.name}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-muted text-[11px]">{f.type}</span>
+                    <span className="text-zinc-400 text-[11px]">{f.type}</span>
                     <span className="text-slate-400">{f.size}</span>
                   </div>
                 </div>
@@ -611,9 +611,9 @@ export function FounderAiOsShell() {
         {/* VIEW 9: INTEGRATIONS */}
         {currentView === "integrations" && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-            <div className="pb-3 border-b border-border/70">
+            <div className="pb-3 border-b border-white/10/70">
               <h3 className="font-display font-black text-lg text-white">Connected Gateways &amp; Services</h3>
-              <p className="text-xs text-muted">Real-time status of payment gateways, cloud providers, and repositories.</p>
+              <p className="text-xs text-zinc-400">Real-time status of payment gateways, cloud providers, and repositories.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -625,14 +625,14 @@ export function FounderAiOsShell() {
                 { name: "Vercel / Edge Preview", status: "Ready for Deploy", type: "Hosting", ready: true },
                 { name: "WhatsApp Cloud Fleet", status: "Dispatcher Ready", type: "Messaging", ready: true },
               ].map((ig) => (
-                <div key={ig.name} className="rounded-xl border border-border/70 bg-black/60 p-3.5 space-y-2">
+                <div key={ig.name} className="rounded-xl border border-white/10/70 bg-black/60 p-3.5 space-y-2">
                   <div className="flex justify-between items-start">
                     <span className="text-xs font-bold text-white">{ig.name}</span>
                     <Badge className="bg-emerald-500/20 text-emerald-400 text-[10px]">
                       {ig.status}
                     </Badge>
                   </div>
-                  <span className="text-[10px] text-muted uppercase tracking-wider block">{ig.type}</span>
+                  <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">{ig.type}</span>
                 </div>
               ))}
             </div>
@@ -642,17 +642,17 @@ export function FounderAiOsShell() {
         {/* VIEW 10: SETTINGS (MODEL INTELLIGENCE & PROVIDERS) */}
         {currentView === "settings" && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-            <div className="pb-3 border-b border-border/70">
+            <div className="pb-3 border-b border-white/10/70">
               <h3 className="font-display font-black text-lg text-white">Model Intelligence &amp; Environment</h3>
-              <p className="text-xs text-muted">Configurable AI provider abstraction layer, model routing, and API status.</p>
+              <p className="text-xs text-zinc-400">Configurable AI provider abstraction layer, model routing, and API status.</p>
             </div>
 
             <div className="space-y-3">
               {providerStatuses.map((p) => (
-                <div key={p.id} className="rounded-xl bg-black/60 border border-border/70 p-3.5 flex items-center justify-between">
+                <div key={p.id} className="rounded-xl bg-black/60 border border-white/10/70 p-3.5 flex items-center justify-between">
                   <div>
                     <span className="text-xs font-bold text-white block">{p.name}</span>
-                    <span className="text-[10px] text-muted">
+                    <span className="text-[10px] text-zinc-400">
                       Models: {p.supportedModels.join(", ")} · Env: {p.requiredEnvVar}
                     </span>
                   </div>
@@ -660,7 +660,7 @@ export function FounderAiOsShell() {
                     className={
                       p.isConfigured
                         ? "bg-emerald-500/20 text-emerald-400 font-mono text-xs"
-                        : "bg-surface-2 text-slate-400 font-mono text-xs"
+                        : "bg-white/5 text-slate-400 font-mono text-xs"
                     }
                   >
                     {p.isConfigured ? "CONFIGURED" : "FALLBACK ACTIVE"}

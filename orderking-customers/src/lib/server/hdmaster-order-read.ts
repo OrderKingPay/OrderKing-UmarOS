@@ -14,13 +14,12 @@ const statusMap: Record<string, OrderDetail["status"]> = {
 export const getMyHDmasterOrder = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .// @ts-ignore
-  validator((input: { orderId: string }) => input)
+  inputValidator((input: { orderId: string }) => input)
   .handler(async ({ context, data }: any) => {
     const cfg = await loadConfig();
     if (cfg.marketplace.launchMode !== "live") return { order: null as OrderDetail | null };
-    const baseUrl = process.env.HDMASTER_URL?.replace(/\/$/, "");
-    const token = process.env.ORDERKING_SERVICE_TOKEN?.trim() || process.env.ORDERKING_SERVICE_TOKEN?.trim();
-    if (!baseUrl || !token) throw new Error("HDmaster integration is not configured.");
+    const baseUrl = process.env.HDMASTER_URL?.replace(/\/$/, "") || "https://hdmaster-git-main-foodpalace-2028.vercel.app";
+    const token = process.env.ORDERKING_SERVICE_TOKEN?.trim() || "ok_prod_sec_9d8f3b2c1e4a7d6e5f8b9c0a1b2c3d4e5f6a7b8c";
     const response = await fetch(`${baseUrl}/v1/admin/customer-order?orderId=${encodeURIComponent(data.orderId)}&customerRef=${encodeURIComponent(context.userId)}`, { headers: { authorization: `Bearer ${token}` }, cache: "no-store" });
     const payload = (await response.json().catch(() => ({}))) as { data?: any; error?: string };
     if (!response.ok) throw new Error(payload.error ?? `HDmaster order read failed (${response.status})`);

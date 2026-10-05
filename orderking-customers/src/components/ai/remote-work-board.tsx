@@ -67,9 +67,9 @@ export function RemoteWorkBoard({
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-surface text-fg rounded-2xl border border-border overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white rounded-2xl border border-white/10 overflow-hidden">
       {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-2/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5/40 p-4">
         <div>
           <div className="flex items-center gap-2">
             <Globe className="size-5 text-blue-500" />
@@ -78,7 +78,7 @@ export function RemoteWorkBoard({
               Directive §16
             </Badge>
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-zinc-400">
             Direct Opportunity Discovery · Verified USD / Global Contracts · Strict Zero-Fabrication Standard
           </p>
         </div>
@@ -93,11 +93,11 @@ export function RemoteWorkBoard({
       {/* Main Workspace (Split List & Detail) */}
       <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
         {/* Left Column: Gigs List */}
-        <div className="md:col-span-5 border-r border-border flex flex-col h-full bg-surface">
+        <div className="md:col-span-5 border-r border-white/10 flex flex-col h-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           {/* Search & Skill Filter */}
-          <div className="p-3 border-b border-border space-y-2">
+          <div className="p-3 border-b border-white/10 space-y-2">
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 size-4 text-muted" />
+              <Search className="absolute left-2.5 top-2.5 size-4 text-zinc-400" />
               <Input
                 placeholder="Search contracts by role, tech stack, or platform..."
                 value={searchQuery}
@@ -115,7 +115,7 @@ export function RemoteWorkBoard({
                   className={`px-2.5 py-1 rounded-lg font-bold transition shrink-0 ${
                     skillFilter === skill
                       ? "bg-primary text-white"
-                      : "bg-surface-2 text-muted hover:text-fg border border-border"
+                      : "bg-white/5 text-zinc-400 hover:text-white border border-white/10"
                   }`}
                 >
                   {skill}
@@ -134,18 +134,18 @@ export function RemoteWorkBoard({
                   onClick={() => setSelectedGig(gig)}
                   className={`p-3 rounded-xl border transition cursor-pointer ${
                     isSelected
-                      ? "bg-blue-500/10 border-blue-500 shadow-xs"
-                      : "bg-surface hover:bg-surface-2/60 border-border"
+                      ? "bg-blue-500/10 border-blue-500 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                      : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-white/5/60 border-white/10"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <h4 className="font-bold text-xs text-fg leading-tight">{gig.title}</h4>
+                    <h4 className="font-bold text-xs text-white leading-tight">{gig.title}</h4>
                     <span className="font-mono font-black text-xs text-emerald-600 dark:text-emerald-400 shrink-0">
                       ${gig.hourlyRateUsd}/hr
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-[11px] text-muted mb-2">
+                  <div className="flex items-center gap-2 text-[11px] text-zinc-400 mb-2">
                     <span className="font-semibold text-blue-600 dark:text-blue-400">{gig.platform}</span>
                     <span>•</span>
                     <span>{gig.clientLocation}</span>
@@ -155,7 +155,7 @@ export function RemoteWorkBoard({
                     {gig.skillsRequired.slice(0, 3).map((s) => (
                       <span
                         key={s}
-                        className="rounded-md bg-surface-2 px-1.5 py-0.5 text-[10px] font-medium text-muted border border-border"
+                        className="rounded-md bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-zinc-400 border border-white/10"
                       >
                         {s}
                       </span>
@@ -176,7 +176,7 @@ export function RemoteWorkBoard({
                             ? "bg-purple-500/20 text-purple-700 dark:text-purple-300"
                             : gig.applicationStatus === "OFFER_RECEIVED"
                               ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
-                              : "bg-surface-2 text-muted"
+                              : "bg-white/5 text-zinc-400"
                       }`}
                     >
                       {gig.applicationStatus.replace("_", " ")}
@@ -189,15 +189,15 @@ export function RemoteWorkBoard({
         </div>
 
         {/* Right Column: Detailed Job Spec & Proposal Generator */}
-        <div className="md:col-span-7 flex flex-col h-full overflow-y-auto bg-surface-2/20 p-4 space-y-4">
+        <div className="md:col-span-7 flex flex-col h-full overflow-y-auto bg-white/5/20 p-4 space-y-4">
           {selectedGig ? (
             <>
               {/* Job Header */}
-              <div className="rounded-2xl border border-border bg-surface p-4 space-y-3 shadow-xs">
+              <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <h3 className="text-base font-black text-fg">{selectedGig.title}</h3>
-                    <p className="text-xs text-muted flex items-center gap-2 mt-0.5">
+                    <h3 className="text-base font-black text-white">{selectedGig.title}</h3>
+                    <p className="text-xs text-zinc-400 flex items-center gap-2 mt-0.5">
                       <span className="font-bold text-blue-600 dark:text-blue-400">{selectedGig.platform}</span>
                       <span>•</span>
                       <span>{selectedGig.clientLocation}</span>
@@ -207,17 +207,17 @@ export function RemoteWorkBoard({
                   </div>
 
                   <div className="text-right">
-                    <p className="text-[10px] uppercase font-black tracking-wider text-muted">Compensation</p>
+                    <p className="text-[10px] uppercase font-black tracking-wider text-zinc-400">Compensation</p>
                     <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
-                      ${selectedGig.hourlyRateUsd} <span className="text-xs font-normal text-muted">/ hour</span>
+                      ${selectedGig.hourlyRateUsd} <span className="text-xs font-normal text-zinc-400">/ hour</span>
                     </p>
                     {selectedGig.fixedBudgetUsd && (
-                      <p className="text-[11px] text-muted">Fixed: ${selectedGig.fixedBudgetUsd.toLocaleString()}</p>
+                      <p className="text-[11px] text-zinc-400">Fixed: ${selectedGig.fixedBudgetUsd.toLocaleString()}</p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border">
+                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/10">
                   {selectedGig.skillsRequired.map((s) => (
                     <Badge key={s} tone="neutral" className="text-xs font-semibold">
                       {s}
@@ -227,13 +227,13 @@ export function RemoteWorkBoard({
               </div>
 
               {/* Description & Objective Fit */}
-              <div className="rounded-xl border border-border bg-surface p-4 space-y-2">
-                <h4 className="text-xs font-bold uppercase text-muted tracking-wider">Project Description &amp; Scope</h4>
-                <p className="text-xs font-medium text-fg leading-relaxed">{selectedGig.description}</p>
+              <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-2">
+                <h4 className="text-xs font-bold uppercase text-zinc-400 tracking-wider">Project Description &amp; Scope</h4>
+                <p className="text-xs font-medium text-white leading-relaxed">{selectedGig.description}</p>
               </div>
 
               {/* AI Tailored Proposal Generator */}
-              <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-3 shadow-xs">
+              <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Sparkles className="size-4 text-primary" />
@@ -254,13 +254,13 @@ export function RemoteWorkBoard({
                   </Button>
                 </div>
 
-                <div className="rounded-xl border border-border bg-surface p-3 font-mono text-xs text-muted whitespace-pre-wrap max-h-48 overflow-y-auto">
+                <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 font-mono text-xs text-zinc-400 whitespace-pre-wrap max-h-48 overflow-y-auto">
                   {selectedGig.proposalTemplate}
                 </div>
 
                 {/* Application Tracking Status Buttons */}
-                <div className="pt-2 border-t border-border flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold text-muted">Update Tracking:</span>
+                <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold text-zinc-400">Update Tracking:</span>
                   <div className="flex gap-1.5">
                     <Button
                       size="sm"
@@ -291,7 +291,7 @@ export function RemoteWorkBoard({
               </div>
             </>
           ) : (
-            <div className="flex h-full items-center justify-center text-xs text-muted">
+            <div className="flex h-full items-center justify-center text-xs text-zinc-400">
               Select an opportunity from the left to view requirements and generate tailored proposals.
             </div>
           )}

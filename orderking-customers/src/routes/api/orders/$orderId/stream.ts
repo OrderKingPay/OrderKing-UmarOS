@@ -3,8 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getSql } from "@/lib/db";
 
 export const Route = createFileRoute("/api/orders/$orderId/stream")({
-  // @ts-expect-error
-  server: {
+server: {
     handlers: {
       GET: async ({ request, params }: any) => {
         const { orderId } = params;

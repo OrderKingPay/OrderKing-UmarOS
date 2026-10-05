@@ -24,9 +24,9 @@ function ReviewsPage() {
 
   return (
     <VendorShell title={t("nav.reviews")} dataLabel={q.data?.dataLabel ?? vendor.dataLabel}>
-      <p className="text-sm text-muted">{t("reviews.cannotDelete")}</p>
+      <p className="text-sm text-zinc-400">{t("reviews.cannotDelete")}</p>
       {(q.data?.reviews.length ?? 0) === 0 ? (
-        <Card className="text-sm text-muted">{t("reviews.empty")}</Card>
+        <Card className="text-sm text-zinc-400">{t("reviews.empty")}</Card>
       ) : (
         q.data?.reviews.map((r) => (
           <ReviewRow
@@ -66,10 +66,10 @@ function ReviewRow({
     <Card className="space-y-2">
       <div className="flex justify-between text-sm">
         <span className="font-semibold tabular">{review.rating}/5</span>
-        <span className="text-muted">{new Date(review.createdAt).toLocaleDateString("en-IN")}</span>
+        <span className="text-zinc-400">{new Date(review.createdAt).toLocaleDateString("en-IN")}</span>
       </div>
       <p>{review.body}</p>
-      {review.response ? <p className="rounded-[12px] bg-surface-2 p-2 text-sm">{review.response}</p> : null}
+      {review.response ? <p className="rounded-[12px] bg-white/5 p-2 text-sm">{review.response}</p> : null}
       {canRespond ? (
         <div className="space-y-2">
           <Textarea value={text} onChange={(e) => setText(e.target.value)} />

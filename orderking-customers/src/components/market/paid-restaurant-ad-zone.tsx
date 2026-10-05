@@ -87,9 +87,9 @@ export function PaidRestaurantAdZone({
           <span className="rounded-full bg-amber-500/15 px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300">
             Sponsored
           </span>
-          <span className="text-[10px] text-muted font-medium">Top Rated Kitchens</span>
+          <span className="text-[10px] text-zinc-400 font-medium">Top Rated Kitchens</span>
         </div>
-        <span className="text-[9px] text-muted/70 font-mono">Ranked by Ad Bid</span>
+        <span className="text-[9px] text-zinc-400/70 font-mono">Ranked by Ad Bid</span>
       </div>
 
       {isCompactMode ? (
@@ -100,12 +100,12 @@ export function PaidRestaurantAdZone({
               key={ad.id}
               to="/r/$slug"
               params={{ slug: ad.id }}
-              className="group flex h-8 shrink-0 items-center gap-2 rounded-full border border-border/80 bg-surface-2/90 px-2.5 shadow-xs hover:border-amber-400 hover:bg-amber-500/10 transition-all active:scale-95 no-underline cursor-pointer"
+              className="group flex h-8 shrink-0 items-center gap-2 rounded-full border border-white/10/80 bg-white/5/90 px-2.5 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:border-amber-400 hover:bg-amber-500/10 transition-all active:scale-95 no-underline cursor-pointer"
             >
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-surface text-xs shadow-xs">
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-xs shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 {ad.emojiFallback}
               </span>
-              <span className="truncate text-xs font-bold text-fg group-hover:text-amber-500 max-w-[120px]">
+              <span className="truncate text-xs font-bold text-white group-hover:text-amber-500 max-w-[120px]">
                 {ad.name}
               </span>
               <div className="flex items-center gap-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
@@ -123,14 +123,14 @@ export function PaidRestaurantAdZone({
               key={ad.id}
               to="/r/$slug"
               params={{ slug: ad.id }}
-              className="group flex items-center gap-2.5 rounded-xl border border-border/80 bg-surface-2/90 p-2 shadow-xs hover:border-amber-400 hover:bg-amber-500/10 transition-all active:scale-95 no-underline cursor-pointer"
+              className="group flex items-center gap-2.5 rounded-xl border border-white/10/80 bg-white/5/90 p-2 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:border-amber-400 hover:bg-amber-500/10 transition-all active:scale-95 no-underline cursor-pointer"
             >
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface text-xl shadow-xs group-hover:scale-105 transition-transform">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-xl shadow-[0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-105 transition-transform">
                 {ad.emojiFallback}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1">
-                  <h4 className="truncate text-xs font-black text-fg group-hover:text-amber-500">
+                  <h4 className="truncate text-xs font-black text-white group-hover:text-amber-500">
                     {ad.name}
                   </h4>
                   <div className="flex items-center gap-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400 shrink-0">
@@ -138,7 +138,7 @@ export function PaidRestaurantAdZone({
                     <span>{ad.rating.toFixed(1)}</span>
                   </div>
                 </div>
-                <p className="truncate text-[10px] text-muted">{ad.cuisine}</p>
+                <p className="truncate text-[10px] text-zinc-400">{ad.cuisine}</p>
                 {ad.specialOffer ? (
                   <span className="inline-block text-[9px] font-bold text-emerald-600 dark:text-emerald-400 truncate">
                     {ad.specialOffer}

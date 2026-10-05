@@ -125,19 +125,19 @@ export function HomeView() {
         <p className="rounded-md bg-offline/10 px-3 py-2 text-sm text-offline">{error}</p>
       ) : null}
 
-      <section className="rounded-xl bg-card p-5 shadow-[var(--shadow-border)]">
+      <section className="rounded-[var(--radius-2xl)] bg-white/5 border border-white/10 p-5 shadow-[0_0_20px_rgba(255,255,255,0.05)] backdrop-blur-md">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{t("welcome")}</p>
-            <h1 className="mt-1 font-display text-3xl leading-none">
+            <p className="text-xs uppercase tracking-widest text-zinc-400-foreground">{t("welcome")}</p>
+            <h1 className="mt-1 font-display text-3xl leading-none text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
               {home.rider.fullName || user?.displayName || "Partner"}
             </h1>
           </div>
           <StatusPill status={status} online={t("online")} offline={t("offline")} busy={t("busy")} />
         </div>
         {kyc !== "VERIFIED" ? (
-          <p className="mt-3 rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
-            {kyc === "UNDER_REVIEW" ? t("underReview") : t("kycHint")} {t("practiceMode")}
+          <p className="mt-3 rounded-md bg-white/10 px-3 py-2 text-sm text-zinc-400 border border-white/5">
+            {kyc === "UNDER_REVIEW" ? t("underReview") : t("kycHint")}
           </p>
         ) : null}
         <dl className="mt-5 grid grid-cols-3 gap-2 text-center">
@@ -156,14 +156,13 @@ export function HomeView() {
         ) : null}
         <div className="mt-5">
           {status === "OFFLINE" ? (
-            <Button size="lg" className="w-full" variant="online" disabled={pending} onClick={() => setConfirm("online")}>
+            <Button size="lg" className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold shadow-[0_0_15px_rgba(16,185,129,0.3)] border border-emerald-400 transition" disabled={pending} onClick={() => setConfirm("online")}>
               {t("goOnline")}
             </Button>
           ) : (
             <Button
               size="lg"
-              className="w-full"
-              variant="outline"
+              className="w-full border-red-500/50 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold transition shadow-[0_0_15px_rgba(239,68,68,0.1)]"
               disabled={pending || Boolean(home.active)}
               onClick={() => setConfirm("offline")}
             >
@@ -174,42 +173,42 @@ export function HomeView() {
       </section>
 
       {/* OrderKing Rider Advantage vs Zomato */}
-      <section className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-emerald-500/5 p-4 shadow-sm">
+      <section className="rounded-[var(--radius-2xl)] border border-fuchsia-500/30 bg-gradient-to-br from-fuchsia-500/10 via-[#0a0a0a] to-amber-500/10 p-4 shadow-[0_0_15px_rgba(217,70,239,0.15)] backdrop-blur-md">
         <div className="flex items-center gap-2 mb-2">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-primary/20 text-sm">
+          <span className="flex size-7 items-center justify-center rounded-lg bg-fuchsia-500/20 text-sm border border-fuchsia-500/30">
             ⭐
           </span>
-          <h3 className="font-display text-sm font-bold text-foreground">OrderKing Rider Advantage</h3>
+          <h3 className="font-display text-sm font-bold text-white drop-shadow-[0_0_8px_rgba(217,70,239,0.3)]">OrderKing Rider Advantage</h3>
         </div>
         <div className="grid grid-cols-3 gap-2 text-center text-xs">
-          <div className="rounded-lg bg-card/80 p-2 border border-border/50">
-            <span className="text-base">💰</span>
-            <p className="font-bold text-foreground mt-0.5">100% Tips</p>
-            <p className="text-[10px] text-muted-foreground">Zero platform cut</p>
+          <div className="rounded-xl bg-white/5 p-2 border border-white/10 hover:border-fuchsia-500/50 hover:bg-white/10 transition">
+            <span className="text-base drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">💰</span>
+            <p className="font-bold text-white mt-0.5">100% Tips</p>
+            <p className="text-[10px] text-zinc-400">Zero platform cut</p>
           </div>
-          <div className="rounded-lg bg-card/80 p-2 border border-border/50">
-            <span className="text-base">⏱️</span>
-            <p className="font-bold text-foreground mt-0.5">Wait Pay</p>
-            <p className="text-[10px] text-muted-foreground">₹1/min after 10m</p>
+          <div className="rounded-xl bg-white/5 p-2 border border-white/10 hover:border-cyan-500/50 hover:bg-white/10 transition">
+            <span className="text-base drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">⏱️</span>
+            <p className="font-bold text-white mt-0.5">Wait Pay</p>
+            <p className="text-[10px] text-zinc-400">₹1/min after 10m</p>
           </div>
-          <div className="rounded-lg bg-card/80 p-2 border border-border/50">
-            <span className="text-base">🛡️</span>
-            <p className="font-bold text-foreground mt-0.5">Zero Penalties</p>
-            <p className="text-[10px] text-muted-foreground">AI Co-Pilot support</p>
+          <div className="rounded-xl bg-white/5 p-2 border border-white/10 hover:border-emerald-500/50 hover:bg-white/10 transition">
+            <span className="text-base drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">🛡️</span>
+            <p className="font-bold text-white mt-0.5">Zero Penalties</p>
+            <p className="text-[10px] text-zinc-400">AI Co-Pilot support</p>
           </div>
         </div>
       </section>
 
       {/* HPCL & IOCL Partner Fuel Pump Quick Navigator */}
-      <section className="rounded-xl border-2 border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
+      <section className="rounded-[var(--radius-2xl)] border border-emerald-500/30 bg-gradient-to-br from-[#0a0a0a] via-[#052e16] to-emerald-500/10 p-4 space-y-3 shadow-[0_0_20px_rgba(16,185,129,0.1)] backdrop-blur-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-sm">
               ⛽
             </span>
             <div>
-              <h3 className="font-display text-sm font-bold text-foreground">Nearby Partner Fuel Pumps</h3>
-              <p className="text-[11px] text-muted-foreground">Save 2.5% on petrol + ₹2L accidental insurance</p>
+              <h3 className="font-display text-sm font-bold text-white drop-shadow-[0_0_5px_rgba(16,185,129,0.3)]">Nearby Partner Fuel Pumps</h3>
+              <p className="text-[11px] text-emerald-200/70">Save 2.5% on petrol + ₹2L accidental insurance</p>
             </div>
           </div>
           <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
@@ -218,30 +217,30 @@ export function HomeView() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          <div className="rounded-lg border border-border bg-card p-2.5 flex items-center justify-between">
+          <div className="rounded-xl border border-emerald-500/20 bg-black/40 p-2.5 flex items-center justify-between hover:border-emerald-500/50 transition">
             <div>
-              <p className="font-semibold text-foreground">HPCL Station - Karimganj Bypass</p>
-              <p className="text-[10px] text-muted-foreground">0.8 km away · Free Air · Priority Lane</p>
+              <p className="font-semibold text-white">HPCL Station - Karimganj Bypass</p>
+              <p className="text-[10px] text-zinc-400">0.8 km away · Free Air · Priority Lane</p>
             </div>
             <a
               href="https://maps.google.com/?q=HPCL+Petrol+Pump+Karimganj"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 text-[11px] font-bold transition"
+              className="rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 px-2 py-1 text-[11px] font-bold transition shadow-[0_0_10px_rgba(16,185,129,0.2)]"
             >
               📍 Route
             </a>
           </div>
-          <div className="rounded-lg border border-border bg-card p-2.5 flex items-center justify-between">
+          <div className="rounded-xl border border-emerald-500/20 bg-black/40 p-2.5 flex items-center justify-between hover:border-emerald-500/50 transition">
             <div>
-              <p className="font-semibold text-foreground">IOCL Station - Silchar Main Rd</p>
-              <p className="text-[10px] text-muted-foreground">1.4 km away · 2.5% Instant Cashback</p>
+              <p className="font-semibold text-white">IOCL Station - Silchar Main Rd</p>
+              <p className="text-[10px] text-zinc-400">1.4 km away · 2.5% Instant Cashback</p>
             </div>
             <a
               href="https://maps.google.com/?q=IOCL+Petrol+Pump+Silchar"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 text-[11px] font-bold transition"
+              className="rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 px-2 py-1 text-[11px] font-bold transition shadow-[0_0_10px_rgba(16,185,129,0.2)]"
             >
               📍 Route
             </a>
@@ -249,7 +248,7 @@ export function HomeView() {
         </div>
 
         <div className="flex items-center justify-between border-t border-emerald-500/20 pt-2 text-[11px]">
-          <span className="font-mono text-muted-foreground">Fleet ID: OK-RIDER-HP-8421</span>
+          <span className="font-mono text-zinc-400-foreground">Fleet ID: OK-RIDER-HP-8421</span>
           <button
             type="button"
             onClick={() => {
@@ -307,7 +306,7 @@ export function HomeView() {
             {home.notifications.slice(0, 4).map((n) => (
               <li key={n.id} className="text-sm">
                 <p className="font-medium">{n.title}</p>
-                <p className="text-muted-foreground">{n.body}</p>
+                <p className="text-zinc-400-foreground">{n.body}</p>
               </li>
             ))}
           </ul>
@@ -318,7 +317,7 @@ export function HomeView() {
         <Link to="/assistant" className="underline">
           {t("assistant")}
         </Link>
-        <span className="text-muted-foreground">·</span>
+        <span className="text-zinc-400-foreground">·</span>
         <Link to="/onboarding" className="underline">
           {t("kyc")}
         </Link>
@@ -363,7 +362,7 @@ export function HomeView() {
                   className={`rounded-full border px-2.5 py-1 text-xs transition ${
                     declineReason === r
                       ? "border-destructive bg-destructive/10 font-semibold text-destructive"
-                      : "border-border bg-muted/50 text-muted-foreground hover:bg-muted"
+                      : "border-white/10 bg-muted/50 text-zinc-400-foreground hover:bg-muted"
                   }`}
                 >
                   {r}
@@ -388,9 +387,9 @@ export function HomeView() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-muted px-2 py-3">
-      <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
-      <dd className="mt-1 font-display text-lg tabular-nums">{value}</dd>
+    <div className="rounded-xl bg-white/5 border border-white/10 px-2 py-3 shadow-inner shadow-white/5">
+      <dt className="text-xs uppercase tracking-wide text-zinc-500 font-bold">{label}</dt>
+      <dd className="mt-1 font-display text-lg tabular-nums text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">{value}</dd>
     </div>
   );
 }
@@ -433,10 +432,11 @@ function OfferCard({
 }) {
   const { t } = useI18n();
   return (
-    <Card className="p-5">
-      <div className="flex items-start justify-between gap-2">
+    <div className="rounded-[var(--radius-2xl)] bg-white/5 border border-fuchsia-500/30 p-5 shadow-[0_0_20px_rgba(217,70,239,0.1)] backdrop-blur-md relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/5 to-amber-500/5 pointer-events-none" />
+      <div className="relative flex items-start justify-between gap-2">
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">{t("offers")}</p>
+          <p className="text-xs uppercase tracking-widest text-zinc-400-foreground">{t("offers")}</p>
           <CardTitle className="mt-1">{offer.restaurant.name}</CardTitle>
           <CardMeta>
             {offer.restaurant.area} → {offer.dropArea}
@@ -447,18 +447,18 @@ function OfferCard({
       
       {/* 1000x Realism: Deep Learning Dispatch Metrics */}
       {(offer as any).aiMetrics ? (
-        <div className="mt-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs space-y-2">
+        <div className="mt-3 rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3 text-xs space-y-2 relative shadow-[0_0_15px_rgba(34,211,238,0.15)]">
            <div className="flex items-center justify-between font-bold">
-              <span className="text-primary flex items-center gap-1">
+              <span className="text-cyan-400 flex items-center gap-1 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">
                 <span className="animate-pulse">⚡</span> AI Smart Match
               </span>
-              <span className="text-foreground border border-primary/30 rounded px-1.5 py-0.5 bg-primary/10">
+              <span className="text-cyan-300 border border-cyan-500/30 rounded px-1.5 py-0.5 bg-cyan-500/20">
                 Score: {(offer as any).aiMetrics.score}/100
               </span>
            </div>
-           <div className="grid grid-cols-2 gap-2 text-[10px] text-muted-foreground">
-              <div>Weather: <span className="font-bold text-foreground">{(offer as any).aiMetrics.weather}</span></div>
-              <div>Traffic: <span className="font-bold text-foreground">{(offer as any).aiMetrics.traffic}</span></div>
+           <div className="grid grid-cols-2 gap-2 text-[10px] text-zinc-400-foreground">
+              <div>Weather: <span className="font-bold text-white">{(offer as any).aiMetrics.weather}</span></div>
+              <div>Traffic: <span className="font-bold text-white">{(offer as any).aiMetrics.traffic}</span></div>
            </div>
            {(offer as any).aiMetrics.surge && (
              <div className="text-[10px] text-amber-500 font-bold bg-amber-500/10 rounded px-2 py-1 mt-1 border border-amber-500/20 text-center">
@@ -474,19 +474,19 @@ function OfferCard({
       </p>
       <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
         <div>
-          <dt className="text-muted-foreground">{t("expectedPayout")}</dt>
+          <dt className="text-zinc-400-foreground">{t("expectedPayout")}</dt>
           <dd className="tabular-nums font-bold text-lg text-emerald-500">{formatPaise(offer.expectedPayoutPaise)}</dd>
         </div>
         <div>
-          <dt className="text-muted-foreground">{t("distance")}</dt>
+          <dt className="text-zinc-400-foreground">{t("distance")}</dt>
           <dd className="tabular-nums">{offer.approxDistanceKm.toFixed(1)} km</dd>
         </div>
         <div>
-          <dt className="text-muted-foreground">{t("route")}</dt>
+          <dt className="text-zinc-400-foreground">{t("route")}</dt>
           <dd className="tabular-nums">{offer.estimatedTotalRouteKm.toFixed(1)} km</dd>
         </div>
         <div>
-          <dt className="text-muted-foreground">{t("packages")}</dt>
+          <dt className="text-zinc-400-foreground">{t("packages")}</dt>
           <dd>{offer.packageCount}</dd>
         </div>
       </dl>
@@ -498,19 +498,19 @@ function OfferCard({
         </p>
       ) : null}
       {offer.restaurant.specialPickupInstructions ? (
-        <p className="mt-3 text-sm text-muted-foreground border-l-2 border-primary/50 pl-2">{offer.restaurant.specialPickupInstructions}</p>
+        <p className="mt-3 text-sm text-zinc-400-foreground border-l-2 border-primary/50 pl-2">{offer.restaurant.specialPickupInstructions}</p>
       ) : null}
-      <p className="mt-2 text-xs text-muted-foreground">
+      <p className="mt-2 text-xs text-zinc-400-foreground">
         {t("estimated")} · {offer.restaurant.preparationStatus}
       </p>
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <Button size="lg" disabled={pending} onClick={onAccept} className="shadow-lg shadow-primary/20">
+      <div className="relative mt-4 grid grid-cols-2 gap-2">
+        <Button size="lg" disabled={pending} onClick={onAccept} className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold shadow-[0_0_15px_rgba(16,185,129,0.3)] border border-emerald-400 transition">
           {t("accept")}
         </Button>
-        <Button size="lg" variant="outline" disabled={pending} onClick={onDecline}>
+        <Button size="lg" disabled={pending} onClick={onDecline} className="border-red-500/50 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold transition">
           {t("decline")}
         </Button>
       </div>
-    </Card>
+    </div>
   );
 }

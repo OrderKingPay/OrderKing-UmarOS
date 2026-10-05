@@ -89,22 +89,22 @@ function SettlementsPage() {
         <p className="text-sm text-warn">{t("settlements.simulatedNote")}</p>
       ) : null}
       <Card>
-        <div className="text-xs uppercase tracking-wide text-muted">{t("settlements.payable")}</div>
+        <div className="text-xs uppercase tracking-wide text-zinc-400">{t("settlements.payable")}</div>
         <div className="font-display text-3xl">
           {q.data ? <MoneyText paise={q.data.currentPayablePaise} /> : "—"}
         </div>
       </Card>
 
       {/* 1-Tap Instant Daily Settlement (0.5% Fee) */}
-      <Card className="border border-primary/30 bg-primary/5 p-4 space-y-3">
+      <Card className="rounded-[var(--radius-2xl)] border border-fuchsia-500/30 bg-gradient-to-br from-black via-fuchsia-950/20 to-fuchsia-500/10 p-4 space-y-3 shadow-[0_0_15px_rgba(217,70,239,0.15)] backdrop-blur-md">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-lg">⚡</span>
-              <h3 className="font-semibold text-foreground text-sm">1-Tap Instant Daily Settlement</h3>
-              <span className="rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">IMPS Real-Time</span>
+              <h3 className="font-semibold text-white text-sm">1-Tap Instant Daily Settlement</h3>
+              <span className="rounded bg-fuchsia-500/20 border border-fuchsia-500/30 px-1.5 py-0.5 text-[10px] font-bold text-fuchsia-400 drop-shadow-[0_0_5px_rgba(217,70,239,0.3)]">IMPS Real-Time</span>
             </div>
-            <p className="text-xs text-muted mt-1">
+            <p className="text-xs text-zinc-400 mt-1">
               Need working capital immediately? Settle today&apos;s accrued balance ({q.data ? formatINR(q.data.currentPayablePaise) : "—"}) in 15 seconds to your registered bank account for a tiny 0.5% convenience fee.
             </p>
           </div>
@@ -112,7 +112,7 @@ function SettlementsPage() {
             size="sm"
             disabled={!q.data || q.data.currentPayablePaise <= 0 || instantSettling}
             onClick={() => handleInstantSettlement()}
-            className="shrink-0 bg-primary hover:bg-primary/90 text-white font-medium"
+            className="shrink-0 bg-fuchsia-600 hover:bg-fuchsia-500 text-white shadow-[0_0_10px_rgba(217,70,239,0.4)] font-medium"
           >
             {instantSettling ? "Settling via IMPS..." : `Instant Cashout (${q.data ? formatINR(Math.max(0, Math.round(q.data.currentPayablePaise * 0.995))) : "—"})`}
           </Button>
@@ -124,25 +124,49 @@ function SettlementsPage() {
         )}
       </Card>
 
+      
+      {/* 🚀 Mandatory Growth & Advertisement Block */}
+      <Card className="rounded-[var(--radius-2xl)] border border-fuchsia-500/40 bg-gradient-to-r from-black via-fuchsia-950/40 to-black p-5 shadow-[0_0_20px_rgba(217,70,239,0.2)] backdrop-blur-xl">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="text-2xl animate-bounce">🚀</span>
+          <h2 className="text-lg font-black text-fuchsia-400 tracking-wide drop-shadow-[0_0_8px_rgba(217,70,239,0.4)]">MANDATORY RESTAURANT GROWTH</h2>
+        </div>
+        <p className="text-sm text-zinc-300 mb-4 font-medium">
+          To maximize your daily payouts and retain 0% commission, spread your OrderKing link on WhatsApp, Instagram, and Facebook daily.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <a href="#" className="flex-1 min-w-[140px] text-center rounded-[var(--radius-lg)] bg-green-500/20 border border-green-500/40 py-2.5 text-sm font-bold text-green-400 hover:bg-green-500/30 transition-all">
+            Share on WhatsApp
+          </a>
+          <a href="#" className="flex-1 min-w-[140px] text-center rounded-[var(--radius-lg)] bg-pink-500/20 border border-pink-500/40 py-2.5 text-sm font-bold text-pink-400 hover:bg-pink-500/30 transition-all">
+            Post on Instagram
+          </a>
+          <a href="#" className="flex-1 min-w-[140px] text-center rounded-[var(--radius-lg)] bg-blue-500/20 border border-blue-500/40 py-2.5 text-sm font-bold text-blue-400 hover:bg-blue-500/30 transition-all">
+            Share on Facebook
+          </a>
+        </div>
+      </Card>
+
+
       <Card className="space-y-2 text-sm">
         <h2 className="font-display text-lg">{t("settlements.formula")}</h2>
-        <p className="text-muted">{t("settlements.formulaHint")}</p>
+        <p className="text-zinc-400">{t("settlements.formulaHint")}</p>
       </Card>
       {/* Zero Unexplained Deductions Guarantee & Statutory Safe Harbor */}
-      <Card className="border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-2 text-xs">
+      <Card className="rounded-[var(--radius-2xl)] border border-emerald-500/30 bg-gradient-to-br from-black via-emerald-950/20 to-emerald-500/10 p-4 space-y-2 text-xs shadow-[0_0_15px_rgba(16,185,129,0.15)] backdrop-blur-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-base">🛡️</span>
-            <h3 className="font-semibold text-emerald-900 dark:text-emerald-300 text-sm">Zero Unexplained Deductions &amp; Statutory Safe Harbor</h3>
+            <h3 className="font-semibold text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.3)] text-sm">Zero Unexplained Deductions &amp; Statutory Safe Harbor</h3>
           </div>
           <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded">
             IT Act §79 Protected
           </span>
         </div>
-        <p className="text-muted leading-relaxed">
+        <p className="text-zinc-400 leading-relaxed">
           OrderKing strictly adheres to transparent merchant accounting under Indian Law. Every single deduction is legally mandated and itemized:
         </p>
-        <ul className="list-disc pl-4 space-y-1 text-muted">
+        <ul className="list-disc pl-4 space-y-1 text-zinc-400">
           <li><strong>GST (5%)</strong>: Remitted under Section 9(5) CGST Act (E-Commerce Restaurant Delivery Services).</li>
           <li><strong>TCS (1%)</strong>: Tax Collected at Source under Section 52 CGST Act.</li>
           <li><strong>TDS (1%)</strong>: Withholding tax under Section 194-O Income Tax Act (Form 16A issued quarterly).</li>
@@ -153,11 +177,11 @@ function SettlementsPage() {
       </Card>
 
       {/* 10x More Profitable than Zomato: Transparent Partner Savings Engine */}
-      <Card className="border border-indigo-500/30 bg-gradient-to-r from-indigo-500/5 via-primary/5 to-emerald-500/5 p-4 space-y-3 text-xs">
+      <Card className="rounded-[var(--radius-2xl)] border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-fuchsia-950/30 to-emerald-950/20 p-4 space-y-3 text-xs shadow-[0_0_15px_rgba(99,102,241,0.15)] backdrop-blur-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-base">🚀</span>
-            <h3 className="font-semibold text-indigo-900 dark:text-indigo-300 text-sm">
+            <h3 className="font-semibold text-indigo-400 drop-shadow-[0_0_5px_rgba(99,102,241,0.3)] text-sm">
               Why OrderKing is 10x More Profitable for You than Zomato
             </h3>
           </div>
@@ -166,32 +190,32 @@ function SettlementsPage() {
           </span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-          <div className="rounded-lg border border-line bg-surface/50 p-2.5">
-            <p className="text-[11px] text-muted uppercase font-medium">Platform Commission</p>
+          <div className="rounded-lg border border-white/10 bg-white/5 p-2.5">
+            <p className="text-[11px] text-zinc-400 uppercase font-medium">Platform Commission</p>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">15% Flat</span>
-              <span className="text-xs text-muted line-through">25% on Zomato</span>
+              <span className="text-xs text-zinc-400 line-through">25% on Zomato</span>
             </div>
-            <p className="text-[10px] text-muted mt-1">You save ₹100 on every ₹1,000 food order.</p>
+            <p className="text-[10px] text-zinc-400 mt-1">You save ₹100 on every ₹1,000 food order.</p>
           </div>
-          <div className="rounded-lg border border-line bg-surface/50 p-2.5">
-            <p className="text-[11px] text-muted uppercase font-medium">Onboarding &amp; Hidden Levies</p>
+          <div className="rounded-lg border border-white/10 bg-white/5 p-2.5">
+            <p className="text-[11px] text-zinc-400 uppercase font-medium">Onboarding &amp; Hidden Levies</p>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">₹0 (FREE)</span>
-              <span className="text-xs text-muted line-through">₹10,000+ fee</span>
+              <span className="text-xs text-zinc-400 line-through">₹10,000+ fee</span>
             </div>
-            <p className="text-[10px] text-muted mt-1">Zero forced ad spend or listing penalties.</p>
+            <p className="text-[10px] text-zinc-400 mt-1">Zero forced ad spend or listing penalties.</p>
           </div>
-          <div className="rounded-lg border border-line bg-surface/50 p-2.5">
-            <p className="text-[11px] text-muted uppercase font-medium">Settlement Certainty</p>
+          <div className="rounded-lg border border-white/10 bg-white/5 p-2.5">
+            <p className="text-[11px] text-zinc-400 uppercase font-medium">Settlement Certainty</p>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-base font-bold text-primary">Integer-Paise</span>
-              <span className="text-xs text-muted">Weekly direct transfer</span>
+              <span className="text-xs text-zinc-400">Weekly direct transfer</span>
             </div>
-            <p className="text-[10px] text-muted mt-1">All deductions statutory: GST §9(5), TDS 194-O, TCS §52.</p>
+            <p className="text-[10px] text-zinc-400 mt-1">All deductions statutory: GST §9(5), TDS 194-O, TCS §52.</p>
           </div>
         </div>
-        <p className="text-[11px] text-muted">
+        <p className="text-[11px] text-zinc-400">
           💡 <em>Pro-tip:</em> Because you take home ₹20,000+ extra per ₹2,00,000 monthly sales compared to Zomato, pass on 5% combo discounts to customers to triple your daily order volume!
         </p>
       </Card>
@@ -204,20 +228,20 @@ function SettlementsPage() {
         </Button>
       </div>
       {(q.data?.batches.length ?? 0) === 0 ? (
-        <Card className="text-sm text-muted">{t("settlements.empty")}</Card>
+        <Card className="text-sm text-zinc-400">{t("settlements.empty")}</Card>
       ) : (
         q.data?.batches.map((b) => (
           <Card key={b.id} className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs uppercase text-muted">{b.status}</div>
+                <div className="text-xs uppercase text-zinc-400">{b.status}</div>
                 <div className="font-medium">{b.scheduled_for ?? b.period_end}</div>
               </div>
               <MoneyText paise={b.totalPayablePaise} className="text-xl font-semibold" />
             </div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-left text-sm">
-                <thead className="text-xs uppercase text-muted">
+                <thead className="text-xs uppercase text-zinc-400">
                   <tr>
                     <th className="py-2">Order</th>
                     <th>{t("settlements.food")}</th>
@@ -229,7 +253,7 @@ function SettlementsPage() {
                 </thead>
                 <tbody>
                   {b.lines.map((l) => (
-                    <tr key={l.id} className="border-t border-line tabular">
+                    <tr key={l.id} className="border-t border-white/10 tabular">
                       <td className="py-2">{l.order_number}</td>
                       <td>{formatINR(l.foodValuePaise)}</td>
                       <td>{formatINR(l.restaurantDiscountPaise)}</td>

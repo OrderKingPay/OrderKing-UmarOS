@@ -123,9 +123,9 @@ export function OpportunityRadarHub({
   const totalEstimated = opportunities.reduce((acc, curr) => acc + curr.estimatedValueInr, 0);
 
   return (
-    <div className="flex flex-col h-full w-full bg-surface text-fg rounded-2xl border border-border overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white rounded-2xl border border-white/10 overflow-hidden">
       {/* Radar Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-2/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5/40 p-4">
         <div>
           <div className="flex items-center gap-2">
             <Radar className="size-5 text-amber-500 animate-spin" style={{ animationDuration: "6s" }} />
@@ -134,9 +134,9 @@ export function OpportunityRadarHub({
               Directive §3, §5 &amp; §14
             </Badge>
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-zinc-400">
             Continuous Work Discovery · Objective Requirement Matching · Total Pipeline:{" "}
-            <span className="font-bold text-fg">₹{totalEstimated.toLocaleString("en-IN")}</span>
+            <span className="font-bold text-white">₹{totalEstimated.toLocaleString("en-IN")}</span>
           </p>
         </div>
 
@@ -163,11 +163,11 @@ export function OpportunityRadarHub({
       {/* Main Radar Layout (Split: Left Feed, Right Unit Economics & Action Deck) */}
       <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
         {/* Left Column: Opportunities List */}
-        <div className="md:col-span-5 border-r border-border flex flex-col h-full bg-surface">
+        <div className="md:col-span-5 border-r border-white/10 flex flex-col h-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           {/* Search & Category Filter */}
-          <div className="p-3 border-b border-border space-y-2">
+          <div className="p-3 border-b border-white/10 space-y-2">
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 size-4 text-muted" />
+              <Search className="absolute left-2.5 top-2.5 size-4 text-zinc-400" />
               <Input
                 placeholder="Search opportunities by title or client..."
                 value={searchQuery}
@@ -185,7 +185,7 @@ export function OpportunityRadarHub({
                   className={`px-2.5 py-1 rounded-lg font-bold capitalize transition shrink-0 ${
                     filterCategory === cat
                       ? "bg-primary text-white"
-                      : "bg-surface-2 text-muted hover:text-fg border border-border"
+                      : "bg-white/5 text-zinc-400 hover:text-white border border-white/10"
                   }`}
                 >
                   {cat.replace("_", " ")}
@@ -204,21 +204,21 @@ export function OpportunityRadarHub({
                   onClick={() => setSelectedOpp(opp)}
                   className={`p-3 rounded-xl border transition cursor-pointer ${
                     isSelected
-                      ? "bg-amber-500/10 border-amber-500 shadow-xs"
-                      : "bg-surface hover:bg-surface-2/60 border-border"
+                      ? "bg-amber-500/10 border-amber-500 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                      : "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-white/5/60 border-white/10"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <h4 className="font-bold text-xs text-fg leading-tight">{opp.title}</h4>
+                    <h4 className="font-bold text-xs text-white leading-tight">{opp.title}</h4>
                     <span className="font-mono font-black text-xs text-emerald-600 dark:text-emerald-400 shrink-0">
                       ₹{opp.estimatedValueInr.toLocaleString("en-IN")}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-[11px] text-muted mb-2">
+                  <div className="flex items-center gap-2 text-[11px] text-zinc-400 mb-2">
                     <span className="capitalize">{opp.category.replace("_", " ")}</span>
                     <span>•</span>
-                    <span className="font-semibold text-fg">{opp.clientName}</span>
+                    <span className="font-semibold text-white">{opp.clientName}</span>
                   </div>
 
                   <div className="flex items-center justify-between text-[10px]">
@@ -228,7 +228,7 @@ export function OpportunityRadarHub({
                           ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
                           : opp.stage === "INVOICED" || opp.stage === "PAYMENT_PENDING"
                             ? "bg-amber-500/20 text-amber-700 dark:text-amber-300"
-                            : "bg-surface-2 text-muted border border-border"
+                            : "bg-white/5 text-zinc-400 border border-white/10"
                       }`}
                     >
                       {opp.stage.replace("_", " ")}
@@ -245,22 +245,22 @@ export function OpportunityRadarHub({
         </div>
 
         {/* Right Column: Detailed Opportunity Spec & Economic Truth Card */}
-        <div className="md:col-span-7 flex flex-col h-full overflow-y-auto bg-surface-2/20 p-4 space-y-4">
+        <div className="md:col-span-7 flex flex-col h-full overflow-y-auto bg-white/5/20 p-4 space-y-4">
           {selectedOpp ? (
             <>
               {/* Header Card */}
-              <div className="rounded-2xl border border-border bg-surface p-4 space-y-3 shadow-xs">
+              <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <h3 className="text-base font-black text-fg">{selectedOpp.title}</h3>
-                    <p className="text-xs text-muted mt-0.5">
-                      Target Client: <span className="font-bold text-fg">{selectedOpp.clientName}</span> · Category:{" "}
+                    <h3 className="text-base font-black text-white">{selectedOpp.title}</h3>
+                    <p className="text-xs text-zinc-400 mt-0.5">
+                      Target Client: <span className="font-bold text-white">{selectedOpp.clientName}</span> · Category:{" "}
                       <span className="capitalize">{selectedOpp.category.replace("_", " ")}</span>
                     </p>
                   </div>
 
                   <div className="text-right">
-                    <p className="text-[10px] uppercase font-black tracking-wider text-muted">Estimated Gross</p>
+                    <p className="text-[10px] uppercase font-black tracking-wider text-zinc-400">Estimated Gross</p>
                     <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
                       ₹{selectedOpp.estimatedValueInr.toLocaleString("en-IN")}
                     </p>
@@ -268,34 +268,34 @@ export function OpportunityRadarHub({
                 </div>
 
                 {/* Source Citation & Evidence */}
-                <div className="rounded-xl border border-border bg-surface-2/40 p-2.5 text-xs text-muted flex items-start gap-2">
+                <div className="rounded-xl border border-white/10 bg-white/5/40 p-2.5 text-xs text-zinc-400 flex items-start gap-2">
                   <Compass className="size-4 text-amber-500 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold text-fg block text-[11px]">Source Evidence:</span>
+                    <span className="font-bold text-white block text-[11px]">Source Evidence:</span>
                     <span>{selectedOpp.sourceEvidence}</span>
                   </div>
                 </div>
               </div>
 
               {/* Economic Optimization Breakdown (§15) */}
-              <div className="rounded-2xl border border-border bg-surface p-4 space-y-3 shadow-xs">
-                <h4 className="text-xs font-black uppercase tracking-wider text-muted flex items-center gap-1.5">
+              <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                <h4 className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                   <TrendingUp className="size-3.5 text-emerald-500" />
                   <span>Unit Economics &amp; Net Contribution Model (§15)</span>
                 </h4>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-                  <div className="rounded-xl border border-border bg-surface-2/30 p-2">
-                    <span className="text-muted block text-[10px]">Platform Fees</span>
-                    <span className="font-mono font-bold text-fg">₹{selectedOpp.economics.platformFeesInr}</span>
+                  <div className="rounded-xl border border-white/10 bg-white/5/30 p-2">
+                    <span className="text-zinc-400 block text-[10px]">Platform Fees</span>
+                    <span className="font-mono font-bold text-white">₹{selectedOpp.economics.platformFeesInr}</span>
                   </div>
-                  <div className="rounded-xl border border-border bg-surface-2/30 p-2">
-                    <span className="text-muted block text-[10px]">Infra &amp; Hosting</span>
-                    <span className="font-mono font-bold text-fg">₹{selectedOpp.economics.infrastructureCostInr}</span>
+                  <div className="rounded-xl border border-white/10 bg-white/5/30 p-2">
+                    <span className="text-zinc-400 block text-[10px]">Infra &amp; Hosting</span>
+                    <span className="font-mono font-bold text-white">₹{selectedOpp.economics.infrastructureCostInr}</span>
                   </div>
-                  <div className="rounded-xl border border-border bg-surface-2/30 p-2">
-                    <span className="text-muted block text-[10px]">AI / API Cost</span>
-                    <span className="font-mono font-bold text-fg">₹{selectedOpp.economics.aiApiCostInr}</span>
+                  <div className="rounded-xl border border-white/10 bg-white/5/30 p-2">
+                    <span className="text-zinc-400 block text-[10px]">AI / API Cost</span>
+                    <span className="font-mono font-bold text-white">₹{selectedOpp.economics.aiApiCostInr}</span>
                   </div>
                   <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-2">
                     <span className="text-emerald-700 dark:text-emerald-300 block text-[10px] font-bold">
@@ -309,9 +309,9 @@ export function OpportunityRadarHub({
               </div>
 
               {/* Stage Progression & Execution Deck (§16 Financial Truth Model) */}
-              <div className="rounded-2xl border border-border bg-surface p-4 space-y-3 shadow-xs">
+              <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black uppercase tracking-wider text-muted flex items-center gap-1.5">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                     <ShieldCheck className="size-3.5 text-primary" />
                     <span>Financial Truth Stage Progression (§16)</span>
                   </h4>
@@ -327,11 +327,11 @@ export function OpportunityRadarHub({
                   </Badge>
                 </div>
 
-                <p className="text-xs text-muted">
+                <p className="text-xs text-zinc-400">
                   Strict Rule: Actual revenue is NEVER recorded until a verified transaction confirms payment.
                 </p>
 
-                <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-white/10">
                   <Button
                     size="sm"
                     variant="outline"
@@ -375,7 +375,7 @@ export function OpportunityRadarHub({
               </div>
             </>
           ) : (
-            <div className="flex h-full items-center justify-center text-xs text-muted">
+            <div className="flex h-full items-center justify-center text-xs text-zinc-400">
               Select an opportunity from the left to view unit economics and truth state.
             </div>
           )}

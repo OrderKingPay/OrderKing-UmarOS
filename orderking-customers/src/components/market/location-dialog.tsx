@@ -68,13 +68,13 @@ export function LocationDialog({ open, onOpenChange }: { open: boolean; onOpenCh
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-fg/40" />
-        <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto rounded-t-[var(--radius-2xl)] bg-surface p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:inset-auto md:left-1/2 md:top-1/2 md:w-[28rem] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[var(--radius-xl)]">
+        <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto rounded-t-[var(--radius-2xl)] bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:inset-auto md:left-1/2 md:top-1/2 md:w-[28rem] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[var(--radius-xl)]">
           <Dialog.Title className="font-display text-2xl">{t("location.title")}</Dialog.Title>
-          <p className="mt-1 text-sm text-muted">{t("location.simulatedPin")}</p>
+          <p className="mt-1 text-sm text-zinc-400">{t("location.simulatedPin")}</p>
           <Button variant="outline" className="mt-4 w-full" onClick={() => void useGeo()} disabled={locating}>
             {locating ? t("location.locating") : t("location.useCurrent")}
           </Button>
-          <h3 className="mt-5 text-sm font-medium text-muted">{t("location.areas")}</h3>
+          <h3 className="mt-5 text-sm font-medium text-zinc-400">{t("location.areas")}</h3>
           {isError ? (
             <button type="button" className="mt-2 text-sm text-primary" onClick={() => void refetch()}>
               {t("common.retry")}
@@ -101,14 +101,14 @@ export function LocationDialog({ open, onOpenChange }: { open: boolean; onOpenCh
                   >
                     <span>
                       <span className="block font-medium">{z.name}</span>
-                      <span className="block text-xs text-muted">{z.cityName}</span>
+                      <span className="block text-xs text-zinc-400">{z.cityName}</span>
                     </span>
                   </button>
                 </li>
               ))}
             </ul>
           )}
-          <h3 className="mt-5 text-sm font-medium text-muted">{t("location.manual")}</h3>
+          <h3 className="mt-5 text-sm font-medium text-zinc-400">{t("location.manual")}</h3>
           <div className="mt-2 space-y-2">
             <Input
               value={line1}

@@ -61,7 +61,7 @@ function PromotionsPage() {
               </span>
               <h2 className="font-display text-xl font-bold">Promote & Boost Kitchen</h2>
             </div>
-            <p className="mt-1 text-sm text-muted">
+            <p className="mt-1 text-sm text-zinc-400">
               Get top placement on customer app Search & Home feed with a Promoted badge.
             </p>
           </div>
@@ -70,25 +70,25 @@ function PromotionsPage() {
               <span className="h-2 w-2 rounded-full bg-success animate-pulse" /> Active Campaign
             </span>
           ) : (
-            <span className="rounded-full bg-muted/20 px-3 py-1 text-xs font-medium text-muted">
+            <span className="rounded-full bg-muted/20 px-3 py-1 text-xs font-medium text-zinc-400">
               Campaign Paused
             </span>
           )}
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border border-border bg-surface p-3">
-            <span className="text-xs text-muted">Daily Budget</span>
+          <div className="rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3">
+            <span className="text-xs text-zinc-400">Daily Budget</span>
             <p className="text-lg font-bold">
               <MoneyText paise={adQuery.data?.dailyBudgetPaise ?? 25000} />
             </p>
           </div>
-          <div className="rounded-lg border border-border bg-surface p-3">
-            <span className="text-xs text-muted">Est. Impressions</span>
-            <p className="text-lg font-bold text-fg">~{adQuery.data?.estimatedImpressions ?? 3000} views/day</p>
+          <div className="rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3">
+            <span className="text-xs text-zinc-400">Est. Impressions</span>
+            <p className="text-lg font-bold text-white">~{adQuery.data?.estimatedImpressions ?? 3000} views/day</p>
           </div>
-          <div className="rounded-lg border border-border bg-surface p-3">
-            <span className="text-xs text-muted">Est. Extra Orders</span>
+          <div className="rounded-lg border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3">
+            <span className="text-xs text-zinc-400">Est. Extra Orders</span>
             <p className="text-lg font-bold text-primary">~{adQuery.data?.estimatedClicks ?? 35} clicks</p>
           </div>
         </div>
@@ -105,7 +105,7 @@ function PromotionsPage() {
                   className={`rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
                     adBudgetRupees === amt
                       ? "bg-primary text-white"
-                      : "bg-surface-2 text-fg hover:bg-surface-3"
+                      : "bg-white/5 text-white hover:bg-surface-3"
                   }`}
                 >
                   ₹{amt}
@@ -140,11 +140,11 @@ function PromotionsPage() {
             <Card key={p.id} className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="font-medium">{p.name}</div>
-                <span className="rounded bg-surface-2 px-2 py-0.5 text-xs uppercase font-medium">
+                <span className="rounded bg-white/5 px-2 py-0.5 text-xs uppercase font-medium">
                   {p.kind}
                 </span>
               </div>
-              <p className="text-sm text-muted">{p.estimate.narrative}</p>
+              <p className="text-sm text-zinc-400">{p.estimate.narrative}</p>
               {canEdit ? (
                 <Button
                   variant="secondary"
@@ -176,11 +176,11 @@ function PromotionsPage() {
             <Card key={p.id} className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="font-medium">{p.name}</div>
-                <span className="rounded bg-surface-2 px-2 py-0.5 text-xs uppercase font-medium">
+                <span className="rounded bg-white/5 px-2 py-0.5 text-xs uppercase font-medium">
                   {p.kind}
                 </span>
               </div>
-              <p className="text-sm text-muted">{p.estimate.narrative}</p>
+              <p className="text-sm text-zinc-400">{p.estimate.narrative}</p>
               <MoneyText paise={p.estimate.estimatedDailyCostPaise} />
             </Card>
           ))}
@@ -205,7 +205,7 @@ function PromotionsPage() {
             <div>
               <Label>Offer Type</Label>
               <select
-                className="h-11 w-full rounded-[12px] border border-line bg-surface px-3 text-sm"
+                className="h-11 w-full rounded-[12px] border border-line bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-3 text-sm"
                 value={kind}
                 onChange={(e) => setKind(e.target.value as PromotionKind)}
               >

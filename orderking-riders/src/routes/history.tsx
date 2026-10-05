@@ -45,7 +45,7 @@ function Page() {
           </Card>
         ) : null}
         {error ? <p className="text-sm text-offline">{error}</p> : null}
-        {rows.length === 0 ? <p className="text-sm text-muted-foreground">{t("noHistory")}</p> : null}
+        {rows.length === 0 ? <p className="text-sm text-zinc-400-foreground">{t("noHistory")}</p> : null}
         <ul className="space-y-2">
           {rows.map((r: any) => (
             <li key={r.delivery.id}>
@@ -53,7 +53,7 @@ function Page() {
                 <Card className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{r.delivery.orderCode}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-zinc-400-foreground">
                       {r.delivery.restaurant.name} · {r.delivery.customer.area}
                     </p>
                   </div>

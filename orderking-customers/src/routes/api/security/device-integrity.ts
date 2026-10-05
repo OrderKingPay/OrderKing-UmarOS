@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/api/security/device-integrity")({
-  // @ts-expect-error
-  server: {
+server: {
     handlers: {
       POST: async ({ request }: any) => {
         try {
           const { getSessionUser } = await import("@/lib/auth/verify.server");
-          const { appendCustomerSecurityEvent } = await import("@/lib/security/customer-event-ledger.server");
+          const { getSql } = await import("@/lib/db");
           const user = await getSessionUser();
           if (!user) return Response.json({ allowed: false, risk: "UNAUTHENTICATED" }, { status: 401 });
 
@@ -20,20 +19,26 @@ export const Route = createFileRoute("/api/security/device-integrity")({
           const crossSite = secFetchSite === "cross-site" && Boolean(origin) && !/orderking/i.test(origin);
           const risk = automationSignal || crossSite ? "HIGH" : !deviceId ? "MEDIUM" : "LOW";
 
-          await appendCustomerSecurityEvent({
-            streamKey: "security:user:" + user.id,
-            actorId: user.id,
-            actorType: "CUSTOMER",
-            eventType: "DEVICE_INTEGRITY_SIGNAL",
-            deviceId: deviceId || null,
-            ipAddress: request.headers.get("x-forwarded-for"),
-            payload: {
-              risk,
-              automationSignal,
-              crossSite,
-              userAgentHash: (await import("node:crypto")).createHash("sha256").update(ua).digest("hex"),
-            },
-          });
+          const sql = await getSql();
+          await sql`
+            SELECT public.orderking_emit_immutable_event(
+              ${"security:user:" + user.id},
+              ${user.id},
+              ${user.id},
+              NULL,
+              'security',
+              ${deviceId || null},
+              'DEVICE_INTEGRITY_SIGNAL',
+              NOW(),
+              ${JSON.stringify({
+                risk,
+                automationSignal,
+                crossSite,
+                userAgentHash: (await import("node:crypto")).createHash("sha256").update(ua).digest("hex"),
+                ipAddress: request.headers.get("x-forwarded-for"),
+              })}::jsonb
+            )
+          `;
 
           return Response.json({ allowed: risk !== "HIGH", risk, vpnAllowed: true });
         } catch {

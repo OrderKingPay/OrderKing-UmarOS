@@ -93,13 +93,13 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
 
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-black text-fg">{displayName}</h2>
+                <h2 className="text-lg font-black text-white">{displayName}</h2>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold text-emerald-600 dark:text-emerald-300 border border-emerald-500/40">
                   <CheckCircle2 className="size-3" />
                   Verified Sovereign KYC
                 </span>
               </div>
-              <p className="text-xs text-muted mt-0.5">{phone} · {email}</p>
+              <p className="text-xs text-zinc-400 mt-0.5">{phone} · {email}</p>
               <div className="flex items-center gap-2 mt-1.5">
                 <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/30">
                   {upiId}
@@ -107,7 +107,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
                 <button
                   type="button"
                   onClick={handleCopyUpi}
-                  className="rounded p-1 text-muted hover:text-fg hover:bg-surface-2 transition"
+                  className="rounded p-1 text-zinc-400 hover:text-white hover:bg-white/5 transition"
                   title="Copy UPI ID"
                 >
                   <Copy className="size-3.5" />
@@ -128,10 +128,10 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
 
         {/* Profile Edit Form */}
         {isEditingProfile && (
-          <form onSubmit={handleSaveProfile} className="mt-4 space-y-3 pt-4 border-t border-border/60">
+          <form onSubmit={handleSaveProfile} className="mt-4 space-y-3 pt-4 border-t border-white/10/60">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-muted block mb-1">Display Name</label>
+                <label className="text-xs font-semibold text-zinc-400 block mb-1">Display Name</label>
                 <Input
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
@@ -139,7 +139,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-muted block mb-1">Phone Number</label>
+                <label className="text-xs font-semibold text-zinc-400 block mb-1">Phone Number</label>
                 <Input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -148,7 +148,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
               </div>
             </div>
             <div>
-              <label className="text-xs font-semibold text-muted block mb-1">Email Address</label>
+              <label className="text-xs font-semibold text-zinc-400 block mb-1">Email Address</label>
               <Input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -169,30 +169,30 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
 
       {/* WALLET & FINANCIAL OVERVIEW */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div className="rounded-xl border border-border bg-surface p-3.5 shadow-xs">
-          <div className="flex items-center justify-between text-muted">
+        <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+          <div className="flex items-center justify-between text-zinc-400">
             <span className="text-xs font-semibold">Wallet Balance</span>
             <Zap className="size-4 text-amber-500" />
           </div>
-          <p className="text-xl font-black text-fg mt-1 font-mono">
+          <p className="text-xl font-black text-white mt-1 font-mono">
             ₹{walletBalance.toLocaleString("en-IN")}.00
           </p>
           <span className="text-[10px] text-emerald-600 font-bold">● RBI Escrow Protected</span>
         </div>
 
-        <div className="rounded-xl border border-border bg-surface p-3.5 shadow-xs">
-          <div className="flex items-center justify-between text-muted">
+        <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+          <div className="flex items-center justify-between text-zinc-400">
             <span className="text-xs font-semibold">Gold Loyalty Points</span>
             <Crown className="size-4 text-amber-500" />
           </div>
           <p className="text-xl font-black text-amber-600 dark:text-amber-400 mt-1 font-mono">
             4,850 <span className="text-xs font-normal">pts</span>
           </p>
-          <span className="text-[10px] text-muted">≈ ₹1,455 Wallet Credit</span>
+          <span className="text-[10px] text-zinc-400">≈ ₹1,455 Wallet Credit</span>
         </div>
 
-        <div className="col-span-2 sm:col-span-1 rounded-xl border border-border bg-surface p-3.5 shadow-xs">
-          <div className="flex items-center justify-between text-muted">
+        <div className="col-span-2 sm:col-span-1 rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+          <div className="flex items-center justify-between text-zinc-400">
             <span className="text-xs font-semibold">Pre-Approved Credit</span>
             <CreditCard className="size-4 text-cyan-500" />
           </div>
@@ -204,11 +204,11 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
       </div>
 
       {/* LINKED BANK ACCOUNTS */}
-      <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
+      <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)] space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Banknote className="size-5 text-primary" />
-            <h3 className="text-sm font-black text-fg">Linked Bank Accounts &amp; UPI</h3>
+            <h3 className="text-sm font-black text-white">Linked Bank Accounts &amp; UPI</h3>
           </div>
           <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
             3 Accounts Active
@@ -217,59 +217,59 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
 
         <div className="space-y-2">
           {/* Bank 1: HDFC Bank */}
-          <div className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-surface-2/50">
+          <div className="flex items-center justify-between p-3 rounded-xl border border-white/10/80 bg-white/5/50">
             <div className="flex items-center gap-3">
               <div className="flex size-9 items-center justify-center rounded-lg bg-blue-600 text-white font-black text-xs">
                 HDFC
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-fg">HDFC Bank ··· 4821</span>
+                  <span className="text-xs font-bold text-white">HDFC Bank ··· 4821</span>
                   <span className="rounded bg-primary/20 text-primary text-[9px] font-black px-1.5 py-0.2">
                     Primary
                   </span>
                 </div>
-                <p className="text-[10px] text-muted">Savings · IFSC: HDFC0001248 · UPI Active</p>
+                <p className="text-[10px] text-zinc-400">Savings · IFSC: HDFC0001248 · UPI Active</p>
               </div>
             </div>
-            <span className="text-xs font-bold text-muted font-mono">₹84,200.00</span>
+            <span className="text-xs font-bold text-zinc-400 font-mono">₹84,200.00</span>
           </div>
 
           {/* Bank 2: State Bank of India */}
-          <div className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-surface-2/50">
+          <div className="flex items-center justify-between p-3 rounded-xl border border-white/10/80 bg-white/5/50">
             <div className="flex items-center gap-3">
               <div className="flex size-9 items-center justify-center rounded-lg bg-sky-700 text-white font-black text-xs">
                 SBI
               </div>
               <div>
-                <span className="text-xs font-bold text-fg">State Bank of India ··· 9912</span>
-                <p className="text-[10px] text-muted">Savings · IFSC: SBIN0004521 · UPI Active</p>
+                <span className="text-xs font-bold text-white">State Bank of India ··· 9912</span>
+                <p className="text-[10px] text-zinc-400">Savings · IFSC: SBIN0004521 · UPI Active</p>
               </div>
             </div>
-            <span className="text-xs font-bold text-muted font-mono">₹21,450.00</span>
+            <span className="text-xs font-bold text-zinc-400 font-mono">₹21,450.00</span>
           </div>
 
           {/* Bank 3: ICICI Bank */}
-          <div className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-surface-2/50">
+          <div className="flex items-center justify-between p-3 rounded-xl border border-white/10/80 bg-white/5/50">
             <div className="flex items-center gap-3">
               <div className="flex size-9 items-center justify-center rounded-lg bg-amber-700 text-white font-black text-xs">
                 ICICI
               </div>
               <div>
-                <span className="text-xs font-bold text-fg">ICICI Bank ··· 3302</span>
-                <p className="text-[10px] text-muted">Current Account · IFSC: ICIC0000841</p>
+                <span className="text-xs font-bold text-white">ICICI Bank ··· 3302</span>
+                <p className="text-[10px] text-zinc-400">Current Account · IFSC: ICIC0000841</p>
               </div>
             </div>
-            <span className="text-xs font-bold text-muted font-mono">₹1,12,000.00</span>
+            <span className="text-xs font-bold text-zinc-400 font-mono">₹1,12,000.00</span>
           </div>
         </div>
       </div>
 
       {/* SECURITY & BIOMETRICS */}
-      <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
+      <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)] space-y-3">
         <div className="flex items-center gap-2">
           <ShieldCheck className="size-5 text-emerald-600" />
-          <h3 className="text-sm font-black text-fg">Security &amp; Payment Controls</h3>
+          <h3 className="text-sm font-black text-white">Security &amp; Payment Controls</h3>
         </div>
 
         <div className="divide-y divide-border/60">
@@ -278,8 +278,8 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
             <div className="flex items-center gap-3">
               <Fingerprint className="size-5 text-primary" />
               <div>
-                <span className="text-xs font-bold text-fg block">Biometric Authentication</span>
-                <span className="text-[11px] text-muted">
+                <span className="text-xs font-bold text-white block">Biometric Authentication</span>
+                <span className="text-[11px] text-zinc-400">
                   Use Face ID or Fingerprint for instant payments under ₹2,000
                 </span>
               </div>
@@ -304,8 +304,8 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
             <div className="flex items-center gap-3">
               <KeyRound className="size-5 text-amber-500" />
               <div>
-                <span className="text-xs font-bold text-fg block">Daily UPI Payment Limit</span>
-                <span className="text-[11px] text-muted">Prevent unauthorized large transactions</span>
+                <span className="text-xs font-bold text-white block">Daily UPI Payment Limit</span>
+                <span className="text-[11px] text-zinc-400">Prevent unauthorized large transactions</span>
               </div>
             </div>
             <select
@@ -315,7 +315,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
                 setDailyLimit(val);
                 toast.success(`Daily payment limit set to ₹${val.toLocaleString("en-IN")}`);
               }}
-              className="rounded-lg border border-border bg-surface-2 px-2.5 py-1 text-xs font-bold text-fg"
+              className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-bold text-white"
             >
               <option value={25000}>₹25,000</option>
               <option value={50000}>₹50,000</option>
@@ -326,13 +326,13 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
       </div>
 
       {/* LANGUAGE & REGIONAL PREFERENCES (CLEAN PROFESSIONAL DESIGN ONLY) */}
-      <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
+      <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)] space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Globe className="size-5 text-primary" />
             <div>
-              <h3 className="text-sm font-black text-fg">Language &amp; Region / ভাষা</h3>
-              <p className="text-xs text-muted">Selected: {selectedLanguage.nativeName} ({selectedLanguage.name})</p>
+              <h3 className="text-sm font-black text-white">Language &amp; Region / ভাষা</h3>
+              <p className="text-xs text-zinc-400">Selected: {selectedLanguage.nativeName} ({selectedLanguage.name})</p>
             </div>
           </div>
           <Button
@@ -348,16 +348,16 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
       </div>
 
       {/* STATUTORY LEGAL & RBI COMPLIANCE */}
-      <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
+      <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 shadow-[0_0_15px_rgba(255,255,255,0.05)] space-y-3">
         <div className="flex items-center gap-2">
-          <Lock className="size-5 text-muted" />
-          <h3 className="text-sm font-black text-fg">Statutory Legal &amp; Compliance Hub</h3>
+          <Lock className="size-5 text-zinc-400" />
+          <h3 className="text-sm font-black text-white">Statutory Legal &amp; Compliance Hub</h3>
         </div>
 
-        <div className="space-y-2 text-xs text-muted">
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-2/40 border border-border/60">
+        <div className="space-y-2 text-xs text-zinc-400">
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5/40 border border-white/10/60">
             <div>
-              <span className="font-bold text-fg block">RBI Escrow Compliance</span>
+              <span className="font-bold text-white block">RBI Escrow Compliance</span>
               <span className="text-[10px]">
                 {escrowStatus ? `Nodal Account: ${escrowStatus.bank} (${escrowStatus.accountNumber})` : "Checking escrow status..."}
               </span>
@@ -367,9 +367,9 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
             </span>
           </div>
 
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-2/40 border border-border/60">
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5/40 border border-white/10/60">
             <div>
-              <span className="font-bold text-fg block">IT Act Section 79 Protection</span>
+              <span className="font-bold text-white block">IT Act Section 79 Protection</span>
               <span className="text-[10px]">Third-Party Intermediary Safe Harbor Active</span>
             </div>
             <span className="text-[10px] text-primary font-extrabold bg-primary/10 px-2 py-0.5 rounded">
@@ -377,9 +377,9 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
             </span>
           </div>
 
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-surface-2/40 border border-border/60">
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5/40 border border-white/10/60">
             <div>
-              <span className="font-bold text-fg block">NPCI UPI Guidelines</span>
+              <span className="font-bold text-white block">NPCI UPI Guidelines</span>
               <span className="text-[10px]">256-Bit TLS Encryption &amp; Tokenization</span>
             </div>
             <span className="text-[10px] text-amber-600 font-extrabold bg-amber-500/10 px-2 py-0.5 rounded">

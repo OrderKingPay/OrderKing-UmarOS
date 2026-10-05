@@ -41,7 +41,7 @@ function Page() {
               {rider?.kycStatus ?? "DRAFT"}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-zinc-400-foreground">
             {rider?.vehicleType} · {rider?.vehicleRegistration || "—"}
           </p>
           <Link to="/onboarding" className="text-sm underline">
@@ -71,8 +71,8 @@ function Page() {
           <CardMeta className="mt-2">
             {DEFAULT_BRANDING.legalCompanyName} · {DEFAULT_BRANDING.domain}
           </CardMeta>
-          <p className="mt-3 text-xs text-muted-foreground">{t("legalNote")}</p>
-          <ul className="mt-3 grid grid-cols-2 gap-1 text-xs text-muted-foreground">
+          <p className="mt-3 text-xs text-zinc-400-foreground">{t("legalNote")}</p>
+          <ul className="mt-3 grid grid-cols-2 gap-1 text-xs text-zinc-400-foreground">
             {Object.entries(DEFAULT_FLAGS).map(([k, v]) => (
               <li key={k}>
                 {k}: {v ? "on" : "off"}

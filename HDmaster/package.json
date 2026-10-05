@@ -15,7 +15,7 @@
     "preview:restart": "node scripts/preview.mjs restart",
     "preview:stop": "node scripts/preview.mjs stop",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/orderking/rbac.test.ts src/lib/orderking/orders/state-machine.test.ts src/lib/orderking/orders/canonical-contract.test.ts src/lib/orderking/finance/economics.test.ts src/lib/orderking/search.test.ts src/lib/orderking/settings.test.ts src/lib/orderking/payments/razorpay.server.test.ts src/lib/orderking/ai/master-ai-command.test.ts src/lib/orderking/platform-hardening.test.ts src/lib/orderking/finance/weekly-settlement.test.ts src/lib/orderking/finance/founder-vault.test.ts src/lib/orderking/finance/profit-engine.test.ts src/lib/orderking/golive/golive-engine.test.ts src/lib/orderking/finance/revenue-harvester.test.ts src/lib/orderking/ai/supreme-ai-os.test.ts src/lib/orderking/revenue-os/revenue-os.test.ts src/lib/orderking/ai/business-os.test.ts src/lib/orderking/finance/canonical-ledger.test.ts src/lib/orderking/ai/ai-workforce.test.ts src/lib/orderking/business/reporting-document-engine.test.ts src/lib/orderking/security/system-diagnostics.test.ts src/lib/orderking/ai/open-world-cognitive-engine.test.ts src/lib/orderking/ai/anti-fake-validation.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/orderking/rbac.test.ts src/lib/orderking/orders/state-machine.test.ts src/lib/orderking/orders/canonical-contract.test.ts src/lib/orderking/finance/economics.test.ts src/lib/orderking/search.test.ts src/lib/orderking/settings.test.ts src/lib/orderking/payments/razorpay.server.test.ts src/lib/orderking/ai/master-ai-command.test.ts src/lib/orderking/platform-hardening.test.ts src/lib/orderking/finance/weekly-settlement.test.ts src/lib/orderking/finance/founder-vault.test.ts src/lib/orderking/finance/profit-engine.test.ts src/lib/orderking/golive/golive-engine.test.ts src/lib/orderking/finance/revenue-harvester.test.ts src/lib/orderking/ai/supreme-ai-os.test.ts src/lib/orderking/revenue-os/revenue-os.test.ts src/lib/orderking/ai/business-os.test.ts src/lib/orderking/finance/canonical-ledger.test.ts src/lib/orderking/ai/ai-workforce.test.ts src/lib/orderking/business/reporting-document-engine.test.ts src/lib/orderking/security/system-diagnostics.test.ts src/lib/orderking/ai/open-world-cognitive-engine.test.ts",
     "format": "prettier --write ."
   },
   "dependencies": {
@@ -43,10 +43,10 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tailwindcss/vite": "^4.3.0",
     "@tanstack/react-query": "^5.101.0",
-    "@tanstack/react-router": "1.168.0",
-    "@tanstack/react-start": "1.168.0",
+    "@tanstack/react-router": "1.170.41",
+    "@tanstack/react-start": "1.168.60",
     "@tanstack/react-table": "^8.21.0",
-    "@tanstack/router-plugin": "1.168.0",
+    "@tanstack/router-plugin": "1.168.42",
     "better-auth": "~1.7.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

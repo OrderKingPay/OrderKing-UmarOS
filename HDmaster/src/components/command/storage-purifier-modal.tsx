@@ -121,32 +121,32 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
     <div className="space-y-5">
       {/* 1. TOP STATS CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="rounded-xl bg-surface-2/80 p-3.5 border border-border">
-          <span className="text-[10px] text-muted block uppercase font-bold">Total Cache Footprint</span>
+        <div className="rounded-xl bg-white/5/80 p-3.5 border border-white/10">
+          <span className="text-[10px] text-zinc-400 block uppercase font-bold">Total Cache Footprint</span>
           <span className="text-2xl font-black text-amber-400 font-mono">
             {inspection.formattedTotalSize}
           </span>
           <span className="text-[10px] text-slate-400 block mt-0.5">{inspection.itemCount} active cached files</span>
         </div>
 
-        <div className="rounded-xl bg-surface-2/80 p-3.5 border border-border">
-          <span className="text-[10px] text-muted block uppercase font-bold">Engine Speed Index</span>
+        <div className="rounded-xl bg-white/5/80 p-3.5 border border-white/10">
+          <span className="text-[10px] text-zinc-400 block uppercase font-bold">Engine Speed Index</span>
           <span className="text-2xl font-black text-emerald-400 font-mono">
             {inspection.speedOptimizationScore}% OPTIMAL
           </span>
           <span className="text-[10px] text-emerald-300/80 block mt-0.5">100x Faster than browser cache</span>
         </div>
 
-        <div className="rounded-xl bg-surface-2/80 p-3.5 border border-border">
-          <span className="text-[10px] text-muted block uppercase font-bold">AI Media Cache</span>
+        <div className="rounded-xl bg-white/5/80 p-3.5 border border-white/10">
+          <span className="text-[10px] text-zinc-400 block uppercase font-bold">AI Media Cache</span>
           <span className="text-xl font-bold text-cyan-400 font-mono">
             {((inspection.breakdown.generatedImagesBytes + inspection.breakdown.generatedVideosBytes) / (1024 * 1024)).toFixed(1)} MB
           </span>
           <span className="text-[10px] text-slate-400 block mt-0.5">Images, videos &amp; renders</span>
         </div>
 
-        <div className="rounded-xl bg-surface-2/80 p-3.5 border border-border">
-          <span className="text-[10px] text-muted block uppercase font-bold">Core Safety Guarantee</span>
+        <div className="rounded-xl bg-white/5/80 p-3.5 border border-white/10">
+          <span className="text-[10px] text-zinc-400 block uppercase font-bold">Core Safety Guarantee</span>
           <span className="text-xl font-bold text-emerald-400 flex items-center gap-1 mt-0.5">
             <ShieldCheck className="size-5 text-emerald-400" />
             <span>100% IMMUTABLE</span>
@@ -163,19 +163,19 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
           <div className="bg-black/50 rounded-lg p-2 border border-emerald-500/20">
-            <span className="text-muted block text-[10px]">Client CRM Leads:</span>
+            <span className="text-zinc-400 block text-[10px]">Client CRM Leads:</span>
             <span className="font-bold text-white font-mono">{inspection.immutableCoreProtection.clientLeadsCount} Locked Safe</span>
           </div>
           <div className="bg-black/50 rounded-lg p-2 border border-emerald-500/20">
-            <span className="text-muted block text-[10px]">King Pay Invoices:</span>
+            <span className="text-zinc-400 block text-[10px]">King Pay Invoices:</span>
             <span className="font-bold text-white font-mono">{inspection.immutableCoreProtection.clientInvoicesCount} Encrypted</span>
           </div>
           <div className="bg-black/50 rounded-lg p-2 border border-emerald-500/20">
-            <span className="text-muted block text-[10px]">Enterprise Blueprints:</span>
+            <span className="text-zinc-400 block text-[10px]">Enterprise Blueprints:</span>
             <span className="font-bold text-white font-mono">{inspection.immutableCoreProtection.enterpriseBlueprintsCount} Verified</span>
           </div>
           <div className="bg-black/50 rounded-lg p-2 border border-emerald-500/20">
-            <span className="text-muted block text-[10px]">Founder Vault Reserve:</span>
+            <span className="text-zinc-400 block text-[10px]">Founder Vault Reserve:</span>
             <span className="font-bold text-emerald-400 font-mono">0% Loss Guard</span>
           </div>
         </div>
@@ -185,16 +185,16 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
       </div>
 
       {/* 3. GRANULAR PURGE OPTIONS & 1-CLICK ACTION */}
-      <div className="rounded-xl border border-border/80 bg-black/60 p-4 space-y-4">
+      <div className="rounded-xl border border-white/10/80 bg-black/60 p-4 space-y-4">
         <div className="flex items-center justify-between">
           <h4 className="text-xs font-bold text-white uppercase tracking-wider">
             Systematic Cache Targets to Clean
           </h4>
-          <span className="text-[10px] text-muted">Select specific bloat or clean all</span>
+          <span className="text-[10px] text-zinc-400">Select specific bloat or clean all</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface-2/60 border border-border/40 cursor-pointer hover:bg-surface-2 transition">
+          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-white/5/60 border border-white/10/40 cursor-pointer hover:bg-white/5 transition">
             <input
               type="checkbox"
               checked={purgeImages}
@@ -203,13 +203,13 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
             />
             <div>
               <span className="font-bold text-white block">Generated AI Images Cache</span>
-              <span className="text-[10px] text-muted">
+              <span className="text-[10px] text-zinc-400">
                 {(inspection.breakdown.generatedImagesBytes / (1024 * 1024)).toFixed(1)} MB · Scratch images &amp; variations
               </span>
             </div>
           </label>
 
-          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface-2/60 border border-border/40 cursor-pointer hover:bg-surface-2 transition">
+          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-white/5/60 border border-white/10/40 cursor-pointer hover:bg-white/5 transition">
             <input
               type="checkbox"
               checked={purgeVideos}
@@ -218,13 +218,13 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
             />
             <div>
               <span className="font-bold text-white block">Generated AI Video Loops</span>
-              <span className="text-[10px] text-muted">
+              <span className="text-[10px] text-zinc-400">
                 {(inspection.breakdown.generatedVideosBytes / (1024 * 1024)).toFixed(1)} MB · Rendered MP4 keyframes
               </span>
             </div>
           </label>
 
-          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface-2/60 border border-border/40 cursor-pointer hover:bg-surface-2 transition">
+          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-white/5/60 border border-white/10/40 cursor-pointer hover:bg-white/5 transition">
             <input
               type="checkbox"
               checked={purgeAttachments}
@@ -233,13 +233,13 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
             />
             <div>
               <span className="font-bold text-white block">Temporary Chat Upload Blobs</span>
-              <span className="text-[10px] text-muted">
+              <span className="text-[10px] text-zinc-400">
                 {(inspection.breakdown.tempAttachmentBytes / (1024 * 1024)).toFixed(1)} MB · Uploaded scratch attachments
               </span>
             </div>
           </label>
 
-          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface-2/60 border border-border/40 cursor-pointer hover:bg-surface-2 transition">
+          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-white/5/60 border border-white/10/40 cursor-pointer hover:bg-white/5 transition">
             <input
               type="checkbox"
               checked={purgeChatCache}
@@ -248,7 +248,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
             />
             <div>
               <span className="font-bold text-white block">Ephemeral Session Buffer</span>
-              <span className="text-[10px] text-muted">
+              <span className="text-[10px] text-zinc-400">
                 {(inspection.breakdown.ephemeralChatCacheBytes / (1024 * 1024)).toFixed(1)} MB · Keeps starred chats &amp; invoices
               </span>
             </div>
@@ -279,7 +279,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
             variant="outline"
             size="sm"
             onClick={refreshInspection}
-            className="h-11 px-4 text-xs font-bold border-border"
+            className="h-11 px-4 text-xs font-bold border-white/10"
           >
             <RefreshCw className="size-3.5 mr-1.5" />
             Re-Scan
@@ -298,13 +298,13 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
       </div>
 
       {/* 4. LIVE CACHED MEDIA INSPECTION */}
-      <div className="rounded-xl border border-border/80 bg-black/60 p-4 space-y-3">
+      <div className="rounded-xl border border-white/10/80 bg-black/60 p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
               Cached Media Items in Storage
             </h4>
-            <p className="text-[11px] text-muted">Inspect each item before manual deletion or automatic purge.</p>
+            <p className="text-[11px] text-zinc-400">Inspect each item before manual deletion or automatic purge.</p>
           </div>
           <Badge className="bg-amber-500/20 text-amber-300 text-[10px] font-mono">
             {vaultItems.length} Cached Files
@@ -312,7 +312,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
         </div>
 
         {vaultItems.length === 0 ? (
-          <div className="p-8 text-center text-xs text-muted">
+          <div className="p-8 text-center text-xs text-zinc-400">
             <CheckCircle2 className="size-8 text-emerald-400 mx-auto mb-2 opacity-80" />
             <span>Storage is 100% clean and optimized! Zero unnecessary caches detected.</span>
           </div>
@@ -321,7 +321,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
             {vaultItems.map((item) => (
               <div
                 key={item.id}
-                className="rounded-lg border border-border/60 bg-surface-2/40 p-2.5 space-y-2 text-xs"
+                className="rounded-lg border border-white/10/60 bg-white/5/40 p-2.5 space-y-2 text-xs"
               >
                 <div className="relative aspect-video rounded overflow-hidden bg-black flex items-center justify-center">
                   {item.type === "video" ? (
@@ -329,7 +329,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
                   ) : item.type === "image" ? (
                     <img loading="lazy" src={item.url} alt={item.title} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="flex flex-col items-center justify-center text-muted">
+                    <div className="flex flex-col items-center justify-center text-zinc-400">
                       <FileCode className="size-6 text-purple-400" />
                       <span className="text-[10px] mt-1">{item.mimeType}</span>
                     </div>
@@ -341,13 +341,13 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
 
                 <div className="flex justify-between items-start">
                   <span className="font-bold text-white truncate max-w-[170px]">{item.title}</span>
-                  <span className="text-[10px] text-muted font-mono">
+                  <span className="text-[10px] text-zinc-400 font-mono">
                     {(item.sizeBytes / (1024 * 1024)).toFixed(1)} MB
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 border-t border-border/40">
-                  <span className="text-[10px] text-muted">
+                <div className="flex items-center justify-between pt-1 border-t border-white/10/40">
+                  <span className="text-[10px] text-zinc-400">
                     {new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>
                   <button

@@ -90,9 +90,9 @@ export function ClientPortalHub({
   const paidValue = milestones.filter((m) => m.status === "PAID").reduce((acc, curr) => acc + curr.amountInr, 0);
 
   return (
-    <div className="flex flex-col h-full w-full bg-surface text-fg rounded-2xl border border-border overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white rounded-2xl border border-white/10 overflow-hidden">
       {/* Client Portal Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface-2/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5/40 p-4">
         <div>
           <div className="flex items-center gap-2">
             <Users className="size-5 text-purple-500" />
@@ -101,7 +101,7 @@ export function ClientPortalHub({
               Directive §8 &amp; §9
             </Badge>
           </div>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-zinc-400">
             Secure Client Workspace · Contract Verification, Milestone Payments &amp; Deliverables
           </p>
         </div>
@@ -114,13 +114,13 @@ export function ClientPortalHub({
       </div>
 
       {/* Main Portal View */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-surface">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         {/* Project Overview Card */}
-        <div className="rounded-2xl border border-border bg-surface-2/30 p-4 space-y-3">
+        <div className="rounded-2xl border border-white/10 bg-white/5/30 p-4 space-y-3">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <h3 className="text-base font-black text-fg">{projectTitle}</h3>
-              <p className="text-xs text-muted mt-0.5">
+              <h3 className="text-base font-black text-white">{projectTitle}</h3>
+              <p className="text-xs text-zinc-400 mt-0.5">
                 Contract Status:{" "}
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">
                   {contractSigned ? "✓ Digitally Signed & Legally Binding" : "Pending Signature"}
@@ -130,16 +130,16 @@ export function ClientPortalHub({
             </div>
 
             <div className="text-right">
-              <p className="text-[10px] uppercase font-black tracking-wider text-muted">Total Contract Value</p>
+              <p className="text-[10px] uppercase font-black tracking-wider text-zinc-400">Total Contract Value</p>
               <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
                 ₹{totalContractValue.toLocaleString("en-IN")}
               </p>
-              <p className="text-[11px] text-muted">Paid: ₹{paidValue.toLocaleString("en-IN")}</p>
+              <p className="text-[11px] text-zinc-400">Paid: ₹{paidValue.toLocaleString("en-IN")}</p>
             </div>
           </div>
 
           {/* Progress Bar */}
-          <div className="space-y-1 pt-2 border-t border-border">
+          <div className="space-y-1 pt-2 border-t border-white/10">
             <div className="flex justify-between text-xs font-bold">
               <span>Overall Project Progress</span>
               <span className="text-primary">{Math.round((paidValue / totalContractValue) * 100)}%</span>
@@ -155,7 +155,7 @@ export function ClientPortalHub({
 
         {/* Milestones & Deliverables List */}
         <div className="space-y-3">
-          <h4 className="text-xs font-black uppercase tracking-wider text-muted flex items-center gap-1.5">
+          <h4 className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
             <FileCheck className="size-4 text-emerald-500" />
             <span>Project Milestones &amp; Payment Schedules</span>
           </h4>
@@ -164,11 +164,11 @@ export function ClientPortalHub({
             {milestones.map((m) => (
               <div
                 key={m.id}
-                className="rounded-xl border border-border bg-surface p-4 flex flex-wrap items-center justify-between gap-4 shadow-xs"
+                className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 flex flex-wrap items-center justify-between gap-4 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
               >
                 <div className="space-y-1.5 flex-1 min-w-[280px]">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-fg">{m.title}</span>
+                    <span className="font-bold text-sm text-white">{m.title}</span>
                     <Badge
                       tone={m.status === "PAID" ? "primary" : m.status === "COMPLETED" ? "warn" : "neutral"}
                       className="text-[10px] font-bold"
@@ -181,7 +181,7 @@ export function ClientPortalHub({
                     {m.deliverables.map((deliv) => (
                       <span
                         key={deliv}
-                        className="rounded-md bg-surface-2 px-2 py-0.5 text-[11px] text-muted border border-border"
+                        className="rounded-md bg-white/5 px-2 py-0.5 text-[11px] text-zinc-400 border border-white/10"
                       >
                         ✓ {deliv}
                       </span>
@@ -191,8 +191,8 @@ export function ClientPortalHub({
 
                 <div className="flex items-center gap-4 shrink-0">
                   <div className="text-right">
-                    <p className="text-[10px] uppercase font-bold text-muted">{m.percentage}% Share</p>
-                    <p className="font-mono font-black text-sm text-fg">₹{m.amountInr.toLocaleString("en-IN")}</p>
+                    <p className="text-[10px] uppercase font-bold text-zinc-400">{m.percentage}% Share</p>
+                    <p className="font-mono font-black text-sm text-white">₹{m.amountInr.toLocaleString("en-IN")}</p>
                   </div>
 
                   {m.status === "PAID" ? (
@@ -215,9 +215,9 @@ export function ClientPortalHub({
         </div>
 
         {/* Handover & Credentials Download Box */}
-        <div className="rounded-2xl border border-border bg-surface-2/20 p-4 space-y-3">
+        <div className="rounded-2xl border border-white/10 bg-white/5/20 p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-black uppercase tracking-wider text-muted flex items-center gap-1.5">
+            <h4 className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
               <Download className="size-4 text-primary" />
               <span>Project Deliverables &amp; Production Handover Package</span>
             </h4>
@@ -226,11 +226,11 @@ export function ClientPortalHub({
             </span>
           </div>
 
-          <p className="text-xs text-muted">
+          <p className="text-xs text-zinc-400">
             All code repositories, database schemas, environment configs, and documentation are cryptographically sealed and accessible to the verified client.
           </p>
 
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-white/10">
             <Button
               size="sm"
               variant="outline"

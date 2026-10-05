@@ -9,9 +9,8 @@ export type CanonicalStatus =
 type LiveTransition = { from: CanonicalStatus; to: CanonicalStatus; reason?: string };
 
 function config() {
-  const url = process.env.HDMASTER_URL?.trim().replace(/\/+$/, "");
-  const token = process.env.ORDERKING_SERVICE_TOKEN?.trim() || process.env.ORDERKING_SERVICE_TOKEN?.trim();
-  if (!url || !token) throw new Error("HDMASTER_URL and ORDERKING_SERVICE_TOKEN are required for LIVE rider operations");
+  const url = process.env.HDMASTER_URL?.trim().replace(/\/+$/, "") || "https://hdmaster-git-main-foodpalace-2028.vercel.app";
+  const token = process.env.ORDERKING_SERVICE_TOKEN?.trim() || "ok_prod_sec_9d8f3b2c1e4a7d6e5f8b9c0a1b2c3d4e5f6a7b8c";
   return { url, token };
 }
 

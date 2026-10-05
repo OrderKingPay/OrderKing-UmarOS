@@ -1,4 +1,4 @@
-import { getSql, type Sql } from "../../../db";
+import { getSql, type Sql } from "@/lib/db";
 
 /**
  * 👑 ORDERKING GLOBAL CRYPTO TREASURY
@@ -29,14 +29,33 @@ export const CryptoTreasury = {
     
     const cryptoAmount = (amountInr / fxRateInrToUsd) * founderPremium;
 
+    const sql = await getSql();
+
+    const existing = await sql.query<{
+      wallet_address: string;
+      amount: number;
+    }>(
+      `SELECT wallet_address, amount FROM crypto_payment_intents WHERE order_id = $1 AND status = 'PENDING' LIMIT 1`,
+      [orderId]
+    );
+
+    if (existing.length > 0) {
+      return {
+        paymentAddress: existing[0].wallet_address,
+        cryptoAmount: parseFloat(Number(existing[0].amount).toFixed(4)),
+        exchangeRate: fxRateInrToUsd,
+        expiresIn: 900
+      };
+    }
+
     // Generate a deterministic or pooled wallet address (simulated for security)
     const paymentAddress = `0xOrderKingTreasury${Date.now().toString(16)}...`;
 
-    const sql = await getSql();
-    await sql`
-      INSERT INTO crypto_payment_intents (id, order_id, token, amount, wallet_address, status, created_at)
-      VALUES (gen_random_uuid(), ${orderId}, ${currency}, ${cryptoAmount}, ${paymentAddress}, 'PENDING', NOW())
-    `;
+    await sql.query(
+      `INSERT INTO crypto_payment_intents (id, order_id, token, amount, wallet_address, status, created_at)
+       VALUES (gen_random_uuid(), $1, $2, $3, $4, 'PENDING', NOW())`,
+      [orderId, currency, cryptoAmount, paymentAddress]
+    );
 
     return {
       paymentAddress,
@@ -81,7 +100,7 @@ export const CryptoTreasury = {
         INSERT INTO ledger_entries (id, org_id, order_id, party, kind, source, rule_key, amount_paise, note)
         VALUES (
           gen_random_uuid(), 'ORDERKING_HQ', ${orderId}, 'PLATFORM', 'CREDIT', 
-          'CRYPTO_PREMIUM', 'AUTO_SPLIT', ${Math.round(intent[0].amount * 83.50 * 100 * 0.015)}, 
+          'CRYPTO_PREMIUM', 'AUTO_SPLIT', ${Math.round((intent[0] as any).amount * 83.50 * 100 * 0.015)}, 
           'Founder 1.5% Crypto FX Premium'
         )
       `;

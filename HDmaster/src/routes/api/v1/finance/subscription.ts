@@ -1,12 +1,8 @@
-import { Request, Response } from 'express';
 
-// Utility for SQL template literal (assuming pg or similar driver usage in project)
-const getSql = (strings: TemplateStringsArray, ...values: any[]) => {
-  return strings.reduce((acc, str, i) => acc + str + (values[i] || ''), '');
-};
+import { getSql } from "@/lib/db";
 
 // 2. Create the raw SQL queries to build customer_subscriptions table
-export const subscriptionMigrationQuery = getSql`
+export const subscriptionMigrationQuery = `
   CREATE TABLE IF NOT EXISTS customer_subscriptions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     customer_id UUID NOT NULL,
@@ -27,7 +23,7 @@ export class SubscriptionController {
   /**
    * Create a King Pass subscription for a user
    */
-  public static async subscribe(req: Request, res: Response) {
+  public static async subscribe(req: any, res: any) {
     try {
       const { customerId, planName } = req.body;
       
@@ -52,14 +48,17 @@ export class SubscriptionController {
       const validUntil = new Date();
       validUntil.setMonth(validUntil.getMonth() + durationMonths);
 
+      const sql = await getSql();
+
       // 3. Subscription logic inserting to DB
-      const insertQuery = getSql`
-        INSERT INTO customer_subscriptions (customer_id, plan_name, price_paise, status, valid_until)
-        VALUES ('${customerId}', '${planName}', ${pricePaise}, 'ACTIVE', '${validUntil.toISOString()}')
-        RETURNING id;
-      `;
-      // DB Execute Logic goes here...
-      const subscriptionId = "mock-uuid-for-now-until-db-wired";
+      const result = await sql.query<{ id: string }>(
+        `INSERT INTO customer_subscriptions (customer_id, plan_name, price_paise, status, valid_until)
+         VALUES ($1, $2, $3, 'ACTIVE', $4)
+         RETURNING id`,
+        [customerId, planName, pricePaise, validUntil.toISOString()]
+      );
+      
+      const subscriptionId = result[0]?.id;
 
       return res.status(201).json({
         success: true,
@@ -80,21 +79,22 @@ export class SubscriptionController {
   /**
    * Get active subscription details
    */
-  public static async getSubscription(req: Request, res: Response) {
+  public static async getSubscription(req: any, res: any) {
     try {
       const { customerId } = req.params;
 
-      const selectQuery = getSql`
-        SELECT * FROM customer_subscriptions 
-        WHERE customer_id = '${customerId}' AND status = 'ACTIVE' AND valid_until > NOW()
-        ORDER BY valid_until DESC
-        LIMIT 1;
-      `;
-      // DB Execute Logic goes here...
+      const sql = await getSql();
+      const result = await sql.query(
+        `SELECT * FROM customer_subscriptions 
+         WHERE customer_id = $1 AND status = 'ACTIVE' AND valid_until > NOW()
+         ORDER BY valid_until DESC
+         LIMIT 1`,
+         [customerId]
+      );
 
       return res.status(200).json({
         success: true,
-        data: null // Fill with actual DB response
+        data: result.length > 0 ? result[0] : null
       });
     } catch (error) {
       return res.status(500).json({ error: 'Internal server error' });

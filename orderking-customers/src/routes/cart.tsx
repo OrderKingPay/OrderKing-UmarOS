@@ -45,13 +45,13 @@ function CartPage() {
       <CustomerShell>
         <div className="px-4 py-12 text-center space-y-4">
           <span className="text-4xl block animate-bounce">👑</span>
-          <h1 className="font-display text-2xl font-bold text-fg">
+          <h1 className="font-display text-2xl font-bold text-white">
             Order King Foods is not active in {location.cityName || "your region"}
           </h1>
-          <p className="text-sm text-muted max-w-sm mx-auto">
+          <p className="text-sm text-zinc-400 max-w-sm mx-auto">
             Food delivery is 1,000x strictly restricted to active operational hubs. Enjoy 0% fee UPI and nationwide bill payments on King Pay!
           </p>
-          <Button asChild className="bg-primary text-white font-bold px-6 py-2 rounded-xl">
+          <Button asChild className="bg-primary text-black font-bold shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)] hover:shadow-[0_0_25px_rgba(var(--primary-rgb),0.8)] transition-all font-bold px-6 py-2 rounded-xl">
             <Link to="/king-pay">Open King Pay 👑</Link>
           </Button>
         </div>
@@ -65,24 +65,24 @@ function CartPage() {
         <h1 className="font-display text-3xl">{t("cart.title")}</h1>
         {!items.length ? (
           <div className="mt-8">
-            <p className="text-muted">{t("cart.empty")}</p>
-            <p className="mt-1 text-sm text-muted">{t("cart.emptyHint")}</p>
+            <p className="text-zinc-400">{t("cart.empty")}</p>
+            <p className="mt-1 text-sm text-zinc-400">{t("cart.emptyHint")}</p>
             <Button className="mt-4" asChild>
               <Link to="/">{t("cart.browse")}</Link>
             </Button>
           </div>
         ) : (
           <>
-            <p className="mt-1 text-sm text-muted">{t("cart.from", { name: restaurantName })}</p>
+            <p className="mt-1 text-sm text-zinc-400">{t("cart.from", { name: restaurantName })}</p>
             <ul className="mt-4 space-y-3">
               {items.map((item) => {
                 const priced = quote.data?.pricedLines.find((p: any) => p.key === item.key);
                 return (
-                  <li key={item.key} className="rounded-[var(--radius-lg)] bg-surface p-3">
+                  <li key={item.key} className="rounded-[var(--radius-2xl)] bg-white/5 border border-white/10 p-3 shadow-sm">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="font-medium">{priced?.name ?? item.itemId}</p>
-                        {item.instructions ? <p className="text-xs text-muted">{item.instructions}</p> : null}
+                        {item.instructions ? <p className="text-xs text-zinc-400">{item.instructions}</p> : null}
                         {priced ? (
                           <p className="mt-1 tabular-nums text-sm">
                             {formatPaise(priced.unitPaise * item.quantity, { locale })}
@@ -92,7 +92,7 @@ function CartPage() {
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          className="size-11 rounded-full bg-bg"
+                          className="size-11 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                           onClick={() => updateQty(item.key, item.quantity - 1)}
                         >
                           −
@@ -100,7 +100,7 @@ function CartPage() {
                         <span className="w-6 text-center tabular-nums">{item.quantity}</span>
                         <button
                           type="button"
-                          className="size-11 rounded-full bg-bg"
+                          className="size-11 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                           onClick={() => updateQty(item.key, item.quantity + 1)}
                         >
                           +
@@ -137,9 +137,9 @@ function CartPage() {
             {coupon && quote.data && !quote.data.promoName ? (
               <p className="mt-2 text-sm text-danger">{t("cart.invalidCoupon")}</p>
             ) : null}
-            <div className="mt-6 rounded-[var(--radius-xl)] bg-surface p-4">
+            <div className="mt-6 rounded-[var(--radius-2xl)] bg-white/5 border border-white/10 p-4 shadow-sm">
               {quote.isPending ? (
-                <p className="text-sm text-muted">{t("common.loading")}</p>
+                <p className="text-sm text-zinc-400">{t("common.loading")}</p>
               ) : quote.isError ? (
                 <button type="button" className="text-sm text-primary" onClick={() => void quote.refetch()}>
                   {t("common.retry")}

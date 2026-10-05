@@ -154,7 +154,7 @@ export const listZones = createServerFn({ method: "GET" }).handler(async () => {
 
 export const listCategories = createServerFn({ method: "GET" })
   .// @ts-ignore
-  validator((input: { lang?: string }) => input)
+  inputValidator((input: { lang?: string }) => input)
   .handler(async ({ data }: any) => {
     try {
       const sql = await getSql();
@@ -181,7 +181,7 @@ export const listCategories = createServerFn({ method: "GET" })
 
 export const listRestaurants = createServerFn({ method: "POST" })
   .// @ts-ignore
-  validator((input: {
+  inputValidator((input: {
     zoneId: string;
     lat: number;
     lng: number;
@@ -280,7 +280,7 @@ export const listRestaurants = createServerFn({ method: "POST" })
 
 export const getRestaurant = createServerFn({ method: "GET" })
   .// @ts-ignore
-  validator((input: { slug: string; lat: number; lng: number; lang?: string }) => input)
+  inputValidator((input: { slug: string; lat: number; lng: number; lang?: string }) => input)
   .handler(async ({ data }: any) => {
     const cfg = await loadConfig();
     const sql = await getSql();
@@ -430,7 +430,7 @@ export type DishSearchResult = {
 
 export const searchDishes = createServerFn({ method: "POST" })
   .// @ts-ignore
-  validator((input: {
+  inputValidator((input: {
     lat: number;
     lng: number;
     q?: string;

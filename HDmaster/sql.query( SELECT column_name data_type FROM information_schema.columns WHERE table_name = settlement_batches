@@ -1,0 +1,2 @@
+
+C:\Users\hasan\OrderKing\HDmaster>  "C:\Users\hasan\OrderKing\HDmaster\node_modules\.bin\\node.exe"  "C:\Users\hasan\OrderKing\HDmaster\node_modules\.bin\\..\vite\bin\vite.js" dev --host 0.0.0.0 --port 8081 --eval import { getSql } from './src/lib/db.ts'; getSql().then(sql =

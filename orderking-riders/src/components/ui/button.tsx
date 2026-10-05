@@ -10,8 +10,8 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98]",
         secondary: "bg-secondary text-secondary-foreground hover:opacity-90",
-        outline: "border border-border bg-surface text-fg hover:bg-muted",
-        ghost: "text-fg hover:bg-muted",
+        outline: "border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-white hover:bg-muted",
+        ghost: "text-white hover:bg-muted",
         destructive: "bg-destructive text-destructive-foreground hover:opacity-90",
         online: "bg-online text-primary-foreground hover:opacity-90 active:scale-[0.98]",
       },

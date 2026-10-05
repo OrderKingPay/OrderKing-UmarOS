@@ -3,8 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { testModelConnectivity } from "@/lib/ai/real-model-registry";
 
 export const Route = createFileRoute("/api/admin/test-connection")({
-  // @ts-expect-error
-  server: {
+server: {
     handlers: {
       POST: async ({ request }: any) => {
         try {

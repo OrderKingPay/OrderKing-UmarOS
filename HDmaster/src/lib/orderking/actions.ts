@@ -314,6 +314,48 @@ export const loadEmployees = createServerFn({ method: "GET" })
     }
   });
 
+export const loadFounderFinance = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { legalAccounting } = await import("@/lib/orderking/finance/legal-accounting-gst");
+      const gstReports = await legalAccounting.generateMonthlyGstReturns(ws);
+      const settlementLedger = await legalAccounting.getRecentSettlementLedger(ws);
+      const privacyShield = await legalAccounting.verifyIntermediaryPrivacyShield();
+      return { ok: true as const, data: { gstReports, settlementLedger, privacyShield } };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const loadFounderIncomeProducts = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { getFounderIncomeProductsFromDb } = await import("@/lib/orderking/server/supreme-founder-data.server");
+      const products = await getFounderIncomeProductsFromDb(ws.ctx.orgId);
+      return { ok: true as const, data: products };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const saveFounderIncomeProductFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { id: string; title: string; priceInr: number; category: string; checkoutLink: string; status: string; salesCount: number; totalEarnedInr: number }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { saveFounderIncomeProductToDb } = await import("@/lib/orderking/server/supreme-founder-data.server");
+      await saveFounderIncomeProductToDb(ws.ctx.orgId, data);
+      return { ok: true as const };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
 export const inviteEmployeeFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: { email: string; name: string; roleKey: string; department: string; cityId?: string | null; customPermissions?: string[] }) => input)
@@ -1165,4 +1207,29 @@ export const getEnterpriseBlueprintsFn = createServerFn({ method: "GET" })
     }
   });
 
+export const loadGrowthReferrals = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { getGrowthReferralsFromDb } = await import("@/lib/orderking/server/growth-engine.server");
+      const referrals = await getGrowthReferralsFromDb(ws.ctx.orgId);
+      return { ok: true as const, data: referrals };
+    } catch (err) {
+      return fail(err);
+    }
+  });
 
+export const saveGrowthReferralFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { data: any }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { saveGrowthReferralToDb } = await import("@/lib/orderking/server/growth-engine.server");
+      await saveGrowthReferralToDb(ws.ctx.orgId, data.data);
+      return { ok: true as const };
+    } catch (err) {
+      return fail(err);
+    }
+  });

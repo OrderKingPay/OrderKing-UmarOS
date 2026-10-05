@@ -56,7 +56,7 @@ export function FounderApprovalModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn">
       <div className="relative w-full max-w-2xl rounded-2xl border-2 border-amber-500/60 bg-gradient-to-b from-[#0B1D16] via-[#06140F] to-black shadow-[0_0_60px_rgba(245,158,11,0.25)] p-6 space-y-5 text-slate-100">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-border/70">
+        <div className="flex items-center justify-between pb-3 border-b border-white/10/70">
           <div className="flex items-center gap-2.5">
             <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40">
               <ShieldAlert className="size-5" />
@@ -65,7 +65,7 @@ export function FounderApprovalModal({
               <h3 className="text-base font-black text-white tracking-wide">
                 Founder Authorization Checkpoint
               </h3>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-zinc-400">
                 Section 14 Sovereign Guard: High-impact action requires explicit founder signature.
               </p>
             </div>
@@ -73,7 +73,7 @@ export function FounderApprovalModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-muted hover:text-white hover:bg-surface-2 transition"
+            className="rounded-lg p-1.5 text-zinc-400 hover:text-white hover:bg-white/5 transition"
           >
             <X className="size-5" />
           </button>
@@ -82,8 +82,8 @@ export function FounderApprovalModal({
         {/* Structured Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           {/* ACTION */}
-          <div className="rounded-xl bg-surface-2/80 p-3 border border-border/60">
-            <span className="text-muted block text-[10px] uppercase font-bold tracking-wider">
+          <div className="rounded-xl bg-white/5/80 p-3 border border-white/10/60">
+            <span className="text-zinc-400 block text-[10px] uppercase font-bold tracking-wider">
               Action
             </span>
             <span className="text-sm font-black text-white font-mono mt-0.5 block">
@@ -92,8 +92,8 @@ export function FounderApprovalModal({
           </div>
 
           {/* TARGET */}
-          <div className="rounded-xl bg-surface-2/80 p-3 border border-border/60">
-            <span className="text-muted block text-[10px] uppercase font-bold tracking-wider">
+          <div className="rounded-xl bg-white/5/80 p-3 border border-white/10/60">
+            <span className="text-zinc-400 block text-[10px] uppercase font-bold tracking-wider">
               Target
             </span>
             <span className="text-sm font-black text-amber-300 mt-0.5 block truncate">
@@ -102,15 +102,15 @@ export function FounderApprovalModal({
           </div>
 
           {/* RISK & COST */}
-          <div className="rounded-xl bg-surface-2/80 p-3 border border-border/60 flex items-center justify-between">
+          <div className="rounded-xl bg-white/5/80 p-3 border border-white/10/60 flex items-center justify-between">
             <div>
-              <span className="text-muted block text-[10px] uppercase font-bold tracking-wider">
+              <span className="text-zinc-400 block text-[10px] uppercase font-bold tracking-wider">
                 Risk Level
               </span>
               <div className="mt-1">{getRiskBadge(request.risk)}</div>
             </div>
             <div>
-              <span className="text-muted block text-[10px] uppercase font-bold tracking-wider">
+              <span className="text-zinc-400 block text-[10px] uppercase font-bold tracking-wider">
                 Financial Cost
               </span>
               <span className="text-xs font-bold text-emerald-400 font-mono mt-1 block">
@@ -120,8 +120,8 @@ export function FounderApprovalModal({
           </div>
 
           {/* EXPECTED RESULT */}
-          <div className="rounded-xl bg-surface-2/80 p-3 border border-border/60">
-            <span className="text-muted block text-[10px] uppercase font-bold tracking-wider">
+          <div className="rounded-xl bg-white/5/80 p-3 border border-white/10/60">
+            <span className="text-zinc-400 block text-[10px] uppercase font-bold tracking-wider">
               Expected Result
             </span>
             <span className="text-xs font-medium text-slate-200 mt-0.5 block leading-relaxed">
@@ -131,7 +131,7 @@ export function FounderApprovalModal({
         </div>
 
         {/* WHY (STRATEGIC RATIONALE) */}
-        <div className="rounded-xl bg-surface-2/60 p-3.5 border border-border/60 space-y-1 text-xs">
+        <div className="rounded-xl bg-white/5/60 p-3.5 border border-white/10/60 space-y-1 text-xs">
           <span className="text-amber-400 font-bold block text-[10px] uppercase tracking-wider">
             Strategic Rationale (Why):
           </span>
@@ -140,16 +140,16 @@ export function FounderApprovalModal({
 
         {/* PREVIEW */}
         <div className="space-y-1.5 text-xs">
-          <span className="text-muted font-bold block text-[10px] uppercase tracking-wider">
+          <span className="text-zinc-400 font-bold block text-[10px] uppercase tracking-wider">
             Payload / Draft Preview:
           </span>
-          <div className="rounded-xl bg-black/90 p-3 font-mono text-[11px] text-slate-300 max-h-36 overflow-y-auto border border-border/70 whitespace-pre-wrap leading-relaxed">
+          <div className="rounded-xl bg-black/90 p-3 font-mono text-[11px] text-slate-300 max-h-36 overflow-y-auto border border-white/10/70 whitespace-pre-wrap leading-relaxed">
             {request.preview}
           </div>
         </div>
 
         {/* ACTIONS */}
-        <div className="flex items-center justify-end gap-3 pt-2 border-t border-border/70">
+        <div className="flex items-center justify-end gap-3 pt-2 border-t border-white/10/70">
           <Button
             size="sm"
             variant="outline"

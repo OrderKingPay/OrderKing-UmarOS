@@ -92,7 +92,7 @@ export function AppProviders({
     <QueryClientProvider client={queryClient}>
       <BrandContext.Provider value={config}>
         <I18nContext.Provider value={value}>
-          <div style={brandStyle} className="min-h-dvh bg-bg text-fg">
+          <div style={brandStyle} className="min-h-dvh bg-bg text-white">
             {children}
           </div>
           <Toaster position="top-center" richColors={false} />

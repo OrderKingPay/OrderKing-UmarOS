@@ -9,15 +9,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-chili text-surface hover:bg-chili-dark shadow-soft",
+          "bg-fuchsia-600 text-white hover:bg-fuchsia-500 shadow-[0_0_15px_rgba(217,70,239,0.4)] border border-fuchsia-400/50",
         secondary:
-          "bg-surface text-ink border border-line hover:bg-surface-2",
+          "bg-white/5 text-white border border-white/10 hover:bg-white/10 shadow-inner shadow-white/5",
         outline:
-          "bg-surface text-ink border border-line hover:bg-surface-2",
-        ghost: "bg-transparent text-ink hover:bg-chili-soft",
-        danger: "bg-danger text-surface hover:opacity-90",
-        destructive: "bg-danger text-surface hover:opacity-90",
-        leaf: "bg-leaf text-surface hover:opacity-90",
+          "bg-transparent text-white border border-white/20 hover:bg-white/5",
+        ghost: "bg-transparent text-white hover:bg-white/10",
+        danger: "bg-red-600/80 text-white border border-red-500/50 hover:bg-red-500/80 shadow-[0_0_15px_rgba(220,38,38,0.3)]",
+        destructive: "bg-red-600/80 text-white border border-red-500/50 hover:bg-red-500/80 shadow-[0_0_15px_rgba(220,38,38,0.3)]",
+        leaf: "bg-emerald-600/80 text-white border border-emerald-500/50 hover:bg-emerald-500/80 shadow-[0_0_15px_rgba(16,185,129,0.3)]",
       },
       size: {
         sm: "h-9 min-h-9 px-3 text-xs rounded-[10px]",

@@ -12,7 +12,7 @@ function Home() {
   if (user) return <Navigate to="/app" />;
 
   return (
-    <main className="min-h-screen bg-bg text-fg">
+    <main className="min-h-screen bg-bg text-white">
       <div className="mx-auto flex min-h-screen max-w-5xl flex-col px-6 py-8">
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -31,7 +31,7 @@ function Home() {
           <h1 className="mt-4 max-w-3xl font-display text-4xl leading-tight sm:text-6xl">
             The single founder operating system for life.
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-muted">
+          <p className="mt-6 max-w-xl text-lg text-zinc-400">
             Execute any business, build any software, orchestrate connected platforms, and control every market operation from one sovereign terminal.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
@@ -45,9 +45,9 @@ function Home() {
               ["Understand", "Contribution, settlements, and alerts with sources."],
               ["Act", "Role-aware tools. High-risk changes need a reason."],
             ].map(([k, v]) => (
-              <div key={k} className="rounded-[24px] border border-border bg-surface p-6">
+              <div key={k} className="rounded-[24px] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6">
                 <dt className="font-display text-2xl">{k}</dt>
-                <dd className="mt-2 text-sm text-muted">{v}</dd>
+                <dd className="mt-2 text-sm text-zinc-400">{v}</dd>
               </div>
             ))}
           </dl>

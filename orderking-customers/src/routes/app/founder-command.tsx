@@ -607,7 +607,7 @@ export function FounderCommandPage() {
           {/* 4 Core Launch Execution Pillars */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {/* 1. Pilot Town & Geofence Matrix */}
-            <div className="rounded-2xl border border-border bg-surface p-5 space-y-4 shadow-md">
+            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <MapPin className="size-5 text-amber-400" />
@@ -627,7 +627,7 @@ export function FounderCommandPage() {
                     value={launchTown}
                     onChange={(e) => setLaunchTown(e.target.value)}
                     placeholder="Enter pilot town (e.g. Karimganj, Silchar, Guwahati)"
-                    className="bg-surface-2 border-border text-xs text-white"
+                    className="bg-white/5 border-white/10 text-xs text-white"
                   />
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {["Karimganj / Sribhumi", "Silchar", "Guwahati", "Kolkata", "Delhi", "Bangalore"].map((town) => (
@@ -638,7 +638,7 @@ export function FounderCommandPage() {
                         className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition ${
                           launchTown === town
                             ? "bg-amber-500 text-black border-amber-400 font-bold"
-                            : "bg-surface-2 text-slate-300 border-border hover:border-amber-400/50"
+                            : "bg-white/5 text-slate-300 border-white/10 hover:border-amber-400/50"
                         }`}
                       >
                         {town}
@@ -647,7 +647,7 @@ export function FounderCommandPage() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5 pt-2 border-t border-border">
+                <div className="space-y-1.5 pt-2 border-t border-white/10">
                   <div className="flex items-center justify-between text-xs font-semibold text-slate-300">
                     <span>Delivery Radius Geofence:</span>
                     <span className="font-mono text-amber-400 font-bold">{geofenceRadiusKm} km</span>
@@ -661,7 +661,7 @@ export function FounderCommandPage() {
                     onChange={(e) => setGeofenceRadiusKm(Number(e.target.value))}
                     className="w-full accent-amber-500 cursor-pointer"
                   />
-                  <div className="flex items-center justify-between text-[10px] text-muted font-mono">
+                  <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
                     <span>3 km (Ultra-Fast 20m)</span>
                     <span>6 km (Recommended)</span>
                     <span>12 km (Town-wide)</span>
@@ -681,7 +681,7 @@ export function FounderCommandPage() {
             </div>
 
             {/* 2. Live UPI Payment Gateway Receiver */}
-            <div className="rounded-2xl border border-border bg-surface p-5 space-y-4 shadow-md">
+            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Wallet className="size-5 text-emerald-400" />
@@ -702,7 +702,7 @@ export function FounderCommandPage() {
                       value={merchantUpiVpa}
                       onChange={(e) => setMerchantUpiVpa(e.target.value)}
                       placeholder="e.g. orderking@okhdfcbank or yourname@icici"
-                      className="bg-surface-2 border-border text-xs text-white flex-1 font-mono"
+                      className="bg-white/5 border-white/10 text-xs text-white flex-1 font-mono"
                     />
                     <Button
                       size="sm"
@@ -714,12 +714,12 @@ export function FounderCommandPage() {
                       Save VPA
                     </Button>
                   </div>
-                  <p className="text-[10px] text-muted mt-1">
+                  <p className="text-[10px] text-zinc-400 mt-1">
                     Every payment made via direct UPI deep-link or QR code arrives instantly into this VPA.
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-border bg-surface-2 p-3 space-y-2">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-200">Universal UPI Compatibility:</span>
                     <span className="text-[10px] text-emerald-400 font-bold">✓ NPCI Compliant</span>
@@ -727,8 +727,8 @@ export function FounderCommandPage() {
                   <p className="text-[11px] text-slate-300 leading-relaxed">
                     Works seamlessly with <strong>Google Pay, PhonePe, Paytm, BHIM, CRED, Navi</strong> and all Indian mobile banking apps.
                   </p>
-                  <div className="pt-2 border-t border-border flex items-center justify-between">
-                    <span className="text-[11px] text-muted">Test payment link:</span>
+                  <div className="pt-2 border-t border-white/10 flex items-center justify-between">
+                    <span className="text-[11px] text-zinc-400">Test payment link:</span>
                     <Button
                       size="sm"
                       variant="outline"
@@ -748,7 +748,7 @@ export function FounderCommandPage() {
             </div>
 
             {/* 3. Merchant Acquisition Blitz Console */}
-            <div className="rounded-2xl border border-border bg-surface p-5 space-y-4 shadow-md">
+            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Store className="size-5 text-amber-400" />
@@ -760,7 +760,7 @@ export function FounderCommandPage() {
               </div>
 
               <div className="space-y-3">
-                <div className="rounded-xl border border-border bg-surface-2 p-3 space-y-2">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-2">
                   <span className="text-xs font-bold text-white block">The 0% Commission Merchant Proposition:</span>
                   <ul className="text-xs text-slate-300 space-y-1 list-disc list-inside">
                     <li><strong>0% Commission</strong> for first 90 days (vs 25–35% Zomato/Swiggy tax).</li>
@@ -800,7 +800,7 @@ export function FounderCommandPage() {
             </div>
 
             {/* 4. Rider Fleet Mobilization & Dispatch */}
-            <div className="rounded-2xl border border-border bg-surface p-5 space-y-4 shadow-md">
+            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-5 space-y-4 shadow-md">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Truck className="size-5 text-sky-400" />
@@ -812,27 +812,27 @@ export function FounderCommandPage() {
               </div>
 
               <div className="space-y-3">
-                <div className="rounded-xl border border-border bg-surface-2 p-3 space-y-1.5">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-1.5">
                   <span className="text-xs font-bold text-white block">Rider Daily Target Incentive Ladder:</span>
                   <div className="grid grid-cols-4 gap-1.5 text-center text-xs">
-                    <div className="rounded-lg bg-surface border border-border p-1.5">
-                      <span className="text-[10px] text-muted block">4 Drops</span>
+                    <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/10 p-1.5">
+                      <span className="text-[10px] text-zinc-400 block">4 Drops</span>
                       <span className="font-bold text-emerald-400">+₹60</span>
                     </div>
-                    <div className="rounded-lg bg-surface border border-border p-1.5">
-                      <span className="text-[10px] text-muted block">8 Drops</span>
+                    <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/10 p-1.5">
+                      <span className="text-[10px] text-zinc-400 block">8 Drops</span>
                       <span className="font-bold text-emerald-400">+₹140</span>
                     </div>
-                    <div className="rounded-lg bg-surface border border-border p-1.5">
-                      <span className="text-[10px] text-muted block">12 Drops</span>
+                    <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/10 p-1.5">
+                      <span className="text-[10px] text-zinc-400 block">12 Drops</span>
                       <span className="font-bold text-emerald-400">+₹250</span>
                     </div>
-                    <div className="rounded-lg bg-surface border border-border p-1.5">
-                      <span className="text-[10px] text-muted block">16 Drops</span>
+                    <div className="rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/10 p-1.5">
+                      <span className="text-[10px] text-zinc-400 block">16 Drops</span>
                       <span className="font-bold text-amber-400">+₹400</span>
                     </div>
                   </div>
-                  <p className="text-[10px] text-muted pt-1">
+                  <p className="text-[10px] text-zinc-400 pt-1">
                     Plus: 100% Tips pass-through + ₹15 peak dinner surge + ₹1/min kitchen wait bonus.
                   </p>
                 </div>
@@ -874,7 +874,7 @@ export function FounderCommandPage() {
                 <Megaphone className="size-6 text-amber-400" />
                 <div>
                   <h3 className="font-bold text-base text-white">5. Customer Viral WhatsApp Launch Campaign</h3>
-                  <p className="text-xs text-muted">
+                  <p className="text-xs text-zinc-400">
                     Broadcast this high-converting launch offer to local foodie groups and contacts with 1 tap.
                   </p>
                 </div>
@@ -893,7 +893,7 @@ export function FounderCommandPage() {
                   <Input
                     value={launchVoucherCode}
                     onChange={(e) => setLaunchVoucherCode(e.target.value.toUpperCase())}
-                    className="bg-surface-2 border-border text-xs text-white font-mono font-bold"
+                    className="bg-white/5 border-white/10 text-xs text-white font-mono font-bold"
                   />
                 </div>
                 <div>
@@ -905,19 +905,19 @@ export function FounderCommandPage() {
                       type="number"
                       value={launchVoucherDiscount}
                       onChange={(e) => setLaunchVoucherDiscount(Number(e.target.value))}
-                      className="bg-surface-2 border-border text-xs text-white font-bold"
+                      className="bg-white/5 border-white/10 text-xs text-white font-bold"
                     />
-                    <span className="text-xs text-muted">₹ OFF</span>
+                    <span className="text-xs text-zinc-400">₹ OFF</span>
                   </div>
                 </div>
               </div>
 
               <div className="md:col-span-2 space-y-3">
-                <div className="rounded-xl border border-border bg-surface-2 p-3 text-xs space-y-2">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs space-y-2">
                   <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block">
                     Message Preview:
                   </span>
-                  <p className="font-mono text-[11px] text-slate-200 whitespace-pre-line leading-relaxed bg-black/40 p-2.5 rounded-lg border border-border/50">
+                  <p className="font-mono text-[11px] text-slate-200 whitespace-pre-line leading-relaxed bg-black/40 p-2.5 rounded-lg border border-white/10/50">
                     {`👑 OrderKing is LIVE in ${launchTown}!
 🍗 Tired of paying 30% extra on Zomato & Swiggy?
 Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKUP (True Dine-In Prices)!
@@ -978,10 +978,10 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Killswitch */}
-              <div className="rounded-xl border border-border bg-black/40 p-3 flex items-center justify-between">
+              <div className="rounded-xl border border-white/10 bg-black/40 p-3 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-fg block">Emergency Platform Kill-Switch</span>
-                  <span className="text-[10px] text-muted">Blocks all incoming orders/payments</span>
+                  <span className="text-xs font-bold text-white block">Emergency Platform Kill-Switch</span>
+                  <span className="text-[10px] text-zinc-400">Blocks all incoming orders/payments</span>
                 </div>
                 <button
                   type="button"
@@ -989,7 +989,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                   className={`rounded-lg px-3 py-1.5 text-xs font-black transition ${
                     platformFrozen
                       ? "bg-rose-600 text-white animate-pulse"
-                      : "bg-surface-2 border border-border text-fg hover:bg-rose-500/20 hover:text-rose-400"
+                      : "bg-white/5 border border-white/10 text-white hover:bg-rose-500/20 hover:text-rose-400"
                   }`}
                 >
                   {platformFrozen ? "FROZEN 🚨" : "ARMED"}
@@ -997,10 +997,10 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
               </div>
 
               {/* Surge Control */}
-              <div className="rounded-xl border border-border bg-black/40 p-3 flex items-center justify-between">
+              <div className="rounded-xl border border-white/10 bg-black/40 p-3 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-fg block">Surge Multiplier</span>
-                  <span className="text-[10px] text-muted">Current: {surgeMultiplier}</span>
+                  <span className="text-xs font-bold text-white block">Surge Multiplier</span>
+                  <span className="text-[10px] text-zinc-400">Current: {surgeMultiplier}</span>
                 </div>
                 <select
                   value={surgeMultiplier}
@@ -1008,7 +1008,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                     setSurgeMultiplier(e.target.value as any);
                     toast.success(`Surge multiplier set to ${e.target.value}!`);
                   }}
-                  className="rounded-lg bg-surface-2 border border-border px-2 py-1 text-xs font-bold text-amber-400"
+                  className="rounded-lg bg-white/5 border border-white/10 px-2 py-1 text-xs font-bold text-amber-400"
                 >
                   <option value="1.0x">1.0x (Normal)</option>
                   <option value="1.25x">1.25x (Mild)</option>
@@ -1018,10 +1018,10 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
               </div>
 
               {/* Dispatch Mode */}
-              <div className="rounded-xl border border-border bg-black/40 p-3 flex items-center justify-between">
+              <div className="rounded-xl border border-white/10 bg-black/40 p-3 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-fg block">Fleet Dispatch Mode</span>
-                  <span className="text-[10px] text-muted">{dispatchMode}</span>
+                  <span className="text-xs font-bold text-white block">Fleet Dispatch Mode</span>
+                  <span className="text-[10px] text-zinc-400">{dispatchMode}</span>
                 </div>
                 <button
                   type="button"
@@ -1030,17 +1030,17 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                     setDispatchMode(next);
                     toast.success(`Dispatch mode toggled to ${next}!`);
                   }}
-                  className="rounded-lg bg-surface-2 border border-border px-2.5 py-1 text-xs font-bold text-emerald-400 hover:bg-surface-3 transition"
+                  className="rounded-lg bg-white/5 border border-white/10 px-2.5 py-1 text-xs font-bold text-emerald-400 hover:bg-surface-3 transition"
                 >
                   {dispatchMode === "AI_AUTO" ? "🤖 AI Auto" : "✋ Manual"}
                 </button>
               </div>
 
               {/* Environment */}
-              <div className="rounded-xl border border-border bg-black/40 p-3 flex items-center justify-between">
+              <div className="rounded-xl border border-white/10 bg-black/40 p-3 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-fg block">Production Sandbox</span>
-                  <span className="text-[10px] text-muted">{productionMode}</span>
+                  <span className="text-xs font-bold text-white block">Production Sandbox</span>
+                  <span className="text-[10px] text-zinc-400">{productionMode}</span>
                 </div>
                 <span className="rounded-full bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 text-xs font-bold">
                   ● LIVE
@@ -1052,19 +1052,19 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
           {/* 4-App Live Telemetry Matrix */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* 1. Customer App */}
-            <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
+            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Smartphone className="size-4 text-orange-400" />
-                  <span className="text-xs font-bold text-fg">1. Customer App</span>
+                  <span className="text-xs font-bold text-white">1. Customer App</span>
                 </div>
                 <span className="flex size-2 rounded-full bg-emerald-500 animate-ping" />
               </div>
               <div>
                 <p className="text-2xl font-black text-white font-mono">1,842</p>
-                <span className="text-[11px] text-muted">Active diners online</span>
+                <span className="text-[11px] text-zinc-400">Active diners online</span>
               </div>
-              <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
+              <div className="space-y-1 text-xs text-zinc-400 border-t border-white/10/60 pt-2 font-mono">
                 <div className="flex justify-between">
                   <span>P95 Latency:</span>
                   <span className="text-emerald-400 font-bold">118ms</span>
@@ -1081,19 +1081,19 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
             </div>
 
             {/* 2. Restaurant Kitchen App */}
-            <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
+            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Store className="size-4 text-emerald-400" />
-                  <span className="text-xs font-bold text-fg">2. Kitchen Partner</span>
+                  <span className="text-xs font-bold text-white">2. Kitchen Partner</span>
                 </div>
                 <span className="flex size-2 rounded-full bg-emerald-500" />
               </div>
               <div>
                 <p className="text-2xl font-black text-white font-mono">86</p>
-                <span className="text-[11px] text-muted">Active commercial kitchens</span>
+                <span className="text-[11px] text-zinc-400">Active commercial kitchens</span>
               </div>
-              <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
+              <div className="space-y-1 text-xs text-zinc-400 border-t border-white/10/60 pt-2 font-mono">
                 <div className="flex justify-between">
                   <span>Avg Prep Time:</span>
                   <span className="text-emerald-400 font-bold">13.8 mins</span>
@@ -1110,19 +1110,19 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
             </div>
 
             {/* 3. Rider Delivery App */}
-            <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
+            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Truck className="size-4 text-blue-400" />
-                  <span className="text-xs font-bold text-fg">3. Fleet Riders</span>
+                  <span className="text-xs font-bold text-white">3. Fleet Riders</span>
                 </div>
                 <span className="flex size-2 rounded-full bg-emerald-500" />
               </div>
               <div>
                 <p className="text-2xl font-black text-white font-mono">142</p>
-                <span className="text-[11px] text-muted">Riders on road</span>
+                <span className="text-[11px] text-zinc-400">Riders on road</span>
               </div>
-              <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
+              <div className="space-y-1 text-xs text-zinc-400 border-t border-white/10/60 pt-2 font-mono">
                 <div className="flex justify-between">
                   <span>Currently on Delivery:</span>
                   <span className="text-blue-400 font-bold">98 orders</span>
@@ -1139,19 +1139,19 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
             </div>
 
             {/* 4. HDmaster Sovereign Core */}
-            <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
+            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Database className="size-4 text-purple-400" />
-                  <span className="text-xs font-bold text-fg">4. Sovereign Core</span>
+                  <span className="text-xs font-bold text-white">4. Sovereign Core</span>
                 </div>
                 <span className="flex size-2 rounded-full bg-emerald-500" />
               </div>
               <div>
                 <p className="text-2xl font-black text-white font-mono">0.00%</p>
-                <span className="text-[11px] text-muted">Deadlocks &amp; Failures</span>
+                <span className="text-[11px] text-zinc-400">Deadlocks &amp; Failures</span>
               </div>
-              <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
+              <div className="space-y-1 text-xs text-zinc-400 border-t border-white/10/60 pt-2 font-mono">
                 <div className="flex justify-between">
                   <span>PostgreSQL Pool:</span>
                   <span className="text-emerald-400 font-bold">28 / 100 Active</span>
@@ -1169,17 +1169,17 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
           </div>
 
           {/* Emergency Push Alert Broadcast */}
-          <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 sm:p-5">
             <div className="flex items-center gap-2 mb-3">
               <Megaphone className="size-4 text-amber-400" />
-              <h3 className="text-sm font-bold text-fg">Fleet &amp; Kitchen Emergency Broadcast</h3>
+              <h3 className="text-sm font-bold text-white">Fleet &amp; Kitchen Emergency Broadcast</h3>
             </div>
             <div className="flex flex-col sm:flex-row gap-2.5">
               <Input
                 value={broadcastMessage}
                 onChange={(e) => setBroadcastMessage(e.target.value)}
                 placeholder="Type emergency alert to broadcast across all delivery riders and partner kitchens..."
-                className="flex-1 bg-surface-2 text-sm"
+                className="flex-1 bg-white/5 text-sm"
               />
               <Button
                 type="button"
@@ -1193,8 +1193,8 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
           </div>
 
           {/* Cryptographic Audit Log */}
-          <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
-            <h3 className="text-sm font-bold text-fg mb-3 flex items-center gap-2">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-4 sm:p-5">
+            <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
               <Terminal className="size-4 text-primary" />
               <span>Immutable Founder Action Audit Log</span>
             </h3>
@@ -1202,13 +1202,13 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
               {auditLog.map((log) => (
                 <div
                   key={log.id}
-                  className="rounded-xl border border-border/80 bg-surface-2/50 p-3 flex items-start justify-between text-xs font-mono"
+                  className="rounded-xl border border-white/10/80 bg-white/5/50 p-3 flex items-start justify-between text-xs font-mono"
                 >
                   <div>
                     <span className="font-bold text-amber-400 mr-2">[{log.action}]</span>
                     <span className="text-slate-300">{log.detail}</span>
                   </div>
-                  <span className="text-muted shrink-0 ml-3">{log.timestamp}</span>
+                  <span className="text-zinc-400 shrink-0 ml-3">{log.timestamp}</span>
                 </div>
               ))}
             </div>
@@ -1219,12 +1219,12 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
       {/* TAB 2: 1-COMMAND SUPREME CREATOR ENGINE */}
       {deckTab === "creator" && (
         <div className="space-y-6">
-          <div className="rounded-2xl border-2 border-amber-500/40 bg-surface p-6 shadow-xl space-y-4">
+          <div className="rounded-2xl border-2 border-amber-500/40 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6 shadow-xl space-y-4">
             <div className="flex items-center gap-3">
               <Rocket className="size-6 text-amber-400" />
               <div>
                 <h2 className="text-lg font-bold text-white">1-Command Sovereign App &amp; Website Deployer</h2>
-                <p className="text-xs text-muted">
+                <p className="text-xs text-zinc-400">
                   Type any natural language instruction. HDmaster instantly creates complete code, routes, schema &amp; edge deployment.
                 </p>
               </div>
@@ -1236,7 +1236,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                 onChange={(e) => setCreatorPrompt(e.target.value)}
                 placeholder="Example: 'Create a luxury organic tea brand e-commerce website with 1-tap UPI checkout, inventory management and instant delivery tracking'..."
                 rows={4}
-                className="w-full rounded-xl border border-border bg-surface-2 p-3 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
               />
               <Button
                 type="button"
@@ -1252,7 +1252,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
               <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 space-y-2 mt-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-emerald-400">⚠️ DEPLOYMENT STATUS: NOT VERIFIED</span>
-                  <span className="text-xs font-mono text-muted">{createdProject.timestamp}</span>
+                  <span className="text-xs font-mono text-zinc-400">{createdProject.timestamp}</span>
                 </div>
                 <h4 className="font-bold text-white">{createdProject.name}</h4>
                 <p className="text-xs text-slate-300 font-mono">Live Edge URL: {createdProject.liveUrl}</p>
@@ -1272,13 +1272,13 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
       {/* TAB 3: FOUNDER LEGAL INCOME PRODUCTS STUDIO */}
       {deckTab === "monetization" && (
         <div className="space-y-6">
-          <div className="rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Banknote className="size-6 text-emerald-400" />
                 <div>
                   <h2 className="text-lg font-bold text-white">Founder Direct Legal Income &amp; Paid Products</h2>
-                  <p className="text-xs text-muted">
+                  <p className="text-xs text-zinc-400">
                     Turnkey software licenses, developer APIs and consulting with direct 100% legal payouts to founder account.
                   </p>
                 </div>
@@ -1290,7 +1290,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {products.map((p) => (
-                <div key={p.id} className="rounded-xl border border-border bg-surface-2 p-4 space-y-3">
+                <div key={p.id} className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono font-bold text-amber-400">{p.id}</span>
                     <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
@@ -1298,17 +1298,17 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                     </span>
                   </div>
                   <h4 className="font-bold text-white text-sm">{p.name}</h4>
-                  <div className="border-t border-border/60 pt-2 space-y-1 text-xs">
+                  <div className="border-t border-white/10/60 pt-2 space-y-1 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-muted">License Price:</span>
+                      <span className="text-zinc-400">License Price:</span>
                       <span className="font-bold text-amber-400 font-mono">₹{p.priceInr.toLocaleString("en-IN")}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted">Units Sold:</span>
-                      <span className="font-bold text-fg font-mono">{p.salesCount}</span>
+                      <span className="text-zinc-400">Units Sold:</span>
+                      <span className="font-bold text-white font-mono">{p.salesCount}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted">Total Net Revenue:</span>
+                      <span className="text-zinc-400">Total Net Revenue:</span>
                       <span className="font-bold text-emerald-400 font-mono">₹{p.totalEarned.toLocaleString("en-IN")}</span>
                     </div>
                   </div>
@@ -1318,7 +1318,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                       void navigator.clipboard?.writeText(`https://orderking.in/pay/license?sku=${p.id}`);
                       toast.success("Checkout payment link copied! Ready to share with buyer.");
                     }}
-                    className="w-full rounded-lg bg-surface border border-border py-1.5 text-xs font-semibold text-fg hover:bg-surface-3 transition"
+                    className="w-full rounded-lg bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/10 py-1.5 text-xs font-semibold text-white hover:bg-surface-3 transition"
                   >
                     Copy Instant Payment Link ➔
                   </button>
@@ -1332,32 +1332,32 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
       {/* TAB 4: AUTONOMOUS SELF-CODING & TUNING ENGINE */}
       {deckTab === "upgrader" && (
         <div className="space-y-6">
-          <div className="rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6 shadow-xl space-y-4">
             <div className="flex items-center gap-3">
               <Cpu className="size-6 text-purple-400" />
               <div>
                 <h2 className="text-lg font-bold text-white">Autonomous Continuous Self-Coding &amp; Tuning</h2>
-                <p className="text-xs text-muted">
+                <p className="text-xs text-zinc-400">
                   Self-healing diagnostics, automatic memory tuning, and zero-downtime hot-patching.
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="rounded-xl border border-border bg-surface-2 p-3 text-center">
-                <span className="text-xs text-muted block">Diagnostic Sweeps</span>
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
+                <span className="text-xs text-zinc-400 block">Diagnostic Sweeps</span>
                 <span className="text-xl font-mono font-bold text-emerald-400">—</span>
               </div>
-              <div className="rounded-xl border border-border bg-surface-2 p-3 text-center">
-                <span className="text-xs text-muted block">Memory Leaks Patched</span>
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
+                <span className="text-xs text-zinc-400 block">Memory Leaks Patched</span>
                 <span className="text-xl font-mono font-bold text-purple-400">—</span>
               </div>
-              <div className="rounded-xl border border-border bg-surface-2 p-3 text-center">
-                <span className="text-xs text-muted block">Query Latency Tuning</span>
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
+                <span className="text-xs text-zinc-400 block">Query Latency Tuning</span>
                 <span className="text-xl font-mono font-bold text-amber-400">—</span>
               </div>
-              <div className="rounded-xl border border-border bg-surface-2 p-3 text-center">
-                <span className="text-xs text-muted block">Health Score</span>
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
+                <span className="text-xs text-zinc-400 block">Health Score</span>
                 <span className="text-xl font-mono font-bold text-emerald-400">—</span>
               </div>
             </div>
@@ -1368,12 +1368,12 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
       {/* TAB 5: GST RETURNS & LEGAL ACCOUNTING */}
       {deckTab === "accounting" && (
         <div className="space-y-6">
-          <div className="rounded-2xl border border-border bg-surface p-6 shadow-xl space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-6 shadow-xl space-y-4">
             <div className="flex items-center gap-3">
               <ShieldCheck className="size-6 text-emerald-400" />
               <div>
                 <h2 className="text-lg font-bold text-white">Automated GST Returns &amp; Section 79 Privacy Shield</h2>
-                <p className="text-xs text-muted">
+                <p className="text-xs text-zinc-400">
                   GSTR-1, GSTR-3B compilation, Section 194-O (1% TDS) ledger &amp; intermediary safe harbor protection.
                 </p>
               </div>

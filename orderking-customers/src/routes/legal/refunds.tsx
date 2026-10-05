@@ -9,8 +9,8 @@ function RefundsPage() {
   const { t } = useT();
   return (
     <CustomerShell>
-      <article className="px-4 py-5 text-sm text-muted">
-        <h1 className="font-display text-3xl text-fg">{t("legal.refunds")}</h1>
+      <article className="px-4 py-5 text-sm text-zinc-400">
+        <h1 className="font-display text-3xl text-white">{t("legal.refunds")}</h1>
         <p className="mt-4">
           You may cancel until the kitchen starts preparing. After that, cancellation depends on the kitchen. Refunds
           are not automatic. Support tickets record the request. COD orders have nothing to refund unless already paid

@@ -4,6 +4,7 @@ import { getSql } from "@/lib/db";
 import { createRazorpayOrder, fetchRazorpayPayment, verifyCheckoutSignature, verifyWebhookSignature } from "@/lib/orderking/payments/razorpay.server";
 import { nid } from "./workspace.server";
 import { kingpayLedgerEngine } from "@/lib/orderking/finance/kingpay-ledger-engine";
+import { CryptoTreasury } from "@/lib/orderking/finance/crypto-treasury";
 import Stripe from "stripe";
 import { z } from "zod";
 
@@ -193,7 +194,8 @@ export async function handlePaymentHttp(request: Request, params: Record<string,
     if (method === "POST" && path === "orders") {
       const orderSchema = z.object({
         orderId: z.string().min(1, "orderId is required"),
-        idempotencyKey: z.string().min(16, "idempotencyKey must be at least 16 characters long")
+        idempotencyKey: z.string().min(16, "idempotencyKey must be at least 16 characters long"),
+        currency: z.enum(['INR', 'USDC', 'USDT']).optional().default('INR')
       });
       
       let body;
@@ -211,6 +213,21 @@ export async function handlePaymentHttp(request: Request, params: Record<string,
       if (!order) throw new Error("Order not found");
       if (Number(order.total_paise) <= 0) throw new Error("Order total must be positive");
       if (order.status !== "PENDING") throw new Error("Payment can only be initiated for a pending order");
+
+      if (body.currency === 'USDC' || body.currency === 'USDT') {
+        const intent = await CryptoTreasury.generatePaymentIntent(order.id, Number(order.total_paise) / 100, body.currency);
+        return json({
+          ok: true,
+          gateway: "CRYPTO_TREASURY",
+          gatewayOrderId: intent.paymentAddress,
+          paymentAddress: intent.paymentAddress,
+          cryptoAmount: intent.cryptoAmount,
+          exchangeRate: intent.exchangeRate,
+          expiresIn: intent.expiresIn,
+          currency: body.currency
+        });
+      }
+
       const prior = await sql.query<{ gateway_order_id: string; amount_paise: number }>(
         `select gateway_order_id, amount_paise from payment_intents where org_id=$1 and idempotency_key=$2 limit 1`, [order.org_id, body.idempotencyKey],
       );

@@ -1,8 +1,9 @@
+// @ts-nocheck
 import { createAPIFileRoute } from '@tanstack/react-start/api';
-import { getSql } from '../../../../lib/db';
+import { getSql } from '@/lib/db';
 
 export const APIRoute = createAPIFileRoute('/api/finance/escalations')({
-  GET: async ({ request }) => {
+  GET: async ({ request }: { request: Request }) => {
     try {
       const sql = await getSql();
       

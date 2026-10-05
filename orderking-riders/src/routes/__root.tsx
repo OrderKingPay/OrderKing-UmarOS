@@ -1,3 +1,4 @@
+﻿import { globalLogger } from '@/lib/logger';
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { AuthProvider } from "@/lib/auth/provider";
@@ -48,7 +49,7 @@ export const Route = createRootRoute({
       <head>
         <HeadContent />
       </head>
-      <body className="bg-bg text-fg">
+      <body className="bg-bg text-white">
         <PreviewHostBridge />
         <OfflineDetector />
         <AuthProvider>
@@ -77,3 +78,4 @@ export const Route = createRootRoute({
     </html>
   ),
 });
+
