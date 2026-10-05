@@ -250,24 +250,14 @@ function Page() {
         </>
         ) : null}
 
-        {/* Wednesday Settlement Notice & Statutory Gig Partner Protection */}
-        <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 text-xs text-zinc-400-foreground space-y-2">
+        <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 p-3.5 text-xs text-zinc-400-foreground space-y-2">
           <div className="flex items-center justify-between font-medium text-white">
-            <div className="flex items-center gap-1.5">
-              <span>🗓️ Wednesday Weekly Settlement</span>
-              <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/20 px-1.5 py-0.2 rounded">
-                Code on Social Security 2020
-              </span>
-            </div>
-            <span className="text-primary font-semibold">Auto-Transfer</span>
+            <span>Settlement schedule</span>
+            <span className="text-primary font-semibold">Provider-backed only</span>
           </div>
           <p className="leading-relaxed">
-            Direct NEFT/UPI bank deposit every Wednesday at 06:00 AM IST. Payout formula: Base delivery pay + Distance pay + Dynamic surge + Daily milestone bonuses + 100% customer tips − Cash on delivery (COD) collected − statutory TDS (1% u/s 194-O).
+            Your actual payout timing, deductions, incentives and transfer status are taken from the verified rider settlement record. No transfer is initiated by this screen until a real payout provider and rider payout account are connected.
           </p>
-          <div className="border-t border-white/10/50 pt-1.5 text-[10px] flex items-center justify-between">
-            <span>🛡️ Independent Gig Partner Agreement · 100% Transparent Itemization</span>
-            <span className="text-zinc-400-foreground">Arbitration Act 1996 Protected</span>
-          </div>
         </div>
 
         <Card>
