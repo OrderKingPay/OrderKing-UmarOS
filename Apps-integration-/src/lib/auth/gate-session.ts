@@ -16,6 +16,22 @@ const gateIdentityRuntime = createServerOnlyFn(async () => {
 const GATE_ACCOUNT_ISSUER = "https://grok.com";
 const LOG = "[gate-identity]";
 
+const setTanStackCookie = createServerOnlyFn(async (
+  name: string,
+  value: string,
+  options: {
+    path?: string;
+    httpOnly?: boolean;
+    secure?: boolean;
+    sameSite?: "lax" | "strict" | "none";
+    maxAge?: number;
+    domain?: string;
+  },
+): Promise<void> => {
+  const { setCookie } = await import("@tanstack/react-start/server");
+  setCookie(name, value, options);
+});
+
 type GateAccount = Parameters<typeof handleOAuthUserInfo>[1]["account"];
 
 /**
@@ -64,8 +80,7 @@ async function emitSessionCookie(
 
   // Primary path: TanStack Start's response cookie store (reaches the browser).
   try {
-    const { setCookie } = await import("@tanstack/react-start/server");
-    setCookie(sessionTokenName, sessionValue, {
+    await setTanStackCookie(sessionTokenName, sessionValue, {
       path: cookieOptions.path ?? "/",
       httpOnly: cookieOptions.httpOnly ?? true,
       secure: cookieOptions.secure ?? true,
@@ -107,8 +122,7 @@ async function expireSessionDataCookie(
   const path = cookie.attributes.path ?? "/";
   const secure = cookie.attributes.secure ?? true;
   try {
-    const { setCookie } = await import("@tanstack/react-start/server");
-    setCookie(cookie.name, "", {
+    await setTanStackCookie(cookie.name, "", {
       path,
       httpOnly: true,
       secure,
