@@ -26,8 +26,12 @@ function splatOf(params: Record<string, string | undefined>): string {
 
 async function resolveAdminUserId(request: Request): Promise<string> {
   const authorization = request.headers.get("authorization")?.trim();
-  const configuredToken = process.env.ORDERKING_SERVICE_TOKEN?.trim() || "ok_prod_sec_9d8f3b2c1e4a7d6e5f8b9c0a1b2c3d4e5f6a7b8c";
-  const configuredUserId = process.env.ORDERKING_SERVICE_USER_ID?.trim() || "usr_system_service";
+  const configuredToken = process.env.ORDERKING_SERVICE_TOKEN?.trim();
+  const configuredUserId = process.env.ORDERKING_SERVICE_USER_ID?.trim();
+  if (!configuredToken || !configuredUserId) return requireUserId();
+  if (/vercel\.app$/i.test(process.env.HDMASTER_URL?.trim() ?? "")) {
+    throw new Error("Cloudflare-only policy: HDMASTER_URL may not target Vercel.");
+  }
   if (configuredToken && configuredUserId && authorization === `Bearer ${configuredToken}`) return configuredUserId;
   return requireUserId();
 }
