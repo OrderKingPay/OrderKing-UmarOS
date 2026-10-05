@@ -18,7 +18,7 @@ export const placeOrderViaHDmaster = createServerFn({ method: "POST" })
   validator((input: {
     restaurantId: string; zoneId: string; lat: number; lng: number; coupon?: string | null; tipPaise?: number; lines: CartLineInput[];
     address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string };
-    paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY"; notes?: string; idempotencyKey: string;
+    paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY" | "RAZORPAY_ONLINE"; notes?: string; idempotencyKey: string;
   }) => input)
   .handler(async ({ context, data }: any) => {
     if (!data.address.line1.trim()) throw new Error("Delivery address is required.");
@@ -57,4 +57,68 @@ export const cancelOrderViaHDmaster = createServerFn({ method: "POST" })
     const payload = (await response.json().catch(() => ({}))) as { data?: { orderId: string; status: string; authoritative: "HDmaster" }; error?: string };
     if (!response.ok || !payload.data) throw new Error(payload.error ?? `HDmaster cancellation failed (${response.status})`);
     return payload.data;
+  });
+
+
+export const createRazorpayPaymentOrder = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { orderId: string; idempotencyKey: string }) => input)
+  .handler(async ({ data }: { data: { orderId: string; idempotencyKey: string } }) => {
+    const { baseUrl, token } = hdmasterConfig();
+    const response = await fetch(`${baseUrl}/v1/payments/orders`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-orderking-service-token": token,
+      },
+      body: JSON.stringify(data),
+    });
+    const payload = await response.json().catch(() => ({})) as {
+      ok?: boolean;
+      gatewayOrderId?: string;
+      amountPaise?: number;
+      currency?: string;
+      keyId?: string;
+      error?: string;
+    };
+    if (!response.ok || !payload.gatewayOrderId || !payload.keyId) {
+      throw new Error(payload.error ?? `Razorpay payment initialization failed (${response.status})`);
+    }
+    return {
+      gatewayOrderId: payload.gatewayOrderId,
+      amountPaise: Number(payload.amountPaise),
+      currency: payload.currency ?? "INR",
+      keyId: payload.keyId,
+    };
+  });
+
+export const verifyRazorpayCheckout = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: {
+    orderId: string;
+    razorpayOrderId: string;
+    paymentId: string;
+    signature: string;
+  }) => input)
+  .handler(async ({ data }: { data: { orderId: string; razorpayOrderId: string; paymentId: string; signature: string } }) => {
+    const { baseUrl, token } = hdmasterConfig();
+    const response = await fetch(`${baseUrl}/v1/payments/verify`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-orderking-service-token": token,
+      },
+      body: JSON.stringify(data),
+    });
+    const payload = await response.json().catch(() => ({})) as {
+      ok?: boolean;
+      status?: string;
+      paymentId?: string;
+      orderId?: string;
+      error?: string;
+    };
+    if (!response.ok || payload.status !== "CAPTURED") {
+      throw new Error(payload.error ?? "Payment verification failed");
+    }
+    return payload;
   });
