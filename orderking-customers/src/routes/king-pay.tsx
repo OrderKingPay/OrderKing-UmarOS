@@ -875,8 +875,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         if (savedBal) setWalletBalance(parseInt(savedBal, 10));
       }
 
-      const savedLater = localStorage.getItem("ok_king_pay_later_active");
-      if (savedLater) setPayLaterActive(savedLater === "true");
+      if (KINGPAY_CREDIT_ENABLED) {
+        const savedLater = localStorage.getItem("ok_king_pay_later_active");
+        if (savedLater) setPayLaterActive(savedLater === "true");
+      }
 
       const savedGold = localStorage.getItem("ok_king_pay_gold_grams");
       if (savedGold) setGoldGrams(parseFloat(savedGold));
@@ -936,8 +938,8 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   // Interactive Scan & Pay Simulator
   const [showScanner, setShowScanner] = useState(false);
-  const [scanRecipient, setScanRecipient] = useState("karimganj.store@upi");
-  const [scanAmount, setScanAmount] = useState("150");
+  const [scanRecipient, setScanRecipient] = useState("");
+  const [scanAmount, setScanAmount] = useState("");
   const [scannerTab, setScannerTab] = useState<"camera" | "manual">("camera");
   const [flashlightOn, setFlashlightOn] = useState(false);
 
@@ -1083,15 +1085,15 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   const [showScratchCard, setShowScratchCard] = useState(false);
   const [scratched, setScratched] = useState(false);
   const [scratchReward, setScratchReward] = useState({
-    title: "🎉 Flat ₹25 Cashback!",
-    desc: "Added directly to your KingPay wallet float.",
-    amount: 25,
-    coins: 100,
+    title: "Reward unavailable",
+    desc: "Rewards are disabled until a verified rewards ledger is connected.",
+    amount: 0,
+    coins: 0,
   });
 
   // 24K Digital Gold Partner Savings (Jar / Paytm Gold style)
   const [showGoldModal, setShowGoldModal] = useState(false);
-  const [goldGrams, setGoldGrams] = useState(0.045);
+  const [goldGrams, setGoldGrams] = useState(0);
   const [goldAmount, setGoldAmount] = useState("100");
 
   // Split Bill with Friends (Splitwise + PhonePe style)
@@ -1207,7 +1209,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
   // Interactive Loan EMI & Eligibility Calculator
   const [calcAmount, setCalcAmount] = useState(100000);
   const [calcTenure, setCalcTenure] = useState(12);
-  const [simulatedCibilScore, setSimulatedCibilScore] = useState(785);
+  const [simulatedCibilScore, setSimulatedCibilScore] = useState(0);
   const [calcCategory, setCalcCategory] = useState<"personal" | "business" | "bike" | "card" | "bajaj">("personal");
   const [selectedBajajOfferCategory, setSelectedBajajOfferCategory] = useState<"all" | "electronics" | "home" | "business" | "health" | "vehicle" | "lifestyle">("all");
 
@@ -1270,7 +1272,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
 
   // Auto-sync offline transaction queue when connectivity returns
   const syncOfflineQueue = () => {
-    if (typeof window === "undefined") return;
+    if (!KINGPAY_PUBLIC_UPI_ENABLED || typeof window === "undefined") return;
     try {
       const rawQueue = localStorage.getItem("ok_offline_tx_queue");
       if (!rawQueue) return;
@@ -2360,7 +2362,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             </div>
             <div className="flex items-center gap-1.5 self-start sm:self-auto rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400">
               <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
-              <span>Instant Disbursal Active</span>
+              <span>{KINGPAY_CREDIT_ENABLED ? "Provider active" : "Future / disabled"}</span>
             </div>
           </div>
 
@@ -2368,7 +2370,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           <div className="rounded-xl border border-indigo-500/20 bg-surface/80 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-fg">🧮 Interactive Loan &amp; EMI Calculator</span>
-              <span className="text-[11px] font-mono text-muted">Estimated Rate: 9.9% p.a.</span>
+              <span className="text-[11px] font-mono text-muted">Illustrative calculator · provider rate not confirmed</span>
             </div>
 
             {/* Slider 1: Loan Amount */}
@@ -2448,9 +2450,9 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             {/* Slider 3: CIBIL Score & Instant Pre-Approval Dial */}
             <div className="space-y-1.5 pt-1 border-t border-indigo-500/20">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-muted font-medium">Your CIBIL Score Dial:</span>
-                <span className={`font-mono font-extrabold text-sm ${simulatedCibilScore >= 750 ? "text-emerald-600" : simulatedCibilScore >= 650 ? "text-indigo-600" : "text-amber-600"}`}>
-                  {simulatedCibilScore} ({simulatedCibilScore >= 750 ? "Super-Prime Pre-Approved" : simulatedCibilScore >= 650 ? "Good Approval Rate" : "100% Guaranteed FD-Backed"})
+                <span className="text-muted font-medium">Your verified CIBIL score:</span>
+                <span className="font-mono font-extrabold text-sm text-amber-600">
+                  {KINGPAY_CREDIT_ENABLED ? "Awaiting verified credit-provider data" : "Unavailable until a verified credit provider is connected"}
                 </span>
               </div>
               <input
@@ -2459,6 +2461,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
                 max={900}
                 step={5}
                 value={simulatedCibilScore}
+                disabled={!KINGPAY_CREDIT_ENABLED}
                 onChange={(e) => setSimulatedCibilScore(Number(e.target.value))}
                 className="w-full h-1.5 bg-surface-2 rounded-lg appearance-none cursor-pointer accent-emerald-500"
               />
@@ -2475,16 +2478,14 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
               <div className="flex items-center justify-between font-bold text-emerald-800 dark:text-emerald-300">
                 <span>🤝 Customer Benefit:</span>
                 <span>
-                  {simulatedCibilScore >= 750
-                    ? "0% Interest / 9.9% p.a. · Instant Disbursal in 20 Mins"
-                    : simulatedCibilScore >= 650
-                    ? "Fast Digital Approval · Low Documentation"
-                    : "100% Guaranteed Approval (Zero Rejections)"}
+                  {KINGPAY_CREDIT_ENABLED
+                    ? "Eligibility, pricing and disbursal are determined by the connected regulated provider."
+                    : "No approval, pricing or disbursal is being represented until a regulated provider is connected."}
                 </span>
               </div>
               <div className="flex items-center justify-between text-[11px] text-amber-800 dark:text-amber-300 font-semibold border-t border-emerald-500/20 pt-1">
-                <span>🛡️ Zero Hidden Charges:</span>
-                <span>100% Transparent · Zero Foreclosure Penalty · Instant Bank Disbursal</span>
+                <span>🛡️ Provider terms:</span>
+                <span>Actual fees, eligibility, interest and disbursal are shown only from the connected provider.</span>
               </div>
             </div>
           </div>
