@@ -11,7 +11,8 @@ export const Route = createFileRoute('/api/finance/cron/run-settlement')({
       GET: async ({ request }: { request: Request }) => {
     try {
       const authHeader = request.headers.get('authorization');
-      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      const cronSecret = process.env.CRON_SECRET?.trim();
+      if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
       }
 
