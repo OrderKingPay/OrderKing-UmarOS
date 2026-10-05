@@ -132,7 +132,6 @@ const baseURL = explicitBaseURL ?? {
       "localhost", 
       "127.0.0.1", 
       "[::1]",
-          "apps-integration.vercel.app"
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
