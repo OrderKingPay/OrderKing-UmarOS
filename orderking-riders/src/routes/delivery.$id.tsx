@@ -45,7 +45,6 @@ function Page() {
           <DeliveryActions
             delivery={pack.delivery}
             cash={null}
-            simulatedOtp={pack.simulatedOtp}
             onChanged={load}
           />
         </div>
