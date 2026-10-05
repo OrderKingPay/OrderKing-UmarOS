@@ -85,14 +85,14 @@ export interface CityWaitlistEntry {
 }
 
 export const EXPANSION_WAITLIST: Record<string, CityWaitlistEntry> = {
-  Silchar: { cityName: "Silchar", waitlistVotes: 3420, trendingRank: 1, estimatedLaunchDays: 14 },
-  Guwahati: { cityName: "Guwahati", waitlistVotes: 8910, trendingRank: 2, estimatedLaunchDays: 30 },
-  Hailakandi: { cityName: "Hailakandi", waitlistVotes: 1840, trendingRank: 3, estimatedLaunchDays: 21 },
-  Badarpur: { cityName: "Badarpur", waitlistVotes: 2150, trendingRank: 4, estimatedLaunchDays: 7 },
-  Kolkata: { cityName: "Kolkata", waitlistVotes: 12400, trendingRank: 5, estimatedLaunchDays: 45 },
-  Delhi: { cityName: "Delhi NCR", waitlistVotes: 18200, trendingRank: 6, estimatedLaunchDays: 60 },
-  Mumbai: { cityName: "Mumbai", waitlistVotes: 16900, trendingRank: 7, estimatedLaunchDays: 60 },
-  Bengaluru: { cityName: "Bengaluru", waitlistVotes: 15400, trendingRank: 8, estimatedLaunchDays: 60 },
+  Silchar: { cityName: "Silchar", waitlistVotes: 0, trendingRank: 0, estimatedLaunchDays: 0 },
+  Guwahati: { cityName: "Guwahati", waitlistVotes: 0, trendingRank: 0, estimatedLaunchDays: 0 },
+  Hailakandi: { cityName: "Hailakandi", waitlistVotes: 0, trendingRank: 0, estimatedLaunchDays: 0 },
+  Badarpur: { cityName: "Badarpur", waitlistVotes: 0, trendingRank: 0, estimatedLaunchDays: 0 },
+  Kolkata: { cityName: "Kolkata", waitlistVotes: 0, trendingRank: 0, estimatedLaunchDays: 0 },
+  Delhi: { cityName: "Delhi NCR", waitlistVotes: 0, trendingRank: 0, estimatedLaunchDays: 0 },
+  Mumbai: { cityName: "Mumbai", waitlistVotes: 0, trendingRank: 0, estimatedLaunchDays: 0 },
+  Bengaluru: { cityName: "Bengaluru", waitlistVotes: 0, trendingRank: 0, estimatedLaunchDays: 0 },
 };
 
 export function getCityWaitlistInfo(cityName: string): CityWaitlistEntry {
