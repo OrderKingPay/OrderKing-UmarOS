@@ -10,7 +10,6 @@ export * from "./gemini-provider.ts";
 export * from "./openai-provider.ts";
 export * from "./anthropic-provider.ts";
 export * from "./xai-provider.ts";
-export * from "./local-deterministic-provider.ts";
 
 export interface ProviderStatus {
   id: string;
@@ -74,13 +73,6 @@ export class ModelRouterService {
         isConfigured: Boolean(process.env.XAI_API_KEY),
         supportedModels: ["grok-2", "grok-3"],
         requiredEnvVar: "XAI_API_KEY",
-      },
-      {
-        id: "local_deterministic",
-        name: "Local Sovereign Engine (Zero-Dep)",
-        isConfigured: true,
-        supportedModels: ["sovereign-ultra-deterministic"],
-        requiredEnvVar: "NONE (Always Active)",
       },
     ];
   }
