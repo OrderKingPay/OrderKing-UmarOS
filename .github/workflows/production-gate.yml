@@ -18,7 +18,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9
+          version: 12.8.1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -28,6 +28,31 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Cloudflare-only runtime guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          runtime_hits="$(rg -n --glob '*.ts' --glob '*.tsx' --glob '*.mjs' --glob '*.js' \
+            -e 'process\\.env\\.VERCEL_URL' \
+            -e 'process\\.env\\.VERCEL_PROJECT_PRODUCTION_URL' \
+            -e 'vercel\\.app' \
+            -e 'netlify\\.app' \
+            orderking-customers orderking-partners orderking-riders HDmaster Apps-integration- || true)"
+          if [[ -n "$runtime_hits" ]]; then
+            echo "Cloudflare-only guard failed: legacy hosting references remain in runtime code."
+            echo "$runtime_hits"
+            exit 1
+          fi
+          credential_hits="$(rg -n --glob '*.ts' --glob '*.tsx' --glob '*.mjs' --glob '*.js' \
+            -e '"test_key"' \
+            -e '"test_secret"' \
+            orderking-customers orderking-partners orderking-riders HDmaster Apps-integration- || true)"
+          if [[ -n "$credential_hits" ]]; then
+            echo "Production credential guard failed: fake Razorpay credentials remain in runtime code."
+            echo "$credential_hits"
+            exit 1
+          fi
 
       - name: Run Typecheck across 5 apps
         run: pnpm run typecheck
