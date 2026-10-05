@@ -48,8 +48,14 @@ import {
   PREVIEW_CLIENT_SECRET,
 } from "./preview";
 
-// Kick (and share) PGLite bootstrap as soon as the auth server module loads.
-void ensureDbReady();
+// PGLite bootstrap is preview/development only. Production must use the configured server database.
+if (
+  process.env.NODE_ENV !== "production" &&
+  process.env.CF_PAGES !== "1" &&
+  process.env.CF_WORKERS !== "1"
+) {
+  void ensureDbReady();
+}
 
 /**
  * Preview secret must outlive module reloads: PGLite (and its session rows) is
