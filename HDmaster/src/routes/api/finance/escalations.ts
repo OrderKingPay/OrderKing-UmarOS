@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getSql } from "../../../../lib/db";
+import { getSql } from "@/lib/db";
 
+// @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/finance/escalations")({
   server: {
     handlers: {
