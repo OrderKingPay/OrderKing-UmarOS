@@ -1,7 +1,6 @@
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
 export type DbSource = "neon" | "unconfigured";
-const productionRuntime = typeof process !== "undefined" && process.env.NODE_ENV === "production";
 const rawDatabaseUrl = typeof process !== "undefined" ? process.env.DATABASE_URL : undefined;
 let databaseUrl = rawDatabaseUrl && rawDatabaseUrl.trim() ? rawDatabaseUrl : undefined;
 if (databaseUrl && databaseUrl.includes("your_supabase_pooler")) {
@@ -100,12 +99,11 @@ async function createSql(): Promise<Sql> {
   if (typeof window !== "undefined") {
     throw new Error("@/lib/db is server-only");
   }
-  if (dbSource === "unconfigured") { 
-    console.warn("DATABASE_URL is missing. Using safe empty fallback."); 
-    const emptySql = ((...args: any[]) => Promise.resolve([])) as unknown as Sql;
-    emptySql.query = async () => [];
-    emptySql.transaction = async <T>(cb: (tx: Sql) => Promise<T>) => cb(emptySql);
-    return emptySql;
+  if (dbSource === "unconfigured") {
+    const missingDatabase: Run = async () => {
+      throw new Error("DATABASE_URL is required for Customer server-side database operations.");
+    };
+    return toSql(missingDatabase);
   }
   return createNeonSql();
 }
@@ -120,6 +118,7 @@ export function getSql(): Promise<Sql> {
 
 export async function getPglite(): Promise<any> { throw new Error("PGLite is intentionally removed."); }
 
-export function ensureDbReady(): Promise<void> {
-  return Promise.resolve();
+export async function ensureDbReady(): Promise<void> {
+  const sql = await getSql();
+  await sql.query("select 1 as ok");
 }
