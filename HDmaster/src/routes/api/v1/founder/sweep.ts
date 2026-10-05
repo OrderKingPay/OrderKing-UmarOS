@@ -35,7 +35,7 @@ export const APIRoute = createAPIFileRoute("/api/v1/founder/sweep")({
       const result = await sql<{ platform_revenue: number }>`
         SELECT COALESCE(SUM(total_paise), 0) AS platform_revenue
         FROM orders
-        WHERE status = "DELIVERED"
+        WHERE status = 'DELIVERED'
       `;
 
       const revenuePaise = Number(result[0]?.platform_revenue ?? 0);
