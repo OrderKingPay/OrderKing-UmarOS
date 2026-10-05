@@ -117,10 +117,11 @@ const baseURL = explicitBaseURL ?? {
   // Include loopback hosts so dynamic baseURL resolves for local email/password
   // (not only the preview wildcard).
   allowedHosts: [
-      ...previewAllowedHosts, 
-      "localhost", 
-      "127.0.0.1", 
+      ...previewAllowedHosts,
+      "localhost",
+      "127.0.0.1",
       "[::1]",
+      "orderking-riders.pages.dev",
       ...(process.env.VERCEL_URL ? [process.env.VERCEL_URL] : []),
       ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [process.env.VERCEL_PROJECT_PRODUCTION_URL] : []),
       "hdmaster.vercel.app",
@@ -137,7 +138,8 @@ const baseURL = explicitBaseURL ?? {
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = [ 'https://orderking-hdmaster.netlify.app', 'https://orderking.netlify.app', 'https://orderking-partners.netlify.app', 'https://orderking-riders.netlify.app', 
+const trustedOrigins: string[] = [
+  "https://orderking-riders.pages.dev", 'https://orderking-hdmaster.netlify.app', 'https://orderking.netlify.app', 'https://orderking-partners.netlify.app', 'https://orderking-riders.netlify.app', 
   ...(explicitBaseURL ? [explicitBaseURL] : []),
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
