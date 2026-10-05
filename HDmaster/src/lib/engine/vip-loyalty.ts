@@ -1,8 +1,8 @@
 /**
- * VIP PREDICTIVE LOYALTY ENGINE
+ * VIP PERSONALIZED LOYALTY ENGINE
  * 
  * Machine Learning module to track customer habits and automatically 
- * dispatch highly targeted, time-sensitive offers to create daily addiction.
+ * dispatch opt-in, relevance-based loyalty offers without fabricated urgency.
  */
 
 import { AntigravityMarketing } from './antigravity-marketing';
@@ -18,10 +18,10 @@ export interface CustomerOrderHistory {
 
 export class VIPLoyaltyEngine {
   /**
-   * Scans the database for users whose average order time is approaching
+   * Scans eligible opted-in users whose usual order time is approaching
    * within the next 30 minutes, and mathematically calculates a custom discount.
    */
-  public static async triggerPredictiveAddictionLoop(
+  public static async triggerPersonalizedLoyaltyOffers(
     customers: CustomerOrderHistory[],
     vapidKeys: { public: string; private: string }
   ): Promise<number> {
@@ -40,13 +40,13 @@ export class VIPLoyaltyEngine {
       // If their usual order time is exactly 15 to 30 minutes away
       if (timeDiff > 15 && timeDiff <= 30) {
         
-        // Construct the VIP Hyper-Personalized Offer
+        // Construct the VIP personalized offer
         const pushPayload = {
           endpoint: customer.pushEndpoint.endpoint,
           keys: customer.pushEndpoint.keys,
           title: '🌟 Special VIP Secret Drop',
-          body: `We know you are craving ${customer.mostOrderedItem}. Order in the next 30 mins for an exclusive 15% VIP discount!`,
-          url: `https://orderking.in/vip-claim/${customer.customerId}`
+          body: `We know you are craving ${customer.mostOrderedItem}. A personalized VIP offer is available for a limited period.`,
+          url: `${process.env.PUBLIC_APP_ORIGIN ?? "https://orderking-customers.pages.dev"}/vip-claim/${customer.customerId}`
         };
 
         // Fire the Web Push through the Antigravity Engine
