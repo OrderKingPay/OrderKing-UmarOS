@@ -9,7 +9,7 @@ function json(body: unknown, status = 200) { return new Response(JSON.stringify(
 function serviceUserId(request: Request): string { const authorization = request.headers.get("authorization")?.trim(); const token = process.env.ORDERKING_SERVICE_TOKEN?.trim(); const userId = process.env.ORDERKING_SERVICE_USER_ID?.trim(); if (!token || !userId || authorization !== `Bearer ${token}`) throw new Error("Unauthorized"); return userId; }
 
 type CustomerOrderInput = {
-  customerRef: string; restaurantId: string; cityId: string; zoneId: string; paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY";
+  customerRef: string; restaurantId: string; cityId: string; zoneId: string; paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY" | "RAZORPAY_ONLINE";
   foodPaise: number; restaurantDiscountPaise: number; platformDiscountPaise: number; deliveryFeePaise: number; serviceFeePaise: number; taxPaise: number; totalPaise: number; commissionPaise: number;
   address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string; lat?: number; lng?: number }; notes?: string;
   lines: { itemId: string; name: string; qty: number; unitPaise: number }[];
@@ -34,7 +34,7 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
       restaurantId: z.string().min(1),
       cityId: z.string().min(1),
       zoneId: z.string().min(1),
-      paymentMethod: z.enum(["COD", "UPI_SANDBOX", "KING_PAY"]),
+      paymentMethod: z.enum(["COD", "UPI_SANDBOX", "KING_PAY", "RAZORPAY_ONLINE"]),
       foodPaise: z.number().min(0),
       restaurantDiscountPaise: z.number().min(0),
       platformDiscountPaise: z.number().min(0),
@@ -85,6 +85,9 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     if (!customerId) { customerId = nid("cus"); await sql`insert into customers (id,org_id,city_id,display_ref,phone_masked,status,data_mode) values (${customerId},${ws.ctx.orgId},${input.cityId},${input.customerRef},'MASKED','ACTIVE',${ws.dataMode})`; }
     const orderId = nid("ord");
       if (input.paymentMethod === "KING_PAY") {
+      if (ws.dataMode === "PRODUCTION") {
+        return json({ error: "Consumer KingPay wallet is not enabled for production checkout.", code: "KINGPAY_CONSUMER_DISABLED" }, 409);
+      }
         const { kingpayLedgerEngine } = await import("@/lib/orderking/finance/kingpay-ledger-engine");
         const entry = kingpayLedgerEngine.processPayment(
           idempotencyKey + ":wallet",
@@ -98,7 +101,11 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     if (process.env.VERCEL_ENV === "production" && input.paymentMethod === "UPI_SANDBOX") {
       return json({ error: "Sandbox UPI is not available in production.", code: "SANDBOX_PAYMENT_BLOCKED" }, 400);
     }
-    const paymentStatus = input.paymentMethod === "COD" ? "PENDING" : input.paymentMethod === "KING_PAY" ? "PAID_WALLET" : "AUTHORIZED_SANDBOX";
+    const paymentStatus =
+      input.paymentMethod === "COD" ? "PENDING" :
+      input.paymentMethod === "RAZORPAY_ONLINE" ? "PENDING_PAYMENT" :
+      input.paymentMethod === "KING_PAY" ? "PAID_WALLET" :
+      "AUTHORIZED_SANDBOX";
     await sql`insert into orders (id,org_id,city_id,zone_id,restaurant_id,customer_id,status,payment_status,payment_method,food_paise,restaurant_discount_paise,platform_discount_paise,delivery_fee_paise,service_fee_paise,tax_paise,total_paise,commission_paise,promised_at,placed_at,data_mode,delivery_address_json,delivery_lat,delivery_lng,delivery_otp) values (${orderId},${ws.ctx.orgId},${input.cityId},${input.zoneId},${input.restaurantId},${customerId},'PENDING',${paymentStatus},${input.paymentMethod},${input.foodPaise},${input.restaurantDiscountPaise},${input.platformDiscountPaise},${input.deliveryFeePaise},${input.serviceFeePaise},${input.taxPaise},${input.totalPaise},${input.commissionPaise},now()+interval '45 minutes',now(),${ws.dataMode},${JSON.stringify(input.address)},${input.address.lat ?? null},${input.address.lng ?? null},${randomInt(1000, 10000).toString()})`;
     for (const line of input.lines) await sql`insert into order_items (id,org_id,order_id,menu_item_id,name,qty,unit_paise) values (${nid("oit")},${ws.ctx.orgId},${orderId},${line.itemId},${line.name},${line.qty},${line.unitPaise})`;
     await sql`insert into order_events (id,org_id,order_id,actor_employee_id,from_status,to_status,action,note) values (${nid("ev")},${ws.ctx.orgId},${orderId},${ws.ctx.employeeId},null,'PENDING','customer.order_created',${JSON.stringify({ customerRef: input.customerRef, address: input.address, notes: input.notes ?? null })})`;
