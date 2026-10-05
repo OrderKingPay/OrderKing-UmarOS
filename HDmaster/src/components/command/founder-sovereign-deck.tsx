@@ -63,7 +63,7 @@ export function FounderSovereignDeck() {
   const [platformFrozen, setPlatformFrozen] = useState(false);
   const [surgeMultiplier, setSurgeMultiplier] = useState<"1.0x" | "1.25x" | "1.5x" | "2.0x">("1.0x");
   const [dispatchMode, setDispatchMode] = useState<"AI_AUTO" | "MANUAL_OVERRIDE">("AI_AUTO");
-  const [productionMode, setProductionMode] = useState<"LIVE_PRODUCTION" | "SIMULATION_TEST">("LIVE_PRODUCTION");
+  const [productionMode, setProductionMode] = useState<"LIVE_PRODUCTION" | "SIMULATION_TEST">("SIMULATION_TEST");
   const [broadcastMessage, setBroadcastMessage] = useState("");
   const [isBroadcasting, setIsBroadcasting] = useState(false);
 
@@ -93,25 +93,11 @@ export function FounderSovereignDeck() {
     Array<{ id: string; action: string; timestamp: string; status: "SUCCESS" | "EXECUTING"; detail: string }>
   >([
     {
-      id: "ord-901",
+      id: "control-init",
       action: "FOUNDER_SESSION_INIT",
-      timestamp: "Just now",
+      timestamp: "Current session",
       status: "SUCCESS",
-      detail: "Sovereign Executive Command Deck initialized with full root authorization",
-    },
-    {
-      id: "ord-900",
-      action: "MERCHANT_SETTLEMENT_SWEEP",
-      timestamp: "12m ago",
-      status: "SUCCESS",
-      detail: "Batch payout of ₹42,500 settled directly to 14 partner restaurant bank accounts",
-    },
-    {
-      id: "ord-899",
-      action: "SURGE_ALGORITHM_CALIBRATION",
-      timestamp: "1h ago",
-      status: "SUCCESS",
-      detail: "Karimganj Town zone surge locked at 1.0x (0% extra fee guarantee enforced)",
+      detail: "Umar OS control deck loaded. No production action is claimed without verified backend evidence.",
     },
   ]);
 
@@ -155,44 +141,31 @@ export function FounderSovereignDeck() {
 
   const handleBroadcastToFleet = () => {
     if (!broadcastMessage) return;
-    setIsBroadcasting(true);
-    setTimeout(() => {
-      setIsBroadcasting(false);
-      setBroadcastMessage("");
-      toast.success("Broadcast delivered to entire active fleet!");
-      addAuditEntry("GLOBAL_BROADCAST", "Sent fleet-wide priority broadcast");
-    }, 1500);
+    setIsBroadcasting(false);
+    toast.info("NOT ENABLED: fleet broadcast requires the authenticated rider messaging provider.");
   };
 
   const handleBatchSettlement = () => {
-    toast.success("Batch settlement process initiated!");
-    addAuditEntry("BATCH_SETTLEMENT_SWEEP", "Initiated batch settlement sweep");
+    toast.info("NOT ENABLED: settlement requires a reconciled ledger and real payment-provider transfer evidence.");
   };
 
   const handleInstantKycSweep = () => {
-    toast.success("Instant KYC sweep executed successfully.");
-    addAuditEntry("INSTANT_KYC_SWEEP", "Executed KYC compliance check across all unverified partners");
+    toast.info("NOT ENABLED: KYC verification requires the approved identity/compliance provider.");
   };
 
   const handleReindexSearch = () => {
-    toast.success("Global search index rebuild started.");
-    addAuditEntry("REINDEX_SEARCH", "Started asynchronous search index rebuild");
+    toast.info("NOT ENABLED: search reindexing is available after a real production index service is connected.");
   };
 
   const handlePurgeCache = () => {
-    toast.success("Edge caches successfully purged globally.");
-    addAuditEntry("PURGE_EDGE_CACHE", "Invalidated all global edge caches");
+    toast.info("NOT ENABLED: cache purge requires a verified Cloudflare API action.");
   };
 
   const handleTriggerSelfUpgrade = () => {
-    toast.success("Autonomous Upgrader Cycle Triggered!");
-    setSelfUpgradeStats(prev => ({
-      ...prev,
-      cycleCount: prev.cycleCount + 1,
-      totalPatches: prev.totalPatches + Math.floor(Math.random() * 3) + 1,
-      totalDataPoints: prev.totalDataPoints + Math.floor(Math.random() * 5000),
-    }));
-    addAuditEntry("SELF_UPGRADE_TRIGGER", "Autonomous Zero-Lag Patch Cycle initiated");
+    const result = selfUpgrader.triggerSelfUpgradeCycle();
+    setRecentUpgrade(result);
+    setSelfUpgradeStats(selfUpgrader.getEngineStats());
+    toast.info("NOT ENABLED: self-upgrade requires an approved CI/change pipeline; no patch was applied.");
   };
 
   return (
@@ -213,7 +186,7 @@ export function FounderSovereignDeck() {
               </Badge>
             </div>
             <p className="text-xs text-zinc-400 mt-0.5">
-              Single Founder Control System · Frontier Intelligence · Section 79 IT Act Protected
+              Single Founder Control System · Evidence-gated operations · Counsel review required
             </p>
           </div>
         </div>
@@ -661,7 +634,7 @@ export function FounderSovereignDeck() {
                   </div>
                   <div className="bg-black/40 p-2.5 rounded-xl border border-white/5">
                     <p className="text-[9px] uppercase tracking-widest text-zinc-500">Uptime</p>
-                    <p className="text-lg font-black text-white font-mono mt-0.5">99.99%</p>
+                    <p className="text-lg font-black text-white font-mono mt-0.5">—</p>
                   </div>
                 </div>
               </div>
