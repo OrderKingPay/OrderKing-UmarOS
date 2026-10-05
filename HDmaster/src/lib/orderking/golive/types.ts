@@ -6,11 +6,13 @@ export type DatabaseProvider =
   | "SELF_HOSTED_POSTGRES" 
   | "LOCAL_PGLITE_DEV";
 
-export type HostingProvider = 
-  | "VERCEL" 
-  | "RAILWAY" 
-  | "AWS_ECS" 
-  | "CLOUD_RUN" 
+export type HostingProvider =
+  | "CLOUDFLARE_PAGES"
+  | "CLOUDFLARE_WORKERS"
+  | "VERCEL"
+  | "RAILWAY"
+  | "AWS_ECS"
+  | "CLOUD_RUN"
   | "VPS_DOCKER";
 
 export type PaymentGatewayProvider = 
