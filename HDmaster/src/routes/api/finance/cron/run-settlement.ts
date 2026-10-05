@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AutoSettlementEngine } from "../../../../lib/orderking/finance/auto-settlement-engine";
 
+// @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/finance/cron/run-settlement")({
   server: {
     handlers: {
