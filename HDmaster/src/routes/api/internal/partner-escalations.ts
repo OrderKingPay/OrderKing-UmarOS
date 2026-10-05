@@ -112,7 +112,7 @@ export const Route = createFileRoute("/api/internal/partner-escalations")({
             ticketId,
             status: "OPEN",
             queue: "partner",
-            dataMode: "ACTUAL",
+            dataMode: "SIMULATED",
           }), {
             status: 201,
             headers: { "content-type": "application/json" },
