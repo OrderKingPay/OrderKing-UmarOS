@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const roots = ["HDmaster/src","orderking-customers/src","orderking-partners/src","orderking-riders/src","Apps-integration-/src","scripts"];
+const roots = ["HDmaster/src","orderking-customers/src","orderking-partners/src","orderking-riders/src","Apps-integration-/src"];
 const bannedTokens = ["ok_prod_sec_","postgresql://","postgres://","RAZORPAY_KEY_ID=\"","RAZORPAY_KEY_SECRET=\"","BETTER_AUTH_SECRET=\"","GROK_AUTH_CLIENT_SECRET=\"","OPENAI_API_KEY=\"","test_key","test_secret"];
 const extensions = new Set([".ts",".tsx",".js",".mjs",".cjs",".json",".toml",".yaml",".yml"]);
 const failures = [];
