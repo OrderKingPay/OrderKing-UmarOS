@@ -6,7 +6,9 @@ export type DatabaseProvider =
   | "SELF_HOSTED_POSTGRES" 
   | "LOCAL_PGLITE_DEV";
 
-export type HostingProvider = 
+export type HostingProvider =
+  | "CLOUDFLARE_PAGES"
+  | "CLOUDFLARE_WORKERS"
   | "VERCEL" 
   | "RAILWAY" 
   | "AWS_ECS" 
