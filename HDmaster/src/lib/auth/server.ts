@@ -62,7 +62,7 @@ const globalAuthRef = globalThis as typeof globalThis & {
 };
 function previewAuthSecret(): string {
   if (process.env.NODE_ENV === "production") {
-    return "unconfigured-production-secret-do-not-use";
+    throw new Error("BETTER_AUTH_SECRET is required in production.");
   }
   globalAuthRef.__grokAuthPreviewSecret__ ??= randomBytes(32).toString("hex");
   return globalAuthRef.__grokAuthPreviewSecret__;
@@ -76,14 +76,19 @@ const env = (key: string): string | undefined => {
 
 // Explicit off-switch. The deployer sets `VITE_AUTH_ENABLED=true` when it
 // provisions auth; set it to "false" to force auth off everywhere (dev user).
+const productionRuntime = process.env.NODE_ENV === "production" || env("DATA_MODE") === "PRODUCTION";
 const authDisabled = env("VITE_AUTH_ENABLED") === "false";
 
-// Broker federation creds: the deployer injects a per-app client when deployed;
-// otherwise fall back to the shared live-preview client, which the broker accepts
+if (productionRuntime && authDisabled) {
+  throw new Error("VITE_AUTH_ENABLED=false is forbidden in production.");
+}
+
+// Broker federation credentials must be explicitly provided in production;
+// only non-production preview may use the shared preview client.
 // for any `*.grok-sandbox.com` callback (see `./preview`).
-const grokIssuer = env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
-const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
-const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
+const grokIssuer = env("GROK_AUTH_ISSUER") ?? (productionRuntime ? "" : GROK_ISSUER_DEFAULT);
+const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? (productionRuntime ? "" : PREVIEW_CLIENT_ID);
+const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? (productionRuntime ? "" : PREVIEW_CLIENT_SECRET);
 
 /** True when federated sign-in is active (real auth is enforced). */
 export const authConfigured =
@@ -96,6 +101,12 @@ export const authConfigured =
 // preview allowlist, which makes the OAuth `redirect_uri` the concrete preview URL
 // the broker's preview client accepts.
 const explicitBaseURL = env("BETTER_AUTH_URL");
+if (productionRuntime && !explicitBaseURL) {
+  throw new Error("BETTER_AUTH_URL is required in production.");
+}
+if (productionRuntime && (!grokIssuer || !grokClientId || !grokClientSecret)) {
+  throw new Error("Production OAuth broker credentials are incomplete.");
+}
 // Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
 // requires a mutable `allowedHosts: string[]`.
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
@@ -145,6 +156,12 @@ const trustedOrigins: string[] = [
 ];
 
 const databaseUrl = env("DATABASE_URL");
+if (productionRuntime && !databaseUrl) {
+  throw new Error("DATABASE_URL is required in production.");
+}
+if (productionRuntime && !env("BETTER_AUTH_SECRET")) {
+  throw new Error("BETTER_AUTH_SECRET is required in production.");
+}
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
