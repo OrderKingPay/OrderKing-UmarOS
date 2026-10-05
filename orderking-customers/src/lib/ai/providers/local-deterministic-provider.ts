@@ -16,9 +16,11 @@ export class LocalDeterministicProvider implements AIProvider {
   readonly id = "local_deterministic";
   readonly name = "Local Sovereign Core Engine";
   readonly supportedModels = ["sovereign-ultra-deterministic", "local-v2"];
-  readonly isConfigured = true;
+  // Preserved as an explicit development/sandbox artifact; never a production provider.
+  readonly isConfigured = process.env.ALLOW_LOCAL_AI_SANDBOX === "1" && process.env.DATA_MODE !== "PRODUCTION";
 
   async chat(input: ChatRequest): Promise<ChatResponse> {
+    if (!this.isConfigured) throw new Error("Local deterministic AI is unavailable outside an explicitly enabled sandbox.");
     const start = Date.now();
     const lastMsg = [...input.messages].reverse().find((m) => m.role === "user");
     const text = typeof lastMsg?.content === "string" ? lastMsg.content : "General inquiry";
@@ -132,6 +134,7 @@ export class LocalDeterministicProvider implements AIProvider {
   }
 
   async analyze(input: AnalysisRequest): Promise<AnalysisResponse> {
+    if (!this.isConfigured) throw new Error("Local deterministic AI is unavailable outside an explicitly enabled sandbox.");
     return {
       provider: this.id,
       model: "sovereign-ultra-deterministic",
@@ -151,6 +154,7 @@ export class LocalDeterministicProvider implements AIProvider {
   }
 
   async generateCode(input: CodeRequest): Promise<CodeResponse> {
+    if (!this.isConfigured) throw new Error("Local deterministic AI is unavailable outside an explicitly enabled sandbox.");
     return {
       provider: this.id,
       model: "sovereign-ultra-deterministic",
@@ -160,6 +164,7 @@ export class LocalDeterministicProvider implements AIProvider {
   }
 
   async generateStructuredOutput<T>(input: StructuredRequest): Promise<T> {
+    if (!this.isConfigured) throw new Error("Local deterministic AI is unavailable outside an explicitly enabled sandbox.");
     return {
       status: "SUCCESS",
       objective: input.prompt,
