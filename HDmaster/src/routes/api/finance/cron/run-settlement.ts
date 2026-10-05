@@ -14,7 +14,7 @@ export const Route = createFileRoute("/api/finance/cron/run-settlement")({
     try {
       const authHeader = request.headers.get("authorization");
       
-      if (!isCron && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
       }
 
