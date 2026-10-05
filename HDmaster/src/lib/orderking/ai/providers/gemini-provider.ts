@@ -16,7 +16,7 @@ import { GoogleGenAI } from "@google/genai";
 export class GoogleGeminiProvider implements AIProvider {
   readonly id = "gemini";
   readonly name = "Google Gemini Core";
-  readonly supportedModels = ["gemini-2.5-pro", "gemini-2.0-flash", "gemini-1.5-pro"];
+  readonly supportedModels = ["PROVIDER_CONFIGURED_MODEL"];
 
   private ai: GoogleGenAI;
   private apiKey: string | undefined;
@@ -44,7 +44,8 @@ export class GoogleGeminiProvider implements AIProvider {
   async chat(input: ChatRequest): Promise<ChatResponse> {
     this.ensureConfigured();
     const start = Date.now();
-    const model = input.model || "gemini-2.5-pro";
+    const model = input.model || process.env.GEMINI_MODEL?.trim();
+    if (!model) throw new Error("GEMINI_MODEL is required; no default model is assumed.");
 
     const contents = input.messages
       .filter((m) => m.role !== "system")
@@ -97,7 +98,6 @@ export class GoogleGeminiProvider implements AIProvider {
         promptTokens,
         completionTokens,
         totalTokens: usage?.totalTokenCount || promptTokens + completionTokens,
-        estimatedCostUsd: (promptTokens * 0.0001 + completionTokens * 0.0004) / 1000,
       },
       latencyMs: Date.now() - start,
     };
