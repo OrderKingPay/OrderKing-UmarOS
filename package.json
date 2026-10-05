@@ -11,7 +11,8 @@
     "deploy:cloudrun": "powershell -ExecutionPolicy Bypass -File scripts/deploy-cloudrun.ps1",
     "verify:cloudflare": "node scripts/verify-cloudflare-only.mjs",
     "verify:payments": "node scripts/verify-payment-key-safety.mjs",
-    "verify:production": "pnpm run verify:cloudflare && pnpm run verify:payments"
+    "verify:production": "pnpm run verify:cloudflare && pnpm run verify:payments && pnpm run verify:secrets",
+    "verify:secrets": "node scripts/verify-secret-hygiene.mjs"
   },
   "devDependencies": {
     "turbo": "latest"
