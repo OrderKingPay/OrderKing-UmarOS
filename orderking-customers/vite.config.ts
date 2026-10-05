@@ -162,7 +162,7 @@ export default defineConfig(({ command, isPreview }) => ({
     port: 8080,
     strictPort: true,
     watch: {
-      ignored: ["**/.vercel/**", "**/node_modules/**"],
+      ignored: ["**/node_modules/**"],
     },
   },
   preview: {

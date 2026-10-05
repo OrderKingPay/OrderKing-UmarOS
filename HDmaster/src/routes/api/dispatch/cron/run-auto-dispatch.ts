@@ -3,17 +3,15 @@ import { createAPIFileRoute } from '@tanstack/react-start/api';
 import { runAlgorithmicAutoDispatch } from '../../../../lib/orderking/server/auto-dispatch-engine.server';
 
 /**
- * 🚀 AI STARLINK-LEVEL DISPATCH CRON ENDPOINT
- * Triggered automatically by Vercel every minute (* * * * *).
+ * Cloudflare-safe internal dispatch job endpoint.
+ * A Cloudflare Worker Cron Trigger calls this route with CRON_SECRET.
  */
 export const APIRoute = createAPIFileRoute('/api/dispatch/cron/run-auto-dispatch')({
   GET: async ({ request }: { request: Request }) => {
     try {
-      // Allow internal invocation or authenticated Vercel Cron
+      // Allow internal invocation or authenticated Cloudflare Cron
       const authHeader = request.headers.get('authorization');
-      const isCron = request.headers.get('x-vercel-cron') === '1';
-      
-      if (!isCron && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+if (!authHeader || !process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
       }
 

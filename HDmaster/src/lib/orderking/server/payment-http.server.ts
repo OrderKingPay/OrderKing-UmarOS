@@ -3,7 +3,6 @@ import { createHmac } from "node:crypto";
 import { getSql } from "@/lib/db";
 import { createRazorpayOrder, fetchRazorpayPayment, verifyCheckoutSignature, verifyWebhookSignature } from "@/lib/orderking/payments/razorpay.server";
 import { nid } from "./workspace.server";
-import { kingpayLedgerEngine } from "@/lib/orderking/finance/kingpay-ledger-engine";
 import { CryptoTreasury } from "@/lib/orderking/finance/crypto-treasury";
 import Stripe from "stripe";
 import { z } from "zod";
@@ -65,18 +64,6 @@ async function markPaymentCaptured(paymentId: string, gatewayOrderId: string, am
               ($5,$2,'PLATFORM_CASH','CREDIT',$3,'PLATFORM',$4)`,
       [nid("jl"), journalId, amountPaise, intent.order_id, nid("jl")],
     );
-  }
-
-  // Settle the ledger upon successful payment using KingPayLedgerEngine
-  try {
-    kingpayLedgerEngine.processPayment(
-      `idem_capt_${paymentId}`,
-      intent.order_id, // acting as senderId or userId
-      intent.org_id,
-      amountPaise / 100 // assuming it needs INR not paise
-    );
-  } catch (e) {
-    console.error("Ledger engine error:", e);
   }
 
   return { orderId: intent.order_id, paymentIntentId: intent.id, paymentId };
