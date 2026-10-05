@@ -50,23 +50,12 @@ export function getProviderApiKey(provider: string): string | undefined {
   const keyFromEnv = envMap[provider.toLowerCase()];
   if (keyFromEnv && keyFromEnv.trim().length > 0) return keyFromEnv.trim();
 
-  // Browser localStorage fallback if available
-  if (typeof window !== "undefined" && window.localStorage) {
-    const key = window.localStorage.getItem(`umar_os_apikey_${provider.toLowerCase()}`);
-    if (key && key.trim().length > 0) return key.trim();
-  }
-
+  // Provider API keys are server-side secrets only. Never read browser storage.
   return undefined;
 }
 
-export function setProviderApiKey(provider: string, apiKey: string): void {
-  if (typeof window !== "undefined" && window.localStorage) {
-    if (apiKey.trim()) {
-      window.localStorage.setItem(`umar_os_apikey_${provider.toLowerCase()}`, apiKey.trim());
-    } else {
-      window.localStorage.removeItem(`umar_os_apikey_${provider.toLowerCase()}`);
-    }
-  }
+export function setProviderApiKey(_provider: string, _apiKey: string): void {
+  throw new Error("Provider API keys must be configured in the server-side secret store; browser storage is not supported.");
 }
 
 /**
