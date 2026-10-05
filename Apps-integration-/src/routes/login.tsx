@@ -90,7 +90,7 @@ function Login() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
             </span>
             Active Region: Global Headquarters
-          </motion.p>
+          </p>
         </div>
       </section>
 
@@ -187,7 +187,7 @@ function Login() {
                     className="rounded-lg bg-red-500/10 p-3 text-center text-sm font-medium text-red-400 border border-red-500/20"
                   >
                     {error}
-                  </motion.p>
+                  </p>
                 )}
               </div>
 
