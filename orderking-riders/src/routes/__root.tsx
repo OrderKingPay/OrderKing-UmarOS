@@ -19,6 +19,7 @@ const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
+  // Cloudflare Pages production redeploy trigger; behavior unchanged.
     // Public/auth endpoints must render without requiring the session server
     // function. On Cloudflare Pages a failed auth runtime dependency must not
     // turn the public /login screen into a 500. The protected home route still
