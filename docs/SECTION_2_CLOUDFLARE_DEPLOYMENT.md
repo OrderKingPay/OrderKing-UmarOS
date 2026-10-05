@@ -4,11 +4,11 @@
 
 | Surface | Pages project | Build preset | Output |
 |---|---|---|---|
-| Umar OS / HDmaster | `umar-os` | Nitro `cloudflare-pages` | `dist` |
+| Umar OS / HDmaster | `orderking-hdmaster` | Nitro `cloudflare-pages` | `dist` |
 | OrderKing Customer | `orderking-customers` | Nitro `cloudflare-pages` | `dist` |
 | OrderKing Partner | `orderking-partners` | Nitro `cloudflare-pages` | `dist` |
 | OrderKing Rider | `orderking-riders` | Nitro `cloudflare-pages` | `dist` |
-| Integrations / KingPay boundary | `orderking-integrations` | Nitro `cloudflare-pages` | `dist` |
+| Integrations / KingPay boundary | `apps-integration` | Nitro `cloudflare-pages` | `dist` |
 
 ## Deployment rule
 
@@ -86,3 +86,14 @@ The connected Cloudflare browser profile is not currently recorded as signed in 
 No existing repository files were deleted in Section 2.
 No Vercel or Netlify configuration was deleted.
 No production DNS was changed.
+
+## Cloudflare account verification (2026-10-05)
+- Account has five existing Pages projects; no duplicate project creation is required.
+- Existing project names are `orderking-customers`, `orderking-partners`, `orderking-riders`, `orderking-hdmaster`, and `apps-integration`.
+- All five are connected to `OrderKingPay/OrderKing-UmarOS`.
+- All five use `dist` as Pages output.
+- The repository directory `HDmaster` and `Apps-integration-` are intentional filesystem paths/casing and must not be normalized by renaming.
+- The integration package name is `app-builder-workspace`; its Cloudflare build command may legitimately use that package name.
+- No custom domains/zones were found in the Cloudflare account at inspection time.
+- The production-branch setting was being migrated from the temporary audit branch to `main`; the browser automation timed out before all five projects could be independently confirmed. This is NOT marked complete until verified.
+- Cloudflare project creation and DNS changes were not claimed complete beyond the existing five projects.
