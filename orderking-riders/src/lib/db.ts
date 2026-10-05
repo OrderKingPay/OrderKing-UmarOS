@@ -7,16 +7,16 @@ export type DbSource = "neon" | "pglite";
 // "unset" — otherwise production would silently run on the PGLite fallback.
 const rawDatabaseUrl =
   typeof process !== "undefined" ? process.env.DATABASE_URL : undefined;
+const runtimeMode =
+  typeof process !== "undefined" ? process.env.ORDERKING_RUNTIME : undefined;
+const isProductionRuntime = runtimeMode === "production";
 let databaseUrl = rawDatabaseUrl && rawDatabaseUrl.trim() ? rawDatabaseUrl : undefined;
 if (databaseUrl && databaseUrl.includes("your_supabase_pooler")) {
   databaseUrl = undefined;
 }
 
 /**
- * Active backend: real **Neon** when `DATABASE_URL` is set (deployed / configured
- * sandbox), otherwise a local embedded **PGLite** (Postgres compiled to WASM) so
- * the app has a working database even with nothing configured — the live preview
- * included. Swap in Neon later by just setting `DATABASE_URL`; no code changes.
+ * Active backend: real **Postgres** when `DATABASE_URL` is set. PGLite remains a local development/preview fallback; production is fail-closed via ORDERKING_RUNTIME=production.
  */
 export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
 
@@ -177,6 +177,9 @@ async function createSql(): Promise<Sql> {
       "@/lib/db is server-only — call getSql() from a createServerFn handler " +
         "or a server route loader, never from client code.",
     );
+  }
+  if (isProductionRuntime && !databaseUrl) {
+    throw new Error("DATABASE_URL is required for OrderKing production database operations.");
   }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
