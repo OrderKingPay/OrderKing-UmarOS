@@ -1,35 +1,37 @@
 import { createHash } from "node:crypto";
 
+function sha256(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+
 export function assertSameOrigin(request: Request): void {
   const origin = request.headers.get("origin");
   if (!origin) return;
 
-  const allowed = new Set(
-    [
-      process.env.CUSTOMER_APP_URL,
-      process.env.ORDERKING_CUSTOMER_URL,
-      process.env.HDMASTER_URL,
-    ]
-      .filter(Boolean)
-      .map((value) => String(value).replace(/\/$/, "")),
-  );
+  let originUrl: URL;
+  try {
+    originUrl = new URL(origin);
+  } catch {
+    throw new Error("Invalid Origin header");
+  }
 
-  if (allowed.size === 0) return;
+  const requestUrl = new URL(request.url);
+  const host = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim()
+    || request.headers.get("host")
+    || requestUrl.host;
 
-  const normalized = origin.replace(/\/$/, "");
-  if (!allowed.has(normalized)) {
-    throw new Error("CROSS_ORIGIN_BLOCKED");
+  if (originUrl.protocol !== requestUrl.protocol || originUrl.host !== host) {
+    throw new Error("Cross-origin request rejected");
   }
 }
 
-export function requestRiskFingerprint(request: Request, subject: string): string {
-  const input = [
-    subject,
-    request.headers.get("user-agent") ?? "",
-    request.headers.get("sec-ch-ua") ?? "",
-    request.headers.get("sec-ch-ua-platform") ?? "",
-    request.headers.get("accept-language") ?? "",
+export function requestRiskFingerprint(request: Request, userId: string): string {
+  const material = [
+    userId,
+    request.headers.get("user-agent") || "",
+    request.headers.get("accept-language") || "",
+    request.headers.get("sec-fetch-site") || "",
+    request.headers.get("host") || "",
   ].join("|");
-
-  return createHash("sha256").update(input).digest("hex");
+  return sha256(material);
 }
