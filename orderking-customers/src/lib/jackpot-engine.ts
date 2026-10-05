@@ -1,7 +1,7 @@
 
 /**
  * King Jackpot & Scratch Card Reward Engine
- * 100% Legal Trade Promotion & Customer Gamification under Indian Law
+ * Trade-promotion concept. Legal/regulatory status must be verified for the final funded reward provider and structure before enabling.
  * (Compliant with Lotteries (Regulation) Act 1998, Prize Chits Act, and Consumer Protection Act 2019).
  * 
  * Rules:
@@ -32,6 +32,9 @@ export function generateScratchCard(
   trigger: ScratchTrigger,
   orderTotalPaise?: number,
 ): ScratchReward {
+  if (import.meta.env.VITE_DATA_MODE !== "SIMULATED") {
+    throw new Error("Rewards are unavailable until a real funded promotion/reward provider is configured.");
+  }
   const seed = Date.now() % 100;
   const id = `sc_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
   const unlockedAt = new Date().toISOString();
