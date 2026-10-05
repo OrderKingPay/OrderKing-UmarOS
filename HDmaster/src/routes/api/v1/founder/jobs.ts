@@ -11,6 +11,7 @@ type RemoteJob = {
   salary_max?: number;
 };
 
+// @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/v1/founder/jobs")({
   server: {
     handlers: {
