@@ -550,7 +550,7 @@ export function FounderAiOsShell() {
                 { title: "CTO & Lead Systems Architect", role: "Software & Infrastructure", icon: Code2, status: "Active" },
                 { title: "Growth & Client Acquisition Lead", role: "Sales & Marketing", icon: Megaphone, status: "Active" },
                 { title: "Chief Financial Officer", role: "King Pay UPI & Ledger", icon: Wallet, status: "Active" },
-                { title: "Security & Compliance Auditor", role: "Section 79 & RBAC", icon: ShieldCheck, status: "Active" },
+                { title: "Security & Compliance Auditor", role: "RBAC + counsel-gated compliance", icon: ShieldCheck, status: "Configured" },
               ].map((agent) => {
                 const Icon = agent.icon;
                 return (
