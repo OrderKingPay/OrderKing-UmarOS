@@ -201,7 +201,8 @@ export function HomeView() {
       </section>
 
       {fleetPartnerBenefitsEnabled ? (
-      {/* HPCL & IOCL Partner Fuel Pump Quick Navigator */}
+        <>
+        {/* HPCL & IOCL Partner Fuel Pump Quick Navigator */}
       <section className="rounded-[var(--radius-2xl)] border border-emerald-500/30 bg-gradient-to-br from-[#0a0a0a] via-[#052e16] to-emerald-500/10 p-4 space-y-3 shadow-[0_0_20px_rgba(16,185,129,0.1)] backdrop-blur-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -265,9 +266,10 @@ export function HomeView() {
           </button>
         </div>
       </section>
+        </>
       ) : null}
 
-    {home.active ? (
+      {home.active ? (
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-xl">{t("currentDelivery")}</h2>
