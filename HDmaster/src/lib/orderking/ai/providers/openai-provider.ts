@@ -15,7 +15,7 @@ import type {
 export class OpenAIProvider implements AIProvider {
   readonly id = "openai";
   readonly name = "OpenAI Omnimodal";
-  readonly supportedModels = ["gpt-5.6-sol", "gpt-5.6-luna"];
+  readonly supportedModels = ["PROVIDER_CONFIGURED_MODEL"];
 
   private apiKey: string | undefined;
 
@@ -28,7 +28,8 @@ export class OpenAIProvider implements AIProvider {
   }
 
   private constructPayload(input: ChatRequest, stream: boolean): Record<string, unknown> {
-    const model = input.model || "gpt-5.6-luna";
+    const model = input.model || process.env.OPENAI_MODEL?.trim();
+    if (!model) throw new Error("OPENAI_MODEL is required; no default model is assumed.");
     const messages: Array<Record<string, unknown>> = [];
     
     if (input.systemPrompt) {
@@ -119,7 +120,6 @@ export class OpenAIProvider implements AIProvider {
         promptTokens,
         completionTokens,
         totalTokens: promptTokens + completionTokens,
-        estimatedCostUsd: (promptTokens * 0.0025 + completionTokens * 0.01) / 1000,
       },
       latencyMs: Date.now() - start,
     };
