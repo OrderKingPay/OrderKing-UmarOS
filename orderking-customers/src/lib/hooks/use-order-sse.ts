@@ -1,5 +1,5 @@
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { getOrderTracking } from "@/lib/server/orders";
 
 export type OrderSSEEvent = {
   orderId: string;
@@ -11,6 +11,11 @@ export type OrderSSEEvent = {
   timestamp: string;
 };
 
+type ConnectionInfo = {
+  effectiveType?: string;
+  saveData?: boolean;
+};
+
 export function useOrderSSE(orderId: string | undefined, onEvent?: (e: OrderSSEEvent) => void) {
   const [lastEvent, setLastEvent] = useState<OrderSSEEvent | null>(null);
   const [connected, setConnected] = useState(false);
@@ -18,49 +23,58 @@ export function useOrderSSE(orderId: string | undefined, onEvent?: (e: OrderSSEE
 
   useEffect(() => {
     if (!orderId) return;
-    
-    let channel: any;
-    let cancelled = false;
 
-    import("@/lib/db-cloud").then(({ supabase }) => {
-      if (cancelled) return;
-      channel = supabase
-        .channel(`public:orders:${orderId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "orders",
-            filter: `id=eq.${orderId}`,
-          },
-          (payload: any) => {
-            const data: OrderSSEEvent = {
-              orderId: payload.new.id,
-              status: payload.new.status,
-              riderLat: payload.new.rider_lat,
-              riderLng: payload.new.rider_lng,
-              timestamp: new Date().toISOString()
-            };
-            setLastEvent(data);
-            onEvent?.(data);
-            setConnected(true);
-          }
-        )
-        .subscribe((status: string) => {
-          if (status === 'SUBSCRIBED') {
-            setConnected(true);
-          }
-        });
-    }).catch(err => console.warn("Supabase realtime error", err));
+    let stopped = false;
+    let timer: number | undefined;
 
-    return () => {
-      cancelled = true;
-      if (channel) {
-        import("@/lib/db-cloud").then(({ supabase }) => supabase.removeChannel(channel));
+    const connection =
+      typeof navigator !== "undefined"
+        ? ((navigator as unknown as { connection?: ConnectionInfo }).connection ?? {})
+        : {};
+    const effectiveType = connection.effectiveType ?? "4g";
+    const slow =
+      effectiveType === "slow-2g" ||
+      effectiveType === "2g" ||
+      effectiveType === "3g" ||
+      connection.saveData === true;
+    setIsSlowNetwork(slow);
+
+    const intervalMs = slow ? 5000 : 2500;
+
+    const poll = async () => {
+      try {
+        const payload = await getOrderTracking({ data: { orderId } });
+        if (stopped) return;
+
+        if (!payload.found) {
+          setConnected(false);
+          return;
+        }
+
+        const event: OrderSSEEvent = {
+          orderId: payload.orderId,
+          status: payload.status,
+          riderLat: payload.riderLat ?? undefined,
+          riderLng: payload.riderLng ?? undefined,
+          timestamp: payload.lastPingAt ?? new Date().toISOString(),
+        };
+        setLastEvent(event);
+        setConnected(true);
+        onEvent?.(event);
+      } catch {
+        if (!stopped) setConnected(false);
+      } finally {
+        if (!stopped) timer = window.setTimeout(poll, intervalMs);
       }
     };
-  }, [orderId]);
+
+    void poll();
+
+    return () => {
+      stopped = true;
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+  }, [orderId, onEvent]);
 
   return { lastEvent, connected, isSlowNetwork };
 }

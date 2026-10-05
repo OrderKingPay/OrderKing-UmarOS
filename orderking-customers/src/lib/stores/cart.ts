@@ -1,37 +1,9 @@
 
 import { create } from "zustand";
-import { persist, createJSONStorage, type StateStorage } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type { CartLineInput } from "@/lib/market-types";
 import { canAddToCart, cartCount, cartKey, mergeItem, toCartItem, type CartItem } from "@/lib/cart-logic";
-import { supabase } from "@/lib/db-cloud";
-
 export type { CartItem };
-
-const supabaseStorage: StateStorage = {
-  getItem: async (name: string): Promise<string | null> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (!deviceId) {
-      deviceId = crypto.randomUUID();
-      localStorage.setItem("device_id", deviceId);
-    }
-    const { data } = await supabase.from("customer_carts").select("cart_state").eq("id", deviceId).single();
-    return data ? data.cart_state : null;
-  },
-  setItem: async (name: string, value: string): Promise<void> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (!deviceId) {
-      deviceId = crypto.randomUUID();
-      localStorage.setItem("device_id", deviceId);
-    }
-    await supabase.from("customer_carts").upsert({ id: deviceId, cart_state: value });
-  },
-  removeItem: async (name: string): Promise<void> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (deviceId) {
-      await supabase.from("customer_carts").delete().eq("id", deviceId);
-    }
-  },
-};
 
 type State = {
   restaurantId: string | null;
@@ -88,9 +60,9 @@ export const useCartStore = create<State>()(
       setCoupon: (code) => set({ coupon: code }),
       clear: () => set({ restaurantId: null, restaurantName: "", items: [], coupon: "" }),
     }),
-    { 
+    {
       name: "marketplace-cart",
-      storage: createJSONStorage(() => supabaseStorage),
+      storage: createJSONStorage(() => localStorage),
     },
   ),
 );

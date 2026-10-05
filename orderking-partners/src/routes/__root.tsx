@@ -23,6 +23,8 @@ const queryClient = new QueryClient({
       },
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: false,
+      refetchInterval: 5000,
+      refetchIntervalInBackground: true,
     },
     mutations: {
       retry: (failureCount, error) => {
@@ -62,7 +64,6 @@ export const Route = createRootRoute({
 });
 
 import { useEffect } from "react";
-import { supabaseCloud } from "@/lib/db-cloud";
 
 function Root() {
   const location = useRouterState({ select: (s) => s.location.pathname });
@@ -75,31 +76,9 @@ function Root() {
     
     window.addEventListener("online", handleOnline);
     
-    // Supabase Realtime starts only when real browser credentials are
-    // provisioned. Missing credentials must never prevent the app shell from
-    // rendering; protected data paths still fail closed server-side.
-    let channel: ReturnType<NonNullable<typeof supabaseCloud>["channel"]> | null = null;
-    if (supabaseCloud) {
-      channel = supabaseCloud
-        .channel("partner_realtime")
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "item_availability" },
-          () => {
-            queryClient.invalidateQueries({ queryKey: ["catalog"] });
-            queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-          }
-        )
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "orders" },
-          () => {
-            queryClient.invalidateQueries({ queryKey: ["orders"] });
-            queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-          }
-        )
-        .subscribe();
-    }
+    const partnerRealtimeDisabled = true;
+    void partnerRealtimeDisabled;
+
 
     return () => {
       window.removeEventListener("online", handleOnline);

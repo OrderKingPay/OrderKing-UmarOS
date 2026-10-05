@@ -28,8 +28,8 @@ export const ViralGrowthEngine = {
    * Generates the high-conversion, dynamic deep link for sharing.
    */
   generateDeepLink(referralCode: string): string {
-    const baseUrl = typeof process !== "undefined" && process.env.VERCEL_PROJECT_PRODUCTION_URL 
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` 
+    const baseUrl = typeof process !== "undefined"
+      ? process.env.PUBLIC_APP_URL || process.env.BETTER_AUTH_URL || "https://orderking.in"
       : "https://orderking.in";
     return `${baseUrl}/r/${referralCode}`;
   },

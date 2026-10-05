@@ -9,7 +9,7 @@ import {
 import { DEFAULT_ORG_ID, DEFAULT_SETTINGS, type PlatformSettings } from "@/lib/orderking/types";
 import { seedIfNeeded } from "./seed.server";
 
-function nid(prefix: string) {
+export function nid(prefix: string) {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 

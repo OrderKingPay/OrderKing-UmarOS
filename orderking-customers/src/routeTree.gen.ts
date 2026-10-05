@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ApiSecurityDeviceIntegrityRouteImport } from './routes/api/security/device-integrity'
 import { Route as TutorRouteImport } from './routes/tutor'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -191,6 +192,11 @@ const ApiOrdersOrderIdStreamRoute = ApiOrdersOrderIdStreamRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 
+const ApiSecurityDeviceIntegrityRoute = ApiSecurityDeviceIntegrityRouteImport.update({
+  id: '/api/security/device-integrity',
+  path: '/api/security/device-integrity',
+  getParentRoute: () => rootRouteImport,
+} as any)
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
@@ -222,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -254,6 +261,7 @@ export interface FileRoutesByTo {
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -287,6 +295,7 @@ export interface FileRoutesById {
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
+  '/api/security/device-integrity': typeof ApiSecurityDeviceIntegrityRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -418,6 +427,7 @@ export interface RootRouteChildren {
   ApiRazorpayCreateOrderRoute: typeof ApiRazorpayCreateOrderRoute
   ApiRazorpayVerifyRoute: typeof ApiRazorpayVerifyRoute
   ApiOrdersOrderIdStreamRoute: typeof ApiOrdersOrderIdStreamRoute
+  ApiSecurityDeviceIntegrityRoute: typeof ApiSecurityDeviceIntegrityRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -632,6 +642,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOrdersOrderIdStreamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/security/device-integrity': {
+      id: '/api/security/device-integrity'
+      path: '/api/security/device-integrity'
+      fullPath: '/api/security/device-integrity'
+      preLoaderRoute: typeof ApiSecurityDeviceIntegrityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -666,6 +683,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiRazorpayCreateOrderRoute: ApiRazorpayCreateOrderRoute,
   ApiRazorpayVerifyRoute: ApiRazorpayVerifyRoute,
   ApiOrdersOrderIdStreamRoute: ApiOrdersOrderIdStreamRoute,
+  ApiSecurityDeviceIntegrityRoute: ApiSecurityDeviceIntegrityRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

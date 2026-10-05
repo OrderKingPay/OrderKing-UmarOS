@@ -701,10 +701,34 @@ export class PgStore implements RiderStore {
   }
 
   async insertLocation(p: LocationPing, userId: string) {
+    const riderRows = await this.sql.query<{ org_id: string }>(
+      "select org_id from riders where id = $1 and user_id = $2 limit 1",
+      [p.riderId, userId],
+    );
+    const orgId = riderRows[0]?.org_id;
+    if (!orgId) throw new RiderError("NOT_FOUND", "Rider organisation was not found", 404);
+
     await this.sql.query(
-      `insert into location_pings (id, rider_id, user_id, delivery_id, lat, lng, accuracy_m, at)
-       values ($1,$2,$3,$4,$5,$6,$7,$8)`,
-      [p.id, p.riderId, userId, p.deliveryId, p.point.lat, p.point.lng, p.accuracyM, p.at],
+      `insert into rider_location_pings
+        (id, org_id, rider_id, order_id, lat, lng, accuracy_m, heading, speed_mps, recorded_at)
+       values ($1,$2,$3,
+         case
+           when $4::text is null then null
+           else (select order_id from deliveries where id = $4 limit 1)
+         end,
+         $5,$6,$7,$8,$9,$10)`,
+      [
+        p.id,
+        orgId,
+        p.riderId,
+        p.deliveryId,
+        p.point.lat,
+        p.point.lng,
+        p.accuracyM,
+        null,
+        null,
+        p.at,
+      ],
     );
 
     if (p.deliveryId) {
@@ -718,22 +742,40 @@ export class PgStore implements RiderStore {
   }
 
   async pruneLocations(userId: string, keepAfterIso: string, maxRows: number) {
-    await this.sql.query(`delete from location_pings where user_id = $1 and at < $2`, [
-      userId,
-      keepAfterIso,
-    ]);
     await this.sql.query(
-      `delete from location_pings where id in (
-         select id from location_pings where user_id = $1
-         order by at desc offset $2
-       )`,
+      `delete from rider_location_pings p
+       using riders r
+       where p.rider_id = r.id
+         and r.user_id = $1
+         and p.recorded_at < $2`,
+      [userId, keepAfterIso],
+    );
+
+    await this.sql.query(
+      `delete from rider_location_pings p
+       using riders r
+       where p.id in (
+         select p2.id
+         from rider_location_pings p2
+         join riders r2 on r2.id = p2.rider_id
+         where r2.user_id = $1
+         order by p2.recorded_at desc
+         offset $2
+       )
+       and p.rider_id = r.id
+       and r.user_id = $1`,
       [userId, maxRows],
     );
   }
 
   async latestLocation(userId: string) {
     const rows = await this.sql.query<Record<string, unknown>>(
-      "select * from location_pings where user_id = $1 order by at desc limit 1",
+      `select p.*
+       from rider_location_pings p
+       join riders r on r.id = p.rider_id
+       where r.user_id = $1
+       order by p.recorded_at desc
+       limit 1`,
       [userId],
     );
     const r = rows[0];
@@ -741,10 +783,10 @@ export class PgStore implements RiderStore {
     return {
       id: String(r.id),
       riderId: String(r.rider_id),
-      deliveryId: r.delivery_id ? String(r.delivery_id) : null,
+      deliveryId: r.order_id ? String(r.order_id) : null,
       point: { lat: num(r.lat), lng: num(r.lng) },
       accuracyM: r.accuracy_m == null ? null : num(r.accuracy_m),
-      at: iso(r.at),
+      at: iso(r.recorded_at),
     } satisfies LocationPing;
   }
 

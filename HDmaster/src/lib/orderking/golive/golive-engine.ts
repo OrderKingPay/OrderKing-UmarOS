@@ -84,7 +84,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     lastTestedAt: null,
   },
   endpoints: {
-    hostingProvider: "VERCEL",
+    hostingProvider: "CLOUDFLARE_PAGES",
     customerAppUrl: process.env.CUSTOMER_APP_URL ?? "",
     partnerAppUrl: process.env.PARTNER_APP_URL ?? "",
     riderAppUrl: process.env.RIDER_APP_URL ?? "",
@@ -92,7 +92,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     apiGatewayUrl: process.env.API_GATEWAY_URL ?? "",
     sslEnforced: true,
     customDomainVerified: false,
-    dnsCnameTarget: process.env.VERCEL_DNS_CNAME_TARGET ?? "",
+    dnsCnameTarget: process.env.CLOUDFLARE_DNS_CNAME_TARGET ?? "",
   },
   paymentGateway: {
     provider: "RAZORPAY",
@@ -201,7 +201,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
     infraScore += 7;
   } else {
     infraWarnings.push("SSL enforcement or custom domain DNS verification is pending.");
-    recommendedActions.push("Verify CNAME records for orderking.in on Vercel/Cloudflare.");
+    recommendedActions.push("Verify CNAME/custom-domain records for orderking.in in Cloudflare.");
   }
 
   const infraPillar: GoLivePillarScore = {
@@ -393,55 +393,208 @@ export function enforceCapacityLimits(
 }
 
 // ==========================================
-// TEST PING RUNNERS (Deterministic Diagnostics)
+/** Live, non-destructive provider diagnostics.
+ * These checks never create payments or send customer SMS. They only perform
+ * safe authentication/metadata calls where the provider exposes one.
+ */
 // ==========================================
 
-export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
-  const start = Date.now();
+function safeErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message.slice(0, 240);
+  return "Provider request failed.";
+}
+
+async function timed<T>(fn: () => Promise<T>): Promise<{ value?: T; error?: unknown; latencyMs: number }> {
+  const started = Date.now();
+  try {
+    return { value: await fn(), latencyMs: Date.now() - started };
+  } catch (error) {
+    return { error, latencyMs: Date.now() - started };
+  }
+}
+
+export async function testDbConnection(
+  config: CloudDatabaseConfig,
+): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!validatePostgresUrl(config.connectionString)) {
     return { ok: false, message: "Malformed PostgreSQL connection string.", latencyMs: 0 };
   }
-  // Simulated handshake or connection pool ping
-  const latencyMs = Math.floor(Math.random() * 25) + 15;
+
+  const result = await timed(async () => {
+    const { Pool } = await import("pg");
+    const pool = new Pool({
+      connectionString: config.connectionString,
+      max: 1,
+      min: 0,
+      connectionTimeoutMillis: 8_000,
+      idleTimeoutMillis: 1_000,
+      ssl: config.sslMode === "require" ? { rejectUnauthorized: false } : undefined,
+    });
+    try {
+      await pool.query("select 1");
+      return true;
+    } finally {
+      await pool.end();
+    }
+  });
+
+  if (result.error) {
+    return {
+      ok: false,
+      message: `PostgreSQL connection failed: ${safeErrorMessage(result.error)}`,
+      latencyMs: result.latencyMs,
+    };
+  }
+
   return {
     ok: true,
-    message: `Connected successfully to ${config.provider} (${config.sslMode} SSL, PgBouncer pool active).`,
-    latencyMs,
+    message: `PostgreSQL live connectivity verified (${config.provider}; ${config.sslMode} SSL).`,
+    latencyMs: result.latencyMs,
   };
 }
 
-export async function testPgConnection(config: PaymentGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
+export async function testPgConnection(
+  config: PaymentGatewayConfig,
+): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey || !config.secretKey) {
-    return { ok: false, message: "Missing API Key or Secret Key.", latencyMs: 0 };
+    return { ok: false, message: "Payment gateway credentials are missing.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 40) + 20;
+
+  if (config.provider !== "RAZORPAY") {
+    return {
+      ok: false,
+      message: `No safe live connectivity check is implemented for payment provider ${config.provider}.`,
+      latencyMs: 0,
+    };
+  }
+
+  const result = await timed(async () => {
+    const auth = Buffer.from(`${config.apiKey}:${config.secretKey}`).toString("base64");
+    const response = await fetch("https://api.razorpay.com/v1/orders?count=1", {
+      headers: {
+        Authorization: `Basic ${auth}`,
+        Accept: "application/json",
+      },
+    });
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Razorpay HTTP ${response.status}: ${body.slice(0, 160)}`);
+    }
+    return true;
+  });
+
+  if (result.error) {
+    return {
+      ok: false,
+      message: `Razorpay live connectivity failed: ${safeErrorMessage(result.error)}`,
+      latencyMs: result.latencyMs,
+    };
+  }
+
   return {
     ok: true,
-    message: `Handshake successful with ${config.provider} in ${config.mode} mode. Webhooks verified.`,
-    latencyMs,
+    message: `Razorpay live API authentication verified in ${config.mode} mode; no money movement performed.`,
+    latencyMs: result.latencyMs,
   };
 }
 
-export async function testSmsConnection(config: SmsGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
+export async function testSmsConnection(
+  config: SmsGatewayConfig,
+): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing SMS Gateway API Key. Operating in local simulation.", latencyMs: 0 };
+    return { ok: false, message: "SMS provider API key is missing.", latencyMs: 0 };
   }
-  const latencyMs = Math.floor(Math.random() * 30) + 15;
+
+  const result = await timed(async () => {
+    if (config.provider === "FAST2SMS") {
+      const response = await fetch("https://www.fast2sms.com/dev/wallet", {
+        method: "POST",
+        headers: { Authorization: config.apiKey, Accept: "application/json" },
+      });
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`Fast2SMS HTTP ${response.status}: ${body.slice(0, 160)}`);
+      }
+      return "Fast2SMS wallet/authentication verified; no SMS sent.";
+    }
+
+    if (config.provider === "MSG91") {
+      const response = await fetch(
+        `https://api.msg91.com/api/balance.php?authkey=${encodeURIComponent(config.apiKey)}&type=1`,
+        { headers: { Accept: "text/plain, application/json" } },
+      );
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`MSG91 HTTP ${response.status}: ${body.slice(0, 160)}`);
+      }
+      return "MSG91 route authentication verified; no SMS sent.";
+    }
+
+    throw new Error(
+      `No safe non-delivery verification endpoint is configured for SMS provider ${config.provider}.`,
+    );
+  });
+
+  if (result.error) {
+    return {
+      ok: false,
+      message: `SMS live connectivity failed: ${safeErrorMessage(result.error)}`,
+      latencyMs: result.latencyMs,
+    };
+  }
+
+  return { ok: true, message: String(result.value), latencyMs: result.latencyMs };
+}
+
+export async function testMapsConnection(
+  config: MapsConfig,
+): Promise<{ ok: boolean; message: string; latencyMs: number }> {
+  if (!config.apiKey) {
+    return { ok: false, message: "Maps provider API key is missing.", latencyMs: 0 };
+  }
+
+  const result = await timed(async () => {
+    const sampleAddress = encodeURIComponent("Karimganj, Assam, India");
+
+    if (config.provider === "GOOGLE_MAPS") {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${sampleAddress}&key=${encodeURIComponent(config.apiKey)}`,
+      );
+      const data = await response.json() as { status?: string; error_message?: string };
+      if (!response.ok || data.status !== "OK") {
+        throw new Error(data.error_message || `Google Maps status: ${data.status ?? "UNKNOWN"}`);
+      }
+      return "Google Maps geocoding authentication verified.";
+    }
+
+    if (config.provider === "MAPBOX") {
+      const response = await fetch(
+        `https://api.mapbox.com/search/geocode/v6/forward?q=${sampleAddress}&access_token=${encodeURIComponent(config.apiKey)}&limit=1`,
+      );
+      const data = await response.json() as { features?: unknown[]; message?: string };
+      if (!response.ok || !Array.isArray(data.features)) {
+        throw new Error(data.message || `Mapbox HTTP ${response.status}`);
+      }
+      return "Mapbox geocoding authentication verified.";
+    }
+
+    throw new Error(
+      `No safe live connectivity check is implemented for maps provider ${config.provider}.`,
+    );
+  });
+
+  if (result.error) {
+    return {
+      ok: false,
+      message: `Maps live connectivity failed: ${safeErrorMessage(result.error)}`,
+      latencyMs: result.latencyMs,
+    };
+  }
+
   return {
     ok: true,
-    message: `SMS Gateway (${config.provider}) active. Sender ID: ${config.senderId}, DLT Entity: ${config.dltEntityId || "Pending"}.`,
-    latencyMs,
+    message: `${String(result.value)} Directions/places features remain gated by provider configuration.`,
+    latencyMs: result.latencyMs,
   };
 }
 
-export async function testMapsConnection(config: MapsConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
-  if (!config.apiKey) {
-    return { ok: false, message: "Missing Maps API Key. Falling back to offline Haversine matrix.", latencyMs: 0 };
-  }
-  const latencyMs = Math.floor(Math.random() * 20) + 10;
-  return {
-    ok: true,
-    message: `Maps API (${config.provider}) active. Directions & Geocoding enabled. Winding factor: ${config.roadWindingFactor}x.`,
-    latencyMs,
-  };
-}

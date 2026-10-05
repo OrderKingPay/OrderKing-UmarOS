@@ -163,28 +163,56 @@ test("Capacity & Scaling Switchboard Enforcer", async (t) => {
   });
 });
 
-test("Test Ping Runners (Deterministic Handshakes)", async (t) => {
-  await t.test("executes database connection test", async () => {
-    const res = await testDbConnection(VALID_DUMMY_CONFIG.database);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+test("Live provider diagnostics fail closed without real credentials", async (t) => {
+  await t.test("database rejects malformed configuration", async () => {
+    const res = await testDbConnection({
+      ...VALID_DUMMY_CONFIG.database,
+      connectionString: "invalid-url",
+    });
+    assert.equal(res.ok, false);
+    assert.equal(res.latencyMs, 0);
   });
 
-  await t.test("executes payment gateway connection test", async () => {
-    const res = await testPgConnection(VALID_DUMMY_CONFIG.paymentGateway);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+  await t.test("payment rejects missing credentials without contacting the gateway", async () => {
+    const res = await testPgConnection({
+      ...VALID_DUMMY_CONFIG.paymentGateway,
+      apiKey: "",
+      secretKey: "",
+    });
+    assert.equal(res.ok, false);
+    assert.equal(res.latencyMs, 0);
   });
 
-  await t.test("executes SMS gateway connection test", async () => {
-    const res = await testSmsConnection(VALID_DUMMY_CONFIG.smsGateway);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+  await t.test("SMS rejects missing credentials without sending a message", async () => {
+    const res = await testSmsConnection({
+      ...VALID_DUMMY_CONFIG.smsGateway,
+      apiKey: "",
+    });
+    assert.equal(res.ok, false);
+    assert.equal(res.latencyMs, 0);
   });
 
-  await t.test("executes maps connection test", async () => {
-    const res = await testMapsConnection(VALID_DUMMY_CONFIG.maps);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+  await t.test("Maps rejects missing credentials without claiming connectivity", async () => {
+    const res = await testMapsConnection({
+      ...VALID_DUMMY_CONFIG.maps,
+      apiKey: "",
+    });
+    assert.equal(res.ok, false);
+    assert.equal(res.latencyMs, 0);
   });
 });
+
+test("Optional live provider diagnostics", { skip: process.env.RUN_LIVE_CONNECTIVITY_TESTS !== "1" }, async (t) => {
+  const realDatabaseUrl = process.env.DATABASE_URL?.trim();
+  if (realDatabaseUrl) {
+    await t.test("verifies live PostgreSQL connectivity", async () => {
+      const res = await testDbConnection({
+        ...VALID_DUMMY_CONFIG.database,
+        connectionString: realDatabaseUrl,
+      });
+      assert.equal(res.ok, true, res.message);
+      assert.ok(res.latencyMs >= 0);
+    });
+  }
+});
+

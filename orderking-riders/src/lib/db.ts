@@ -1,3 +1,4 @@
+import { PGlite } from "@electric-sql/pglite";
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
 /** Which database backend is active. */
@@ -181,7 +182,18 @@ async function createSql(): Promise<Sql> {
         "or a server route loader, never from client code.",
     );
   }
-  if (dbSource === "unconfigured") { console.warn("DATABASE_URL is missing. Using safe empty fallback."); return ((...args) => Promise.resolve([])); }
+  if (dbSource === "unconfigured") {
+    console.warn("DATABASE_URL is missing. Using safe empty fallback.");
+    const emptySql = (async <T = Record<string, unknown>>(
+      _strings: TemplateStringsArray,
+      ..._values: unknown[]
+    ): Promise<T[]> => []) as unknown as Sql;
+    emptySql.query = async <T = Record<string, unknown>>(
+      _text: string,
+      _params: unknown[] = [],
+    ): Promise<T[]> => [];
+    return emptySql;
+  }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
 

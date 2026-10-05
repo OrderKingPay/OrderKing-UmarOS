@@ -1,0 +1,4 @@
+name = "orderking-umar-os"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
+pages_build_output_dir = "dist"

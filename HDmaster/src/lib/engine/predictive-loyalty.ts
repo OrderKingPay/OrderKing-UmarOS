@@ -32,7 +32,7 @@ export class PredictiveLoyaltyEngine {
         // Construct the VIP Push Notification
         const pushSubject = 'mailto:founder@orderking.in';
         user.pushEndpoint.title = '👑 VIP Secret Offer';
-        user.pushEndpoint.body = \We know you love \. Because you are a special VIP, here is a secret 15% discount valid for the next 30 minutes.\;
+        user.pushEndpoint.body = `Your usual OrderKing time is coming up. Enjoy 15% off for the next 30 minutes.`;
         user.pushEndpoint.url = '/vip-checkout';
 
         // Fire natively via Antigravity Marketing Engine (No 3rd party SDKs)

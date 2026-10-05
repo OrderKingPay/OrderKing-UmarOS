@@ -3,8 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LiveTrackingMap } from "@/components/tracking/live-tracking-map";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/db-cloud";
+import { useCallback, useEffect, useState } from "react";
+import { useOrderSSE } from "@/lib/hooks/use-order-sse";
 
 type TrackingPosition = { lat: number; lng: number };
 
@@ -17,40 +17,30 @@ function TrackingRoute() {
   const [position, setPosition] = useState<TrackingPosition | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadInitialPosition = async () => {
-      setLoading(true);
-      const { data } = await supabase
-        .from("orders")
-        .select("rider_lat,rider_lng,restaurant_lat,restaurant_lng")
-        .eq("id", dispatchJobId)
-        .maybeSingle();
-
-      if (cancelled) return;
-
-      const riderLat = Number(data?.rider_lat);
-      const riderLng = Number(data?.rider_lng);
-      const restaurantLat = Number(data?.restaurant_lat);
-      const restaurantLng = Number(data?.restaurant_lng);
-
-      if (Number.isFinite(riderLat) && Number.isFinite(riderLng)) {
-        setPosition({ lat: riderLat, lng: riderLng });
-      } else if (Number.isFinite(restaurantLat) && Number.isFinite(restaurantLng)) {
-        setPosition({ lat: restaurantLat, lng: restaurantLng });
-      } else {
-        setPosition(null);
-      }
-
+  const handleEvent = useCallback((event: {
+    riderLat?: number;
+    riderLng?: number;
+  }) => {
+    const riderLat = Number(event.riderLat);
+    const riderLng = Number(event.riderLng);
+    if (Number.isFinite(riderLat) && Number.isFinite(riderLng)) {
+      setPosition({ lat: riderLat, lng: riderLng });
       setLoading(false);
-    };
+    }
+  }, []);
 
-    void loadInitialPosition();
-    return () => {
-      cancelled = true;
-    };
-  }, [dispatchJobId]);
+  const { lastEvent, connected, isSlowNetwork } = useOrderSSE(dispatchJobId, handleEvent);
+
+  useEffect(() => {
+    if (!lastEvent) return;
+    if (
+      lastEvent.riderLat == null &&
+      lastEvent.riderLng == null &&
+      !position
+    ) {
+      setLoading(false);
+    }
+  }, [lastEvent, position]);
 
   return (
     <div className="relative w-full h-dvh bg-black flex flex-col">
@@ -59,7 +49,7 @@ function TrackingRoute() {
           <ArrowLeft className="w-5 h-5 text-white" />
         </Link>
         <h1 className="text-white font-semibold text-lg tracking-wide drop-shadow-md">
-          Live Tracking <span className="text-primary ml-2 text-sm uppercase">Live Realtime</span>
+          Live Tracking <span className="text-primary ml-2 text-sm uppercase">{connected ? "Live" : "Reconnecting"}</span>
         </h1>
       </div>
 
@@ -69,12 +59,16 @@ function TrackingRoute() {
             dispatchJobId={dispatchJobId}
             initialLat={position.lat}
             initialLng={position.lng}
+            riderLat={lastEvent?.riderLat}
+            riderLng={lastEvent?.riderLng}
           />
         ) : (
           <div className="flex h-full items-center justify-center px-6 text-center text-white/80">
             {loading
               ? "Loading live tracking…"
-              : "Live rider location is not available yet. Tracking will start when verified telemetry arrives."}
+              : isSlowNetwork
+                ? "Network is constrained. Tracking is continuing with low-bandwidth updates."
+                : "Live rider location is not available yet. Tracking will start when verified telemetry arrives."}
           </div>
         )}
       </div>
