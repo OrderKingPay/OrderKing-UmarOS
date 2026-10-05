@@ -9,9 +9,8 @@ export const Route = createFileRoute("/api/zomato-killer-cron")({
     handlers: {
       POST: async ({ request }: any) => {
         try {
-          // Basic security check (e.g. cron secret in production)
           const authHeader = request.headers.get("Authorization");
-          if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+          if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
             return new Response("Unauthorized", { status: 401 });
           }
 
