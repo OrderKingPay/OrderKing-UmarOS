@@ -37,6 +37,8 @@ const blockedPatterns = [
   ['|| "test_secret"', 'placeholder Razorpay test secret fallback in production source'],
   ['safe empty fallback', 'silent database fallback'],
   ['0xOrderKingTreasury', 'fabricated crypto address'],
+  ['vercel.app', 'active Vercel endpoint in production source'],
+  ['ok_prod_sec_', 'hard-coded production service credential'],
   ['Founder 1.5% Crypto FX Premium', 'fabricated crypto profit ledger'],
 ];
 
