@@ -1,4 +1,4 @@
-import { getSql, type Sql } from "../../../db";
+import { getSql, type Sql } from "../../db";
 
 /**
  * 👑 ORDERKING GLOBAL CRYPTO TREASURY
