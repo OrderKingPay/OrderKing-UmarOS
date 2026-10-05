@@ -6,7 +6,7 @@
  * algorithm to guarantee delivery even in sub-optimal cellular zones.
  */
 
-interface FetchOptions extends RequestInit {
+interface FetchOptions extends Omit<RequestInit, "priority"> {
   retries?: number;
   backoffDelay?: number;
   priority?: 'critical' | 'standard' | 'background';
@@ -19,15 +19,16 @@ export class StarlinkNet {
    * Executes a fault-tolerant fetch with exponential backoff and jitter.
    */
   static async fetch(url: string, options: FetchOptions = {}): Promise<Response> {
-    let retries = options.retries ?? this.MAX_RETRIES;
-    let delay = options.backoffDelay ?? 500;
+    const { retries: retryCount, backoffDelay, priority: networkPriority, ...requestInit } = options;
+    let retries = retryCount ?? this.MAX_RETRIES;
+    let delay = backoffDelay ?? 500;
 
     while (retries > 0) {
       try {
         const response = await fetch(url, {
-          ...options,
+          ...requestInit,
           // If critical, force bypass cache to ensure real-time accuracy
-          cache: options.priority === 'critical' ? 'no-store' : options.cache
+          cache: networkPriority === 'critical' ? 'no-store' : requestInit.cache
         });
         
         if (!response.ok && response.status >= 500) {

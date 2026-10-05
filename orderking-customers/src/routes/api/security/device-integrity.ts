@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+// @ts-expect-error TanStack regenerates routeTree.gen.ts during the Vite build; direct tsc runs before that refresh.
 export const Route = createFileRoute("/api/security/device-integrity")({
   // @ts-expect-error
   server: {

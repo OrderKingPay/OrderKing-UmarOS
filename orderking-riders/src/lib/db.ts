@@ -1,4 +1,5 @@
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
+import { PGlite } from "@electric-sql/pglite";
 
 /** Which database backend is active. */
 export type DbSource = "neon" | "pglite" | "unconfigured";
@@ -115,7 +116,6 @@ async function createPgliteSql(): Promise<Sql> {
   // One in-memory instance per process, shared across HMR module instances, so
   // data survives source edits (it resets on dev-server restart).
   globalRef.__pgliteInstance__ ??= (async () => {
-    throw new Error("PGLite removed");
     const pg = new PGlite({
       parsers: {
         [OID_INT8]: Number,
@@ -181,7 +181,12 @@ async function createSql(): Promise<Sql> {
         "or a server route loader, never from client code.",
     );
   }
-  if (dbSource === "unconfigured") { console.warn("DATABASE_URL is missing. Using safe empty fallback."); return ((...args) => Promise.resolve([])); }
+  if (dbSource === "unconfigured") {
+    const missingDatabase: Run = async () => {
+      throw new Error("DATABASE_URL is required for server-side database operations.");
+    };
+    return toSql(missingDatabase);
+  }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
 
@@ -205,7 +210,15 @@ export function getSql(): Promise<Sql> {
  * Lets Better Auth persist to the SAME embedded DB as app data in preview (via a
  * Kysely dialect). Throws when `DATABASE_URL` is set (that path uses Neon).
  */
-export async function getPglite(): Promise<any> { throw new Error("PGLite is intentionally removed."); }
+export async function getPglite(): Promise<PGlite> {
+  if (dbSource !== "pglite") {
+    throw new Error("PGLite is available only when DATABASE_URL is not configured.");
+  }
+  await ensureDbReady();
+  const pg = await globalRef.__pgliteInstance__;
+  if (!pg) throw new Error("PGLite failed to initialize.");
+  return pg;
+}
 
 /**
  * Finish DB bootstrap before the server handles traffic.
