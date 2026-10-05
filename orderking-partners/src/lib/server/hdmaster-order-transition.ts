@@ -16,12 +16,13 @@ type CanonicalStatus =
   | "RESTAURANT_REJECTED";
 
 export function coreUrl(): string {
-  const value = process.env.HDMASTER_URL?.trim() || "https://hdmaster-git-main-foodpalace-2028.vercel.app";
+  const value = process.env.HDMASTER_URL?.trim() || "https://orderking-hdmaster.pages.dev";
   return value.replace(/\/+$/, "");
 }
 
 export function serviceToken(): string {
-  const value = process.env.ORDERKING_SERVICE_TOKEN?.trim() || "ok_prod_sec_9d8f3b2c1e4a7d6e5f8b9c0a1b2c3d4e5f6a7b8c";
+  const value = process.env.ORDERKING_SERVICE_TOKEN?.trim();
+  if (!value) throw new Error("ORDERKING_SERVICE_TOKEN is not configured.");
   return value;
 }
 
