@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/api/security/device-integrity")({
+export const Route = createFileRoute("/api/security/device-integrity" as any)({
   // @ts-expect-error
   server: {
     handlers: {
