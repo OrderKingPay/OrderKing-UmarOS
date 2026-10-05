@@ -386,7 +386,11 @@ export class SystemDiagnosticsEngine {
       }>(`
         SELECT
           (SELECT COUNT(*) FROM riders WHERE COALESCE(online, 0) = 1)::int AS riders_online,
-          (SELECT COUNT(*) FROM riders WHERE COALESCE(online, 0) = 1 AND last_ping_at >= NOW() - INTERVAL '2 minutes')::int AS riders_with_fresh_gps,
+          (SELECT COUNT(DISTINCT rp.rider_id)
+    FROM rider_location_pings rp
+    JOIN riders rr ON rr.id = rp.rider_id
+    WHERE COALESCE(rr.online, 0) = 1
+      AND rp.recorded_at >= NOW() - INTERVAL '2 minutes')::int AS riders_with_fresh_gps,
           (SELECT COUNT(*) FROM orders
              WHERE rider_id IS NOT NULL
                AND status NOT IN ('DELIVERED','CANCELLED','FAILED','REFUNDED'))::int AS active_deliveries,
