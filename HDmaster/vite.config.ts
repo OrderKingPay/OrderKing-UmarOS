@@ -213,6 +213,7 @@ export default defineConfig(({ command, isPreview }) => ({
       ? [
           nitro({
             preset: "cloudflare-pages",
+            cloudflare: { deployConfig: false },
             // Auto-registers server/middleware/* (the PWA install page +
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.
