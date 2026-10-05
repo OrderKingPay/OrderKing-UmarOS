@@ -5,7 +5,8 @@ import { AutoSettlementEngine } from '../../../../lib/orderking/finance/auto-set
  * 👑 AI ZOMATO-STYLE SETTLEMENT CRON ENDPOINT
  * Triggered automatically by Vercel every Monday at 2:00 AM (0 2 * * 1).
  */
-export const APIRoute = createAPIFileRoute('/api/finance/cron/run-settlement')({
+// @ts-expect-error TanStack regenerates routeTree.gen.ts during the Vite build; direct tsc runs before that refresh.
+export const Route = createFileRoute("/api/finance/cron/run-settlement")({
   GET: async ({ request }: { request: Request }) => {
     try {
       // Basic security to ensure this is triggered by Vercel Cron or Admin
