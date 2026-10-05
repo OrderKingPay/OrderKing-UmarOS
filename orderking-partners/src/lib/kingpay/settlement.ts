@@ -20,7 +20,7 @@ function getRazorpayClient(): Razorpay {
 }
 
 export const SettlementSchema = z.object({
-  restaurantId: z.string().uuid(),
+  restaurantId: z.string().min(1),
   amountPaise: z.number().int().positive(),
   idempotencyKey: z.string().min(1),
 });
@@ -28,64 +28,78 @@ export const SettlementSchema = z.object({
 export const settlementEngine = {
   async getPendingBalance(restaurantId: string): Promise<number> {
     const sql = await getSql();
-    const result = await sql<{ balance_paise: number }>`
-      SELECT balance_paise 
-      FROM partner_ledgers 
-      WHERE restaurant_id = ${restaurantId}
+    const result = await sql<{ pending_paise: number }>`
+      SELECT coalesce(sum(net_paise), 0)::int AS pending_paise
+      FROM settlement_batches
+      WHERE party_id = ${restaurantId}
+        AND party_type = 'RESTAURANT'
+        AND status IN ('READY', 'APPROVED')
     `;
-    return result[0]?.balance_paise || 0;
+    return Number(result[0]?.pending_paise ?? 0);
   },
 
   async triggerSettlement(input: z.infer<typeof SettlementSchema>) {
     const data = SettlementSchema.parse(input);
-    const razorpay = getRazorpayClient();
     const sql = await getSql();
-    
-    return await sql.transaction(async (tx) => {
-      const existing = await tx`
-        SELECT 1 FROM settlement_history 
-        WHERE idempotency_key = ${data.idempotencyKey}
-      `;
-      if (existing.length > 0) return { status: "already_processed" };
 
-      const ledgers = await tx<{ balance_paise: number, fund_account_id: string }>`
-        SELECT balance_paise, fund_account_id 
-        FROM partner_ledgers 
-        WHERE restaurant_id = ${data.restaurantId} FOR UPDATE
-      `;
+    // The authoritative ledger has no verified payout-account/Route-account mapping
+    // yet. Never invent one or transfer money to an unverified account.
+    const batches = await sql<{ id: string; net_paise: number; external_reference: string | null; status: string }>`
+      SELECT id, net_paise, external_reference, status
+      FROM settlement_batches
+      WHERE party_id = ${data.restaurantId}
+        AND party_type = 'RESTAURANT'
+        AND status IN ('READY', 'APPROVED')
+        AND net_paise >= ${data.amountPaise}
+      ORDER BY created_at
+      LIMIT 1
+      FOR UPDATE
+    `;
 
-      if (ledgers.length === 0) {
-        throw new Error("Ledger not found for restaurant");
-      }
-      
-      const ledger = ledgers[0];
-      if (ledger.balance_paise < data.amountPaise) {
-        throw new Error("Insufficient balance for settlement");
-      }
+    if (batches.length === 0) {
+      throw new Error("No eligible settlement batch exists for this restaurant.");
+    }
 
-      await tx`
-        UPDATE partner_ledgers 
-        SET balance_paise = balance_paise - ${data.amountPaise}, 
-            updated_at = NOW()
-        WHERE restaurant_id = ${data.restaurantId}
-      `;
+    const batch = batches[0];
+    if (!batch.external_reference) {
+      return {
+        status: "NOT_ENABLED" as const,
+        reason: "A verified payout-provider account/reference is required before any restaurant transfer can be initiated.",
+        settlementBatchId: batch.id,
+      };
+    }
 
-      await tx`
-        INSERT INTO settlement_history (restaurant_id, amount_paise, idempotency_key, status)
-        VALUES (${data.restaurantId}, ${data.amountPaise}, ${data.idempotencyKey}, 'PROCESSING')
-      `;
+    const configuredProvider = process.env.KINGPAY_PAYOUT_PROVIDER?.trim().toLowerCase();
+    if (configuredProvider !== "razorpay_route") {
+      return {
+        status: "NOT_ENABLED" as const,
+        reason: "KINGPAY_PAYOUT_PROVIDER must be explicitly configured as an approved payout rail before transfer execution.",
+        settlementBatchId: batch.id,
+      };
+    }
 
-      const transfer = await razorpay.transfers.create({
-        account: ledger.fund_account_id,
-        amount: data.amountPaise,
-        currency: "INR",
-        notes: {
-          restaurantId: data.restaurantId,
-          idempotencyKey: data.idempotencyKey,
-        }
-      });
-
-      return { status: "processing", transferId: transfer.id };
+    const razorpay = getRazorpayClient();
+    // external_reference must be a provider-verified recipient identifier. The
+    // mapping is intentionally not inferred from restaurant IDs.
+    const transfer = await razorpay.transfers.create({
+      account: batch.external_reference,
+      amount: data.amountPaise,
+      currency: "INR",
+      notes: {
+        restaurantId: data.restaurantId,
+        settlementBatchId: batch.id,
+        idempotencyKey: data.idempotencyKey,
+      },
     });
-  }
+
+    await sql`
+      UPDATE settlement_batches
+      SET status = 'PAID',
+          external_reference = ${transfer.id},
+          paid_at = NOW()
+      WHERE id = ${batch.id}
+    `;
+
+    return { status: "processing" as const, settlementBatchId: batch.id, transferId: transfer.id };
+  },
 };
