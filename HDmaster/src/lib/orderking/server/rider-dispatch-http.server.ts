@@ -26,13 +26,19 @@ async function resolveRiderId(request: Request, orgId: string) {
   const riderUserId = request.headers.get("x-order-king-rider-user-id")?.trim();
   if (!riderUserId) throw new Error("Rider identity is required");
   const sql = await getSql();
-  const rows = await sql<{ id: string }>`select id from riders where org_id=${orgId} and user_id=${riderUserId} and data_mode='PRODUCTION' and status in ('ACTIVE','ONLINE','BUSY') limit 1`;
-  if (!rows[0]) {
-    const newId = nid('rid');
-    await sql`insert into riders (id, org_id, city_id, user_id, display_ref, phone_masked, data_mode, status, online, current_lat, current_lng) values (${newId}, ${orgId}, 'city_1', ${riderUserId}, 'RIDER_' || substring(${riderUserId} from 1 for 6), 'MASKED', 'PRODUCTION', 'ONLINE', 1, 0, 0)`;
-    return newId;
-  }
-  return rows[0].id;
+  const rows = await sql<{ id: string }>`
+    select id
+    from riders
+    where org_id=${orgId}
+      and user_id=${riderUserId}
+      and data_mode='PRODUCTION'
+      and kyc_status='VERIFIED'
+      and status in ('ONLINE','BUSY')
+      and online=1
+    limit 1
+  `;
+  if (!rows[0]) throw new Error("Rider is not onboarded and verified for live dispatch.");
+
 }
 
 export async function handleRiderOffersHttp(request: Request): Promise<Response> {
@@ -75,15 +81,16 @@ export async function handleRiderOffersHttp(request: Request): Promise<Response>
       const updated = await sql<{ id: string; order_id: string }>`update dispatch_assignments set status='DECLINED', responded_at=now() where id=${body.offerId} and org_id=${ws.ctx.orgId} and rider_id=${riderId} and status='OFFERED' returning id, order_id`;
       if (!updated[0]) return json({ error: "Offer is no longer available", code: "OFFER_GONE" }, 409);
 
-      // SLA Penalty: Deduct 50 INR from the rider for declining an optimal route (Platform Revenue Protection)
-      await sql`
-        INSERT INTO ledger_entries (id, org_id, order_id, party, kind, source, rule_key, amount_paise, note)
-        VALUES (
-          gen_random_uuid(), ${ws.ctx.orgId}, ${updated[0].order_id}, 'RIDER', 'DEBIT', 
-          'SLA_PENALTY', 'DECLINE_OPTIMAL_ROUTE', 5000, 
-          'Penalty for declining optimal AI route'
-        )
-      `;
+      if (process.env.RIDER_DECLINE_PENALTY_ENABLED === "1") {
+        await sql`
+          INSERT INTO ledger_entries (id, org_id, order_id, party, kind, source, rule_key, amount_paise, note)
+          VALUES (
+            gen_random_uuid(), ${ws.ctx.orgId}, ${updated[0].order_id}, 'RIDER', 'DEBIT',
+            'SLA_PENALTY', 'DECLINE_OPTIMAL_ROUTE', 5000,
+            'Contract/policy-backed rider decline penalty'
+          )
+        `;
+      }
 
       // Cascading dispatch: immediately route to next nearest rider with escalated bounty
       const { cascadeNextNearestRider } = await import("@/lib/orderking/orders/smart-dispatch.server");
