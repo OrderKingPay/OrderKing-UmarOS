@@ -2,10 +2,10 @@
  * Low-Network & 2G Offline-First Cache Layer
  * OrderKing Rider / Delivery Fleet App
  * 
- * Guarantees zero delivery action drops and 0ms UI responsiveness even in:
+ * Targets reliable delivery-action queuing and immediate local UI response where technically possible:
  * - Underground parking lots / basement restaurant kitchens
  * - High-speed transit in remote / border cell towers
- * - 2G, EDGE, or momentary network cutouts
+ * - 2G, EDGE, or momentary network cutouts; server confirmation remains authoritative
  * 
  * Capabilities:
  * - Aggressive localStorage snapshotting for active delivery, earnings, and duty status.
