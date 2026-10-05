@@ -212,7 +212,10 @@ export default defineConfig(({ command, isPreview }) => ({
     ...(command === "build" || isPreview
       ? [
           nitro({
-            preset: process.env.NETLIFY ? "netlify" : "vercel",
+            // Cloudflare is the only production deployment target.
+            // Legacy Vercel/Netlify config may remain in the repository, but
+            // production builds must never select those presets.
+            preset: "cloudflare_module",
             // Auto-registers server/middleware/* (the PWA install page +
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.

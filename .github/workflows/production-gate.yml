@@ -18,7 +18,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9
+          version: 12.8.1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -28,6 +28,12 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Verify package-manager version
+        run: pnpm --version
+
+      - name: Run repository production invariants
+        run: node scripts/production-invariants.mjs
 
       - name: Run Typecheck across 5 apps
         run: pnpm run typecheck

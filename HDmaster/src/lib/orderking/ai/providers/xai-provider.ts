@@ -166,20 +166,25 @@ export class XAIProvider implements AIProvider {
       responseFormat: "json_object",
     });
 
-    let parsed: any = {};
+    const clean = res.text.replace(/\`\`\`json/g, "").replace(/\`\`\`/g, "").trim();
+    let parsed: any;
     try {
-      parsed = JSON.parse(res.text);
+      parsed = JSON.parse(clean);
     } catch {
-      console.warn("xAI analyze failed to return valid JSON", res.text);
+      throw new Error("xAI analyze returned non-JSON output; no synthetic findings or recommendations are permitted.");
+    }
+
+    if (!parsed.summary || !Array.isArray(parsed.findings) || !Array.isArray(parsed.recommendations)) {
+      throw new Error("xAI analyze returned an invalid analysis schema.");
     }
 
     return {
       provider: this.id,
       model: res.model,
-      summary: parsed.summary || res.text.slice(0, 300),
-      findings: parsed.findings || ["Realtime market telemetry verified"],
-      recommendations: parsed.recommendations || ["Deploy immediately"],
-      confidenceScore: typeof parsed.confidenceScore === "number" ? parsed.confidenceScore : 0.95,
+      summary: parsed.summary,
+      findings: parsed.findings,
+      recommendations: parsed.recommendations,
+      confidenceScore: typeof parsed.confidenceScore === "number" ? parsed.confidenceScore : 0,
       rawAnalysis: res.text,
     };
   }
@@ -191,19 +196,23 @@ export class XAIProvider implements AIProvider {
       responseFormat: "json_object",
     });
 
-    let parsed: any = {};
+    const clean = res.text.replace(/\`\`\`json/g, "").replace(/\`\`\`/g, "").trim();
+    let parsed: any;
     try {
-      parsed = JSON.parse(res.text);
+      parsed = JSON.parse(clean);
     } catch {
-      console.warn("xAI generateCode failed to return valid JSON", res.text);
-      parsed = { code: res.text, explanation: "Fallback parse." };
+      throw new Error("xAI generateCode returned non-JSON output; no raw-model text will be treated as validated code.");
+    }
+
+    if (!parsed.code || typeof parsed.code !== "string") {
+      throw new Error("xAI generateCode returned an invalid code payload.");
     }
 
     return {
       provider: this.id,
       model: res.model,
-      code: parsed.code || res.text,
-      explanation: parsed.explanation || "Generated high-performance code via Grok engine.",
+      code: parsed.code,
+      explanation: parsed.explanation || "",
       unitTests: parsed.unitTests,
       dependencies: parsed.dependencies,
     };
