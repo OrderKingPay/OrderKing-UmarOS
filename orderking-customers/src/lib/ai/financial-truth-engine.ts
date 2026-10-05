@@ -78,7 +78,7 @@ export function calculateUnitEconomics(
 }
 
 // Initial Curated Opportunities with Truthful Accounting Statuses
-export const INITIAL_FINANCIAL_RECORDS: FinancialTruthRecord[] = [
+const SIMULATED_FINANCIAL_RECORDS: FinancialTruthRecord[] = [
   {
     id: "FIN-REC-001",
     title: "White-Label Direct Ordering App & Fleet Integration",
@@ -170,3 +170,7 @@ export function calculateFinancialTelemetry(records: FinancialTruthRecord[]): Fi
     averageContributionMarginPct: avgMargin,
   };
 }
+
+
+export const INITIAL_FINANCIAL_RECORDS: FinancialTruthRecord[] =
+  import.meta.env.VITE_DATA_MODE === "SIMULATED" ? SIMULATED_FINANCIAL_RECORDS : [];
