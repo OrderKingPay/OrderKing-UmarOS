@@ -78,7 +78,7 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   strategicDispatchRadiusKm: 8.0,
   bountyEscalationPaise: 1000,
   sampleCatalogueBanner: false,
-  launchMode: "live",
+  launchMode: "pilot",
 };
 
 export type BrandingConfig = {
@@ -117,7 +117,7 @@ export const DEFAULT_BRANDING: BrandingConfig = {
   colorAccent: "#c8ccd4",
   fontDisplay: "Newsreader",
   fontBody: "IBM Plex Sans",
-  domain: "orderking.in",
+  domain: null,
   tagline: "Order like a King.",
   appStoreName: "Order King",
   notificationSender: "Order King",
@@ -126,9 +126,9 @@ export const DEFAULT_BRANDING: BrandingConfig = {
   restaurantBranding: "Order King Partner",
   riderBranding: "Order King Rider",
   adminBranding: "Order King Command",
-  legalCompanyName: "Order King Foods Private Limited",
-  supportEmail: "support@orderking.in",
-  supportPhone: "+91 38xxx xxxxx",
+  legalCompanyName: "",
+  supportEmail: "",
+  supportPhone: "",
 };
 
 export const FEATURE_FLAG_KEYS = [
