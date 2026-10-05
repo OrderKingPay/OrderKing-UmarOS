@@ -32,7 +32,7 @@ export function getRazorpayConfig() {
 
 /**
  * Creates a Razorpay Order for online UPI/Card payment.
- * Automatically falls back to zero-crash test mode if keys are not set.
+ * Missing provider credentials fail closed; sandbox/live mode is explicit.
  */
 export const createRazorpayOrder = createServerFn({ method: "POST" })
   .// @ts-ignore
