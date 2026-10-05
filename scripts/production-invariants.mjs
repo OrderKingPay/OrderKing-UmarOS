@@ -11,6 +11,14 @@ const files = [
   "orderking-customers/src/lib/db-cloud.ts",
   "orderking-partners/src/lib/db-cloud.ts",
   "orderking-riders/src/lib/db-cloud.ts",
+  "orderking-customers/vite.config.ts",
+  "orderking-partners/vite.config.ts",
+  "orderking-riders/vite.config.ts",
+  "HDmaster/src/lib/orderking/ai/real-model-registry.ts",
+  "orderking-customers/src/lib/ai/real-model-registry.ts",
+  "HDmaster/src/lib/orderking/ai/model-router.server.ts",
+  "HDmaster/src/routes/api/v1/integrations/openai.ts",
+  "HDmaster/src/lib/orderking/ai/providers/xai-provider.ts",
 ];
 
 const forbidden = [
@@ -19,6 +27,8 @@ const forbidden = [
   { pattern: /preset\s*:\s*["'](?:vercel|netlify)["']/, label: "non-Cloudflare Nitro production preset" },
   { pattern: /process\.env\.NETLIFY\s*\?/, label: "Netlify production preset selection" },
   { pattern: /dummy\.supabase\.co|dummy-key/, label: "dummy Supabase production client configuration" },
+  { pattern: /localStorage\.(getItem|setItem).*umar_os_apikey|umar_os_apikey_/, label: "AI provider secret in browser storage" },
+  { pattern: /dummy_openai|Simulated synthesis|Deploy immediately|Realtime market telemetry verified/, label: "synthetic AI success/finding path" },
 ];
 
 const failures = [];
