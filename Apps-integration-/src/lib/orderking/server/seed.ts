@@ -10,6 +10,12 @@ function iso(msOffset: number): string {
 }
 
 export async function ensureSeeded(sql: Sql): Promise<void> {
+  // Marketplace fixtures may only run in an explicitly enabled simulator.
+  // Production, pilot, and unknown modes must never auto-create kitchens,
+  // riders, customers, orders, settlements, or tickets.
+  const runtimeMode = process.env.DATA_MODE?.trim().toUpperCase();
+  if (runtimeMode !== "SIMULATED") return;
+
   const orgs = await sql<{ id: string }>`select id from organizations where id = ${ORG_ID}`;
   if (orgs.length === 0) {
     await sql`insert into organizations (id, name) values (${ORG_ID}, ${"Order King"})`;
