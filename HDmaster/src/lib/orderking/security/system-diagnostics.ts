@@ -14,6 +14,7 @@
 import { canonicalLedger } from '../finance/canonical-ledger.ts';
 import { aiWorkforceOrchestrator } from '../ai/ai-workforce-orchestrator.ts';
 import { founderPrivacyShield } from './founder-privacy-shield.ts';
+import { getSql } from '../db.ts';
 
 export type SystemHealthStatus = 'HEALTHY' | 'DEGRADED' | 'CRITICAL' | 'DOWN';
 
@@ -134,15 +135,15 @@ export class SystemDiagnosticsEngine {
     components.push(securityHealth);
 
     // 4. Order State Machine & Dispatch Health
-    const ordersHealth = this.checkOrdersHealth();
+    const ordersHealth = await this.checkOrdersHealth();
     components.push(ordersHealth);
 
     // 5. Rider Fleet & Geofence GPS Registry
-    const fleetHealth = this.checkFleetHealth();
+    const fleetHealth = await this.checkFleetHealth();
     components.push(fleetHealth);
 
     // 6. Database & Core Infrastructure Latency
-    const infraHealth = this.checkInfrastructureHealth();
+    const infraHealth = await this.checkInfrastructureHealth();
     components.push(infraHealth);
 
     // Calculate overall status & score
@@ -305,61 +306,180 @@ export class SystemDiagnosticsEngine {
     };
   }
 
-  private static checkOrdersHealth(): ComponentHealth {
-    return {
-      componentId: 'order_state_machine',
-      name: 'Order Lifecycle State Machine',
-      category: 'ORDERS',
-      status: 'HEALTHY',
-      latencyMs: 18,
-      message: 'Order lifecycle transitions running smoothly with zero stuck orders.',
-      metrics: {
-        stuckOrdersCount: 0,
-        activeOrders: 14,
-        avgTransitionLatencyMs: 18,
-      },
-      lastCheckedAt: new Date().toISOString(),
-      incidentCount: 0,
-    };
+  private static async checkOrdersHealth(): Promise<ComponentHealth> {
+    const t0 = Date.now();
+    try {
+      const sql = await getSql();
+      const [summary] = await sql.query<{
+        active_orders: number | string;
+        stuck_orders: number | string;
+        active_deliveries: number | string;
+      }>(`
+        SELECT
+          COUNT(*) FILTER (
+            WHERE status NOT IN ('DELIVERED','CANCELLED','FAILED','REFUNDED')
+          )::int AS active_orders,
+          COUNT(*) FILTER (
+            WHERE status NOT IN ('DELIVERED','CANCELLED','FAILED','REFUNDED')
+              AND promised_at IS NOT NULL
+              AND promised_at < NOW()
+          )::int AS stuck_orders,
+          COUNT(*) FILTER (
+            WHERE rider_id IS NOT NULL
+              AND status NOT IN ('DELIVERED','CANCELLED','FAILED','REFUNDED')
+          )::int AS active_deliveries
+        FROM orders
+      `);
+      const activeOrders = Number(summary?.active_orders ?? 0);
+      const stuckOrders = Number(summary?.stuck_orders ?? 0);
+      const activeDeliveries = Number(summary?.active_deliveries ?? 0);
+      const latencyMs = Math.max(1, Date.now() - t0);
+      const status: SystemHealthStatus =
+        stuckOrders > 0 ? 'DEGRADED' : 'HEALTHY';
+
+      return {
+        componentId: 'order_state_machine',
+        name: 'Order Lifecycle State Machine',
+        category: 'ORDERS',
+        status,
+        latencyMs,
+        message: stuckOrders > 0
+          ? `${stuckOrders} active order(s) are past their promised delivery time.`
+          : `Live order database check completed; ${activeOrders} active order(s), ${activeDeliveries} active deliveries.`,
+        metrics: {
+          stuckOrdersCount: stuckOrders,
+          activeOrders,
+          activeDeliveries,
+        },
+        lastCheckedAt: new Date().toISOString(),
+        incidentCount: stuckOrders > 0 ? 1 : 0,
+        recommendation: stuckOrders > 0 ? 'Investigate delayed orders and dispatch/restaurant bottlenecks.' : undefined,
+      };
+    } catch (error) {
+      return {
+        componentId: 'order_state_machine',
+        name: 'Order Lifecycle State Machine',
+        category: 'ORDERS',
+        status: 'DOWN',
+        latencyMs: Math.max(1, Date.now() - t0),
+        message: 'Live order-state database check failed; no healthy status is assumed.',
+        metrics: {
+          dataAvailable: false,
+          error: error instanceof Error ? error.message : 'Unknown database error',
+        },
+        lastCheckedAt: new Date().toISOString(),
+        incidentCount: 1,
+        recommendation: 'Restore database connectivity before treating order operations as healthy.',
+      };
+    }
   }
 
-  private static checkFleetHealth(): ComponentHealth {
-    return {
-      componentId: 'rider_fleet_dispatch',
-      name: 'Rider Fleet & Proximity Dispatch Engine',
-      category: 'FLEET',
-      status: 'HEALTHY',
-      latencyMs: 32,
-      message: 'Rider proximity engine operational. 18 riders online with active GPS heartbeats.',
-      metrics: {
-        ridersOnline: 18,
-        activeDeliveries: 9,
-        idleRiders: 9,
-        avgAssignmentLatencySec: 42,
-      },
-      lastCheckedAt: new Date().toISOString(),
-      incidentCount: 0,
-    };
+  private static async checkFleetHealth(): Promise<ComponentHealth> {
+    const t0 = Date.now();
+    try {
+      const sql = await getSql();
+      const [summary] = await sql.query<{
+        riders_online: number | string;
+        riders_with_fresh_gps: number | string;
+        active_deliveries: number | string;
+        pending_dispatch: number | string;
+      }>(`
+        SELECT
+          (SELECT COUNT(*) FROM riders WHERE COALESCE(online, 0) = 1)::int AS riders_online,
+          (SELECT COUNT(*) FROM riders WHERE COALESCE(online, 0) = 1 AND last_ping_at >= NOW() - INTERVAL '2 minutes')::int AS riders_with_fresh_gps,
+          (SELECT COUNT(*) FROM orders
+             WHERE rider_id IS NOT NULL
+               AND status NOT IN ('DELIVERED','CANCELLED','FAILED','REFUNDED'))::int AS active_deliveries,
+          (SELECT COUNT(*) FROM dispatch_assignments
+             WHERE status IN ('OFFERED','PENDING','ASSIGNED'))::int AS pending_dispatch
+      `);
+      const ridersOnline = Number(summary?.riders_online ?? 0);
+      const freshGps = Number(summary?.riders_with_fresh_gps ?? 0);
+      const activeDeliveries = Number(summary?.active_deliveries ?? 0);
+      const pendingDispatch = Number(summary?.pending_dispatch ?? 0);
+      const latencyMs = Math.max(1, Date.now() - t0);
+      const status: SystemHealthStatus =
+        ridersOnline > 0 && freshGps < ridersOnline ? 'DEGRADED' : 'HEALTHY';
+
+      return {
+        componentId: 'rider_fleet_dispatch',
+        name: 'Rider Fleet & Proximity Dispatch Engine',
+        category: 'FLEET',
+        status,
+        latencyMs,
+        message: ridersOnline === 0
+          ? 'No currently online riders are recorded in the live database.'
+          : `${ridersOnline} rider(s) online; ${freshGps} have a GPS heartbeat within 2 minutes; ${activeDeliveries} active deliveries; ${pendingDispatch} dispatch offers pending.`,
+        metrics: {
+          ridersOnline,
+          ridersWithFreshGps: freshGps,
+          activeDeliveries,
+          pendingDispatch,
+        },
+        lastCheckedAt: new Date().toISOString(),
+        incidentCount: status === 'HEALTHY' ? 0 : 1,
+        recommendation: status === 'DEGRADED'
+          ? 'Investigate stale rider GPS heartbeats before enabling live dispatch.'
+          : undefined,
+      };
+    } catch (error) {
+      return {
+        componentId: 'rider_fleet_dispatch',
+        name: 'Rider Fleet & Proximity Dispatch Engine',
+        category: 'FLEET',
+        status: 'DOWN',
+        latencyMs: Math.max(1, Date.now() - t0),
+        message: 'Live rider/dispatch database check failed; no healthy status is assumed.',
+        metrics: {
+          dataAvailable: false,
+          error: error instanceof Error ? error.message : 'Unknown database error',
+        },
+        lastCheckedAt: new Date().toISOString(),
+        incidentCount: 1,
+        recommendation: 'Restore database connectivity and rider telemetry before enabling live dispatch.',
+      };
+    }
   }
 
-  private static checkInfrastructureHealth(): ComponentHealth {
-    return {
-      componentId: 'infrastructure_db',
-      name: 'Core Database & API Gateway',
-      category: 'INFRASTRUCTURE',
-      status: 'HEALTHY',
-      latencyMs: 45,
-      message: 'Gateway responding normally. P99 latency within 140ms SLA.',
-      metrics: {
-        p50LatencyMs: 24,
-        p95LatencyMs: 88,
-        p99LatencyMs: 138,
-        connectionPoolUsagePct: 22,
-      },
-      lastCheckedAt: new Date().toISOString(),
-      incidentCount: 0,
-    };
+  private static async checkInfrastructureHealth(): Promise<ComponentHealth> {
+    const t0 = Date.now();
+    try {
+      const sql = await getSql();
+      await sql.query('SELECT 1 AS ok');
+      const latencyMs = Math.max(1, Date.now() - t0);
+      const status: SystemHealthStatus = latencyMs > 500 ? 'DEGRADED' : 'HEALTHY';
+      return {
+        componentId: 'infrastructure_db',
+        name: 'Core Database & API Gateway',
+        category: 'INFRASTRUCTURE',
+        status,
+        latencyMs,
+        message: `Live database health query succeeded in ${latencyMs} ms.`,
+        metrics: {
+          databaseReachable: true,
+          healthQueryLatencyMs: latencyMs,
+        },
+        lastCheckedAt: new Date().toISOString(),
+        incidentCount: status === 'HEALTHY' ? 0 : 1,
+        recommendation: status === 'DEGRADED' ? 'Investigate database/query latency before public launch.' : undefined,
+      };
+    } catch (error) {
+      return {
+        componentId: 'infrastructure_db',
+        name: 'Core Database & API Gateway',
+        category: 'INFRASTRUCTURE',
+        status: 'DOWN',
+        latencyMs: Math.max(1, Date.now() - t0),
+        message: 'Live database health query failed.',
+        metrics: {
+          databaseReachable: false,
+          error: error instanceof Error ? error.message : 'Unknown database error',
+        },
+        lastCheckedAt: new Date().toISOString(),
+        incidentCount: 1,
+        recommendation: 'Restore database connectivity before enabling live operations.',
+      };
+    }
   }
-}
 
 export const systemDiagnostics = SystemDiagnosticsEngine;
