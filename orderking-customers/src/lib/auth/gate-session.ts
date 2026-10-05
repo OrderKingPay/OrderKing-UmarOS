@@ -8,14 +8,11 @@ import {
   setSessionCookie,
 } from "better-auth/cookies";
 import { handleOAuthUserInfo } from "better-auth/oauth2";
-import {
-  GATE_IDENTITY_HEADER,
-  gateIdentityEnabled,
-  gateIdentityFromHeaders,
-  sessionBoundToGateIdentity,
-} from "./gate-identity.server";
-
 export const GATE_PROVIDER_ID = "grok-gate";
+const GATE_IDENTITY_HEADER = "x-grok-identity";
+const gateIdentityRuntime = createServerOnlyFn(async () => {
+  return await import("./gate-identity.server");
+});
 const GATE_ACCOUNT_ISSUER = "https://grok.com";
 const LOG = "[gate-identity]";
 
@@ -172,6 +169,11 @@ export function gateIdentitySessions() {
         {
           matcher: (ctx: { path?: string }) => ctx.path === "/get-session",
           handler: createAuthMiddleware(async (ctx) => {
+            const {
+              gateIdentityEnabled,
+              gateIdentityFromHeaders,
+              sessionBoundToGateIdentity,
+            } = await gateIdentityRuntime();
             if (!gateIdentityEnabled()) return;
             const inbound = ctx.request?.headers ?? ctx.headers;
             if (!inbound) {
