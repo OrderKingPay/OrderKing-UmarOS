@@ -29,6 +29,9 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Production truth audit
+        run: pnpm run production-truth-audit
+
       - name: Run Typecheck across 5 apps
         run: pnpm run typecheck
 
