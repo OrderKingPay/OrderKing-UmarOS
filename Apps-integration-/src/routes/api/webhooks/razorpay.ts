@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { createAPIFileRoute } from '@/lib/createAPIFileRoute';
+import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { getSql, type Sql } from '../../../lib/db';
 
@@ -29,7 +29,7 @@ const RazorpayWebhookSchema = z.object({
   }).passthrough()
 }).passthrough();
 
-export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
+export const Route = createFileRoute('/api/webhooks/razorpay')({
   server: {
     handlers: {
       POST: async ({ request }) => {
