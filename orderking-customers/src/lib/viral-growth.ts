@@ -18,7 +18,8 @@ export const ViralGrowthEngine = {
    * Format: OK-{4 chars from hash}-{3 random chars}
    */
   generateReferralCode(userId: string): string {
-    const secret = typeof process !== "undefined" && process.env.BETTER_AUTH_SECRET ? process.env.BETTER_AUTH_SECRET : "default_secret";
+    const secret = typeof process !== "undefined" ? process.env.BETTER_AUTH_SECRET?.trim() : undefined;
+    if (!secret) throw new Error("Referral codes require BETTER_AUTH_SECRET.");
     const hash = createHash("sha256").update(userId + secret).digest("hex").substring(0, 4).toUpperCase();
     const entropy = randomBytes(2).toString("hex").substring(0, 3).toUpperCase();
     return `OK-${hash}${entropy}`;
@@ -28,25 +29,35 @@ export const ViralGrowthEngine = {
    * Generates the high-conversion, dynamic deep link for sharing.
    */
   generateDeepLink(referralCode: string): string {
-    const baseUrl = typeof process !== "undefined" && process.env.VERCEL_PROJECT_PRODUCTION_URL 
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` 
-      : "https://orderking.in";
-    return `${baseUrl}/r/${referralCode}`;
+    const baseUrl =
+      (typeof process !== "undefined" && (process.env.PUBLIC_CUSTOMER_APP_URL || process.env.PUBLIC_APP_URL)?.trim()) ||
+      "https://orderking-customers.pages.dev";
+    if (/vercel\.app$/i.test(new URL(baseUrl).hostname)) {
+      throw new Error("Cloudflare-only policy: referral links may not target Vercel.");
+    }
+    return `${baseUrl.replace(/\/+$/, "")}/r/${referralCode}`;
   },
 
   /**
    * Generates native share intents optimized for maximum organic spread.
    */
-  createViralShareIntent(referralCode: string, amount: number = 100) {
+  createViralShareIntent(referralCode: string) {
     const link = this.generateDeepLink(referralCode);
-    const copy = `👑 I just got ₹${amount} free food credit on OrderKing!\n\nUse my invite link to claim your ₹${amount} welcome bonus instantly. No hidden fees, just real food at 0% markup.\n\nClaim here: ${link}`;
+    const configuredReward = Number.parseInt(
+      typeof process !== "undefined" ? process.env.ORDERKING_REFERRAL_REWARD_PAISE ?? "0" : "0",
+      10,
+    );
+    const amount = Number.isFinite(configuredReward) && configuredReward > 0 ? configuredReward / 100 : null;
+    const copy = amount
+      ? `👑 Join me on OrderKing and claim the active ₹${amount} referral benefit.\n\nClaim here: ${link}`
+      : `👑 Join me on OrderKing. Referral rewards are available only during verified campaigns.\n\nJoin here: ${link}`;
     const encodedCopy = encodeURIComponent(copy);
 
     return {
       whatsapp: `https://wa.me/?text=${encodedCopy}`,
       telegram: `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(`Claim ₹${amount} free food on OrderKing!`)}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodedCopy}`,
-      navigatorShare: typeof navigator !== "undefined" && typeof navigator.share === 'function' ? {
+      navigatorShare: typeof navigator !== "undefined" && typeof navigator.share === "function" ? {
         title: "OrderKing Welcome Bonus",
         text: copy,
         url: link
@@ -108,8 +119,14 @@ export const ViralGrowthEngine = {
         [referrerId, newUserId]
       );
 
-      // 4. Execute the Wallet Credits via KingPay Wallet Engine (₹100 = 10000 paise)
-      const REWARD_PAISE = 10000;
+      const configuredReward = Number.parseInt(
+        typeof process !== "undefined" ? process.env.ORDERKING_REFERRAL_REWARD_PAISE ?? "0" : "0",
+        10,
+      );
+      const REWARD_PAISE = Number.isFinite(configuredReward) && configuredReward > 0 ? configuredReward : 0;
+      if (REWARD_PAISE === 0) {
+        return { success: false, message: "Referral rewards are not enabled; no wallet credit was issued.", amountCredited: 0 };
+      }
       
       const referrerCredit = await walletEngine.creditWallet(
         referrerId, 
