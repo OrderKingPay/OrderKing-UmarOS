@@ -54,7 +54,7 @@ function Login() {
     <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#020202] px-4 py-10 text-zinc-100 selection:bg-emerald-500/30">
       {/* UMAR OS SUPREME COMMAND CENTER BACKGROUND */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden bg-[#020202]">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.035)_1px,transparent_0)] opacity-[0.03] mix-blend-overlay"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[length:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_80%)] opacity-70" />
         <motion.div
           animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.35, 0.15], rotate: [0, 90, 0] }}

@@ -51,21 +51,9 @@ export function useRealKingPayWallet() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
   });
 
-  // Mock setWalletBalance to emulate the useState tuple structure for easy patching
-  const setWalletBalance = (action: any) => {
-    let amount = 0;
-    if (typeof action === 'function') {
-      const result = action(walletBalance);
-      amount = result - walletBalance;
-    } else {
-      amount = action - walletBalance;
-    }
-    
-    if (amount > 0) {
-      addMoney.mutate({ amount, description: "Wallet Top-up / Reward" });
-    } else if (amount < 0) {
-      deductMoney.mutate({ amount: Math.abs(amount), description: "Wallet Deduction" });
-    }
+  // Real balance is provider-backed and read-only until a verified payment path is enabled.
+  const setWalletBalance = () => {
+    throw new Error("KingPay balance changes are unavailable until a verified payment provider is connected.");
   };
 
   const setKingCoins = () => { /* read only for now, mutations can be added */ };

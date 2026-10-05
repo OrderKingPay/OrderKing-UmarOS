@@ -104,7 +104,7 @@ export class OpportunityEngine {
   ]);
 
   constructor() {
-    this.seedRealOpportunities();
+    if (process.env.DATA_MODE === "SIMULATED") this.seedRealOpportunities();
   }
 
   private seedRealOpportunities() {

@@ -1,6 +1,10 @@
-// @ts-nocheck
-// Legitimate Payment & Revenue Gateway Integration
-// Supports King Pay UPI, Razorpay, and Stripe with Webhook Verification and Zero-Fabrication Integrity
+// Explicit provider boundary for finance/revenue features.
+//
+// This module deliberately contains NO seeded financial transactions and NO
+// synthetic confirmation paths. Until a real provider is configured and its
+// webhook/reconciliation contract is verified, revenue operations fail closed.
+
+import { createHmac, timingSafeEqual } from "node:crypto";
 
 export type PaymentChannel = "KING_PAY_UPI" | "RAZORPAY" | "STRIPE";
 export type PaymentStatus = "PENDING" | "CONFIRMED" | "FAILED" | "REFUNDED";
@@ -12,7 +16,7 @@ export interface PaymentTransaction {
   status: PaymentStatus;
   clientName: string;
   description: string;
-  referenceNumber: string; // UTR or provider payment ID
+  referenceNumber: string;
   providerFeeInr: number;
   netFounderDepositInr: number;
   createdAt: string;
@@ -29,117 +33,66 @@ export interface RevenueMetrics {
   pendingInvoicesValueInr: number;
 }
 
+function unavailable(operation: string): never {
+  throw new Error(`${operation} is unavailable until a real payment provider, contract, credentials, webhook verification, and reconciliation flow are configured.`);
+}
+
 export class RevenueGatewayService {
-  private transactions: PaymentTransaction[] = [
-    {
-      id: "TXN-8801",
-      amountInr: 74999,
-      channel: "KING_PAY_UPI",
-      status: "CONFIRMED",
-      clientName: "Royal Darbar Palace",
-      description: "50% Milestone Advance - Direct Ordering App",
-      referenceNumber: "UPI-UTR-908234710293",
-      providerFeeInr: 0, // 0% gateway cut
-      netFounderDepositInr: 74999,
-      createdAt: "2026-09-21 15:40",
-      settledAt: "2026-09-21 15:41",
-    },
-    {
-      id: "TXN-8802",
-      amountInr: 50000,
-      channel: "RAZORPAY",
-      status: "CONFIRMED",
-      clientName: "Sylhet Heritage Sweets",
-      description: "POS Hardware & Cloud License Setup",
-      referenceNumber: "pay_OpL92810Xkz9",
-      providerFeeInr: 1000, // 2% standard cut
-      netFounderDepositInr: 49000,
-      createdAt: "2026-09-20 12:20",
-      settledAt: "2026-09-20 12:21",
-    },
-  ];
+  private transactions: PaymentTransaction[] = [];
 
   getTransactions(): PaymentTransaction[] {
     return [...this.transactions];
   }
 
   getMetrics(): RevenueMetrics {
-    const confirmed = this.transactions.filter((t) => t.status === "CONFIRMED");
-    const totalGross = confirmed.reduce((acc, t) => acc + t.amountInr, 0);
-    const netFounder = confirmed.reduce((acc, t) => acc + t.netFounderDepositInr, 0);
-    // Calculate what would have been lost if standard 2.5% card/gateway fees applied
-    const savedFees = confirmed.reduce((acc, t) => (t.channel === "KING_PAY_UPI" ? acc + Math.round(t.amountInr * 0.025) : acc), 0);
-
     return {
-      totalGrossInr: totalGross,
-      netFounderDepositedInr: netFounder,
-      totalSavedGatewayFeesInr: savedFees,
-      confirmedTransactionsCount: confirmed.length,
-      pendingInvoicesCount: 3,
-      pendingInvoicesValueInr: 324998,
+      totalGrossInr: 0,
+      netFounderDepositedInr: 0,
+      totalSavedGatewayFeesInr: 0,
+      confirmedTransactionsCount: 0,
+      pendingInvoicesCount: 0,
+      pendingInvoicesValueInr: 0,
     };
   }
 
-  createUpiPaymentLink(params: {
+  createUpiPaymentLink(_params: {
     amountInr: number;
     clientName: string;
     description: string;
     founderVpa?: string;
   }): { upiLink: string; qrPayload: string; transactionId: string } {
-    const vpa = params.founderVpa || "orderking@okhdfcbank";
-    const txnId = `TXN-${Date.now().toString().slice(-4)}`;
-    const upiLink = `upi://pay?pa=${vpa}&pn=OrderKing&am=${params.amountInr}&cu=INR&tn=${encodeURIComponent(
-      params.description
-    )}`;
-
-    // Record pending transaction
-    this.transactions.unshift({
-      id: txnId,
-      amountInr: params.amountInr,
-      channel: "KING_PAY_UPI",
-      status: "PENDING",
-      clientName: params.clientName,
-      description: params.description,
-      referenceNumber: `PENDING-${txnId}`,
-      providerFeeInr: 0,
-      netFounderDepositInr: params.amountInr,
-      createdAt: new Date().toISOString().replace("T", " ").slice(0, 16),
-    });
-
-    return {
-      upiLink,
-      qrPayload: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`,
-      transactionId: txnId,
-    };
+    return unavailable("Direct UPI payment links");
   }
 
-  confirmUpiDeposit(params: {
+  confirmUpiDeposit(_params: {
     transactionId: string;
     utrNumber: string;
     verifiedAmountInr: number;
   }): { success: boolean; transaction: PaymentTransaction } {
-    const txn = this.transactions.find((t) => t.id === params.transactionId);
-    if (!txn) throw new Error(`Transaction ${params.transactionId} not found.`);
-
-    txn.status = "CONFIRMED";
-    txn.referenceNumber = params.utrNumber;
-    txn.amountInr = params.verifiedAmountInr;
-    txn.netFounderDepositInr = params.verifiedAmountInr;
-    txn.settledAt = new Date().toISOString().replace("T", " ").slice(0, 16);
-
-    return { success: true, transaction: txn };
+    return unavailable("Manual UPI confirmation");
   }
 
-  verifyRazorpayWebhook(payload: Record<string, unknown>, signature: string, webhookSecret?: string): boolean {
-    if (!signature || !webhookSecret) return false;
-    // In production, HMAC SHA256 verification of raw body
-    return true;
+  verifyRazorpayWebhook(
+    rawBody: string,
+    signature: string,
+    webhookSecret?: string,
+  ): boolean {
+    if (!rawBody || !signature || !webhookSecret) return false;
+    const expected = createHmac("sha256", webhookSecret).update(rawBody).digest("hex");
+    const provided = signature.trim().toLowerCase();
+    if (!/^[a-f0-9]{64}$/.test(provided)) return false;
+    return timingSafeEqual(Buffer.from(expected, "utf8"), Buffer.from(provided, "utf8"));
   }
 
-  verifyStripeWebhook(payload: Record<string, unknown>, signature: string, webhookSecret?: string): boolean {
-    if (!signature || !webhookSecret) return false;
-    // In production, Stripe event construction and signature check
-    return true;
+  verifyStripeWebhook(
+    _rawBody: string,
+    _signature: string,
+    _webhookSecret?: string,
+  ): boolean {
+    // Stripe signature verification must use Stripe's official event
+    // construction with the exact raw request body. Do not accept a boolean
+    // placeholder as proof of payment.
+    return false;
   }
 }
 

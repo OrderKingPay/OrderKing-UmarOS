@@ -1,6 +1,5 @@
 import { getSql, type Sql } from "./db";
 import { createHash, randomBytes } from "node:crypto";
-import { walletEngine } from "./kingpay/wallet";
 
 /**
  * 👑 ORDERKING ELITE VIRAL GROWTH ENGINE
@@ -18,7 +17,8 @@ export const ViralGrowthEngine = {
    * Format: OK-{4 chars from hash}-{3 random chars}
    */
   generateReferralCode(userId: string): string {
-    const secret = typeof process !== "undefined" && process.env.BETTER_AUTH_SECRET ? process.env.BETTER_AUTH_SECRET : "default_secret";
+    const secret = process.env.BETTER_AUTH_SECRET?.trim();
+    if (!secret) throw new Error("BETTER_AUTH_SECRET is not configured.");
     const hash = createHash("sha256").update(userId + secret).digest("hex").substring(0, 4).toUpperCase();
     const entropy = randomBytes(2).toString("hex").substring(0, 3).toUpperCase();
     return `OK-${hash}${entropy}`;
@@ -28,9 +28,7 @@ export const ViralGrowthEngine = {
    * Generates the high-conversion, dynamic deep link for sharing.
    */
   generateDeepLink(referralCode: string): string {
-    const baseUrl = typeof process !== "undefined" && process.env.VERCEL_PROJECT_PRODUCTION_URL 
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` 
-      : "https://orderking.in";
+    const baseUrl = process.env.PUBLIC_APP_ORIGIN?.trim() || "https://orderking-customers.pages.dev";
     return `${baseUrl}/r/${referralCode}`;
   },
 
@@ -108,26 +106,41 @@ export const ViralGrowthEngine = {
         [referrerId, newUserId]
       );
 
-      // 4. Execute the Wallet Credits via KingPay Wallet Engine (₹100 = 10000 paise)
-      const REWARD_PAISE = 10000;
-      
-      const referrerCredit = await walletEngine.creditWallet(
-        referrerId, 
-        REWARD_PAISE, 
-        `ref_reward_${referrerId}_${newUserId}`
+      // 4. Record promotional food credits as loyalty points, not cash balance.
+      // 100 points = ₹100 promotional redemption value under the current loyalty policy.
+      const REWARD_POINTS = 100;
+
+      await tx.query(
+        `INSERT INTO loyalty_accounts (user_id, points, lifetime_points)
+         VALUES ($1, $2, $2)
+         ON CONFLICT (user_id) DO UPDATE
+         SET points = loyalty_accounts.points + EXCLUDED.points,
+             lifetime_points = loyalty_accounts.lifetime_points + EXCLUDED.lifetime_points,
+             updated_at = NOW()`,
+        [referrerId, REWARD_POINTS],
+      );
+      await tx.query(
+        `INSERT INTO loyalty_transactions (id, user_id, delta, reason, created_at)
+         VALUES ($1, $2, $3, 'referral_reward_referrer', NOW())`,
+        [randomBytes(16).toString("hex"), referrerId, REWARD_POINTS],
       );
 
-      const newUserCredit = await walletEngine.creditWallet(
-        newUserId, 
-        REWARD_PAISE, 
-        `ref_reward_welcome_${newUserId}_${referrerId}`
+      await tx.query(
+        `INSERT INTO loyalty_accounts (user_id, points, lifetime_points)
+         VALUES ($1, $2, $2)
+         ON CONFLICT (user_id) DO UPDATE
+         SET points = loyalty_accounts.points + EXCLUDED.points,
+             lifetime_points = loyalty_accounts.lifetime_points + EXCLUDED.lifetime_points,
+             updated_at = NOW()`,
+        [newUserId, REWARD_POINTS],
+      );
+      await tx.query(
+        `INSERT INTO loyalty_transactions (id, user_id, delta, reason, created_at)
+         VALUES ($1, $2, $3, 'referral_reward_new_user', NOW())`,
+        [randomBytes(16).toString("hex"), newUserId, REWARD_POINTS],
       );
 
-      if (referrerCredit.status !== "success" || newUserCredit.status !== "success") {
-         throw new Error("Failed to credit wallets via KingPay engine");
-      }
-
-      return { success: true, message: "Bonus successfully deployed to wallets.", amountCredited: REWARD_PAISE };
+      return { success: true, message: "Promotional food credits added to loyalty accounts.", amountCredited: REWARD_POINTS * 100 };
     });
   }
 };

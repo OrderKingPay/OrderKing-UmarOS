@@ -1,6 +1,6 @@
 // @ts-nocheck
 /**
- * Zomato / Swiggy Compatible Weekly Settlement Engine for Order King
+ * Marketplace Weekly Settlement Engine for Order King
  * Standard Indian Food Delivery Cycle:
  * - Cycle: Monday 00:00:00 to Sunday 23:59:59 IST
  * - Payout Day: Wednesday (Disbursed via NEFT/IMPS/Razorpay Route)
@@ -82,7 +82,7 @@ export function getWeeklyCycle(referenceDate = new Date()): WeeklyCyclePeriod {
 }
 
 /**
- * Computes Restaurant Weekly Settlement Statement matching Zomato's exact tax & commission formula:
+ * Computes a configurable marketplace settlement statement. Tax and fee rates are policy/configuration inputs and must be validated by counsel/tax specialists before live use:
  * Net Payable = (Net Food Sales + Packaging + Platform Reimbursements) 
  *               - (Commission + 18% GST on Commission) 
  *               - (PG Fee + 18% GST on PG Fee) 
@@ -117,8 +117,10 @@ export function calculateRestaurantWeeklySettlement(params: {
   const gstOnPgFee = Math.round((pgFee * 18) / 100);
 
   // 3. Indian Statutory Tax Deductions (TCS 1% + TDS 1%)
-  const tcsDeduction = Math.round((netFoodSales * 100) / 10000); // 1% TCS
-  const tdsDeduction = Math.round((netFoodSales * 100) / 10000); // 1% TDS
+  const tcsBps = 100;
+  const tdsBps = 100;
+  const tcsDeduction = Math.round((netFoodSales * tcsBps) / 10000);
+  const tdsDeduction = Math.round((netFoodSales * tdsBps) / 10000)
 
   // Total deductions
   const totalDeductions = commission + gstOnCommission + pgFee + gstOnPgFee + tcsDeduction + tdsDeduction;
@@ -129,7 +131,7 @@ export function calculateRestaurantWeeklySettlement(params: {
   return {
     restaurantId: params.restaurantId,
     restaurantName: params.restaurantName,
-    bankAccountNumberMasked: params.bankAccountMasked || "XXXX-XXXX-1234",
+    bankAccountNumberMasked: params.bankAccountMasked || "NOT_PROVIDED",
     cycle: params.cycle,
     deliveredOrdersCount: params.deliveredOrdersCount,
     grossSalesPaise: params.grossSalesPaise,
@@ -150,7 +152,7 @@ export function calculateRestaurantWeeklySettlement(params: {
 }
 
 /**
- * Computes Rider Weekly Settlement Statement matching Zomato's weekly payout schedule:
+ * Computes a configurable rider settlement statement. Actual payout cadence and payment method are policy/configuration inputs:
  * Net Disbursement = (Base Trips + Distance + Surge + Milestone Bonuses) - Cash Collected (COD)
  */
 export function calculateRiderWeeklySettlement(params: {
@@ -178,7 +180,7 @@ export function calculateRiderWeeklySettlement(params: {
   return {
     riderId: params.riderId,
     riderName: params.riderName,
-    upiIdOrBankMasked: params.upiOrBankMasked || "rider@upi",
+    upiIdOrBankMasked: params.upiOrBankMasked || "NOT_PROVIDED",
     cycle: params.cycle,
     deliveriesCompleted: params.deliveriesCompleted,
     basePayPaise: params.basePayPaise,

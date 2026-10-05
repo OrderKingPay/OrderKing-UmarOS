@@ -27,7 +27,7 @@ export class FounderApprovalGovernor {
   private approvalQueue: Map<string, FounderApprovalCard> = new Map();
 
   constructor() {
-    this.seedPendingApproval();
+    if (process.env.DATA_MODE === "SIMULATED") this.seedPendingApproval();
   }
 
   private seedPendingApproval() {

@@ -59,7 +59,9 @@ export class RealMoneyOperatingEngine {
   private opportunities: Map<string, RealMoneyOpportunity> = new Map();
 
   constructor() {
-    this.seedInitialOpportunities();
+    // Synthetic opportunity fixtures are simulator-only. Production starts empty
+    // and can only be populated by real, auditable provider-backed opportunities.
+    if (process.env.DATA_MODE === "SIMULATED") this.seedInitialOpportunities();
   }
 
   private seedInitialOpportunities() {
@@ -68,7 +70,7 @@ export class RealMoneyOperatingEngine {
       title: "Royal Darbar Direct Ordering App & Fleet Logistics",
       clientName: "Royal Darbar Palace",
       category: "client_service",
-      stage: "PAYMENT_CONFIRMED",
+      stage: "CONTRACTED",
       currency: "INR",
       economics: {
         expectedGrossRevenue: 149999,
@@ -81,16 +83,13 @@ export class RealMoneyOperatingEngine {
         estimatedContribution: 139549,
         isEstimate: false,
       },
-      proofHash: "SHA256:8f9b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b",
-      bankReferenceNumber: "UPI-UTR-908234710293",
-      confirmedPaymentDate: "2026-09-21 15:40",
-      notes: ["Advance 50% milestone received directly into founder bank account via King Pay UPI."],
+      notes: ["Simulated pipeline fixture; payment remains unverified."],
       history: [
         { stage: "DISCOVERED", timestamp: "2026-09-19 10:00", note: "Identified ₹5.18L/mo aggregator commission loss", actor: "AI_RADAR" },
         { stage: "PROPOSAL" as FinancialStage, timestamp: "2026-09-20 14:00", note: "Custom proposal sent with 28% margin recovery model", actor: "FOUNDER" },
         { stage: "CONTRACTED", timestamp: "2026-09-21 11:00", note: "Signed 14-day SLA delivery contract", actor: "FOUNDER" },
         { stage: "INVOICED", timestamp: "2026-09-21 12:00", note: "Invoice INV-8801 issued for ₹74,999 advance", actor: "FOUNDER" },
-        { stage: "PAYMENT_CONFIRMED", timestamp: "2026-09-21 15:40", note: "Bank verified deposit UTR 908234710293", actor: "BANK_WEBHOOK" },
+        { stage: "PAYMENT_PENDING", timestamp: "2026-09-21 15:40", note: "Simulated fixture remains unpaid.", actor: "SIMULATOR" },
       ],
     };
 

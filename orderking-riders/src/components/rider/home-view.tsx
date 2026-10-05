@@ -30,6 +30,7 @@ export function HomeView() {
   const [confirm, setConfirm] = useState<"online" | "offline" | "decline" | null>(null);
   const [declineReason, setDeclineReason] = useState("");
   const [now, setNow] = useState(Date.now());
+  const fleetPartnerBenefitsEnabled = import.meta.env.VITE_RIDER_FLEET_PARTNERS_ENABLED === "true";
 
   const load = useCallback(async () => {
     try {
@@ -199,7 +200,9 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* HPCL & IOCL Partner Fuel Pump Quick Navigator */}
+      {fleetPartnerBenefitsEnabled ? (
+        <>
+        {/* HPCL & IOCL Partner Fuel Pump Quick Navigator */}
       <section className="rounded-[var(--radius-2xl)] border border-emerald-500/30 bg-gradient-to-br from-[#0a0a0a] via-[#052e16] to-emerald-500/10 p-4 space-y-3 shadow-[0_0_20px_rgba(16,185,129,0.1)] backdrop-blur-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -263,6 +266,8 @@ export function HomeView() {
           </button>
         </div>
       </section>
+        </>
+      ) : null}
 
       {home.active ? (
         <section className="space-y-3">

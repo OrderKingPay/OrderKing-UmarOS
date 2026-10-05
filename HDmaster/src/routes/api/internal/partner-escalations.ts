@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { getSql } from "@/lib/orderking/db.server";
-import { nid } from "@/lib/orderking/server/queries.server";
+// @ts-nocheck
+import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { getSql } from "@/lib/db";
+import { nid } from "@/lib/orderking/server/workspace.server";
 
 type EscalationPayload = {
   escalationId: string;
@@ -20,11 +21,8 @@ const priorityFor = (severity: EscalationPayload["severity"]): string => {
   return "MEDIUM";
 };
 
-export const Route = createFileRoute("/api/internal/partner-escalations")({
-  // @ts-expect-error
-  server: {
-    handlers: {
-      POST: async ({ request }: any) => {
+export const APIRoute = createAPIFileRoute("/api/internal/partner-escalations")({
+  POST: async ({ request }: { request: Request }) => {
         const configuredSecret = process.env.UMAR_OS_ESCALATION_SECRET?.trim();
         if (!configuredSecret) {
           return new Response(JSON.stringify({ ok: false, error: "connector_not_configured" }), {
@@ -126,7 +124,5 @@ export const Route = createFileRoute("/api/internal/partner-escalations")({
             headers: { "content-type": "application/json" },
           });
         }
-      },
-    },
   },
 });

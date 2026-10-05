@@ -99,10 +99,17 @@ export const authConfigured =
 // it derives the origin per-request from the (proxied) host, validated against the
 // preview allowlist, which makes the OAuth `redirect_uri` the concrete preview URL
 // the broker's preview client accepts.
-const explicitBaseURL = undefined;
+const explicitBaseURL = env("BETTER_AUTH_URL");
+if (productionRuntime && !explicitBaseURL) {
+  throw new Error("BETTER_AUTH_URL is required in production.");
+}
+if (productionRuntime && (!grokIssuer || !grokClientId || !grokClientSecret)) {
+  throw new Error("Production OAuth broker credentials are incomplete.");
+}
 // Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
 // requires a mutable `allowedHosts: string[]`.
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
+const deploymentHost = env("CLOUDFLARE_PAGES_HOST") ?? "orderking-customers.pages.dev";
 // Local `npm run dev` (port 8080 contract). Browsers may send Origin as any of
 // these for the same server — trusting only `localhost` rejects `127.0.0.1` and
 // breaks email/password with "Invalid origin".
@@ -126,40 +133,34 @@ const baseURL = explicitBaseURL ?? {
   // (not only the preview wildcard).
   allowedHosts: [
       ...previewAllowedHosts, 
-      "localhost", 
-      "127.0.0.1", 
+      "localhost",
+      "127.0.0.1",
       "[::1]",
-      ...(process.env.VERCEL_URL ? [process.env.VERCEL_URL] : []),
-      ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [process.env.VERCEL_PROJECT_PRODUCTION_URL] : []),
-      "hdmaster.vercel.app",
-      "orderking-customers.vercel.app",
-      "orderking-partners.vercel.app",
-      "orderking-riders.vercel.app",
-      "apps-integration.vercel.app", "orderking.netlify.app", "orderking-hdmaster.netlify.app", "orderking-partners.netlify.app", "orderking-riders.netlify.app"
+      deploymentHost
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
   protocol: "auto" as const,
-  fallback: process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:8080",
+  fallback: explicitBaseURL ?? `https://${deploymentHost}`,
 };
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = [ 'https://orderking-hdmaster.netlify.app', 'https://orderking.netlify.app', 'https://orderking-partners.netlify.app', 'https://orderking-riders.netlify.app', 
+const trustedOrigins: string[] = [
   ...(explicitBaseURL ? [explicitBaseURL] : []),
+  `https://${deploymentHost}`,
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
-  ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-  ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
-  'https://hdmaster.vercel.app',
-  'https://orderking-customers.vercel.app',
-  'https://orderking-partners.vercel.app',
-  'https://orderking-riders.vercel.app',
-  'https://apps-integration.vercel.app'
 ];
 
 const databaseUrl = env("DATABASE_URL");
+if (productionRuntime && !databaseUrl) {
+  throw new Error("DATABASE_URL is required in production.");
+}
+if (productionRuntime && !env("BETTER_AUTH_SECRET")) {
+  throw new Error("BETTER_AUTH_SECRET is required in production.");
+}
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can

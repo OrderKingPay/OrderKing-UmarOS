@@ -177,7 +177,7 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
             
             if (internalOrderId) {
               await sql.transaction(async (tx: Sql) => {
-                const orderRows = await tx<{ org_id: string, total_paise: number, refunded_paise: number }>`SELECT org_id, total_paise, refunded_paise FROM orders WHERE id = ${internalOrderId} FOR UPDATE`;
+                const orderRows = await tx<{ org_id: string, total_paise: number, refunded_paise: number, status: string }>`SELECT org_id, total_paise, refunded_paise, status FROM orders WHERE id = ${internalOrderId} FOR UPDATE`;
                 if (orderRows.length === 0) return;
                 const order = orderRows[0];
 

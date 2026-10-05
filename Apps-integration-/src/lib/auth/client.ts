@@ -16,13 +16,9 @@ import { GROK_PROVIDERS } from "./providers";
  * leaves the bearer token in place, and `onRequest` keeps re-attaching it, so
  * the visitor stays signed in.
  */
-const getBaseURL = () => {
+const getBaseURL = (): string => {
   if (typeof window !== "undefined") return window.location.origin;
-  if (typeof process !== "undefined" && process.env) {
-    if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  }
-  return "http://localhost:8080";
+  return import.meta.env.VITE_PUBLIC_APP_ORIGIN || "http://localhost:8080";
 };
 
 export const authClient = createAuthClient({
@@ -36,13 +32,6 @@ export const authClient = createAuthClient({
   },
 });
 
-/**
- * True when sign-in UI should be shown — i.e. whenever `VITE_AUTH_ENABLED` is
- * not `"false"`. The shipped template sets it to `"false"`
- * (`.grok/app-env.json`), which selects the dev user (see `use-current-user`);
- * with the key removed, sign-in is real in preview (baked preview client) and
- * when deployed (injected per-app client).
- */
 export const authEnabled = import.meta.env.VITE_AUTH_ENABLED !== "false";
 
 /** The upstream providers to render sign-in buttons for. */

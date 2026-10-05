@@ -282,6 +282,10 @@ export function generateMeityUpiClaimSchedule(input: {
   rupayTransactionsCount: number;
   totalEligibleVolumePaise: number;
 }): MeityClaimSchedule {
+  if (process.env.DATA_MODE !== "SIMULATED" && process.env.MEITY_INCENTIVE_PROVIDER_ENABLED !== "1") {
+    throw new Error("Government incentive claims are unavailable until current eligibility, acquiring-bank process and provider integration are verified.");
+  }
+
   const batchId = `MEITY_CLAIM_${input.quarter}_${Date.now()}`;
   const reimbursementRateBps = 40; // 0.40% standard MeitY reimbursement on P2M UPI transactions <= ₹2,000
   const totalClaimAmountPaise = Math.round((input.totalEligibleVolumePaise * reimbursementRateBps) / 10000);
@@ -338,10 +342,10 @@ export function calculatePlanetaryRevenueHarvest(options: {
     throw new Error("OWNER_CONSENT_REQUIRED: Revenue harvest and money execution requires explicit owner consent.");
   }
 
-  const restaurants = options.activeRestaurantsCount ?? 150;
-  const orders = options.monthlyOrdersCount ?? 25000;
-  const gmv = options.monthlyGmvPaise ?? 750000000; // ₹75 Lakhs GMV
-  const kingCoinsLiability = options.kingCoinsMintedMonthlyPaise ?? Math.round(gmv * 0.05); // Assume 5% average cashback liability
+  const restaurants = options.activeRestaurantsCount ?? 0;
+  const orders = options.monthlyOrdersCount ?? 0;
+  const gmv = options.monthlyGmvPaise ?? 0;
+  const kingCoinsLiability = options.kingCoinsMintedMonthlyPaise ?? 0;
 
   // 1. MeitY 0.40% Reimbursement
   const meityClaim = generateMeityUpiClaimSchedule({

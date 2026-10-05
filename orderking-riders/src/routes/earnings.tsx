@@ -26,16 +26,9 @@ function Page() {
   const [data, setData] = useState<Awaited<ReturnType<typeof getEarningsFn>> | null>(null);
   const [settlements, setSettlements] = useState<Awaited<ReturnType<typeof getSettlementsFn>>>([]);
   const [error, setError] = useState<string | null>(null);
-  const [cashoutBusy, setCashoutBusy] = useState(false);
-  const [cashoutSuccess, setCashoutSuccess] = useState(false);
-
-  const handleInstantCashout = () => {
-    setCashoutBusy(true);
-    setTimeout(() => {
-      setCashoutBusy(false);
-      setCashoutSuccess(true);
-    }, 800);
-  };
+  const incentivesEnabled = import.meta.env.VITE_RIDER_INCENTIVES_ENABLED === "true";
+  const instantCashoutEnabled = import.meta.env.VITE_RIDER_INSTANT_CASHOUT_ENABLED === "true";
+  const fleetPartnerBenefitsEnabled = import.meta.env.VITE_RIDER_FLEET_PARTNERS_ENABLED === "true";
 
   useEffect(() => {
     void getEarningsFn({ data: { preset } })
@@ -57,6 +50,8 @@ function Page() {
           
         </div>
 
+        {incentivesEnabled ? (
+        <>
         {/* Peak Surge Hours Banner */}
         <div className="flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
           <span className="text-xl">🔥</span>
@@ -72,7 +67,7 @@ function Page() {
         </div>
 
         {/* Daily Incentive Milestones (Zomato Partner Model) */}
-        {preset === "today" ? (
+        {preset === "today" && incentivesEnabled ? (
           <Card className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
@@ -133,6 +128,8 @@ function Page() {
             </div>
           </Card>
         ) : null}
+        </>
+        ) : null}
 
         <div className="flex flex-wrap gap-2">
           {(["today", "yesterday", "week", "month"] as const).map((p) => (
@@ -158,8 +155,7 @@ function Page() {
           </Card>
         ) : null}
 
-        {/* 1-Tap Daily Cashout to UPI (₹5 Instant Fee) */}
-        {data && data.totals.netPayable > 500 ? (
+        {instantCashoutEnabled && data && data.totals.netPayable > 500 ? (
           <Card className="border border-primary/40 bg-primary/5 p-4 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
@@ -174,21 +170,19 @@ function Page() {
               </div>
               <Button
                 size="sm"
-                disabled={cashoutBusy}
-                onClick={() => handleInstantCashout()}
+                disabled
+                onClick={() => undefined}
                 className="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
               >
-                {cashoutBusy ? "Sending via UPI..." : `Instant Cashout (${formatPaise(data.totals.netPayable - 500)})`}
+                Instant Cashout unavailable until a verified payout provider is connected
               </Button>
             </div>
-            {cashoutSuccess && (
-              <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                ✅ UPI Transfer of {formatPaise(data.totals.netPayable - 500)} completed! UTR: 429108492019. Amount deposited to rider@okaxis.
-              </p>
-            )}
+
           </Card>
         ) : null}
 
+        {fleetPartnerBenefitsEnabled ? (
+        <>
         {/* HPCL DriveTrack Plus & IOCL XTRAPOWER Fleet Hub */}
         <div className="rounded-xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-500/15 via-surface to-teal-500/10 p-4 text-xs space-y-3 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
           <div className="flex items-center justify-between border-b border-emerald-500/20 pb-2.5">
@@ -253,25 +247,17 @@ function Page() {
             </button>
           </div>
         </div>
+        </>
+        ) : null}
 
-        {/* Wednesday Settlement Notice & Statutory Gig Partner Protection */}
-        <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3.5 text-xs text-zinc-400-foreground space-y-2">
+        <div className="rounded-xl border border-white/10 bg-[#0a0a0a]/80 p-3.5 text-xs text-zinc-400-foreground space-y-2">
           <div className="flex items-center justify-between font-medium text-white">
-            <div className="flex items-center gap-1.5">
-              <span>🗓️ Wednesday Weekly Settlement</span>
-              <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/20 px-1.5 py-0.2 rounded">
-                Code on Social Security 2020
-              </span>
-            </div>
-            <span className="text-primary font-semibold">Auto-Transfer</span>
+            <span>Settlement schedule</span>
+            <span className="text-primary font-semibold">Provider-backed only</span>
           </div>
           <p className="leading-relaxed">
-            Direct NEFT/UPI bank deposit every Wednesday at 06:00 AM IST. Payout formula: Base delivery pay + Distance pay + Dynamic surge + Daily milestone bonuses + 100% customer tips − Cash on delivery (COD) collected − statutory TDS (1% u/s 194-O).
+            Your actual payout timing, deductions, incentives and transfer status are taken from the verified rider settlement record. No transfer is initiated by this screen until a real payout provider and rider payout account are connected.
           </p>
-          <div className="border-t border-white/10/50 pt-1.5 text-[10px] flex items-center justify-between">
-            <span>🛡️ Independent Gig Partner Agreement · 100% Transparent Itemization</span>
-            <span className="text-zinc-400-foreground">Arbitration Act 1996 Protected</span>
-          </div>
         </div>
 
         <Card>

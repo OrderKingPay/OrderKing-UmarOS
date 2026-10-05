@@ -1,8 +1,6 @@
-// @ts-nocheck
-// Universal Connector Architecture & 3-Tier Provider Fallback (Directives 18 & 19)
-// Standard interface for all system connectors (AI, Search, Git, Database, Payments, Cloud, etc.)
-// 3-Tier Fallback Hierarchy: PRIMARY → SECONDARY → TERTIARY → SAFE FAILURE + HUMAN NOTICE.
-// Never silently pretends a failed action succeeded.
+// Universal Connector Architecture & 3-Tier Provider Fallback.
+// Built-in connectors are explicit provider boundaries. They never manufacture
+// successful payments, database health, or search results.
 
 export type Capability =
   | "ai_inference"
@@ -30,6 +28,10 @@ export interface Connector {
   healthCheck(): Promise<boolean>;
 }
 
+const unavailable = (id: string, action: string): never => {
+  throw new Error(`Connector ${id} is unavailable for ${action} until a real provider is registered and verified.`);
+};
+
 export class UniversalConnectorRegistry {
   private connectors: Map<string, Connector> = new Map();
 
@@ -38,64 +40,35 @@ export class UniversalConnectorRegistry {
   }
 
   private registerStandardConnectors() {
-    // 1. King Pay Direct UPI Connector
     this.register({
       id: "conn-king-pay-upi",
-      name: "King Pay UPI Gateway Connector",
+      name: "King Pay UPI Provider Boundary",
       capabilities: ["payments_upi", "accounting_ledger"],
-      async authenticate() {
-        // Authenticate with local Section 79 cryptographic keys
-      },
-      async execute(action, input: any) {
-        if (action === "create_payment_link") {
-          const vpa = input.founderVpa || "orderking@okhdfcbank";
-          return {
-            upiLink: `upi://pay?pa=${vpa}&pn=OrderKing&am=${input.amountInr}&cu=INR&tn=${encodeURIComponent(input.description || "")}`,
-            qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`upi://pay?pa=${vpa}&pn=OrderKing&am=${input.amountInr}&cu=INR`)}`,
-            providerFee: 0,
-          };
-        }
-        throw new Error(`Unknown action: ${action}`);
-      },
-      async healthCheck() {
-        return true;
-      },
+      async authenticate() { unavailable(this.id, "authenticate"); },
+      async execute(action) { return unavailable(this.id, action); },
+      async healthCheck() { return false; },
     });
 
-    // 2. PostgreSQL Sovereign Ledger Connector
     this.register({
       id: "conn-postgres-ledger",
-      name: "PostgreSQL Sovereign Ledger Connector",
+      name: "PostgreSQL Ledger Provider Boundary",
       capabilities: ["database_query", "accounting_ledger"],
-      async authenticate() {},
-      async execute(action, input: any) {
-        if (action === "query") {
-          return { rowCount: 1, rows: [{ status: "HEALTHY", activeConnections: 4 }] };
-        }
-        return { success: true };
-      },
+      async authenticate() { unavailable(this.id, "authenticate"); },
+      async execute(action) { return unavailable(this.id, action); },
       async healthCheck() {
-        return true;
+        // The actual database adapter is owned by the application DB layer.
+        // This generic connector is not allowed to claim DB health by default.
+        return false;
       },
     });
 
-    // 3. Web Search & Intelligence Connector
     this.register({
       id: "conn-web-search",
-      name: "Market Intelligence Web Connector",
+      name: "Web Search Provider Boundary",
       capabilities: ["web_search"],
-      async authenticate() {},
-      async execute(action, input: any) {
-        return {
-          query: input?.query || "Market scan",
-          results: [
-            { title: "Regional Merchant Gazette 2026", url: "https://assam.gov.in/gazette/2026/09" },
-          ],
-        };
-      },
-      async healthCheck() {
-        return true;
-      },
+      async authenticate() { unavailable(this.id, "authenticate"); },
+      async execute(action) { return unavailable(this.id, action); },
+      async healthCheck() { return false; },
     });
   }
 
@@ -111,7 +84,6 @@ export class UniversalConnectorRegistry {
     return Array.from(this.connectors.values());
   }
 
-  // Directive 19: 3-Tier Fallback Execution
   async executeWithFallback<T>(params: {
     primaryConnectorId: string;
     secondaryConnectorId?: string;
@@ -127,7 +99,7 @@ export class UniversalConnectorRegistry {
 
     const errors: string[] = [];
 
-    for (let i = 0; i < chain.length; i++) {
+    for (let i = 0; i < chain.length; i += 1) {
       const connId = chain[i];
       const conn = this.connectors.get(connId);
 
@@ -144,17 +116,12 @@ export class UniversalConnectorRegistry {
         }
 
         const res = (await conn.execute(params.action, params.input)) as T;
-        return {
-          success: true,
-          result: res,
-          executedBy: conn.name,
-        };
+        return { success: true, result: res, executedBy: conn.name };
       } catch (err) {
         errors.push(`Tier ${i + 1} (${conn.name}) execution failed: ${err instanceof Error ? err.message : String(err)}`);
       }
     }
 
-    // All tiers failed: Safe Failure + Human Notice
     return {
       success: false,
       error: `ALL_PROVIDERS_FAILED: ${errors.join(" | ")}`,

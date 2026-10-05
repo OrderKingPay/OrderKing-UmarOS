@@ -61,7 +61,7 @@ const globalAuthRef = globalThis as typeof globalThis & {
 };
 function previewAuthSecret(): string {
   if (process.env.NODE_ENV === "production") {
-    return "unconfigured-production-secret-do-not-use";
+    throw new Error("BETTER_AUTH_SECRET is required in production.");
   }
   globalAuthRef.__grokAuthPreviewSecret__ ??= randomBytes(32).toString("hex");
   return globalAuthRef.__grokAuthPreviewSecret__;
@@ -75,14 +75,19 @@ const env = (key: string): string | undefined => {
 
 // Explicit off-switch. The deployer sets `VITE_AUTH_ENABLED=true` when it
 // provisions auth; set it to "false" to force auth off everywhere (dev user).
+const productionRuntime = process.env.NODE_ENV === "production" || env("DATA_MODE") === "PRODUCTION";
 const authDisabled = env("VITE_AUTH_ENABLED") === "false";
 
-// Broker federation creds: the deployer injects a per-app client when deployed;
-// otherwise fall back to the shared live-preview client, which the broker accepts
+if (productionRuntime && authDisabled) {
+  throw new Error("VITE_AUTH_ENABLED=false is forbidden in production.");
+}
+
+// Broker federation credentials must be explicitly provided in production;
+// only non-production preview may use the shared preview client.
 // for any `*.grok-sandbox.com` callback (see `./preview`).
-const grokIssuer = env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
-const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
-const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
+const grokIssuer = env("GROK_AUTH_ISSUER") ?? (productionRuntime ? "" : GROK_ISSUER_DEFAULT);
+const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? (productionRuntime ? "" : PREVIEW_CLIENT_ID);
+const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? (productionRuntime ? "" : PREVIEW_CLIENT_SECRET);
 
 /** True when federated sign-in is active (real auth is enforced). */
 export const authConfigured =
@@ -95,9 +100,16 @@ export const authConfigured =
 // preview allowlist, which makes the OAuth `redirect_uri` the concrete preview URL
 // the broker's preview client accepts.
 const explicitBaseURL = env("BETTER_AUTH_URL");
+if (productionRuntime && !explicitBaseURL) {
+  throw new Error("BETTER_AUTH_URL is required in production.");
+}
+if (productionRuntime && (!grokIssuer || !grokClientId || !grokClientSecret)) {
+  throw new Error("Production OAuth broker credentials are incomplete.");
+}
 // Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
 // requires a mutable `allowedHosts: string[]`.
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
+const deploymentHost = env("CLOUDFLARE_PAGES_HOST") ?? "apps-integration.pages.dev";
 // Local `npm run dev` (port 8080 contract). Browsers may send Origin as any of
 // these for the same server — trusting only `localhost` rejects `127.0.0.1` and
 // breaks email/password with "Invalid origin".
@@ -121,40 +133,34 @@ const baseURL = explicitBaseURL ?? {
   // (not only the preview wildcard).
   allowedHosts: [
       ...previewAllowedHosts, 
-      "localhost", 
-      "127.0.0.1", 
+      "localhost",
+      "127.0.0.1",
       "[::1]",
-      ...(process.env.VERCEL_URL ? [process.env.VERCEL_URL] : []),
-      ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [process.env.VERCEL_PROJECT_PRODUCTION_URL] : []),
-      "hdmaster.vercel.app",
-      "orderking-customers.vercel.app",
-      "orderking-partners.vercel.app",
-      "orderking-riders.vercel.app",
-      "apps-integration.vercel.app"
+      deploymentHost
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
   protocol: "auto" as const,
-  fallback: process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:8080",
+  fallback: explicitBaseURL ?? `https://${deploymentHost}`,
 };
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
 const trustedOrigins: string[] = [
   ...(explicitBaseURL ? [explicitBaseURL] : []),
+  `https://${deploymentHost}`,
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
-  ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-  ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
-  'https://hdmaster.vercel.app',
-  'https://orderking-customers.vercel.app',
-  'https://orderking-partners.vercel.app',
-  'https://orderking-riders.vercel.app',
-  'https://apps-integration.vercel.app'
 ];
 
 const databaseUrl = env("DATABASE_URL");
+if (productionRuntime && !databaseUrl) {
+  throw new Error("DATABASE_URL is required in production.");
+}
+if (productionRuntime && !env("BETTER_AUTH_SECRET")) {
+  throw new Error("BETTER_AUTH_SECRET is required in production.");
+}
 
 // Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
 // Discovery would cost an extra network hop to the broker before the popup can
