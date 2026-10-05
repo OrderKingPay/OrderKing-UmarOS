@@ -28,12 +28,13 @@ export const Route = createFileRoute("/api/finance/cron/run-settlement")({
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
-    } catch (error: any) {
-      console.error("[CRON FATAL] Auto-Settlement Engine crashed:", error);
-      return new Response(JSON.stringify({ success: false, message: 'CRON Error', error: error?.message }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-  }
+      } catch (error: any) {
+        console.error("[CRON FATAL] Auto-Settlement Engine crashed:", error);
+        return new Response(JSON.stringify({ success: false, message: "CRON Error", error: error?.message }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" }
+        });
+      }
+    },
+  },
 });
