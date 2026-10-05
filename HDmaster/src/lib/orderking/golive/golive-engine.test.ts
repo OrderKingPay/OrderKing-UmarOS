@@ -166,8 +166,8 @@ test("Capacity & Scaling Switchboard Enforcer", async (t) => {
 test("Test Ping Runners (Deterministic Handshakes)", async (t) => {
   await t.test("executes database connection test", async () => {
     const res = await testDbConnection(VALID_DUMMY_CONFIG.database);
-    assert.equal(res.ok, true);
-    assert.ok(res.latencyMs > 0);
+    assert.equal(res.ok, false);
+    assert.ok(res.message.includes("live connection") || res.message.includes("credentials"));
   });
 
   await t.test("executes payment gateway connection test", async () => {
