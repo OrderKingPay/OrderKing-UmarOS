@@ -62,7 +62,7 @@ export function FounderSovereignDeck() {
   const [platformFrozen, setPlatformFrozen] = useState(false);
   const [surgeMultiplier, setSurgeMultiplier] = useState<"1.0x" | "1.25x" | "1.5x" | "2.0x">("1.0x");
   const [dispatchMode, setDispatchMode] = useState<"AI_AUTO" | "MANUAL_OVERRIDE">("AI_AUTO");
-  const [productionMode, setProductionMode] = useState<"LIVE_PRODUCTION" | "SIMULATION_TEST">("LIVE_PRODUCTION");
+  const [productionMode, setProductionMode] = useState<"LIVE_PRODUCTION" | "SIMULATION_TEST">("SIMULATION_TEST");
   const [broadcastMessage, setBroadcastMessage] = useState("");
   const [isBroadcasting, setIsBroadcasting] = useState(false);
 
