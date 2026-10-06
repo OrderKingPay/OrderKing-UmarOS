@@ -314,7 +314,14 @@ export class UniversalPlatformManager {
       }
 
       case "whatsapp": {
-        const rawPhone = (params.payload.recipient || "+919435100000").replace(/[^0-9]/g, "");
+        const recipient = String(params.payload.recipient || "").trim();
+        if (!recipient) {
+          outputData = { status: "CONFIGURATION_REQUIRED", required: "recipient" };
+          summary = "A real recipient phone number is required; no default recipient is used.";
+          actionSuccess = false;
+          break;
+        }
+        const rawPhone = recipient.replace(/[^0-9]/g, "");
         const text = params.payload.text || "Hello! We have prepared a zero-commission direct ordering and 0% UPI payment solution for your business. Let us know a convenient time to discuss.";
         const clickToChatUrl = `https://api.whatsapp.com/send?phone=${rawPhone}&text=${encodeURIComponent(text)}`;
         outputData = {
@@ -329,7 +336,13 @@ export class UniversalPlatformManager {
       }
 
       case "telegram": {
-        const channel = params.payload.channel || "@OrderKingAlerts";
+        const channel = String(params.payload.channel || "").trim();
+        if (!channel) {
+          outputData = { status: "CONFIGURATION_REQUIRED", required: "channel" };
+          summary = "A real Telegram channel or recipient is required; no default channel is used.";
+          actionSuccess = false;
+          break;
+        }
         const text = params.payload.text || "OrderKing System Alert: Real-time telemetry nominal.";
         const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(channel)}&text=${encodeURIComponent(text)}`;
         outputData = {
@@ -345,12 +358,11 @@ export class UniversalPlatformManager {
 
       case "zomato": {
         outputData = {
-          merchantZone: "Karimganj / Sribhumi",
-          parityCalculation: "OrderKing direct orders save merchants 24%–30% in aggregator commissions.",
-          directCustomerDiscount: "Recommend offering customers 15% discount for ordering direct via King Pay.",
-          status: "PARITY_ANALYSIS_COMPLETE",
+          status: "PROVIDER_DATA_REQUIRED",
+          merchantZone: params.payload.merchantZone || "",
+          required: ["merchant settlement export/API credentials", "platform fee/commission evidence"],
         };
-        summary = `Calculated commission arbitrage: 28% avg aggregator fee eliminated by direct King Pay ordering.`;
+        summary = "No commission or parity figure is fabricated. Connect a real merchant settlement source before calculating savings.";
         break;
       }
 
@@ -442,8 +454,14 @@ export class UniversalPlatformManager {
       }
 
       case "kingpay": {
-        const amountInr = Number(params.payload.amountInr) || 49999;
-        const vpa = params.payload.founderVpa || "orderking@okhdfcbank";
+        const amountInr = Number(params.payload.amountInr);
+        const vpa = String(params.payload.founderVpa || "").trim();
+        if (!vpa || !Number.isFinite(amountInr) || amountInr <= 0) {
+          outputData = { status: "CONFIGURATION_REQUIRED", required: ["founderVpa", "positive amountInr"] };
+          summary = "A verified merchant VPA and a real amount are required; no default VPA or amount is used.";
+          actionSuccess = false;
+          break;
+        }
         const upiIntentUrl = `upi://pay?pa=${vpa}&pn=OrderKing&am=${amountInr}&cu=INR&tn=Enterprise%20Scaffold`;
         const qrMatrixUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiIntentUrl)}`;
         outputData = {
