@@ -1,18 +1,30 @@
-import { useEffect, useRef, useState } from "react";
-import { supabase } from "../db-cloud";
+import { useEffect, useRef } from "react";
+import { postLocationFn } from "@/lib/server/rider-fns";
 
-type GPSPosition = { lat: number; lng: number; accuracy: number; heading: number | null; speed: number | null; ts: number };
+type GPSPosition = {
+  lat: number;
+  lng: number;
+  accuracy: number;
+  heading: number | null;
+  speed: number | null;
+  ts: number;
+};
 
-export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpdate?: (pos: GPSPosition) => void, riderId?: string) {
+export function useGpsHeartbeat(
+  enabled: boolean,
+  baseIntervalMs = 2_000,
+  onUpdate?: (pos: GPSPosition) => void,
+  _riderId?: string,
+  deliveryId?: string | null,
+) {
   const lastRef = useRef<GPSPosition | null>(null);
 
   useEffect(() => {
     if (!enabled || !navigator.geolocation) return;
+
     let watchId: number | undefined;
     let timer: ReturnType<typeof setInterval> | undefined;
-
-    const channel = supabase.channel('rider_gps');
-    channel.subscribe();
+    let cancelled = false;
 
     async function sendPosition(position: GeolocationPosition) {
       const pos: GPSPosition = {
@@ -26,18 +38,18 @@ export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpda
       lastRef.current = pos;
       onUpdate?.(pos);
 
-      if (riderId) {
-        // Send to realtime channel
-        channel.send({
-          type: 'broadcast',
-          event: 'gps_update',
-          payload: { riderId, pos }
+      if (cancelled) return;
+      try {
+        await postLocationFn({
+          data: {
+            lat: pos.lat,
+            lng: pos.lng,
+            accuracyM: Number.isFinite(pos.accuracy) ? pos.accuracy : null,
+            deliveryId: deliveryId ?? null,
+          },
         });
-
-        // Insert into database
-        await supabase.from('rider_locations').insert([
-          { rider_id: riderId, lat: pos.lat, lng: pos.lng, accuracy: pos.accuracy, heading: pos.heading, speed: pos.speed, ts: new Date(pos.ts).toISOString() }
-        ]).select();
+      } catch (error) {
+        console.warn("OrderKing GPS heartbeat failed", error);
       }
     }
 
@@ -48,19 +60,19 @@ export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpda
     });
 
     timer = setInterval(() => {
-      navigator.geolocation.getCurrentPosition(sendPosition, () => {}, { 
-        enableHighAccuracy: true, 
-        maximumAge: 0, 
-        timeout: baseIntervalMs 
+      navigator.geolocation.getCurrentPosition(sendPosition, () => {}, {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: baseIntervalMs,
       });
     }, baseIntervalMs);
 
     return () => {
+      cancelled = true;
       if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
       if (timer) clearInterval(timer);
-      supabase.removeChannel(channel);
     };
-  }, [enabled, baseIntervalMs, riderId]);
+  }, [enabled, baseIntervalMs, onUpdate, deliveryId]);
 
   return lastRef;
 }
