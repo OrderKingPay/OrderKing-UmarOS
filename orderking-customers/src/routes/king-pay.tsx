@@ -1800,8 +1800,6 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
           </div>
         )}
 
-        {/* 👑 3D GLOWING SWITCH BUTTON + SAME-LEVEL AI SUPPORT */}
-        <EcosystemSwitchBar currentApp="KINGPAY" className="mb-1.5" />
 
         {/* 👑 FULL PHONEPE / PAYTM STYLE FINANCE SEARCH (AUTOPAY, REWARDS, BILLS, LOANS, TRANSFERS, UPI) */}
         <KingPayFinanceSearch

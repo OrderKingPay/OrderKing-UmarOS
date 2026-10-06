@@ -1,15 +1,7 @@
 import { getSql } from "../db.ts";
-import Razorpay from "razorpay";
 import { z } from "zod";
 
-function getRazorpayClient(): Razorpay {
-  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
-  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
-  if (!keyId || !keySecret) {
-    throw new Error("Razorpay credentials missing. Partner settlement is BLOCKED (fail-closed).");
-  }
-  return new Razorpay({ key_id: keyId, key_secret: keySecret });
-}
+
 
 export const SettlementSchema = z.object({
   restaurantId: z.string().uuid(),
@@ -64,17 +56,32 @@ export const settlementEngine = {
       await tx`
         INSERT INTO settlement_history (restaurant_id, amount_paise, idempotency_key, status)
         VALUES (${data.restaurantId}, ${data.amountPaise}, ${data.idempotencyKey}, 'PROCESSING')
-      `;
-
-      const transfer = await getRazorpayClient().transfers.create({
-        account: ledger.fund_account_id,
-        amount: data.amountPaise,
-        currency: "INR",
-        notes: {
-          restaurantId: data.restaurantId,
-          idempotencyKey: data.idempotencyKey,
-        }
+      `;      const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+      const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+      if (!keyId || !keySecret) {
+        throw new Error("Razorpay credentials missing. Partner settlement is BLOCKED.");
+      }
+      const token = btoa(${keyId}:);
+      const res = await fetch("https://api.razorpay.com/v1/transfers", {
+        method: "POST",
+        headers: {
+          "Authorization": Basic ,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          account: ledger.fund_account_id,
+          amount: data.amountPaise,
+          currency: "INR",
+          notes: {
+            restaurantId: data.restaurantId,
+            idempotencyKey: data.idempotencyKey,
+          }
+        })
       });
+      if (!res.ok) {
+         throw new Error("Failed to create Razorpay transfer");
+      }
+      const transfer = await res.json();
 
       return { status: "processing", transferId: transfer.id };
     });

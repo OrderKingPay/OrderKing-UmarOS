@@ -1,4 +1,4 @@
-
+﻿
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
 /** Which database backend is active. */
@@ -13,7 +13,7 @@ export function getDatabaseUrl() {
   return url;
 }
 export function getDbSource() { return 'neon'; }
-export const dbSource = 'neon';
+export const dbSource: string = 'neon';
 
 /**
  * Minimal shared SQL surface, satisfied by both Neon and PGLite. Both the
@@ -44,7 +44,7 @@ export interface Sql {
  */
 const globalRef = globalThis as typeof globalThis & {
   __pgSqlPromise__?: Promise<Sql>;
-  __pgliteInstance__?: Promise<import("@electric-sql/pglite").PGlite>;
+  __pgliteInstance__?: Promise<any>;
   __pgliteMigrateChain__?: Promise<void>;
 };
 
@@ -185,3 +185,5 @@ if (typeof window === "undefined" && dbSource === "pglite") {
     throw err;
   });
 }
+
+

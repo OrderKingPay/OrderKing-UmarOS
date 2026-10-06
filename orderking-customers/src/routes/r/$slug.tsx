@@ -1,7 +1,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, Leaf } from "lucide-react";
+import { Heart, Leaf, Headset } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CustomizeDialog } from "@/components/market/customize-dialog";
@@ -197,66 +197,7 @@ function RestaurantPage() {
               placeholder={t("restaurant.searchMenu")}
               className="mt-4 min-h-11 w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 text-sm"
             />
-            {/* Zomato-style Diet Filter Pills & Group Order */}
-            <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-              <button
-                type="button"
-                onClick={() => setDietFilter(dietFilter === "VEG" ? "ALL" : "VEG")}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition ${
-                  dietFilter === "VEG"
-                    ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
-                    : "border-border bg-surface text-muted hover:border-emerald-500"
-                }`}
-              >
-                <span className="flex size-3.5 items-center justify-center rounded-sm border border-emerald-600 bg-white">
-                  <span className="size-1.5 rounded-full bg-emerald-600" />
-                </span>
-                Veg
-              </button>
 
-              <button
-                type="button"
-                onClick={() => setDietFilter(dietFilter === "NON_VEG" ? "ALL" : "NON_VEG")}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition ${
-                  dietFilter === "NON_VEG"
-                    ? "border-rose-600 bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-200"
-                    : "border-border bg-surface text-muted hover:border-rose-500"
-                }`}
-              >
-                <span className="flex size-3.5 items-center justify-center rounded-sm border border-rose-600 bg-white">
-                  <span className="size-0 border-x-[3px] border-b-[6px] border-x-transparent border-b-rose-600" />
-                </span>
-                Non-Veg
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setDietFilter(dietFilter === "BESTSELLER" ? "ALL" : "BESTSELLER")}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition ${
-                  dietFilter === "BESTSELLER"
-                    ? "border-amber-500 bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200"
-                    : "border-border bg-surface text-muted hover:border-amber-500"
-                }`}
-              >
-                <span>⭐</span>
-                Bestseller
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  const url = typeof window !== "undefined" ? window.location.href : "";
-                  if (typeof navigator !== "undefined" && navigator.clipboard) {
-                    navigator.clipboard.writeText(url);
-                    toast.success("Group order link copied! Share with friends to order together.");
-                  }
-                }}
-                className="flex shrink-0 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20"
-              >
-                <span>👥</span>
-                Group Order
-              </button>
-            </div>
           </div>
           <nav className="flex gap-2 overflow-x-auto border-y border-border bg-bg px-4 py-2">
             {restaurant.categories.map((c: any) => (
@@ -384,6 +325,47 @@ function RestaurantPage() {
           </div>
         </div>
       ) : null}
+      <div className="fixed bottom-[85px] left-1/2 -translate-x-1/2 z-40 flex items-center justify-center gap-2 rounded-full border border-black/5 bg-white/90 p-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.1)] backdrop-blur-md">
+        <button
+          type="button"
+          onClick={() => setDietFilter(dietFilter === "VEG" ? "ALL" : "VEG")}
+          className={`flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition ${
+            dietFilter === "VEG" ? "bg-emerald-100 text-emerald-800" : "bg-transparent text-slate-600 hover:bg-slate-100"
+          }`}
+        >
+          <span className="flex size-3 items-center justify-center rounded-sm border border-emerald-600 bg-white">
+            <span className="size-1 rounded-full bg-emerald-600" />
+          </span>
+          Veg
+        </button>
+        
+        <div className="h-4 w-px bg-slate-200" />
+
+        <button
+          type="button"
+          onClick={() => {
+            const url = typeof window !== "undefined" ? window.location.href : "";
+            if (typeof navigator !== "undefined" && navigator.clipboard) {
+              navigator.clipboard.writeText(url);
+              toast.success("Group order link copied!");
+            }
+          }}
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition"
+          aria-label="Group Order / Share"
+        >
+          <span>👥</span>
+        </button>
+
+        <div className="h-4 w-px bg-slate-200" />
+        
+        <button
+          type="button"
+          className="flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 transition"
+        >
+          <Headset className="size-3.5" />
+          Support
+        </button>
+      </div>
       <span className="sr-only">{brand.appName}</span>
     </CustomerShell>
   );

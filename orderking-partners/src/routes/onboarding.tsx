@@ -27,6 +27,8 @@ function OnboardingPage() {
     queryFn: () => getRestaurant({ data: { restaurantId: vendor.restaurantId } }),
     enabled: Boolean(vendor.restaurantId),
   });
+  
+  const [step, setStep] = useState(1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -48,10 +50,41 @@ function OnboardingPage() {
   });
 
   const r = restQ.data?.restaurant as Record<string, unknown> | undefined;
+  
+  // Strict geographic check simulated
+  const serviceableCities = ["mumbai", "delhi", "bengaluru", "bangalore", "hyderabad"];
+  function isServiceable(addr: string) {
+    const lower = addr.toLowerCase();
+    return serviceableCities.some(city => lower.includes(city));
+  }
+
+  async function handleNextStep() {
+    setError(null);
+    if (step === 1) {
+      if (!form.name || !form.address || !form.phone) {
+        setError("Please fill all mandatory basic fields.");
+        return;
+      }
+      if (!isServiceable(form.address)) {
+        setError("We are sorry! OrderKing does not service your area yet. Currently serviceable: Mumbai, Delhi, Bengaluru, Hyderabad.");
+        return;
+      }
+      if (!vendor.restaurantId) {
+        await createReal();
+      }
+      setStep(2);
+    } else if (step === 2) {
+      if (!form.fssaiNumber || !form.pan || !form.bankAccount || !form.bankIfsc) {
+        setError("FSSAI, PAN, and Bank details are strictly mandatory for KYC.");
+        return;
+      }
+      await saveMore();
+      setStep(3);
+    }
+  }
 
   async function createReal() {
     setBusy(true);
-    setError(null);
     try {
       await createRestaurantDraft({
         data: {
@@ -70,6 +103,7 @@ function OnboardingPage() {
       await qc.invalidateQueries();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not save");
+      throw e;
     } finally {
       setBusy(false);
     }
@@ -78,7 +112,6 @@ function OnboardingPage() {
   async function saveMore() {
     if (!vendor.restaurantId) return;
     setBusy(true);
-    setError(null);
     try {
       await updateRestaurantProfile({
         data: {
@@ -95,6 +128,7 @@ function OnboardingPage() {
       await qc.invalidateQueries({ queryKey: ["restaurant"] });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not save");
+      throw e;
     } finally {
       setBusy(false);
     }
@@ -114,62 +148,82 @@ function OnboardingPage() {
     }
   }
 
-  return (
-    <VendorShell title={t("onboarding.title")} dataLabel={vendor.dataLabel} restaurantName={vendor.selected?.restaurantName}>
-      {!vendor.restaurantId ? (
-        <div className="grid gap-4 md:grid-cols-2">
-          
-          <Card className="space-y-3">
-            <h2 className="font-display text-xl">{t("onboarding.realCta")}</h2>
-            <p className="text-sm text-muted">{t("onboarding.notVerified")}</p>
-            <Field label={t("onboarding.name")} value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
-            <Field label={t("onboarding.displayName")} value={form.displayName} onChange={(v) => setForm({ ...form, displayName: v })} />
-            <Field label={t("onboarding.owner")} value={form.ownerName} onChange={(v) => setForm({ ...form, ownerName: v })} />
-            <Field label={t("onboarding.phone")} value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
-            <Field label={t("onboarding.email")} value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
-            <Field label={t("onboarding.address")} value={form.address} onChange={(v) => setForm({ ...form, address: v })} />
-            <Field label={t("onboarding.landmark")} value={form.landmark} onChange={(v) => setForm({ ...form, landmark: v })} />
-            <Field label={t("onboarding.cuisine")} value={form.cuisine} onChange={(v) => setForm({ ...form, cuisine: v })} />
-            {error ? <p className="text-sm text-danger">{error}</p> : null}
-            <Button disabled={busy || !form.name} onClick={() => void createReal()}>
-              {t("onboarding.saveDraft")}
-            </Button>
-          </Card>
-        </div>
-      ) : (
+  const isVerified = (r?.verification_status ?? vendor.selected?.verificationStatus) === "APPROVED";
+  const isPending = (r?.verification_status ?? vendor.selected?.verificationStatus) === "PENDING_APPROVAL";
+
+  if (isVerified || isPending) {
+    return (
+      <VendorShell title="Application Status" dataLabel={vendor.dataLabel} restaurantName={vendor.selected?.restaurantName}>
         <div className="space-y-4">
           <Card>
-            <div className="text-xs uppercase tracking-wide text-muted">{t("onboarding.status")}</div>
-            <div className="font-display text-2xl">{String(r?.verification_status ?? vendor.selected?.verificationStatus)}</div>
-            <p className="mt-1 text-sm text-muted">{t("onboarding.notVerified")}</p>
+            <div className="text-xs uppercase tracking-wide text-muted">Status</div>
+            <div className="font-display text-2xl">{isVerified ? "APPROVED" : "PENDING APPROVAL"}</div>
+            <p className="mt-1 text-sm text-muted">
+              {isVerified ? "Your restaurant is approved!" : "Your application is under review by the founder team."}
+            </p>
           </Card>
-          <Card className="grid gap-3 md:grid-cols-2">
-            <Field label={t("onboarding.cuisine")} value={form.cuisine || String(r?.cuisine ?? "")} onChange={(v) => setForm({ ...form, cuisine: v })} />
-            <Field label={t("onboarding.gst")} value={form.gstin || String(r?.gstin ?? "")} onChange={(v) => setForm({ ...form, gstin: v })} />
-            <Field label={t("onboarding.fssai")} value={form.fssaiNumber || String(r?.fssai_number ?? "")} onChange={(v) => setForm({ ...form, fssaiNumber: v })} />
-            <Field label={t("onboarding.pan")} value={form.pan || String(r?.pan ?? "")} onChange={(v) => setForm({ ...form, pan: v })} />
-            <Field label={t("onboarding.bank")} value={form.bankAccount} onChange={(v) => setForm({ ...form, bankAccount: v })} />
-            <Field label={t("onboarding.ifsc")} value={form.bankIfsc} onChange={(v) => setForm({ ...form, bankIfsc: v })} />
-            <div className="md:col-span-2">
-              <Label>{t("onboarding.description")}</Label>
-              <Textarea
-                value={form.description || String(r?.description ?? "")}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-              />
+        </div>
+      </VendorShell>
+    );
+  }
+
+  return (
+    <VendorShell title={t("onboarding.title")} dataLabel={vendor.dataLabel} restaurantName={vendor.selected?.restaurantName}>
+      <div className="space-y-6">
+        <div className="flex gap-2">
+           {[1, 2, 3].map(s => (
+             <div key={s} className={`h-2 flex-1 rounded ${step >= s ? 'bg-primary' : 'bg-muted'}`} />
+           ))}
+        </div>
+
+        {step === 1 && (
+          <Card className="space-y-3">
+            <h2 className="font-display text-xl">Step 1: Restaurant Details</h2>
+            <p className="text-sm text-muted">Enter basic restaurant information and location.</p>
+            <Field label="Restaurant Name *" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
+            <Field label="Owner Name" value={form.ownerName} onChange={(v) => setForm({ ...form, ownerName: v })} />
+            <Field label="Phone *" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+            <Field label="Full Address (include City) *" value={form.address} onChange={(v) => setForm({ ...form, address: v })} />
+            <Field label="Cuisine" value={form.cuisine} onChange={(v) => setForm({ ...form, cuisine: v })} />
+            {error ? <p className="text-sm text-danger">{error}</p> : null}
+            <Button disabled={busy} onClick={() => void handleNextStep()}>Next: KYC Details</Button>
+          </Card>
+        )}
+
+        {step === 2 && (
+          <Card className="space-y-3">
+            <h2 className="font-display text-xl">Step 2: Mandatory KYC</h2>
+            <p className="text-sm text-muted">Please provide valid tax and bank information.</p>
+            <Field label="FSSAI License Number *" value={form.fssaiNumber || String(r?.fssai_number ?? "")} onChange={(v) => setForm({ ...form, fssaiNumber: v })} />
+            <Field label="PAN Card Number *" value={form.pan || String(r?.pan ?? "")} onChange={(v) => setForm({ ...form, pan: v })} />
+            <Field label="GSTIN (Optional)" value={form.gstin || String(r?.gstin ?? "")} onChange={(v) => setForm({ ...form, gstin: v })} />
+            <Field label="Bank Account Number *" value={form.bankAccount} onChange={(v) => setForm({ ...form, bankAccount: v })} />
+            <Field label="Bank IFSC Code *" value={form.bankIfsc} onChange={(v) => setForm({ ...form, bankIfsc: v })} />
+            {error ? <p className="text-sm text-danger">{error}</p> : null}
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={() => setStep(1)}>Back</Button>
+              <Button disabled={busy} onClick={() => void handleNextStep()}>Next: Document Upload</Button>
             </div>
           </Card>
-          <DocumentUpload restaurantId={vendor.restaurantId} />
-          {error ? <p className="text-sm text-danger">{error}</p> : null}
-          <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" disabled={busy} onClick={() => void saveMore()}>
-              {t("onboarding.saveDraft")}
-            </Button>
-            <Button disabled={busy || vendor.dataLabel === "SIMULATED"} onClick={() => void submit()}>
-              {t("onboarding.submit")}
-            </Button>
+        )}
+
+        {step === 3 && vendor.restaurantId && (
+          <div className="space-y-4">
+             <Card>
+               <h2 className="font-display text-xl">Step 3: Document Uploads</h2>
+               <p className="text-sm text-muted">Upload photos of Menu, FSSAI, and PAN.</p>
+             </Card>
+             <DocumentUpload restaurantId={vendor.restaurantId} kind="FSSAI_DOC" label="FSSAI Certificate Image" />
+             <DocumentUpload restaurantId={vendor.restaurantId} kind="PAN_DOC" label="PAN Card Image" />
+             <DocumentUpload restaurantId={vendor.restaurantId} kind="MENU_IMAGES" label="Restaurant Menu Images" />
+             {error ? <p className="text-sm text-danger">{error}</p> : null}
+             <div className="flex gap-2">
+               <Button variant="secondary" onClick={() => setStep(2)}>Back</Button>
+               <Button disabled={busy || vendor.dataLabel === "SIMULATED"} onClick={() => void submit()}>Submit Application</Button>
+             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </VendorShell>
   );
 }
@@ -191,13 +245,12 @@ function Field({
   );
 }
 
-function DocumentUpload({ restaurantId }: { restaurantId: string }) {
+function DocumentUpload({ restaurantId, kind, label }: { restaurantId: string, kind: string, label: string }) {
   const t = useT();
   const [msg, setMsg] = useState<string | null>(null);
   return (
     <Card className="space-y-2">
-      <h3 className="font-medium">{t("onboarding.documents")}</h3>
-      <p className="text-xs text-muted">{t("onboarding.storageHint")}</p>
+      <h3 className="font-medium">{label}</h3>
       <input
         type="file"
         accept="application/pdf,image/jpeg,image/png,image/webp"
@@ -215,7 +268,7 @@ function DocumentUpload({ restaurantId }: { restaurantId: string }) {
             const res = await uploadDocument({
               data: {
                 restaurantId,
-                kind: "FSSAI",
+                kind,
                 fileName: file.name,
                 contentType: file.type || "application/octet-stream",
                 dataUrl,
@@ -228,7 +281,6 @@ function DocumentUpload({ restaurantId }: { restaurantId: string }) {
         }}
       />
       {msg ? <p className="text-sm text-muted">{msg}</p> : null}
-      <p className="text-xs text-faint">{t("onboarding.notVerified")}</p>
     </Card>
   );
 }

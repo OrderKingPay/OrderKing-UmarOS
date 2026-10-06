@@ -1,7 +1,7 @@
 
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ClipboardList, House, QrCode, Search, ShoppingBag, UserRound, Wallet, Zap, GraduationCap, Globe } from "lucide-react";
-import { useState } from "react";
+import { ClipboardList, House, QrCode, Search, ShoppingBag, UserRound, Wallet, Zap, GraduationCap, Globe, Gift, Headset, Sun, Moon } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Wordmark } from "@/components/brand/wordmark";
 import { LocationDialog } from "@/components/market/location-dialog";
 import { LanguageSelectorModal, ALL_INDIAN_LANGUAGES } from "@/components/common/language-selector-modal";
@@ -11,7 +11,7 @@ import { useLocationStore } from "@/lib/stores/location";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { SignedIn, SignedOut, UserButton } from "@/lib/auth/gates";
 import { cn } from "@/lib/utils";
-import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
+import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";import { useThemeStore } from "@/lib/stores/theme";
 
 export function CustomerShell({
   children,
@@ -31,9 +31,18 @@ export function CustomerShell({
   const navigate = useNavigate();
   const [locOpen, setLocOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const { theme, toggleTheme } = useThemeStore();
+
+  useEffect(() => {
+    // If empty on first load, initialize with system preference
+    const saved = localStorage.getItem("theme-storage");
+    if (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      useThemeStore.getState().setTheme("dark");
+    }
+  }, []);
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-bg pb-24 md:max-w-5xl">
+    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-bg pb-24 md:max-w-5xl transition-colors duration-300">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-surface focus:px-3 focus:py-2"
@@ -45,7 +54,7 @@ export function CustomerShell({
           <div className="shrink-0 max-w-[50%]">
             <Wordmark />
             <span className="block text-[10px] font-medium tracking-wide text-primary/80 break-words text-wrap">
-              {isDeliveryActive ? "Have it your way, King 👑" : "King Pay · Sovereign UPI Across India 👑"}
+              {isDeliveryActive ? "Have It Your Way" : "King Pay · Sovereign UPI Across India 👑"}
             </span>
           </div>
 
@@ -67,6 +76,17 @@ export function CustomerShell({
           </Link>
 
           <div className="flex items-center gap-2 shrink-0">
+            {/* Share/Promotion */}
+            <Link
+              to="/rewards"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 hover:bg-amber-500/20"
+              aria-label="Share & Earn"
+            >
+              <Gift className="h-4 w-4" />
+            </Link>
+
+
+            
             <button
               type="button"
               onClick={() => setLangOpen(true)}
@@ -74,6 +94,14 @@ export function CustomerShell({
               aria-label="Change Language"
             >
               <Globe className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-muted hover:text-fg"
+              aria-label="Toggle Theme"
+            >
+              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </button>
             {isPending ? (
               <div className="h-8 w-8 animate-pulse rounded-full bg-surface-2" />
@@ -83,7 +111,7 @@ export function CustomerShell({
               </SignedIn>
             ) : (
               <SignedOut>
-                <Link to="/login" className="text-sm font-medium text-primary">
+                <Link to="/login" className="text-sm font-medium text-primary ml-1">
                   {t("common.signIn")}
                 </Link>
               </SignedOut>
@@ -150,7 +178,7 @@ export function CustomerShell({
           aria-label={brand.appName}
           className="fixed bottom-4 left-4 right-4 z-40 rounded-3xl border border-black/5 bg-white/80 pb-0 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden"
         >
-          <ul className="mx-auto grid grid-cols-4 items-center justify-items-center relative px-2">
+          <ul className="mx-auto grid grid-cols-5 items-center justify-items-center relative px-2">
             <NavItem to="/" icon={House} label="Home" active={path === "/"} />
             <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
             
@@ -174,6 +202,7 @@ export function CustomerShell({
                 )}
               </Link>
             </li>
+            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} />
             <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} />
           </ul>
         </nav>

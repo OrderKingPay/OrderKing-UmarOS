@@ -41,6 +41,21 @@ function DashboardPage() {
     );
   }
 
+  // Zomato Style Approval Block
+  if (!vendor.isPending && vendor.selected?.verificationStatus !== "APPROVED" && vendor.selected?.verificationStatus !== "ACTIVE") {
+    return (
+      <VendorShell title="Awaiting Approval">
+        <Card className="space-y-3">
+          <h2 className="text-xl font-display">Verification Pending</h2>
+          <p className="text-sm text-muted">Your restaurant onboarding application is currently pending approval from the founder. You will be able to access the dashboard once approved.</p>
+          <Button asChild>
+             <Link to="/onboarding">View Application</Link>
+          </Button>
+        </Card>
+      </VendorShell>
+    );
+  }
+
   const d = dash.data;
   const stale = dash.isError;
 

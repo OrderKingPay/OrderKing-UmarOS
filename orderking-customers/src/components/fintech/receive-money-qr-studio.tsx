@@ -155,24 +155,11 @@ export function ReceiveMoneyQrStudio({
     return `upi://pay?${params.toString()}`;
   };
 
-  // Generate QR Code on change
+    // Generate QR Code on change
   useEffect(() => {
     const uri = generateUpiUri();
-    QRCode.toDataURL(uri, {
-      width: 480,
-      margin: 1.5,
-      color: {
-        dark: "#0F172A",
-        light: "#FFFFFF",
-      },
-      errorCorrectionLevel: "H",
-    })
-      .then((url) => {
-        setQrDataUrl(url);
-      })
-      .catch((err) => {
-        console.error("QR Code generation error:", err);
-      });
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=480x480&data=${encodeURIComponent(uri)}&bgcolor=FFFFFF&color=0F172A`;
+    setQrDataUrl(url);
   }, [upiId, payeeName, amount, note]);
 
   // Copy UPI ID

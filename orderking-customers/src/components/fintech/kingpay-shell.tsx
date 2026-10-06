@@ -1,9 +1,10 @@
 
 import { type ReactNode, useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import { Bell, Car, CreditCard, History, Plane, QrCode, ShieldCheck, Sparkles, User, UtilityPole, Wallet, Zap } from "lucide-react";
+import { Bell, Car, CreditCard, History, Plane, QrCode, ShieldCheck, Sparkles, User, UtilityPole, Wallet, Zap, House, ClipboardList, GraduationCap, UserRound } from "lucide-react";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export type KingPaySection = "pay" | "garage" | "loan" | "travel" | "bills" | "passbook" | "account";
 
@@ -106,19 +107,68 @@ export function KingPayShell({
       {/* MAIN FINTECH CONTENT AREA */}
       <main className="flex-1 pb-24">{children}</main>
 
-      {/* PURE FINTECH DEDICATED 7-TAB BALANCED BOTTOM NAVIGATION BAR */}
-      <nav
-        aria-label="Back Navigation"
-        className="fixed inset-x-0 bottom-6 z-40 flex justify-center px-4"
-      >
+      {/* Massive distinct Back button */}
+      <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-4 pointer-events-none">
         <Link
           to="/"
-          className="group flex w-full max-w-sm items-center justify-center gap-2 rounded-full border-2 border-amber-400/50 bg-surface/90 px-6 py-3.5 text-sm font-bold text-amber-500 shadow-[0_8px_32px_rgba(245,158,11,0.15)] backdrop-blur-md transition-all hover:scale-105 hover:border-amber-400 hover:bg-surface active:scale-95 no-underline"
+          className="pointer-events-auto group flex w-full max-w-sm items-center justify-center gap-2 rounded-full border-2 border-amber-400/50 bg-amber-500 text-black px-6 py-4 text-base font-black shadow-[0_8px_32px_rgba(245,158,11,0.4)] backdrop-blur-md transition-all hover:scale-105 active:scale-95 no-underline"
         >
-          <span className="text-lg leading-none">←</span>
-          <span>Back to Order King</span>
+          <span className="text-xl leading-none">←</span>
+          <span>Back to Order King Food</span>
         </Link>
+      </div>
+
+      {/* STANDARD BOTTOM NAVIGATION BAR */}
+      <nav
+        aria-label="App Navigation"
+        className="fixed bottom-4 left-4 right-4 z-40 rounded-3xl border border-black/5 bg-white/80 pb-0 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden"
+      >
+        <ul className="mx-auto grid grid-cols-5 items-center justify-items-center relative px-2">
+          <NavItem to="/" icon={House} label="Home" active={false} />
+          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={false} />
+          
+          <li className="relative -top-2 flex w-full justify-center">
+            <Link
+              to="/king-pay"
+              className="group relative flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-full border-2 border-amber-400 bg-gradient-to-br from-amber-400 to-yellow-600 text-white shadow-[0_0_15px_rgba(251,191,36,0.4)] text-xs no-underline transition-all active:scale-95"
+            >
+              <span className="text-lg leading-none">👑</span>
+              <span className="text-[8px] font-black tracking-tight leading-none">KingPay</span>
+            </Link>
+          </li>
+          <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={false} />
+          <NavItem to="/account" icon={UserRound} label="Profile" active={false} />
+        </ul>
       </nav>
     </div>
+  );
+}
+
+function NavItem({
+  to,
+  icon: Icon,
+  label,
+  active,
+}: {
+  to: string;
+  icon: typeof House;
+  label: string;
+  active: boolean;
+}) {
+  return (
+    <li className="w-full flex justify-center py-2">
+      <Link
+        to={to}
+        className={cn(
+          "flex flex-col items-center justify-center gap-1 text-[10px] sm:text-xs no-underline relative transition-colors",
+          active ? "text-primary font-bold" : "text-slate-500 hover:text-slate-700 font-medium",
+        )}
+      >
+        <div className="relative flex items-center justify-center h-6 w-6">
+          <Icon className={cn("size-5 sm:size-5.5 transition-transform", active && "scale-110")} aria-hidden />
+        </div>
+        <span className="text-center truncate w-full px-0.5">{label}</span>
+      </Link>
+    </li>
   );
 }

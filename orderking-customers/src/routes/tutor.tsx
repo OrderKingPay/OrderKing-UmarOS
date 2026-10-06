@@ -2,12 +2,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
-import { Send, GraduationCap, Award, BookOpen, BrainCircuit, Loader2, Sparkles } from "lucide-react";
+import { Send, GraduationCap, Award, BookOpen, BrainCircuit, Loader2, Sparkles, Briefcase } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 
 const askTutorFn = createServerFn({ method: "POST" })
-  .// @ts-ignore
-  validator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => data)
+  // @ts-ignore
+  .validator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => data)
   .handler(async ({ data }: any) => {
     const apiKey = process.env.OPENAI_API_KEY;
 
@@ -55,7 +55,7 @@ export const Route = createFileRoute('/tutor')({
 });
 
 function TutorPage() {
-  const [activeTab, setActiveTab] = useState<"chat" | "schemes" | "premium">("chat");
+  const [activeTab, setActiveTab] = useState<"chat" | "jobs" | "schemes" | "premium">("chat");
   const [message, setMessage] = useState("");
   const [board, setBoard] = useState("State (Assam SEBA)");
   const [stdClass, setStdClass] = useState("Class 10");
@@ -168,22 +168,28 @@ function TutorPage() {
         </div>
 
         {/* Custom Tabs */}
-        <div className="flex px-4 pt-2 bg-white border-b border-slate-200">
+        <div className="flex px-4 pt-2 bg-white border-b border-slate-200 overflow-x-auto whitespace-nowrap hide-scrollbar">
            <button 
              onClick={() => setActiveTab('chat')}
-             className={`flex-1 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'chat' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-slate-500'}`}
+             className={`flex-none px-4 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'chat' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-slate-500'}`}
            >
              <GraduationCap className="size-4 inline-block mr-1 mb-0.5"/> Tutor
            </button>
            <button 
+             onClick={() => setActiveTab('jobs')}
+             className={`flex-none px-4 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'jobs' ? 'border-sky-600 text-sky-700' : 'border-transparent text-slate-500'}`}
+           >
+             <Briefcase className="size-4 inline-block mr-1 mb-0.5"/> WFH Jobs
+           </button>
+           <button 
              onClick={() => setActiveTab('schemes')}
-             className={`flex-1 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'schemes' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-slate-500'}`}
+             className={`flex-none px-4 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'schemes' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-slate-500'}`}
            >
              <Award className="size-4 inline-block mr-1 mb-0.5"/> Govt Schemes
            </button>
            <button 
              onClick={() => setActiveTab('premium')}
-             className={`flex-1 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'premium' ? 'border-amber-500 text-amber-600' : 'border-transparent text-slate-500'}`}
+             className={`flex-none px-4 pb-2 text-xs font-bold border-b-2 transition-colors ${activeTab === 'premium' ? 'border-amber-500 text-amber-600' : 'border-transparent text-slate-500'}`}
            >
              <Sparkles className="size-4 inline-block mr-1 mb-0.5"/> Premium
            </button>
@@ -243,6 +249,45 @@ function TutorPage() {
                    Step 1: Ask Question • Step 2: Learn Formula • Step 3: Score Max Marks
                  </p>
               </div>
+            </div>
+          )}
+
+          {/* Work From Home / Remote Jobs Tab */}
+          {activeTab === 'jobs' && (
+            <div className="h-full overflow-y-auto p-4 pb-24 space-y-4">
+               <div className="bg-sky-50 border border-sky-200 rounded-xl p-4">
+                  <h3 className="font-bold text-sky-800 flex items-center gap-2">
+                    <Briefcase className="size-5" />
+                    Data Annotation & AI Training
+                  </h3>
+                  <p className="text-xs text-sky-700 mt-1">Earn ₹1500 - ₹3000/day. High-paying AI training tasks. Read instructions, evaluate AI responses, and get paid in USD via PayPal.</p>
+                  <p className="text-[10px] text-sky-600 font-bold mt-2">Platforms: DataAnnotation.tech, Remotasks (Outlier)</p>
+                  <button className="w-full mt-3 text-xs bg-sky-600 text-white px-3 py-2 rounded-lg font-bold">Apply Now</button>
+               </div>
+
+               <div className="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-4">
+                  <h3 className="font-bold text-fuchsia-800 flex items-center gap-2">
+                    <Briefcase className="size-5" />
+                    Micro-tasking & Surveys
+                  </h3>
+                  <p className="text-xs text-fuchsia-700 mt-1">Earn ₹300 - ₹800/day. Simple data entry, survey completion, and image categorization tasks. Guaranteed payout.</p>
+                  <p className="text-[10px] text-fuchsia-600 font-bold mt-2">Platforms: Amazon MTurk, Appen, Clickworker</p>
+                  <button className="w-full mt-3 text-xs bg-fuchsia-600 text-white px-3 py-2 rounded-lg font-bold">Start Earning</button>
+               </div>
+               
+               <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
+                  <h3 className="font-bold text-teal-800 flex items-center gap-2">
+                    <Briefcase className="size-5" />
+                    Transcription & Translation
+                  </h3>
+                  <p className="text-xs text-teal-700 mt-1">Earn ₹500 - ₹1200/day. Convert audio to text or translate documents in regional languages.</p>
+                  <p className="text-[10px] text-teal-600 font-bold mt-2">Platforms: Rev, TranscribeMe, Local Agencies</p>
+                  <button className="w-full mt-3 text-xs bg-teal-600 text-white px-3 py-2 rounded-lg font-bold">Take Skill Test</button>
+               </div>
+               
+               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center text-center mt-6">
+                  <p className="text-xs text-slate-500">Connecting to global verified platforms... Note: Never pay joining fees for any online job.</p>
+               </div>
             </div>
           )}
 

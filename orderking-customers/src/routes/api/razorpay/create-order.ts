@@ -1,7 +1,4 @@
-
-import { createFileRoute } from "@tanstack/react-router";
-import Razorpay from "razorpay";
-import crypto from "crypto";
+﻿import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/api/razorpay/create-order")({
   
@@ -26,19 +23,24 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
             );
           }
 
-          const instance = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID,
-            key_secret: process.env.RAZORPAY_KEY_SECRET,
-          });
-
+          const token = btoa(process.env.RAZORPAY_KEY_ID + ':' + process.env.RAZORPAY_KEY_SECRET);
+          
           // Amount in smallest unit (paise for INR)
           const options = {
             amount: Math.round(amount * 100),
             currency,
-            receipt: `rcpt_${crypto.randomBytes(8).toString("hex")}`,
+            receipt: 'rcpt_' + crypto.randomUUID().replace(/-/g, '').substring(0, 16),
           };
 
-          const order = await instance.orders.create(options);
+          const res = await fetch("https://api.razorpay.com/v1/orders", {
+             method: "POST",
+             headers: {
+               "Authorization": "Basic " + token,
+               "Content-Type": "application/json"
+             },
+             body: JSON.stringify(options)
+          });
+          const order = await res.json();
 
           return new Response(JSON.stringify({
              ...order,
@@ -58,4 +60,3 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
     },
   },
 });
-

@@ -1,16 +1,8 @@
-
+﻿
 import { getSql } from "../db.ts";
-import Razorpay from "razorpay";
 import { z } from "zod";
 
-function getRazorpayClient(): Razorpay {
-  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
-  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
-  if (!keyId || !keySecret) {
-    throw new Error("Razorpay credentials missing. KingPay wallet top-up is BLOCKED (fail-closed).");
-  }
-  return new Razorpay({ key_id: keyId, key_secret: keySecret });
-}
+
 
 export const TopUpSchema = z.object({
   customerId: z.string().uuid(),
@@ -31,16 +23,28 @@ export const walletEngine = {
 
   async createTopUpOrder(input: z.infer<typeof TopUpSchema>) {
     const data = TopUpSchema.parse(input);
-    const order = await getRazorpayClient().orders.create({
-      amount: data.amountPaise,
-      currency: "INR",
-      receipt: `topup_${data.customerId}_${Date.now()}`,
-      notes: {
-        customerId: data.customerId,
-        idempotencyKey: data.idempotencyKey,
-      }
+    const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+    const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+    if (!keyId || !keySecret) throw new Error('Razorpay credentials missing.');
+    const token = btoa(keyId + ':' + keySecret);
+    const res = await fetch('https://api.razorpay.com/v1/orders', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount: data.amountPaise,
+        currency: 'INR',
+        receipt: 'topup_' + data.customerId.substring(0,8),
+        notes: {
+          customerId: data.customerId,
+          idempotencyKey: data.idempotencyKey,
+        }
+      })
     });
-    return order;
+    if (!res.ok) throw new Error('Razorpay api failed');
+    return await res.json() as any;
   },
 
   async creditWallet(customerId: string, amountPaise: number, idempotencyKey: string) {
@@ -117,3 +121,6 @@ export const walletEngine = {
     });
   }
 };
+
+
+

@@ -79,6 +79,22 @@ export function HomeView() {
     );
   }
 
+  // Zomato Style Approval Block for Riders
+  const isVerified = home.rider.kycStatus === "VERIFIED" || home.rider.kycStatus === "APPROVED";
+  if (!isVerified) {
+    return (
+      <div className="space-y-4">
+        <Card className="space-y-3">
+          <CardTitle>Verification Pending</CardTitle>
+          <p className="text-sm text-muted-foreground">Your rider onboarding application is currently pending approval. You will be able to access the dashboard and accept deliveries once approved.</p>
+          <Button asChild className="w-full">
+            <Link to="/onboarding">View Application Status</Link>
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   const status = home.active ? "BUSY" : home.rider.status;
   const remaining = home.offer
     ? Math.max(0, Math.ceil((new Date(home.offer.expiresAt).getTime() - now) / 1000))

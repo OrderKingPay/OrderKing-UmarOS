@@ -1,9 +1,8 @@
 // @ts-nocheck
 import { defineEventHandler, getRequestHeader, setResponseHeader, createError } from "h3";
-import { checkRateLimit, getRateLimitHeaders, startCleanup } from "../../src/lib/orderking/server/rate-limiter";
+import { checkRateLimit, getRateLimitHeaders } from "../../src/lib/orderking/server/rate-limiter";
 
-// Initialize rate limiter cleanup for massive scale to prevent memory leaks
-startCleanup();
+// (startCleanup removed as Cloudflare Workers forbid global setInterval)
 
 
 export default defineEventHandler(async (event) => {
