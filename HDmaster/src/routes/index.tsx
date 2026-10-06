@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Store, Users, Bike, Settings, Activity, ShieldCheck, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -15,6 +15,7 @@ function OmarOSDashboard() {
               <ShieldCheck className="h-10 w-10 text-emerald-600" />
               Omar OS Control Center
             </h1>
+            <Link to="/settings" className="inline-flex items-center gap-2 mt-4 text-emerald-600 font-bold bg-emerald-50 px-4 py-2 rounded-lg hover:bg-emerald-100"><Settings className="h-4 w-4"/> Platform Settings</Link>
             <p className="mt-2 text-slate-500 text-base">Real-time administrative control, onboarding approvals, and ecosystem metrics.</p>
           </div>
           <div className="flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm border border-slate-100">
