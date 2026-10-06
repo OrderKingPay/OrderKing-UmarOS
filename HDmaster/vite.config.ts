@@ -199,7 +199,7 @@ export default defineConfig(({ command, isPreview }) => ({
   
   resolve: { tsconfigPaths: true },
   plugins: [
-    pgliteBootstrapPlugin(),
+    
     pglitePreviewAssetsPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
     authPopupPlugin(),

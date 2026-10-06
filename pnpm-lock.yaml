@@ -172,9 +172,6 @@ importers:
 
   Apps-integration-:
     dependencies:
-      '@electric-sql/pglite':
-        specifier: ^0.5.4
-        version: 0.5.8
       '@hookform/resolvers':
         specifier: ^5.7.0
         version: 5.9.1(@standard-schema/spec@1.1.0)(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(zod@4.6.5)
@@ -392,9 +389,6 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.128.0
         version: 0.128.0(zod@4.6.5)
-      '@electric-sql/pglite':
-        specifier: ^0.5.4
-        version: 0.5.8
       '@google/genai':
         specifier: ^2.24.0
         version: 2.24.0(supports-color@7.2.0)
@@ -618,9 +612,6 @@ importers:
 
   orderking-customers:
     dependencies:
-      '@electric-sql/pglite':
-        specifier: ^0.5.4
-        version: 0.5.8
       '@hookform/resolvers':
         specifier: ^5.7.0
         version: 5.9.1(@standard-schema/spec@1.1.0)(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(zod@4.6.5)
@@ -862,9 +853,6 @@ importers:
 
   orderking-partners:
     dependencies:
-      '@electric-sql/pglite':
-        specifier: ^0.5.4
-        version: 0.5.8
       '@hookform/resolvers':
         specifier: ^5.7.0
         version: 5.9.1(@standard-schema/spec@1.1.0)(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(zod@4.6.5)
@@ -1091,9 +1079,6 @@ importers:
 
   orderking-riders:
     dependencies:
-      '@electric-sql/pglite':
-        specifier: ^0.5.4
-        version: 0.5.8
       '@hookform/resolvers':
         specifier: ^5.7.0
         version: 5.9.1(@standard-schema/spec@1.1.0)(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(zod@4.6.5)
@@ -5466,7 +5451,8 @@ snapshots:
 
   '@date-fns/tz@1.5.0': {}
 
-  '@electric-sql/pglite@0.5.8': {}
+  '@electric-sql/pglite@0.5.8':
+    optional: true
 
   '@emnapi/core@1.11.1':
     dependencies:

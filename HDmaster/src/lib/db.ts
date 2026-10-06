@@ -12,9 +12,7 @@ export function getDatabaseUrl() {
   if (url && url.includes('your_supabase_pooler')) url = undefined;
   return url;
 }
-export function getDbSource() {
-  return getDatabaseUrl() ? 'neon' : 'pglite';
-}
+export function getDbSource() { return 'neon'; }
 export const dbSource = 'neon';
 
 /**
@@ -147,96 +145,6 @@ function createNeonSql(): Promise<Sql> {
   return globalRef.__pgSqlPromise__;
 }
 
-async function createPgliteSql(): Promise<Sql> {
-  globalRef.__pgliteInstance__ ??= (async () => {
-    const { PGlite } = await import("@electric-sql/pglite");
-    const pg = new PGlite({
-      parsers: {
-        [OID_INT8]: Number,
-        [OID_DATE]: identity,
-        [OID_INTERVAL]: identity,
-      },
-    });
-    await pg.waitReady;
-    await pg.exec(
-      "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
-    );
-    return pg;
-  })().catch((err) => {
-    globalRef.__pgliteInstance__ = undefined;
-    console.error("[db] PGLite init error:", err);
-    throw err;
-  });
-  
-  let pg: import("@electric-sql/pglite").PGlite | undefined;
-  try {
-    pg = await globalRef.__pgliteInstance__;
-  } catch (e) {
-    return toSql(async () => []);
-  }
-  if (!pg) return toSql(async () => []);
-
-  const migrate = async (): Promise<void> => {
-    try {
-      let migrations: Record<string, string> = {};
-
-      if (typeof import.meta.glob === 'function') {
-        migrations = import.meta.glob("/migrations/*.sql", {
-          query: "?raw",
-          import: "default",
-          eager: true,
-        }) as Record<string, string>;
-      } else {
-        // Fallback for node:test runner which lacks Vite's import.meta.glob
-        const fs = await import('node:fs');
-        const path = await import('node:path');
-        const process = await import('node:process');
-
-        const migrationsDir = path.join(process.cwd(), 'migrations');
-        if (fs.existsSync(migrationsDir)) {
-          const files = fs.readdirSync(migrationsDir).filter(f => f.endsWith('.sql'));
-          for (const file of files) {
-            migrations[`/migrations/`] = fs.readFileSync(path.join(migrationsDir, file), 'utf-8');
-          }
-        }
-      }
-      const doneRows = await pg!.query<{ name: string }>(
-        "select name from _migrations",
-      );
-      const done = doneRows.rows.map((r) => r.name);
-      for (const { name, path } of pendingMigrations(Object.keys(migrations), done)) {
-        await pg!.transaction(async (tx) => {
-          await tx.exec(migrations[path]);
-          await tx.query("insert into _migrations (name) values ($1)", [name]);
-        });
-      }
-    } catch (e) {
-      console.error("[db] Migration error:", e);
-    }
-  };
-  const pass = (globalRef.__pgliteMigrateChain__ ?? Promise.resolve())
-    .catch(() => undefined)
-    .then(migrate);
-  globalRef.__pgliteMigrateChain__ = pass;
-  await pass;
-
-  return toSql(
-    async <T>(text: string, params: unknown[]) => {
-      const result = await pg!.query<T>(text, params);
-      return result.rows;
-    },
-    async <T>(fn: (tx: Sql) => Promise<T>) =>
-      pg!.transaction(async (tx) =>
-        fn(
-          toSql(async <R>(text: string, params: unknown[]) => {
-            const result = await tx.query<R>(text, params);
-            return result.rows;
-          }),
-        ),
-      ),
-  );
-}
-
 let sqlPromise: Promise<Sql> | null = null;
 
 async function createSql(): Promise<Sql> {
@@ -246,7 +154,7 @@ async function createSql(): Promise<Sql> {
         "or a server route loader, never from client code.",
     );
   }
-  return getDbSource() === "neon" ? createNeonSql() : createPgliteSql();
+  return createNeonSql();
 }
 
 export function getSql(): Promise<Sql> {
@@ -256,16 +164,6 @@ export function getSql(): Promise<Sql> {
     return toSql(async () => []);
   });
   return sqlPromise;
-}
-
-export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite> {
-  if (getDbSource() !== "pglite") {
-    throw new Error("getPglite() is only available on the PGLite fallback (no DATABASE_URL)");
-  }
-  await getSql();
-  const pg = await globalRef.__pgliteInstance__;
-  if (!pg) throw new Error("PGLite instance failed to initialize");
-  return pg;
 }
 
 export function ensureDbReady(): Promise<void> {

@@ -28,16 +28,11 @@ function Home() {
     });
   }, [location.cityId, location.cityName, isDeliveryActive]);
 
-  // 1,000x Strict Geofencing:
-  // In locations where Order King is NOT active, users must ONLY see and use King Pay.
-  // Order King FOODS is completely invisible and inaccessible.
-  if (!isDeliveryActive) {
-    return <KingPayPage isGeofencedFallback={true} />;
-  }
-
   return (
     <CustomerShell onSearch={() => void navigate({ to: "/search" })}>
       <HomeFeed />
     </CustomerShell>
   );
 }
+
+
