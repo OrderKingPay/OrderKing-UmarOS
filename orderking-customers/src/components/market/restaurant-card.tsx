@@ -14,7 +14,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
     <Link
       to="/r/$slug"
       params={{ slug: restaurant.slug }}
-      className="block overflow-hidden rounded-[var(--radius-xl)] bg-surface text-fg no-underline shadow-[0_1px_0_var(--color-border)]"
+      className="block overflow-hidden rounded-[var(--radius-2xl)] bg-surface text-fg no-underline shadow-lg border border-border hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-surface-2">
         {restaurant.coverImage ? (

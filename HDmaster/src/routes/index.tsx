@@ -1,84 +1,89 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Zap, Cpu, Network, Globe, Activity, Terminal } from "lucide-react";
+import { Store, Users, Bike, Settings, Activity, ShieldCheck, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/")({
-  component: OmarOSGodDashboard,
+  component: OmarOSDashboard,
 });
 
-function OmarOSGodDashboard() {
+function OmarOSDashboard() {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-50 p-8">
+    <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8">
       <div className="max-w-7xl mx-auto w-full space-y-8">
-        <header className="border-b border-slate-800 pb-8">
-          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 flex items-center gap-4">
-            <Cpu className="h-12 w-12 text-amber-400" />
-            OMAR OS: GOD OF TECHNOLOGY
-          </h1>
-          <p className="mt-4 text-slate-400 text-lg">Supreme Administrative Control. Unlimited Power. 100x Capability.</p>
+        <header className="border-b border-slate-200 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-slate-900 flex items-center gap-3">
+              <ShieldCheck className="h-10 w-10 text-emerald-600" />
+              Omar OS Control Center
+            </h1>
+            <p className="mt-2 text-slate-500 text-base">Real-time administrative control, onboarding approvals, and ecosystem metrics.</p>
+          </div>
+          <div className="flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+            <div className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span className="text-sm font-semibold text-slate-600">Ecosystem Online • Cloudflare Edge</span>
+          </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Models */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
-            <h2 className="text-xl font-bold flex items-center gap-2 mb-4"><Zap className="text-yellow-400"/> AI Models Matrix</h2>
-            <ul className="space-y-3">
-              <li className="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800">
-                <span className="font-semibold text-emerald-400">Super Grok 4.6</span>
-                <span className="text-xs bg-emerald-900 text-emerald-200 px-2 py-1 rounded">ACTIVE / UNLIMITED</span>
-              </li>
-              <li className="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800">
-                <span className="font-semibold text-blue-400">Claude 4.6</span>
-                <span className="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded">ACTIVE / UNLIMITED</span>
-              </li>
-              <li className="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800">
-                <span className="font-semibold text-purple-400">GPT-Omega</span>
-                <span className="text-xs bg-purple-900 text-purple-200 px-2 py-1 rounded">ACTIVE / UNLIMITED</span>
-              </li>
-            </ul>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {/* Metrics Cards */}
+          <MetricCard title="Total Customers" value="---" icon={Users} color="text-blue-600" bg="bg-blue-50" />
+          <MetricCard title="Active Restaurants" value="---" icon={Store} color="text-emerald-600" bg="bg-emerald-50" />
+          <MetricCard title="Fleet Riders" value="---" icon={Bike} color="text-amber-600" bg="bg-amber-50" />
+          <MetricCard title="Today's Orders" value="---" icon={Activity} color="text-indigo-600" bg="bg-indigo-50" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Onboarding Approvals */}
+          <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h2 className="text-lg font-bold flex items-center gap-2"><Store className="h-5 w-5 text-slate-500"/> Pending Approvals (KYC/FSSAI)</h2>
+              <span className="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-full">Requires Action</span>
+            </div>
+            <div className="p-6 text-center text-slate-500 py-12">
+              No pending onboarding requests at this time.
+            </div>
           </div>
 
-          {/* Core Systems */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
-            <h2 className="text-xl font-bold flex items-center gap-2 mb-4"><Network className="text-blue-400"/> Infrastructure</h2>
-            <ul className="space-y-3">
-              <li className="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800">
-                <span className="font-semibold text-slate-300">SpaceX Starlink Node</span>
-                <span className="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded">SYNCED - 14ms</span>
-              </li>
-              <li className="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800">
-                <span className="font-semibold text-slate-300">Cloudflare Edge Fleet</span>
-                <span className="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded">340 REGIONS UP</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Master Switches */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
-            <h2 className="text-xl font-bold flex items-center gap-2 mb-4"><Globe className="text-indigo-400"/> Supreme Commands</h2>
-            <div className="space-y-3">
-              <button className="w-full bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 font-bold py-3 rounded-lg shadow-lg hover:scale-[1.02] transition-transform">
-                Force Algorithm Update
-              </button>
-              <button className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-bold py-3 rounded-lg shadow-lg hover:scale-[1.02] transition-transform">
-                Execute Automated Wealth Generation
-              </button>
-              <button className="w-full bg-slate-800 text-white font-bold py-3 rounded-lg border border-slate-700 hover:bg-slate-700 transition-colors">
-                Delete All Fake Data
-              </button>
+          {/* Configuration & Toggles */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-5 border-b border-slate-100 bg-slate-50">
+              <h2 className="text-lg font-bold flex items-center gap-2"><Settings className="h-5 w-5 text-slate-500"/> Feature Flags</h2>
+            </div>
+            <div className="p-5 space-y-4">
+              <ToggleRow label="Customer KingPay (Tickets/Bills)" description="Show Flight/Train booking UI in KingPay" active={true} />
+              <ToggleRow label="Surge Pricing Engine" description="Apply dynamic multipliers during high demand" active={false} />
+              <ToggleRow label="WhatsApp Viral Referral" description="Enable ₹100 referral bonuses" active={true} />
+              <ToggleRow label="AI Tutor Gig Economy" description="Show affiliate jobs in Tutor section" active={true} />
             </div>
           </div>
         </div>
-        
-        {/* Logs */}
-        <div className="bg-black border border-slate-800 rounded-2xl p-4 font-mono text-xs text-green-500 overflow-hidden h-40">
-          <div className="flex items-center gap-2 mb-2 text-slate-400 border-b border-slate-800 pb-2"><Terminal size={14}/> Omar OS Terminal</div>
-          <p>[SYSTEM] Connected to Global Algorithm...</p>
-          <p>[SYSTEM] All fake data purged.</p>
-          <p>[SYSTEM] PWA Caches invalidated.</p>
-          <p>[SYSTEM] Customer UI luxury injection successful.</p>
-          <p>[SYSTEM] Supreme Power granted to Founder.</p>
-        </div>
+      </div>
+    </div>
+  );
+}
 
+function MetricCard({ title, value, icon: Icon, color, bg }: { title: string, value: string, icon: any, color: string, bg: string }) {
+  return (
+    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-start justify-between">
+      <div>
+        <p className="text-sm font-medium text-slate-500">{title}</p>
+        <h3 className="text-3xl font-black text-slate-900 mt-2">{value}</h3>
+      </div>
+      <div className={`p-3 rounded-xl ${bg}`}>
+        <Icon className={`h-6 w-6 ${color}`} />
+      </div>
+    </div>
+  );
+}
+
+function ToggleRow({ label, description, active }: { label: string, description: string, active: boolean }) {
+  return (
+    <div className="flex items-start justify-between gap-4 py-2">
+      <div>
+        <p className="font-semibold text-slate-900 text-sm">{label}</p>
+        <p className="text-xs text-slate-500">{description}</p>
+      </div>
+      <div className={`shrink-0 w-10 h-6 rounded-full flex items-center px-1 transition-colors ${active ? 'bg-emerald-500' : 'bg-slate-300'}`}>
+        <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${active ? 'translate-x-4' : 'translate-x-0'}`}></div>
       </div>
     </div>
   );

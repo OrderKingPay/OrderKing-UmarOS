@@ -21,6 +21,46 @@ import { getCurrentFestiveContext } from "@/lib/brand/calendar-festive-engine";
 import { EcosystemSwitchBar } from "@/components/common/ecosystem-switch-bar";
 import { PaidRestaurantAdZone } from "@/components/market/paid-restaurant-ad-zone";
 
+
+
+function DailyHub() {
+  return (
+    <div className="mb-4 mt-2">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="font-display text-lg font-bold text-fg">Daily Hub</h2>
+        <span className="text-[10px] uppercase tracking-wider font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">Suggested</span>
+      </div>
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x">
+        
+        <a href="/tutor" className="snap-start shrink-0 w-32 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl p-3 shadow-md flex flex-col gap-2 no-underline hover:scale-105 transition-transform">
+          <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-sm">🎓</div>
+          <div>
+            <div className="text-white font-bold text-sm leading-tight">AI Tutor</div>
+            <div className="text-white/80 text-[10px] leading-tight mt-0.5">Learn & Earn</div>
+          </div>
+        </a>
+        
+        <a href="/king-pay" className="snap-start shrink-0 w-32 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl p-3 shadow-md flex flex-col gap-2 no-underline hover:scale-105 transition-transform">
+          <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-sm">💸</div>
+          <div>
+            <div className="text-white font-bold text-sm leading-tight">Bills & Tickets</div>
+            <div className="text-white/80 text-[10px] leading-tight mt-0.5">King Pay 0% Fee</div>
+          </div>
+        </a>
+        
+        <a href="/tutor" className="snap-start shrink-0 w-32 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-3 shadow-md flex flex-col gap-2 no-underline hover:scale-105 transition-transform">
+          <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-sm">💼</div>
+          <div>
+            <div className="text-white font-bold text-sm leading-tight">Gig Jobs</div>
+            <div className="text-white/80 text-[10px] leading-tight mt-0.5">Work from Home</div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  );
+}
+
 export function HomeFeed({
   q,
   veg,
@@ -140,7 +180,10 @@ export function HomeFeed({
 
   return (
     <div className="space-y-2 px-2 py-2 sm:px-3 sm:py-3">
-      {/* 2G / Low-Network Offline-First Resilience Banner */}
+              {/* Daily Hub: Mind-Reading & Geographical Demands */}
+        {!q && !veg && !openNow && !category && <DailyHub />}
+        
+        {/* 2G / Low-Network Offline-First Resilience Banner */}
       {networkSpeed !== "NORMAL" ? (
         <div className="flex items-center justify-between rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
           <div className="flex items-center gap-2">

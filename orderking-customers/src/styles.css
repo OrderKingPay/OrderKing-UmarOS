@@ -5,15 +5,15 @@
 @theme {
   --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
-  --color-bg: #FAF8F5;
+  --color-bg: #FAFAFA;
   --color-surface: #FFFFFF;
-  --color-surface-2: #F3EFEA;
+  --color-surface-2: #F1F5F9;
   --color-fg: #111827;
   --color-muted: #57534E;
   --color-subtle: #857F77;
-  --color-primary: #0D3B2E;
-  --color-primary-fg: #FAF8F5;
-  --color-accent: #EA580C;
+  --color-primary: #E11D48;
+  --color-primary-fg: #FFFFFF;
+  --color-accent: #F59E0B;
   --color-border: color-mix(in oklab, var(--color-fg) 10%, transparent);
   --color-border-strong: color-mix(in oklab, var(--color-fg) 20%, transparent);
   --color-danger: #DC2626;
