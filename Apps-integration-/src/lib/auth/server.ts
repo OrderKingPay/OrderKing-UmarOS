@@ -121,11 +121,6 @@ const baseURL = explicitBaseURL ?? {
       "localhost", 
       "127.0.0.1", 
       "[::1]",
-      "hdmaster.vercel.app",
-      "orderking-customers.vercel.app",
-      "orderking-partners.vercel.app",
-      "orderking-riders.vercel.app",
-      "apps-integration.vercel.app"
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
@@ -140,8 +135,6 @@ const trustedOrigins: string[] = [
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
-  ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-  ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
 ];
 
 const databaseUrl = env("DATABASE_URL");
