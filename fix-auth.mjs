@@ -23,14 +23,14 @@ for (const file of files) {
   if (!file.includes('auth')) continue;
   let content = fs.readFileSync(file, 'utf8');
   
-  // Replace getPglite import with getDatabaseUrl
-  content = content.replace(/import \{ ensureDbReady, getPglite \} from "\.\.\/db";/, 'import { ensureDbReady, getDatabaseUrl } from "../db";');
+  // Replace getPglite import
+  content = content.replace(/, getPglite /g, ' ');
   
   // Remove pgliteDialect import
-  content = content.replace(/import \{ pgliteDialect \} from "\.\/pglite-dialect";\n/, '');
+  content = content.replace(/import \{ pgliteDialect \} from "\.\/pglite-dialect";\n/g, '');
   
   // Fix the database variable initialization
-  content = content.replace(/let database;[\s\S]*?\} catch \(err\) \{[\s\S]*?\n  \}/, "let database;\n  try {\n    const url = getDatabaseUrl();\n    if (!url) throw new Error('DATABASE_URL is missing');\n    database = new Pool({ connectionString: url });\n  } catch (err) {\n    console.error('Auth DB Init Error:', err);\n  }");
+  content = content.replace(/let database;[\s\S]*?console\.error\("Auth DB Init Error:", err\);[\s\S]*?\n\}/, "let database = new Pool({ connectionString: databaseUrl });");
 
   fs.writeFileSync(file, content);
   console.log('Fixed auth server:', file);

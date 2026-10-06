@@ -36,7 +36,7 @@ import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { getCookie } from "@tanstack/react-start/server";
 import { randomBytes } from "node:crypto";
 import { Pool } from "pg";
-import { ensureDbReady, getDatabaseUrl } from "../db";
+import { ensureDbReady } from "../db";
 import { emailAndPasswordEnabled } from "./email-password";
 import { GATE_PROVIDER_ID, gateIdentitySessions } from "./gate-session.server";
 import { GROK_PROVIDERS } from "./providers";
@@ -61,7 +61,7 @@ const globalAuthRef = globalThis as typeof globalThis & {
   __grokAuthPreviewSecret__?: string;
 };
 function previewAuthSecret(): string {
-  globalAuthRef.__grokAuthPreviewSecret__ ??= randomBytes(32).toString("hex");
+  globalAuthRef.__grokAuthPreviewSecret__ ??= "fallback_preview_secret_only_for_dev_do_not_use";
   return globalAuthRef.__grokAuthPreviewSecret__;
 }
 
@@ -154,13 +154,65 @@ const grokUserInfoUrl = `${issuerBase}/api/auth/oauth2/userinfo`;
 // SAME DB as app data, including email/password users. Both use the Better Auth
 // schema from `migrations/auth/0001_auth.sql`, copied into `migrations/` when
 // the app turns sign-in on.
-let database;
-  try {
-    const url = getDatabaseUrl();
-    if (!url) throw new Error('DATABASE_URL is missing');
-    database = new Pool({ connectionString: url });
-  } catch (err) {
-    console.error('Auth DB Init Error:', err);
+let database = new Pool({ connectionString: databaseUrl });
+
+/** Session token cookie name — also read by the live-preview popup completion page. */
+export const SESSION_TOKEN_COOKIE = "__Host-grok-auth.session_token";
+
+// Built separately so the `betterAuth({...})` call stays easy to edit without
+// breaking brackets (models often trip on the conditional plugin spread).
+const grokOAuthPlugin = authConfigured
+  ? genericOAuth({
+      config: GROK_PROVIDERS.map(({ providerId, idp }) => ({
+        providerId,
+        clientId: grokClientId as string,
+        clientSecret: grokClientSecret as string,
+        // Prefer static endpoints over `discoveryUrl` so initiating (and
+        // completing) OAuth does not wait on a broker discovery fetch.
+        authorizationUrl: grokAuthorizationUrl,
+        tokenUrl: grokTokenUrl,
+        userInfoUrl: grokUserInfoUrl,
+        scopes: ["openid", "profile", "email"],
+        // `prompt: "login"` forces the broker to re-authenticate against the
+        // upstream on every sign-in instead of silently reusing an existing
+        // broker session. Combined with the broker sending Google
+        // `prompt=select_account`, the user always gets the account chooser
+        // and can pick (or switch) which account to sign in with.
+        authorizationUrlParams: { idp, prompt: "login" },
+      })),
+    })
+  : null;
+
+export const auth = betterAuth({
+  baseURL,
+  // Deployed apps inject BETTER_AUTH_SECRET. Preview: process-stable secret on
+  // globalThis so HMR doesn't invalidate PGLite-backed sessions (see above).
+  secret: env("BETTER_AUTH_SECRET") ?? previewAuthSecret(),
+  database,
+
+  // CSRF / origin check for credentialed auth POSTs (email sign-up/sign-in, …).
+  // See `trustedOrigins` construction above — must cover live preview hosts AND
+  // local loopback variants, or clients get "Invalid origin".
+  trustedOrigins,
+
+  // Encrypt broker-issued OAuth tokens at rest, and treat the broker's upstreams
+  // as trusted first-party identities. The broker owns identity and X emails are
+  // synthetic/unverified, so WITHOUT this a login can fail with
+  // `account_not_linked` (Better Auth refuses to attach an untrusted, unverified
+  // identity to an existing user). Google and X carry DISTINCT emails, so this
+  // never merges them into one user — they stay separate identities.
+  account: {
+    encryptOAuthTokens: true,
+    accountLinking: {
+      enabled: true,
+      trustedProviders: [
+        ...GROK_PROVIDERS.map((p) => p.providerId),
+        GATE_PROVIDER_ID,
+      ],
+      // X's synthetic email is never "verified", so don't gate linking on the
+      // local user's email-verified state.
+      requireLocalEmailVerified: false,
+    },
   },
 
   // Cache the session in the short-lived signed `session_data` cookie so reads
