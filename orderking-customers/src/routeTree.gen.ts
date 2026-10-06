@@ -23,6 +23,8 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as TutorRouteImport } from './routes/tutor'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
+import { Route as ApiRestaurantRouteImport } from './routes/api/restaurant'
+import { Route as ApiSearchRouteImport } from './routes/api/search'
 import { Route as AppFounderCommandRouteImport } from './routes/app/founder-command'
 import { Route as DevBrandRouteImport } from './routes/dev/brand'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
@@ -108,6 +110,16 @@ const TutorRoute = TutorRouteImport.update({
 const AccountIndexRoute = AccountIndexRouteImport.update({
   id: '/account/',
   path: '/account/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRestaurantRoute = ApiRestaurantRouteImport.update({
+  id: '/api/restaurant',
+  path: '/api/restaurant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSearchRoute = ApiSearchRouteImport.update({
+  id: '/api/search',
+  path: '/api/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppFounderCommandRoute = AppFounderCommandRouteImport.update({
@@ -205,6 +217,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/tutor': typeof TutorRoute
+  '/api/restaurant': typeof ApiRestaurantRoute
+  '/api/search': typeof ApiSearchRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -237,6 +251,8 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/tutor': typeof TutorRoute
+  '/api/restaurant': typeof ApiRestaurantRoute
+  '/api/search': typeof ApiSearchRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -270,6 +286,8 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/tutor': typeof TutorRoute
+  '/api/restaurant': typeof ApiRestaurantRoute
+  '/api/search': typeof ApiSearchRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -304,6 +322,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/tutor'
+    | '/api/restaurant'
+    | '/api/search'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -336,6 +356,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/tutor'
+    | '/api/restaurant'
+    | '/api/search'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -368,6 +390,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/tutor'
+    | '/api/restaurant'
+    | '/api/search'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -401,6 +425,8 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
   TutorRoute: typeof TutorRoute
+  ApiRestaurantRoute: typeof ApiRestaurantRoute
+  ApiSearchRoute: typeof ApiSearchRoute
   AppFounderCommandRoute: typeof AppFounderCommandRoute
   DevBrandRoute: typeof DevBrandRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
@@ -518,6 +544,20 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account/'
       preLoaderRoute: typeof AccountIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/restaurant': {
+      id: '/api/restaurant'
+      path: '/api/restaurant'
+      fullPath: '/api/restaurant'
+      preLoaderRoute: typeof ApiRestaurantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/search': {
+      id: '/api/search'
+      path: '/api/search'
+      fullPath: '/api/search'
+      preLoaderRoute: typeof ApiSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/founder-command': {
@@ -649,6 +689,8 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
   TutorRoute: TutorRoute,
+  ApiRestaurantRoute: ApiRestaurantRoute,
+  ApiSearchRoute: ApiSearchRoute,
   AppFounderCommandRoute: AppFounderCommandRoute,
   DevBrandRoute: DevBrandRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,

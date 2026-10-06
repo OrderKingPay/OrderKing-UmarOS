@@ -6,20 +6,16 @@ export type DbSource = "neon" | "pglite";
 
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
-const rawDatabaseUrl =
-  typeof process !== "undefined" ? process.env.DATABASE_URL : undefined;
-let databaseUrl = rawDatabaseUrl && rawDatabaseUrl.trim() ? rawDatabaseUrl : undefined;
-if (databaseUrl && databaseUrl.includes("your_supabase_pooler")) {
-  databaseUrl = undefined;
+export function getDatabaseUrl() {
+  const raw = typeof process !== 'undefined' ? process.env.DATABASE_URL : undefined;
+  let url = raw && raw.trim() ? raw : undefined;
+  if (url && url.includes('your_supabase_pooler')) url = undefined;
+  return url;
 }
-
-/**
- * Active backend: real **Neon** when `DATABASE_URL` is set (deployed / configured
- * sandbox), otherwise a local embedded **PGLite** (Postgres compiled to WASM) so
- * the app has a working database even with nothing configured — the live preview
- * included. Swap in Neon later by just setting `DATABASE_URL`; no code changes.
- */
-export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
+export function getDbSource() {
+  return getDatabaseUrl() ? 'neon' : 'pglite';
+}
+export const dbSource = 'neon';
 
 /**
  * Minimal shared SQL surface, satisfied by both Neon and PGLite. Both the
@@ -115,7 +111,7 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const pool = new Pool({ connectionString: databaseUrl });
+    const url = getDatabaseUrl(); if (!url) throw new Error("DATABASE_URL is missing"); const pool = new Pool({ connectionString: url });
     const makeClientSql = (client: import("pg").PoolClient) =>
       toSql(
         async <T>(text: string, params: unknown[]) => {
@@ -250,7 +246,7 @@ async function createSql(): Promise<Sql> {
         "or a server route loader, never from client code.",
     );
   }
-  return dbSource === "neon" ? createNeonSql() : createPgliteSql();
+  return getDbSource() === "neon" ? createNeonSql() : createPgliteSql();
 }
 
 export function getSql(): Promise<Sql> {
@@ -263,7 +259,7 @@ export function getSql(): Promise<Sql> {
 }
 
 export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite> {
-  if (dbSource !== "pglite") {
+  if (getDbSource() !== "pglite") {
     throw new Error("getPglite() is only available on the PGLite fallback (no DATABASE_URL)");
   }
   await getSql();
@@ -273,7 +269,7 @@ export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite
 }
 
 export function ensureDbReady(): Promise<void> {
-  if (dbSource !== "pglite") return Promise.resolve();
+  if (getDbSource() !== "pglite") return Promise.resolve();
   return getSql().then(() => undefined).catch(err => {
     console.error("[db] ensureDbReady error:", err);
   });

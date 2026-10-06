@@ -90,35 +90,41 @@ export function CustomerShell({
             )}
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => setLocOpen(true)}
-          className={`mt-3 flex min-h-11 w-full items-center justify-between rounded-[var(--radius-lg)] px-3 text-left ${
-            isDeliveryActive
-              ? "bg-surface"
-              : "bg-amber-500/10 border border-amber-400/40"
-          }`}
-        >
-          <span className="flex-1 min-w-0 pr-2">
-            <span className="block text-xs uppercase tracking-wide text-muted break-words text-wrap">
-              {isDeliveryActive ? t("home.deliveringTo") : "👑 King Pay Sovereign Territory"}
-            </span>
-            <span className="block font-medium break-words text-wrap">
-              {isDeliveryActive ? location.label : `${location.cityName || location.label} · 0% UPI Active`}
-            </span>
-          </span>
-          <span className="text-sm text-primary shrink-0">{t("home.changeLocation")}</span>
-        </button>
-        {path !== "/search" && (
+        <div className="mt-3 flex items-center gap-2 w-full">
           <button
             type="button"
-            onClick={() => (onSearch ? onSearch() : void navigate({ to: "/search" }))}
-            className="mt-2 flex min-h-11 w-full items-center gap-2 rounded-[var(--radius-lg)] border border-border bg-surface px-3 text-left text-muted"
+            onClick={() => setLocOpen(true)}
+            className={`flex h-11 min-w-0 max-w-[40%] items-center justify-center rounded-full px-3 text-left shrink-0 border ${
+              isDeliveryActive
+                ? "bg-surface border-border hover:bg-surface-2 transition-colors"
+                : "bg-amber-500/10 border-amber-400/40"
+            }`}
           >
-            <Search className="size-4" aria-hidden />
-            {isDeliveryActive ? t("home.searchPlaceholder") : "Search King Pay UPI, Bills, Recharges & Flights..."}
+            <div className="flex flex-col min-w-0 w-full">
+              <span className="text-[9px] uppercase tracking-wide text-muted font-bold truncate">
+                {isDeliveryActive ? t("home.deliveringTo") : "👑 King Pay"}
+              </span>
+              <span className="text-xs font-bold truncate text-fg">
+                {isDeliveryActive ? location.label : location.cityName || location.label}
+              </span>
+            </div>
           </button>
-        )}
+          
+          {path !== "/search" ? (
+            <button
+              type="button"
+              onClick={() => (onSearch ? onSearch() : void navigate({ to: "/search" }))}
+              className="flex h-11 flex-1 min-w-0 items-center gap-2 rounded-full border border-border bg-surface px-4 text-left text-muted hover:bg-surface-2 transition-colors shadow-sm"
+            >
+              <Search className="size-4 shrink-0 text-primary" aria-hidden />
+              <span className="text-xs truncate">
+                {isDeliveryActive ? t("home.searchPlaceholder") : "Search King Pay, Bills..."}
+              </span>
+            </button>
+          ) : (
+             <div className="flex-1" />
+          )}
+        </div>
       </header>
       <main id="main" className="flex-1">
         {children}
@@ -143,31 +149,25 @@ export function CustomerShell({
         aria-label={brand.appName}
         className="fixed bottom-4 left-4 right-4 z-40 rounded-3xl border border-black/5 bg-white/80 pb-0 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden"
       >
-        <ul className="mx-auto grid grid-cols-5 items-center justify-items-center relative px-2">
+        <ul className="mx-auto grid grid-cols-4 items-center justify-items-center relative px-2">
           <NavItem to="/" icon={House} label="Home" active={path === "/"} />
-          <NavItem to="/search" icon={Search} label="Search" active={path.startsWith("/search")} />
-          <NavItem
-            to="/cart"
-            icon={ShoppingBag}
-            label="Cart"
-            active={path.startsWith("/cart")}
-            badge={count > 0 ? count : undefined}
-          />
+          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
+          
           {/* 👑 Glowing KingPay Tab */}
           <li className="relative -top-2 flex w-full justify-center">
             <Link
               to="/king-pay"
               className={cn(
-                "group relative flex h-14 w-14 flex-col items-center justify-center gap-0.5 rounded-full border-2 text-xs no-underline shadow-lg transition-all active:scale-95",
+                "group relative flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-full border-2 text-xs no-underline shadow-md transition-all active:scale-95",
                 path.startsWith("/king-pay")
-                  ? "border-amber-400 bg-gradient-to-br from-amber-400 to-yellow-600 text-white shadow-[0_0_20px_rgba(251,191,36,0.4)]"
-                  : "border-transparent bg-gradient-to-br from-amber-100 to-amber-200 text-amber-900 shadow-[0_0_15px_rgba(251,191,36,0.2)] hover:border-amber-300"
+                  ? "border-amber-400 bg-gradient-to-br from-amber-400 to-yellow-600 text-white shadow-[0_0_15px_rgba(251,191,36,0.4)]"
+                  : "border-transparent bg-gradient-to-br from-amber-100 to-amber-200 text-amber-900 shadow-[0_0_10px_rgba(251,191,36,0.2)] hover:border-amber-300"
               )}
             >
-              <span className="text-xl leading-none">👑</span>
-              <span className="text-[9px] font-black tracking-tight leading-none">KingPay</span>
+              <span className="text-lg leading-none">👑</span>
+              <span className="text-[8px] font-black tracking-tight leading-none">KingPay</span>
               {!path.startsWith("/king-pay") && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white shadow-sm">
+                <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white shadow-sm">
                   1
                 </span>
               )}
