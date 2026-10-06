@@ -175,10 +175,10 @@ export function CustomerShell({
       ) : null}
             {!path.startsWith("/king-pay") ? (
         <nav
-          aria-label={brand.appName}
-          className="fixed bottom-4 left-4 right-4 z-40 rounded-3xl border border-black/5 bg-white/80 pb-0 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden"
-        >
-          <ul className="mx-auto grid grid-cols-5 items-center justify-items-center relative px-2">
+            aria-label={brand.appName}
+            className="fixed bottom-0 left-0 right-0 z-40 border-t border-amber-500/30 bg-gradient-to-t from-slate-950 via-slate-900 to-slate-950/95 pb-safe shadow-[0_-10px_40px_rgba(245,158,11,0.15)] overflow-hidden"
+          >
+            <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-2">
             <NavItem to="/" icon={House} label="Home" active={path === "/"} />
             <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
             
@@ -249,7 +249,7 @@ function NavItem({
         to={to}
         className={cn(
           "flex flex-col items-center justify-center gap-1 text-[10px] sm:text-xs no-underline relative transition-colors",
-          active ? "text-primary font-bold" : "text-slate-500 hover:text-slate-700 font-medium",
+          active ? "text-primary font-bold" : "text-slate-400 hover:text-slate-700 font-medium",
         )}
       >
         <div className="relative flex items-center justify-center h-6 w-6">
