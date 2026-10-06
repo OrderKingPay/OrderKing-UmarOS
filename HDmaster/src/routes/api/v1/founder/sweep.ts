@@ -10,7 +10,7 @@ export const APIRoute = createAPIFileRoute("/api/v1/founder/sweep")({
       const result = await sql`
         SELECT COALESCE(SUM(restaurant_payable_paise), 0) as payable_paise
         FROM orders
-        WHERE status = "DELIVERED"
+        WHERE status = 'DELIVERED'
       `;
       const payablePaise = Number(result[0]?.payable_paise || 0);
 
