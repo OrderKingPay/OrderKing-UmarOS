@@ -2,10 +2,14 @@ import { getSql } from "../db.ts";
 import Razorpay from "razorpay";
 import { z } from "zod";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "test_key",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "test_secret",
-});
+function getRazorpayClient(): Razorpay {
+  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+  if (!keyId || !keySecret) {
+    throw new Error("Razorpay credentials missing. Partner settlement is BLOCKED (fail-closed).");
+  }
+  return new Razorpay({ key_id: keyId, key_secret: keySecret });
+}
 
 export const SettlementSchema = z.object({
   restaurantId: z.string().uuid(),
@@ -62,7 +66,7 @@ export const settlementEngine = {
         VALUES (${data.restaurantId}, ${data.amountPaise}, ${data.idempotencyKey}, 'PROCESSING')
       `;
 
-      const transfer = await razorpay.transfers.create({
+      const transfer = await getRazorpayClient().transfers.create({
         account: ledger.fund_account_id,
         amount: data.amountPaise,
         currency: "INR",
