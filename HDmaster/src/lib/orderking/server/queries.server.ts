@@ -2452,81 +2452,53 @@ export async function calculateRestaurantPayout(ws: Workspace, restaurantId: str
 
 export async function executeBankPayout(ws: Workspace, restaurantId: string, period: string) {
   requirePermission(ws.ctx, "manage_ai_workforce");
-  const sql = await getSql();
-  
-  // 1. Calculate Exact Amounts instantly
   const payout = await calculateRestaurantPayout(ws, restaurantId, period);
-  
+
   if (payout.ordersIncluded === 0) {
     return { success: false, reason: "No pending orders to settle" };
   }
 
-  // 2. Instantly deduct OrderKing's commission/fees and record the batch
+  const sql = await getSql();
   const batchId = nid("set");
   await sql.query(
-    `insert into settlement_batches (id, org_id, party_type, party_id, status, net_paise, created_by, payout_date, updated_at)
+    `insert into settlement_batches (
+       id, org_id, party_type, party_id, status, net_paise, created_by, payout_date, updated_at
+     )
      values ($1, $2, $3, $4, $5, $6, $7, now(), now())`,
-    [batchId, ws.ctx.orgId, "RESTAURANT", restaurantId, "PAID", payout.netPayoutPaise, ws.ctx.employeeId || "SYSTEM_AI"]
-  );
-
-  // 3. Authentically execute transfer via Razorpay (if keys present)
-  let bankRef = "pending_gateway";
-  let status = "APPROVED";
-  const rzpKey = process.env.RAZORPAY_KEY_ID;
-  const rzpSecret = process.env.RAZORPAY_KEY_SECRET;
-  
-  if (rzpKey && rzpSecret) {
-    try {
-      const Razorpay = (await import("razorpay")).default;
-      const rzp = new Razorpay({ key_id: rzpKey, key_secret: rzpSecret });
-      // In a real system, you would fetch the restaurant's connected fund account ID
-      // Here we simulate the Razorpay API call structure for the exact transfer amount
-      console.log(`[Bank Payout] Initiating genuine Razorpay transfer for ${payout.netPayoutPaise} paise`);
-      /* 
-      const transfer = await rzp.transfers.create({
-        account: "acc_restaurant123",
-        amount: payout.netPayoutPaise,
-        currency: "INR"
-      });
-      bankRef = transfer.id;
-      */
-      bankRef = `rzp_live_${Date.now()}`;
-      status = "PAID";
-    } catch (err) {
-      console.error("[Bank Payout] Razorpay transfer failed", err);
-      status = "FAILED";
-    }
-  }
-
-  // 4. Securely deposit the fresh profit into the Founder's account (Automated Audit Trail)
-  const auditId = nid("frec");
-  await sql.query(
-    `insert into finance_reconciliations (id, org_id, batch_id, verified_by, discrepancy_paise, details_json, status)
-     values ($1, $2, $3, $4, $5, $6, $7)`,
     [
-      auditId, 
-      ws.ctx.orgId, 
-      batchId, 
-      ws.ctx.employeeId || "SYSTEM_AI", 
-      0, 
-      JSON.stringify({ 
-        action: "execute_bank_payout", 
-        restaurantPayout: payout.netPayoutPaise, 
-        founderProfitSecured: payout.totalCommissionPaise,
-        founderUpiVpa: "orderking@okhdfcbank",
-        gatewayRef: bankRef
-      }), 
-      status
-    ]
+      batchId,
+      ws.ctx.orgId,
+      "RESTAURANT",
+      restaurantId,
+      "PENDING_PROVIDER",
+      payout.netPayoutPaise,
+      ws.ctx.employeeId || "SYSTEM_AI",
+    ],
   );
+
+  await appendAudit({
+    orgId: ws.ctx.orgId,
+    employeeId: ws.ctx.employeeId,
+    userId: ws.ctx.userId,
+    roleKey: ws.ctx.actingRoleKey,
+    action: "settlement.provider_required",
+    targetType: "settlement_batch",
+    targetId: batchId,
+    next: {
+      status: "PENDING_PROVIDER",
+      amountPaise: payout.netPayoutPaise,
+      restaurantId,
+      period,
+    },
+    reason: "No provider-backed payout execution is enabled. Settlement must remain pending until a verified payout provider and connected account evidence exist.",
+  });
 
   return {
-    success: true,
+    success: false,
     batchId,
-    amountPaid: payout.netPayoutPaise,
-    commissionSecured: payout.totalCommissionPaise,
-    founderAccount: "orderking@okhdfcbank",
-    status: "PAID_AND_PROFIT_SECURED"
+    amountPayable: payout.netPayoutPaise,
+    status: "PENDING_PROVIDER",
+    reason: "A verified payout provider, destination account, authorization, transfer ID and settlement evidence are required before funds can be marked PAID.",
   };
 }
 
