@@ -2,3 +2,4 @@ name = "apps-integration"
 pages_build_output_dir = "dist"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
+# Cloudflare unified production release validation: 2026-10-06
