@@ -75,29 +75,7 @@ export function FounderSovereignDeck() {
 
   const [auditLog, setAuditLog] = useState<
     Array<{ id: string; action: string; timestamp: string; status: "SUCCESS" | "EXECUTING"; detail: string }>
-  >([
-    {
-      id: "ord-901",
-      action: "FOUNDER_SESSION_INIT",
-      timestamp: "Just now",
-      status: "SUCCESS",
-      detail: "Sovereign Executive Command Deck initialized with full root authorization",
-    },
-    {
-      id: "ord-900",
-      action: "MERCHANT_SETTLEMENT_SWEEP",
-      timestamp: "12m ago",
-      status: "SUCCESS",
-      detail: "Batch payout of ₹42,500 settled directly to 14 partner restaurant bank accounts",
-    },
-    {
-      id: "ord-899",
-      action: "SURGE_ALGORITHM_CALIBRATION",
-      timestamp: "1h ago",
-      status: "SUCCESS",
-      detail: "Karimganj Town zone surge locked at 1.0x (0% extra fee guarantee enforced)",
-    },
-  ]);
+  >([]);
 
   // Simulation Mutation
   const advanceSim = useMutation({
@@ -261,32 +239,32 @@ export function FounderSovereignDeck() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
         <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
           <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
-            Confirmed Revenue
+            Verified Revenue
           </span>
           <p className="text-base font-extrabold text-emerald-400 font-mono">
-            ₹49,999
+            ₹0
           </p>
-          <span className="text-[9px] text-emerald-400/80 font-medium block">✓ Bank Settlements</span>
+          <span className="text-[9px] text-emerald-400/80 font-medium block">No settled provider transactions</span>
         </div>
 
         <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
           <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
-            Invoiced (Pending)
+            Pending Invoices
           </span>
           <p className="text-base font-extrabold text-amber-300 font-mono">
-            ₹1,49,999
+            ₹0
           </p>
-          <span className="text-[9px] text-amber-400/80 font-medium block">⏳ Client Invoices</span>
+          <span className="text-[9px] text-amber-400/80 font-medium block">No verified receivables</span>
         </div>
 
         <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
           <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
-            Projected Pipeline
+            Verified Pipeline
           </span>
           <p className="text-base font-extrabold text-zinc-200 font-mono">
-            ₹26,88,000
+            ₹0
           </p>
-          <span className="text-[9px] text-zinc-400 font-medium block">🎯 Opportunities</span>
+          <span className="text-[9px] text-zinc-400 font-medium block">No verified opportunities</span>
         </div>
 
         <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
@@ -294,29 +272,29 @@ export function FounderSovereignDeck() {
             Active Contracts
           </span>
           <p className="text-base font-extrabold text-cyan-300 font-mono">
-            3 Accounts
+            0 Accounts
           </p>
-          <span className="text-[9px] text-cyan-400/80 font-medium block">🎯 Direct Clients</span>
+          <span className="text-[9px] text-cyan-400/80 font-medium block">No signed contracts recorded</span>
         </div>
 
         <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
           <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
-            Food Geofence
+            Pilot Geography
           </span>
           <p className="text-base font-extrabold text-zinc-200 font-mono">
-            Sribhumi 12km
+            Not configured
           </p>
-          <span className="text-[9px] text-zinc-400 font-medium block">🛡️ Pan-India KingPay</span>
+          <span className="text-[9px] text-zinc-400 font-medium block">Use launch-control zone evidence</span>
         </div>
 
         <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
           <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
-            Payment Cut
+            Payment State
           </span>
           <p className="text-base font-extrabold text-emerald-400 font-mono">
-            0% Gateway Fee
+            SANDBOX
           </p>
-          <span className="text-[9px] text-zinc-400 font-medium block">⚡ Instant UPI Escrow</span>
+          <span className="text-[9px] text-zinc-400 font-medium block">Live settlement evidence required</span>
         </div>
       </div>
 
