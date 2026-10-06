@@ -701,10 +701,18 @@ export class PgStore implements RiderStore {
   }
 
   async insertLocation(p: LocationPing, userId: string) {
+    // Quick raw SQL migration to ensure current_location exists
+    await this.sql.query(`ALTER TABLE riders ADD COLUMN IF NOT EXISTS current_location JSONB`);
+
     await this.sql.query(
       `insert into location_pings (id, rider_id, user_id, delivery_id, lat, lng, accuracy_m, at)
        values ($1,$2,$3,$4,$5,$6,$7,$8)`,
       [p.id, p.riderId, userId, p.deliveryId, p.point.lat, p.point.lng, p.accuracyM, p.at],
+    );
+
+    await this.sql.query(
+      `update riders set current_location = $1 where id = $2`,
+      [JSON.stringify(p.point), p.riderId]
     );
 
     if (p.deliveryId) {

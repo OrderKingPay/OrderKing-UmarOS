@@ -116,3 +116,50 @@ export const quickThrottleKitchen = createServerFn({ method: "POST" })
       return { ok: true as const, mode: data.mode };
     });
   });
+
+import { getSql } from "@/lib/db";
+
+export const acceptOrder = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string; orderId: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.edit", async (sql, ctx) => {
+      const res = await sql`UPDATE orders SET status = 'CONFIRMED' WHERE id = ${data.orderId} AND status = 'PENDING' AND restaurant_id = ${ctx.restaurantId}`;
+      if (res.count === 0) throw new Error("Order not found or not in PENDING state");
+      return { ok: true, status: 'CONFIRMED' };
+    });
+  });
+
+export const rejectOrder = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string; orderId: string; reason: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.edit", async (sql, ctx) => {
+      const res = await sql`UPDATE orders SET status = 'RESTAURANT_REJECTED', reject_reason = ${data.reason} WHERE id = ${data.orderId} AND status = 'PENDING' AND restaurant_id = ${ctx.restaurantId}`;
+      if (res.count === 0) throw new Error("Order not found or not in PENDING state");
+      return { ok: true, status: 'RESTAURANT_REJECTED' };
+    });
+  });
+
+export const markPreparing = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string; orderId: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.edit", async (sql, ctx) => {
+      const res = await sql`UPDATE orders SET status = 'PREPARING' WHERE id = ${data.orderId} AND status = 'CONFIRMED' AND restaurant_id = ${ctx.restaurantId}`;
+      if (res.count === 0) throw new Error("Order not found or not in CONFIRMED state");
+      return { ok: true, status: 'PREPARING' };
+    });
+  });
+
+export const markReady = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string; orderId: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.edit", async (sql, ctx) => {
+      const res = await sql`UPDATE orders SET status = 'READY' WHERE id = ${data.orderId} AND status = 'PREPARING' AND restaurant_id = ${ctx.restaurantId}`;
+      if (res.count === 0) throw new Error("Order not found or not in PREPARING state");
+      return { ok: true, status: 'READY' };
+    });
+  });
+

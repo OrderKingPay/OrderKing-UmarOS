@@ -7,6 +7,8 @@ import { paise } from "@/lib/money";
 import { withVendor } from "./helpers";
 import type { PromotionFunder, PromotionKind } from "@/lib/contracts";
 
+import { getSql } from "@/lib/db";
+
 export const getSettlements = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .validator((d: { restaurantId?: string }) => d)
@@ -347,5 +349,42 @@ export const getAnalytics = createServerFn({ method: "GET" })
           platformFundedPaise: asInt(promo[0]?.plat),
         },
       };
+    });
+  });
+
+export const getSoundboxStatus = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "settlements.view", async (sql, ctx) => {
+      const db = await getSql();
+      await db`CREATE TABLE IF NOT EXISTS restaurant_entitlements (restaurant_id TEXT PRIMARY KEY, soundbox_active BOOLEAN, expires_at TIMESTAMPTZ);`;
+      const res = await sql<{ soundbox_active: boolean }>`
+        SELECT soundbox_active FROM restaurant_entitlements WHERE restaurant_id = ${ctx.restaurantId}
+      `;
+      return { active: res[0]?.soundbox_active === true };
+    });
+  });
+
+export const activateSoundbox = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { restaurantId?: string }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "settlements.view", async (sql, ctx) => {
+      const db = await getSql();
+      await db`CREATE TABLE IF NOT EXISTS restaurant_entitlements (restaurant_id TEXT PRIMARY KEY, soundbox_active BOOLEAN, expires_at TIMESTAMPTZ);`;
+      await db`CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY, restaurant_id TEXT, amount_paise INT, description TEXT, created_at TIMESTAMPTZ DEFAULT NOW());`;
+      
+      await sql`
+        INSERT INTO restaurant_entitlements (restaurant_id, soundbox_active, expires_at)
+        VALUES (${ctx.restaurantId}, true, NOW() + INTERVAL '30 days')
+        ON CONFLICT (restaurant_id) DO UPDATE SET soundbox_active = true, expires_at = NOW() + INTERVAL '30 days'
+      `;
+      
+      await sql`
+        INSERT INTO invoices (id, restaurant_id, amount_paise, description)
+        VALUES (${newId("inv")}, ${ctx.restaurantId}, 9900, 'King Pay Soundbox Activation - ₹99/mo')
+      `;
+      return { ok: true };
     });
   });
