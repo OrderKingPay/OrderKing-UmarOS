@@ -2,10 +2,10 @@ import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-/** Cloudflare Pages preview keeps static/server-side companion assets under dist. */
+/** Nitro's PGLite bundle looks for wasm/data next to `_libs/electric-sql__pglite.mjs`. */
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const srcDir = join(root, "node_modules/@electric-sql/pglite/dist");
-const destDir = join(root, "dist", "_libs");
+const destDir = join(root, ".vercel/output/functions/__server.func/_libs");
 
 if (!existsSync(destDir)) {
   console.log("[pglite-assets] no server bundle yet — skip");

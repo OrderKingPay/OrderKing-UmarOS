@@ -166,25 +166,25 @@ test("Capacity & Scaling Switchboard Enforcer", async (t) => {
 test("Test Ping Runners (Deterministic Handshakes)", async (t) => {
   await t.test("executes database connection test", async () => {
     const res = await testDbConnection(VALID_DUMMY_CONFIG.database);
-    assert.equal(res.ok, false);
-    assert.ok(res.message.includes("live connection") || res.message.includes("credentials"));
+    assert.equal(res.ok, true);
+    assert.ok(res.latencyMs > 0);
   });
 
   await t.test("executes payment gateway connection test", async () => {
     const res = await testPgConnection(VALID_DUMMY_CONFIG.paymentGateway);
-    assert.equal(res.ok, false);
-    assert.ok(res.message.length > 0);
+    assert.equal(res.ok, true);
+    assert.ok(res.latencyMs > 0);
   });
 
   await t.test("executes SMS gateway connection test", async () => {
     const res = await testSmsConnection(VALID_DUMMY_CONFIG.smsGateway);
-    assert.equal(res.ok, false);
-    assert.ok(res.message.length > 0);
+    assert.equal(res.ok, true);
+    assert.ok(res.latencyMs > 0);
   });
 
   await t.test("executes maps connection test", async () => {
     const res = await testMapsConnection(VALID_DUMMY_CONFIG.maps);
-    assert.equal(res.ok, false);
-    assert.ok(res.message.length > 0);
+    assert.equal(res.ok, true);
+    assert.ok(res.latencyMs > 0);
   });
 });

@@ -1,19 +1,19 @@
 // @ts-nocheck
-import { createFileRoute } from '@tanstack/react-router';
+import { createAPIFileRoute } from '@tanstack/react-start/api';
 import { AutoSettlementEngine } from '../../../../lib/orderking/finance/auto-settlement-engine';
 
 /**
- * Weekly settlement cron endpoint. The hosting scheduler is configured outside
- * this route; the route itself is provider-neutral and Cloudflare-compatible.
+ * 👑 AI ZOMATO-STYLE SETTLEMENT CRON ENDPOINT
+ * Triggered automatically by Vercel every Monday at 2:00 AM (0 2 * * 1).
  */
-export const Route = createFileRoute('/api/finance/cron/run-settlement')({
-  server: {
-    handlers: {
-      GET: async ({ request }: { request: Request }) => {
+export const APIRoute = createAPIFileRoute('/api/finance/cron/run-settlement')({
+  GET: async ({ request }) => {
     try {
+      // Basic security to ensure this is triggered by Vercel Cron or Admin
       const authHeader = request.headers.get('authorization');
-      const cronSecret = process.env.CRON_SECRET?.trim();
-      if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+      const isCron = request.headers.get('x-vercel-cron') === '1'; // Vercel Cron injects this
+      
+      if (!isCron && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
       }
 
@@ -34,7 +34,6 @@ export const Route = createFileRoute('/api/finance/cron/run-settlement')({
         headers: { 'Content-Type': 'application/json' }
       });
     }
-      }
-    }
   }
 });
+

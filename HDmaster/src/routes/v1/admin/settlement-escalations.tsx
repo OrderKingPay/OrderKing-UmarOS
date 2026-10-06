@@ -1,5 +1,6 @@
+import { createFileRoute } from '@tanstack/react-router'
 // @ts-nocheck
-import { createFileRoute } from '@tanstack/react-router';
+
 import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/v1/admin/settlement-escalations')({
@@ -93,3 +94,5 @@ function SettlementEscalations() {
     </div>
   );
 }
+
+

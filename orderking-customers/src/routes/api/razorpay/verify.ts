@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import crypto from "crypto";
 
 export const Route = createFileRoute("/api/razorpay/verify")({
-  // @ts-expect-error
+  
   server: {
     handlers: {
       POST: async ({ request }: any) => {
@@ -49,3 +49,4 @@ export const Route = createFileRoute("/api/razorpay/verify")({
     },
   },
 });
+

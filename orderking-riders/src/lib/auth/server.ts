@@ -30,7 +30,6 @@
  * a verified id via `@/lib/auth/middleware`.
  */
 import { betterAuth } from "better-auth";
-import { createServerOnlyFn } from "@tanstack/react-start";
 import { bearer, genericOAuth } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { getCookie } from "@tanstack/react-start/server";
@@ -38,7 +37,7 @@ import { randomBytes } from "node:crypto";
 import { Pool } from "pg";
 import { ensureDbReady, getPglite } from "../db";
 import { emailAndPasswordEnabled } from "./email-password";
-import { GATE_PROVIDER_ID, gateIdentitySessions } from "./gate-session";
+import { GATE_PROVIDER_ID, gateIdentitySessions } from "./gate-session.server";
 import { GROK_PROVIDERS } from "./providers";
 import { pgliteDialect } from "./pglite-dialect";
 import {
@@ -92,7 +91,7 @@ export const authConfigured =
 // it derives the origin per-request from the (proxied) host, validated against the
 // preview allowlist, which makes the OAuth `redirect_uri` the concrete preview URL
 // the broker's preview client accepts.
-const explicitBaseURL = env("BETTER_AUTH_URL");
+const explicitBaseURL = undefined;
 // Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
 // requires a mutable `allowedHosts: string[]`.
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
@@ -117,20 +116,39 @@ const LOCAL_DEV_ORIGINS: string[] = [
 const baseURL = explicitBaseURL ?? {
   // Include loopback hosts so dynamic baseURL resolves for local email/password
   // (not only the preview wildcard).
-  allowedHosts: [...previewAllowedHosts],
+  allowedHosts: [
+      ...previewAllowedHosts, 
+      "localhost", 
+      "127.0.0.1", 
+      "[::1]",
+      ...(process.env.VERCEL_URL ? [process.env.VERCEL_URL] : []),
+      ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [process.env.VERCEL_PROJECT_PRODUCTION_URL] : []),
+      "hdmaster.vercel.app",
+      "orderking-customers.vercel.app",
+      "orderking-partners.vercel.app",
+      "orderking-riders.vercel.app",
+      "apps-integration.vercel.app", "orderking.netlify.app", "orderking-hdmaster.netlify.app", "orderking-partners.netlify.app", "orderking-riders.netlify.app"
+    ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
   protocol: "auto" as const,
-  fallback: explicitBaseURL ?? "http://localhost:8080",
+  fallback: process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:8080",
 };
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = [ 
+const trustedOrigins: string[] = [ 'https://orderking-hdmaster.netlify.app', 'https://orderking.netlify.app', 'https://orderking-partners.netlify.app', 'https://orderking-riders.netlify.app', 
   ...(explicitBaseURL ? [explicitBaseURL] : []),
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
+  ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+  ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
+  'https://hdmaster.vercel.app',
+  'https://orderking-customers.vercel.app',
+  'https://orderking-partners.vercel.app',
+  'https://orderking-riders.vercel.app',
+  'https://apps-integration.vercel.app'
 ];
 
 const databaseUrl = env("DATABASE_URL");
@@ -268,9 +286,9 @@ export const auth = betterAuth({
   ],
 });
 
-export const readSessionToken = createServerOnlyFn(() =>
-  getCookie(SESSION_TOKEN_COOKIE) ?? null,
-);
+export function readSessionToken(): string | null {
+  return getCookie(SESSION_TOKEN_COOKIE) ?? null;
+}
 
 // Re-exported for convenience; the array lives in the dependency-free
 // `providers.ts` so the client can import it too.

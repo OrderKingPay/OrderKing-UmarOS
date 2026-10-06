@@ -1,11 +1,24 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs from 'fs';
+import path from 'path';
 
-const appDir = process.cwd();
-const distDir = path.join(appDir, "dist");
-
-if (!fs.existsSync(distDir)) {
-  throw new Error("Cloudflare Pages build output is missing: dist/");
+function copyDir(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  let entries = fs.readdirSync(src, { withFileTypes: true });
+  for (let entry of entries) {
+    let srcPath = path.join(src, entry.name);
+    let destPath = path.join(dest, entry.name);
+    entry.isDirectory() ? copyDir(srcPath, destPath) : fs.copyFileSync(srcPath, destPath);
+  }
 }
 
-console.log("[cloudflare] Using Vite/Nitro dist/ output directly; no legacy host copy step is required.");
+function run(appDir) {
+    const src = path.join(appDir, '.vercel/output/static');
+    const dest = path.join(appDir, 'dist/client');
+    if (fs.existsSync(src)) {
+        console.log(`Copying ${src} to ${dest}`);
+        copyDir(src, dest);
+    }
+}
+
+const appDir = process.cwd();
+run(appDir);

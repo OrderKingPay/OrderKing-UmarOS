@@ -70,6 +70,7 @@ export const Route = createRootRoute({
         
       ],
       links: [
+        { rel: "preconnect", href: "https://vitals.vercel-insights.com" },
         { rel: "preconnect", href: "https://xezsqsptomcndbksxrvu.supabase.co" },
         { rel: "icon", type: "image/jpeg", href: "/logo.jpg" },
         { rel: "stylesheet", href: appCss },

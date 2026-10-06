@@ -4,7 +4,7 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 
 export const Route = createFileRoute("/api/razorpay/create-order")({
-  // @ts-expect-error
+  
   server: {
     handlers: {
       POST: async ({ request }: any) => {
@@ -58,3 +58,4 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
     },
   },
 });
+

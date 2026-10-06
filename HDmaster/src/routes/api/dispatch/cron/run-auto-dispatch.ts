@@ -1,19 +1,19 @@
 // @ts-nocheck
-import { createFileRoute } from '@tanstack/react-router';
+import { createAPIFileRoute } from '@tanstack/react-start/api';
 import { runAlgorithmicAutoDispatch } from '../../../../lib/orderking/server/auto-dispatch-engine.server';
 
 /**
- * Dispatch cron endpoint. Cloudflare should invoke this route through its
- * configured scheduler/Worker trigger; no Vercel-specific headers are used.
+ * 🚀 AI STARLINK-LEVEL DISPATCH CRON ENDPOINT
+ * Triggered automatically by Vercel every minute (* * * * *).
  */
-export const Route = createFileRoute('/api/dispatch/cron/run-auto-dispatch')({
-  server: {
-    handlers: {
-      GET: async ({ request }: { request: Request }) => {
+export const APIRoute = createAPIFileRoute('/api/dispatch/cron/run-auto-dispatch')({
+  GET: async ({ request }) => {
     try {
+      // Allow internal invocation or authenticated Vercel Cron
       const authHeader = request.headers.get('authorization');
-      const cronSecret = process.env.CRON_SECRET?.trim();
-      if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+      const isCron = request.headers.get('x-vercel-cron') === '1';
+      
+      if (!isCron && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), { status: 401 });
       }
 
@@ -36,7 +36,6 @@ export const Route = createFileRoute('/api/dispatch/cron/run-auto-dispatch')({
         headers: { 'Content-Type': 'application/json' }
       });
     }
-      }
-    }
   }
 });
+

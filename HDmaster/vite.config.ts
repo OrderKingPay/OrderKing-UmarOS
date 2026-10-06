@@ -52,7 +52,7 @@ function pgliteBootstrapPlugin(): Plugin {
 }
 
 /**
- * The server bundle may inline `@electric-sql/pglite` without copying the
+ * Nitro's Vercel bundle inlines `@electric-sql/pglite` but does not copy the
  * sibling WASM/data blobs the WASM loader resolves next to the chunk
  * (`pglite.data`, `pglite.wasm`). Local `vite preview` (no DATABASE_URL) needs
  * them; a deployed Neon app never loads PGLite. Copy after the nitro emit.
@@ -64,7 +64,7 @@ function pglitePreviewAssetsPlugin(): Plugin {
     closeBundle() {
       const destDir = join(
         process.cwd(),
-        "dist/_libs",
+        ".vercel/output/functions/__server.func/_libs",
       );
       const srcDir = join(
         process.cwd(),
@@ -213,6 +213,7 @@ export default defineConfig(({ command, isPreview }) => ({
       ? [
           nitro({
             preset: "cloudflare-pages",
+            cloudflare: { deployConfig: false },
             // Auto-registers server/middleware/* (the PWA install page +
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.
@@ -223,5 +224,6 @@ export default defineConfig(({ command, isPreview }) => ({
     viteReact(),
   ],
 }));
+
 
 
