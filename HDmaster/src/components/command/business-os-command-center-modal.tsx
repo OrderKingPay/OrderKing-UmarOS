@@ -343,7 +343,7 @@ export function BusinessOsCommandCenterModal({
                     {leads.length} Real Outlets
                   </div>
                   <span className="text-[11px] text-slate-400 block">
-                    ₹{(leads.reduce((s, l) => s + l.annualAggregatorLossInr, 0) / 100000).toFixed(1)}L Annual Losses
+                    ₹{(leads.reduce((s: number, l: any) => s + Number(l.annualAggregatorLossInr || 0), 0) / 100000).toFixed(1)}L Annual Losses
                   </span>
                 </div>
 
@@ -405,7 +405,7 @@ export function BusinessOsCommandCenterModal({
                   <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">0% FAKE</Badge>
                 </div>
                 <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                  {leads.map((l) => (
+                  {leads.map((l: any) => (
                     <div key={l.id} className="p-2 rounded-lg bg-black/30 flex items-center justify-between text-xs">
                       <div>
                         <span className="font-bold text-white block">{l.businessName}</span>
@@ -429,7 +429,7 @@ export function BusinessOsCommandCenterModal({
                   <Badge className="bg-orange-500/20 text-orange-300 text-[9px] font-mono">REALTIME</Badge>
                 </div>
                 <div className="space-y-1.5">
-                  {slas.map((s) => (
+                  {slas.map((s: any) => (
                     <div key={s.restaurantId} className="p-2 rounded-lg bg-black/30 flex items-center justify-between text-xs">
                       <div>
                         <span className="font-bold text-white block">{s.restaurantName}</span>
@@ -453,7 +453,7 @@ export function BusinessOsCommandCenterModal({
                   <Badge className="bg-cyan-500/20 text-cyan-300 text-[9px] font-mono">ALL GREEN</Badge>
                 </div>
                 <div className="space-y-1.5">
-                  {sre.map((item) => (
+                  {sre.map((item: any) => (
                     <div key={item.service} className="p-2 rounded-lg bg-black/30 flex items-center justify-between text-xs">
                       <div>
                         <span className="font-bold text-white block">{item.service}</span>
@@ -485,7 +485,7 @@ export function BusinessOsCommandCenterModal({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {adapters.map((adapter) => (
+                {adapters.map((adapter: any) => (
                   <div key={adapter.id} className="p-4 rounded-xl bg-[#141a22] border border-white/5 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-white">{adapter.name}</span>
@@ -497,7 +497,7 @@ export function BusinessOsCommandCenterModal({
                       Vendor: {adapter.vendor} · Context: {(adapter.maxContextTokens / 1000).toFixed(0)}k
                     </span>
                     <div className="flex flex-wrap gap-1 pt-1">
-                      {adapter.activeModels.map((m) => (
+                      {adapter.activeModels.map((m: string) => (
                         <span key={m} className="px-1.5 py-0.5 rounded bg-black/40 text-[9px] font-mono text-slate-300 border border-white/5">
                           {m}
                         </span>
@@ -525,7 +525,7 @@ export function BusinessOsCommandCenterModal({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {pendingApprovals.map((req) => (
+                  {pendingApprovals.map((req: any) => (
                     <div key={req.id} className="p-4 rounded-xl bg-[#141a22] border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2">
@@ -578,7 +578,7 @@ export function BusinessOsCommandCenterModal({
               </div>
 
               <div className="space-y-2 max-h-96 overflow-y-auto">
-                {auditChain.slice().reverse().map((entry) => (
+                {auditChain.slice().reverse().map((entry: any) => (
                   <div key={entry.sequence} className="p-3 rounded-xl bg-[#141a22] border border-white/5 text-xs space-y-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
