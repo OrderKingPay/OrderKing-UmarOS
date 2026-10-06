@@ -121,18 +121,11 @@ const baseURL = explicitBaseURL ?? {
       "localhost", 
       "127.0.0.1", 
       "[::1]",
-      ...(process.env.VERCEL_URL ? [process.env.VERCEL_URL] : []),
-      ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [process.env.VERCEL_PROJECT_PRODUCTION_URL] : []),
-      "hdmaster.vercel.app",
-      "orderking-customers.vercel.app",
-      "orderking-partners.vercel.app",
-      "orderking-riders.vercel.app",
-      "apps-integration.vercel.app", "orderking.netlify.app", "orderking-hdmaster.netlify.app", "orderking-partners.netlify.app", "orderking-riders.netlify.app"
     ],
   // `auto` → trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
   protocol: "auto" as const,
-  fallback: process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:8080",
+  fallback: "http://localhost:8080",
 };
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
@@ -144,11 +137,6 @@ const trustedOrigins: string[] = [ 'https://orderking-hdmaster.netlify.app', 'ht
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
   ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
   ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
-  'https://hdmaster.vercel.app',
-  'https://orderking-customers.vercel.app',
-  'https://orderking-partners.vercel.app',
-  'https://orderking-riders.vercel.app',
-  'https://apps-integration.vercel.app'
 ];
 
 const databaseUrl = env("DATABASE_URL");
