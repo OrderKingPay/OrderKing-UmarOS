@@ -1,20 +1,32 @@
-import { useEffect, useRef, useState } from "react";
-import { supabase } from "../db-cloud";
+import { useEffect, useRef } from "react";
+import { postLocationFn } from "@/lib/server/rider-fns";
 
-type GPSPosition = { lat: number; lng: number; accuracy: number; heading: number | null; speed: number | null; ts: number };
+type GPSPosition = {
+  lat: number;
+  lng: number;
+  accuracy: number;
+  heading: number | null;
+  speed: number | null;
+  ts: number;
+};
 
-export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpdate?: (pos: GPSPosition) => void, riderId?: string) {
+export function useGpsHeartbeat(
+  enabled: boolean,
+  baseIntervalMs = 2_000,
+  onUpdate?: (pos: GPSPosition) => void,
+  riderId?: string,
+  deliveryId?: string | null,
+) {
   const lastRef = useRef<GPSPosition | null>(null);
 
   useEffect(() => {
-    if (!enabled || !navigator.geolocation) return;
+    if (!enabled || typeof navigator === "undefined" || !navigator.geolocation || !riderId) return;
+
     let watchId: number | undefined;
     let timer: ReturnType<typeof setInterval> | undefined;
+    let stopped = false;
 
-    const channel = supabase.channel('rider_gps');
-    channel.subscribe();
-
-    async function sendPosition(position: GeolocationPosition) {
+    const sendPosition = async (position: GeolocationPosition) => {
       const pos: GPSPosition = {
         lat: position.coords.latitude,
         lng: position.coords.longitude,
@@ -26,41 +38,50 @@ export function useGpsHeartbeat(enabled: boolean, baseIntervalMs = 2_000, onUpda
       lastRef.current = pos;
       onUpdate?.(pos);
 
-      if (riderId) {
-        // Send to realtime channel
-        channel.send({
-          type: 'broadcast',
-          event: 'gps_update',
-          payload: { riderId, pos }
+      if (stopped) return;
+
+      try {
+        await postLocationFn({
+          data: {
+            lat: pos.lat,
+            lng: pos.lng,
+            accuracyM: Number.isFinite(pos.accuracy) ? pos.accuracy : null,
+            deliveryId: deliveryId ?? null,
+          },
         });
-
-        // Insert into database
-        await supabase.from('rider_locations').insert([
-          { rider_id: riderId, lat: pos.lat, lng: pos.lng, accuracy: pos.accuracy, heading: pos.heading, speed: pos.speed, ts: new Date(pos.ts).toISOString() }
-        ]).select();
+      } catch {
+        // A rejected/stale/unauthorized ping is never treated as a successful update.
       }
-    }
+    };
 
-    watchId = navigator.geolocation.watchPosition(sendPosition, () => {}, {
-      enableHighAccuracy: true,
-      maximumAge: 0,
-      timeout: baseIntervalMs,
-    });
+    watchId = navigator.geolocation.watchPosition(
+      (position) => void sendPosition(position),
+      () => undefined,
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: Math.max(baseIntervalMs, 5_000),
+      },
+    );
 
     timer = setInterval(() => {
-      navigator.geolocation.getCurrentPosition(sendPosition, () => {}, { 
-        enableHighAccuracy: true, 
-        maximumAge: 0, 
-        timeout: baseIntervalMs 
-      });
+      navigator.geolocation.getCurrentPosition(
+        (position) => void sendPosition(position),
+        () => undefined,
+        {
+          enableHighAccuracy: true,
+          maximumAge: 0,
+          timeout: Math.max(baseIntervalMs, 5_000),
+        },
+      );
     }, baseIntervalMs);
 
     return () => {
+      stopped = true;
       if (watchId !== undefined) navigator.geolocation.clearWatch(watchId);
       if (timer) clearInterval(timer);
-      supabase.removeChannel(channel);
     };
-  }, [enabled, baseIntervalMs, riderId]);
+  }, [enabled, baseIntervalMs, onUpdate, riderId, deliveryId]);
 
   return lastRef;
 }

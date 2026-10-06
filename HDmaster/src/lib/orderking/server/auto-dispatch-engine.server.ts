@@ -62,9 +62,12 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
 
       // 3. AI Dispatch Matching (Closest Proximity + Capacity)
       for (const order of unassignedOrders) {
-        // If the restaurant is missing coordinates, fallback to default center (simulate for safety)
-        const rstLat = order.rst_lat || 20.5937; // Center of India fallback
-        const rstLng = order.rst_lng || 78.9629; 
+        // Live dispatch must use real restaurant coordinates. Never invent a fallback coordinate.
+        if (!Number.isFinite(order.rst_lat) || !Number.isFinite(order.rst_lng)) {
+          continue;
+        }
+        const rstLat = order.rst_lat;
+        const rstLng = order.rst_lng;
 
         let bestRiderId: string | null = null;
         let bestDistance = Infinity;
@@ -127,7 +130,7 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
     return {
       assignedOrders: matchedPairs.length,
       matchedPairs,
-      unassignedOrders: 0 // Simplification for return type
+      unassignedOrders: unassignedOrders.length - matchedPairs.length
     };
 
   } catch (error) {

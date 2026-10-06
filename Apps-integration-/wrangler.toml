@@ -1,4 +1,7 @@
 name = "apps-integration"
 pages_build_output_dir = "dist"
-compatibility_date = "2024-09-23"
-compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
+
+[env.production.vars]
+ORDERKING_RUNTIME = "production"
