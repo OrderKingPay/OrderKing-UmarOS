@@ -90,7 +90,7 @@ export function BusinessOsCommandCenterModal({
   };
 
   const handleApprove = async (id: string) => {
-    const res = await approveFounderActionFn({ data: { id } });
+    const res: any = await approveFounderActionFn({ data: { id } });
     if (res.success) {
       toast.success(res.message);
       setLastResult(null);
@@ -100,7 +100,7 @@ export function BusinessOsCommandCenterModal({
   };
 
   const handleReject = async (id: string) => {
-    const res = await rejectFounderActionFn({ data: { id } });
+    const res: any = await rejectFounderActionFn({ data: { id } });
     if (res.success) {
       toast.info(res.message);
       setLastResult(null);
@@ -260,7 +260,7 @@ export function BusinessOsCommandCenterModal({
 
                   {/* 5-Stage Pipeline Progress Steps */}
                   <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 text-xs">
-                    {lastResult.executionSteps.map((step) => (
+                    {lastResult.executionSteps.map((step: any) => (
                       <div
                         key={step.stepIndex}
                         className={`p-2.5 rounded-xl border flex flex-col justify-between gap-1.5 ${
