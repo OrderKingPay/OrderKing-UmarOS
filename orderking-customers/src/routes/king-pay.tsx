@@ -17,6 +17,7 @@ import { CameraScannerModal, type ParsedUpiResult } from "@/components/scanner/c
 import { ReceiveMoneyQrStudio } from "@/components/fintech/receive-money-qr-studio";
 import { getCurrentFestiveContext } from "@/lib/brand/calendar-festive-engine";
 import { EcosystemSwitchBar } from "@/components/common/ecosystem-switch-bar";
+import { useFeatureFlags } from "@/lib/stores/features";
 import { PaidRestaurantAdZone } from "@/components/market/paid-restaurant-ad-zone";
 import { KingPayFinanceSearch } from "@/components/fintech/kingpay-finance-search";
 import { isDeliveryActiveInLocation, getCityWaitlistInfo } from "@/lib/geo/geofence-guard";
@@ -837,6 +838,7 @@ function ScannerVisualGraphic({ className = "size-20 sm:size-24" }: { className?
 }
 
 export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallback?: boolean } = {}) {
+  const flags = useFeatureFlags();
   const { user } = useCurrentUserState();
   const location = useLocationStore((s) => s.location);
   const isDeliveryActive = !isGeofencedFallback && isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
@@ -2035,87 +2037,92 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
         </div>
 
         {/* QUICK JUMP: VEHICLE GARAGE & RTO COMPLIANCE */}
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => setActiveSection("garage")}
-          className="group cursor-pointer rounded-2xl border-2 border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-surface to-surface p-4 shadow-sm hover:border-amber-500 hover:shadow-md transition flex items-center justify-between"
-        >
-          <div className="flex items-center gap-3">
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-amber-500/20 text-2xl group-hover:scale-105 transition">
-              🚗
-            </span>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-display text-sm font-bold text-fg">
-                  Vehicle Garage &amp; RTO Compliance
-                </h3>
-                <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                  MoRTH Radar
-                </span>
-                {garageAlertsCount > 0 && (
-                  <span className="rounded-full bg-rose-600 px-1.5 py-0.2 text-[9px] font-bold text-white animate-pulse">
-                    {garageAlertsCount} Action Required
+        {flags.enableVehicleGarage && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setActiveSection("garage")}
+            className="group cursor-pointer rounded-2xl border-2 border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-surface to-surface p-4 shadow-sm hover:border-amber-500 hover:shadow-md transition flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-amber-500/20 text-2xl group-hover:scale-105 transition">
+                🚗
+              </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-display text-sm font-bold text-fg">
+                    Vehicle Garage &amp; RTO Compliance
+                  </h3>
+                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                    MoRTH Radar
                   </span>
-                )}
+                  {garageAlertsCount > 0 && (
+                    <span className="rounded-full bg-rose-600 px-1.5 py-0.2 text-[9px] font-bold text-white animate-pulse">
+                      {garageAlertsCount} Action Required
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-muted mt-0.5">
+                  Check traffic e-challans, 0-paperwork insurance renewal, PUC expiry &amp; FASTag
+                </p>
               </div>
-              <p className="text-xs text-muted mt-0.5">
-                Check traffic e-challans, 0-paperwork insurance renewal, PUC expiry &amp; FASTag
-              </p>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-bold text-primary">
+              <span>Manage</span>
+              <span>➔</span>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-xs font-bold text-primary">
-            <span>Manage</span>
-            <span>➔</span>
-          </div>
-        </div>
+        )}
 
         {/* QUICK JUMP: PLANET'S LOWEST FARE FLIGHTS & TRAVEL HUB */}
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => setActiveSection("travel")}
-          className="group cursor-pointer rounded-2xl border-2 border-sky-500/40 bg-gradient-to-r from-sky-500/15 via-blue-500/5 to-surface p-4 shadow-sm hover:border-sky-500 hover:shadow-md transition flex items-center justify-between"
-        >
-          <div className="flex items-center gap-3">
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-sky-500/20 text-2xl group-hover:scale-105 transition">
-              ✈️
-            </span>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-display text-sm font-bold text-fg">
-                  Planet's Lowest Price Flights &amp; Travel
-                </h3>
-                <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                  ₹0 Convenience Fee
-                </span>
-                <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[10px] font-bold text-sky-700 dark:text-sky-300">
-                  2x Price Match
-                </span>
+        {flags.enableFlightsAndTrains && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setActiveSection("travel")}
+            className="group cursor-pointer rounded-2xl border-2 border-sky-500/40 bg-gradient-to-r from-sky-500/15 via-blue-500/5 to-surface p-4 shadow-sm hover:border-sky-500 hover:shadow-md transition flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-sky-500/20 text-2xl group-hover:scale-105 transition">
+                ✈️ / 🚆
+              </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-display text-sm font-bold text-fg">
+                    Book Flights &amp; Trains
+                  </h3>
+                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                    ₹0 Convenience Fee
+                  </span>
+                  <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[10px] font-bold text-sky-700 dark:text-sky-300">
+                    2x Price Match
+                  </span>
+                </div>
+                <p className="text-xs text-muted mt-0.5">
+                  Wholesale GDS fares, split-ticketing optimizer, IRCTC tatkal radar, buses &amp; cabs
+                </p>
               </div>
-              <p className="text-xs text-muted mt-0.5">
-                Wholesale GDS fares, split-ticketing optimizer, IRCTC tatkal radar, buses &amp; cabs
-              </p>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-bold text-sky-600 dark:text-sky-400">
+              <span>Explore</span>
+              <span>➔</span>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-xs font-bold text-sky-600 dark:text-sky-400">
-            <span>Explore</span>
-            <span>➔</span>
-          </div>
-        </div>
+        )}
 
         {/* QUICK JUMP: KINGPAY SOVEREIGN MICRO-CREDIT LINE */}
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => setActiveSection("loan")}
-          className="group cursor-pointer rounded-2xl border-2 border-cyan-500/40 bg-gradient-to-r from-cyan-500/15 via-blue-500/5 to-surface p-4 shadow-sm hover:border-cyan-500 hover:shadow-md transition flex items-center justify-between"
-        >
-          <div className="flex items-center gap-3">
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-cyan-500/20 text-2xl group-hover:scale-105 transition">
-              💳
-            </span>
-            <div>
+        {flags.enableMicroLoans && (
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setActiveSection("loan")}
+            className="group cursor-pointer rounded-2xl border-2 border-cyan-500/40 bg-gradient-to-r from-cyan-500/15 via-blue-500/5 to-surface p-4 shadow-sm hover:border-cyan-500 hover:shadow-md transition flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-cyan-500/20 text-2xl group-hover:scale-105 transition">
+                💳
+              </span>
+              <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-display text-sm font-bold text-fg">
                   Sovereign Credit Line &amp; Micro-Loans
@@ -2137,8 +2144,10 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             <span>➔</span>
           </div>
         </div>
+        )}
 
         {/* EVERYDAY NEEDS & UTILITY BILLS (ORGANIZED AT THE TOP) */}
+        {flags.enableBillPayments && (
         <section aria-label="Everyday Needs & Bills" className="rounded-2xl border border-border bg-surface p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-border/60 pb-2">
             <div>
@@ -2248,6 +2257,7 @@ export function KingPayPage({ isGeofencedFallback = false }: { isGeofencedFallba
             </button>
           </div>
         </section>
+        )}
 
         {/* 24K Digital Gold Partner Vault (SafeGold / MMTC-PAMP style) */}
         <div className="rounded-[var(--radius-xl)] border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-surface to-surface p-4 shadow-xs">
