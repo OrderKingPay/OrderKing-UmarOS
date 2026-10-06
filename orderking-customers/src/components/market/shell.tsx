@@ -145,37 +145,49 @@ export function CustomerShell({
           </Link>
         </div>
       ) : null}
-      <nav
-        aria-label={brand.appName}
-        className="fixed bottom-4 left-4 right-4 z-40 rounded-3xl border border-black/5 bg-white/80 pb-0 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden"
-      >
-        <ul className="mx-auto grid grid-cols-4 items-center justify-items-center relative px-2">
-          <NavItem to="/" icon={House} label="Home" active={path === "/"} />
-          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
-          
-          {/* 👑 Glowing KingPay Tab */}
-          <li className="relative -top-2 flex w-full justify-center">
-            <Link
-              to="/king-pay"
-              className={cn(
-                "group relative flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-full border-2 text-xs no-underline shadow-md transition-all active:scale-95",
-                path.startsWith("/king-pay")
-                  ? "border-amber-400 bg-gradient-to-br from-amber-400 to-yellow-600 text-white shadow-[0_0_15px_rgba(251,191,36,0.4)]"
-                  : "border-transparent bg-gradient-to-br from-amber-100 to-amber-200 text-amber-900 shadow-[0_0_10px_rgba(251,191,36,0.2)] hover:border-amber-300"
-              )}
-            >
-              <span className="text-lg leading-none">👑</span>
-              <span className="text-[8px] font-black tracking-tight leading-none">KingPay</span>
-              {!path.startsWith("/king-pay") && (
-                <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white shadow-sm">
-                  1
-                </span>
-              )}
-            </Link>
-          </li>
-          <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} />
-        </ul>
-      </nav>
+            {!path.startsWith("/king-pay") ? (
+        <nav
+          aria-label={brand.appName}
+          className="fixed bottom-4 left-4 right-4 z-40 rounded-3xl border border-black/5 bg-white/80 pb-0 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden"
+        >
+          <ul className="mx-auto grid grid-cols-4 items-center justify-items-center relative px-2">
+            <NavItem to="/" icon={House} label="Home" active={path === "/"} />
+            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
+            
+            {/* 👑 Glowing KingPay Tab */}
+            <li className="relative -top-2 flex w-full justify-center">
+              <Link
+                to="/king-pay"
+                className={cn(
+                  "group relative flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-full border-2 text-xs no-underline shadow-md transition-all active:scale-95",
+                  path.startsWith("/king-pay")
+                    ? "border-amber-400 bg-gradient-to-br from-amber-400 to-yellow-600 text-white shadow-[0_0_15px_rgba(251,191,36,0.4)]"
+                    : "border-transparent bg-gradient-to-br from-amber-100 to-amber-200 text-amber-900 shadow-[0_0_10px_rgba(251,191,36,0.2)] hover:border-amber-300"
+                )}
+              >
+                <span className="text-lg leading-none">👑</span>
+                <span className="text-[8px] font-black tracking-tight leading-none">KingPay</span>
+                {!path.startsWith("/king-pay") && (
+                  <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white shadow-sm">
+                    1
+                  </span>
+                )}
+              </Link>
+            </li>
+            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} />
+          </ul>
+        </nav>
+      ) : (
+        <div className="fixed bottom-4 left-4 right-4 z-40 flex justify-center pointer-events-none">
+          <Link
+            to="/"
+            className="pointer-events-auto flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-xl active:scale-95 transition-transform border border-slate-700 no-underline"
+          >
+            <House className="size-4" />
+            Back to Order King
+          </Link>
+        </div>
+      )}
       <LocationDialog open={locOpen} onOpenChange={setLocOpen} />
       <LanguageSelectorModal
         isOpen={langOpen}
