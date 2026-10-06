@@ -367,89 +367,28 @@ export class UniversalPlatformManager {
       }
 
       case "stripe": {
-        const amount = params.payload.amount || 2500;
-        const currency = (params.payload.currency || "USD").toUpperCase();
-        const stripeKey = getEnvOrStorage("STRIPE_SECRET_KEY");
-        if (stripeKey) {
-          try {
-            const Stripe = require("stripe").default || require("stripe");
-            const stripe = new Stripe(stripeKey, { apiVersion: "2024-06-20" });
-            const paymentIntent = await stripe.paymentIntents.create({
-              amount: amount,
-              currency: currency.toLowerCase(),
-              payment_method_types: ["card"],
-            });
-            outputData = {
-              amount,
-              currency,
-              status: "STRIPE_INTENT_CREATED",
-              paymentIntentId: paymentIntent.id,
-              clientSecret: paymentIntent.client_secret,
-            };
-            summary = `Stripe live session active. Intent created for ${currency} ${amount}.`;
-            actionSuccess = true;
-          } catch (e: any) {
-            outputData = {
-              amount,
-              currency,
-              status: "STRIPE_API_ERROR",
-              error: e?.message,
-            };
-            summary = `Stripe API error: ${e?.message}`;
-            actionSuccess = false;
-          }
-        } else {
-          outputData = {
-            amount,
-            currency,
-            status: "CREDENTIAL_REQUIRED",
-            credentialKey: "STRIPE_SECRET_KEY",
-            suggestedCli: `stripe checkout sessions create --success-url "https://orderking.in/success" --line-items[0][price_data][currency]=${currency.toLowerCase()} --line-items[0][price_data][unit_amount]=${amount * 100} --line-items[0][price_data][product_data][name]="Sovereign License" --line-items[0][quantity]=1 --mode=payment`,
-          };
-          summary = `STRIPE_SECRET_KEY not set. Provided CLI test command and payload specification.`;
-          actionSuccess = false;
-        }
+        const amount = Number(params.payload.amount);
+        const currency = String(params.payload.currency || "USD").toUpperCase();
+        outputData = {
+          amount: Number.isFinite(amount) && amount > 0 ? amount : null,
+          currency,
+          status: "SERVER_ACTION_REQUIRED",
+          reason: "Stripe secret-key operations are server-only.",
+        };
+        summary = "Stripe payment creation is intentionally blocked from the browser. Use the authenticated server payment path.";
+        actionSuccess = false;
         break;
       }
 
       case "razorpay": {
-        const amountPaise = params.payload.amountPaise || 50000;
-        const keyId = getEnvOrStorage("RAZORPAY_KEY_ID");
-        const keySecret = getEnvOrStorage("RAZORPAY_KEY_SECRET");
-        if (keyId && keySecret) {
-          try {
-            const Razorpay = require("razorpay").default || require("razorpay");
-            const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
-            const order = await razorpay.orders.create({
-              amount: amountPaise,
-              currency: "INR",
-              receipt: `rcpt_${Date.now()}`
-            });
-            outputData = {
-              amountPaise,
-              status: "RAZORPAY_ORDER_CREATED",
-              orderId: order.id,
-            };
-            summary = `Razorpay order created for INR ${amountPaise / 100}.`;
-            actionSuccess = true;
-          } catch (e: any) {
-            outputData = {
-              amountPaise,
-              status: "RAZORPAY_API_ERROR",
-              error: e?.message,
-            };
-            summary = `Razorpay API error: ${e?.message}`;
-            actionSuccess = false;
-          }
-        } else {
-          outputData = {
-            amountPaise,
-            status: "CREDENTIAL_REQUIRED",
-            credentialKey: "RAZORPAY_KEY_ID",
-          };
-          summary = `RAZORPAY credentials not set.`;
-          actionSuccess = false;
-        }
+        const amountPaise = Number(params.payload.amountPaise);
+        outputData = {
+          amountPaise: Number.isFinite(amountPaise) && amountPaise > 0 ? amountPaise : null,
+          status: "SERVER_ACTION_REQUIRED",
+          reason: "Razorpay secret-key operations are server-only.",
+        };
+        summary = "Razorpay order creation is intentionally blocked from the browser. Use the authenticated server payment path.";
+        actionSuccess = false;
         break;
       }
 
