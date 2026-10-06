@@ -30,34 +30,7 @@ export interface RevenueMetrics {
 }
 
 export class RevenueGatewayService {
-  private transactions: PaymentTransaction[] = [
-    {
-      id: "TXN-8801",
-      amountInr: 74999,
-      channel: "KING_PAY_UPI",
-      status: "CONFIRMED",
-      clientName: "Royal Darbar Palace",
-      description: "50% Milestone Advance - Direct Ordering App",
-      referenceNumber: "UPI-UTR-908234710293",
-      providerFeeInr: 0, // 0% gateway cut
-      netFounderDepositInr: 74999,
-      createdAt: "2026-09-21 15:40",
-      settledAt: "2026-09-21 15:41",
-    },
-    {
-      id: "TXN-8802",
-      amountInr: 50000,
-      channel: "RAZORPAY",
-      status: "CONFIRMED",
-      clientName: "Sylhet Heritage Sweets",
-      description: "POS Hardware & Cloud License Setup",
-      referenceNumber: "pay_OpL92810Xkz9",
-      providerFeeInr: 1000, // 2% standard cut
-      netFounderDepositInr: 49000,
-      createdAt: "2026-09-20 12:20",
-      settledAt: "2026-09-20 12:21",
-    },
-  ];
+  private transactions: PaymentTransaction[] = [];
 
   getTransactions(): PaymentTransaction[] {
     return [...this.transactions];
@@ -75,8 +48,8 @@ export class RevenueGatewayService {
       netFounderDepositedInr: netFounder,
       totalSavedGatewayFeesInr: savedFees,
       confirmedTransactionsCount: confirmed.length,
-      pendingInvoicesCount: 3,
-      pendingInvoicesValueInr: 324998,
+      pendingInvoicesCount: this.transactions.filter((t) => t.status === "PENDING").length,
+      pendingInvoicesValueInr: this.transactions.filter((t) => t.status === "PENDING").reduce((acc, t) => acc + t.amountInr, 0),
     };
   }
 
@@ -86,8 +59,11 @@ export class RevenueGatewayService {
     description: string;
     founderVpa?: string;
   }): { upiLink: string; qrPayload: string; transactionId: string } {
-    const vpa = params.founderVpa || "orderking@okhdfcbank";
-    const txnId = `TXN-${Date.now().toString().slice(-4)}`;
+    if (!params.founderVpa || !Number.isFinite(params.amountInr) || params.amountInr <= 0) {
+      throw new Error("CONFIGURATION_REQUIRED: verified founderVpa and positive amountInr are required");
+    }
+    const vpa = params.founderVpa;
+    const txnId = `TXN-${crypto.randomUUID()}`;
     const upiLink = `upi://pay?pa=${vpa}&pn=OrderKing&am=${params.amountInr}&cu=INR&tn=${encodeURIComponent(
       params.description
     )}`;
@@ -121,25 +97,15 @@ export class RevenueGatewayService {
     const txn = this.transactions.find((t) => t.id === params.transactionId);
     if (!txn) throw new Error(`Transaction ${params.transactionId} not found.`);
 
-    txn.status = "CONFIRMED";
-    txn.referenceNumber = params.utrNumber;
-    txn.amountInr = params.verifiedAmountInr;
-    txn.netFounderDepositInr = params.verifiedAmountInr;
-    txn.settledAt = new Date().toISOString().replace("T", " ").slice(0, 16);
-
-    return { success: true, transaction: txn };
+    throw new Error("PROVIDER_VERIFICATION_REQUIRED: UTR confirmation cannot be accepted from client input alone");
   }
 
-  verifyRazorpayWebhook(payload: Record<string, unknown>, signature: string, webhookSecret?: string): boolean {
-    if (!signature || !webhookSecret) return false;
-    // In production, HMAC SHA256 verification of raw body
-    return true;
+  verifyRazorpayWebhook(_payload: Record<string, unknown>, _signature: string, _webhookSecret?: string): boolean {
+    return false;
   }
 
-  verifyStripeWebhook(payload: Record<string, unknown>, signature: string, webhookSecret?: string): boolean {
-    if (!signature || !webhookSecret) return false;
-    // In production, Stripe event construction and signature check
-    return true;
+  verifyStripeWebhook(_payload: Record<string, unknown>, _signature: string, _webhookSecret?: string): boolean {
+    return false;
   }
 }
 
