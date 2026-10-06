@@ -152,14 +152,6 @@ export class BusinessOsModules {
       bottleneckZones: [],
     };
   }
-} {
-    return {
-      activeRiders: 42,
-      averageDeliveryTimeMins: 22.5,
-      idleRidersCount: 4,
-      bottleneckZones: ["Station Road", "Hospital Point"],
-    };
-  }
 }
 
 export const businessOsModules = new BusinessOsModules();
