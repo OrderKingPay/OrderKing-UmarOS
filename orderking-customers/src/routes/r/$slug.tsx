@@ -37,7 +37,17 @@ function RestaurantPage() {
 
   const detail = useQuery({
     queryKey: ["restaurant", slug, location.lat, location.lng, lang],
-    queryFn: () => getRestaurant({ data: { slug, lat: location.lat, lng: location.lng, lang } }),
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set("slug", slug);
+      params.set("lat", location.lat.toString());
+      params.set("lng", location.lng.toString());
+      if (lang) params.set("lang", lang);
+      
+      const response = await fetch(`/api/restaurant?${params.toString()}`);
+      if (!response.ok) throw new Error("Failed to fetch restaurant");
+      return response.json();
+    },
   });
 
   const restaurant = detail.data?.restaurant;
