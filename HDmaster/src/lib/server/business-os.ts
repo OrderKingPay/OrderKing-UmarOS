@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { createServerFn } from "@tanstack/react-start";
 import { getSessionUser } from "@/lib/auth/verify.server";
-import { ensureWorkspace } from "./workspace.server";
+import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
 import { liveOrchestrationEngine } from "@/lib/orderking/ai/live-orchestration-engine";
 import { businessOsModules } from "@/lib/orderking/ai/business-os-modules";
 import { founderApprovalGates } from "@/lib/orderking/ai/founder-approval-gates";
