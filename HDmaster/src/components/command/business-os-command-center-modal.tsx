@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Briefcase,
@@ -22,10 +23,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { liveOrchestrationEngine } from "@/lib/orderking/ai/live-orchestration-engine";
-import { businessOsModules } from "@/lib/orderking/ai/business-os-modules";
-import { founderApprovalGates, PendingApprovalRequest } from "@/lib/orderking/ai/founder-approval-gates";
-import { autonomousCommandOrchestrator, AutonomousCommandResult } from "@/lib/orderking/ai/autonomous-command-orchestrator";
+import {
+  approveFounderActionFn,
+  executeFounderCommandFn,
+  getBusinessOsSnapshot,
+  rejectFounderActionFn,
+} from "@/lib/orderking/server/business-os.server";
 
 interface BusinessOsCommandCenterModalProps {
   isOpen: boolean;
@@ -41,21 +44,30 @@ export function BusinessOsCommandCenterModal({
   const [activeTab, setActiveTab] = useState<"overview" | "modules" | "consensus" | "approvals" | "audit">("overview");
   const [commandInput, setCommandInput] = useState("");
   const [isExecuting, setIsExecuting] = useState(false);
-  const [lastResult, setLastResult] = useState<AutonomousCommandResult | null>(null);
+  const [lastResult, setLastResult] = useState<any>(null);
 
-  const [pendingApprovals, setPendingApprovals] = useState<PendingApprovalRequest[]>(() =>
-    founderApprovalGates.listPendingRequests()
-  );
+  const { data: snapshot } = useQuery({
+    queryKey: ["business-os-founder-snapshot"],
+    queryFn: () => getBusinessOsSnapshot(),
+  });
 
-  const budgetStatus = liveOrchestrationEngine.getBudgetStatus();
-  const adapters = liveOrchestrationEngine.listRegisteredAdapters();
-  const pnl = businessOsModules.calculateFinancialPnL();
-  const leads = businessOsModules.discoverLawfulOpportunities();
-  const slas = businessOsModules.auditKitchenSlas();
-  const inventory = businessOsModules.inspectInventoryAlerts();
-  const sre = businessOsModules.inspectSreHealth();
-  const roster = businessOsModules.getMinimalStaffRoster();
-  const auditChain = founderApprovalGates.getAuditChain();
+  const budgetStatus = snapshot?.budgetStatus ?? { accumulatedSpendInr: 0, monthlyBudgetCapInr: 0 };
+  const adapters = snapshot?.adapters ?? [];
+  const pnl = snapshot?.pnl ?? {
+    grossMerchandiseValueInr: 0,
+    aggregatorSavingsInr: 0,
+    gstInputTaxCreditInr: 0,
+    retainedCapitalVaultInr: 0,
+    netFounderProfitInr: 0,
+    cashRunwayMonths: 0,
+  };
+  const leads = snapshot?.leads ?? [];
+  const slas = snapshot?.slas ?? [];
+  const inventory = snapshot?.inventory ?? [];
+  const sre = snapshot?.sre ?? [];
+  const roster = snapshot?.roster ?? { totalHumanStaff: 0, automatedSubsystemsCount: 0, monthlyPayrollSavingsInr: 0 };
+  const pendingApprovals = snapshot?.pendingApprovals ?? [];
+  const auditChain = snapshot?.auditChain ?? [];
 
   if (!isOpen) return null;
 
@@ -63,9 +75,8 @@ export function BusinessOsCommandCenterModal({
     if (!cmd.trim()) return;
     setIsExecuting(true);
     try {
-      const result = await autonomousCommandOrchestrator.executeFounderCommand(cmd);
+      const result = await executeFounderCommandFn({ data: { command: cmd } });
       setLastResult(result);
-      setPendingApprovals(founderApprovalGates.listPendingRequests());
       setIsExecuting(false);
       toast.success("⚡ Autonomous Business Command Executed!");
 
@@ -78,21 +89,21 @@ export function BusinessOsCommandCenterModal({
     }
   };
 
-  const handleApprove = (id: string) => {
-    const res = founderApprovalGates.approveRequest(id);
+  const handleApprove = async (id: string) => {
+    const res = await approveFounderActionFn({ data: { id } });
     if (res.success) {
       toast.success(res.message);
-      setPendingApprovals(founderApprovalGates.listPendingRequests());
+      setLastResult(null);
     } else {
       toast.error(res.message);
     }
   };
 
-  const handleReject = (id: string) => {
-    const res = founderApprovalGates.rejectRequest(id);
+  const handleReject = async (id: string) => {
+    const res = await rejectFounderActionFn({ data: { id } });
     if (res.success) {
       toast.info(res.message);
-      setPendingApprovals(founderApprovalGates.listPendingRequests());
+      setLastResult(null);
     } else {
       toast.error(res.message);
     }
