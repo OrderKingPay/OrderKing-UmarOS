@@ -130,6 +130,7 @@ const baseURL = explicitBaseURL ?? {
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
+const trustedOrigins: string[] = [
   ...(explicitBaseURL ? [explicitBaseURL] : []),
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
