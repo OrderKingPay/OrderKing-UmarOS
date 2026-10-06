@@ -11,6 +11,7 @@ import { useT } from "@/components/providers";
 import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { advanceSimulatedOrder, cancelMyOrder, getMyOrder, reorderItems } from "@/lib/server/orders";
+import { createTicket } from "@/lib/server/account";
 import { getMyHDmasterOrder } from "@/lib/server/hdmaster-order-read";
 import { submitOrderReview, getOrderReview } from "@/lib/server/reviews";
 import { loadConfig } from "@/lib/server/load-config";
@@ -65,26 +66,40 @@ function OrderDetailPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleComplaintSubmit = () => {
+  const handleComplaintSubmit = async () => {
     if (!complaintText.trim() && !complaintImage) {
       toast.error("Please provide a description or attach photo proof of the issue.");
       return;
     }
-    const ticketNum = Math.floor(100000 + Math.random() * 900000);
-    const newComplaint = {
-      ticketId: `HD-COMPLAINT-${ticketNum}`,
-      category: complaintCategory,
-      resolution:
+    try {
+      const photoNote = complaintImage
+        ? "\nPhoto attachment: received in this browser, but private evidence storage is not connected yet."
+        : "";
+      const requestedResolution =
         preferredResolution === "REFUND"
-          ? "Instant 100% Wallet Refund"
+          ? "Customer requested a refund."
           : preferredResolution === "REDELIVERY"
-            ? "Free Express Redelivery"
-            : "Escalated to HDmaster Founder Operations",
-      status: "UNDER_REVIEW",
-      createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-    setSubmittedComplaint(newComplaint);
-    toast.success(`Complaint registered! Ticket #${newComplaint.ticketId} escalated.`);
+            ? "Customer requested redelivery."
+            : "Customer requested HDmaster review.";
+      const result = await createTicket({
+        data: {
+          orderId: id,
+          topic: `ORDER_COMPLAINT_${complaintCategory}`,
+          message: `${complaintText.trim()}${photoNote}\n${requestedResolution}`,
+        },
+      });
+      const newComplaint = {
+        ticketId: result.id,
+        category: complaintCategory,
+        resolution: "UNDER_REVIEW",
+        status: "OPEN",
+        createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+      setSubmittedComplaint(newComplaint);
+      toast.success(`Complaint registered. Ticket #${newComplaint.ticketId} is under review.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not create support ticket.");
+    }
   };
   const detail = useQuery({
     queryKey: ["order", id],
@@ -199,13 +214,10 @@ function OrderDetailPage() {
                   </p>
                 </div>
               </div>
-              <a
-                href="tel:18001000"
-                className="flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-fg shadow-xs hover:bg-surface-3"
-              >
+              <span className="flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-muted">
                 <span>📞</span>
-                <span>Call (Masked)</span>
-              </a>
+                <span>Calling unavailable until masked-call provider is connected</span>
+              </span>
             </div>
             {order.notes ? (
               <div className="mt-3 rounded-lg bg-surface-2/60 p-2 text-xs text-muted">
@@ -262,31 +274,15 @@ function OrderDetailPage() {
                 <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-center">
                   <span className="text-2xl">🎉</span>
                   <p className="font-bold text-sm text-emerald-800 dark:text-emerald-200">
-                    You won 2,500 King Coins + ₹50 HP Fuel Voucher!
+                    Reward campaign is not active in this pilot.
                   </p>
                   <p className="mt-0.5 text-xs text-muted">
-                    Code: <span className="font-mono font-bold text-fg">HPFUEL50</span> (HP Pay / IndianOil ONE)
+                    No real voucher has been issued.
                   </p>
                   <div className="mt-2.5 flex flex-wrap justify-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        void navigator.clipboard?.writeText("HPFUEL50");
-                        toast.success("Voucher code copied!");
-                      }}
-                    >
-                      Copy Code
-                    </Button>
-                    <a
-                      href="https://hppay.in?ref=orderking"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
-                    >
-                      <span>Redeem on HP Pay</span>
-                      <span>↗</span>
-                    </a>
+                    <span className="text-[11px] text-muted">
+                      Rewards will appear here after a verified campaign and redemption provider are connected.
+                    </span>
                     <Button size="sm" variant="ghost" asChild>
                       <Link to="/king-pay">KingPay Hub →</Link>
                     </Button>
