@@ -71,7 +71,7 @@ export const Route = createRootRoute({
       ],
       links: [
         { rel: "preconnect", href: "https://xezsqsptomcndbksxrvu.supabase.co" },
-        { rel: "icon", type: "image/jpeg", href: "/logo.jpg" },
+        { rel: "icon", type: "image/png", href: "/icon-192.png" },
         { rel: "stylesheet", href: appCss },
         { rel: "manifest", href: "/manifest.json" },
 
