@@ -99,7 +99,7 @@ export class UniversalPlatformManager {
         id: "whatsapp",
         name: "WhatsApp Business & Click-to-Chat",
         category: "messaging",
-        status: "ONLINE", // Always online via direct WhatsApp click-to-chat protocol
+        status: "STANDBY",
         description: "Direct high-ticket client pitch delivery via native WhatsApp deep-links and Meta Cloud API.",
         icon: "MessageSquare",
         latencyMs: 24,
@@ -156,9 +156,9 @@ export class UniversalPlatformManager {
       },
       {
         id: "kingpay",
-        name: "King Pay 0% Fee UPI Core",
+        name: "King Pay UPI Core",
         category: "payments",
-        status: "ONLINE", // Fully operational client-side UPI standard
+        status: "STANDBY",
         description: "Statutory Section 79 compliant zero-fee UPI QR codes and deep-intent links direct to founder VPA.",
         icon: "QrCode",
         latencyMs: 4,
@@ -168,10 +168,10 @@ export class UniversalPlatformManager {
       },
       {
         id: "vercel",
-        name: "Vercel & Cloudflare Edge",
+        name: "Cloudflare Workers & Pages",
         category: "cloud",
-        status: getEnvOrStorage("VERCEL_TOKEN") ? "ONLINE" : "STANDBY",
-        description: "1-Click automated edge deployments, custom domains, and terminal CLI deploy commands.",
+        status: "STANDBY",
+        description: "Cloudflare-only production hosting. Git-connected Pages deployments are the source of truth; no Vercel production path is used.",
         icon: "Globe",
         latencyMs: 48,
         lastSyncAt: new Date().toISOString(),
