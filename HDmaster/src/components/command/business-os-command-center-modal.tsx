@@ -28,7 +28,7 @@ import {
   executeFounderCommandFn,
   getBusinessOsSnapshot,
   rejectFounderActionFn,
-} from "@/lib/orderking/server/business-os.server";
+} from "@/lib/server/business-os.server";
 
 interface BusinessOsCommandCenterModalProps {
   isOpen: boolean;
