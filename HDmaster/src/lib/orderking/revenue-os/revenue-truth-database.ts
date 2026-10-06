@@ -43,7 +43,7 @@ export class RevenueTruthDatabase {
   private lastHash: string = "GENESIS_HASH_0000000000000000000000000000000000000000000000000000000000000000";
 
   constructor() {
-    this.seedVerifiedHistoricalRecords();
+    if (process.env.DATA_MODE === "SIMULATED") this.seedVerifiedHistoricalRecords();
   }
 
   private calculateHash(event: Omit<FinancialEvent, "eventHash">): string {
