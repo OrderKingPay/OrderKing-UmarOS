@@ -213,7 +213,7 @@ export default defineConfig(({ command, isPreview }) => ({
       ? [
           nitro({
             preset: "cloudflare-pages",
-            compatibilityDate: "2024-09-23",
+            compatibilityDate: "2026-10-06",
             cloudflare: { deployConfig: false, nodeCompat: true },
             // Auto-registers server/middleware/* (the PWA install page +
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
