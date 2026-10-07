@@ -33,6 +33,7 @@ import { Route as AppSecurityRouteImport } from './routes/_app/security'
 import { Route as AppSupportRouteImport } from './routes/_app/support'
 import { Route as AppSystemRouteImport } from './routes/_app/system'
 import { Route as AppTasksRouteImport } from './routes/_app/tasks'
+import { Route as ApiAiRouteImport } from './routes/api/ai'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiWebhooksMessagebirdRouteImport } from './routes/api/webhooks/messagebird'
 import { Route as ApiWebhooksRazorpayRouteImport } from './routes/api/webhooks/razorpay'
@@ -157,6 +158,11 @@ const AppTasksRoute = AppTasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiAiRoute = ApiAiRouteImport.update({
+  id: '/api/ai',
+  path: '/api/ai',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -202,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/support': typeof AppSupportRoute
   '/system': typeof AppSystemRoute
   '/tasks': typeof AppTasksRoute
+  '/api/ai': typeof ApiAiRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/messagebird': typeof ApiWebhooksMessagebirdRoute
   '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/support': typeof AppSupportRoute
   '/system': typeof AppSystemRoute
   '/tasks': typeof AppTasksRoute
+  '/api/ai': typeof ApiAiRoute
   '/': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/messagebird': typeof ApiWebhooksMessagebirdRoute
@@ -261,6 +269,7 @@ export interface FileRoutesById {
   '/_app/support': typeof AppSupportRoute
   '/_app/system': typeof AppSystemRoute
   '/_app/tasks': typeof AppTasksRoute
+  '/api/ai': typeof ApiAiRoute
   '/_app/': typeof AppIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/messagebird': typeof ApiWebhooksMessagebirdRoute
@@ -293,6 +302,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/system'
     | '/tasks'
+    | '/api/ai'
     | '/api/auth/$'
     | '/api/webhooks/messagebird'
     | '/api/webhooks/razorpay'
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/system'
     | '/tasks'
+    | '/api/ai'
     | '/'
     | '/api/auth/$'
     | '/api/webhooks/messagebird'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/_app/support'
     | '/_app/system'
     | '/_app/tasks'
+    | '/api/ai'
     | '/_app/'
     | '/api/auth/$'
     | '/api/webhooks/messagebird'
@@ -361,6 +373,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiAiRoute: typeof ApiAiRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiWebhooksMessagebirdRoute: typeof ApiWebhooksMessagebirdRoute
   ApiWebhooksRazorpayRoute: typeof ApiWebhooksRazorpayRoute
@@ -537,6 +550,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTasksRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/ai': {
+      id: '/api/ai'
+      path: '/api/ai'
+      fullPath: '/api/ai'
+      preLoaderRoute: typeof ApiAiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -623,6 +643,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiAiRoute: ApiAiRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiWebhooksMessagebirdRoute: ApiWebhooksMessagebirdRoute,
   ApiWebhooksRazorpayRoute: ApiWebhooksRazorpayRoute,

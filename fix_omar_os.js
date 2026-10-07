@@ -1,4 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+const fs = require("fs");
+const path = "HDmaster/src/routes/index.tsx";
+
+const content = `import { createFileRoute, Link } from "@tanstack/react-router";
 import { Store, Users, Bike, Settings, Activity, ShieldCheck, MapPin } from "lucide-react";
 import { createServerFn } from "@tanstack/start";
 import { getSql } from "@/lib/db";
@@ -7,13 +10,13 @@ const getOmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
   const sql = await getSql();
   
   // Real ecosystem metrics
-  const [{ count: userCount }] = await sql<{ count: number }>`SELECT COUNT(*) FROM "user"` || [{ count: 0 }];
-  const [{ count: restCount }] = await sql<{ count: number }>`SELECT COUNT(*) FROM restaurants` || [{ count: 0 }];
-  const [{ count: riderCount }] = await sql<{ count: number }>`SELECT COUNT(*) FROM riders` || [{ count: 0 }];
-  const [{ count: orderCount }] = await sql<{ count: number }>`SELECT COUNT(*) FROM orders WHERE created_at >= CURRENT_DATE` || [{ count: 0 }];
+  const [{ count: userCount }] = await sql<{ count: number }>\`SELECT COUNT(*) FROM user\` || [{ count: 0 }];
+  const [{ count: restCount }] = await sql<{ count: number }>\`SELECT COUNT(*) FROM restaurants\` || [{ count: 0 }];
+  const [{ count: riderCount }] = await sql<{ count: number }>\`SELECT COUNT(*) FROM riders\` || [{ count: 0 }];
+  const [{ count: orderCount }] = await sql<{ count: number }>\`SELECT COUNT(*) FROM orders WHERE created_at >= CURRENT_DATE\` || [{ count: 0 }];
   
   // Fetch real pending restaurants
-  const pendingRestaurants = await sql<{ id: string, name: string, verification_status: string }>`SELECT id, name, verification_status FROM restaurants WHERE verification_status = 'PENDING_APPROVAL' LIMIT 5` || [];
+  const pendingRestaurants = await sql<{ id: string, name: string, status: string }>\`SELECT id, name, status FROM restaurants WHERE verification_status = 'PENDING_APPROVAL' LIMIT 5\` || [];
 
   return {
     users: Number(userCount),
@@ -54,7 +57,7 @@ function OmarOSDashboard() {
           <MetricCard title="Total Customers" value={stats.users.toLocaleString()} icon={Users} color="text-blue-400" bg="bg-blue-900/20" />
           <MetricCard title="Active Restaurants" value={stats.restaurants.toLocaleString()} icon={Store} color="text-emerald-400" bg="bg-emerald-900/30" />
           <MetricCard title="Fleet Riders" value={stats.riders.toLocaleString()} icon={Bike} color="text-amber-400" bg="bg-amber-900/20" />
-          <MetricCard title="Today's Orders" value={stats.todayOrders.toLocaleString()} icon={Activity} color="text-indigo-600" bg="bg-indigo-50" />
+          <MetricCard title="Today\\'s Orders" value={stats.todayOrders.toLocaleString()} icon={Activity} color="text-indigo-600" bg="bg-indigo-50" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -130,3 +133,7 @@ function ToggleRow({ label, description, active }: { label: string, description:
     </div>
   );
 }
+`;
+
+fs.writeFileSync(path, content, "utf8");
+console.log("Fixed OmarOS Dashboard with realistic data fetching");

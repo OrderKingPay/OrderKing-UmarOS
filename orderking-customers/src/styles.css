@@ -5,12 +5,12 @@
 @theme {
   --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
-  --color-bg: #FAFAFA;
-  --color-surface: #FFFFFF;
-  --color-surface-2: #F1F5F9;
-  --color-fg: #111827;
-  --color-muted: #57534E;
-  --color-subtle: #857F77;
+  --color-bg: #020617;
+  --color-surface: #0F172A;
+  --color-surface-2: #1E293B;
+  --color-fg: #F8FAFC;
+  --color-muted: #94A3B8;
+  --color-subtle: #64748B;
   --color-primary: #E11D48;
   --color-primary-fg: #FFFFFF;
   --color-accent: #F59E0B;
@@ -29,6 +29,7 @@
 
 @layer base {
   html {
+    color-scheme: dark;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
