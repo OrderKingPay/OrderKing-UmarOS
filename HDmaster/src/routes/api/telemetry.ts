@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { logGeospatialTelemetry, type TelemetryPayload } from "@/lib/orderking/server/telemetry.server";
 

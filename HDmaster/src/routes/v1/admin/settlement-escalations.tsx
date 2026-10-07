@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-// @ts-nocheck
 
 import { useQuery } from '@tanstack/react-query';
 

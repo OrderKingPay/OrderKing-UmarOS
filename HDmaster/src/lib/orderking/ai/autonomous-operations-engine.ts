@@ -1,4 +1,3 @@
-// @ts-nocheck
 // HDmaster Autonomous Operations Engine — 1000x Zomato-Level Autonomy
 // Replaces Level 1/2 Support, Partner Operations, and Payout Calculations with Zero Legal Liability.
 // Implements Strict Tax Compliance (TCS Section 52, TDS Section 194-O) and Dispute Management.

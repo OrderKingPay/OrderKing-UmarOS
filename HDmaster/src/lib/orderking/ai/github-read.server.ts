@@ -1,4 +1,3 @@
-// @ts-nocheck
 type GitHubRepo = "HDmaster" | "orderking-customers--orders-" | "OrderKing-partners" | "orderking-riders" | "Apps-integration-";
 
 type GitHubConfig = { token: string; owner: string };

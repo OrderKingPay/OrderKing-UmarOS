@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Umar OS Instant 1-Command Live Deployment Engine
 // Enables the founder to create any website, app, business system, or product page
 // and deploy it live in one single command.

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { Sql } from "@/lib/db";
 import { assertCan, isRestaurantRole, type Permission, type RestaurantRole } from "@/lib/rbac";
 import { IsolationError, assertSameRestaurant } from "@/lib/isolation-guard";

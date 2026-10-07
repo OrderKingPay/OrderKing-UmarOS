@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Autonomous Operating Schedule Manager (Directive 16)
 // Governs background schedules: Hourly, 4-Hourly, Daily, Weekly, and Monthly.
 // Fully configurable, observable, and cancellable.

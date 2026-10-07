@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Umar OS Multi-Model Ensemble Consensus Engine
 // Orchestrates verified frontier models (OpenAI GPT-4o, Anthropic Claude 3.7 Sonnet, xAI Grok 2, Google Gemini 2.0 Flash, Codex, DeepSeek)
 // Truthfully validates API availability and delivers cross-domain consensus without fabrication.

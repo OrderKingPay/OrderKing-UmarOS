@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * OrderKing canonical order contract.
  *

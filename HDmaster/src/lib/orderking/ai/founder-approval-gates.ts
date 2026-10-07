@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Founder Approval Gates & Enterprise Governance (HDmaster Core OS)
 // Strictly enforces human founder approval on Money, Legal, Destructive, Production, and External actions.
 // Maintains an immutable HMAC-SHA256 chained audit log with 1-click rollback support.

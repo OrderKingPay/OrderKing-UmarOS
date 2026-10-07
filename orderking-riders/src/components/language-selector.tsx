@@ -8,7 +8,7 @@ export function LanguageSelector() {
   const { locale, setLocale } = useI18n();
   
   return (
-    <Select value={locale} onValueChange={(val) => setLocale(val as LocaleCode)}>
+    <Select value={locale} onValueChange={(val: any) => setLocale(val as LocaleCode)}>
       <SelectTrigger className="w-[140px] border-amber-500/20 bg-amber-500/5 text-amber-500 focus:ring-amber-500/20">
         <SelectValue placeholder="Language" />
       </SelectTrigger>

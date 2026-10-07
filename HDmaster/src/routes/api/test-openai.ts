@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { OpenAIProvider } from "@/lib/orderking/ai/providers/openai-provider";
 import type { ToolDefinition } from "@/lib/orderking/ai/providers/provider-interface";

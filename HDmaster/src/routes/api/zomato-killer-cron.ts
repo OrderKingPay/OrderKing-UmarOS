@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { runAlgorithmicAutoDispatch } from "@/lib/orderking/server/auto-dispatch-engine.server";
 

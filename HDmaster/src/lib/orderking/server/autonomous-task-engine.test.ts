@@ -1,4 +1,3 @@
-// @ts-nocheck
 import assert from 'node:assert/strict';
 import { spawnTask, updateTaskState } from './autonomous-task-engine.server.ts';
 import { getSql } from '../../db.ts';

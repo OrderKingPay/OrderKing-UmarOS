@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Shared domain errors for OrderKing Core
  */

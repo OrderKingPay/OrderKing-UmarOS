@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { PlatformSettings } from "./types";
 
 /** Fields that move money. Changing them requires `modify_financial_settings`. */

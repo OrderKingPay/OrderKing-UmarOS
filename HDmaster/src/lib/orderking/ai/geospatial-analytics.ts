@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Geospatial Hotspot & Dispatch Optimization Engine
  * Processes live coordinate streams to identify geographic "Hot Zones".

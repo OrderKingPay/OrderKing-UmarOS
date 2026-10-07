@@ -15,7 +15,7 @@ import { formatPaise } from "@/lib/money";
 import { useLocationStore } from "@/lib/stores/location";
 import { useCartStore } from "@/lib/stores/cart";
 import type { RestaurantCard } from "@/lib/market-types";
-import { PreferredKitchensAdRow } from "@/components/market/preferred-kitchens-ad-row";
+
 import { getNetworkSpeed, cacheGet, cacheSet, type NetworkSpeed } from "@/lib/low-network-cache";
 import { getCurrentFestiveContext } from "@/lib/brand/calendar-festive-engine";
 import { EcosystemSwitchBar } from "@/components/common/ecosystem-switch-bar";
@@ -469,3 +469,4 @@ function Section({ title, items, empty }: { title: string; items: RestaurantCard
     </section>
   );
 }
+

@@ -1,4 +1,3 @@
-// @ts-nocheck
 export type SearchIntent =
   | { type: "orders"; delayed?: boolean; city?: string; minutes?: number }
   | { type: "restaurants"; cancellationsGt?: number; query?: string }

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * The upstream identity providers this app offers for sign-in (via the broker).
  *

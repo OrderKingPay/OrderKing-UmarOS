@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { AiToolRisk, MasterAiToolName } from "./tool-registry";
 
 /**

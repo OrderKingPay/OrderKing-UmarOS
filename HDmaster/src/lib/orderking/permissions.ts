@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const PERMISSIONS = [
   "view_orders",
   "modify_orders",

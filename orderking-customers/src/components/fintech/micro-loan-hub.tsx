@@ -188,3 +188,4 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
     </div>
   );
 }
+

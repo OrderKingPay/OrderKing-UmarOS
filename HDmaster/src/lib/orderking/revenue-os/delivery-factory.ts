@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Automatic Delivery Factory & Project Task Graph Engine (Directive 8)
 // Transforms client requirements into a 15-stage task graph executed across specialized agent roles.
 // Specialized Agents: Product Manager, Researcher, Architect, Designer, Frontend Engineer, Backend Engineer, Database Engineer, QA Engineer, Security Reviewer, DevOps Engineer, Documentation Writer, Customer Support Agent.

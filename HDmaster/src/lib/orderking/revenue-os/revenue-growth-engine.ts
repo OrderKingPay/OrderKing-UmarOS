@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Revenue Growth Engine & Automatic Repeat-Business Engine (Directives 13 & 14)
 // Post-delivery expansion discovery: Maintenance, Support, Hosting, Retainers, Features, Automation, Analytics, Security.
 // Tracks CSAT, renewal dates, open issues, and generates legitimate repeat proposals under approval governance.

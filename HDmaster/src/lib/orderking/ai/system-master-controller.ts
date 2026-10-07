@@ -1,4 +1,3 @@
-// @ts-nocheck
 // System Master Controller & Optimization Engine
 // Handles:
 // 1. REFRESH (Soft glitch fix, audio resync, zero disconnection)

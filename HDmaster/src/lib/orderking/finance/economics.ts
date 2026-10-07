@@ -1,4 +1,3 @@
-// @ts-nocheck
 export type ScenarioInputs = {
   name: string;
   commissionBps: number;

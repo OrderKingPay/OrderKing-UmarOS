@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Umar OS Founder Privacy & Sovereign Identity Shield
 // Enforces 100% cryptographic masking: Zero founder personal identity
 // is ever visible to any customer, restaurant, rider, or public entity.

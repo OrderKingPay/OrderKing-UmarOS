@@ -57,8 +57,8 @@ export const platformConfig = {
   },
   localization: {
     defaultLanguage: "en" as const,
-    supportedLanguages: ["en", "bn", "hi", "te", "ta"] as const,
-    futureLanguages: ["as"] as const,
+    supportedLanguages: ["en", "bn", "hi", "te", "ta", "as", "mr", "gu", "kn", "ml", "pa", "or", "ur"] as const,
+    futureLanguages: ["hi", "te", "ta", "as"] as const,
   },
   restaurantSettings: {
     defaultPrepMinutes: 20,

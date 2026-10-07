@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { testModelConnectivity, getVerifiedModelRegistry } from "@/lib/orderking/ai/real-model-registry";
 

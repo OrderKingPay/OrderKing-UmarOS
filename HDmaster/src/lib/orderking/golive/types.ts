@@ -1,4 +1,3 @@
-// @ts-nocheck
 export type DatabaseProvider = 
   | "SUPABASE" 
   | "NEON" 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Live-preview sign-in popup — server-only (NEVER import from the client).
  *

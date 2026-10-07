@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * OrderKing Executive Growth, Government Grants, Keynotes & 100,000x Ad Domination Toolkit
  *

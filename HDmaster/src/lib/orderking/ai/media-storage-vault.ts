@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Sovereign Media Storage Vault & Cache Management Engine
 // Stores generated AI images, generated AI videos, attachments, and provides 100x systematic purging
 

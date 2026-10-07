@@ -1,4 +1,3 @@
-// @ts-nocheck
 // The Supreme Task Executor (Directive 28)
 // Decomposes high-level founder commands ("Build me a legitimate online business around this opportunity") into 14 business creation pillars:
 // 1. RESEARCH  2. BUSINESS MODEL  3. MARKET VALIDATION  4. OFFER  5. BRAND  6. WEBSITE  7. PRODUCT

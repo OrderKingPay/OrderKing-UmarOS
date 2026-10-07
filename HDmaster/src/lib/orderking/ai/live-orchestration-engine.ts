@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Live Multi-Model Orchestration Engine (HDmaster Core OS)
 // Concurrently coordinates frontier AI models, cross-validates outputs,
 // eliminates hallucinations, respects provider quotas/costs, and returns concise executive results.

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
 /** Which database backend is active. */

@@ -56,7 +56,8 @@ export const settlementEngine = {
       await tx`
         INSERT INTO settlement_history (restaurant_id, amount_paise, idempotency_key, status)
         VALUES (${data.restaurantId}, ${data.amountPaise}, ${data.idempotencyKey}, 'PROCESSING')
-      `;      const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+      `;
+      const keyId = process.env.RAZORPAY_KEY_ID?.trim();
       const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
       if (!keyId || !keySecret) {
         throw new Error("Razorpay credentials missing. Partner settlement is BLOCKED.");
@@ -65,7 +66,7 @@ export const settlementEngine = {
       const res = await fetch("https://api.razorpay.com/v1/transfers", {
         method: "POST",
         headers: {
-          \"Authorization\": `Basic ${token}`,
+          "Authorization": `Basic ${token}`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({

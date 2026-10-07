@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Cost Control & Expense Optimization Engine (Directive 24)
 // Tracks expenses across 8 categories: AI API Cost, Hosting, Storage, Database, Payment Fees, Third-Party Services, Automation Costs, Infrastructure.
 // Automatically recommends cheaper equivalent approaches when quality is preserved.

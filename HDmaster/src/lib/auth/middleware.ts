@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createMiddleware } from "@tanstack/react-start";
 
 /**

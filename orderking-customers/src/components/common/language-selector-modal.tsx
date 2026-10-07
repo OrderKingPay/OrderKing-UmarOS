@@ -18,13 +18,7 @@ export const ALL_INDIAN_LANGUAGES: IndianLanguageOption[] = [
   { code: "bn", name: "Bengali", nativeName: "বাংলা", voiceLang: "bn-IN", region: "West Bengal, Assam & Tripura", greeting: "নমস্কার" },
   { code: "as", name: "Assamese", nativeName: "অসমীয়া", voiceLang: "as-IN", region: "Assam & Northeast", greeting: "নমস্কাৰ" },
   { code: "ta", name: "Tamil", nativeName: "தமிழ்", voiceLang: "ta-IN", region: "Tamil Nadu & Puducherry", greeting: "வணக்கம்" },
-  { code: "te", name: "Telugu", nativeName: "తెలుగు", voiceLang: "te-IN", region: "Andhra Pradesh & Telangana", greeting: "నమస్కారం" },
-  { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ", voiceLang: "kn-IN", region: "Karnataka", greeting: "ನಮಸ್ಕಾರ" },
-  { code: "ml", name: "Malayalam", nativeName: "മലയാളം", voiceLang: "ml-IN", region: "Kerala & Lakshadweep", greeting: "നമസ്കാരം" },
-  { code: "mr", name: "Marathi", nativeName: "मराठी", voiceLang: "mr-IN", region: "Maharashtra & Goa", greeting: "नमस्कार" },
-  { code: "gu", name: "Gujarati", nativeName: "ગુજરાતી", voiceLang: "gu-IN", region: "Gujarat", greeting: "નમસ્તે" },
-  { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ", voiceLang: "pa-IN", region: "Punjab & Delhi NCR", greeting: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ" },
-  { code: "or", name: "Odia", nativeName: "ଓଡ଼ିଆ", voiceLang: "or-IN", region: "Odisha", greeting: "ନମସ୍କାର" },
+  { code: "te", name: "Telugu", nativeName: "తెలుగు", voiceLang: "te-IN", region: "Andhra Pradesh & Telangana", greeting: "నమస్కారం" }
 ];
 
 interface LanguageSelectorModalProps {
@@ -62,7 +56,7 @@ export function LanguageSelectorModal({
             </div>
             <div>
               <h3 className="text-base font-black text-fg tracking-tight">Select Language / ভাষা</h3>
-              <p className="text-xs text-muted">12 Sovereign Indian Languages Supported</p>
+              <p className="text-xs text-muted">6 Sovereign Indian Languages Supported</p>
             </div>
           </div>
           <button

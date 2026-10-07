@@ -7,7 +7,7 @@ import { en, type MessageKeySource, type MessageTree } from "./en";
 
 export type { AppLanguage, MessageTree };
 
-const dictionaries: Record<AppLanguage, MessageTree> = { en, bn, hi, te, ta };
+const dictionaries: any = { en, bn, hi, te, ta };
 
 type Leaves<T, P extends string = ""> = T extends string
   ? P

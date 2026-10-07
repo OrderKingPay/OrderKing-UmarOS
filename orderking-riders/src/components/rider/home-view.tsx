@@ -80,7 +80,7 @@ export function HomeView() {
   }
 
   // Zomato Style Approval Block for Riders
-  const isVerified = home.rider.kycStatus === "VERIFIED" || home.rider.kycStatus === "APPROVED";
+  const isVerified = home.rider.kycStatus === "VERIFIED" || (home.rider.kycStatus as string) === "APPROVED";
   if (!isVerified) {
     return (
       <div className="space-y-4">

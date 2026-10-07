@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Pool } from "pg";
 
 export type EventType = "ORDER_CREATED" | "PAYMENT_CAPTURED" | "ORDER_DISPATCHED" | "ORDER_DELIVERED";

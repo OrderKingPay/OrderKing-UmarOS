@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Layered Agent Memory System (Directive 20)
 // Implements 9 discrete memory layers:
 // 1. Conversation Memory  2. Project Memory  3. Client Memory  4. Founder Preferences

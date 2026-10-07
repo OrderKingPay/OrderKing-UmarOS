@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createServerFn } from "@tanstack/react-start";
 import { getSessionUser } from "@/lib/auth/verify.server";
 import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";

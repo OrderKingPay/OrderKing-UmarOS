@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 
 // OPENAI API SCAFFOLDING

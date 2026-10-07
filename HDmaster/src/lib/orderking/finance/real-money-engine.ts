@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Real-Money Operating Engine & Zero-Fabrication Financial Truth Model
 // Governs the 14-stage financial lifecycle, economic contribution optimization, and verifiable transaction ledger
 

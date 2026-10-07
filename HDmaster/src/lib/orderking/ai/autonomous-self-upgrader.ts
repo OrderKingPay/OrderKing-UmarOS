@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * 👑 HD MASTER AUTONOMOUS SELF-CODING & SELF-UPGRADING ENGINE
  * 

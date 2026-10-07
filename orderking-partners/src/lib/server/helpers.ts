@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getSql, type Sql } from "@/lib/db";
 import { newId } from "@/lib/utils";
 import type { Permission } from "@/lib/rbac";

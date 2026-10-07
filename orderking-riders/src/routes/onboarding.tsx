@@ -97,8 +97,8 @@ function Page() {
     );
   }
 
-  const isVerified = rider.kycStatus === "VERIFIED" || rider.kycStatus === "APPROVED";
-  const isWaiting = rider.kycStatus === "PENDING_APPROVAL" || rider.kycStatus === "SUBMITTED" || rider.kycStatus === "VERIFYING";
+  const isVerified = rider.kycStatus === "VERIFIED" || (rider.kycStatus as string) === "APPROVED";
+  const isWaiting = (rider.kycStatus as string) === "PENDING_APPROVAL" || rider.kycStatus === "SUBMITTED" || (rider.kycStatus as string) === "VERIFYING";
 
   if (isVerified || isWaiting) {
     return (

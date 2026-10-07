@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Autonomous Command Orchestrator (HDmaster Core OS)
 // Radically simple interface: Founder gives ONE command ->
 // 1. System Plans -> 2. Parallel AI Agents Execute -> 3. Specialized Models Verify ->

@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Always-On Work Discovery & Autonomous Business Development Agent
 // Scans legitimate freelance, contract, remote work, and enterprise software opportunities with objective metrics
 

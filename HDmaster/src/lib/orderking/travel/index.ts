@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { travelRegistry } from "./provider-registry.ts";
 import { AmadeusFlightProvider } from "./providers/amadeus-flight-provider.ts";
 import { IrctcTrainProvider } from "./providers/irctc-train-provider.ts";

@@ -1,4 +1,3 @@
-// @ts-nocheck
 export type SseEvent = {
   event?: string;
   data: unknown;

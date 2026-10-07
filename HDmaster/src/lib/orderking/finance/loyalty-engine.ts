@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * KingCoins Loyalty & Tier Progression Ecosystem
  * Handles cashback percentages, manages tier statuses (Silver, Gold, King),

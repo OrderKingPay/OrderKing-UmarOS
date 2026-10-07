@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { fraudShield, type OrderRiskContext } from '../security/fraud-shield.ts';
 import { getSql } from '../../db.ts';
 import * as crypto from 'crypto';

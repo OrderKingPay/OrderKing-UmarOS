@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 import { createAuthClient } from "better-auth/react";
 import { runPreSignInSignOut, runSignOut } from "../../../scripts/sign-out-plan.mjs";

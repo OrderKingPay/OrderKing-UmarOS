@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Client Acquisition Machine & Prospecting Engine (Directive 6)
 // 10-step flow: Research → Need ID → Service Match → Personalized Value Prop → Outreach Draft → Approval → Permitted Channel Send → Response Tracking → Follow-up → Meeting → Proposal.
 // Enforces anti-spam protections, daily rate limits, and opt-out handling.

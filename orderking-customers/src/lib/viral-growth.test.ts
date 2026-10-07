@@ -1,4 +1,3 @@
-// @ts-nocheck
 declare const assert: any;
 declare const it: any;
 declare const describe: any;

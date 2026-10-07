@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getSql } from "@/lib/db";
 import { ForbiddenError, requireHighRisk, requirePermission, type AccessContext } from "@/lib/orderking/rbac";
 import { assertTransition, isDelayed, type OrderStatus } from "@/lib/orderking/orders/state-machine";

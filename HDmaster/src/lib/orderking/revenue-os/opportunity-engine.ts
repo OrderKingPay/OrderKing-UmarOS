@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Automatic Opportunity Hunter, Prioritization Engine & Minimum-Friction Path Finder (Directives 3, 4, 29)
 // Discovers, prioritizes, and finds minimum-friction legitimate revenue opportunities without false guarantees.
 

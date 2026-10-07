@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Legitimate Payment & Revenue Gateway Integration
 // Supports King Pay UPI, Razorpay, and Stripe with Webhook Verification and Zero-Fabrication Integrity
 

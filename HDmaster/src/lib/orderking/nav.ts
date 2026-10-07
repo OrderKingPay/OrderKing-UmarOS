@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { Permission } from "./permissions";
 
 export type NavItem = {

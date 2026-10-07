@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 // HDmaster / Umar OS: Unified AI Chat & Streaming Service
 // Zero-Fabrication: connects real models, real model IDs, real streaming,

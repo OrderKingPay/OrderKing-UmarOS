@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 ﻿
 // Umar Supreme Founder AI Executive Intelligence & Core Dispatcher (Umar OS)

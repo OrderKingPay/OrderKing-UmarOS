@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { modelRouter, type ModelRouterService } from "./providers/index.ts";
 import { executeFounderTool, FOUNDER_TOOLS } from "./founder-tools.server.ts";
 import { spawnTask, updateTaskState } from "../server/autonomous-task-engine.server.ts";

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from "zod";
 // Genuine Agent & Tool Execution Architecture with Permissions & Approval Gates
 // Supports Research, Files, Code, Git, Database, CRM, Payments, App Factory, and Remote Work

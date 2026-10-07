@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, LayoutGroup } from "framer-motion";
 import { Send, GraduationCap, Award, BookOpen, BrainCircuit, Loader2, Sparkles, Briefcase } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
-import { DailyHub } from "@/components/market/daily-hub";
+
 
 const askTutorFn = createServerFn({ method: "POST" })
   // @ts-ignore
@@ -98,7 +98,7 @@ function TutorPage() {
       <LayoutGroup><motion.div layout className="flex flex-col h-[calc(100dvh-60px)] bg-gradient-to-tr from-slate-950 via-[#0a0a0f] to-indigo-950 text-slate-50 backdrop-blur-3xl">
         
         {/* Header Options */}
-        <div className="px-4 py-2 bg-gradient-to-br from-indigo-50 to-purple-50"><DailyHub /></div>
+        
         
         {/* Magnetic Job Board & Affiliate Aggregator */}
         {/* @ts-nocheck */}
@@ -424,7 +424,6 @@ function TutorPage() {
           )}
 
         </div>
-      </div>
     </motion.div></LayoutGroup></CustomerShell>
   );
 }

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createHash } from "node:crypto";
 import { getRequest } from "@tanstack/react-start/server";
 import {

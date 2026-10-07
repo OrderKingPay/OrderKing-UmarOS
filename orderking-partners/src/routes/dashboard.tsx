@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -97,15 +96,15 @@ function DashboardPage() {
         </Button>
       ) : null}
 
-      {/* Zomato-style Kitchen Rush & Throttle Controls */}
+      {/* Enterprise High-Volume Throttle Controls */}
       <Card className="border border-primary/20 bg-primary/5 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold text-primary">Kitchen Operation Mode</h2>
+            <h2 className="text-base font-semibold text-primary">Business Operation Mode</h2>
             <p className="text-xs text-slate-400">
               {d?.isOpen
-                ? "Kitchen is live and accepting orders normally."
-                : "Kitchen is paused / closed. Customers see your kitchen as offline."}
+                ? "Business is live and accepting orders normally."
+                : "Kitchen is paused / closed. Customers see your business as offline."}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -123,7 +122,7 @@ function DashboardPage() {
                 void dash.refetch();
               }}
             >
-              {d?.isOpen ? "⏸️ Pause Orders" : "▶️ Resume Kitchen"}
+              {d?.isOpen ? "⏸️ Pause Orders" : "▶️ Resume Operations"}
             </Button>
             <Button
               size="sm"
@@ -156,7 +155,7 @@ function DashboardPage() {
               ⚡
             </span>
             <div>
-              <h3 className="text-sm font-bold text-fg">Fast-Track Kitchen: Top Priority</h3>
+              <h3 className="text-sm font-bold text-fg">Fast-Track Service: Top Priority</h3>
               <p className="text-[11px] text-slate-400">Average Prep Time: <span className="font-semibold text-emerald-600 dark:text-emerald-400">11m 40s</span> (Target: &lt;15m)</p>
             </div>
           </div>

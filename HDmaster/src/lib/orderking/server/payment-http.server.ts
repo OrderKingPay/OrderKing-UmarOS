@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createHmac } from "node:crypto";
 import { getSql } from "@/lib/db";
 import { createRazorpayOrder, fetchRazorpayPayment, verifyCheckoutSignature, verifyWebhookSignature } from "@/lib/orderking/payments/razorpay.server";

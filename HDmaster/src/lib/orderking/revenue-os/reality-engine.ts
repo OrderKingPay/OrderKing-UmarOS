@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Reality Engine & Zero-Fabrication Verification Core (Directive 25)
 // Strictly distinguishes Fact, Estimate, Forecast, Recommendation, Attempt, Completed, Verified, Failed, and Unknown.
 // Prevents unverified claims from being presented as verified truth.

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getSql, type Sql } from "../../../db";
 import { getWeeklyCycle, calculateRestaurantWeeklySettlement } from "./weekly-settlement";
 

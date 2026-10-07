@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getSql } from "@/lib/db";
 import { resolveChannels, buildNotification, type NotificationChannel } from "./push-notifications";
 

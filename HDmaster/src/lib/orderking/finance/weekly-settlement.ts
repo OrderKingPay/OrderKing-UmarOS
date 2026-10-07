@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Zomato / Swiggy Compatible Weekly Settlement Engine for Order King
  * Standard Indian Food Delivery Cycle:

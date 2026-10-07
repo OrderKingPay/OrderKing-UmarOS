@@ -1,10 +1,10 @@
-// @ts-nocheck
 import { createRootRoute, HeadContent, Outlet, Scripts, ErrorComponent } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { Toaster } from "sonner";
+import { UmarVoiceTerminal } from "@/components/umar-voice-terminal";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Umar OS";
@@ -27,7 +27,7 @@ export const Route = createRootRoute({
       { rel: "icon", type: 'image/png', href: '/icon-192.png' },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
+      { rel: "apple-touch-icon", href: "/icon-192.png" },
     ],
   }),
   component: RootDocument,
@@ -69,6 +69,7 @@ function RootDocument() {
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
             <Outlet />
+            <UmarVoiceTerminal />
             <Toaster
               theme="dark"
               position="bottom-right"

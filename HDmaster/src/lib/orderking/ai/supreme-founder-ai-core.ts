@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Umar Supreme Founder AI Executive Intelligence & Core Dispatcher (Umar OS)
 // Governs Multi-Model Ensemble Consensus, 1-Command Live Deploy, 500+ Platforms & Zero Identity Leakage
 

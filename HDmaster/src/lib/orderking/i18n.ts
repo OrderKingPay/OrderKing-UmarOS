@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const LOCALES = ["en", "bn", "as", "hi"] as const;
 export type Locale = (typeof LOCALES)[number];
 

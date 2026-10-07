@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { requireUserId } from "@/lib/auth/verify.server";
 import { ensureWorkspace, appendAudit } from "@/lib/orderking/server/workspace.server";
 import { ForbiddenError, requirePermission } from "@/lib/orderking/rbac";

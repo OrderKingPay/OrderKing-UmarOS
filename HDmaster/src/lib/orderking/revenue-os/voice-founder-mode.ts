@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Voice-First Founder Mode & Live State Telemetry (Directive 22)
 // Interprets natural voice commands and returns actual verifiable system state.
 // Never returns fictional conversational answers.

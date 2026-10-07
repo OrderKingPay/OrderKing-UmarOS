@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createHash, createHmac, randomBytes } from "node:crypto";
 
 export type UploadTarget = "menu_item" | "restaurant_banner" | "kyc_document" | "rider_avatar";

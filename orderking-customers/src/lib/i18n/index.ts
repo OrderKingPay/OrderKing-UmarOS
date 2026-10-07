@@ -6,19 +6,7 @@ import { hi } from "./hi";
 import { ta } from "./ta";
 import { te } from "./te";
 
-export type Lang =
-  | "en"
-  | "hi"
-  | "bn"
-  | "as"
-  | "ta"
-  | "te"
-  | "kn"
-  | "ml"
-  | "mr"
-  | "gu"
-  | "pa"
-  | "or";
+export type Lang = "en" | "hi" | "bn" | "as" | "ta" | "te";
 
 export const LANGS: { id: Lang; name: string; native: string }[] = [
   { id: "en", name: "English", native: "English" },
@@ -27,12 +15,6 @@ export const LANGS: { id: Lang; name: string; native: string }[] = [
   { id: "as", name: "Assamese", native: "অসমীয়া" },
   { id: "ta", name: "Tamil", native: "தமிழ்" },
   { id: "te", name: "Telugu", native: "తెలుగు" },
-  { id: "kn", name: "Kannada", native: "ಕನ್ನಡ" },
-  { id: "ml", name: "Malayalam", native: "മലയാളം" },
-  { id: "mr", name: "Marathi", native: "मराठी" },
-  { id: "gu", name: "Gujarati", native: "ગુજરાતી" },
-  { id: "pa", name: "Punjabi", native: "ਪੰਜਾਬੀ" },
-  { id: "or", name: "Odia", native: "ଓଡ଼ିଆ" },
 ];
 
 const trees: Partial<Record<Lang, MessageTree>> = { en, bn, as, hi, ta, te };

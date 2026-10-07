@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Universal Capability Layer & Extensible Plugin Architecture
 // Provides a unified capability registry for 40+ disciplines across AI, Engineering, Business, Finance, and Operations
 

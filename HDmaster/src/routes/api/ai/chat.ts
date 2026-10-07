@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { executeFounderAiChat, type AiChatRequest } from "@/lib/orderking/server/ai-chat-service.server";
 import { createSseStream } from "@/lib/orderking/infrastructure/sse-hub";

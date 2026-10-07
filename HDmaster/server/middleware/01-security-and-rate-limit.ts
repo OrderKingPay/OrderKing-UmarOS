@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { defineEventHandler, getRequestHeader, setResponseHeader, createError } from "h3";
 import { checkRateLimit, getRateLimitHeaders } from "../../src/lib/orderking/server/rate-limiter";
 

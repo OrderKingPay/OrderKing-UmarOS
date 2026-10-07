@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createFileRoute } from "@tanstack/react-router";
 import { handleTravelHttp } from "@/lib/orderking/server/travel-http.server";
 

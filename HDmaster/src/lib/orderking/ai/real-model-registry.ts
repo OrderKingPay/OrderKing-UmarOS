@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Umar OS: Sovereign Verified Model Registry & Real Provider Connection Engine
 // Enforces Zero-Fabrication: Truthfully reports connection status, real API model IDs,
 // supported modalities, context windows, and real-time latency measurements.

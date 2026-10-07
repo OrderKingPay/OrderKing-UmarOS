@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ensureWorkspace, nid } from "@/lib/orderking/server/workspace.server";
 import { requirePermission } from "@/lib/orderking/rbac";
 import { getSql } from "@/lib/db";

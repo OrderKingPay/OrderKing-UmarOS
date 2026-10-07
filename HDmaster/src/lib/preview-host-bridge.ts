@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Guest side of the grok-web ↔ sandbox preview postMessage bridge.
  *

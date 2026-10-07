@@ -1,4 +1,3 @@
-// @ts-nocheck
 import test from "node:test";
 import assert from "node:assert/strict";
 import { MASTER_AI_SPECIALISTS, getSpecialist, listSpecialists } from "./specialists.ts";

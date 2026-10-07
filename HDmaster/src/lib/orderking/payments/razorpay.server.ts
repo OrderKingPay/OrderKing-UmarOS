@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { resilientFetch } from "../sre/resilient-fetch.ts";
 import { createHmac, timingSafeEqual } from "node:crypto";
 

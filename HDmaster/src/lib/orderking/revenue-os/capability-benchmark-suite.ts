@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Capability Benchmarking Suite (Directive 26)
 // Internal benchmark suite testing 12 capability dimensions:
 // 1. Reasoning  2. Coding  3. Web Research  4. Tool Selection  5. Agent Planning  6. Task Completion

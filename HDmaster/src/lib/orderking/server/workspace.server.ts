@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getSql } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth/verify.server";
 import {

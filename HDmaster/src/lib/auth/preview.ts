@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Shared LIVE-PREVIEW OAuth client (server-only — NEVER import from the client).
  *

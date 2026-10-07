@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getRequest } from "@tanstack/react-start/server";
 
 /**

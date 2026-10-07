@@ -1,45 +1,79 @@
-
-// @ts-nocheck
 import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 import { GoogleGenAI } from "@google/genai";
-
-// Avoid crashing immediately if API key is missing
-let ai = null;
-try {
-  ai = new GoogleGenAI({});
-} catch(e) {
-  console.warn("GoogleGenAI init failed:", e);
-}
 
 export const Route = createAPIFileRoute("/api/ai")({
   server: {
     handlers: {
+      GET: async () => {
+        // Evaluate available providers based on environment securely
+        const availableModels = [];
+        
+        if (process.env.GEMINI_API_KEY) {
+           availableModels.push({
+              id: "gemini-1.5-pro",
+              provider: "google",
+              name: "Google Gemini 1.5 Pro",
+              capabilities: ["reasoning", "multimodal"],
+              tier: "high"
+           });
+           availableModels.push({
+              id: "gemini-1.5-flash",
+              provider: "google",
+              name: "Google Gemini 1.5 Flash",
+              capabilities: ["speed", "multimodal"],
+              tier: "fast"
+           });
+        }
+        
+        if (process.env.OPENAI_API_KEY) {
+           availableModels.push({
+              id: "gpt-4o",
+              provider: "openai",
+              name: "OpenAI GPT-4o",
+              capabilities: ["reasoning", "multimodal"],
+              tier: "high"
+           });
+        }
+
+        return new Response(JSON.stringify({ 
+          models: availableModels,
+          status: availableModels.length > 0 ? 'online' : 'offline',
+          message: availableModels.length === 0 ? "No AI providers configured. Add API keys to environment." : "AI subsystem operational."
+        }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" }
+        });
+      },
+      
       POST: async ({ request }: any) => {
         try {
           const body = await request.json();
-          const { message, context, history } = body;
+          const { message, context, history, intent } = body;
           
           if (!message) {
-            return new Response(JSON.stringify({ error: "Message is required" }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" }
-            });
+            return new Response(JSON.stringify({ error: "Message is required" }), { status: 400 });
           }
 
-          const systemInstruction = `You are an elite FoodTech growth advisor for OrderKing (UMAR OS).
-Your goal is to provide predictive analytics, operational insights, and restaurant growth strategies to restaurant partners and admins.
-Context provided: ${JSON.stringify(context || {})}.
-Act as the AI Tutor and Restaurant Growth engine.
-Be concise, analytical, and highly actionable. Base recommendations on real-world restaurant metrics.`;
+          // Intelligent routing logic
+          const needsSpeed = intent === 'support_triage' || intent === 'quick_reply';
+          const defaultModel = needsSpeed ? "gemini-1.5-flash" : "gemini-1.5-pro";
 
-          if (!ai) {
-    return new Response(JSON.stringify({
-      text: "The elite Gemini 3.1 Pro AI engine is currently in cold-standby. To activate real-time predictive analytics, the Founder must inject the secure GEMINI_API_KEY into the UmarOS Cloudflare environment.",
-      success: true
-    }), { status: 200, headers: { "Content-Type": "application/json" } });
-  }
-  const response = await ai.models.generateContent({
-            model: "gemini-3.1-pro",
+          if (!process.env.GEMINI_API_KEY) {
+             return new Response(JSON.stringify({
+               text: "The AI router is currently offline. To activate predictive analytics and intelligent routing, the Founder must inject secure provider keys (e.g. GEMINI_API_KEY) into the environment.",
+               routedTo: "fallback",
+               success: true
+             }), { status: 200, headers: { "Content-Type": "application/json" } });
+          }
+
+          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+          
+          const systemInstruction = `You are an elite FoodTech AI embedded within UMAR OS (OrderKing).
+Context: ${JSON.stringify(context || {})}.
+Be highly actionable, strictly factual, and prioritize platform profitability and operational efficiency.`;
+
+          const response = await ai.models.generateContent({
+            model: defaultModel,
             contents: message,
             config: {
               systemInstruction: systemInstruction,
@@ -49,14 +83,15 @@ Be concise, analytical, and highly actionable. Base recommendations on real-worl
 
           return new Response(JSON.stringify({ 
             text: response.text,
+            routedTo: defaultModel,
             success: true
           }), {
             status: 200,
             headers: { "Content-Type": "application/json" }
           });
         } catch (error: any) {
-          console.error("[AI Tutor Engine] API Error:", error);
-          return new Response(JSON.stringify({ error: "Failed to generate AI response", details: error.message }), {
+          console.error("[AI Router] Fault:", error);
+          return new Response(JSON.stringify({ error: "AI execution fault", details: error.message }), {
             status: 500,
             headers: { "Content-Type": "application/json" }
           });

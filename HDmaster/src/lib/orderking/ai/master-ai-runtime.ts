@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { MASTER_AI_OPERATING_CONTRACT, requiresHumanApproval } from "./master-ai-operating-contract.ts";
 import { MASTER_AI_TOOL_REGISTRY, type MasterAiToolSpec, type MasterAiToolName } from "./tool-registry.ts";
 import { requirePermission } from "../rbac.ts";

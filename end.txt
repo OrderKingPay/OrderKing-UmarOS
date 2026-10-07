@@ -1,0 +1,10 @@
+﻿      <div>
+        <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{title}</p>
+        <h3 className="text-3xl font-black text-white mt-1">{value}</h3>
+      </div>
+      <div className={`p-2.5 rounded-lg ${bg}`}>
+        <Icon className={`h-5 w-5 ${color}`} />
+      </div>
+    </div>
+  );
+}

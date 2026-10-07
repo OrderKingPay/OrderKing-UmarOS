@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { GROK_PROVIDERS, authEnabled, signIn, authClient } from "@/lib/auth/client";

@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Continuous Capability Discovery (Directive 27)
 // Scheduled system that searches for newly available AI models, APIs, dev tools, automation platforms, payment providers, and cloud services.
 // Evaluates compatibility and presents upgrade opportunities without automatically installing untrusted software.
