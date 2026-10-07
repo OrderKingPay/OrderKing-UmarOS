@@ -58,22 +58,16 @@ export function CustomerShell({
             </span>
           </div>
 
-          {/* 👑 DYNAMIC 3D KINGPAY & ZERO-FEE PROMOTION PILL */}
-          <Link
-            to="/king-pay"
-            className="group flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/15 via-yellow-500/20 to-emerald-500/15 border border-amber-400/50 hover:border-amber-300 text-[10px] sm:text-[11px] font-bold text-slate-200 transition-all active:scale-95 hover:scale-105 shadow-[0_2px_12px_rgba(245,158,11,0.2)] no-underline mx-auto truncate"
-          >
-            <span className="text-xs shrink-0">👑</span>
-            <span className="font-display font-black text-amber-400 whitespace-nowrap">
-              KingPay
-            </span>
-            <span className="text-emerald-400 font-extrabold whitespace-nowrap">
-              0% Fee · ₹40 Cash
-            </span>
-            <span className="hidden sm:inline text-amber-300 font-mono shrink-0">
-              ⚡ 15m
-            </span>
-          </Link>
+          {/* 👑 DYNAMIC TRAVEL & KINGPAY PILL */}
+            <Link
+              to="/king-pay"
+              className="group flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/30 transition-all active:scale-95 hover:scale-105 no-underline ml-auto border border-white/20"
+            >
+              <span className="text-sm drop-shadow-md">👑</span>
+              <span className="text-sm drop-shadow-md">✈️</span>
+              <span className="text-sm drop-shadow-md">🏨</span>
+              <span className="text-sm drop-shadow-md">🚆</span>
+            </Link>
 
           <div className="flex items-center gap-2 shrink-0">
             {/* Share/Promotion */}
@@ -95,14 +89,7 @@ export function CustomerShell({
             >
               <Globe className="h-4 w-4" />
             </button>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-muted hover:text-fg"
-              aria-label="Toggle Theme"
-            >
-              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-            </button>
+            
             {isPending ? (
               <div className="h-8 w-8 animate-pulse rounded-full bg-surface-2" />
             ) : user ? (
@@ -173,47 +160,50 @@ export function CustomerShell({
           </Link>
         </div>
       ) : null}
-            {!path.startsWith("/king-pay") ? (
+                  {!path.startsWith("/king-pay") ? (
         <nav
             aria-label={brand.appName}
-            className="fixed bottom-0 left-0 right-0 z-40 border-t border-amber-500/30 bg-gradient-to-t from-slate-950 via-slate-900 to-slate-950/95 pb-safe shadow-[0_-10px_40px_rgba(245,158,11,0.15)] overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-zinc-950 border-t border-border shadow-[0_-10px_40px_rgba(0,0,0,0.05)] overflow-hidden"
           >
-            <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-2">
-            <NavItem to="/" icon={House} label="Home" active={path === "/"} />
-            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
+            <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-1">
+            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-emerald-500" />
+            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-blue-500" />
             
             {/* 👑 Glowing KingPay Tab */}
             <li className="relative -top-2 flex w-full justify-center">
               <Link
                 to="/king-pay"
                 className={cn(
-                  "group relative flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-full border-2 text-xs no-underline shadow-md transition-all active:scale-95",
+                  "group relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-4 border-white dark:border-zinc-950 text-xs no-underline shadow-lg transition-all active:scale-95",
                   path.startsWith("/king-pay")
-                    ? "border-amber-400 bg-gradient-to-br from-amber-400 to-yellow-600 text-white shadow-[0_0_15px_rgba(251,191,36,0.4)]"
-                    : "border-transparent bg-gradient-to-br from-amber-100 to-amber-200 text-amber-900 shadow-[0_0_10px_rgba(251,191,36,0.2)] hover:border-amber-300"
+                    ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-[0_4px_20px_rgba(245,158,11,0.5)]"
+                    : "bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 text-white shadow-[0_4px_15px_rgba(245,158,11,0.3)] hover:brightness-110"
                 )}
               >
-                <span className="text-lg leading-none">👑</span>
-                <span className="text-[8px] font-black tracking-tight leading-none">KingPay</span>
+                <span className="text-xl leading-none drop-shadow-sm mt-0.5">👑</span>
+                <span className="text-[10px] font-black tracking-tight leading-none drop-shadow-sm mt-0.5">KingPay</span>
                 {!path.startsWith("/king-pay") && (
-                  <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white shadow-sm">
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border border-white text-[10px] font-bold text-white shadow-sm">
                     1
                   </span>
                 )}
               </Link>
             </li>
-            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} />
-            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} />
+            
+            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-indigo-500" />
+            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-purple-500" />
           </ul>
         </nav>
       ) : (
-        <div className="fixed bottom-4 left-4 right-4 z-40 flex justify-center pointer-events-none">
+        <div className="fixed bottom-6 left-4 right-4 z-50 flex justify-center pointer-events-none">
           <Link
             to="/"
-            className="pointer-events-auto flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-xl active:scale-95 transition-transform border border-slate-700 no-underline"
+            className="pointer-events-auto flex items-center justify-center gap-3 w-full max-w-sm rounded-full bg-gradient-to-r from-orange-500 via-red-500 to-rose-600 px-6 py-4 text-lg font-black text-white shadow-[0_10px_40px_rgba(249,115,22,0.5)] active:scale-95 transition-all no-underline border-2 border-white/20 hover:brightness-110"
+            style={{ animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
           >
-            <House className="size-4" />
-            Back to Order King
+            <span className="text-2xl drop-shadow-lg">🍔</span>
+            <span className="drop-shadow-md uppercase tracking-wide text-center leading-tight">Craving Food?<br/><span className="text-[11px] opacity-90">Tap to Order Now!</span></span>
+            <span className="text-2xl drop-shadow-lg">🍕</span>
           </Link>
         </div>
       )}
@@ -231,26 +221,28 @@ export function CustomerShell({
 }
 
 function NavItem({
-  to,
-  icon: Icon,
-  label,
-  active,
-  badge,
-}: {
-  to: string;
-  icon: typeof House;
-  label: string;
-  active: boolean;
-  badge?: number | string;
-}) {
-  return (
-    <li className="w-full flex justify-center py-2">
-      <Link
-        to={to}
-        className={cn(
-          "flex flex-col items-center justify-center gap-1 text-[10px] sm:text-xs no-underline relative transition-colors",
-          active ? "text-primary font-bold" : "text-slate-400 hover:text-slate-700 font-medium",
-        )}
+    to,
+    icon: Icon,
+    label,
+    active,
+    badge,
+    colorClass
+  }: {
+    to: string;
+    icon: typeof House;
+    label: string;
+    active: boolean;
+    badge?: number | string;
+    colorClass?: string;
+  }) {
+    return (
+      <li className="w-full flex justify-center py-2">
+        <Link
+          to={to}
+          className={cn(
+            "flex flex-col items-center justify-center gap-1 text-[10px] sm:text-[11px] no-underline relative transition-colors",
+            active ? (colorClass || "text-primary") + " font-bold" : "text-muted-foreground hover:text-foreground font-medium",
+          )}
       >
         <div className="relative flex items-center justify-center h-6 w-6">
           <Icon className={cn("size-5 sm:size-5.5 transition-transform", active && "scale-110")} aria-hidden />

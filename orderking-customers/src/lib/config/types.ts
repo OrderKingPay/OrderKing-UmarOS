@@ -141,4 +141,14 @@ export type PublicAppConfig = {
   marketplace: MarketplaceConfig;
   tax: TaxConfig;
   notification: NotificationProviderConfig;
+  features?: {
+    dailyHub?: boolean;
+    viralReferrals?: boolean;
+    dynamicSurge?: boolean;
+  };
+  ai?: {
+    supportProvider?: string;
+    menuSuggester?: string;
+    tutorProvider?: string;
+  };
 };

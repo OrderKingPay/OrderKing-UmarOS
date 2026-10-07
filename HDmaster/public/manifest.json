@@ -9,7 +9,7 @@
   "theme_color": "#3b82f6",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/icon-192.png",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
@@ -21,14 +21,14 @@
       "short_name": "Chat",
       "description": "Supreme AI Voice & Multilingual Command",
       "url": "/",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "any" }]
     },
     {
       "name": "System Diagnostics",
       "short_name": "Diagnostics",
       "description": "Real-time Telemetry & Health Checks",
       "url": "/?tab=diagnostics",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "any" }]
     }
   ],
   "categories": ["business", "productivity"]

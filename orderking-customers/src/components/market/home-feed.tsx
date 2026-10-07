@@ -1,5 +1,150 @@
 
-import 
+import { Store } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import { KitchenCard } from "@/components/market/restaurant-card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useBrand, useT } from "@/components/providers";
+import { listCategories, listRestaurants } from "@/lib/server/catalog";
+import { listMyOrders, reorderItems } from "@/lib/server/orders";
+import { formatPaise } from "@/lib/money";
+import { useLocationStore } from "@/lib/stores/location";
+import { useCartStore } from "@/lib/stores/cart";
+import type { RestaurantCard } from "@/lib/market-types";
+import { PreferredKitchensAdRow } from "@/components/market/preferred-kitchens-ad-row";
+import { getNetworkSpeed, cacheGet, cacheSet, type NetworkSpeed } from "@/lib/low-network-cache";
+import { getCurrentFestiveContext } from "@/lib/brand/calendar-festive-engine";
+import { EcosystemSwitchBar } from "@/components/common/ecosystem-switch-bar";
+import { PaidRestaurantAdZone } from "@/components/market/paid-restaurant-ad-zone";
+
+
+
+
+
+export function HomeFeed({
+  q,
+  veg,
+  openNow,
+  category,
+}: {
+  q?: string;
+  veg?: boolean;
+  openNow?: boolean;
+  category?: string;
+}) {
+  const { t, lang } = useT();
+  const locale = lang === "bn" ? "bn-IN" : "en-IN";
+  const { marketplace, brand } = useBrand();
+  const location = useLocationStore((s) => s.location);
+  const setLocation = useLocationStore((s) => s.setLocation);
+  const [isGeoActive, setIsGeoActive] = useState<boolean>(true);
+  const [isRequestingGeo, setIsRequestingGeo] = useState<boolean>(false);
+  const [activeFilter, setActiveFilter] = useState<"all" | "fast" | "rating" | "veg" | "offers" | "budget">("all");
+
+  const requestLiveGps = () => {
+    if (typeof navigator !== "undefined" && "geolocation" in navigator) {
+      setIsRequestingGeo(true);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setIsRequestingGeo(false);
+          setIsGeoActive(true);
+          setLocation({
+            ...location,
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            line1: `Verified GPS (${pos.coords.latitude.toFixed(3)}, ${pos.coords.longitude.toFixed(3)})`,
+          });
+          toast.success("100% Real-Time GPS Active! Verifying restaurants in your vicinity...");
+        },
+        (err) => {
+          setIsRequestingGeo(false);
+          setIsGeoActive(false);
+          toast.error("Accurate GPS location required to show verified restaurants.");
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    } else {
+      setIsGeoActive(false);
+      toast.error("Geolocation is not supported by your browser.");
+    }
+  };
+
+  const [networkSpeed, setNetworkSpeed] = useState<NetworkSpeed>("NORMAL");
+  useEffect(() => {
+    setNetworkSpeed(getNetworkSpeed());
+    const handleOnline = () => setNetworkSpeed(getNetworkSpeed());
+    const handleOffline = () => setNetworkSpeed("OFFLINE");
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  const pastOrders = useQuery({
+    queryKey: ["pastOrders"],
+    queryFn: () => listMyOrders(),
+    retry: false,
+  });
+  const cats = useQuery({
+    queryKey: ["categories", lang],
+    queryFn: () => listCategories({ data: { lang } }),
+  });
+  const list = useQuery({
+    queryKey: ["restaurants", location.zoneId, location.lat, location.lng, q, veg, openNow, category, lang],
+    queryFn: async () => {
+      try {
+        const params = new URLSearchParams();
+        if (q) params.set("q", q);
+        if (veg) params.set("veg", "true");
+        if (openNow) params.set("openNow", "true");
+        if (category) params.set("category", category);
+        params.set("lat", location.lat.toString());
+        params.set("lng", location.lng.toString());
+        params.set("zoneId", location.zoneId);
+        if (lang) params.set("lang", lang);
+
+        const response = await fetch(`/api/search?${params.toString()}`);
+        if (!response.ok) throw new Error("Failed to fetch restaurants");
+        const res = await response.json();
+        if (res) await cacheSet("home_restaurants", res);
+        return res;
+      } catch (err) {
+        const cached = await cacheGet<any>("home_restaurants");
+        if (cached) return cached;
+        throw err;
+      }
+    },
+  });
+
+  const cart = useCartStore();
+  const navigate = useNavigate();
+
+  const handleReorder = async (orderId: string) => {
+    try {
+      const res = await reorderItems({ data: { orderId } });
+      cart.replaceCart(res.restaurantId, res.restaurantName, res.lines);
+      toast.success("Past order items added to cart!");
+      void navigate({ to: "/cart" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not reorder");
+    }
+  };
+
+  const activeOrder = pastOrders.data?.orders?.find((o) =>
+    ["PENDING", "PLACED", "CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "OUT_FOR_DELIVERY", "ARRIVED"].includes(o.status)
+  );
+
+  const festive = getCurrentFestiveContext();
+
+  return (
+    <div className="space-y-2 px-2 py-2 sm:px-3 sm:py-3">
+
         
         {/* 2G / Low-Network Offline-First Resilience Banner */}
       {networkSpeed !== "NORMAL" ? (
@@ -126,45 +271,7 @@ import
       {/* Preferred & Top-Rated Kitchens Ad Row (Ranked by Ad Spend + Performance) */}
       {!q && !veg && !openNow && !category ? <PreferredKitchensAdRow className="my-1" /> : null}
 
-      {/* 100x Viral Marketing: Invite Friends & Both Get Rewarded */}
-      {!q && !veg && !openNow && !category ? (
-        <section aria-label="Referral Rewards" className="rounded-[var(--radius-3xl)] border border-white/20 dark:border-white/10 bg-gradient-to-r from-primary/20 via-white/40 to-white/10 dark:via-black/40 dark:to-black/10 backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-primary/20 text-2xl shadow-inner">
-                🎁
-              </span>
-              <div>
-                <h3 className="font-display text-base font-bold text-fg">Share & Earn ₹40</h3>
-                <p className="text-xs text-muted">
-                  Share OrderKing with friends. They get <span className="font-semibold text-primary">₹40 OFF + Free Delivery</span> (min ₹249) and you get <span className="font-semibold text-primary">₹40 wallet cash</span>!
-                </p>
-              </div>
-            </div>
-            <div className="flex w-full sm:w-auto items-center gap-2">
-              <a
-                href={`https://wa.me/?text=${encodeURIComponent("Hey! Use my code to get ₹40 OFF + Free Delivery on your first delicious food order on OrderKing: https://orderking.in/?ref=KINGVIP")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700 active:scale-95"
-              >
-                <span>💬</span>
-                <span>Share WhatsApp</span>
-              </a>
-              <button
-                type="button"
-                onClick={() => {
-                  void navigator.clipboard?.writeText("https://orderking.in/?ref=KINGVIP");
-                  toast.success("Referral link copied to clipboard!");
-                }}
-                className="inline-flex items-center justify-center rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-fg shadow-xs transition hover:bg-surface-2"
-              >
-                Copy Link
-              </button>
-            </div>
-          </div>
-        </section>
-      ) : null}
+
 
       {marketplace.sampleCatalogueBanner ? (
         <p className="rounded-[var(--radius-lg)] bg-surface px-3 py-3 text-sm text-muted">{t("home.sampleBanner")}</p>
@@ -194,69 +301,47 @@ import
       </section>
 
 
-      {/* Zomato-style Quick Filter Pills */}
+      {/* Unified Action Bar: Veg/Non-Veg, Share, AI Support */}
       {isGeoActive && !q && !category && (
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs font-semibold">
-          <button
-            type="button"
-            onClick={() => setActiveFilter(activeFilter === "fast" ? "all" : "fast")}
-            className={`flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 transition shadow-xs cursor-pointer ${
-              activeFilter === "fast"
-                ? "bg-primary text-primary-fg font-bold"
-                : "border border-border bg-surface text-fg hover:bg-surface-2"
-            }`}
-          >
-            <span>⚡</span>
-            <span>Fast Delivery</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveFilter(activeFilter === "rating" ? "all" : "rating")}
-            className={`flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 transition shadow-xs cursor-pointer ${
-              activeFilter === "rating"
-                ? "bg-primary text-primary-fg font-bold"
-                : "border border-border bg-surface text-fg hover:bg-surface-2"
-            }`}
-          >
-            <span>⭐</span>
-            <span>Rating 4.0+</span>
-          </button>
+        <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2 pt-2 scrollbar-hide px-2">
           <button
             type="button"
             onClick={() => setActiveFilter(activeFilter === "veg" ? "all" : "veg")}
-            className={`flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 transition shadow-xs cursor-pointer ${
+            className={`flex items-center gap-1.5 shrink-0 rounded-full px-4 py-1.5 transition shadow-sm text-sm font-semibold border ${
               activeFilter === "veg"
-                ? "bg-primary text-primary-fg font-bold"
-                : "border border-border bg-surface text-fg hover:bg-surface-2"
+                ? "bg-emerald-600 text-white border-emerald-600"
+                : "bg-surface text-fg border-border hover:bg-surface-2"
             }`}
           >
-            <span>🥗</span>
-            <span>Pure Veg</span>
+            <span className={`w-3 h-3 rounded-sm border flex items-center justify-center ${activeFilter === "veg" ? "border-white" : "border-green-600"}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${activeFilter === "veg" ? "bg-white" : "bg-green-600"}`}></span>
+            </span>
+            Veg Only
           </button>
-          <button
-            type="button"
-            onClick={() => setActiveFilter(activeFilter === "offers" ? "all" : "offers")}
-            className={`flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 transition shadow-xs cursor-pointer ${
-              activeFilter === "offers"
-                ? "bg-primary text-primary-fg font-bold"
-                : "border border-border bg-surface text-fg hover:bg-surface-2"
-            }`}
-          >
-            <span>🏷️</span>
-            <span>Great Offers</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveFilter(activeFilter === "budget" ? "all" : "budget")}
-            className={`flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 transition shadow-xs cursor-pointer ${
-              activeFilter === "budget"
-                ? "bg-primary text-primary-fg font-bold"
-                : "border border-border bg-surface text-fg hover:bg-surface-2"
-            }`}
-          >
-            <span>💰</span>
-            <span>Under ₹199</span>
-          </button>
+
+          {useBrand().features?.viralReferrals !== false && (
+            <button
+              type="button"
+              onClick={() => {
+                void navigator.clipboard?.writeText("https://orderkingpay.com/?ref=KINGVIP");
+                toast.success("Link copied! Share to earn ₹40.");
+              }}
+              className="flex items-center gap-1.5 shrink-0 rounded-full px-4 py-1.5 transition shadow-sm text-sm font-semibold border bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-900 dark:text-amber-100 border-amber-200 dark:border-amber-800 hover:opacity-90 cursor-pointer"
+            >
+              <span>🎁</span>
+              Earn ₹40
+            </button>
+          )}
+
+          {useBrand().ai?.supportProvider !== 'Off' && (
+            <Link
+              to="/tutor"
+              className="flex items-center gap-1.5 shrink-0 rounded-full px-4 py-1.5 transition shadow-sm text-sm font-semibold border bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800 cursor-pointer"
+            >
+              <span>✨</span>
+              AI Support
+            </Link>
+          )}
         </div>
       )}
 

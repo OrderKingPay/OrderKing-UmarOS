@@ -15,14 +15,14 @@ export type SelectedLocation = {
 };
 
 const DEFAULT_LOCATION: SelectedLocation = {
-  cityId: "city_sribhumi",
-  cityName: "Sribhumi",
-  zoneId: "zone_bazaar",
-  zoneName: "Central Bazaar",
-  label: "Central Bazaar",
-  line1: "Central Bazaar, Sribhumi",
-  lat: 24.8688,
-  lng: 92.3511,
+  cityId: "",
+  cityName: "Locating...",
+  zoneId: "",
+  zoneName: "",
+  label: "Tap to set location",
+  line1: "Please set your delivery address",
+  lat: 0,
+  lng: 0,
 };
 
 type State = {

@@ -4,6 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
 import { Send, GraduationCap, Award, BookOpen, BrainCircuit, Loader2, Sparkles, Briefcase } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
+import { DailyHub } from "@/components/market/daily-hub";
 
 const askTutorFn = createServerFn({ method: "POST" })
   // @ts-ignore
@@ -96,7 +97,8 @@ function TutorPage() {
       <div className="flex flex-col h-[calc(100dvh-60px)] bg-slate-50">
         
         {/* Header Options */}
-        <div className="bg-white px-4 py-3 shadow-sm z-10 flex flex-col gap-3">
+        <div className="px-4 py-2 bg-gradient-to-br from-indigo-50 to-purple-50"><DailyHub /></div>
+          <div className="bg-white px-4 py-3 shadow-sm z-10 flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-black text-slate-800 flex items-center gap-2">
               <BrainCircuit className="text-indigo-600 size-6" />
