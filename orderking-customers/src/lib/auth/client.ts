@@ -35,7 +35,6 @@ const getBaseURL = () => {
 
 export const authClient = createAuthClient({
   baseURL: getBaseURL(),
-  baseURL: getAppBaseUrl(),
   
   fetchOptions: {
     onRequest(ctx) {

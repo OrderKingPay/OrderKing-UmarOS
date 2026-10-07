@@ -1,3 +1,4 @@
+﻿
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
 /** Which database backend is active. */
@@ -12,7 +13,7 @@ export function getDatabaseUrl() {
   return url;
 }
 export function getDbSource() { return 'neon'; }
-export const dbSource = 'neon';
+export const dbSource: string = 'neon';
 
 /**
  * Minimal shared SQL surface, satisfied by both Neon and PGLite. Both the
@@ -31,7 +32,7 @@ export interface Sql {
     text: string,
     params?: unknown[],
   ): Promise<T[]>;
-  transaction<T>(fn: (tx: Sql) => Promise<T>): Promise<T>;
+  transaction<T>(cb: (tx: Sql) => Promise<T>): Promise<T>;
 }
 
 /**
@@ -43,7 +44,7 @@ export interface Sql {
  */
 const globalRef = globalThis as typeof globalThis & {
   __pgSqlPromise__?: Promise<Sql>;
-  __pgliteInstance__?: Promise<import("@electric-sql/pglite").PGlite>;
+  __pgliteInstance__?: Promise<any>;
   __pgliteMigrateChain__?: Promise<void>;
 };
 
@@ -67,55 +68,47 @@ const identity = (v: string) => v;
 type Run = <T>(text: string, params: unknown[]) => Promise<T[]>;
 
 /** Wrap a query runner in the tagged-template + `.query()` `Sql` surface. */
-function toSql(run: Run, transaction?: <T>(fn: (tx: Sql) => Promise<T>) => Promise<T>): Sql {
-  const safeRun: Run = async <T>(text: string, params: unknown[]) => {
-    try {
-      return await run<T>(text, params);
-    } catch (e) {
-      console.error("[db query error]", e);
-      return [] as T[];
-    }
-  };
-
+function toSql(
+  run: Run,
+  transaction?: <T>(fn: (tx: Sql) => Promise<T>) => Promise<T>,
+): Sql {
   const sql = (async <T = Record<string, unknown>>(
     strings: TemplateStringsArray,
     ...values: unknown[]
   ): Promise<T[]> => {
+    // Rebuild with $1, $2, … placeholders so values stay parameterized.
     let text = strings[0];
     for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
-    return safeRun<T>(text, values);
+    return run<T>(text, values);
   }) as unknown as Sql;
   sql.query = <T = Record<string, unknown>>(text: string, params: unknown[] = []) =>
-    safeRun<T>(text, params);
-  sql.transaction = async <T>(fn: (tx: Sql) => Promise<T>) => {
-    if (!transaction) {
-      console.error("Database transactions are unavailable");
-      return {} as T;
-    }
-    try {
-      return await transaction(fn);
-    } catch (e) {
-      console.error("[db transaction error]", e);
-      return {} as T;
-    }
+    run<T>(text, params);
+  sql.transaction = async <T>(cb: (tx: Sql) => Promise<T>): Promise<T> => {
+    if (!transaction) throw new Error("Database transactions are unavailable");
+    return transaction(cb);
   };
   return sql;
 }
 
 function createNeonSql(): Promise<Sql> {
   globalRef.__pgSqlPromise__ ??= (async () => {
+    // Regular Postgres driver: node-postgres (`pg`) — works directly with Neon's
+    // pooled endpoint. One pool per process; warm serverless instances reuse it.
     const { Pool, types } = await import("pg");
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
     const url = getDatabaseUrl(); if (!url) throw new Error("DATABASE_URL is missing"); const pool = new Pool({ connectionString: url });
+    const run = async <T>(text: string, params: unknown[]) => {
+      const res = await pool.query(text, params);
+      return res.rows as T[];
+    };
     const makeClientSql = (client: import("pg").PoolClient) =>
-      toSql(
-        async <T>(text: string, params: unknown[]) => {
-          const res = await client.query(text, params);
-          return res.rows as T[];
-        },
-      );
+      toSql(async <T>(text: string, params: unknown[]) => {
+        const res = await client.query(text, params);
+        return res.rows as T[];
+      });
+
     return toSql(
       async <T>(text: string, params: unknown[]) => {
         const res = await pool.query(text, params);
@@ -138,8 +131,7 @@ function createNeonSql(): Promise<Sql> {
     );
   })().catch((err) => {
     globalRef.__pgSqlPromise__ = undefined;
-    console.error("[db] Neon init error:", err);
-    return toSql(async () => []);
+    throw err;
   });
   return globalRef.__pgSqlPromise__;
 }
@@ -156,22 +148,33 @@ async function createSql(): Promise<Sql> {
   return createNeonSql();
 }
 
+/**
+ * Get the shared, **server-only** SQL client. Neon when `DATABASE_URL` is set,
+ * otherwise the local PGLite fallback. Memoized — safe to call per request.
+ *
+ * Schema comes from `migrations/*.sql`, auto-applied before the first query on
+ * both backends — define tables there, never inline in server functions.
+ */
 export function getSql(): Promise<Sql> {
   sqlPromise ??= createSql().catch((err) => {
-    sqlPromise = null; 
-    console.error("[db] getSql error:", err);
-    return toSql(async () => []);
+    sqlPromise = null; // don't memoize failures — let the next call retry
+    throw err;
   });
   return sqlPromise;
 }
 
+/**
+ * The shared PGLite instance (preview only), with `migrations/*.sql` applied.
+ * Lets Better Auth persist to the SAME embedded DB as app data in preview (via a
+ * Kysely dialect). Throws when `DATABASE_URL` is set (that path uses Neon).
+ */
 export function ensureDbReady(): Promise<void> {
   if (getDbSource() !== "pglite") return Promise.resolve();
-  return getSql().then(() => undefined).catch(err => {
-    console.error("[db] ensureDbReady error:", err);
-  });
+  return getSql().then(() => undefined);
 }
 
+// Server-only eager start: kick PGLite bootstrap as soon as this module loads in
+// Node. Client bundles never hit this path (`getSql` throws in the browser).
 const globalBoot = globalThis as typeof globalThis & {
   __pgBootstrapPromise__?: Promise<void>;
 };
@@ -179,5 +182,8 @@ if (typeof window === "undefined" && dbSource === "pglite") {
   globalBoot.__pgBootstrapPromise__ ??= ensureDbReady().catch((err) => {
     globalBoot.__pgBootstrapPromise__ = undefined;
     console.error("[db] PGLite bootstrap failed:", err);
+    throw err;
   });
 }
+
+

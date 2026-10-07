@@ -157,7 +157,6 @@ export const Route = createAPIFileRoute("/api/umar-voice")({
               functionResult = { failed_count: failed.length, recent_failed: failed };
             }
 
-            // @ts-ignore
             response = await chatSession.sendMessage({ message: [{ functionResponse: { name: call.name || "", response: functionResult } }] });
           }
 

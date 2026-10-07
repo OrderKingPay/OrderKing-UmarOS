@@ -3,7 +3,7 @@ import { logGeospatialTelemetry, type TelemetryPayload } from "@/lib/orderking/s
 
 // @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/telemetry")({
-  // @ts-expect-error
+  
   server: {
     handlers: {
       POST: async ({ request }: any) => {

@@ -172,7 +172,7 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
       const commits = await getLocalRecentCommits("HDmaster", 5);
       return [
         `### 📜 Recent Commits: HDmaster`,
-        ...commits.map((c) => `- \`${c.sha.slice(0, 8)}\` — **${c.message}** (${c.author}, ${c.date})`),
+        ...commits.map((c) => `- \`${(c as any).sha.slice(0, 8)}\` — **${(c as any).message}** (${(c as any).author}, ${(c as any).date})`),
       ].join("\n");
     } catch (err) {
       return `### 📜 Commits\nCould not fetch commits: ${err instanceof Error ? err.message : String(err)}`;
@@ -263,7 +263,7 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
        if (!payload.query.toLowerCase().trim().startsWith("select")) {
           throw new Error("Only SELECT queries are permitted for autonomous fetch_data tasks.");
        }
-       const rows = await sql?.unsafe(payload.query);
+       const rows = await (sql as any)?.unsafe(payload.query);
        return { status: "SUCCESS", message: `Executed query successfully`, count: rows.length, data: rows.slice(0, 100), latencyMs: Date.now() - startTime };
     }
     

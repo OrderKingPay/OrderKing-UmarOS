@@ -16,11 +16,11 @@ export interface PendingApprovalRequest {
   description: string;
   targetEntity: string;
   amountInr?: number;
-  payload: Record<string, unknown>;
+  payload: Record<string, any>;
   reversible: boolean;
   rollbackAction?: {
     actionName: string;
-    payload: Record<string, unknown>;
+    payload: Record<string, any>;
   };
   createdAt: string;
   status: "PENDING" | "APPROVED" | "REJECTED" | "ROLLED_BACK";
@@ -73,7 +73,7 @@ export class FounderApprovalGates {
     description: string;
     targetEntity: string;
     amountInr?: number;
-    payload: Record<string, unknown>;
+    payload: Record<string, any>;
     reversible?: boolean;
     rollbackAction?: { actionName: string; payload: Record<string, unknown> };
   }): PendingApprovalRequest {

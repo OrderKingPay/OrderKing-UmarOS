@@ -1,11 +1,11 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 
 // TRAVEL API SCAFFOLDING (Amadeus / IRCTC / Skyscanner)
 // Drop your production API keys in Netlify Environment Variables:
 // VITE_TRAVEL_API_KEY, VITE_IRCTC_MERCHANT_KEY
 
 export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
-  POST: async () => {
+  POST: async ({ request }: any) => {
   try {
     const { origin, destination, date, type } = await request.json();
 

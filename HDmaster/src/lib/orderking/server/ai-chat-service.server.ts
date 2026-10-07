@@ -1,3 +1,8 @@
+import { conversationalControl } from '../ai/founder-conversational-control.server';
+import { registerFounderTools } from '../ai/tool-registry.server';
+
+registerFounderTools();
+
 // HDmaster / Umar OS: Unified AI Chat & Streaming Service
 // Zero-Fabrication: connects real models, real model IDs, real streaming,
 // contextual conversation memory, multimodal attachments, and authorized tools.
@@ -515,7 +520,34 @@ export async function executeFounderAiChat(
   const { currentQuery } = resolveContextualQuery(request.messages);
 
   // 1. Check for real repository / engineering tool commands
-  const engineeringResult = await tryExecuteEngineeringCommand(currentQuery);
+      // 0. UMAR OS Universal Conversational Control Fabric
+    if (currentQuery.toLowerCase().includes('platform state') || currentQuery.toLowerCase().includes('reconciliation') || currentQuery.toLowerCase().includes('cancellation')) {
+       try {
+           const result = await conversationalControl.interpretAndExecute(currentQuery, {
+             userId: request.userId || 'system',
+               role: (request as any).userRole || 'USER',
+             requestId: 'req_' + Date.now(),
+             timestamp: new Date().toISOString()
+           });
+           
+           if (result.status === 'SUCCESS') {
+               const responseText = '### 👑 Universal Tool Executed: ' + result.toolExecuted + '\n\n`json\n' + JSON.stringify(result.data, null, 2) + '\n`';
+               onStreamEvent?.({ type: 'delta', data: responseText });
+               onStreamEvent?.({ type: 'done', data: { text: responseText } });
+               
+               return {
+                 text: responseText,
+                 modelUsed: 'gemini-2.5-pro',
+                 provider: 'Universal Fabric',
+                 executionSteps: [],
+                 latencyMs: Date.now() - startTime,
+               };
+           }
+       } catch (e) {
+           console.error('Conversational Fabric failed', e);
+       }
+    }
+    const engineeringResult = await tryExecuteEngineeringCommand(currentQuery);
   if (engineeringResult) {
     onStreamEvent?.({ type: "delta", data: engineeringResult });
     onStreamEvent?.({ type: "done", data: { text: engineeringResult } });

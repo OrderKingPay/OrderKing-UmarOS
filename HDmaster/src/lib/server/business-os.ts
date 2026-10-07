@@ -21,7 +21,7 @@ export const getBusinessOsSnapshot = createServerFn({ method: "GET" }).handler(a
   await requireFounderAccess();
   return {
     budgetStatus: liveOrchestrationEngine.getBudgetStatus(),
-    adapters: liveOrchestrationEngine.listRegisteredAdapters(),
+    adapters: liveOrchestrationEngine.listRegisteredAdapters().map(({ executePrompt, ...rest }) => rest),
     pnl: businessOsModules.calculateFinancialPnL(),
     leads: businessOsModules.discoverLawfulOpportunities(),
     slas: businessOsModules.auditKitchenSlas(),
@@ -57,50 +57,50 @@ export const rejectFounderActionFn = createServerFn({ method: "POST" })
 // Compatibility exports for existing callers.
 export const getPendingApprovals = createServerFn({ method: "GET" }).handler(async () => {
   await requireFounderAccess();
-  return founderApprovalGates.listPendingRequests() as any;
+  return founderApprovalGates.listPendingRequests();
 });
 
 export const getBudgetStatus = createServerFn({ method: "GET" }).handler(async () => {
   await requireFounderAccess();
-  return liveOrchestrationEngine.getBudgetStatus() as any;
+  return liveOrchestrationEngine.getBudgetStatus();
 });
 
 export const getRegisteredAdapters = createServerFn({ method: "GET" }).handler(async () => {
   await requireFounderAccess();
-  return liveOrchestrationEngine.listRegisteredAdapters() as any;
+  return liveOrchestrationEngine.listRegisteredAdapters().map(({ executePrompt, ...rest }) => rest);
 });
 
 export const getFinancialPnL = createServerFn({ method: "GET" }).handler(async () => {
   await requireFounderAccess();
-  return businessOsModules.calculateFinancialPnL() as any;
+  return businessOsModules.calculateFinancialPnL();
 });
 
 export const getLawfulOpportunities = createServerFn({ method: "GET" }).handler(async () => {
   await requireFounderAccess();
-  return businessOsModules.discoverLawfulOpportunities() as any;
+  return businessOsModules.discoverLawfulOpportunities();
 });
 
 export const getKitchenSlas = createServerFn({ method: "GET" }).handler(async () => {
   await requireFounderAccess();
-  return businessOsModules.auditKitchenSlas() as any;
+  return businessOsModules.auditKitchenSlas();
 });
 
 export const getInventoryAlerts = createServerFn({ method: "GET" }).handler(async () => {
   await requireFounderAccess();
-  return businessOsModules.inspectInventoryAlerts() as any;
+  return businessOsModules.inspectInventoryAlerts();
 });
 
 export const getSreHealth = createServerFn({ method: "GET" }).handler(async () => {
   await requireFounderAccess();
-  return businessOsModules.inspectSreHealth() as any;
+  return businessOsModules.inspectSreHealth();
 });
 
 export const getMinimalStaffRoster = createServerFn({ method: "GET" }).handler(async () => {
   await requireFounderAccess();
-  return businessOsModules.getMinimalStaffRoster() as any;
+  return businessOsModules.getMinimalStaffRoster();
 });
 
 export const getAuditChain = createServerFn({ method: "GET" }).handler(async () => {
   await requireFounderAccess();
-  return founderApprovalGates.getAuditChain() as any;
+  return founderApprovalGates.getAuditChain();
 });

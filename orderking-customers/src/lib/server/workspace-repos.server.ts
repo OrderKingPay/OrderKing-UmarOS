@@ -1,4 +1,4 @@
-﻿export type AllowedRepo =
+export type AllowedRepo =
   | "HDmaster"
   | "orderking-customers--orders-"
   | "OrderKing-partners"
@@ -25,7 +25,7 @@ export async function getLocalRepoStatus(repo: unknown) {
   return { repo: validateRepo(repo), path: "/", existsOnDisk: false, branch: "unknown", isClean: true, changedFiles: [] };
 }
 
-export async function getLocalRecentCommits(repo: unknown, limit = 10) {
+export async function getLocalRecentCommits(repo: unknown, limit = 10): Promise<{sha: string, message: string, author: string, date: string}[]> {
   return [];
 }
 

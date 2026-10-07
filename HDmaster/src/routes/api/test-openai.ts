@@ -3,7 +3,7 @@ import { OpenAIProvider } from "@/lib/orderking/ai/providers/openai-provider";
 import type { ToolDefinition } from "@/lib/orderking/ai/providers/provider-interface";
 
 export const Route = createFileRoute("/api/test-openai")({
-  // @ts-expect-error
+  
   server: {
     handlers: {
       GET: async ({ request }: any) => {

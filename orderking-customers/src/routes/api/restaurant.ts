@@ -34,7 +34,7 @@ async function loadHours(): Promise<Map<string, HourWindow[]>> {
   return map;
 }
 
-// @ts-ignore
+
 export const Route = createFileRoute("/api/restaurant")({
   server: {
     handlers: {

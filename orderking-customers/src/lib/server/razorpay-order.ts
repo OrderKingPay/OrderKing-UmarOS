@@ -26,8 +26,8 @@ export type RazorpayOrderResponse = {
  * This is the client-callable RPC bridge. The handler runs server-side only.
  */
 export const createRazorpayOrder = createServerFn({ method: "POST" })
-  .// @ts-ignore
-  validator((data: RazorpayOrderRequest) => data)
+  
+.  validator((data: RazorpayOrderRequest) => data)
   .handler(async ({ data }: { data: RazorpayOrderRequest }): Promise<RazorpayOrderResponse> => {
     // Dynamic import keeps node:crypto out of client bundle
     const { getRazorpayConfig } = await import("./razorpay.server");

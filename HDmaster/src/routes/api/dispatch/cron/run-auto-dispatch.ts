@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 import { runAlgorithmicAutoDispatch } from '../../../../lib/orderking/server/auto-dispatch-engine.server';
 
 /**
@@ -6,7 +6,7 @@ import { runAlgorithmicAutoDispatch } from '../../../../lib/orderking/server/aut
  * Triggered automatically by Vercel every minute (* * * * *).
  */
 export const APIRoute = createAPIFileRoute('/api/dispatch/cron/run-auto-dispatch')({
-  GET: async ({ request }) => {
+  GET: async ({ request }: any) => {
     try {
       // Allow internal invocation or authenticated Vercel Cron
       const authHeader = request.headers.get('authorization');

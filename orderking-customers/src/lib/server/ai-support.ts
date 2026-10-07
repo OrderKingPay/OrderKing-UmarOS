@@ -26,8 +26,7 @@ export type ResolutionResult = {
 
 export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((d: { orderId: string; issueType: SupportIssueType; details?: string }) => d)
+  .validator((d: { orderId: string; issueType: SupportIssueType; details?: string }) => d)
   .handler(async ({ context, data }: any): Promise<ResolutionResult> => {
     const sql = await getSql();
 
@@ -223,8 +222,7 @@ export type AiChatMessage = {
 
 export const askAiSupportAssistant = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((d: { query: string; orderId?: string }) => d)
+  .validator((d: { query: string; orderId?: string }) => d)
   .handler(async ({ context, data }: any): Promise<{ reply: string; links?: { title: string; url: string; phone?: string; badge?: string }[]; actionChip?: { label: string; issueType: SupportIssueType } }> => {
     const q = data.query.toLowerCase().trim();
     const sql = await getSql();

@@ -1,8 +1,8 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
-import { getSql } from '../../../../lib/db';
+import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
+import { getSql } from '@/lib/db';
 
 export const APIRoute = createAPIFileRoute('/api/finance/escalations')({
-  GET: async ({ request }) => {
+  GET: async ({ request }: any) => {
     try {
       const sql = await getSql();
       

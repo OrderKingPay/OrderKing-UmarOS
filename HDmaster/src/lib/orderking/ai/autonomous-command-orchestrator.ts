@@ -23,7 +23,7 @@ export interface AutonomousCommandResult {
   executionSteps: AutonomousExecutionStep[];
   consensus: MultiModelConsensusResult;
   conciseSummary: string;
-  businessData?: Record<string, unknown>;
+  businessData?: Record<string, any>;
   pendingApproval?: PendingApprovalRequest;
   totalDurationMs: number;
 }

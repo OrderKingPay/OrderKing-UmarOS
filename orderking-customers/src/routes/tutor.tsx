@@ -8,7 +8,7 @@ import { CustomerShell } from "@/components/market/shell";
 
 
 const askTutorFn = createServerFn({ method: "POST" })
-  // @ts-ignore
+  
   .validator((data: { message: string, board: string, stdClass: string, language: string, history: any[] }) => data)
   .handler(async ({ data }: any) => {
     const apiKey = process.env.OPENAI_API_KEY;
@@ -101,7 +101,7 @@ function TutorPage() {
         
         
         {/* Magnetic Job Board & Affiliate Aggregator */}
-        {/* @ts-nocheck */}
+        
         <div className="px-4 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 overflow-x-auto whitespace-nowrap hide-scrollbar flex gap-3 shadow-inner">
           <a href="#" className="inline-block bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-3 shrink-0 hover:bg-white/30 transition-all cursor-pointer min-w-[200px]">
             <div className="flex items-center gap-2 mb-1">

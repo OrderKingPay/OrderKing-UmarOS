@@ -1,0 +1,26 @@
+{
+  "AI_Providers": {
+    "Gemini": "REQUIRES CREDENTIAL",
+    "OpenAI": "REQUIRES CREDENTIAL",
+    "Anthropic": "REQUIRES CREDENTIAL"
+  },
+  "Payments": {
+    "Stripe": "REQUIRES CREDENTIAL",
+    "Razorpay": "REQUIRES CREDENTIAL",
+    "CashFree": "REQUIRES CREDENTIAL"
+  },
+  "Maps_Logistics": {
+    "GoogleMaps": "REQUIRES CREDENTIAL",
+    "Mapbox": "REQUIRES CREDENTIAL",
+    "PostGIS": "IMPLEMENTABLE NOW"
+  },
+  "Databases": {
+    "Neon": "NOT AVAILABLE",
+    "PGLite": "IMPLEMENTABLE NOW",
+    "Redis": "REQUIRES CREDENTIAL"
+  },
+  "Integrations": {
+    "WhatsApp": "REQUIRES CREDENTIAL",
+    "BBPS": "REQUIRES CREDENTIAL"
+  }
+}

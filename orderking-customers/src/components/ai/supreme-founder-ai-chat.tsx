@@ -996,7 +996,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   }
 
   // Card: Verified Capability Benchmarks (§26)
-  if (card.type === "benchmark_results") {
+  if (card.type === ("benchmark_results" as any)) {
     const report = card.data as BenchmarkRunReport;
     const voiceLatency = report.categoryScores?.voice_latency?.latencyMs ?? report.averageLatencyMs;
     const softwareLatency = report.categoryScores?.software_generation?.latencyMs ?? 85;
@@ -1070,7 +1070,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   }
 
   // Card: Cost Optimization (§24)
-  if (card.type === "cost_optimization") {
+  if (card.type === ("cost_optimization" as any)) {
     const rep = card.data as CostControlReport;
     return (
       <div className="rounded-xl border border-amber-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
@@ -1112,12 +1112,12 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   }
 
   // Card: In-Chat Credential Configuration
-  if (card.type === "credential_config") {
+  if (card.type === ("credential_config" as any)) {
     return <InChatCredentialCard onSave={onSaveKeys} />;
   }
 
   // Card: Delivery Task Graph (§28)
-  if (card.type === "delivery_graph") {
+  if (card.type === ("delivery_graph" as any)) {
     const graph = card.data as SupremeExecutionPlan;
     return (
       <div className="rounded-xl border border-cyan-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">

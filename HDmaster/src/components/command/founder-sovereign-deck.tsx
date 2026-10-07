@@ -50,13 +50,14 @@ import { FounderIncomeProducts } from "./founder-income-products";
 import { selfUpgrader, type SelfUpgradeMetric } from "@/lib/orderking/ai/autonomous-self-upgrader";
 import { legalAccounting, type GstReport, type LegalPayoutEntry } from "@/lib/orderking/finance/legal-accounting-gst";
 import { SupremeFounderAiChat } from "./supreme-founder-ai-chat";
+import { UniversalFabricTab } from "./universal-fabric-tab";
 import { FounderAiOsShell } from "./founder-ai-os-shell";
 
 export function FounderSovereignDeck() {
   const qc = useQueryClient();
 
   // Navigation Tabs for Supreme Capabilities
-  const [deckTab, setDeckTab] = useState<"supreme_ai" | "telemetry" | "creator" | "monetization" | "upgrader" | "accounting">("supreme_ai");
+  const [deckTab, setDeckTab] = useState<"supreme_ai" | "telemetry" | "creator" | "monetization" | "upgrader" | "accounting" | "fabric">("supreme_ai");
 
   // Founder State Controls
   const [platformFrozen, setPlatformFrozen] = useState(false);
@@ -192,7 +193,8 @@ export function FounderSovereignDeck() {
                 System Subsystems
               </span>
               {[
-                { id: "creator", label: "1-Command App Creator", icon: Sparkles },
+                { id: "fabric", label: "Universal Fabric", icon: Sparkles },
+                  { id: "creator", label: "1-Command App Creator", icon: Sparkles },
                 { id: "monetization", label: "Founder Legal Income", icon: Wallet },
                 { id: "upgrader", label: "Autonomous Self-Coding", icon: Zap },
                 { id: "telemetry", label: "Operations & Telemetry", icon: Activity },
@@ -304,7 +306,9 @@ export function FounderSovereignDeck() {
       )}
 
       {/* TAB 1: 1-COMMAND APP & WEB CREATOR */}
-      {deckTab === "creator" && <SupremeCreatorEngine />}
+      {deckTab === "fabric" && <UniversalFabricTab />}
+
+        {deckTab === "creator" && <SupremeCreatorEngine />}
 
       {/* TAB 2: FOUNDER INCOME & PAID PRODUCTS */}
       {deckTab === "monetization" && <FounderIncomeProducts />}

@@ -1,3 +1,4 @@
+
 import { describe, it } from "node:test";
 import assert from "node:assert";
 import {
@@ -83,7 +84,7 @@ describe("rate-limiter", () => {
 describe("surge-pricing", () => {
   it("returns no surge when supply exceeds demand", () => {
     const result = calculateSurge({
-      activeOrders: 5,
+      hour: 12, activeOrders: 5,
       availableRiders: 15,
       totalRiders: 20,
       hour: 10,
@@ -97,10 +98,7 @@ describe("surge-pricing", () => {
 
   it("applies surge when riders are scarce", () => {
     const result = calculateSurge({
-      activeOrders: 20,
-      availableRiders: 5,
-      totalRiders: 30,
-      hour: 20,
+      hour: 12, activeOrders: 20, availableRiders: 5, totalRiders: 30,
       baseDeliveryFeePaise: 3000,
       baseMinOrderPaise: 10000,
       badWeather: true,
@@ -113,10 +111,7 @@ describe("surge-pricing", () => {
 
   it("caps surge at maximum 2.5x", () => {
     const result = calculateSurge({
-      activeOrders: 100,
-      availableRiders: 1,
-      totalRiders: 50,
-      hour: 21,
+      hour: 12, activeOrders: 100, availableRiders: 1, totalRiders: 50,
       baseDeliveryFeePaise: 3000,
       baseMinOrderPaise: 10000,
       badWeather: true,
@@ -127,7 +122,7 @@ describe("surge-pricing", () => {
 
   it("surgeForZone uses current hour", () => {
     const result = surgeForZone({
-      activeOrders: 5,
+      hour: 12, activeOrders: 5,
       availableRiders: 10,
       totalRiders: 20,
       baseDeliveryFeePaise: 3000,
@@ -139,8 +134,8 @@ describe("surge-pricing", () => {
 
   it("surgeForAllZones returns per-zone results", () => {
     const results = surgeForAllZones([
-      { zoneId: "z1", activeOrders: 2, availableRiders: 8, totalRiders: 10, baseDeliveryFeePaise: 2500, baseMinOrderPaise: 9900 },
-      { zoneId: "z2", activeOrders: 15, availableRiders: 3, totalRiders: 10, baseDeliveryFeePaise: 3000, baseMinOrderPaise: 9900 },
+      { zoneId: "z1", hour: 12, activeOrders: 2, availableRiders: 8, totalRiders: 10, baseDeliveryFeePaise: 2500, baseMinOrderPaise: 9900 },
+      { zoneId: "z2", hour: 12, activeOrders: 15, availableRiders: 3, totalRiders: 10, baseDeliveryFeePaise: 3000, baseMinOrderPaise: 9900 },
     ]);
     assert.strictEqual(results.length, 2);
     assert.strictEqual(results[0].zoneId, "z1");

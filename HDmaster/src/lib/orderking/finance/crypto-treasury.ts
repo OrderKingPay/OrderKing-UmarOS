@@ -1,4 +1,4 @@
-import { getSql, type Sql } from "../../../db";
+import { getSql, type Sql } from '@/lib/db';
 
 /**
  * 👑 ORDERKING GLOBAL CRYPTO TREASURY
@@ -81,7 +81,7 @@ export const CryptoTreasury = {
         INSERT INTO ledger_entries (id, org_id, order_id, party, kind, source, rule_key, amount_paise, note)
         VALUES (
           gen_random_uuid(), 'ORDERKING_HQ', ${orderId}, 'PLATFORM', 'CREDIT', 
-          'CRYPTO_PREMIUM', 'AUTO_SPLIT', ${Math.round(intent[0].amount * 83.50 * 100 * 0.015)}, 
+          'CRYPTO_PREMIUM', 'AUTO_SPLIT', ${Math.round((intent[0] as any).amount * 83.50 * 100 * 0.015)}, 
           'Founder 1.5% Crypto FX Premium'
         )
       `;

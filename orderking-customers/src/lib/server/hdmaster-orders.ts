@@ -14,8 +14,8 @@ export function hdmasterConfig() {
 
 export const placeOrderViaHDmaster = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((input: {
+  
+.  validator((input: {
     restaurantId: string; zoneId: string; lat: number; lng: number; coupon?: string | null; tipPaise?: number; lines: CartLineInput[];
     address: { line1: string; area: string; landmark?: string; instructions?: string; label?: string };
     paymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY"; notes?: string; idempotencyKey: string;
@@ -44,8 +44,8 @@ export const placeOrderViaHDmaster = createServerFn({ method: "POST" })
 
 export const cancelOrderViaHDmaster = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((input: { orderId: string; reason?: string; idempotencyKey: string }) => input)
+  
+.  validator((input: { orderId: string; reason?: string; idempotencyKey: string }) => input)
   .handler(async ({ context, data }: any) => {
     if (!data.orderId || !data.idempotencyKey || data.idempotencyKey.length < 8) throw new Error("Order ID and idempotency key are required.");
     const { baseUrl, token } = hdmasterConfig();

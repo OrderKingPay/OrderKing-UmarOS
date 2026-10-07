@@ -16,8 +16,8 @@ export type OrderReview = {
 
 export const submitOrderReview = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((input: { orderId: string; rating: number; body?: string }) => input)
+  
+.  validator((input: { orderId: string; rating: number; body?: string }) => input)
   .handler(async ({ context, data }: any) => {
     const rating = Math.min(5, Math.max(1, Math.floor(data.rating)));
     const body = (data.body ?? "").trim().slice(0, 500);
@@ -77,8 +77,8 @@ export const submitOrderReview = createServerFn({ method: "POST" })
 
 export const getOrderReview = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((input: { orderId: string }) => input)
+  
+.  validator((input: { orderId: string }) => input)
   .handler(async ({ context, data }: any): Promise<{ review: OrderReview | null }> => {
     const sql = await getSql();
     // Verify user owns order

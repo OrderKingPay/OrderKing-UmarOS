@@ -1,4 +1,4 @@
-import { sql } from '@/lib/db';
+import { getSql } from '@/lib/db';
 
 export type TransactionType = 
   | 'ORDER_PAYMENT' 
@@ -26,7 +26,7 @@ export interface LedgerEntry {
 export class FinancialLedger {
   
   static async recordTransaction(entry: LedgerEntry) {
-    const res = await sql`
+    const res = await (await getSql())`
       INSERT INTO financial_ledger (
         order_id, transaction_type, amount, currency, source_account_id, destination_account_id, status, metadata
       ) VALUES (
@@ -46,8 +46,8 @@ export class FinancialLedger {
 
   static async reconcileOrder(orderId: string) {
     // Reconcile single order
-    const transactions = await sql`
-      SELECT * FROM financial_ledger WHERE order_id = ${orderId}
+    const transactions = await (await getSql())`
+      SELECT * FROM financial_ledger WHERE order_id =  as Promise<Array<{ destination_account_id: string, source_account_id: string, amount: number }>>
     `;
 
     let totalIn = 0;
@@ -55,17 +55,17 @@ export class FinancialLedger {
 
     for (const tx of transactions) {
       if (tx.destination_account_id === 'PLATFORM') {
-        totalIn += tx.amount;
+        totalIn += Number(tx.amount);
       }
       if (tx.source_account_id === 'PLATFORM') {
-        totalOut += tx.amount;
+        totalOut += Number(tx.amount);
       }
     }
 
     const netPlatformRevenue = totalIn - totalOut;
 
     // Log reconciliation result
-    await sql`
+    await (await getSql())`
       INSERT INTO reconciliation_reports (order_id, total_in, total_out, net_revenue, status)
       VALUES (${orderId}, ${totalIn}, ${totalOut}, ${netPlatformRevenue}, ${netPlatformRevenue >= 0 ? 'BALANCED' : 'DEFICIT'})
     `;
@@ -75,7 +75,7 @@ export class FinancialLedger {
 
   static async calculateRestaurantPayout(restaurantId: string, startDate: string, endDate: string) {
     // Find all completed orders for restaurant
-    const orders = await sql`
+    const orders = await (await getSql())`
       SELECT id, total_amount, commission_rate FROM orders 
       WHERE restaurant_id = ${restaurantId} AND status = 'DELIVERED' 
       AND created_at >= ${startDate} AND created_at <= ${endDate}
@@ -85,12 +85,12 @@ export class FinancialLedger {
     let totalCommission = 0;
 
     for (const order of orders) {
-      const commission = order.total_amount * (order.commission_rate || 0.15); // 15% default
-      totalSales += order.total_amount;
+      const commission = Number(order.total_amount) * Number(order.commission_rate || 0.15); // 15% default
+      totalSales += Number(order.total_amount);
       totalCommission += commission;
 
       await this.recordTransaction({
-        orderId: order.id,
+        orderId: order.id as string,
         transactionType: 'COMMISSION_DEDUCTION',
         amount: commission,
         currency: 'INR',

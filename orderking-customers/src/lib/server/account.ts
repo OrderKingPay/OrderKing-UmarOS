@@ -7,8 +7,7 @@ import type { AddressView, LoyaltyView, PromoView, TicketView } from "@/lib/mark
 
 export const ensureProfile = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((input: { name?: string; language?: string } | undefined) => input ?? {})
+  .validator((input: { name?: string; language?: string } | undefined) => input ?? {})
   .handler(async ({ context, data }: any) => {
     const sql = await getSql();
     await sql`
@@ -49,8 +48,7 @@ export const ensureProfile = createServerFn({ method: "POST" })
 
 export const updateProfile = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((input: {
+  .validator((input: {
     name?: string;
     phone?: string;
     language?: string;
@@ -114,8 +112,7 @@ export const listAddresses = createServerFn({ method: "GET" })
 
 export const saveAddress = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((input: {
+  .validator((input: {
     id?: string;
     label: string;
     line1: string;
@@ -159,8 +156,7 @@ export const saveAddress = createServerFn({ method: "POST" })
 
 export const toggleFavourite = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((input: { restaurantId: string }) => input)
+  .validator((input: { restaurantId: string }) => input)
   .handler(async ({ context, data }: any) => {
     const sql = await getSql();
     const existing = await sql<{ restaurant_id: string }>`
@@ -229,8 +225,7 @@ export const requestDeletion = createServerFn({ method: "POST" })
 
 export const createTicket = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .// @ts-ignore
-  validator((input: { topic: string; message: string; orderId?: string }) => input)
+  .validator((input: { topic: string; message: string; orderId?: string }) => input)
   .handler(async ({ context, data }: any) => {
     const message = data.message.trim();
     if (message.length < 4) throw new Error("Please describe the issue.");

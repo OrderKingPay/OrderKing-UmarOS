@@ -24,8 +24,8 @@ export const getKingpayBalance = createServerFn({ method: "GET" }).handler(async
 });
 
 export const addKingpayMoney = createServerFn({ method: "POST" })
-  .// @ts-ignore
-  validator((d: { amount: number; description: string }) => d)
+  
+.  validator((d: { amount: number; description: string }) => d)
   .handler(async ({ data }: any) => {
     const user = await getSessionUser();
     if (!user) throw new Error("Unauthorized");
@@ -41,8 +41,8 @@ export const addKingpayMoney = createServerFn({ method: "POST" })
   });
 
 export const deductKingpayMoney = createServerFn({ method: "POST" })
-  .// @ts-ignore
-  validator((d: { amount: number; description: string }) => d)
+  
+.  validator((d: { amount: number; description: string }) => d)
   .handler(async ({ data }: any) => {
     const user = await getSessionUser();
     if (!user) throw new Error("Unauthorized");

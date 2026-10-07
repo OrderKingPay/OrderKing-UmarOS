@@ -35,8 +35,8 @@ export function getRazorpayConfig() {
  * Automatically falls back to zero-crash test mode if keys are not set.
  */
 export const createRazorpayOrder = createServerFn({ method: "POST" })
-  .// @ts-ignore
-  validator((data: RazorpayOrderRequest) => data)
+  
+.  validator((data: RazorpayOrderRequest) => data)
   .handler(async ({ data }: { data: RazorpayOrderRequest }): Promise<RazorpayOrderResponse> => {
     const config = getRazorpayConfig();
 

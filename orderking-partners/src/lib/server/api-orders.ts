@@ -20,7 +20,7 @@ export const listOrders = createServerFn({ method: "GET" }).middleware([authMidd
     const res = await fetch(`${coreUrl()}/v1/admin/restaurants/${ctx.restaurantId}/partner-orders?scope=${scope}`, {
       headers: { authorization: `Bearer ${serviceToken()}` }
     });
-    const payload = (await res.json()) as any;
+    const payload: any = await res.json();
     const { rows, lines, events } = payload.data || { rows: [], lines: [], events: [] };
 
     const linesByOrder = new Map<string, OrderLineView[]>();
@@ -56,7 +56,7 @@ export const getDashboard = createServerFn({ method: "GET" }).middleware([authMi
     const res = await fetch(`${coreUrl()}/v1/admin/restaurants/${ctx.restaurantId}/partner-dashboard`, {
       headers: { authorization: `Bearer ${serviceToken()}` }
     });
-    const payload = (await res.json()) as any;
+    const payload: any = await res.json();
     const hdStats = payload.data || {};
     
     const unavailable = await sql<{ c: number }>`select count(*)::int as c from item_availability a join items i on i.id = a.item_id where a.restaurant_id = ${ctx.restaurantId} and a.status <> 'available' and i.is_active = true`;
@@ -124,7 +124,7 @@ export const acceptOrder = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
       const res = await sql`UPDATE orders SET status = 'CONFIRMED' WHERE id = ${data.orderId} AND status = 'PENDING' AND restaurant_id = ${ctx.restaurantId}`;
-      if ((res as any).count === 0) throw new Error("Order not found or not in PENDING state");
+      if (res.length === 0) throw new Error("Order not found or not in PENDING state");
       return { ok: true, status: 'CONFIRMED' };
     });
   });
@@ -135,7 +135,7 @@ export const rejectOrder = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
       const res = await sql`UPDATE orders SET status = 'RESTAURANT_REJECTED', reject_reason = ${data.reason} WHERE id = ${data.orderId} AND status = 'PENDING' AND restaurant_id = ${ctx.restaurantId}`;
-      if ((res as any).count === 0) throw new Error("Order not found or not in PENDING state");
+      if (res.length === 0) throw new Error("Order not found or not in PENDING state");
       return { ok: true, status: 'RESTAURANT_REJECTED' };
     });
   });
@@ -146,7 +146,7 @@ export const markPreparing = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
       const res = await sql`UPDATE orders SET status = 'PREPARING' WHERE id = ${data.orderId} AND status = 'CONFIRMED' AND restaurant_id = ${ctx.restaurantId}`;
-      if ((res as any).count === 0) throw new Error("Order not found or not in CONFIRMED state");
+      if (res.length === 0) throw new Error("Order not found or not in CONFIRMED state");
       return { ok: true, status: 'PREPARING' };
     });
   });
@@ -157,7 +157,7 @@ export const markReady = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "orders.view", async (sql, ctx) => {
       const res = await sql`UPDATE orders SET status = 'READY' WHERE id = ${data.orderId} AND status = 'PREPARING' AND restaurant_id = ${ctx.restaurantId}`;
-      if ((res as any).count === 0) throw new Error("Order not found or not in PREPARING state");
+      if (res.length === 0) throw new Error("Order not found or not in PREPARING state");
       return { ok: true, status: 'READY' };
     });
   });

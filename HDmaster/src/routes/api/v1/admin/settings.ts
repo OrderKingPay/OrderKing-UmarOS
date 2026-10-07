@@ -15,9 +15,9 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
           `;
           
           const rows = await sql`SELECT settings_json FROM platform_settings LIMIT 1`;
-          let bag = {};
+          let bag: Record<string, any> = {};
           if (rows.length > 0 && rows[0].settings_json) {
-            try { bag = JSON.parse(rows[0].settings_json); } catch (e) {}
+            try { bag = JSON.parse(rows[0].settings_json as string); } catch (e) {}
           }
           
           // Map nested bag to flat UI state
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
           return new Response(JSON.stringify(config), { headers: { 'Content-Type': 'application/json' } });
         } catch (err) {
           console.error("GET /settings error:", err);
-          return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+          return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
         }
       },
       POST: async ({ request }) => {
@@ -55,9 +55,9 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
           `;
 
           const rows = await sql`SELECT settings_json FROM platform_settings LIMIT 1`;
-          let existing = {};
+          let existing: Record<string, any> = {};
           if (rows.length > 0 && rows[0].settings_json) {
-            try { existing = JSON.parse(rows[0].settings_json); } catch (e) {}
+            try { existing = JSON.parse(rows[0].settings_json as string); } catch (e) {}
           }
 
           // Map flat UI state to nested bag
@@ -93,7 +93,7 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
           return new Response(JSON.stringify({ success: true, updated }), { headers: { 'Content-Type': 'application/json' } });
         } catch (err) {
           console.error("POST /settings error:", err);
-          return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+          return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
         }
       }
     }

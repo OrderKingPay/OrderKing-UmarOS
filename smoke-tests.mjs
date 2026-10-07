@@ -1,36 +1,15 @@
-import { execSync } from 'child_process';
-import path from 'path';
-
-const apps = [
-  'HDmaster',
-  'orderking-customers',
-  'orderking-partners',
-  'orderking-riders',
-  'Apps-integration-'
-];
-
-console.log('Running Smoke Tests (Typecheck) for all 5 Apps...');
-
-let allPassed = true;
-
+﻿const { execSync } = require('child_process');
+const apps = ['orderking-customers', 'orderking-partners', 'orderking-riders', 'HDmaster', 'Apps-integration-'];
+let success = true;
 for (const app of apps) {
-  console.log(`\n--- Testing ${app} ---`);
+  console.log(Checking ...);
   try {
-    // Run typecheck inside the workspace
-    // We try to run `tsc --noEmit` locally in each app's directory.
-    // If an app doesn't have a tsconfig, tsc will fail. But presumably they do.
-    execSync(`npx tsc --noEmit`, { stdio: 'inherit', cwd: path.resolve(process.cwd(), app) });
-    console.log(`✅ ${app} passed typecheck.`);
-  } catch (error) {
-    console.error(`❌ ${app} failed typecheck.`);
-    allPassed = false;
+    execSync('pnpm run typecheck', { cwd: C:/Users/hasan/OrderKing/, stdio: 'pipe' });
+    console.log(${app} passed!);
+  } catch(e) {
+    console.error(${app} FAILED:);
+    console.error(e.stdout ? e.stdout.toString() : e.message);
+    success = false;
   }
 }
-
-if (!allPassed) {
-  console.error('\n❌ Smoke tests failed!');
-  process.exit(1);
-} else {
-  console.log('\n✅ All smoke tests passed!');
-  process.exit(0);
-}
+if (!success) process.exit(1);

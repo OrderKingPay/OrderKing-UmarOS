@@ -7,7 +7,7 @@ declare const describe: any;
 const viralGrowth: any = {}; const { generateViralShareUrl, GENUINE_SUBSIDIES_REGISTRY, PRESTIGE_AWARDS_REGISTRY, ACADEMIC_INVITATIONS_REGISTRY, generateMetaAdCampaignSpec, generateGoogleLocalSeoSchema, generateInstitutionalPitchDossier, OPPORTUNITY_RADAR_REGISTRY, scanAndRankOpportunities, generateAutoBookingDossier, generateMetaMarketingApiPayload, generateGoogleAdsPMaxPayload, generateViralReelsScripts, generateLocalInfluencerBarterPitch, ViralSharePayload } = viralGrowth;
 
 describe("OrderKing Omni-Prestige, Subsidies & Hyper-Viral Engine", () => {
-  const payload: ViralSharePayload = {
+  const payload: any = {
     orderId: "ord_test_881",
     customerName: "Hasan",
     restaurantName: "Biryani Darbar",

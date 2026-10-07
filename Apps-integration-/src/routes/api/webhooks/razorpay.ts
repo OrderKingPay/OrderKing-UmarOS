@@ -32,7 +32,7 @@ const RazorpayWebhookSchema = z.object({
 export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: async ({ request }: any) => {
         try {
       const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET;
       

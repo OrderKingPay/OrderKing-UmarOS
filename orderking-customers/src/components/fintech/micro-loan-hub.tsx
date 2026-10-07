@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 
 import { useState } from "react";
 import { Banknote, ArrowRight, ShieldCheck, Zap, Sparkles, Loader2, CheckCircle2 } from "lucide-react";
@@ -26,13 +27,13 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
     try {
       toast.error('Loan integration coming soon - Under Development');
       return;
-      const data = await res.json();
+      // const data = await res.json();
       
-      if (res.ok && data.approved) {
-        setResult(data);
-        onDisburseToWallet(data.disbursedAmount);
+      if (false) {
+        setResult({} as any);
+        onDisburseToWallet((undefined as any));
       } else {
-        setError(data.message || data.error || "Application rejected");
+        setError("Application rejected");
       }
     } catch (err) {
       setError("Network error connecting to NBFC partner.");

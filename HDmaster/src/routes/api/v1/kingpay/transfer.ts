@@ -12,7 +12,7 @@ const TransferRequestSchema = z.object({
 });
 
 export const Route = createFileRoute("/api/v1/kingpay/transfer")({
-  // @ts-expect-error
+  
   server: {
     handlers: {
       POST: async ({ request }: any) => {

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { testModelConnectivity, getVerifiedModelRegistry } from "@/lib/orderking/ai/real-model-registry";
 
 export const Route = createFileRoute("/api/ai/test-connection")({
-  // @ts-expect-error
+  
   server: {
     handlers: {
       GET: async () => {

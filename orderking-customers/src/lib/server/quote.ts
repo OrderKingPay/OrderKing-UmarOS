@@ -260,16 +260,16 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
 }
 
 export const quoteCart = createServerFn({ method: "POST" })
-  .// @ts-ignore
-  validator((input: QuoteRequest & { isFirstOrder?: boolean }) => input)
+  
+.  validator((input: QuoteRequest & { isFirstOrder?: boolean }) => input)
   .handler(async ({ data }: any) => {
     const built = await buildQuote(data, Boolean(data.isFirstOrder));
     return built.result;
   });
 
 export const trackAnalytics = createServerFn({ method: "POST" })
-  .// @ts-ignore
-  validator((input: { name: string; payload?: Record<string, string | number | boolean | null> }) => input)
+  
+.  validator((input: { name: string; payload?: Record<string, string | number | boolean | null> }) => input)
   .handler(async ({ data }: any) => {
     const allowed = new Set([
       "app_open",

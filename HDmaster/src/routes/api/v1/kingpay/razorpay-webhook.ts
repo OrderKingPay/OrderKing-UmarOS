@@ -20,7 +20,7 @@ const RazorpayWebhookSchema = z.object({
 }).passthrough();
 
 export const Route = createFileRoute("/api/v1/kingpay/razorpay-webhook")({
-  // @ts-expect-error
+  
   server: {
     handlers: {
       POST: async ({ request }: any) => {

@@ -31,7 +31,7 @@ describe("Supreme Conversational Engine — Real Listening & Non-Repetitive Dial
 
   it("should answer 'Why is delivery restricted to Karimganj?' with strategic clarity", async () => {
     const res = await parseFounderQuery("Why is food delivery restricted to Karimganj?");
-    assert.ok(res!.intent === "geofence_status" || res!.intent === "general_executive");
+    assert.ok(res!.intent === "geofence_status" as any || res!.intent === "general_executive");
     assert.ok(res!.responseMarkdown.includes("15-Minute") || res!.responseMarkdown.includes("Karimganj"));
     assert.ok(res!.voiceSpokenText.includes("fifteen-minute") || res!.voiceSpokenText.includes("Karimganj"));
     assert.ok(!res!.voiceSpokenText.includes("Supreme AI Executive Assistant, operating at maximum capacity"));

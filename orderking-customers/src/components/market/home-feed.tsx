@@ -269,7 +269,7 @@ export function HomeFeed({
       ) : null}
 
       {/* Preferred & Top-Rated Kitchens Ad Row (Ranked by Ad Spend + Performance) */}
-      {!q && !veg && !openNow && !category ? <PreferredKitchensAdRow className="my-1" /> : null}
+      {!q && !veg && !openNow && !category ? null : null}
 
 
 

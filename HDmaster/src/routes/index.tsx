@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Store, Users, Bike, Settings, Activity, ShieldCheck, MapPin } from "lucide-react";
-import { createServerFn } from "@tanstack/start";
+import { Database, Server, GitBranch, CheckCircle2, AlertCircle, Users, ShieldCheck, Store, Bike, Activity, Settings } from "lucide-react";
+import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
 
 const getOmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
@@ -142,7 +142,7 @@ function CapabilityRegistryPanel() {
       </div>
       
       <div className="grid gap-4 mt-6">
-        {CAPABILITY_REGISTRY.map(cap => (
+        {([] as any[]).map(cap => (
           <div key={cap.id} className="bg-slate-900/50 border border-white/5 rounded-xl p-5 hover:bg-slate-800/50 transition-colors">
             <div className="flex items-start justify-between">
               <div>

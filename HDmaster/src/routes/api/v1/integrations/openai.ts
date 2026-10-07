@@ -1,11 +1,11 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 
 // OPENAI API SCAFFOLDING
 // Drop your production API keys in Netlify Environment Variables:
 // VITE_OPENAI_API_KEY
 
 export const APIRoute = createAPIFileRoute('/api/v1/integrations/openai')({
-  POST: async () => {
+  POST: async ({ request }: any) => {
   try {
     const { prompt } = await request.json();
     const openAiKey = process.env.VITE_OPENAI_API_KEY;

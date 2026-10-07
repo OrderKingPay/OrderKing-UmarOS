@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
@@ -58,6 +57,7 @@ export const getHomeFn = createServerFn({ method: "GET" })
               const restaurant = { id: o.restaurant_id ?? "live_restaurant", name: o.restaurant_name ?? "Restaurant", area: "", address: o.restaurant_address ?? "", location: { lat: o.restaurant_lat ?? 0, lng: o.restaurant_lng ?? 0 }, phoneMasked: "XXX", specialPickupInstructions: null, preparationStatus: "READY" as const };
               const customer = { displayName: o.customer_name ?? "Customer", area: o.zone_name ?? "", address: o.customer_address ?? o.zone_name ?? "", contactMasked: null, contactAllowed: false, instructions: null };
               await e.getStore().insertDelivery({
+                pickupLocation: {lat:0, lng:0}, dropLocation: {lat:0, lng:0}, packageCount: 1, cod: false, codAmountPaise: 0, pickupVerification: "ORDER_CODE", pickupCode: "0000", otpRequired: false, arrivedRestaurantAt: null, expectedReadyAt: null, pickedUpAt: null, arrivedCustomerAt: null, deliveredAt: null, waitStartedAt: null, contactAttempts: 0, cancelReason: null, failReason: null, updatedAt: o.offered_at,
                 id: o.order_id,
                 orderCode: o.order_id,
                 orderId: o.order_id,
@@ -66,37 +66,37 @@ export const getHomeFn = createServerFn({ method: "GET" })
                 riderId: home.rider.id,
                 state: "OFFERED",
                 dataMode: "LIVE",
-                valuePaise: o.total_paise,
-                expectedDistanceM: o.distance_m ?? 0,
-                expectedEtaSeconds: o.eta_seconds ?? 0,
+                expectedPayoutPaise: o.total_paise,
+                // expectedDistanceM: o.distance_m ?? 0,
+                // expectedEtaSeconds: o.eta_seconds ?? 0,
                 restaurant,
                 customer,
-                pickupWindowStart: o.offered_at,
-                pickupWindowEnd: o.expires_at,
-                dropoffWindowStart: o.offered_at,
-                dropoffWindowEnd: o.expires_at,
-                routeScore: o.score,
+                // pickupWindowStart: o.offered_at,
+                // pickupWindowEnd: o.expires_at,
+                // dropoffWindowStart: o.offered_at,
+                // dropoffWindowEnd: o.expires_at,
+                // routeScore: o.score,
                 createdAt: o.offered_at,
               });
               await e.getStore().insertOffer({
+                  pickupLocation: {lat:0, lng:0}, dropLocation: {lat:0, lng:0},
                 id: o.id,
                 orderCode: o.order_id,
-                orderId: o.order_id,
                 riderId: home.rider.id,
                 dataMode: "LIVE",
-                status: "OPEN",
-                valuePaise: o.total_paise,
-                expectedDistanceM: o.distance_m ?? 0,
-                expectedEtaSeconds: o.eta_seconds ?? 0,
+                status: "OPEN", approxDistanceKm: 0, estimatedTravelKm: 0, estimatedTotalRouteKm: 0, cod: false, codAmountPaise: 0, packageCount: 1, createdAt: new Date().toISOString(), dropArea: "Local",
+                expectedPayoutPaise: o.total_paise,
+                // expectedDistanceM: o.distance_m ?? 0,
+                // expectedEtaSeconds: o.eta_seconds ?? 0,
                 restaurant,
                 customer,
-                pickupWindowStart: o.offered_at,
-                pickupWindowEnd: o.expires_at,
-                dropoffWindowStart: o.offered_at,
-                dropoffWindowEnd: o.expires_at,
-                offeredAt: o.offered_at,
+                // pickupWindowStart: o.offered_at,
+                // pickupWindowEnd: o.expires_at,
+                // dropoffWindowStart: o.offered_at,
+                // dropoffWindowEnd: o.expires_at,
+                // offeredAt: o.offered_at,
                 expiresAt: o.expires_at,
-                routeScore: o.score,
+                // routeScore: o.score,
               }, context.userId);
               home = await e.home(context.userId);
             }

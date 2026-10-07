@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 
 export const APIRoute = createAPIFileRoute('/api/v1/founder/jobs')({
   GET: async () => {

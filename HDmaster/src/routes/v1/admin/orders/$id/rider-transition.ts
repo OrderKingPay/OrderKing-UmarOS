@@ -13,7 +13,7 @@ function isCanonicalStatus(value: string): value is CanonicalOrderStatus {
 }
 
 export const Route = createFileRoute("/v1/admin/orders/$id/rider-transition")({
-  // @ts-expect-error
+  
   server: {
     handlers: {
       POST: async ({ request, params }: any) => {

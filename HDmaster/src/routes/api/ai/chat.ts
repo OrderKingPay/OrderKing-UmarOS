@@ -2,13 +2,31 @@ import { createFileRoute } from "@tanstack/react-router";
 import { executeFounderAiChat, type AiChatRequest } from "@/lib/orderking/server/ai-chat-service.server";
 import { createSseStream } from "@/lib/orderking/infrastructure/sse-hub";
 import { enforceRateLimit } from "@/lib/orderking/security/rate-limiter";
+import { getSessionUser } from "@/lib/auth/verify.server";
+import { getSql } from "@/lib/db";
 
 export const Route = createFileRoute("/api/ai/chat")({
-  // @ts-expect-error
   server: {
     handlers: {
       POST: async ({ request }: any) => {
         try {
+          const session = await getSessionUser();
+          if (!session?.id) {
+             return new Response(JSON.stringify({ error: "UNAUTHORIZED: Must be logged in" }), {
+               status: 401, headers: { "content-type": "application/json" }
+             });
+          }
+
+          const sql = await getSql();
+          const rows = await sql`SELECT role FROM users WHERE id = ${session.id}`;
+          const userRole = rows.length > 0 ? (rows[0] as any).role : 'USER';
+          
+          if (userRole !== 'SUPER_ADMIN') {
+             return new Response(JSON.stringify({ error: "FORBIDDEN: Requires SUPER_ADMIN privileges" }), {
+               status: 403, headers: { "content-type": "application/json" }
+             });
+          }
+
           const rateLimitResponse = await enforceRateLimit(request, "ai-chat", {
             windowMs: 60_000,
             maxRequests: 20,
@@ -25,6 +43,10 @@ export const Route = createFileRoute("/api/ai/chat")({
               headers: { "content-type": "application/json" },
             });
           }
+          
+          // Inject actual user context for executeFounderAiChat
+          body.userId = session.id;
+          (body as any).userRole = userRole;
 
           if (prefersStream) {
             const stream = createSseStream(

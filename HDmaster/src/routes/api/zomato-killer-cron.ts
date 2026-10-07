@@ -3,7 +3,7 @@ import { runAlgorithmicAutoDispatch } from "@/lib/orderking/server/auto-dispatch
 
 // @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/zomato-killer-cron")({
-  // @ts-expect-error
+  
   server: {
     handlers: {
       POST: async ({ request }: any) => {
