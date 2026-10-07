@@ -2,6 +2,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
+import { motion, LayoutGroup } from "framer-motion";
 import { Send, GraduationCap, Award, BookOpen, BrainCircuit, Loader2, Sparkles, Briefcase } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { DailyHub } from "@/components/market/daily-hub";
@@ -94,7 +95,7 @@ function TutorPage() {
 
   return (
     <CustomerShell>
-      <div className="flex flex-col h-[calc(100dvh-60px)] bg-slate-50">
+      <LayoutGroup><motion.div layout className="flex flex-col h-[calc(100dvh-60px)] bg-gradient-to-tr from-slate-950 via-[#0a0a0f] to-indigo-950 text-slate-50 backdrop-blur-3xl">
         
         {/* Header Options */}
         <div className="px-4 py-2 bg-gradient-to-br from-indigo-50 to-purple-50"><DailyHub /></div>
@@ -146,9 +147,9 @@ function TutorPage() {
             </div>
           </a>
         </div>
-          <div className="bg-white px-4 py-3 shadow-sm z-10 flex flex-col gap-3">
+          <div className="bg-slate-900/50 backdrop-blur-xl border-y border-white/10 px-4 py-3 shadow-2xl z-10 flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-black text-slate-800 flex items-center gap-2">
+            <h1 className="text-xl font-black text-amber-400 flex items-center gap-2">
               <BrainCircuit className="text-indigo-600 size-6" />
               AI Super-Tutor
             </h1>
@@ -161,7 +162,7 @@ function TutorPage() {
              <select 
                 value={board} 
                 onChange={(e) => setBoard(e.target.value)}
-                className="bg-slate-100 border-none text-xs rounded-md p-2 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-800 border border-white/20 text-xs rounded-md p-2 font-medium text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="CBSE">CBSE Board</option>
                 <option value="ICSE">ICSE Board</option>
@@ -198,7 +199,7 @@ function TutorPage() {
              <select 
                 value={stdClass} 
                 onChange={(e) => setStdClass(e.target.value)}
-                className="bg-slate-100 border-none text-xs rounded-md p-2 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-800 border border-white/20 text-xs rounded-md p-2 font-medium text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 {[...Array(12)].map((_, i) => (
                   <option key={i+1} value={`Class ${i+1}`}>Class {i+1}</option>
@@ -207,7 +208,7 @@ function TutorPage() {
              <select 
                 value={language} 
                 onChange={(e) => setLanguage(e.target.value)}
-                className="bg-slate-100 border-none text-xs rounded-md p-2 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-800 border border-white/20 text-xs rounded-md p-2 font-medium text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="English">English</option>
                 <option value="Hindi">हिंदी (Hindi)</option>
@@ -257,7 +258,7 @@ function TutorPage() {
                     <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap ${
                       msg.role === 'user' 
                         ? 'bg-indigo-600 text-white rounded-br-none' 
-                        : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-sm'
+                        : 'bg-white border border-slate-200 text-amber-400 rounded-bl-none shadow-sm'
                     }`}>
                       {msg.content}
                     </div>
@@ -279,7 +280,7 @@ function TutorPage() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Type your textbook question here..."
-                      className="flex-1 max-h-32 min-h-[40px] bg-transparent resize-none outline-none text-[13px] p-2 text-slate-800 placeholder:text-slate-400"
+                      className="flex-1 max-h-32 min-h-[40px] bg-transparent resize-none outline-none text-[13px] p-2 text-amber-400 placeholder:text-slate-400"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
@@ -424,6 +425,6 @@ function TutorPage() {
 
         </div>
       </div>
-    </CustomerShell>
+    </motion.div></LayoutGroup></CustomerShell>
   );
 }

@@ -1,6 +1,7 @@
 
 import { type ReactNode, useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
+import { motion, LayoutGroup } from "framer-motion";
 import { Bell, Car, CreditCard, History, Plane, QrCode, ShieldCheck, Sparkles, User, UtilityPole, Wallet, Zap, House, ClipboardList, GraduationCap, UserRound } from "lucide-react";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { Button } from "@/components/ui/button";
@@ -28,9 +29,10 @@ export function KingPayShell({
   alertsCount = 0,
 }: Props) {
   return (
-    <div className="min-h-screen bg-bg text-fg flex flex-col antialiased selection:bg-amber-400 selection:text-black">
+    <LayoutGroup>
+    <motion.div layout className="min-h-screen bg-gradient-to-tr from-slate-950 via-[#0a0a0f] to-indigo-950 text-slate-50 flex flex-col antialiased selection:bg-amber-400 selection:text-black">
       {/* PURE FINTECH DEDICATED KINGPAY TOP APP BAR */}
-      <header className="sticky top-0 z-40 border-b border-border/80 bg-surface/95 px-4 py-3 backdrop-blur-md shadow-xs">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur-3xl shadow-2xl">
         <div className="mx-auto flex max-w-lg md:max-w-5xl items-center justify-between gap-3">
           {/* KingPay Brand Identity */}
           <div className="flex items-center gap-2.5">
@@ -118,10 +120,10 @@ export function KingPayShell({
         </Link>
       </div>
 
-      {/* STANDARD BOTTOM NAVIGATION BAR */}
+      {/* LUXURY BOTTOM NAVIGATION BAR */}
       <nav
         aria-label="App Navigation"
-        className="fixed bottom-4 left-4 right-4 z-40 rounded-3xl border border-black/5 bg-white/80 pb-0 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.08)] overflow-hidden"
+        className="fixed bottom-4 left-4 right-4 z-40 rounded-3xl border border-white/10 bg-slate-950/80 pb-0 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden"
       >
         <ul className="mx-auto grid grid-cols-5 items-center justify-items-center relative px-2">
           <NavItem to="/" icon={House} label="Home" active={false} />
@@ -140,7 +142,8 @@ export function KingPayShell({
           <NavItem to="/account" icon={UserRound} label="Profile" active={false} />
         </ul>
       </nav>
-    </div>
+    </motion.div>
+    </LayoutGroup>
   );
 }
 
@@ -161,7 +164,7 @@ function NavItem({
         to={to}
         className={cn(
           "flex flex-col items-center justify-center gap-1 text-[10px] sm:text-xs no-underline relative transition-colors",
-          active ? "text-primary font-bold" : "text-slate-500 hover:text-slate-700 font-medium",
+          active ? "text-amber-400 font-bold" : "text-slate-400 hover:text-slate-200 font-medium",
         )}
       >
         <div className="relative flex items-center justify-center h-6 w-6">
