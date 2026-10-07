@@ -42,14 +42,14 @@ export function CustomerShell({
   }, []);
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-bg pb-24 md:max-w-5xl transition-colors duration-300">
+    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 pb-24 md:max-w-5xl transition-colors duration-300">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-surface focus:px-3 focus:py-2"
       >
         {t("a11y.skip")}
       </a>
-      <header className="sticky top-0 z-30 border-b border-border bg-bg/95 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
+      <header className="sticky top-0 z-30 bg-gradient-to-r from-slate-900/90 via-indigo-950/90 to-slate-900/90 backdrop-blur-xl border-b border-amber-500/20 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <div className="flex items-center justify-between gap-2 sm:gap-3">
           <div className="shrink-0 max-w-[50%]">
             <Wordmark />
@@ -116,10 +116,10 @@ export function CustomerShell({
             }`}
           >
             <div className="flex flex-col min-w-0 w-full">
-              <span className="text-[9px] uppercase tracking-wide text-muted font-bold truncate">
+              <span className="text-[9px] uppercase tracking-wide text-amber-400 font-bold truncate">
                 {isDeliveryActive ? t("home.deliveringTo") : "👑 King Pay"}
               </span>
-              <span className="text-xs font-bold truncate text-fg">
+              <span className="text-xs font-bold truncate text-white drop-shadow-sm">
                 {isDeliveryActive ? location.label : location.cityName || location.label}
               </span>
             </div>
@@ -129,7 +129,7 @@ export function CustomerShell({
             <button
               type="button"
               onClick={() => (onSearch ? onSearch() : void navigate({ to: "/search" }))}
-              className="flex h-11 flex-1 min-w-0 items-center gap-2 rounded-full border border-border bg-surface px-4 text-left text-muted hover:bg-surface-2 transition-colors shadow-sm"
+              className="flex h-11 flex-1 min-w-0 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 text-left text-slate-300 hover:bg-white/10 transition-colors shadow-sm"
             >
               <Search className="size-4 shrink-0 text-primary" aria-hidden />
               <span className="text-xs truncate">
@@ -163,18 +163,18 @@ export function CustomerShell({
                   {!path.startsWith("/king-pay") ? (
         <nav
             aria-label={brand.appName}
-            className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-zinc-950 border-t border-border shadow-[0_-10px_40px_rgba(0,0,0,0.05)] overflow-hidden"
+            className="fixed bottom-4 left-4 right-4 z-40 bg-gradient-to-r from-slate-900/95 via-indigo-950/95 to-slate-900/95 backdrop-blur-2xl border border-amber-500/30 rounded-2xl shadow-[0_8px_40px_rgba(245,158,11,0.15)] overflow-hidden"
           >
             <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-1">
-            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-emerald-500" />
-            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-blue-500" />
+            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-sky-400 drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
             
             {/* 👑 Glowing KingPay Tab */}
             <li className="relative -top-2 flex w-full justify-center">
               <Link
                 to="/king-pay"
                 className={cn(
-                  "group relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-4 border-white dark:border-zinc-950 text-xs no-underline shadow-lg transition-all active:scale-95",
+                  "group relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-4 border-slate-900 text-xs no-underline shadow-lg transition-all active:scale-95 animate-pulse",
                   path.startsWith("/king-pay")
                     ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-[0_4px_20px_rgba(245,158,11,0.5)]"
                     : "bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 text-white shadow-[0_4px_15px_rgba(245,158,11,0.3)] hover:brightness-110"
@@ -190,8 +190,8 @@ export function CustomerShell({
               </Link>
             </li>
             
-            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-indigo-500" />
-            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-purple-500" />
+            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-violet-400 drop-shadow-[0_0_8px_rgba(167,139,250,0.5)]" />
+            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-rose-400 drop-shadow-[0_0_8px_rgba(251,113,133,0.5)]" />
           </ul>
         </nav>
       ) : (
@@ -241,7 +241,7 @@ function NavItem({
           to={to}
           className={cn(
             "flex flex-col items-center justify-center gap-1 text-[10px] sm:text-[11px] no-underline relative transition-colors",
-            active ? (colorClass || "text-primary") + " font-bold" : "text-muted-foreground hover:text-foreground font-medium",
+            active ? (colorClass || "text-emerald-400") + " font-black drop-shadow-md scale-105" : "text-slate-300 hover:text-white font-medium",
           )}
       >
         <div className="relative flex items-center justify-center h-6 w-6">
