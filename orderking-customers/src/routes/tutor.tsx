@@ -98,6 +98,54 @@ function TutorPage() {
         
         {/* Header Options */}
         <div className="px-4 py-2 bg-gradient-to-br from-indigo-50 to-purple-50"><DailyHub /></div>
+        
+        {/* Magnetic Job Board & Affiliate Aggregator */}
+        {/* @ts-nocheck */}
+        <div className="px-4 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 overflow-x-auto whitespace-nowrap hide-scrollbar flex gap-3 shadow-inner">
+          <a href="#" className="inline-block bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-3 shrink-0 hover:bg-white/30 transition-all cursor-pointer min-w-[200px]">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="bg-green-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider animate-pulse">Hiring</span>
+              <span className="text-white font-bold text-sm">Data Annotation</span>
+            </div>
+            <p className="text-amber-50 text-[10px] font-medium leading-tight">Earn $20/hr training AI. Remote.</p>
+            <div className="mt-2 text-white font-black text-xs flex items-center justify-between">
+              Apply Now <span>→</span>
+            </div>
+          </a>
+
+          <a href="#" className="inline-block bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-3 shrink-0 hover:bg-white/30 transition-all cursor-pointer min-w-[200px]">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="bg-blue-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">Top Offer</span>
+              <span className="text-white font-bold text-sm">SBI Credit Card</span>
+            </div>
+            <p className="text-amber-50 text-[10px] font-medium leading-tight">Get ₹1500 cashback on approval.</p>
+            <div className="mt-2 text-white font-black text-xs flex items-center justify-between">
+              Claim Offer <span>→</span>
+            </div>
+          </a>
+
+          <a href="#" className="inline-block bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-3 shrink-0 hover:bg-white/30 transition-all cursor-pointer min-w-[200px]">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="bg-purple-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">Free</span>
+              <span className="text-white font-bold text-sm">Upstox Demat</span>
+            </div>
+            <p className="text-amber-50 text-[10px] font-medium leading-tight">Zero brokerage for 30 days. Open free.</p>
+            <div className="mt-2 text-white font-black text-xs flex items-center justify-between">
+              Open Account <span>→</span>
+            </div>
+          </a>
+          
+          <a href="#" className="inline-block bg-white/20 backdrop-blur-md border border-white/30 rounded-xl p-3 shrink-0 hover:bg-white/30 transition-all cursor-pointer min-w-[200px]">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">Trending</span>
+              <span className="text-white font-bold text-sm">Appen & MTurk</span>
+            </div>
+            <p className="text-amber-50 text-[10px] font-medium leading-tight">Easy micro-tasks. Guaranteed payout.</p>
+            <div className="mt-2 text-white font-black text-xs flex items-center justify-between">
+              Start Earning <span>→</span>
+            </div>
+          </a>
+        </div>
           <div className="bg-white px-4 py-3 shadow-sm z-10 flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-black text-slate-800 flex items-center gap-2">
