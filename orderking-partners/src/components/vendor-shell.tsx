@@ -77,9 +77,9 @@ export function VendorShell({
 
   if (isPending) {
     return (
-      <div className="min-h-dvh bg-bg p-6">
+      <div className="min-h-dvh bg-slate-950 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 p-6">
         <div className="mx-auto max-w-md space-y-3">
-          <div className="font-display text-xl text-ink">{t("app.name")}</div>
+          <div className="font-display text-xl text-slate-50">{t("app.name")}</div>
           <div className="h-10 w-40 animate-pulse rounded-full bg-line" />
           <div className="h-32 animate-pulse rounded-[24px] bg-line" />
           <div className="h-32 animate-pulse rounded-[24px] bg-line" />
@@ -90,14 +90,14 @@ export function VendorShell({
   if (!user) return <RedirectToSignIn />;
 
   return (
-    <div className="min-h-dvh bg-bg text-ink break-words text-wrap">
+    <div className="min-h-dvh bg-slate-950 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 text-slate-50 break-words text-wrap">
       <div className="mx-auto flex min-h-dvh max-w-6xl">
-        <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r border-line p-4 md:flex">
+        <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r border-slate-800/60 p-4 md:flex">
           <div className="mb-6 flex items-center gap-2">
             <OrderKingMark className="size-8 text-chili" />
             <div>
               <div className="font-display text-base leading-tight">{t("app.name")}</div>
-              <div className="text-xs text-muted">{restaurantName ?? t("app.tagline")}</div>
+              <div className="text-xs text-slate-400">{restaurantName ?? t("app.tagline")}</div>
             </div>
           </div>
           <nav className="flex flex-1 flex-col gap-1" aria-label="Main">
@@ -117,7 +117,7 @@ export function VendorShell({
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col pb-24 md:pb-0">
-          <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-line bg-bg px-4 py-3 md:px-6">
+          <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-slate-800/60 bg-slate-950 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 px-4 py-3 md:px-6">
             <div className="min-w-0">
               <div className="flex items-center gap-2 md:hidden">
                 <OrderKingMark className="size-7 shrink-0 text-chili" />
@@ -128,7 +128,7 @@ export function VendorShell({
             <div className="flex items-center gap-2">
               <div className="relative">
                 <select
-                  className="h-11 appearance-none rounded-[12px] border border-line bg-surface pl-9 pr-8 text-sm outline-none transition-colors hover:bg-surface-2 focus:border-chili focus:ring-1 focus:ring-chili"
+                  className="h-11 appearance-none rounded-[12px] border border-slate-800/60 bg-slate-900/60 backdrop-blur-xl pl-9 pr-8 text-sm outline-none transition-colors hover:bg-slate-800/60 backdrop-blur-xl focus:border-chili focus:ring-1 focus:ring-chili"
                   value={lang}
                   onChange={(e) => setLang(e.target.value as AppLanguage)}
                   aria-label={t("settings.language")}
@@ -139,7 +139,7 @@ export function VendorShell({
                   <option value="te">తెలుగు</option>
                   <option value="ta">தமிழ்</option>
                 </select>
-                <Languages className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" />
+                <Languages className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
               </div>
               <button
                 type="button"
@@ -153,7 +153,7 @@ export function VendorShell({
               {(!role || can(role, "notifications.view")) && (
                 <Link
                   to="/notifications"
-                  className="grid size-11 place-items-center rounded-[12px] border border-line bg-surface"
+                  className="grid size-11 place-items-center rounded-[12px] border border-slate-800/60 bg-slate-900/60 backdrop-blur-xl"
                   aria-label={t("nav.notifications")}
                 >
                   <Bell className="size-4" />
@@ -177,7 +177,7 @@ export function VendorShell({
       </div>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-800/60 bg-slate-900/60 backdrop-blur-xl pb-[env(safe-area-inset-bottom)] md:hidden"
         aria-label="Mobile"
       >
         {mobilePrimary.map((item) => (
@@ -186,7 +186,7 @@ export function VendorShell({
             to={item.to}
             className={cn(
               "flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px]",
-              pathname.startsWith(item.to) ? "text-chili" : "text-muted",
+              pathname.startsWith(item.to) ? "text-chili" : "text-slate-400",
             )}
           >
             <item.icon className="size-5" />
@@ -197,7 +197,7 @@ export function VendorShell({
           to="/more"
           className={cn(
             "flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px]",
-            pathname === "/more" || more.some((m) => pathname.startsWith(m.to)) ? "text-chili" : "text-muted",
+            pathname === "/more" || more.some((m) => pathname.startsWith(m.to)) ? "text-chili" : "text-slate-400",
           )}
         >
           <MoreHorizontal className="size-5" />
@@ -227,7 +227,7 @@ function NavLink({
       to={to}
       className={cn(
         "flex min-h-11 items-center gap-2 rounded-[12px] px-3 text-sm",
-        active ? "bg-chili-soft text-chili-dark" : "text-muted hover:bg-surface-2 hover:text-ink",
+        active ? "bg-chili-soft text-chili-dark" : "text-slate-400 hover:bg-slate-800/60 backdrop-blur-xl hover:text-slate-50",
       )}
     >
       <Icon className="size-4" />
@@ -235,3 +235,4 @@ function NavLink({
     </Link>
   );
 }
+

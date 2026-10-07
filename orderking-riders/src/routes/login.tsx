@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { GROK_PROVIDERS, authClient, authEnabled, signIn } from "@/lib/auth/client";
 import { DEFAULT_BRANDING } from "@/lib/rider/config";
 import { useI18n } from "@/lib/rider/i18n-context";
+import { LanguageSelector } from "@/components/language-selector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -53,9 +54,7 @@ function Login() {
     <main className="mx-auto min-h-dvh max-w-lg px-4 py-10">
       <div className="mb-4 flex items-center justify-between">
         
-        <button type="button" className="text-sm underline" onClick={() => setLocale(locale === "en" ? "bn" : "en")}>
-          {locale === "en" ? "বাংলা" : "English"}
-        </button>
+        <LanguageSelector />
       </div>
       <img src={DEFAULT_BRANDING.logoUrl} alt="" className="size-14 rounded-lg" />
       <p className="mt-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">

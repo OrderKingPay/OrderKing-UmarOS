@@ -172,7 +172,7 @@ function SettlementsPage() {
               <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">15% Flat</span>
               <span className="text-xs text-muted line-through">25% on Zomato</span>
             </div>
-            <p className="text-[10px] text-muted mt-1">You save ₹100 on every ₹1,000 food order.</p>
+            <p className="text-[10px] text-muted mt-1">OrderKing 0% Commission Guarantee.</p>
           </div>
           <div className="rounded-lg border border-line bg-surface/50 p-2.5">
             <p className="text-[11px] text-muted uppercase font-medium">Onboarding &amp; Hidden Levies</p>
@@ -192,7 +192,7 @@ function SettlementsPage() {
           </div>
         </div>
         <p className="text-[11px] text-muted">
-          💡 <em>Pro-tip:</em> Because you take home ₹20,000+ extra per ₹2,00,000 monthly sales compared to Zomato, pass on 5% combo discounts to customers to triple your daily order volume!
+          💡 <em>Pro-tip:</em> Because you experience exponential growth with OrderKing 0% Commission Guarantee compared to Zomato, pass on 5% combo discounts to customers to triple your daily order volume!
         </p>
       </Card>
       <div className="flex gap-2">

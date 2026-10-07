@@ -380,25 +380,106 @@ export const STRINGS = {
     orderCancelled: "অর্ডার বাতিল। ডেলিভারি করবেন না।",
     offerGone: "এই অফার আর নেই।",
   },
+
+  hi: { ...STRINGS.en, brandTag: "पार्टनर", signIn: "साइन इन करें", goOnline: "ऑनलाइन जाएं" },
+  te: { ...STRINGS.en, brandTag: "భాగస్వామి", signIn: "సైన్ ఇన్ చేయండి", goOnline: "ఆన్‌లైన్‌కి వెళ్లండి" },
+  ta: { ...STRINGS.en, brandTag: "கூட்டாளர்", signIn: "உள்நுழைக", goOnline: "ஆன்லைனில் செல்லவும்" },
+  mr: { ...STRINGS.en, brandTag: "भागीदार", signIn: "साइन इन करा", goOnline: "ऑनलाइन जा" },
+  gu: { ...STRINGS.en, brandTag: "ભાગીદાર", signIn: "સાઇન ઇન કરો", goOnline: "ઓનલાઇન જાઓ" },
+  kn: { ...STRINGS.en, brandTag: "ಪಾಲುದಾರ", signIn: "ಸೈನ್ ಇನ್ ಮಾಡಿ", goOnline: "ಆನ್‌ಲೈನ್‌ಗೆ ಹೋಗಿ" },
+  ml: { ...STRINGS.en, brandTag: "പങ്കാളി", signIn: "സൈൻ ഇൻ ചെയ്യുക", goOnline: "ഓൺലൈനിൽ പോകുക" },
+  pa: { ...STRINGS.en, brandTag: "ਭਾਈਵਾਲ", signIn: "ਸਾਈਨ ਇਨ ਕਰੋ", goOnline: "ਆਨਲਾਈਨ ਜਾਓ" },
+  or: { ...STRINGS.en, brandTag: "ଅଂଶୀଦାର", signIn: "ସାଇନ୍ ଇନ୍ କରନ୍ତୁ", goOnline: "ଅନଲାଇନ୍ ଯାଆନ୍ତୁ" },
+  as: { ...STRINGS.en, brandTag: "অংশীদাৰ", signIn: "ছাইন ইন কৰক", goOnline: "অনলাইনলৈ যাওক" },
+  ur: { ...STRINGS.en, brandTag: "پارٹنر", signIn: "سائن ان کریں", goOnline: "آن لائن جائیں" },
+
+  hi: {
+    signIn: "साइन इन करें",
+    goOnline: "ऑनलाइन जाएं",
+    goOffline: "ऑफ़लाइन जाएं",
+    todayEarnings: "आज की कमाई"
+  },
+  te: {
+    signIn: "సైన్ ఇన్ చేయండి",
+    goOnline: "ఆన్‌లైన్‌కు వెళ్లండి",
+    goOffline: "ఆఫ్‌లైన్‌కు వెళ్లండి",
+    todayEarnings: "నేటి ఆదాయం"
+  },
+  ta: {
+    signIn: "உள்நுழைய",
+    goOnline: "ஆன்லைனில் செல்",
+    goOffline: "ஆஃப்லைனில் செல்",
+    todayEarnings: "இன்றைய வருமானம்"
+  },
+  mr: {
+    signIn: "साइन इन करा",
+    goOnline: "ऑनलाइन जा",
+    goOffline: "ऑफलाइन जा",
+    todayEarnings: "आजची कमाई"
+  },
+  gu: {
+    signIn: "સાઇન ઇન કરો",
+    goOnline: "ઓનલાઈન જાઓ",
+    goOffline: "ઓફલાઈન જાઓ",
+    todayEarnings: "આજની કમાણી"
+  },
+  kn: {
+    signIn: "ಸೈನ್ ಇನ್ ಮಾಡಿ",
+    goOnline: "ಆನ್‌ಲೈನ್ ಹೋಗಿ",
+    goOffline: "ಆಫ್‌ಲೈನ್ ಹೋಗಿ",
+    todayEarnings: "ಇಂದಿನ ಗಳಿಕೆ"
+  },
+  ml: {
+    signIn: "സൈൻ ഇൻ ചെയ്യുക",
+    goOnline: "ഓൺലൈനിൽ പോകുക",
+    goOffline: "ഓഫ്‌ലൈനിൽ പോകുക",
+    todayEarnings: "ഇന്നത്തെ വരുമാനം"
+  },
+  pa: {
+    signIn: "ਸਾਈਨ ਇਨ ਕਰੋ",
+    goOnline: "ਆਨਲਾਈਨ ਜਾਓ",
+    goOffline: "ਆਫਲਾਈਨ ਜਾਓ",
+    todayEarnings: "ਅੱਜ ਦੀ ਕਮਾਈ"
+  },
+  or: {
+    signIn: "ସାଇନ୍ ଇନ୍ କରନ୍ତୁ",
+    goOnline: "ଅନ୍ଲାଇନ୍ ଯାଆନ୍ତୁ",
+    goOffline: "ଅଫଲାଇନ୍ ଯାଆନ୍ତୁ",
+    todayEarnings: "ଆଜିର ରୋଜଗାର"
+  },
+  as: {
+    signIn: "ছাইন ইন কৰক",
+    goOnline: "অনলাইনলৈ যাওক",
+    goOffline: "অফলাইনলৈ যাওক",
+    todayEarnings: "আজিৰ উপাৰ্জন"
+  },
+  ur: {
+    signIn: "سائن ان کریں",
+    goOnline: "آن لائن جائیں",
+    goOffline: "آف لائن جائیں",
+    todayEarnings: "آج کی کمائی"
+  }
 } as const;
 
 export type MessageKey = keyof typeof STRINGS.en;
 
-const FALLBACK: Record<LocaleCode, "en" | "bn"> = {
-  en: "en",
-  bn: "bn",
-  as: "en",
-  hi: "en",
-};
-
 export function t(locale: LocaleCode, key: MessageKey): string {
-  const pack = STRINGS[FALLBACK[locale]];
+  const pack = (STRINGS as any)[locale] || STRINGS.en;
   return pack[key] ?? STRINGS.en[key];
 }
 
 export const LOCALE_LABELS: Record<LocaleCode, string> = {
   en: "English",
   bn: "বাংলা",
-  as: "অসমীয়া",
   hi: "हिन्दी",
+  te: "తెలుగు",
+  ta: "தமிழ்",
+  mr: "मराठी",
+  gu: "ગુજરાતી",
+  kn: "ಕನ್ನಡ",
+  ml: "മലയാളം",
+  pa: "ਪੰਜਾਬੀ",
+  or: "ଓଡ଼ିଆ",
+  as: "অসমীয়া",
+  ur: "اردو"
 };

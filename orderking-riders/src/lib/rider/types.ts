@@ -101,7 +101,7 @@ export type Actor = "RIDER" | "SYSTEM" | "DISPATCH" | "RESTAURANT" | "CUSTOMER" 
 
 export type GeoPoint = { lat: number; lng: number };
 
-export type LocaleCode = "en" | "bn" | "as" | "hi";
+export type LocaleCode = "en" | "bn" | "hi" | "te" | "ta" | "mr" | "gu" | "kn" | "ml" | "pa" | "or" | "as" | "ur";
 
 export type FeatureFlags = {
   rider_ai: boolean;

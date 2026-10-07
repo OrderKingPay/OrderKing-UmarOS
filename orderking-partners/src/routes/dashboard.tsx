@@ -47,7 +47,7 @@ function DashboardPage() {
       <VendorShell title="Awaiting Approval">
         <Card className="space-y-3">
           <h2 className="text-xl font-display">Verification Pending</h2>
-          <p className="text-sm text-muted">Your restaurant onboarding application is currently pending approval from the founder. You will be able to access the dashboard once approved.</p>
+          <p className="text-sm text-slate-400">Your restaurant onboarding application is currently pending approval from the founder. You will be able to access the dashboard once approved.</p>
           <Button asChild>
              <Link to="/onboarding">View Application</Link>
           </Button>
@@ -66,20 +66,20 @@ function DashboardPage() {
       stale={stale}
       restaurantName={d?.restaurantName}
     >
-      <p className="text-sm text-muted">
+      <p className="text-sm text-slate-400">
         {t("dashboard.today")}
         {" · "}
         {d?.isOpen ? t("dashboard.open") : t("dashboard.closed")}
       </p>
       <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Stat label={t("dashboard.orders")} value={d?.today.orders ?? "—"} />
-        <Stat label={t("dashboard.sales")} value={d ? <MoneyText paise={d.today.salesPaise} /> : "—"} />
-        <Stat label={t("dashboard.aov")} value={d ? <MoneyText paise={d.today.aovPaise} /> : "—"} />
+        <Stat label={t("dashboard.sales")} value={d ? <span className="blur-sm hover:blur-none transition-all cursor-pointer select-none"><MoneyText paise={d.today.salesPaise} /></span> : "—"} />
+        <Stat label={t("dashboard.aov")} value={d ? <span className="blur-sm hover:blur-none transition-all cursor-pointer select-none"><MoneyText paise={d.today.aovPaise} /></span> : "—"} />
         <Stat label={t("dashboard.pending")} value={d?.today.pending ?? "—"} warn={Boolean(d && d.today.pending > 0)} />
         <Stat label={t("dashboard.accepted")} value={d?.today.accepted ?? "—"} />
         <Stat label={t("dashboard.cancelled")} value={d?.today.cancelled ?? "—"} />
-        <Stat label={t("dashboard.refunds")} value={d ? <MoneyText paise={d.today.refundsPaise} /> : "—"} />
-        <Stat label={t("dashboard.settlement")} value={d ? <MoneyText paise={d.today.settlementPaise} /> : "—"} />
+        <Stat label={t("dashboard.refunds")} value={d ? <span className="blur-sm hover:blur-none transition-all cursor-pointer select-none"><MoneyText paise={d.today.refundsPaise} /></span> : "—"} />
+        <Stat label={t("dashboard.settlement")} value={d ? <span className="blur-sm hover:blur-none transition-all cursor-pointer select-none"><MoneyText paise={d.today.settlementPaise} /></span> : "—"} />
         <Stat
           label={t("dashboard.rating")}
           value={d?.today.rating != null ? `${d.today.rating} (${d.today.ratingCount})` : "—"}
@@ -102,7 +102,7 @@ function DashboardPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-base font-semibold text-primary">Kitchen Operation Mode</h2>
-            <p className="text-xs text-muted">
+            <p className="text-xs text-slate-400">
               {d?.isOpen
                 ? "Kitchen is live and accepting orders normally."
                 : "Kitchen is paused / closed. Customers see your kitchen as offline."}
@@ -157,10 +157,10 @@ function DashboardPage() {
             </span>
             <div>
               <h3 className="text-sm font-bold text-fg">Fast-Track Kitchen: Top Priority</h3>
-              <p className="text-[11px] text-muted">Average Prep Time: <span className="font-semibold text-emerald-600 dark:text-emerald-400">11m 40s</span> (Target: &lt;15m)</p>
+              <p className="text-[11px] text-slate-400">Average Prep Time: <span className="font-semibold text-emerald-600 dark:text-emerald-400">11m 40s</span> (Target: &lt;15m)</p>
             </div>
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-muted">
+          <p className="mt-2 text-xs leading-relaxed text-slate-400">
             <strong className="text-emerald-700 dark:text-emerald-300">+35% Organic Ranking Boost</strong> is active! Preparing OrderKing orders fast keeps your restaurant pinned at the top of customer search and home carousels.
           </p>
         </Card>
@@ -168,15 +168,15 @@ function DashboardPage() {
         <Card className="border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-surface to-transparent p-4">
           <div className="flex items-center gap-2">
             <span className="flex size-8 items-center justify-center rounded-lg bg-amber-500/20 text-lg">
-              💰
+              👑
             </span>
             <div>
-              <h3 className="text-sm font-bold text-fg">Fair Commission Advantage</h3>
-              <p className="text-[11px] text-muted">OrderKing: <strong className="text-emerald-600">10%</strong> vs Zomato: <strong className="text-rose-600">24%</strong></p>
+              <h3 className="text-sm font-bold text-fg">Strategic Partner Alliance</h3>
+              <p className="text-[11px] text-slate-400">OrderKing Ecosystem Advantage</p>
             </div>
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-muted">
-            You keep <strong className="text-fg">14% more profit per order</strong> on OrderKing with zero hidden marketing levies. You saved approx. <strong className="text-amber-700 dark:text-amber-400">₹4,250</strong> this week!
+          <p className="mt-2 text-xs leading-relaxed text-slate-400">
+            You retain <strong className="text-fg">maximum revenue share</strong> per order with OrderKing's transparent growth model. Enjoy increased order volume, premium brand visibility, and optimized logistics—putting restaurant growth first.
           </p>
         </Card>
       </div>
@@ -185,7 +185,7 @@ function DashboardPage() {
         <h2 className="font-display text-xl">{t("dashboard.attention")}</h2>
         <ul className="mt-3 space-y-2">
           {(d?.attention.length ?? 0) === 0 ? (
-            <li className="text-sm text-muted">{t("dashboard.noAttention")}</li>
+            <li className="text-sm text-slate-400">{t("dashboard.noAttention")}</li>
           ) : (
             d?.attention.map((a) => (
               <li
@@ -218,8 +218,9 @@ function Stat({
 }) {
   return (
     <Card className={cn("min-h-[5.5rem] p-3", warn && "border-danger")}>
-      <div className="text-xs uppercase tracking-wide text-muted">{label}</div>
+      <div className="text-xs uppercase tracking-wide text-slate-400">{label}</div>
       <div className="mt-1 font-display text-2xl leading-tight tabular">{value}</div>
     </Card>
   );
 }
+

@@ -61,11 +61,11 @@ export const settlementEngine = {
       if (!keyId || !keySecret) {
         throw new Error("Razorpay credentials missing. Partner settlement is BLOCKED.");
       }
-      const token = btoa(${keyId}:);
+      const token = btoa(`${keyId}:${keySecret}`);
       const res = await fetch("https://api.razorpay.com/v1/transfers", {
         method: "POST",
         headers: {
-          "Authorization": Basic ,
+          \"Authorization\": `Basic ${token}`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({

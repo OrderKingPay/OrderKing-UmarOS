@@ -52,7 +52,7 @@ function SettingsPage() {
     <div className="p-6 max-w-7xl mx-auto min-h-screen bg-slate-50">
       <header className="mb-8 border-b pb-4 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 flex items-center gap-2">
+          <h1 className="text-3xl font-black text-white flex items-center gap-2">
             <Settings2 className="h-8 w-8 text-emerald-600" />
             Platform Settings
           </h1>
@@ -73,7 +73,7 @@ function SettingsPage() {
           <TabButton id="localization" current={activeTab} set={setActiveTab} icon={Languages} label="Localization" />
         </nav>
 
-        <main className="flex-1 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <main className="flex-1 bg-slate-900/50 backdrop-blur-md border-white/5 rounded-xl shadow-sm border border-white/10 p-6">
           {activeTab === 'features' && <FeatureFlagsPanel config={config} onSave={handleSave} saving={saving} />}
           {activeTab === 'fees' && <FeesPanel config={config} onSave={handleSave} saving={saving} />}
           {activeTab === 'ai' && <AIPanel config={config} onSave={handleSave} saving={saving} />}
@@ -89,7 +89,7 @@ function TabButton({ id, current, set, icon: Icon, label }: any) {
     <button
       onClick={() => set(id)}
       className={`flex items-center gap-3 px-4 py-3 rounded-lg text-left font-semibold transition-all ${
-        isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'text-slate-600 hover:bg-slate-100'
+        isActive ? 'bg-emerald-50 text-emerald-400 border border-emerald-200' : 'text-slate-300 hover:bg-white/10 text-white'
       }`}
     >
       <Icon className="h-5 w-5" />
@@ -173,7 +173,7 @@ function ToggleRow({ title, description, isOn, onToggle }: any) {
         <p className="text-sm text-slate-500">{description}</p>
       </div>
       <button onClick={onToggle} className={`w-12 h-6 rounded-full transition-colors relative ${isOn ? 'bg-emerald-500' : 'bg-slate-300'}`}>
-        <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${isOn ? 'left-7' : 'left-1'}`}></div>
+        <div className={`w-4 h-4 bg-slate-900/50 backdrop-blur-md border-white/5 rounded-full absolute top-1 transition-transform ${isOn ? 'left-7' : 'left-1'}`}></div>
       </button>
     </div>
   );
@@ -182,7 +182,7 @@ function ToggleRow({ title, description, isOn, onToggle }: any) {
 function InputRow({ title, value, onChange }: any) {
   return (
     <div>
-      <label className="block text-sm font-bold text-slate-700 mb-1">{title}</label>
+      <label className="block text-sm font-bold text-slate-300 mb-1">{title}</label>
       <input type="number" value={value} onChange={e => onChange(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2" />
     </div>
   );

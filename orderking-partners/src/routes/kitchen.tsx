@@ -185,7 +185,7 @@ function KitchenPage() {
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted">{q.data ? `Updated ${new Date(q.data.serverTime).toLocaleTimeString()}` : t("common.loading")}</p>
+        <p className="text-sm text-slate-400">{q.data ? `Updated ${new Date(q.data.serverTime).toLocaleTimeString()}` : t("common.loading")}</p>
         <Button
           variant="secondary"
           size="icon"
@@ -207,10 +207,10 @@ function KitchenPage() {
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-sm text-foreground">King Pay AI Soundbox Active</h3>
                     <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                      ₹99/mo Active
+                      Enterprise Active
                     </span>
                   </div>
-                  <p className="text-xs text-muted mt-0.5">
+                  <p className="text-xs text-slate-400 mt-0.5">
                     Zero physical hardware cost. Announces incoming orders and King Pay UPI payments aloud in Bengali, Hindi, and English.
                   </p>
                 </>
@@ -219,7 +219,7 @@ function KitchenPage() {
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-sm text-foreground">King Pay AI Soundbox</h3>
                   </div>
-                  <p className="text-xs text-muted mt-0.5">
+                  <p className="text-xs text-slate-400 mt-0.5">
                     Activate to announce incoming orders and King Pay UPI payments aloud.
                   </p>
                 </>
@@ -236,7 +236,7 @@ function KitchenPage() {
                 }}
                 className="shrink-0 text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                Activate King Pay Soundbox (₹99/mo)
+                Activate KingPay Enterprise Soundbox
               </Button>
             )}
             <Button
@@ -265,10 +265,10 @@ function KitchenPage() {
             <section key={col.state} className="w-[min(86vw,22rem)] shrink-0 snap-start space-y-2 lg:w-auto lg:min-w-0">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold tracking-wide">{t(col.key)}</h2>
-                <span className="tabular text-sm text-muted">{items.length}</span>
+                <span className="tabular text-sm text-slate-400">{items.length}</span>
               </div>
               {items.length === 0 ? (
-                <Card className="text-sm text-muted">{t("kitchen.empty")}</Card>
+                <Card className="text-sm text-slate-400">{t("kitchen.empty")}</Card>
               ) : (
                 items.map((o: any) => (
                   <OrderCard
@@ -288,3 +288,4 @@ function KitchenPage() {
     </VendorShell>
   );
 }
+
