@@ -1,6 +1,7 @@
+
 // @ts-nocheck
-import { createAPIFileRoute } from '@/lib/createAPIFileRoute';
-import { GoogleGenAI } from '@google/genai';
+import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
+import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({});
 
@@ -52,3 +53,4 @@ Be concise, analytical, and highly actionable. Base recommendations on real-worl
     },
   },
 });
+

@@ -11,8 +11,8 @@ export function getDatabaseUrl() {
   if (url && url.includes('your_supabase_pooler')) url = undefined;
   return url;
 }
-export function getDbSource() { return 'neon'; }
-export const dbSource = 'neon';
+export function getDbSource(): DbSource { return (process.env.DATABASE_URL ? 'neon' : 'pglite') as any; }
+export const dbSource: DbSource = (process.env.DATABASE_URL ? 'neon' : 'pglite') as any;
 
 /**
  * Minimal shared SQL surface, satisfied by both Neon and PGLite. Both the
