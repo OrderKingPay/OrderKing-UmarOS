@@ -37,7 +37,7 @@ export function CustomerShell({
     // If empty on first load, initialize with system preference
     const saved = localStorage.getItem("theme-storage");
     if (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      useThemeStore.getState().setTheme("dark");
+      document.documentElement.classList.add("dark"); document.documentElement.style.backgroundColor = "#020617";
     }
   }, []);
 
@@ -166,8 +166,8 @@ export function CustomerShell({
             className="fixed bottom-4 left-4 right-4 z-40 bg-gradient-to-r from-slate-900/95 via-indigo-950/95 to-slate-900/95 backdrop-blur-2xl border border-amber-500/30 rounded-2xl shadow-[0_8px_40px_rgba(245,158,11,0.15)] overflow-hidden"
           >
             <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-1">
-            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-sky-400 drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
+            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.8)] scale-110" />
+            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.8)] scale-110" />
             
             {/* 👑 Glowing KingPay Tab */}
             <li className="relative -top-2 flex w-full justify-center">
@@ -190,8 +190,8 @@ export function CustomerShell({
               </Link>
             </li>
             
-            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-violet-400 drop-shadow-[0_0_8px_rgba(167,139,250,0.5)]" />
-            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-rose-400 drop-shadow-[0_0_8px_rgba(251,113,133,0.5)]" />
+            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-violet-400 drop-shadow-[0_0_12px_rgba(167,139,250,0.8)] scale-110" />
+            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-rose-400 drop-shadow-[0_0_12px_rgba(251,113,133,0.8)] scale-110" />
           </ul>
         </nav>
       ) : (

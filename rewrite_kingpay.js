@@ -1,4 +1,8 @@
 
+const fs = require("fs");
+const path = "orderking-customers/src/routes/king-pay.tsx";
+
+const newContent = `
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CustomerShell } from "@/components/market/shell";
 import { ShieldCheck, Wallet, QrCode, Banknote } from "lucide-react";
@@ -54,3 +58,8 @@ function KingPayPage() {
     </CustomerShell>
   );
 }
+`;
+
+fs.writeFileSync(path, newContent, "utf8");
+console.log("Rewrote king-pay.tsx entirely");
+

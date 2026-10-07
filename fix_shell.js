@@ -3,35 +3,27 @@ const fs = require("fs");
 const path = "orderking-customers/src/components/market/shell.tsx";
 let content = fs.readFileSync(path, "utf8");
 
+// 1. Remove Theme Toggle button
 content = content.replace(
-  /\{\/\* 👑 DYNAMIC 3D KINGPAY & ZERO-FEE PROMOTION PILL \*\/\}[\s\S]*?<\/Link>/,
-  `{/* 👑 DYNAMIC TRAVEL & KINGPAY PILL */}
-            <Link
-              to="/king-pay"
-              className="group flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/30 transition-all active:scale-95 hover:scale-105 no-underline ml-auto border border-white/20"
-            >
-              <span className="text-sm drop-shadow-md">👑</span>
-              <span className="text-sm drop-shadow-md">✈️</span>
-              <span className="text-sm drop-shadow-md">🏨</span>
-              <span className="text-sm drop-shadow-md">🚆</span>
-            </Link>`
+  /<button[^>]*onClick=\{toggleTheme\}[^>]*>[\s\S]*?<\/button>/,
+  ""
 );
 
+// 2. Change the bottom nav from floating pill to docked luxury bar
 content = content.replace(
-  /<div className="fixed bottom-4 left-4 right-4 z-40 flex justify-center pointer-events-none">[\s\S]*?<\/div>/,
-  `<div className="fixed bottom-6 left-4 right-4 z-50 flex justify-center pointer-events-none">
-          <Link
-            to="/"
-            className="pointer-events-auto flex items-center justify-center gap-3 w-full max-w-sm rounded-full bg-gradient-to-r from-orange-500 via-red-500 to-rose-600 px-6 py-4 text-lg font-black text-white shadow-[0_10px_40px_rgba(249,115,22,0.5)] active:scale-95 transition-all no-underline border-2 border-white/20 hover:brightness-110"
-            style={{ animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
-          >
-            <span className="text-2xl drop-shadow-lg">🍔</span>
-            <span className="drop-shadow-md uppercase tracking-wide text-center leading-tight">Craving Food?<br/><span className="text-[11px] opacity-90">Tap to Order Now!</span></span>
-            <span className="text-2xl drop-shadow-lg">🍕</span>
-          </Link>
-        </div>`
+  /className="fixed bottom-4 left-4 right-4 z-50 flex h-16 items-center justify-around bg-gradient-to-r from-slate-900\/95 via-indigo-950\/95 to-slate-900\/95 backdrop-blur-2xl border border-amber-500\/30 rounded-2xl shadow-\[0_8px_40px_rgba\(245,158,11,0\.15\)\]"/,
+  `className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 backdrop-blur-3xl border-t border-indigo-500/30 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_40px_rgba(79,70,229,0.15)]"`
 );
+
+// 3. Make ALL navigation icons vibrant and glowing (not just text color, but active glows)
+content = content.replace(/text-emerald-400 drop-shadow-\[0_0_8px_rgba\(52,211,153,0\.5\)\]/, "text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.8)] scale-110");
+content = content.replace(/text-sky-400 drop-shadow-\[0_0_8px_rgba\(56,189,248,0\.5\)\]/, "text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.8)] scale-110");
+content = content.replace(/text-violet-400 drop-shadow-\[0_0_8px_rgba\(167,139,250,0\.5\)\]/, "text-violet-400 drop-shadow-[0_0_12px_rgba(167,139,250,0.8)] scale-110");
+content = content.replace(/text-rose-400 drop-shadow-\[0_0_8px_rgba\(251,113,133,0\.5\)\]/, "text-rose-400 drop-shadow-[0_0_12px_rgba(251,113,133,0.8)] scale-110");
+
+// 4. Force dark mode on mount
+content = content.replace(/useThemeStore\.getState\(\)\.setTheme\("dark"\);/, `document.documentElement.classList.add("dark"); document.documentElement.style.backgroundColor = "#020617";`);
 
 fs.writeFileSync(path, content, "utf8");
-console.log("Done");
+console.log("Fixed shell.tsx");
 
