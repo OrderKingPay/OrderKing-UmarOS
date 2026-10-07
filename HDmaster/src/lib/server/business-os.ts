@@ -104,3 +104,40 @@ export const getAuditChain = createServerFn({ method: "GET" }).handler(async () 
   await requireFounderAccess();
   return founderApprovalGates.getAuditChain();
 });
+
+import { getSql } from "@/lib/db";
+
+export const getDigitalWorkforceData = createServerFn({ method: "GET" }).handler(async () => {
+  await requireFounderAccess();
+  const sql = await getSql();
+  
+  const agents = await sql`
+    SELECT id, role, capabilities, status, created_at 
+    FROM agent_registry 
+    ORDER BY created_at DESC
+  `;
+  
+  const activeTasks = await sql`
+    SELECT t.id, t.agent_id, t.payload, t.status, t.cost, t.started_at, a.role
+    FROM agent_tasks t
+    JOIN agent_registry a ON t.agent_id = a.id
+    WHERE t.status IN ('PENDING', 'RUNNING')
+    ORDER BY t.started_at DESC NULLS LAST
+  `;
+  
+  const taskHistory = await sql`
+    SELECT t.id, t.agent_id, t.payload, t.status, t.result, t.cost, t.error_details, t.completed_at, a.role
+    FROM agent_tasks t
+    JOIN agent_registry a ON t.agent_id = a.id
+    WHERE t.status IN ('COMPLETED', 'FAILED')
+    ORDER BY t.completed_at DESC
+    LIMIT 50
+  `;
+  
+  return {
+    agents: agents as any[],
+    activeTasks: activeTasks as any[],
+    taskHistory: taskHistory as any[]
+  };
+});
+

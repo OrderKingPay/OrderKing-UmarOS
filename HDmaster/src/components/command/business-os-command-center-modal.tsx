@@ -20,6 +20,7 @@ import {
   Layers,
   Sparkles,
 } from "lucide-react";
+import { DigitalWorkforceTab } from "./digital-workforce-tab";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -41,7 +42,7 @@ export function BusinessOsCommandCenterModal({
   onClose,
   onExecuteInChat,
 }: BusinessOsCommandCenterModalProps) {
-  const [activeTab, setActiveTab] = useState<"overview" | "modules" | "consensus" | "approvals" | "audit">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "modules" | "workforce" | "consensus" | "approvals" | "audit">("overview");
   const [commandInput, setCommandInput] = useState("");
   const [isExecuting, setIsExecuting] = useState(false);
   const [lastResult, setLastResult] = useState<any>(null);
@@ -155,6 +156,7 @@ export function BusinessOsCommandCenterModal({
             {[
               { id: "overview" as const, label: "⚡ One-Command Center" },
               { id: "modules" as const, label: "🏢 Business Modules (8)" },
+              { id: "workforce" as const, label: "🤖 Digital Workforce" },
               { id: "consensus" as const, label: `🧠 Multi-Model Consensus (${adapters.length})` },
               { id: "approvals" as const, label: `🔒 Approval Gates (${pendingApprovals.length})` },
               { id: "audit" as const, label: `📜 Audit Chain (${auditChain.length})` },
@@ -361,6 +363,12 @@ export function BusinessOsCommandCenterModal({
                 </div>
               </div>
             </div>
+          )}
+
+          
+          {/* TAB: WORKFORCE */}
+          {activeTab === "workforce" && (
+            <DigitalWorkforceTab />
           )}
 
           {/* TAB 2: BUSINESS MODULES */}
@@ -603,3 +611,4 @@ export function BusinessOsCommandCenterModal({
     </div>
   );
 }
+
