@@ -22,7 +22,7 @@ export const Route = createRootRoute({
       { name: "description", content: "OrderKing master admin and CEO command center" },
     ],
     links: [
-      { rel: "icon", type: "image/jpeg", href: "/logo.jpg" },
+      { rel: "icon", type: 'image/png', href: '/icon-192.png' },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
