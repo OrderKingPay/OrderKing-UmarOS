@@ -24,15 +24,8 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
     setResult(null);
 
     try {
-      const res = await fetch("/api/loans/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          panNumber: pan,
-          income: Number(income),
-          requestedAmount: Number(amount),
-        })
-      });
+      toast.error('Loan integration coming soon - Under Development');
+      return;
       const data = await res.json();
       
       if (res.ok && data.approved) {

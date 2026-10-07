@@ -278,7 +278,7 @@ export function HomeFeed({
       ) : null}
 
       <section aria-label={t("home.categories")}>
-        <h2 className="mb-3 font-display text-xl">{t("home.categories")}</h2>
+        <h2 className="mb-4 font-display text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-500 drop-shadow-lg">{t("home.categories")}</h2>
         <div className="flex gap-3 overflow-x-auto pb-1">
           {cats.isPending
             ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 w-24 shrink-0 rounded-[var(--radius-2xl)] bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/10 animate-pulse shadow-sm" />)
@@ -308,9 +308,7 @@ export function HomeFeed({
             type="button"
             onClick={() => setActiveFilter(activeFilter === "veg" ? "all" : "veg")}
             className={`flex items-center gap-1.5 shrink-0 rounded-full px-4 py-1.5 transition shadow-sm text-sm font-semibold border ${
-              activeFilter === "veg"
-                ? "bg-emerald-600 text-white border-emerald-600"
-                : "bg-surface text-fg border-border hover:bg-surface-2"
+              activeFilter === "veg" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
             }`}
           >
             <span className={`w-3 h-3 rounded-sm border flex items-center justify-center ${activeFilter === "veg" ? "border-white" : "border-green-600"}`}>
