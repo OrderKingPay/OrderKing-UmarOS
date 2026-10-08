@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderking-deployment
+  labels:
+    app: orderking
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: orderking
+  template:
+    metadata:
+      labels:
+        app: orderking
+    spec:
+      containers:
+      - name: orderking
+        image: orderking:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
