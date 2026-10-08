@@ -1,4 +1,5 @@
-import { type AccessContext, hasPermission, type Permission, ForbiddenError } from "../rbac.ts";
+import { type AccessContext, hasPermission, ForbiddenError } from "../rbac.ts";
+import { type Permission } from "../permissions.ts";
 
 export const IdentityType = {
   HUMAN: "HUMAN",

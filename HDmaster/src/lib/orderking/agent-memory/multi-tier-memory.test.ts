@@ -75,7 +75,7 @@ test("MultiTierMemoryEngine - store and retrieve", async (t) => {
   assert.equal(memories[0].id, "mem1");
   assert.equal(memories[0].content, "Test context");
   assert.equal(memories[0].tier, "semantic");
-  assert.equal(memories[0].metadata.source, "test");
+  assert.equal(memories[0].metadata?.source, "test");
 
   // Test Metadata filter failure
   const filteredEmpty = await engine.retrieveMemory({

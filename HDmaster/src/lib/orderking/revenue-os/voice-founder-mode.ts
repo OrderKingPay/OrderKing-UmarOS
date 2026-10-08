@@ -16,13 +16,14 @@ export interface VoiceCommandResult {
 }
 
 export class VoiceFounderMode {
-  executeVoiceCommand(rawTranscript: string): VoiceCommandResult {
+  async executeVoiceCommand(rawTranscript: string): Promise<VoiceCommandResult> {
     const text = rawTranscript.trim().toLowerCase();
 
     // 1. "Show me today's revenue" / "What is our revenue?"
     if (text.includes("revenue") || text.includes("money") || text.includes("earned") || text.includes("collections")) {
-      const verifiedInr = revenueTruthDB.getVerifiedRevenue("INR");
-      const pendingInr = revenueTruthDB.getPendingPayments("INR");
+      const verifiedInr = await revenueTruthDB.getVerifiedRevenue("INR");
+      const pendingInr = await revenueTruthDB.getPendingPayments("INR");
+      const events = await revenueTruthDB.getEvents();
       return {
         command: rawTranscript,
         matchedIntent: "QUERY_REVENUE",
@@ -30,7 +31,7 @@ export class VoiceFounderMode {
         liveSystemData: {
           verifiedRevenueInr: verifiedInr,
           pendingPaymentsInr: pendingInr,
-          immutableEventCount: (await revenueTruthDB.getEvents()).length,
+          immutableEventCount: events.length,
         },
       };
     }
@@ -85,10 +86,11 @@ export class VoiceFounderMode {
     }
 
     // 5. Default fallback to live OS status
+    const defaultVerifiedInr = await revenueTruthDB.getVerifiedRevenue("INR");
     return {
       command: rawTranscript,
       matchedIntent: "UNKNOWN_INTENT_SYSTEM_SUMMARY",
-      spokenSummary: `HDmaster Supreme AI OS is online. Verified revenue: ₹${revenueTruthDB.getVerifiedRevenue("INR").toLocaleString()}. Active projects: ${deliveryFactory.getProjects().length}.`,
+      spokenSummary: `HDmaster Supreme AI OS is online. Verified revenue: ₹${defaultVerifiedInr.toLocaleString()}. Active projects: ${deliveryFactory.getProjects().length}.`,
       liveSystemData: {
         timestamp: new Date().toISOString(),
       },

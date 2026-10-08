@@ -85,14 +85,23 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     const orderId = nid("ord");
       if (input.paymentMethod === "KING_PAY") {
         const { kingpayLedgerEngine } = await import("@/lib/orderking/finance/kingpay-ledger-engine");
-        const entry = kingpayLedgerEngine.processPayment(
-          idempotencyKey + ":wallet",
-          customerId,
-          input.restaurantId,
-          input.totalPaise / 100,
-          2
-        );
-        if (entry.status === "BLOCKED_AML") return json({ error: "Payment blocked by AML policy", code: "AML_BLOCKED" }, 403);
+        let entryStatus = "PENDING";
+        try {
+          await sql.transaction(async (tx) => {
+            const entry = await kingpayLedgerEngine.processPayment(
+              tx,
+              idempotencyKey + ":wallet",
+              customerId,
+              input.restaurantId,
+              input.totalPaise,
+              2
+            );
+            entryStatus = entry.status;
+          });
+        } catch (e: any) {
+          return json({ error: e.message || "Payment failed", code: "PAYMENT_FAILED" }, 402);
+        }
+        if (entryStatus === "BLOCKED_AML") return json({ error: "Payment blocked by AML policy", code: "AML_BLOCKED" }, 403);
       }
     if (process.env.VERCEL_ENV === "production" && input.paymentMethod === "UPI_SANDBOX") {
       return json({ error: "Sandbox UPI is not available in production.", code: "SANDBOX_PAYMENT_BLOCKED" }, 400);
@@ -101,6 +110,11 @@ export async function handleCustomerOrderHttp(request: Request): Promise<Respons
     await sql`insert into orders (id,org_id,city_id,zone_id,restaurant_id,customer_id,status,payment_status,payment_method,food_paise,restaurant_discount_paise,platform_discount_paise,delivery_fee_paise,service_fee_paise,tax_paise,total_paise,commission_paise,promised_at,placed_at,data_mode,delivery_address_json,delivery_lat,delivery_lng,delivery_otp) values (${orderId},${ws.ctx.orgId},${input.cityId},${input.zoneId},${input.restaurantId},${customerId},'PENDING',${paymentStatus},${input.paymentMethod},${input.foodPaise},${input.restaurantDiscountPaise},${input.platformDiscountPaise},${input.deliveryFeePaise},${input.serviceFeePaise},${input.taxPaise},${input.totalPaise},${input.commissionPaise},now()+interval '45 minutes',now(),${ws.dataMode},${JSON.stringify(input.address)},${input.address.lat ?? null},${input.address.lng ?? null},${randomInt(1000, 10000).toString()})`;
     for (const line of input.lines) await sql`insert into order_items (id,org_id,order_id,menu_item_id,name,qty,unit_paise) values (${nid("oit")},${ws.ctx.orgId},${orderId},${line.itemId},${line.name},${line.qty},${line.unitPaise})`;
     await sql`insert into order_events (id,org_id,order_id,actor_employee_id,from_status,to_status,action,note) values (${nid("ev")},${ws.ctx.orgId},${orderId},${ws.ctx.employeeId},null,'PENDING','customer.order_created',${JSON.stringify({ customerRef: input.customerRef, address: input.address, notes: input.notes ?? null })})`;
+    
+    // Gamified Loyalty: Hook into checkout flow autonomously
+    const { processLoyaltyForOrder } = await import("@/lib/orderking/loyalty-engine");
+    await processLoyaltyForOrder(sql, ws.ctx.orgId, customerId, orderId, input.totalPaise);
+
     await appendAudit({ orgId: ws.ctx.orgId, employeeId: ws.ctx.employeeId, userId: ws.ctx.userId, roleKey: ws.ctx.actingRoleKey, action: "order.customer_created", targetType: "order", targetId: orderId, next: { status: "PENDING", customerId, restaurantId: input.restaurantId, dataMode: ws.dataMode }, reason: "Customer application order" });
     const result = { orderId, status: "PENDING", paymentStatus, totalPaise: input.totalPaise, dataMode: ws.dataMode };
     await sql`insert into idempotency_keys (key,org_id,employee_id,action,response_json) values (${idempotencyKey},${ws.ctx.orgId},${ws.ctx.employeeId},'order.customer_create',${JSON.stringify(result)}) on conflict (key) do nothing`;

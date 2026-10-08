@@ -16,3 +16,4 @@ minimumReleaseAgeExclude:
   - '@google-cloud/bigquery@9.2.0'
   - playwright-core@1.64.0
   - playwright@1.64.0
+  - geolib@4.0.0

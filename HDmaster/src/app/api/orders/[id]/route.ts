@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { transitionOrder, OrderStatus } from '../../../../lib/orderking/order-ops/order-state-machine';
 import { getSql } from '../../../../lib/db';
 
+export const runtime = 'edge';
+
 export async function GET(request: NextRequest, context: any) {
   try {
     const params = await context.params;

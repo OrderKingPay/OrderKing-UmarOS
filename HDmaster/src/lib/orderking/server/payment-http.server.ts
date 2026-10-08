@@ -28,56 +28,67 @@ function fail(err: unknown) {
 
 async function markPaymentCaptured(paymentId: string, gatewayOrderId: string, amountPaise: number, method: string) {
   const sql = await getSql();
-  const rows = await sql.query<{ id: string; org_id: string; order_id: string; amount_paise: number }>(
-    `select id, org_id, order_id, amount_paise from payment_intents where gateway_order_id=$1 limit 1`,
-    [gatewayOrderId],
-  );
-  const intent = rows[0];
-  if (!intent) throw new Error("Payment intent not found");
-  if (Number(intent.amount_paise) !== amountPaise) throw new Error("Payment amount mismatch");
 
-  await sql.query(
-    `update payment_intents
-       set gateway_payment_id=$1, status='CAPTURED', updated_at=now()
-     where id=$2 and status not in ('REFUNDED','FAILED')`,
-    [paymentId, intent.id],
-  );
-  await sql.query(
-    `update orders set payment_status='PAID' where id=$1 and org_id=$2 and payment_status <> 'PAID'`,
-    [intent.order_id, intent.org_id],
-  );
+  let finalIntent: { order_id: string; id: string } | undefined;
 
-  const journalId = nid("jrnl");
-  const sourceId = `payment:${paymentId}`;
-  const inserted = await sql.query<{ id: string }>(
-    `insert into journal_entries (id, org_id, order_id, source_type, source_id, description)
-     values ($1,$2,$3,'PAYMENT',$4,$5)
-     on conflict (org_id, source_type, source_id) do nothing
-     returning id`,
-    [journalId, intent.org_id, intent.order_id, sourceId, `Razorpay ${method} payment ${paymentId}`],
-  );
-  if (inserted[0]) {
-    await sql.query(
-      `insert into journal_lines (id, journal_id, account, direction, amount_paise, party_type, party_id)
-       values ($1,$2,'CUSTOMER_RECEIVABLE','DEBIT',$3,'CUSTOMER',$4),
-              ($5,$2,'PLATFORM_CASH','CREDIT',$3,'PLATFORM',$4)`,
-      [nid("jl"), journalId, amountPaise, intent.order_id, nid("jl")],
+  await sql.transaction(async (tx) => {
+    const rows = await tx.query<{ id: string; org_id: string; order_id: string; amount_paise: number }>(
+      `select id, org_id, order_id, amount_paise from payment_intents where gateway_order_id=$1 limit 1 FOR UPDATE`,
+      [gatewayOrderId],
     );
-  }
+    const intent = rows[0];
+    if (!intent) throw new Error("Payment intent not found");
+    if (Number(intent.amount_paise) !== amountPaise) throw new Error("Payment amount mismatch");
 
-  // Settle the ledger upon successful payment using KingPayLedgerEngine
-  try {
-    kingpayLedgerEngine.processPayment(
-      `idem_capt_${paymentId}`,
-      intent.order_id, // acting as senderId or userId
-      intent.org_id,
-      amountPaise / 100 // assuming it needs INR not paise
+    await tx.query(
+      `update payment_intents
+         set gateway_payment_id=$1, status='CAPTURED', updated_at=now()
+       where id=$2 and status not in ('REFUNDED','FAILED')`,
+      [paymentId, intent.id],
     );
-  } catch (e) {
-    console.error("Ledger engine error:", e);
-  }
+    await tx.query(
+      `update orders set payment_status='PAID' where id=$1 and org_id=$2 and payment_status <> 'PAID'`,
+      [intent.order_id, intent.org_id],
+    );
 
-  return { orderId: intent.order_id, paymentIntentId: intent.id, paymentId };
+    const journalId = nid("jrnl");
+    const sourceId = `payment:${paymentId}`;
+    const inserted = await tx.query<{ id: string }>(
+      `insert into journal_entries (id, org_id, order_id, source_type, source_id, description)
+       values ($1,$2,$3,'PAYMENT',$4,$5)
+       on conflict (org_id, source_type, source_id) do nothing
+       returning id`,
+      [journalId, intent.org_id, intent.order_id, sourceId, `Razorpay ${method} payment ${paymentId}`],
+    );
+    
+    if (inserted[0]) {
+      await tx.query(
+        `insert into journal_lines (id, journal_id, account, direction, amount_paise, party_type, party_id)
+         values ($1,$2,'CUSTOMER_RECEIVABLE','DEBIT',$3,'CUSTOMER',$4),
+                ($5,$2,'PLATFORM_CASH','CREDIT',$3,'PLATFORM',$4)`,
+        [nid("jl"), journalId, amountPaise, intent.order_id, nid("jl")],
+      );
+    }
+
+    // Settle the ledger upon successful payment using KingPayLedgerEngine
+    try {
+      await kingpayLedgerEngine.processPayment(
+        tx,
+        `idem_capt_${paymentId}`,
+        intent.order_id, // acting as senderId or userId
+        intent.org_id,
+        amountPaise // using paise consistently instead of INR mapping
+      );
+    } catch (e) {
+      console.error("Ledger engine error:", e);
+      throw e; // Rollback on ledger failure
+    }
+    
+    finalIntent = intent;
+  });
+
+  if (!finalIntent) throw new Error("Payment intent missing after transaction");
+  return { orderId: finalIntent.order_id, paymentIntentId: finalIntent.id, paymentId };
 }
 
 async function markPaymentFailed(paymentId: string, gatewayOrderId: string, reason: string | null) {

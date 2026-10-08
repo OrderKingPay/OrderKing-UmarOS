@@ -14,14 +14,15 @@ export interface A11yProps {
  * HOC that enforces WCAG 2.1 AAA compliance by strictly checking ARIA tags
  * and managing appropriate semantic roles.
  */
-export function withA11y<P extends object>(
+export function withA11y<P extends object, T = unknown>(
   WrappedComponent: React.ComponentType<P>,
   componentName: string = WrappedComponent.displayName || WrappedComponent.name || 'Component'
 ) {
-  return React.forwardRef<any, P & A11yProps>((props, ref) => {
+  const Component = WrappedComponent as React.ElementType;
+  return React.forwardRef<T, P & A11yProps>((props, ref) => {
     // Run real-time semantic enforcement
     A11ySemanticEngine.enforceAria(props, componentName);
-    return <WrappedComponent ref={ref} {...props} />;
+    return <Component ref={ref} {...props} />;
   });
 }
 

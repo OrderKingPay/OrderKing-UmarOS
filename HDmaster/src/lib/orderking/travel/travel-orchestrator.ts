@@ -93,7 +93,12 @@ export class TravelOrchestrator {
 
     // Rank overall results by the best customer price
     searchResults.sort((a, b) => a.bestOffer.customerPrice - b.bestOffer.customerPrice);
-
     return searchResults;
   }
+
+  async book(request: any): Promise<any> {
+    return { status: "CONFIRMED", bookingId: `BK-${Date.now()}`, details: request };
+  }
 }
+
+export const travelOrchestrator = new TravelOrchestrator();

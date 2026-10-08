@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { calculateFounderRevenue } from '../../../../lib/orderking/revenue/revenue-calculator';
 import { checkPermission } from '../../../../lib/orderking/auth/rbac-engine'; 
 
+export const runtime = 'edge';
+
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');

@@ -43,13 +43,13 @@ fabric.registerRoute(
   { schema: { body: TravelSchemas.BookFlight }, requiredRole: 'USER' },
   async (req, ctx) => {
     // Ideally this would import from the travel orchestrator
-    // e.g. await travelOrchestrator.bookFlight(req.body)
+    // e.g. await travelOrchestrator.bookFlight(req.body!)
     return {
       status: 200,
       data: {
         message: 'Flight booked via Travel Engine',
         bookingId: `BK_${Math.random().toString(36).substring(7).toUpperCase()}`,
-        details: req.body,
+        details: req.body!,
         userId: ctx.userId,
       },
     };
@@ -67,7 +67,7 @@ fabric.registerRoute(
       data: {
         message: 'Job posted via Jobs Engine',
         jobId: `JB_${Date.now()}`,
-        details: req.body,
+        details: req.body!,
         postedBy: ctx.userId,
       },
     };
@@ -85,8 +85,8 @@ fabric.registerRoute(
       data: {
         message: 'Funds transferred successfully via KingPay Engine',
         transactionId: `TX_${Date.now()}`,
-        amount: req.body.amount,
-        currency: req.body.currency,
+        amount: req.body!.amount,
+        currency: req.body!.currency,
       },
     };
   }
@@ -103,8 +103,8 @@ fabric.registerRoute(
       status: 200,
       data: {
         message: 'Tax rate updated via Economics Engine',
-        newRate: req.body.newRate,
-        region: req.body.region,
+        newRate: req.body!.newRate,
+        region: req.body!.region,
         updatedBy: ctx.userId, // founder ID
       },
     };

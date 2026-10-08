@@ -3,8 +3,8 @@
  * Viral distribution engine for Restaurants, Riders, and Customers.
  */
 
-import { ReferralRewardCalculator, CustomerLTVStats, RestaurantLTVStats, RiderLTVStats } from './ReferralRewardCalculator';
-import { DeepLinkGenerator, AffiliateRole } from './DeepLinkGenerator';
+import { ReferralRewardCalculator, CustomerLTVStats, RestaurantLTVStats, RiderLTVStats } from './ReferralRewardCalculator.ts';
+import { DeepLinkGenerator, AffiliateRole } from './DeepLinkGenerator.ts';
 
 export class ViralDistributionEngine {
   private rewardCalculator: ReferralRewardCalculator;

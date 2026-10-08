@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   Activity,
@@ -47,15 +47,19 @@ import type {
   FounderApprovalCard,
   OperatingLoopTransition,
 } from "@/lib/orderking/revenue-os";
+import type { FinancialEvent } from "@/lib/orderking/revenue-os/revenue-truth-database";
 
-export async function RevenueOperatingSystemDashboard() {
+export function RevenueOperatingSystemDashboard() {
   const [timeframe, setTimeframe] = useState<"TODAY" | "THIS_WEEK" | "THIS_MONTH" | "THIS_YEAR">("THIS_MONTH");
   const [activeTab, setActiveTab] = useState<
     "money" | "opportunities" | "delivery" | "qa" | "voice" | "approvals" | "connectors" | "bi"
   >("money");
 
   // Live Engine State
-  const metrics = supremeRevenueOS.getMoneyDashboardMetrics(timeframe);
+  const [metrics, setMetrics] = useState<any>(null);
+  const [events, setEvents] = useState<FinancialEvent[]>([]);
+  const [biReport, setBiReport] = useState<any>(null);
+
   const [opportunities, setOpportunities] = useState(supremeRevenueOS.opportunities.getOpportunities());
   const [rankedFriction, setRankedFriction] = useState(supremeRevenueOS.opportunities.getRankedOpportunitiesByLowestFriction());
   const [projects, setProjects] = useState(supremeRevenueOS.delivery.getProjects());
@@ -63,8 +67,17 @@ export async function RevenueOperatingSystemDashboard() {
   const [qaRuns, setQaRuns] = useState(supremeRevenueOS.qa.getAllRuns());
   const [voiceQuery, setVoiceQuery] = useState("");
   const [voiceResponse, setVoiceResponse] = useState<any>(null);
-  const [biReport, setBiReport] = useState(supremeRevenueOS.bi.generateReport());
   const connectors = supremeRevenueOS.connectors.listConnectors();
+
+  useEffect(() => {
+    supremeRevenueOS.getMoneyDashboardMetrics(timeframe).then(setMetrics);
+    supremeRevenueOS.truthDb.getEvents().then(setEvents);
+    supremeRevenueOS.bi.generateReport().then(setBiReport);
+  }, [timeframe]);
+
+  if (!metrics || !events || !biReport) {
+    return <div className="flex h-full items-center justify-center bg-[#07090E] text-emerald-400">Loading Revenue OS...</div>;
+  }
 
   // Voice Command Execution
   const handleVoiceSubmit = (query: string) => {
@@ -315,7 +328,7 @@ export async function RevenueOperatingSystemDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60">
-                    {supremeRevenueOS.truthDb.getEvents().map((e) => (
+                    {events.map((e) => (
                       <tr key={e.id} className="hover:bg-slate-900/40">
                         <td className="py-3 px-3 font-mono text-slate-300">{e.id}</td>
                         <td className="py-3 px-3">

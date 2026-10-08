@@ -82,7 +82,9 @@ export class VoiceOrderParser {
     }
 
     try {
-      const parsedArgs = JSON.parse(toolCalls[0].function.arguments);
+      const firstCall = toolCalls[0];
+      if (firstCall.type !== 'function') throw new Error('Expected a function call.');
+      const parsedArgs = JSON.parse(firstCall.function.arguments);
       return parsedArgs.items as ParsedCartItem[];
     } catch (error) {
       throw new Error(`Error parsing function arguments: ${error}`);

@@ -8,7 +8,7 @@ export async function handleFabricRequest(request: Request): Promise<Response> {
   try {
     const url = new URL(request.url);
     const path = url.pathname;
-    const method = request.method as 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+    const method = request.method as 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
 
     const headers: Record<string, string> = {};
     request.headers.forEach((value, key) => {

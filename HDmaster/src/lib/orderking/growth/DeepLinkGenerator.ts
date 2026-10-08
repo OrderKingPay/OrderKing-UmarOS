@@ -3,11 +3,13 @@
  * Generates deep-links for affiliate sharing.
  */
 
-export enum AffiliateRole {
-  CUSTOMER = 'customer',
-  RESTAURANT = 'restaurant',
-  RIDER = 'rider'
-}
+export const AffiliateRole = {
+  CUSTOMER: 'customer',
+  RESTAURANT: 'restaurant',
+  RIDER: 'rider'
+} as const;
+
+export type AffiliateRole = typeof AffiliateRole[keyof typeof AffiliateRole];
 
 export interface DeepLinkPayload {
   referrerId: string;

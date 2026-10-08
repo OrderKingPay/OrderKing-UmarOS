@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { processPayment } from '../../../../lib/orderking/kingpay/payment-processor';
 
+export const runtime = 'edge';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

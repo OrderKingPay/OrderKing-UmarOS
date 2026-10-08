@@ -18,6 +18,9 @@ const processNotificationRouter = async (job: Job) => {
 };
 
 export const startWorkers = () => {
+  // Initialize predictive push worker logic which internally registers its cron schedules and eventBus listeners
+  import('../notifications/predictive-push-worker.js').catch(err => console.error('Failed to init PredictivePushWorker', err));
+
   const payoutWorker = new Worker(
     'payouts',
     async (job: Job) => {

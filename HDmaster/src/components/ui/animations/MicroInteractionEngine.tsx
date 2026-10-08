@@ -3,7 +3,7 @@ import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 // Transition configuration optimized for smooth 60fps micro-interactions
 const transitionConfig = {
-  type: 'spring',
+  type: 'spring' as const,
   stiffness: 400,
   damping: 30,
 };

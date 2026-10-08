@@ -252,7 +252,7 @@ export function SystemMasterSettingsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 backdrop-blur-md animate-fadeIn" role="dialog" aria-modal="true" aria-labelledby="settings-title">
       <div className="relative w-full max-w-4xl rounded-2xl border-2 border-amber-500/40 bg-[#070e0b] shadow-[0_0_90px_rgba(245,158,11,0.25)] overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-amber-500/30 bg-black/60 px-5 py-3.5">
@@ -262,7 +262,7 @@ export function SystemMasterSettingsModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-display font-black text-base text-white">
+                <h3 id="settings-title" className="font-display font-black text-base text-white">
                   System Master Settings &amp; Optimizations
                 </h3>
                 <Badge className="bg-amber-500/20 text-amber-300 border-amber-400/40 text-[9px] font-mono font-bold">

@@ -1,5 +1,4 @@
 import { generateKeyPair, SignJWT, jwtVerify } from 'jose';
-import type { KeyLike } from 'jose';
 
 export interface WorkloadIdentityOptions {
   issuer: string;
@@ -21,8 +20,8 @@ export interface IssuedIdentity {
  * No shared standing credentials.
  */
 export class WorkloadIdentityManager {
-  private activeKeyPair: { publicKey: KeyLike; privateKey: KeyLike; kid: string } | null = null;
-  private verificationKeys: Map<string, KeyLike> = new Map();
+  private activeKeyPair: (Awaited<ReturnType<typeof generateKeyPair>> & { kid: string }) | null = null;
+  private verificationKeys: Map<string, Awaited<ReturnType<typeof generateKeyPair>>['publicKey']> = new Map();
   private options: WorkloadIdentityOptions;
 
   constructor(options: WorkloadIdentityOptions) {

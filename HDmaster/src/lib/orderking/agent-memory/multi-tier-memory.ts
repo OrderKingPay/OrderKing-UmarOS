@@ -96,10 +96,10 @@ export class MultiTierMemoryEngine {
     baseQuery += ` LIMIT $${paramIndex}`;
     params.push(limit);
 
-    const rows = await sql.query<any>(baseQuery, params);
+    const rows: any[] = await sql.query(baseQuery, params);
 
     // Apply metadata filtering in-memory if requested (or we could do it in SQL)
-    let results = rows.map(r => ({
+    let results = rows.map((r: any) => ({
       id: r.id,
       tenantId: r.tenant_id,
       domainId: r.domain_id,

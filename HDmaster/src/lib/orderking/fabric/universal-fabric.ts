@@ -4,7 +4,7 @@ export type Role = 'GUEST' | 'USER' | 'ADMIN' | 'FOUNDER';
 
 export interface FabricRequest<T = any> {
   path: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
   headers: Record<string, string | undefined>;
   body?: T;
   query?: Record<string, string | undefined>;
@@ -24,7 +24,7 @@ export interface FabricContext {
 }
 
 export type FabricHandler<TBody = any, TQuery = any, TRes = any> = (
-  req: FabricRequest<TBody> & { query: TQuery },
+  req: Omit<FabricRequest<TBody>, 'body' | 'query'> & { body: TBody; query: TQuery },
   ctx: FabricContext
 ) => Promise<FabricResponse<TRes>>;
 
@@ -43,7 +43,7 @@ export class UniversalConnectorFabric {
   private routes: RouteDefinition[] = [];
 
   public registerRoute<TBody, TQuery, TRes>(
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS',
     path: string,
     options: {
       schema?: { body?: z.ZodType<TBody>; query?: z.ZodType<TQuery> };
@@ -119,7 +119,7 @@ export class UniversalConnectorFabric {
       if (route.schema?.body) {
         const bodyResult = route.schema.body.safeParse(req.body);
         if (!bodyResult.success) {
-          return { status: 400, error: 'Invalid request body', data: bodyResult.error.errors };
+          return { status: 400, error: 'Invalid request body', data: (bodyResult.error as z.ZodError).issues };
         }
         parsedBody = bodyResult.data;
       }
@@ -127,9 +127,9 @@ export class UniversalConnectorFabric {
       if (route.schema?.query) {
         const queryResult = route.schema.query.safeParse(req.query);
         if (!queryResult.success) {
-          return { status: 400, error: 'Invalid request query parameters', data: queryResult.error.errors };
+          return { status: 400, error: 'Invalid request query parameters', data: (queryResult.error as z.ZodError).issues };
         }
-        parsedQuery = queryResult.data;
+        parsedQuery = queryResult.data as Record<string, string | undefined> | undefined;
       }
 
       const validatedReq = { ...req, body: parsedBody, query: parsedQuery };

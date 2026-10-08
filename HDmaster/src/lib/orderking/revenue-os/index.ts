@@ -224,9 +224,9 @@ export class SupremeRevenueOperatingSystem {
   }
 
   // Directive 12: Segmented Money Dashboard Telemetry
-  getMoneyDashboardMetrics(timeframe: "TODAY" | "THIS_WEEK" | "THIS_MONTH" | "THIS_YEAR" = "THIS_MONTH") {
-    const verifiedInr = this.truthDb.getVerifiedRevenue("INR");
-    const pendingInr = this.truthDb.getPendingPayments("INR");
+  async getMoneyDashboardMetrics(timeframe: "TODAY" | "THIS_WEEK" | "THIS_MONTH" | "THIS_YEAR" = "THIS_MONTH") {
+    const verifiedInr = await this.truthDb.getVerifiedRevenue("INR");
+    const pendingInr = await this.truthDb.getPendingPayments("INR");
     const opps = this.opportunities.getOpportunities();
 
     // Actual / Pending / Estimated / Forecast segmentation
@@ -238,6 +238,8 @@ export class SupremeRevenueOperatingSystem {
     const knownCostsInr = this.costControl.getTotalMonthlyExpensesInr();
     const netRevenueInr = verifiedInr - knownCostsInr;
     const recurringRevenueInr = 14999 * 2; // Active monthly retainers
+
+    const integrity = await this.truthDb.verifyLedgerIntegrity();
 
     return {
       timeframe,
@@ -263,7 +265,7 @@ export class SupremeRevenueOperatingSystem {
 
       // Zero-fabrication check
       zeroFabricationConfirmed: true,
-      immutableLedgerIntegrity: this.truthDb.verifyLedgerIntegrity().isValid,
+      immutableLedgerIntegrity: integrity.isValid,
     };
   }
 }

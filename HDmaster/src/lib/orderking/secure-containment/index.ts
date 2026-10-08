@@ -1,4 +1,5 @@
 import Docker from 'dockerode';
+import { PassThrough } from 'stream';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -72,10 +73,15 @@ export class SecureContainment {
             const logPromise = new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
                 let stdout = '';
                 let stderr = '';
+                const outStream = new PassThrough();
+                const errStream = new PassThrough();
+                outStream.on('data', (chunk) => stdout += chunk.toString());
+                errStream.on('data', (chunk) => stderr += chunk.toString());
+
                 this.docker.modem.demuxStream(
                     stream,
-                    { write: (chunk: Buffer) => { stdout += chunk.toString(); } },
-                    { write: (chunk: Buffer) => { stderr += chunk.toString(); } }
+                    outStream,
+                    errStream
                 );
                 stream.on('end', () => resolve({ stdout, stderr }));
                 stream.on('error', reject);

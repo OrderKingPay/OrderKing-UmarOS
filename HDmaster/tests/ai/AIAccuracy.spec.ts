@@ -17,6 +17,7 @@ test("VoiceOrderParser - Correctly extracts cart from heavily slurred text", asy
               message: {
                 tool_calls: [
                   {
+                    type: "function",
                     function: {
                       arguments: JSON.stringify({
                         items: [
@@ -67,6 +68,57 @@ test("GrievanceResolutionAI - Mathematically blocks abuser from wallet refund", 
   
   const resolution = GrievanceResolutionAI.processGrievance(grievance, abuserProfile);
   
-  assert.equal(resolution.status, "FLAGGED_FOR_REVIEW", "Fraudulent refund should be flagged");
+  assert.equal(resolution.status, "REJECTED", "Fraudulent refund should be rejected");
   assert.equal(resolution.creditAmount, 0, "Credit amount should be 0");
 });
+
+import { RegionalVoiceParser } from "../../src/lib/orderking/ai/multimodal/RegionalVoiceParser.ts";
+
+test("RegionalVoiceParser - Extracts cart from Hindi/regional text autonomously", async () => {
+  const mockOpenAI = {
+    chat: {
+      completions: {
+        create: async () => ({
+          choices: [
+            {
+              message: {
+                tool_calls: [
+                  {
+                    type: "function",
+                    function: {
+                      arguments: JSON.stringify({
+                        items: [
+                          { name: "paneer tikka", quantity: 1, modifiers: ["extra spicy"] },
+                          { name: "butter naan", quantity: 3 }
+                        ]
+                      })
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        })
+      }
+    }
+  };
+
+  const parser = new RegionalVoiceParser(mockOpenAI as any);
+  // Tier 2/Tier 3 target demographic phrase in Hindi:
+  // "Bhaiya ek paneer tikka dena extra spicy aur teen butter naan."
+  const hindiText = "Bhaiya ek paneer tikka dena extra spicy aur teen butter naan.";
+  
+  const cart = await parser.parseRegionalOrder(hindiText);
+  
+  assert.ok(cart.length > 0, "Cart should not be empty");
+  
+  const paneer = cart.find(item => item.name.toLowerCase().includes("paneer"));
+  assert.ok(paneer, "Paneer should be extracted");
+  assert.equal(paneer?.quantity, 1, "Should extract 1 paneer");
+  assert.ok(paneer?.modifiers?.includes("extra spicy"), "Should capture modifier");
+
+  const naan = cart.find(item => item.name.toLowerCase().includes("naan"));
+  assert.ok(naan, "Naan should be extracted");
+  assert.equal(naan?.quantity, 3, "Should extract 3 naan");
+});
+

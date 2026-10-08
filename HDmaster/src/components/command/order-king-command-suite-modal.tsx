@@ -58,7 +58,7 @@ export function OrderKingCommandSuiteModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="order-king-title">
       <div className="flex h-[90vh] max-h-[820px] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border-2 border-emerald-500/40 bg-zinc-950 text-zinc-100 shadow-[0_10px_50px_rgba(0,0,0,0.8),0_0_40px_rgba(16,185,129,0.2)]">
         {/* HEADER */}
         <div className="flex items-center justify-between border-b border-zinc-800 bg-gradient-to-r from-emerald-950/80 via-zinc-900 to-zinc-950 px-5 py-4">

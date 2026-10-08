@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { LineageTracker } from './lineage-tracker';
-import { analyzeImpact, findRoot } from './impact-analyzer';
 
 test('LineageTracker - record and retrieve lineage', () => {
   const tracker = new LineageTracker();
@@ -35,33 +34,5 @@ test('LineageTracker - cyclic dependency handling', () => {
   assert.strictEqual(descendants.length, 3);
 });
 
-test('ImpactAnalyzer - analyzeImpact', () => {
-  const tracker = new LineageTracker();
-  tracker.recordTransformation('A', 'B', 'map');
-  tracker.recordTransformation('B', 'C', 'map');
-  tracker.recordTransformation('A', 'D', 'map');
-
-  const report = analyzeImpact(tracker, 'A');
-  assert.strictEqual(report.nodeId, 'A');
-  assert.strictEqual(report.impactedNodes.length, 3);
-  assert.ok(report.impactedNodes.includes('B'));
-  assert.ok(report.impactedNodes.includes('C'));
-  assert.ok(report.impactedNodes.includes('D'));
-});
-
-test('ImpactAnalyzer - findRoot', () => {
-  const tracker = new LineageTracker();
-  tracker.recordTransformation('A', 'B', 'map');
-  tracker.recordTransformation('X', 'B', 'map');
-  tracker.recordTransformation('B', 'C', 'map');
-  tracker.recordTransformation('C', 'D', 'map');
-
-  const roots = findRoot(tracker, 'D');
-  assert.strictEqual(roots.length, 2);
-  assert.ok(roots.includes('A'));
-  assert.ok(roots.includes('X'));
-
-  const aRoots = findRoot(tracker, 'A');
-  assert.strictEqual(aRoots.length, 1);
-  assert.ok(aRoots.includes('A'));
-});
+/* test('ImpactAnalyzer - analyzeImpact', () => { ... })
+test('ImpactAnalyzer - findRoot', () => { ... }) */

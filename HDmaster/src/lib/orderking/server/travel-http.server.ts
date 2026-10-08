@@ -1,4 +1,5 @@
 import { TravelOrchestrator } from "../travel/index.ts";
+const travelOrchestrator = new TravelOrchestrator();
 import { searchAmadeusLocations } from "../travel/providers/amadeus-flight-provider.ts";
 import {
   travelBookingRequestSchema,
@@ -51,7 +52,7 @@ export async function handleTravelHttp(
       return json({ error: "INVALID_TRAVEL_SEARCH", details: parsed.error.flatten() }, 400);
     }
 
-    const result = await TravelOrchestrator.search(parsed.data);
+    const result = await travelOrchestrator.search(parsed.data as any);
     return json(result);
   }
 
@@ -62,7 +63,7 @@ export async function handleTravelHttp(
       return json({ error: "INVALID_TRAVEL_BOOKING", details: parsed.error.flatten() }, 400);
     }
 
-    return json(await TravelOrchestrator.book(parsed.data));
+    return json(await travelOrchestrator.book(parsed.data));
   }
 
   return json({ error: "Not Found" }, 404);

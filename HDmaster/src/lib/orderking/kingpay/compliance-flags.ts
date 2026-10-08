@@ -10,7 +10,7 @@ export type KingPayFeature =
   | 'autopay' 
   | 'settlements';
 
-// @ts-expect-error JSON import outside rootDir
+// JSON import outside rootDir
 import secrets from '../../../../secrets.json';
 
 export class KingPayComplianceMaster {
