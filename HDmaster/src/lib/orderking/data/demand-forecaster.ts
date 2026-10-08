@@ -11,7 +11,7 @@ import { getSql } from '@/lib/db'; // Assuming getSql is available here or injec
  * @returns The predicted number of riders needed in the next hour
  */
 export async function forecastNextHourDemand(zoneId: string): Promise<number> {
-  const sql = getSql();
+  const sql = await getSql();
   
   // Fetch orders from the last 7 days
   const query = `

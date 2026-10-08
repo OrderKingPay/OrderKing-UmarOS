@@ -1,4 +1,6 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+﻿const fs = require('fs');
+
+const chatCode = import { createFileRoute } from "@tanstack/react-router";
 import { executeFounderAiChat, type AiChatRequest } from "@/lib/orderking/server/ai-chat-service.server";
 import { createSseStream } from "@/lib/orderking/infrastructure/sse-hub";
 import { checkRateLimit } from "@/lib/orderking/security/rate-limiter";
@@ -18,7 +20,7 @@ export const Route = createFileRoute("/api/ai/chat")({
           }
 
           const sql = await getSql();
-          const rows = await sql`SELECT role FROM users WHERE id = ${session.id}`;
+          const rows = await sql\SELECT role FROM users WHERE id = \\;
           const userRole = rows.length > 0 ? (rows[0] as any).role : 'USER';
           
           if (userRole !== 'SUPER_ADMIN') {
@@ -82,4 +84,5 @@ export const Route = createFileRoute("/api/ai/chat")({
       },
     },
   },
-});
+});;
+fs.writeFileSync('src/routes/api/ai/chat.ts', chatCode);
