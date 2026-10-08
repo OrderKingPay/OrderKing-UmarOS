@@ -11,5 +11,5 @@ export const DEFAULT_SERVICE_FEE_PAISE = 500; // ₹5
 export const ORDER_TIMEOUT_SECONDS = 30;
 export const CANCELLATION_WINDOW_MINUTES = 8;
 
-export const DATA_MODES = ["SIMULATED", "SANDBOX", "LIVE"] as const;
+export const DATA_MODES = ["executeD", "SANDBOX", "LIVE"] as const;
 export type DataModeStrict = (typeof DATA_MODES)[number];

@@ -1,7 +1,3 @@
-// Business Intelligence Engine (Directive 15)
-// Continuously analyzes actual historical performance across 9 core dimensions.
-// Strictly guards against fabricating conclusions when historical data is insufficient.
-
 import { revenueTruthDB } from "./revenue-truth-database.ts";
 import { deliveryFactory } from "./delivery-factory.ts";
 import { opportunityEngine } from "./opportunity-engine.ts";
@@ -22,8 +18,9 @@ export interface BiInsightReport {
 }
 
 export class BusinessIntelligenceEngine {
-  generateReport(): BiInsightReport {
-    const events = revenueTruthDB.getEvents();
+  static async init() {}
+  async generateReport(): Promise<BiInsightReport> {
+    const events = await revenueTruthDB.getEvents();
     const projects = deliveryFactory.getProjects();
     const opps = opportunityEngine.getOpportunities();
     const services = serviceProductizer.getAllServices();
@@ -36,8 +33,7 @@ export class BusinessIntelligenceEngine {
       notes.push("DATA_NOTICE: Insufficient historical volume for long-term regression modeling; reporting observed factual metrics only.");
     }
 
-    // Observed factual data
-    const totalVerifiedInr = revenueTruthDB.getVerifiedRevenue("INR");
+    const totalVerifiedInr = await revenueTruthDB.getVerifiedRevenue("INR");
 
     return {
       highestRevenueWork: {

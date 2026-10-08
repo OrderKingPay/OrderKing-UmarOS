@@ -1,10 +1,10 @@
 /**
- * Randomly throws an error to simulate network failure.
+ * Randomly throws an error to execute network failure.
  * @param probability Number between 0 and 1 indicating the chance of failure.
  */
-export function simulateNetworkFailure(probability: number = 0.5): void {
+export function executeNetworkFailure(probability: number = 0.5): void {
   if (Math.random() < probability) {
-    throw new Error("Chaos Monkey: Simulated network failure");
+    throw new Error("Chaos Monkey: executed network failure");
   }
 }
 

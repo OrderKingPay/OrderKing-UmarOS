@@ -34,4 +34,4 @@ CREATE INDEX IF NOT EXISTS idx_geospatial_h3_index ON geospatial_telemetry_100x 
 
 -- Payment Webhook Events (if exists)
 CREATE INDEX IF NOT EXISTS idx_payment_webhook_events_type ON payment_webhook_events (event_type);
-CREATE INDEX IF NOT EXISTS idx_payment_webhook_events_created_at ON payment_webhook_events (created_at);
+CREATE INDEX IF NOT EXISTS idx_payment_webhook_events_received_at ON payment_webhook_events (received_at);

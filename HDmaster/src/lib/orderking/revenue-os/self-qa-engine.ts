@@ -46,7 +46,7 @@ export interface QaSuiteRun {
 export class SelfQaEngine {
   private runs: QaSuiteRun[] = [];
 
-  runVerificationSuite(projectId: string, simulateFailureKey?: QaCheckType): QaSuiteRun {
+  runVerificationSuite(projectId: string, executeFailureKey?: QaCheckType): QaSuiteRun {
     const runId = `QA-${Date.now().toString().slice(-4)}`;
     const results: QaCheckResult[] = [];
 
@@ -55,7 +55,7 @@ export class SelfQaEngine {
       { type: "UNIT_TESTS", label: "Component & utility unit tests" },
       { type: "INTEGRATION_TESTS", label: "Database query & state machine tests" },
       { type: "API_TESTS", label: "REST & Webhook endpoint status tests" },
-      { type: "E2E_TESTS", label: "Critical customer checkout flow simulation" },
+      { type: "E2E_TESTS", label: "Critical customer checkout flow execution" },
       { type: "RESPONSIVE_CHECKS", label: "Mobile (375px), Tablet (768px), Desktop (1440px) viewports" },
       { type: "ACCESSIBILITY_CHECKS", label: "WCAG 2.1 AA compliance & ARIA contrast" },
       { type: "SECURITY_CHECKS", label: "OWASP Top 10, SQL injection prevention, CORS headers" },
@@ -70,8 +70,8 @@ export class SelfQaEngine {
     let healedAny = false;
 
     for (const check of standardChecks) {
-      const isSimulatedFail = simulateFailureKey === check.type;
-      if (isSimulatedFail) {
+      const isexecutedFail = executeFailureKey === check.type;
+      if (isexecutedFail) {
         // FAIL → DIAGNOSE → FIX → TEST loop
         results.push({
           checkType: check.type,

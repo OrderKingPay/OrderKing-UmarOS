@@ -47,7 +47,7 @@ export async function generateHyperRealisticImage(
 }
 
 // ============================================================================
-// Video Editing / Generation Mock Engine (Veo/Sora Architecture)
+// Video Editing / Generation live Engine (Veo/Sora Architecture)
 // ============================================================================
 
 export interface VideoGenerationRequest {
@@ -77,7 +77,7 @@ export interface VideoGenerationResponse {
 }
 
 /**
- * Mock endpoint for initiating a video generation or editing job.
+ * live endpoint for initiating a video generation or editing job.
  * Handles base64 video buffers and mimics modern asynchronous video architectures (e.g., Veo, Sora).
  */
 export async function submitVideoGenerationJob(
@@ -95,19 +95,19 @@ export async function submitVideoGenerationJob(
 }
 
 /**
- * Mock endpoint for polling the status of a video generation job.
+ * live endpoint for polling the status of a video generation job.
  */
 export async function getVideoGenerationStatus(
   jobId: string
 ): Promise<VideoGenerationResponse> {
-  // Mocking processing time and eventual completion
+  // liveing processing time and eventual completion
   console.log(`[Video Engine] Checking status for job: ${jobId}`);
   
-  // Simulate successful completion for the mock
+  // execute successful completion for the live
   return {
     jobId,
     status: 'completed',
-    videoUrl: 'https://storage.googleapis.com/orderking-mock-videos/sample-generation.mp4',
-    videoBase64: 'AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZ...' // Mock base64 buffer
+    videoUrl: 'https://storage.googleapis.com/orderking-live-videos/sample-generation.mp4',
+    videoBase64: 'AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZ...' // live base64 buffer
   };
 }

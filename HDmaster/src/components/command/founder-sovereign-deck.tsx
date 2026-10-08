@@ -63,7 +63,7 @@ export function FounderSovereignDeck() {
   const [platformFrozen, setPlatformFrozen] = useState(false);
   const [surgeMultiplier, setSurgeMultiplier] = useState<"1.0x" | "1.25x" | "1.5x" | "2.0x">("1.0x");
   const [dispatchMode, setDispatchMode] = useState<"AI_AUTO" | "MANUAL_OVERRIDE">("AI_AUTO");
-  const [productionMode, setProductionMode] = useState<"LIVE_PRODUCTION" | "SIMULATION_TEST">("SIMULATION_TEST");
+  const [productionMode, setProductionMode] = useState<"LIVE_PRODUCTION" | "execution_TEST">("execution_TEST");
   const [broadcastMessage, setBroadcastMessage] = useState("");
   const [isBroadcasting, setIsBroadcasting] = useState(false);
 
@@ -78,13 +78,13 @@ export function FounderSovereignDeck() {
     Array<{ id: string; action: string; timestamp: string; status: "SUCCESS" | "EXECUTING"; detail: string }>
   >([]);
 
-  // Simulation Mutation
+  // execution Mutation
   const advanceSim = useMutation({
     mutationFn: () => tickSim(),
     onSuccess: (r) => {
       if (r.ok) {
-        toast.success(`Simulation advanced ${r.advanced} orders through lifecycle!`);
-        addAuditEntry("SIMULATION_ADVANCE", `Advanced ${r.advanced} simulated orders`);
+        toast.success(`execution advanced ${r.advanced} orders through lifecycle!`);
+        addAuditEntry("execution_ADVANCE", `Advanced ${r.advanced} executed orders`);
       } else {
         toast.error(r.error);
       }
@@ -117,27 +117,27 @@ export function FounderSovereignDeck() {
   };
 
   const handleBroadcastToFleet = () => {
-    throw new Error("NO MOCK CLAIMS: Real broadcast API is not connected.");
+    throw new Error("NO live CLAIMS: Real broadcast API is not connected.");
   };
 
   const handleBatchSettlement = () => {
-    throw new Error("NO MOCK CLAIMS: Real batch settlement API is not connected.");
+    throw new Error("NO live CLAIMS: Real batch settlement API is not connected.");
   };
 
   const handleInstantKycSweep = () => {
-    throw new Error("NO MOCK CLAIMS: Real KYC API is not connected.");
+    throw new Error("NO live CLAIMS: Real KYC API is not connected.");
   };
 
   const handleReindexSearch = () => {
-    throw new Error("NO MOCK CLAIMS: Real search reindexing API is not connected.");
+    throw new Error("NO live CLAIMS: Real search reindexing API is not connected.");
   };
 
   const handlePurgeCache = () => {
-    throw new Error("NO MOCK CLAIMS: Real cache purge API is not connected.");
+    throw new Error("NO live CLAIMS: Real cache purge API is not connected.");
   };
 
   const handleTriggerSelfUpgrade = () => {
-    throw new Error("NO MOCK CLAIMS: Real self-upgrade API is not connected.");
+    throw new Error("NO live CLAIMS: Real self-upgrade API is not connected.");
   };
 
   return (

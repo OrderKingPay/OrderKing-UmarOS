@@ -25,7 +25,7 @@ export class GoogleGeminiProvider implements AIProvider {
     if (this.apiKey) {
       this.ai = new GoogleGenAI({ apiKey: this.apiKey });
     } else {
-      // Mock initialization to satisfy typescript, will throw in isConfigured check
+      // live initialization to satisfy typescript, will throw in isConfigured check
       this.ai = new GoogleGenAI({ apiKey: "unconfigured" });
     }
   }

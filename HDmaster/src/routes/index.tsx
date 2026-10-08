@@ -2,18 +2,41 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Database, Server, GitBranch, CheckCircle2, AlertCircle, Users, ShieldCheck, Store, Bike, Activity, Settings } from "lucide-react";
 import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
+import { KingPayMasterSwitch } from "@/components/kingpay/KingPayMasterSwitch";
 
-const getOmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
+const getUmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
   const sql = await getSql();
   
   // Real ecosystem metrics
-  const [{ count: userCount }] = await sql<{ count: number }>`SELECT COUNT(*) FROM "user"` || [{ count: 0 }];
-  const [{ count: restCount }] = await sql<{ count: number }>`SELECT COUNT(*) FROM restaurants` || [{ count: 0 }];
-  const [{ count: riderCount }] = await sql<{ count: number }>`SELECT COUNT(*) FROM riders` || [{ count: 0 }];
-  const [{ count: orderCount }] = await sql<{ count: number }>`SELECT COUNT(*) FROM orders WHERE created_at >= CURRENT_DATE` || [{ count: 0 }];
+  let userCount = 0;
+  let restCount = 0;
+  let riderCount = 0;
+  let orderCount = 0;
+  let pendingRestaurants: any[] = [];
   
-  // Fetch real pending restaurants
-  const pendingRestaurants = await sql<{ id: string, name: string, verification_status: string }>`SELECT id, name, verification_status FROM restaurants WHERE verification_status = 'PENDING_APPROVAL' LIMIT 5` || [];
+  try {
+    const userRes = await sql<{ count: number }>`SELECT COUNT(*) FROM profiles`;
+    userCount = userRes?.[0]?.count || 0;
+  } catch (e) {}
+
+  try {
+    const restRes = await sql<{ count: number }>`SELECT COUNT(*) FROM restaurants`;
+    restCount = restRes?.[0]?.count || 0;
+  } catch (e) {}
+
+  try {
+    const riderRes = await sql<{ count: number }>`SELECT COUNT(*) FROM riders`;
+    riderCount = riderRes?.[0]?.count || 0;
+  } catch (e) {}
+
+  try {
+    const orderRes = await sql<{ count: number }>`SELECT COUNT(*) FROM orders`;
+    orderCount = orderRes?.[0]?.count || 0;
+  } catch (e) {}
+  
+  try {
+    pendingRestaurants = await sql<{ id: string, name: string, status: string }>`SELECT id, name, status FROM restaurants WHERE status = 'PENDING' LIMIT 5` || [];
+  } catch (e) {}
 
   return {
     users: Number(userCount),
@@ -25,11 +48,11 @@ const getOmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 export const Route = createFileRoute("/")({
-  component: OmarOSDashboard,
-  loader: async () => await getOmarOSStats(),
+  component: UmarOSDashboard,
+  loader: async () => await getUmarOSStats(),
 });
 
-function OmarOSDashboard() {
+function UmarOSDashboard() {
   const stats = Route.useLoaderData();
 
   return (
@@ -39,7 +62,7 @@ function OmarOSDashboard() {
           <div>
             <h1 className="text-3xl md:text-4xl font-black text-white flex items-center gap-3">
               <ShieldCheck className="h-10 w-10 text-emerald-400" />
-              Omar OS Control Center
+              UMAR OS Control Center
             </h1>
             <Link to="/settings" className="inline-flex items-center gap-2 mt-4 text-emerald-400 font-bold bg-emerald-900/30 px-4 py-2 rounded-lg hover:bg-emerald-800/40"><Settings className="h-4 w-4"/> Platform Settings</Link>
             <p className="mt-2 text-slate-400 text-base">Real-time administrative control, onboarding approvals, and ecosystem metrics.</p>
@@ -55,6 +78,10 @@ function OmarOSDashboard() {
           <MetricCard title="Active Restaurants" value={stats.restaurants.toLocaleString()} icon={Store} color="text-emerald-400" bg="bg-emerald-900/30" />
           <MetricCard title="Fleet Riders" value={stats.riders.toLocaleString()} icon={Bike} color="text-amber-400" bg="bg-amber-900/20" />
           <MetricCard title="Today's Orders" value={stats.todayOrders.toLocaleString()} icon={Activity} color="text-indigo-600" bg="bg-indigo-50" />
+        </div>
+        
+        <div className="mt-8 mb-8">
+          <KingPayMasterSwitch />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

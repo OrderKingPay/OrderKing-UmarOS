@@ -1,3 +1,2 @@
-export * from './browser-session';
-export * from './interaction-engine';
-export * from './automation-flows';
+export * from './cdp-client';
+export * from './dom-interactor';

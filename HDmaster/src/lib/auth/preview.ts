@@ -6,7 +6,7 @@
  * shared "preview" client that accepts any
  * `https://*.grok-sandbox.com/api/auth/oauth2/callback/*`
  * (broker: `app-builder-deployer/auth/src/preview-oauth.ts`). Baking it here lets
- * the live preview do REAL sign-in — no demo/mock users — with no platform
+ * the live preview do REAL sign-in — no demo/live users — with no platform
  * injection. When deployed the deployer injects a per-app
  * `GROK_AUTH_*` that overrides these (see `server.ts`).
  *

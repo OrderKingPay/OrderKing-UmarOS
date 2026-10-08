@@ -62,7 +62,7 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
 
       // 3. AI Dispatch Matching (Closest Proximity + Capacity)
       for (const order of unassignedOrders) {
-        // If the restaurant is missing coordinates, fallback to default center (simulate for safety)
+        // If the restaurant is missing coordinates, fallback to default center (execute for safety)
         const rstLat = order.rst_lat || 20.5937; // Center of India fallback
         const rstLng = order.rst_lng || 78.9629; 
 

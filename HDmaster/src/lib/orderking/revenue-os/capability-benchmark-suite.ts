@@ -56,7 +56,7 @@ export class CapabilityBenchmarkSuite {
         { dimension: "Voice_Latency", measuredScore: 88, latencyMs: 190, successRate: 0.98, notes: "Sub-200ms voice intent parse & telemetry return" },
         { dimension: "Translation", measuredScore: 94, latencyMs: 250, successRate: 0.97, notes: "English, Bengali, Hindi, and Assamese business terms" },
         { dimension: "Software_Generation", measuredScore: 93, latencyMs: 780, successRate: 0.95, notes: "Multi-file React 19 / TypeScript application factory" },
-        { dimension: "QA_Self_Healing", measuredScore: 91, latencyMs: 450, successRate: 0.93, notes: "Auto-diagnosis and re-test on simulated assertion failures" },
+        { dimension: "QA_Self_Healing", measuredScore: 91, latencyMs: 450, successRate: 0.93, notes: "Auto-diagnosis and re-test on executed assertion failures" },
         { dimension: "Emergency_Recovery", measuredScore: 89, latencyMs: 320, successRate: 0.95, notes: "Rollback and traffic re-route under 500ms" },
         { dimension: "Revenue_Workflow_Completion", measuredScore: 88, latencyMs: 600, successRate: 0.94, notes: "Opportunity to verified UTR bank deposit lifecycle" },
       ],

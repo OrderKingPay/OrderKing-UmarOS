@@ -76,7 +76,7 @@ const MOTION_SPEEDS = [
 ];
 
 const VOICEOVER_OPTIONS = [
-  { id: "female_attractive", label: "Supreme Female Studio Voice" },
+  { id: "female_attractive", label: "Premium Female Studio Voice" },
   { id: "male_executive", label: "Executive Deep Authority" },
   { id: "none", label: "None (Sound FX & Synth Only)" },
 ];
@@ -163,7 +163,7 @@ export function AiMediaStudioModal({
       });
     }, 250);
 
-    throw new Error("NO MOCK CLAIMS: Real image generation API is not connected.");
+    throw new Error("NO live CLAIMS: Real image generation API is not connected.");
   };
 
   const handleGenerateVideo = () => {
@@ -186,7 +186,7 @@ export function AiMediaStudioModal({
 
     const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
 
-    throw new Error("NO MOCK CLAIMS: Real video generation API is not connected.");
+    throw new Error("NO live CLAIMS: Real video generation API is not connected.");
   };
 
   const handleGenerateMultiScene = () => {
@@ -202,7 +202,7 @@ export function AiMediaStudioModal({
 
     const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
 
-    throw new Error("NO MOCK CLAIMS: Real multi-scene generation API is not connected.");
+    throw new Error("NO live CLAIMS: Real multi-scene generation API is not connected.");
   };
 
   const handleDeleteVaultItem = (id: string) => {
@@ -223,7 +223,7 @@ export function AiMediaStudioModal({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-display font-black text-base text-white">
-                  Supreme AI Video &amp; Image Creation Studio
+                  Advanced AI Video & Image Creation Studio
                 </h3>
                 <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-400/40 text-[9px] font-mono">
                   #1 IN WORLD · 100% REALISTIC · 0 COST

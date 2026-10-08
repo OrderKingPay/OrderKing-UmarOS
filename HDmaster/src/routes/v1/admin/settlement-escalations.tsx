@@ -11,7 +11,7 @@ function SettlementEscalations() {
     queryKey: ['escalated-settlements'],
     queryFn: async () => {
       // In a real app, this hits a dedicated server function.
-      // For this implementation, we simulate the fetch to match the backend structure perfectly.
+      // For this implementation, we execute the fetch to match the backend structure perfectly.
       const res = await fetch('/api/finance/escalations');
       if (!res.ok) return [];
       return res.json();

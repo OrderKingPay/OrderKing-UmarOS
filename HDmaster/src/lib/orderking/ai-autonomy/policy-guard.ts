@@ -1,37 +1,25 @@
-import { requireFounderApproval } from '../auth/founder-policy';
+import { policyEngine, PolicyDecision } from '../policy-kernel/index.ts';
+import type { Principal } from '../policy-kernel/index.ts';
 
-export function enforcePolicy(toolName: string, args: Record<string, any>): boolean {
-    if (args.amount) {
-        try {
-            requireFounderApproval(toolName, args.amount);
-        } catch (err: any) {
-            console.error(`[POLICY GUARD] Blocked by Founder Control: ${err.message}`);
-            return false;
-        }
+export async function enforcePolicy(toolName: string, args: Record<string, any>): Promise<boolean> {
+    const principal: Principal = { id: 'ai-system', roles: ['autonomous-agent'] };
+    
+    const result = await policyEngine.evaluate({
+        principal,
+        capability: toolName,
+        resource: args
+    });
+
+    if (result.decision === PolicyDecision.DENY) {
+        console.warn(`[POLICY GUARD] Blocked: ${result.reason}`);
+        return false;
     }
 
-    if (toolName === 'refundCustomer') {
-        const amount = args.amount;
-        // Deny refundCustomer > $100 without human-in-the-loop approval state
-        if (amount > 100 && !args.humanApprovalToken) {
-            console.warn(`[POLICY GUARD] Blocked: Refund amount $${amount} exceeds autonomous limit of $100. Human approval required.`);
-            return false;
-        }
+    if (result.decision === PolicyDecision.AUDIT) {
+        console.warn(`[POLICY GUARD] Audit flagged for capability ${toolName}: ${result.reason}`);
+        // Still allow, but audited
+        return true;
     }
 
-    if (toolName === 'banUser') {
-        if (!args.userId || !args.reason) {
-            console.warn(`[POLICY GUARD] Blocked: banUser requires userId and reason.`);
-            return false;
-        }
-    }
-
-    if (toolName === 'adjustPricing') {
-        if (args.newPrice < 0) {
-            console.warn(`[POLICY GUARD] Blocked: Price cannot be negative.`);
-            return false;
-        }
-    }
-
-    return true; // Approved by default if not caught by restrictions
+    return true; // Approved
 }

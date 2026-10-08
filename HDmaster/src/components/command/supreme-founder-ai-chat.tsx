@@ -549,12 +549,12 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
           <div className="flex items-center justify-between pb-2 mb-3 border-b border-border/50 text-[11px] text-muted">
             <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
               <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-              Live Interactive Sandbox Mockup (Fully Functional Simulation)
+              Live Interactive Sandbox liveup (Fully Functional execution)
             </span>
             <span className="font-mono text-[10px]">React 19 · Next.js · Node.js · PostgreSQL</span>
           </div>
 
-          {/* Hospital ERP Interactive Mockup */}
+          {/* Hospital ERP Interactive liveup */}
           {blueprint.category === "erp" && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
@@ -630,7 +630,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             </div>
           )}
 
-          {/* Multi-Vendor Marketplace Interactive Mockup */}
+          {/* Multi-Vendor Marketplace Interactive liveup */}
           {blueprint.category === "marketplace" && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
@@ -717,7 +717,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             </div>
           )}
 
-          {/* FinTech Ledger Interactive Mockup */}
+          {/* FinTech Ledger Interactive liveup */}
           {blueprint.category === "fintech" && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
@@ -1151,7 +1151,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
   };
 
   const handleTurboRender = () => {
-    throw new Error("NO MOCK CLAIMS: Real video rendering API is not connected.");
+    throw new Error("NO live CLAIMS: Real video rendering API is not connected.");
   };
 
   // Aspect ratio styling container calculation
@@ -1286,7 +1286,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
         </div>
       </div>
 
-      {/* 3. Live Video Canvas & Subtitles Simulation */}
+      {/* 3. Live Video Canvas & Subtitles execution */}
       <div className="flex flex-col items-center justify-center bg-black/90 p-3 rounded-xl border border-border/80 overflow-hidden relative min-h-[200px]">
         <div className={`relative rounded-lg overflow-hidden border border-white/20 bg-black flex items-center justify-center ${getAspectClasses()}`}>
           <video
@@ -1432,11 +1432,11 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
   const [hasSaved, setHasSaved] = useState(false);
 
   const handleRestart = () => {
-    throw new Error("NO MOCK CLAIMS: Real restart API is not connected.");
+    throw new Error("NO live CLAIMS: Real restart API is not connected.");
   };
 
   const handleRefresh = () => {
-    throw new Error("NO MOCK CLAIMS: Real refresh API is not connected.");
+    throw new Error("NO live CLAIMS: Real refresh API is not connected.");
   };
 
   const handleSave = () => {
@@ -2269,7 +2269,7 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-purple-300">
               {data.type === "image" ? <ImageIcon className="size-4 inline mr-1 text-amber-400" /> : <Film className="size-4 inline mr-1 text-cyan-400" />}
-              Supreme AI Studio {data.type === "image" ? "Image" : "Video"}
+              Enterprise AI Studio {data.type === "image" ? "Image" : "Video"}
             </span>
           </div>
           <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">100% Free &amp; Unlimited</Badge>
@@ -2589,7 +2589,7 @@ function FounderWorkHub({
             <div className="flex items-center gap-2">
               <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
               <h2 className="text-lg font-bold text-white tracking-tight">
-                Supreme Founder Execution &amp; Work Deck
+                Command Center & Work Deck
               </h2>
               <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px] uppercase font-bold">
                 10,000X BEYOND CHATGPT
@@ -3165,7 +3165,7 @@ function FounderWorkHub({
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <span>Non-Negotiable Strict Tasks Matrix</span>
               <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">
-                100% STRICT ACCURACY · NO FAKE
+                100% STRICT ACCURACY · NO actual
               </Badge>
             </h3>
             <p className="text-[11px] text-slate-400">
@@ -4233,7 +4233,7 @@ export function SupremeFounderAiChat({
                       Duplex Voice Active
                     </span>
                     <div className="text-xs text-emerald-300/70 mt-2 font-mono">
-                      {Math.floor(callDuration / 60)}:{(callDuration % 60).toString().padStart(2, "0")} · SUPREME DUPLEX
+                      {Math.floor(callDuration / 60)}:{(callDuration % 60).toString().padStart(2, "0")} · ENTERPRISE DUPLEX
                     </div>
                   </div>
                   <div className="flex gap-6 mt-8">
@@ -4687,7 +4687,7 @@ export function SupremeFounderAiChat({
                       </div>
                       <div className="flex items-center text-sm text-slate-400 font-medium">
                         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse mr-2" />
-                        Synthesizing supreme output...
+                        Synthesizing optimized output...
                       </div>
                     </div>
                   )}

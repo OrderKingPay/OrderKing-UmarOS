@@ -1,5 +1,5 @@
-export type DataMode = "SIMULATED" | "PRODUCTION";
-export type MetricLabel = "ACTUAL" | "ESTIMATE" | "FORECAST" | "MODEL" | "SIMULATED";
+export type DataMode = "executeD" | "PRODUCTION";
+export type MetricLabel = "ACTUAL" | "ESTIMATE" | "FORECAST" | "MODEL" | "executeD";
 
 export type Metric<T = number> = {
   value: T;

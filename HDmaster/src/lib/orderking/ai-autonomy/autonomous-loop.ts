@@ -43,7 +43,7 @@ export async function startAutonomousAgent(goal: string, aiClient: any): Promise
                 console.log(`[AUTONOMY] Model requested tool call: ${name} with args`, args);
 
                 // 1. Verify against policy guard
-                if (enforcePolicy(name, args)) {
+                if (await enforcePolicy(name, args)) {
                     // 2. Execute underlying function safely
                     const impl = toolImplementations[name];
                     if (impl) {

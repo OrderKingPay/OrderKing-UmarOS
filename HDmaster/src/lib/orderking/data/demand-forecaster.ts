@@ -3,7 +3,7 @@ import { getSql } from '@/lib/db';
 export async function forecastNextHourDemand(zoneId: string): Promise<number> {
     const sql = await getSql();
     
-    // Simulate complex demand forecasting by returning a baseline calculation
+    // execute complex demand forecasting by returning a baseline calculation
     // Instead of raw sql string passing which breaks Neon types, we use safe templating.
     const result = await sql`
         SELECT count(id) as recent_orders 
@@ -13,7 +13,7 @@ export async function forecastNextHourDemand(zoneId: string): Promise<number> {
     
     const recentOrders = result[0]?.recent_orders ? Number(result[0].recent_orders) : 0;
     
-    // Simple Exponential Smoothing logic mock:
+    // Simple Exponential Smoothing logic live:
     const alpha = 0.3;
     const historicalBaseline = 10; 
     

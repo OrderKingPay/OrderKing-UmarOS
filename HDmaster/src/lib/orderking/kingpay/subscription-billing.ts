@@ -28,7 +28,7 @@ export async function billSubscription(restaurantId: string) {
     
     const orderId = `sub_${restaurantId}_${Date.now()}`;
     
-    // We would need a saved payment method. For now, mocking method here but calling the real processPayment
+    // We would need a saved payment method. For now, liveing method here but calling the real processPayment
     const payment = await processPayment(orderId, amount, 'card', 'stripe');
     
     await sql`

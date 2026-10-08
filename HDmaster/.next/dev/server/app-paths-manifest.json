@@ -1,0 +1,8 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/admin/revenue/route": "app/api/admin/revenue/route.js",
+  "/api/orders/[id]/route": "app/api/orders/[id]/route.js",
+  "/api/payments/checkout/route": "app/api/payments/checkout/route.js",
+  "/checkout/page": "app/checkout/page.js",
+  "/restaurants/page": "app/restaurants/page.js"
+}

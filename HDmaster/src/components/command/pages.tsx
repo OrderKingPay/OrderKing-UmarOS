@@ -95,12 +95,19 @@ import {
 import { useEmployee } from "./shell";
 import { GrowthVaultView } from "./growth-vault";
 import { FounderSovereignDeck } from "./founder-sovereign-deck";
+import { FounderEconomics } from "../dashboard/FounderEconomics";
 
 
 function useInvalidate() {
   const qc = useQueryClient();
   return () => void qc.invalidateQueries();
 }
+
+import { lazy, Suspense } from "react";
+
+const EducationDashboard = lazy(() => import("../education/EducationDashboard").then(m => ({ default: m.EducationDashboard })));
+const TravelPage = lazy(() => import("../travel/TravelPage").then(m => ({ default: m.TravelPage })));
+const WorkMarketplaceControlCenter = lazy(() => import("../jobs/WorkMarketplaceControlCenter").then(m => ({ default: m.WorkMarketplaceControlCenter })));
 
 export function ModuleView({ module, id }: { module: string; id?: string }) {
   const emp = useEmployee();
@@ -143,7 +150,9 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "notifications") return <NotificationsPage />;
   if (module === "audit") return <AuditPage />;
   if (module === "health") return <HealthPage />;
-  if (module === "travel") return <TravelPage />;
+  if (module === "travel") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><TravelPage /></Suspense>;
+  if (module === "education") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><EducationDashboard /></Suspense>;
+  if (module === "jobs") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><WorkMarketplaceControlCenter jobs={[]} workers={[]} /></Suspense>;
   return <DashboardPage />;
 }
 
@@ -153,7 +162,7 @@ export function DashboardPage() {
   const tick = useMutation({
     mutationFn: () => tickSim(),
     onSuccess: (r) => {
-      if (r.ok) toast.message(`Simulation advanced ${r.advanced} orders`);
+      if (r.ok) toast.message(`execution advanced ${r.advanced} orders`);
       else toast.error(r.error);
     },
   });
@@ -173,7 +182,7 @@ export function DashboardPage() {
             Refresh
           </Button>
           <Button size="sm" onClick={() => tick.mutate()} disabled={tick.isPending}>
-            Advance simulation
+            Advance execution
           </Button>
         </div>
       </header>
@@ -203,8 +212,8 @@ export function DashboardPage() {
             <MetricCard label="Online riders" value={formatNumber(t!.onlineRiders.value)} source={t!.onlineRiders.label} />
             <MetricCard label="Active deliveries" value={formatNumber(t!.activeDeliveries.value)} source={t!.activeDeliveries.label} />
             <MetricCard label="Support load" value={formatNumber(t!.supportLoad.value)} source={t!.supportLoad.label} />
-            <MetricCard label="Delayed now" value={formatNumber(data.live.delayedOrders)} tone="danger" source="SIMULATED" />
-            <MetricCard label="Unassigned" value={formatNumber(data.live.unassignedOrders)} tone="warning" source="SIMULATED" />
+            <MetricCard label="Delayed now" value={formatNumber(data.live.delayedOrders)} tone="danger" source="executeD" />
+            <MetricCard label="Unassigned" value={formatNumber(data.live.unassignedOrders)} tone="warning" source="executeD" />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
@@ -264,6 +273,7 @@ function CeoPage() {
   return (
     <div className="space-y-4">
       {/* UMAR OS: SOVEREIGN FOUNDER CONTROL DECK */}
+      <FounderEconomics />
       <FounderSovereignDeck />
     </div>
   );
@@ -292,7 +302,7 @@ function LivePage() {
           </div>
         ))}
       </div>
-      <Panel title={data?.trackingEnabled ? "Rider positions (SIMULATED)" : "Live tracking flag is OFF"}>
+      <Panel title={data?.trackingEnabled ? "Rider positions (executeD)" : "Live tracking flag is OFF"}>
         <div className="relative h-64 overflow-hidden rounded-[16px] border border-border bg-elevated">
           {riders.filter((r) => r.lat != null && r.lng != null).map((r) => {
             const x = ((r.lng! - minLng) / (maxLng - minLng)) * 100;
@@ -307,7 +317,7 @@ function LivePage() {
             );
           })}
           <p className="absolute bottom-2 left-3 text-[10px] uppercase tracking-wider text-muted">
-            GPS last-fix · SIMULATED · not a street map
+            GPS last-fix · executeD · not a street map
           </p>
         </div>
         <ul className="mt-3 grid gap-1 text-xs sm:grid-cols-2">
@@ -490,7 +500,7 @@ function OrderDetail({ id }: { id: string }) {
         <div className="flex flex-col gap-3">
           <ConfirmBar title="Cancel order" onConfirm={(reason) => act.mutate({ orderId: o.id, action: "cancel", reason })} />
           <ConfirmBar title="Issue refund" onConfirm={(reason) => act.mutate({ orderId: o.id, action: "refund", reason, amountPaise: o.totalPaise })} />
-          <p className="text-xs text-muted">Refunds are allowed from DELIVERED / CANCELLED / failed states. Live orders must be cancelled first. Reassign is a request to the dispatcher, applied locally only in simulation.</p>
+          <p className="text-xs text-muted">Refunds are allowed from DELIVERED / CANCELLED / failed states. Live orders must be cancelled first. Reassign is a request to the dispatcher, applied locally only in execution.</p>
           <ConfirmBar title="Escalate to support" onConfirm={(reason) => act.mutate({ orderId: o.id, action: "escalate", reason })} />
           <div className="flex flex-wrap items-end gap-2">
             <Field label="Reassign rider">
@@ -586,10 +596,10 @@ function RestaurantDetail({ id }: { id: string }) {
       </div>
       <p className="text-sm text-muted">{String(r.address)} · {String(r.phoneMasked)}</p>
       <div className="grid gap-3 sm:grid-cols-4">
-        <MetricCard label="Orders" value={formatNumber(r.performance.orders)} source="SIMULATED" />
-        <MetricCard label="GMV" value={money(r.performance.gmv)} source="SIMULATED" />
-        <MetricCard label="AOV" value={money(r.performance.aov)} source="SIMULATED" />
-        <MetricCard label="Cancel rate" value={`${(r.performance.cancellationRate * 100).toFixed(1)}%`} source="SIMULATED" />
+        <MetricCard label="Orders" value={formatNumber(r.performance.orders)} source="executeD" />
+        <MetricCard label="GMV" value={money(r.performance.gmv)} source="executeD" />
+        <MetricCard label="AOV" value={money(r.performance.aov)} source="executeD" />
+        <MetricCard label="Cancel rate" value={`${(r.performance.cancellationRate * 100).toFixed(1)}%`} source="executeD" />
       </div>
       {r.contributionEstimate ? (
         <MetricCard label="Estimated contribution" value={money(r.contributionEstimate.value)} source="ESTIMATE" />
@@ -660,7 +670,7 @@ function RiderDetail({ id }: { id: string }) {
       <h1 className="font-display text-3xl">{r.name}</h1>
       <StatusBadge value={r.status} />
       <p className="text-sm text-muted">{r.vehicle} · {r.phoneMasked} · rating {r.rating.toFixed(1)}</p>
-      {r.lat != null ? <p className="text-xs text-muted">Last operational fix {r.lat.toFixed(3)}, {r.lng?.toFixed(3)} (SIMULATED)</p> : null}
+      {r.lat != null ? <p className="text-xs text-muted">Last operational fix {r.lat.toFixed(3)}, {r.lng?.toFixed(3)} (executeD)</p> : null}
       <Panel title="Recent deliveries">
         <ul className="text-sm">
           {r.deliveries.map((d) => (
@@ -2207,7 +2217,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
           <div className="flex flex-wrap items-center gap-2">
             <div className="rounded-[14px] border border-border bg-elevated px-3 py-1.5 text-xs">
               <span className="text-muted">Data Mode: </span>
-              <span className="font-semibold text-primary">{ecosystem?.dataMode ?? "SIMULATED"}</span>
+              <span className="font-semibold text-primary">{ecosystem?.dataMode ?? "executeD"}</span>
             </div>
             <div className="rounded-[14px] border border-border bg-elevated px-3 py-1.5 text-xs">
               <span className="text-muted">Active Engine: </span>
@@ -2529,7 +2539,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
                   onClick={() => runPreset("autonomous_revenue_and_affiliate_maximizer: Autonomously audit and tune all affiliate funnels (loans, fuel cards, insurance, bill payments) to maximize owner revenue with zero liability", "finance")}
                 >
-                  <span className="font-semibold">💸 1-Click 1000x Affiliate Revenue Maximization Audit</span>
+                  <span className="font-semibold">💸 1-Click Affiliate Revenue Maximization Audit</span>
                   <p className="text-[11px] text-muted">Audit ₹4.41L/mo projected yield, Bajaj + HPCL/IOCL/BPCL alliances, and 100% zero-liability LSP compliance.</p>
                 </button>
                 <button
@@ -2661,27 +2671,27 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-green-500/20 hover:opacity-90 border-2 border-emerald-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_strategic_nearest_rider_and_fleet_orchestrator: 1000x Strategic Nearest-Rider Proximity Engine: Calibrate GPS proximity matrix, execute sequential cascading dispatch with escalated bounty (+₹10, +₹20), and optimize fleet load balancing", "dispatch")}
+                  onClick={() => runPreset("autonomous_strategic_nearest_rider_and_fleet_orchestrator: Strategic Nearest-Rider Proximity Engine: Calibrate GPS proximity matrix, execute sequential cascading dispatch with escalated bounty (+₹10, +₹20), and optimize fleet load balancing", "dispatch")}
                 >
                   <span className="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
-                    <span>🎯</span> 1-Click 1000x Strategic Nearest-Rider &amp; Fleet Dispatch Engine
+                    <span>🎯</span> 1-Click Intelligent Nearest-Rider & Fleet Dispatch Engine
                   </span>
                   <p className="text-[11px] text-muted">Dispatches exclusively to the single closest online rider via GPS distance. Cascades decline fallbacks with dynamic bounty surge, eliminating random allocation.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-yellow-500/20 hover:opacity-90 border-2 border-amber-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_off_peak_demand_stimulator_and_revenue_multiplier: 1000x Dynamic Off-Peak Demand Stimulator: Activate 2-5:30 PM and late-night low-sales stimulator, prioritize under ₹99/₹149 high-demand items, and maximize kitchen order volume", "pricing")}
+                  onClick={() => runPreset("autonomous_off_peak_demand_stimulator_and_revenue_multiplier: Dynamic Off-Peak Demand Stimulator: Activate 2-5:30 PM and late-night low-sales stimulator, prioritize under ₹99/₹149 high-demand items, and maximize kitchen order volume", "pricing")}
                 >
                   <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                    <span>⚡</span> 1-Click 1000x Dynamic Off-Peak Demand &amp; Revenue Multiplier
+                    <span>⚡</span> 1-Click Dynamic Off-Peak Demand & Revenue Multiplier
                   </span>
                   <p className="text-[11px] text-muted">Analyzes hourly order velocity in Karimganj, dynamically promotes dishes under ₹99/₹149 during low-sales hours, and doubles kitchen conversion.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-indigo-500/20 hover:opacity-90 border-2 border-violet-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_planetary_multi_repo_watchdog_and_self_healing_core: 1000x Autonomous Multi-Repo Self-Healing Watchdog: Scan all 5 physical repositories, verify schema parity, enforce canonical contracts, and maintain 100% planetary uptime", "engineers")}
+                  onClick={() => runPreset("autonomous_planetary_multi_repo_watchdog_and_self_healing_core: Autonomous Multi-Repo Self-Healing Watchdog: Scan all 5 physical repositories, verify schema parity, enforce canonical contracts, and maintain 100% planetary uptime", "engineers")}
                 >
                   <span className="font-bold text-violet-900 dark:text-violet-200 flex items-center gap-1.5">
                     <span>🪐</span> 1-Click Planetary Multi-Repo Watchdog &amp; Self-Healing Core
@@ -3739,7 +3749,7 @@ function GoLivePage() {
                 <option value="PHONEPE_PG">PhonePe Payment Gateway</option>
                 <option value="PAYTM_PG">Paytm PG</option>
                 <option value="ICICI_EAZYPAY">ICICI Eazypay</option>
-                <option value="SIMULATION">Local Simulation (Dev)</option>
+                <option value="execution">Local execution (Dev)</option>
               </select>
             </Field>
             <Field label="Gateway Mode">
@@ -3813,7 +3823,7 @@ function GoLivePage() {
                 <option value="TWILIO">Twilio</option>
                 <option value="GUPSHUP">Gupshup</option>
                 <option value="EXOTEL">Exotel</option>
-                <option value="SIMULATION">Local Simulation</option>
+                <option value="execution">Local execution</option>
               </select>
             </Field>
             <Field label="Sender ID (Header)">
@@ -3996,7 +4006,7 @@ function GoLivePage() {
               onChange={(e) => updateCapacity({ mode: e.target.value as any })}
             >
               <option value="PILOT_DISTRICT">🎯 Pilot District Mode (Recommended for Launch)</option>
-              <option value="PAN_INDIA_SYNTHETIC">🧪 Pan-India Synthetic Simulation</option>
+              <option value="PAN_INDIA_SYNTHETIC">🧪 Pan-India Synthetic execution</option>
               <option value="PAN_INDIA_PRODUCTION">🚀 Pan-India Live Production</option>
             </select>
           </Field>
@@ -4219,7 +4229,7 @@ export function ApprovalsPage() {
           <div className="flex items-center gap-2 mb-1">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <p className="text-xs uppercase tracking-[0.2em] font-semibold text-emerald-500">
-              Supreme Founder Governance
+              Platform Governance & Controls
             </p>
           </div>
           <h1 className="font-display text-3xl font-semibold tracking-tight">
@@ -4483,7 +4493,7 @@ export function ApprovalsPage() {
                       <Bot className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-base">Supreme Dispatch Coordinator</h3>
+                      <h3 className="font-semibold text-base">Intelligent Dispatch Coordinator</h3>
                       <p className="text-xs text-muted">Role: Fleet Orchestration (Zomato-level)</p>
                     </div>
                   </div>
@@ -4621,106 +4631,3 @@ function Denied({ error }: { error: string }) {
   );
 }
 
-function TravelPage() {
-  const [mode, setMode] = useState<"FLIGHT" | "TRAIN">("FLIGHT");
-  const [origin, setOrigin] = useState("");
-  const [destination, setDestination] = useState("");
-  const [date, setDate] = useState("");
-  const [passengers, setPassengers] = useState("1");
-  const [error, setError] = useState<string | null>(null);
-
-  const search = useMutation({
-    mutationFn: async () => {
-      setError(null);
-      const res = await fetch(`/api/v1/travel/search?mode=${mode}&origin=${origin}&destination=${destination}&date=${date}&passengers=${passengers}`);
-      const data = await res.json();
-      if (data.errors && data.errors.length > 0) {
-        const blocked = data.errors.find((e: any) => e.error === "EXTERNAL_PROVIDER_BLOCKED" || e.blocked);
-        if (blocked) {
-          throw new Error(blocked.details || "BLOCKED BY EXTERNAL PROVIDER: Missing production API credentials.");
-        }
-        throw new Error(data.errors[0]?.details || data.errors[0]?.error || "Search failed");
-      }
-      return data.results || [];
-    },
-    onError: (err: Error) => {
-      setError(err.message);
-      toast.error(err.message);
-    }
-  });
-
-  return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-3xl">King Pay Travel Center</h1>
-        <p className="mt-1 text-sm text-muted">Universal Extensible Booking Platform (Flights & Rail)</p>
-      </header>
-
-      <div className="flex gap-2 border-b border-border pb-4">
-        <Button variant={mode === "FLIGHT" ? "primary" : "secondary"} onClick={() => setMode("FLIGHT")}>
-          Flights
-        </Button>
-        <Button variant={mode === "TRAIN" ? "primary" : "secondary"} onClick={() => setMode("TRAIN")}>
-          Indian Rail
-        </Button>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 items-end">
-        <Field label="Origin">
-          <Input placeholder="Code (e.g. DEL)" value={origin} onChange={(e: any) => setOrigin(e.target.value)} />
-        </Field>
-        <Field label="Destination">
-          <Input placeholder="Code (e.g. BOM)" value={destination} onChange={(e: any) => setDestination(e.target.value)} />
-        </Field>
-        <Field label="Date">
-          <Input type="date" value={date} onChange={(e: any) => setDate(e.target.value)} />
-        </Field>
-        <Field label="Passengers">
-          <Input type="number" min="1" max="9" value={passengers} onChange={(e: any) => setPassengers(e.target.value)} />
-        </Field>
-        <Button 
-          disabled={search.isPending || !origin || !destination || !date} 
-          onClick={() => search.mutate()}
-        >
-          {search.isPending ? "Searching..." : "Search"}
-        </Button>
-      </div>
-
-      {error ? (
-        <div className="rounded-[16px] border border-red-500/30 bg-red-500/10 p-4">
-          <div className="flex items-center gap-2 text-red-500 font-semibold mb-1">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span>INTEGRATION STATUS</span>
-          </div>
-          <p className="text-sm text-red-400">{error}</p>
-        </div>
-      ) : null}
-
-      {!error && search.data ? (
-        <Panel title="Search Results">
-          {search.data.length === 0 ? (
-            <p className="text-muted text-sm">No inventory found for this route/date.</p>
-          ) : (
-            <ul className="space-y-3">
-              {search.data.map((r: any, idx: number) => (
-                <li key={idx} className="flex justify-between items-center rounded-[12px] border border-border p-4 bg-elevated/50">
-                  <div>
-                    <p className="font-semibold">{r.carrier.name} ({r.carrier.code})</p>
-                    <p className="text-sm text-muted">{r.origin.code} → {r.destination.code}</p>
-                    <p className="text-xs text-muted mt-1">{new Date(r.departureTime).toLocaleString()} - {new Date(r.arrivalTime).toLocaleString()}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-mono font-bold text-lg">{r.price.currency} {r.price.amount}</p>
-                    <Button size="sm" variant="secondary" className="mt-2" onClick={() => toast.info("Booking flow requires passenger identity details.")}>
-                      Select
-                    </Button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Panel>
-      ) : null}
-    </div>
-  );
-}

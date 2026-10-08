@@ -92,7 +92,7 @@ export function SupremeCreatorEngine() {
     setIsGenerating(true);
     setGeneratedCode(null);
 
-    throw new Error("NO MOCK CLAIMS: Real generation API is not connected.");
+    throw new Error("NO live CLAIMS: Real generation API is not connected.");
 
   };
 

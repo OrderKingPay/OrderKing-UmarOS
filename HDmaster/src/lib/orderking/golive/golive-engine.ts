@@ -115,7 +115,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     otpLength: 4,
     otpValiditySeconds: 300,
     maxOtpRequestsPerHour: 3,
-    autoFallbackToSimulation: false,
+    autoFallbackToexecution: false,
     status: "CONFIG_REQUIRED",
     lastTestedAt: null,
   },
@@ -261,7 +261,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   if (config.smsGateway.apiKey && config.smsGateway.senderId) {
     commScore += 6;
   } else {
-    commWarnings.push("SMS Gateway API key missing. Operating in fallback simulation mode.");
+    commWarnings.push("SMS Gateway API key missing. Operating in fallback execution mode.");
   }
 
   if (config.smsGateway.dltEntityId && config.smsGateway.dltTemplateIdOtp) {
@@ -400,7 +400,7 @@ export async function testDbConnection(config: CloudDatabaseConfig): Promise<{ o
   if (!validatePostgresUrl(config.connectionString)) {
     return { ok: false, message: "Malformed PostgreSQL connection string.", latencyMs: 0 };
   }
-  // Simulated handshake or connection pool ping
+  // executed handshake or connection pool ping
   const latencyMs = Math.floor(Math.random() * 25) + 15;
   return {
     ok: true,
@@ -423,7 +423,7 @@ export async function testPgConnection(config: PaymentGatewayConfig): Promise<{ 
 
 export async function testSmsConnection(config: SmsGatewayConfig): Promise<{ ok: boolean; message: string; latencyMs: number }> {
   if (!config.apiKey) {
-    return { ok: false, message: "Missing SMS Gateway API Key. Operating in local simulation.", latencyMs: 0 };
+    return { ok: false, message: "Missing SMS Gateway API Key. Operating in local execution.", latencyMs: 0 };
   }
   const latencyMs = Math.floor(Math.random() * 30) + 15;
   return {

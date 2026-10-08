@@ -13,3 +13,6 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - framer-motion@13.4.5
   - motion-dom@13.4.5
+  - '@google-cloud/bigquery@9.2.0'
+  - playwright-core@1.64.0
+  - playwright@1.64.0

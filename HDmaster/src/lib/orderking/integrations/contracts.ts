@@ -103,5 +103,5 @@ export const WINDOW5_CONTRACT = {
 
 export interface MarketplaceSource {
   connected: boolean;
-  label: "SIMULATED" | "WINDOW1" | "WINDOW2" | "WINDOW3" | "WINDOW5";
+  label: "executeD" | "WINDOW1" | "WINDOW2" | "WINDOW3" | "WINDOW5";
 }

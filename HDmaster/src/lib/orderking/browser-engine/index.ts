@@ -1,3 +1,3 @@
 export * from './puppeteer-adapter';
 export * from './dom-extractor';
-export * from './action-simulator';
+export * from './action-executor';

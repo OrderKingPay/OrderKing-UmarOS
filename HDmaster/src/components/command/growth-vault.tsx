@@ -38,7 +38,7 @@ export function GrowthVaultView() {
   };
 
   const testDns = () => {
-    throw new Error("NO MOCK CLAIMS: Real DNS testing API is not connected.");
+    throw new Error("NO live CLAIMS: Real DNS testing API is not connected.");
   };
 
   return (
@@ -77,7 +77,7 @@ export function GrowthVaultView() {
               subTab === "revenue" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
-            <span>⚡</span> 1000x Money &amp; Cash Harvester
+            <span>⚡</span> Revenue & Cashflow Optimizer
           </button>
           <button
             type="button"
@@ -123,7 +123,7 @@ export function GrowthVaultView() {
       </div>
 
       {/* -------------------------------------------------------------------- */}
-      {/* 0. 1000X SUPERPOWER REVENUE & MONEY HARVESTER */}
+      {/* 0. ENTERPRISE REVENUE & MONEY HARVESTER */}
       {/* -------------------------------------------------------------------- */}
       {subTab === "revenue" && (
         <div className="space-y-6">
@@ -188,7 +188,7 @@ export function GrowthVaultView() {
                 variant="primary"
                 className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center gap-2 shadow-md"
                 onClick={() => {
-                  throw new Error("NO MOCK CLAIMS: Real revenue harvest API is not connected.");
+                  throw new Error("NO live CLAIMS: Real revenue harvest API is not connected.");
                 }}
                 disabled={harvestState === "HARVESTING"}
               >

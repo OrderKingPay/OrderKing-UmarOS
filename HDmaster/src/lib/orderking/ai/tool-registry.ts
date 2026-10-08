@@ -25,7 +25,7 @@ const OPS_ROLES = ["SUPER_ADMIN", "CEO", "COO", "AREA_MANAGER"] as const;
 const FINANCE_ROLES = ["SUPER_ADMIN", "CEO", "COO", "FINANCE"] as const;
 const SUPPORT_ROLES = ["SUPER_ADMIN", "CEO", "COO", "CUSTOMER_SUPPORT", "RESTAURANT_SUPPORT", "RIDER_SUPPORT"] as const;
 const ENGINEERING_ROLES = ["SUPER_ADMIN", "CEO", "COO"] as const;
-const LIVE = ["SIMULATED", "PRODUCTION"] as const;
+const LIVE = ["executeD", "PRODUCTION"] as const;
 
 const read = (
   name: string,

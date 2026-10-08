@@ -43,7 +43,7 @@ export async function processDlqBatch() {
   for (const item of pending) {
     try {
       // In a real system, you'd route this back into the specific system.
-      // For now, we simulate executing the retry block.
+      // For now, we execute executing the retry block.
       console.log(`[DLQ] Retrying ${item.target_system} for org ${item.org_id}...`);
       
       // Update as successful

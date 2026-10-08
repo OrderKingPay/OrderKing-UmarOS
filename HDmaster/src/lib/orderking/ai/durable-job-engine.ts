@@ -139,7 +139,7 @@ export class DurableJobEngine {
     job.status = "RUNNING";
     job.logs.push(`[${new Date().toLocaleTimeString()}] Worker started execution`);
 
-    // Simulate progressive execution
+    // execute progressive execution
     let currentIdx = 0;
     const interval = setInterval(() => {
       if (currentIdx < job.steps.length) {

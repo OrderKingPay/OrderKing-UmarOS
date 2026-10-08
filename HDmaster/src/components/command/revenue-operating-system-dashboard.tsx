@@ -48,7 +48,7 @@ import type {
   OperatingLoopTransition,
 } from "@/lib/orderking/revenue-os";
 
-export function RevenueOperatingSystemDashboard() {
+export async function RevenueOperatingSystemDashboard() {
   const [timeframe, setTimeframe] = useState<"TODAY" | "THIS_WEEK" | "THIS_MONTH" | "THIS_YEAR">("THIS_MONTH");
   const [activeTab, setActiveTab] = useState<
     "money" | "opportunities" | "delivery" | "qa" | "voice" | "approvals" | "connectors" | "bi"

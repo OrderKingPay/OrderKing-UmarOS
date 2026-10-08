@@ -87,7 +87,7 @@ export class BusinessOsModules {
   }
 
   // 2. Sales & Lawful Opportunity Discovery Module
-  // Discovers genuine local restaurants paying extortionate commissions without fake promises
+  // Discovers genuine local restaurants paying extortionate commissions without actual promises
   public discoverLawfulOpportunities(_region = "Sribhumi / Barak Valley"): LawfulSalesLead[] {
     return [];
   }

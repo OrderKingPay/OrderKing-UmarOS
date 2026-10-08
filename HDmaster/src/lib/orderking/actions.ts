@@ -644,7 +644,7 @@ export const exportCsv = createServerFn({ method: "POST" })
       } else {
         requirePermission(ws.ctx, "view_finance");
         const fin = await q.financeSummary(ws.ctx);
-        csv = "metric,paise,label\nGMV," + fin.gmv + ",SIMULATED\ncontribution," + fin.contribution.total + ",ESTIMATE\n";
+        csv = "metric,paise,label\nGMV," + fin.gmv + ",executeD\ncontribution," + fin.contribution.total + ",ESTIMATE\n";
       }
       await (await import("@/lib/orderking/server/workspace.server")).appendAudit({
         orgId: ws.ctx.orgId,

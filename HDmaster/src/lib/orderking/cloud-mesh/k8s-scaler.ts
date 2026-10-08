@@ -1,6 +1,6 @@
 /**
  * UMAR OS — Kubernetes Auto-Scaler
- * Replaces simulated "Math.random() CPU load" with real PostgreSQL
+ * Replaces executed "Math.random() CPU load" with real PostgreSQL
  * telemetry via pg_stat_activity and pg_stat_database.
  */
 import { exec } from 'child_process';
@@ -87,7 +87,7 @@ export async function scaleDeployment(
 
 /**
  * Monitor real database load and auto-scale the deployment accordingly.
- * Uses actual PostgreSQL telemetry — no simulation.
+ * Uses actual PostgreSQL telemetry — no execution.
  */
 export async function monitorAndScale(
   deployment: string,

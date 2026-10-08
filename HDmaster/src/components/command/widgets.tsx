@@ -22,7 +22,7 @@ export function MetricCard({
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs uppercase tracking-[0.14em] text-muted">{label}</p>
         {source ? (
-          <Badge tone={source === "SIMULATED" ? "warning" : source === "ESTIMATE" || source === "MODEL" ? "info" : "default"}>
+          <Badge tone={source === "executeD" ? "warning" : source === "ESTIMATE" || source === "MODEL" ? "info" : "default"}>
             {source}
           </Badge>
         ) : null}

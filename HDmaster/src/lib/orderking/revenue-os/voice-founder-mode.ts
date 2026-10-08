@@ -30,7 +30,7 @@ export class VoiceFounderMode {
         liveSystemData: {
           verifiedRevenueInr: verifiedInr,
           pendingPaymentsInr: pendingInr,
-          immutableEventCount: revenueTruthDB.getEvents().length,
+          immutableEventCount: (await revenueTruthDB.getEvents()).length,
         },
       };
     }

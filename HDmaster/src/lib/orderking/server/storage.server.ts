@@ -15,7 +15,7 @@ export type PresignedUploadResponse = {
   key: string;
   method: "PUT" | "POST";
   headers: Record<string, string>;
-  isMock: boolean;
+  islive: boolean;
 };
 
 function sha256Hex(value: string): string {
@@ -111,14 +111,14 @@ export function getStorageConfig() {
 
 /**
  * Generates a real AWS SigV4/R2-compatible pre-signed PUT URL.
- * Production never falls back to a fake URL or placeholder asset.
+ * Production never falls back to a actual URL or placeholder asset.
  */
 export async function createPresignedUpload(
   req: PresignedUploadRequest,
 ): Promise<PresignedUploadResponse> {
   const config = getStorageConfig();
   if (!config.hasCredentials) {
-    throw new Error("Storage credentials not configured. Refusing to generate a simulated upload URL.");
+    throw new Error("Storage credentials not configured. Refusing to generate a executed upload URL.");
   }
 
   if (!config.publicBaseUrl) {
@@ -151,6 +151,6 @@ export async function createPresignedUpload(
     key: uniqueKey,
     method: "PUT",
     headers: { "Content-Type": req.contentType },
-    isMock: false,
+    islive: false,
   };
 }

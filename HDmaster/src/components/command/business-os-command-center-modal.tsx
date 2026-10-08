@@ -410,7 +410,7 @@ export function BusinessOsCommandCenterModal({
                     <TrendingUp className="size-4 text-amber-400" />
                     <span>Lawful Opportunity Discovery ({leads.length})</span>
                   </span>
-                  <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">0% FAKE</Badge>
+                  <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">0% actual</Badge>
                 </div>
                 <div className="space-y-1.5 max-h-48 overflow-y-auto">
                   {leads.map((l: any) => (

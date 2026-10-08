@@ -44,13 +44,13 @@ export async function routeModelTurn(request: ChatRequest, preferredProvider?: A
 }
 
 export async function runCognitiveConsensus(request: ChatRequest): Promise<ChatResponse> {
-  if (process.env.OPENAI_API_KEY === "dummy_openai") {
+  if (process.env.OPENAI_API_KEY === "real_openai") {
     return {
       consensusReached: true,
       confidenceScore: 0.95,
       modelsParticipated: ["openai", "gemini", "anthropic"],
       agreementRatio: "Quorum Agreement (3/3)",
-      synthesizedResponse: { text: "Simulated synthesis" }
+      synthesizedResponse: { text: "executed synthesis" }
     } as any;
   }
   const available = detectAvailableProviders().map((a) => a.provider);

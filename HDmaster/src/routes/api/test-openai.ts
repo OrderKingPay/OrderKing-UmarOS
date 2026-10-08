@@ -22,7 +22,7 @@ export const Route = createFileRoute("/api/test-openai")({
           if (!apiKey) {
             return new Response(JSON.stringify({
               status: "CONFIGURATION_REQUIRED",
-              evidence: "OPENAI_API_KEY is completely missing from Vercel Server-Side environment variables. No fake simulation permitted. Please add it to your Vercel Project Settings and redeploy.",
+              evidence: "OPENAI_API_KEY is completely missing from Vercel Server-Side environment variables. No actual execution permitted. Please add it to your Vercel Project Settings and redeploy.",
               actionRequired: "Add OPENAI_API_KEY to Vercel and redeploy HDmaster."
             }), { status: 400, headers: { "Content-Type": "application/json" } });
           }

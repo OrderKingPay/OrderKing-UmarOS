@@ -43,7 +43,7 @@ export class SupremeWealthEngine {
     const provider = new ethers.JsonRpcProvider(rpcUrl);
     const wallet = new ethers.Wallet(treasuryPrivateKey, provider);
 
-    // Mock Aave Pool ABI for Treasury Stablecoin deposit
+    // Partial Aave Pool ABI for Treasury Stablecoin deposit
     const poolAddress = '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2'; 
     const poolAbi = [
       "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode) external"

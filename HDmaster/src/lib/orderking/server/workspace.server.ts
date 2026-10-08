@@ -38,7 +38,7 @@ export type Workspace = {
   employee: EmployeeRow;
   email: string | null;
   displayName: string;
-  dataMode: "SIMULATED" | "PRODUCTION";
+  dataMode: "executeD" | "PRODUCTION";
   settings: PlatformSettings;
 };
 
@@ -229,7 +229,7 @@ export async function ensureWorkspace(
     employee: row,
     email,
     displayName: row.name,
-    dataMode: (meta[0]?.data_mode as "SIMULATED" | "PRODUCTION") ?? "PRODUCTION",
+    dataMode: (meta[0]?.data_mode as "executeD" | "PRODUCTION") ?? "PRODUCTION",
     settings,
   };
 }

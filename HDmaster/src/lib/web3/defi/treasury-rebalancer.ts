@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 // Assuming the `safe-manager` module is defined as stated in requirements
 // @ts-ignore
 import { proposeTransaction } from '../safe-manager';
-import { requireFounderApproval } from '../../orderking/auth/founder-policy';
+import { policyEngine, PolicyDecision } from '../../orderking/policy-kernel/index.ts';
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 const AAVE_POOL_ADDRESS = '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2'; // Aave V3 Pool mainnet
@@ -32,7 +32,15 @@ export async function rebalanceTreasury(
     const excess = usdcBalance - threshold;
     const totalUsdcValue = Number(excess) / 10000; // convert 6 decimals to cents
 
-    requireFounderApproval('treasury_sweep', totalUsdcValue);
+    const result = await policyEngine.evaluate({
+      principal: { id: 'treasury-system', roles: ['system'] },
+      capability: 'treasury_sweep',
+      resource: { amount: totalUsdcValue }
+    });
+
+    if (result.decision === PolicyDecision.DENY) {
+      throw new Error(`Founder Control: Action 'treasury_sweep' requires explicit Founder approval. Reason: ${result.reason}`);
+    }
     
     const usdcInterface = new ethers.Interface(ERC20_ABI);
     const approveData = usdcInterface.encodeFunctionData('approve', [AAVE_POOL_ADDRESS, excess]);

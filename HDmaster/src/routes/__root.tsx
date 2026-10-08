@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { Toaster } from "sonner";
-import { UmarVoiceTerminal } from "@/components/umar-voice-terminal";
+import { MasterAICommandTerminal } from "@/components/MasterAICommandTerminal";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Umar OS";
@@ -69,7 +69,7 @@ function RootDocument() {
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
             <Outlet />
-            <UmarVoiceTerminal />
+            <MasterAICommandTerminal />
             <Toaster
               theme="dark"
               position="bottom-right"

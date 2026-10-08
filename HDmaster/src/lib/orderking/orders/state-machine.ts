@@ -27,7 +27,7 @@ export type TransitionActor =
   | "rider"
   | "admin"
   | "system"
-  | "simulated_rider";
+  | "api";
 
 export const ACTIVE_FLOW: OrderStatus[] = [
   "PENDING", "CONFIRMED", "PREPARING", "READY", "RIDER_ASSIGNED",
@@ -43,11 +43,11 @@ const ACTOR_TRANSITIONS: Record<OrderStatus, Partial<Record<OrderStatus, Transit
   PENDING: { CONFIRMED: ["restaurant", "admin"], CANCELLED: ["customer", "admin", "system"], PAYMENT_FAILED: ["system", "admin"] },
   CONFIRMED: { PREPARING: ["restaurant", "admin"], CANCELLED: ["customer", "admin"], RESTAURANT_REJECTED: ["restaurant", "admin"] },
   PREPARING: { READY: ["restaurant", "admin"], CANCELLED: ["customer", "admin"] },
-  READY: { RIDER_ASSIGNED: ["rider", "admin", "system", "simulated_rider"], CANCELLED: ["admin"] },
-  RIDER_ASSIGNED: { PICKED_UP: ["rider", "admin", "system", "simulated_rider"], RIDER_CANCELLED: ["rider", "admin", "system"], CANCELLED: ["admin"] },
-  PICKED_UP: { ON_THE_WAY: ["rider", "admin", "system", "simulated_rider"], DELIVERY_FAILED: ["rider", "admin", "system"] },
-  ON_THE_WAY: { ARRIVING: ["rider", "admin", "system", "simulated_rider"], DELIVERY_FAILED: ["rider", "admin", "system"], CUSTOMER_UNAVAILABLE: ["rider", "admin", "system"] },
-  ARRIVING: { DELIVERED: ["rider", "admin", "system", "simulated_rider"], CUSTOMER_UNAVAILABLE: ["rider", "admin", "system"], DELIVERY_FAILED: ["rider", "admin", "system"] },
+  READY: { RIDER_ASSIGNED: ["rider", "admin", "system", "api"], CANCELLED: ["admin"] },
+  RIDER_ASSIGNED: { PICKED_UP: ["rider", "admin", "system", "api"], RIDER_CANCELLED: ["rider", "admin", "system"], CANCELLED: ["admin"] },
+  PICKED_UP: { ON_THE_WAY: ["rider", "admin", "system", "api"], DELIVERY_FAILED: ["rider", "admin", "system"] },
+  ON_THE_WAY: { ARRIVING: ["rider", "admin", "system", "api"], DELIVERY_FAILED: ["rider", "admin", "system"], CUSTOMER_UNAVAILABLE: ["rider", "admin", "system"] },
+  ARRIVING: { DELIVERED: ["rider", "admin", "system", "api"], CUSTOMER_UNAVAILABLE: ["rider", "admin", "system"], DELIVERY_FAILED: ["rider", "admin", "system"] },
   DELIVERED: { DISPUTED: ["customer", "admin", "system"], REFUND_PENDING: ["admin", "system"] },
   CANCELLED: { REFUND_PENDING: ["admin", "system"] },
   PAYMENT_FAILED: {},

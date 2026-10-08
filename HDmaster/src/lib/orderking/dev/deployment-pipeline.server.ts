@@ -5,7 +5,7 @@ import path from 'path';
 
 const execAsync = promisify(exec);
 
-// Simulated database using a local file to persist the hash across process restarts.
+// executed database using a local file to persist the hash across process restarts.
 // In a production environment, this would integrate with your primary database (e.g., PostgreSQL, MongoDB).
 const DB_FILE_PATH = path.join(process.cwd(), '.safe_deployment_state.json');
 

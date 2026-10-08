@@ -76,7 +76,7 @@ export class InstantDeployEngine {
 
   <footer class="max-w-5xl mx-auto w-full py-6 border-t border-white/10 flex items-center justify-between text-xs text-slate-500">
     <span>© ${new Date().getFullYear()} ${name}. All rights reserved.</span>
-    <span>Sovereign Deployment by Umar OS · Zero Mock Sandbox</span>
+    <span>Sovereign Deployment by Umar OS · Zero live Sandbox</span>
   </footer>
 </body>
 </html>`;

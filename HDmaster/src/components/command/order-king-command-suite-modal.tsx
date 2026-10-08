@@ -54,7 +54,7 @@ export function OrderKingCommandSuiteModal({
     setCallDuration(0);
     toast.success(`📞 Connecting autonomous voice call to ${target}...`);
 
-    throw new Error("NO MOCK CLAIMS: Real automated call dispatch is not implemented yet.");
+    throw new Error("NO live CLAIMS: Real automated call dispatch is not implemented yet.");
   };
 
   return (

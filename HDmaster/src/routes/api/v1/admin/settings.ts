@@ -4,8 +4,13 @@ import { getSql } from "@/lib/db";
 export const Route = createFileRoute("/api/v1/admin/settings")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         try {
+          const auth = request?.headers?.get('Authorization');
+          if (auth !== 'Bearer ' + (process.env.FOUNDER_SECRET || 'dev_founder_secret')) {
+            return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+          }
+
           const sql = await getSql();
           await sql`
             CREATE TABLE IF NOT EXISTS platform_settings (
@@ -44,6 +49,11 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
       },
       POST: async ({ request }) => {
         try {
+          const auth = request?.headers?.get('Authorization');
+          if (auth !== 'Bearer ' + (process.env.FOUNDER_SECRET || 'dev_founder_secret')) {
+            return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+          }
+
           const body = await request.json();
           const sql = await getSql();
           

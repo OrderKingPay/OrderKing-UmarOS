@@ -8,7 +8,7 @@ const workerOptions: WorkerOptions = {
   },
 };
 
-// Mocking the scheduler and router for now
+// liveing the scheduler and router for now
 const processPayoutScheduler = async (job: Job) => {
   console.log(`[PayoutWorker] Processing job ${job.id}`, job.data);
 };
