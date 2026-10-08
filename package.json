@@ -13,6 +13,7 @@
     "turbo": "latest"
   },
   "dependencies": {
+    "@google/genai": "^2.27.0",
     "@types/express": "^5.0.6",
     "ethers": "^6.17.0",
     "express": "^5.2.1"
