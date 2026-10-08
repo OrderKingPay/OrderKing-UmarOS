@@ -1,12 +1,15 @@
 import React from 'react';
 
+import { searchRestaurants as discoverySearch } from '@/lib/orderking/discovery/full-text-search';
+
 async function searchRestaurants(query: string) {
-  // Simulating discovery module search
-  return [
-    { id: 1, name: "Burger King", matchScore: 0.95 },
-    { id: 2, name: "Pizza Hut", matchScore: 0.82 },
-    { id: 3, name: "Taco Bell", matchScore: 0.75 }
-  ];
+  if (!query) return [];
+  const res = await discoverySearch(query);
+  return res.map((r: any) => ({
+    id: r.id,
+    name: r.name,
+    matchScore: r.rank ? r.rank.toFixed(2) : 0
+  }));
 }
 
 export default async function RestaurantsPage({ searchParams }: { searchParams: { q?: string } }) {
@@ -30,7 +33,7 @@ export default async function RestaurantsPage({ searchParams }: { searchParams: 
 
       {results.length > 0 ? (
         <ul className="space-y-4">
-          {results.map((restaurant) => (
+          {results.map((restaurant: any) => (
             <li key={restaurant.id} className="p-4 bg-gray-50 border border-gray-200 rounded-md">
               <h2 className="text-xl font-semibold text-gray-900">{restaurant.name}</h2>
               <p className="text-sm text-gray-500">Match Score: {restaurant.matchScore}</p>

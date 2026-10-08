@@ -1,12 +1,21 @@
 import React from 'react';
 
-// Assuming an internal API or direct SQL call is made here.
+import { getSql } from '@/lib/db';
+
 async function getDashboardData() {
-  // Mocking the data fetch as the exact internal API isn't fully specified here.
+  const sql = await getSql();
+  const revenueRes = await sql<{ total: number }>`SELECT SUM(total_paise) as total FROM orders`;
+  const ordersRes = await sql<{ count: number }>`SELECT COUNT(*) as count FROM orders WHERE status NOT IN ('DELIVERED', 'CANCELLED')`;
+  const customersRes = await sql<{ count: number }>`SELECT COUNT(*) as count FROM customers`;
+  
+  const revenue = revenueRes[0]?.total ? `$${(revenueRes[0].total / 100).toLocaleString()}` : "$0";
+  const activeOrders = ordersRes[0]?.count || 0;
+  const totalCustomers = customersRes[0]?.count || 0;
+
   return {
-    founderRevenue: "$10,500",
-    activeOrders: 42,
-    k8sCpu: "65%"
+    founderRevenue: revenue,
+    activeOrders: activeOrders,
+    totalCustomers: totalCustomers
   };
 }
 
@@ -29,8 +38,8 @@ export default async function DashboardPage() {
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold text-gray-700">K8s CPU Usage</h2>
-          <p className="text-4xl font-bold text-purple-600 mt-2">{data.k8sCpu}</p>
+          <h2 className="text-lg font-semibold text-gray-700">Total Customers</h2>
+          <p className="text-4xl font-bold text-purple-600 mt-2">{data.totalCustomers}</p>
         </div>
       </div>
     </div>

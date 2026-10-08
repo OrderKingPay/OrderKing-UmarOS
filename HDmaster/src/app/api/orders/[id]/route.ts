@@ -1,34 +1,32 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrder, transitionOrder } from '../../../lib/orderking/order-ops';
+import { transitionOrder, OrderStatus } from '../../../../lib/orderking/order-ops/order-state-machine';
+import { getSql } from '../../../../lib/db';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const order = await getOrder(params.id);
-    if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
-    }
+    const sql = await getSql();
+    const [order] = await sql`SELECT * FROM orders WHERE id = ${params.id}`;
+    if (!order) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(order);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const body = await request.json();
-    const { status } = body;
-    if (!status) {
-      return NextResponse.json({ error: 'Status is required' }, { status: 400 });
+    const { action } = await request.json();
+    let newStatus: OrderStatus;
+    
+    // Map string action to enum if needed, or just cast
+    if (Object.values(OrderStatus).includes(action)) {
+      newStatus = action as OrderStatus;
+    } else {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
-    const updatedOrder = await transitionOrder(params.id, status);
-    return NextResponse.json(updatedOrder);
+
+    await transitionOrder(params.id, newStatus);
+    return NextResponse.json({ status: newStatus });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

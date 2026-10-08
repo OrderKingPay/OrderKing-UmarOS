@@ -1,22 +1,21 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { searchRestaurants } from '../../../lib/orderking/full-text-search';
+import { searchRestaurants } from '../../../../lib/orderking/discovery/full-text-search';
 
 export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const q = searchParams.get('q');
+  const lat = searchParams.get('lat');
+  const lng = searchParams.get('lng');
+
+  if (!q) {
+    return NextResponse.json({ error: 'Missing query' }, { status: 400 });
+  }
+
+  const numLat = lat ? parseFloat(lat) : undefined;
+  const numLng = lng ? parseFloat(lng) : undefined;
+
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const query = searchParams.get('q') || '';
-    const lat = searchParams.get('lat');
-    const lng = searchParams.get('lng');
-    const radius = searchParams.get('radius');
-
-    const results = await searchRestaurants({
-      query,
-      lat: lat ? parseFloat(lat) : undefined,
-      lng: lng ? parseFloat(lng) : undefined,
-      radius: radius ? parseFloat(radius) : undefined
-    });
-
+    const results = await searchRestaurants(q, numLat, numLng);
     return NextResponse.json(results);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

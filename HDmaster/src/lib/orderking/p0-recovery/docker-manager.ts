@@ -1,4 +1,3 @@
-// @ts-nocheck
 import Docker from 'dockerode';
 
 // Connects to local Docker daemon (handles Windows named pipes and Unix sockets)

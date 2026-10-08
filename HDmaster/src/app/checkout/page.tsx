@@ -8,9 +8,13 @@ export default function CheckoutPage() {
   const handleCheckout = async () => {
     setLoading(true);
     try {
-      // Simulate API call to KingPay backend
-      const response = await fetch('/api/kingpay/create-session', {
+      // Call real payments checkout API
+      const response = await fetch('/api/payments/checkout', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderId: `ord_${Date.now()}`, amount: 5000 }),
       });
       
       if (response.ok) {

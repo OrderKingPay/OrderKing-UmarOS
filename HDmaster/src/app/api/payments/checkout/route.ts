@@ -1,22 +1,23 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
-import { createPaymentSession } from '../../../lib/orderking/payment-processor';
+import { processPayment } from '../../../../lib/orderking/kingpay/payment-processor';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { orderId, amount, currency, provider } = body;
+    const { orderId, amount, provider } = body;
     
     if (!orderId || !amount) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const session = await createPaymentSession({
+    const gateway = provider === 'razorpay' ? 'razorpay' : 'stripe';
+    
+    const session = await processPayment(
       orderId,
       amount,
-      currency: currency || 'USD',
-      provider: provider || 'stripe'
-    });
+      'card',
+      gateway
+    );
 
     return NextResponse.json(session);
   } catch (error: any) {

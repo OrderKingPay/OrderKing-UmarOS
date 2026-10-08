@@ -1,4 +1,15 @@
+import { requireFounderApproval } from '../auth/founder-policy';
+
 export function enforcePolicy(toolName: string, args: Record<string, any>): boolean {
+    if (args.amount) {
+        try {
+            requireFounderApproval(toolName, args.amount);
+        } catch (err: any) {
+            console.error(`[POLICY GUARD] Blocked by Founder Control: ${err.message}`);
+            return false;
+        }
+    }
+
     if (toolName === 'refundCustomer') {
         const amount = args.amount;
         // Deny refundCustomer > $100 without human-in-the-loop approval state
