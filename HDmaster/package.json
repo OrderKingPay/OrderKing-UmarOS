@@ -52,6 +52,8 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.0.0",
+    "ethers": "^6.17.0",
+    "express": "^5.2.1",
     "framer-motion": "^13.4.3",
     "h3": "2.0.1-rc.32",
     "h3-js": "^4.5.0",
@@ -77,6 +79,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.16.5",
     "@types/pg": "^8.11.10",
     "@types/react": "^19.2.0",
