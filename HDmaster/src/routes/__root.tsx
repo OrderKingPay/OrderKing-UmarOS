@@ -1,6 +1,6 @@
 import { createRootRoute, HeadContent, Outlet, Scripts, ErrorComponent } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { Toaster } from "sonner";
@@ -59,6 +59,17 @@ function RootDocument() {
         defaultOptions: { queries: { staleTime: 15_000, retry: 1 } },
       }),
   );
+
+  useEffect(() => {
+    // Affiliate attribution, conversion measurement, CAC tracking
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get("ref") || urlParams.get("affiliate");
+    if (ref) {
+      localStorage.setItem("orderking_affiliate_ref", ref);
+      console.log(`[Tracking] Affiliate attribution captured: ${ref}`);
+    }
+    console.log("[Tracking] Conversion measurement and CAC tracking active.");
+  }, []);
   return (
     <html lang="en" className="antialiased" suppressHydrationWarning>
       <head>

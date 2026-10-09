@@ -100,7 +100,6 @@ function TabButton({ id, current, set, icon: Icon, label }: any) {
 
 function FeatureFlagsPanel({ config, onSave, saving }: any) {
   const [flags, setFlags] = useState({
-    daily_hub_enabled: config.daily_hub_enabled ?? false,
     viral_referrals_enabled: config.viral_referrals_enabled ?? true,
     dynamic_surge_enabled: config.dynamic_surge_enabled ?? true,
   });
@@ -110,7 +109,6 @@ function FeatureFlagsPanel({ config, onSave, saving }: any) {
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold border-b pb-2">Global Feature Flags</h2>
-      <ToggleRow title="Customer Daily Hub" description="Show the Daily Hub (Gig jobs, Govt schemes) on the customer home page." isOn={flags.daily_hub_enabled} onToggle={() => toggle('daily_hub_enabled')} />
       <ToggleRow title="Viral WhatsApp Referrals" description="Enable the multi-sided referral system for customers, riders, and restaurants." isOn={flags.viral_referrals_enabled} onToggle={() => toggle('viral_referrals_enabled')} />
       <ToggleRow title="Dynamic Surge Pricing" description="Automatically increase delivery fees during peak hours or bad weather." isOn={flags.dynamic_surge_enabled} onToggle={() => toggle('dynamic_surge_enabled')} />
       <SaveButton onClick={() => onSave(flags)} saving={saving} />
@@ -169,7 +167,7 @@ function ToggleRow({ title, description, isOn, onToggle }: any) {
   return (
     <div className="flex items-center justify-between py-3">
       <div>
-        <h3 className="font-bold text-slate-800">{title}</h3>
+        <h3 className="font-bold text-slate-200">{title}</h3>
         <p className="text-sm text-slate-500">{description}</p>
       </div>
       <button onClick={onToggle} className={`w-12 h-6 rounded-full transition-colors relative ${isOn ? 'bg-emerald-500' : 'bg-slate-300'}`}>
@@ -191,7 +189,7 @@ function InputRow({ title, value, onChange }: any) {
 function SelectRow({ title, options, value, onChange }: any) {
   return (
     <div className="flex items-center justify-between py-3 border-b border-slate-100">
-      <h3 className="font-bold text-slate-800">{title}</h3>
+      <h3 className="font-bold text-slate-200">{title}</h3>
       <select value={value} onChange={e => onChange(e.target.value)} className="border border-slate-300 rounded-lg px-3 py-2 bg-slate-50">
         {options.map((o: string) => <option key={o} value={o}>{o}</option>)}
       </select>

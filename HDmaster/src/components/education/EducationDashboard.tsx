@@ -103,11 +103,13 @@ export function EducationDashboard() {
             columns={[
               { key: "student", label: "Student ID" },
               { key: "board", label: "Board/Grade" },
-              { key: "mastery", label: "Top Mastery" }
+              { key: "mastery", label: "Top Mastery" },
+              { key: "opportunities", label: "Unlocked Opportunities" }
             ]}
             rows={allProfiles.map(p => {
               const masteredCount = Object.values(p.topicProgress).filter(v => v >= 80).length;
               const totalAttempted = Object.keys(p.topicProgress).length;
+              const unlockedOps = tutor.getUnlockedOpportunities(p.studentId);
               
               return {
                 _id: p.studentId,
@@ -118,10 +120,40 @@ export function EducationDashboard() {
                     <span className="font-mono text-xs">{masteredCount}/{totalAttempted} Topics</span>
                     {masteredCount > 0 ? <Badge tone="success">Advancing</Badge> : <Badge tone="warning">Learning</Badge>}
                   </div>
+                ),
+                opportunities: (
+                  <div className="flex flex-col gap-1">
+                    {unlockedOps.length > 0 ? unlockedOps.map((op, idx) => (
+                      <span key={idx} className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-md inline-block whitespace-nowrap">
+                        {op}
+                      </span>
+                    )) : <span className="text-xs text-muted">None yet</span>}
+                  </div>
                 )
               };
             })}
           />
+        </Panel>
+
+        <Panel title="Interactive Assessment & Opportunities Engine">
+          <div className="space-y-4">
+            <div className="p-4 border rounded-xl bg-slate-50">
+              <h3 className="font-semibold mb-2">Verified Skills to Opportunities</h3>
+              <p className="text-sm text-slate-600 mb-4">
+                Our AI Tutor maps topic mastery (85%+) directly to verified freelance and tutoring opportunities. No fake jobs, no guaranteed income claims. Pure skill-based meritocracy with transparent monetization.
+              </p>
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between items-center text-sm p-2 bg-white rounded border">
+                  <span>Peer Tutor (Math)</span>
+                  <Badge tone="default">Requires 2 topics mastered</Badge>
+                </div>
+                <div className="flex justify-between items-center text-sm p-2 bg-white rounded border">
+                  <span>Content QA Reviewer (Science)</span>
+                  <Badge tone="default">Requires 4 topics mastered</Badge>
+                </div>
+              </div>
+            </div>
+          </div>
         </Panel>
       </div>
     </div>

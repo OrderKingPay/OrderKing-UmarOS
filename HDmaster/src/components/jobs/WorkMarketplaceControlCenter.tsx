@@ -42,8 +42,8 @@ export function WorkMarketplaceControlCenter({ jobs, workers }: WorkMarketplaceC
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Work Marketplace</h1>
-          <p className="text-muted-foreground">Founder Control Center & Matching Engine</p>
+          <h1 className="text-3xl font-bold tracking-tight">Verified Skills Marketplace</h1>
+          <p className="text-muted-foreground">Transparent Opportunities & Matching Engine (No Guaranteed Income)</p>
         </div>
         <div className="flex space-x-4 bg-muted/50 p-2 rounded-lg">
           <div className="flex flex-col items-center px-4">

@@ -33,9 +33,6 @@ export function KingPayMasterSwitch() {
     { id: 'upi', label: 'UPI Integration', desc: 'Real-time UPI Payments' },
     { id: 'collect', label: 'Payment Links (Collect)', desc: 'Asynchronous P2M Collect' },
     { id: 'pay', label: 'Direct Pay / Checkout', desc: 'Synchronous Checkout Engine' },
-    { id: 'scan', label: 'Scan to Pay (QR)', desc: 'Dynamic QR Code Generation' },
-    { id: 'wallet', label: 'KingPay Wallet', desc: 'Prepaid Closed-Loop Wallet' },
-    { id: 'recharge', label: 'Wallet Recharge', desc: 'Add funds to wallet' },
     { id: 'autopay', label: 'AutoPay Mandates', desc: 'Recurring e-Mandates' },
     { id: 'settlements', label: 'Merchant Settlements', desc: 'T+1 Nodal Settlements' },
   ];
@@ -52,10 +49,10 @@ export function KingPayMasterSwitch() {
         <div>
           <h2 className="text-xl font-bold text-red-500 flex items-center gap-2">
             <ShieldAlert className="w-5 h-5" />
-            KingPay Regulated Feature Master Switch
+            KingPay Integration Master Switch
           </h2>
           <p className="text-sm text-red-400/80 mt-1 max-w-2xl">
-            Strict Regulatory Enforcement Engine. Features are disabled by default requiring explicit Founder Authorization. Non-authorized activation attempts are logged.
+            API capabilities and feature flags. Features are disabled by default requiring explicit Founder Authorization. Non-authorized activation attempts are logged.
           </p>
         </div>
         <Badge variant="outline" className="bg-red-950 text-red-400 border-red-800 uppercase tracking-widest font-mono text-xs py-1 px-3">

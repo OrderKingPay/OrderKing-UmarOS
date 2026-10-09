@@ -5,7 +5,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/founder/kingpay-compliance')
   GET: async () => {
     try {
       const features: KingPayFeature[] = [
-        'upi', 'collect', 'pay', 'scan', 'wallet', 'recharge', 'autopay', 'settlements'
+        'upi', 'collect', 'pay', 'autopay', 'settlements'
       ];
       
       const state = features.reduce((acc, feature) => {

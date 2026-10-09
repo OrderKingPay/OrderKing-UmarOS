@@ -5,7 +5,7 @@ import { conversationalControl } from '../../../../lib/orderking/ai/founder-conv
 import { registerFounderTools } from '../../../../lib/orderking/ai/tool-registry.server';
 import { getSql } from '@/lib/db';
 
-registerFounderTools();
+
 
 export const executeConversationalCommand = createServerFn({ method: 'POST' })
   .validator((d: { command: string }) => d)
@@ -18,6 +18,7 @@ export const executeConversationalCommand = createServerFn({ method: 'POST' })
     const rows = await sql`SELECT role FROM users WHERE id = ${session.id}`;
     const userRole = rows.length > 0 ? (rows[0] as any).role : 'USER';
     
+    registerFounderTools();
     const context = {
       userId: session.id,
       role: userRole,

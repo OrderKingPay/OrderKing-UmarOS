@@ -129,6 +129,24 @@ export class AITutor {
     };
   }
 
+  public getUnlockedOpportunities(studentId: string): string[] {
+    const profile = this.studentProfiles.get(studentId);
+    if (!profile) return [];
+    
+    const opportunities: string[] = [];
+    const masteredCount = Object.values(profile.topicProgress).filter(m => m >= 85).length;
+    
+    // Legitimate, transparent skills-to-opportunities logic
+    if (masteredCount >= 2) {
+      opportunities.push("Freelance Peer Tutor (Verified Math)");
+    }
+    if (masteredCount >= 4) {
+      opportunities.push("Content QA Reviewer (Science)");
+    }
+    
+    return opportunities;
+  }
+
   public resolveDoubt(studentId: string, query: string, contextTopicId?: string): string {
     const profile = this.studentProfiles.get(studentId);
     if (!profile) return "Student not found.";

@@ -1,8 +1,8 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 import { getSql } from "@/lib/db";
 import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
 
-export const Route = createAPIFileRoute("/api/v1/loyalty")({
+export const APIRoute = createAPIFileRoute("/api/v1/loyalty")({
   GET: async ({ request }) => {
     try {
       const url = new URL(request.url);
