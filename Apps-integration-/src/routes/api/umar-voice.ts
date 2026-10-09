@@ -1,5 +1,5 @@
 import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai/web";
 import { getSql } from "@/lib/db";
 
 // Safe wrapper for GenAI initialization

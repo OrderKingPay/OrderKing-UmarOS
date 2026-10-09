@@ -1,5 +1,5 @@
 import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "@google/genai/web";
 
 export const Route = createAPIFileRoute("/api/ai")({
   server: {
