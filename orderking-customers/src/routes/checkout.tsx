@@ -127,7 +127,7 @@ function CheckoutPage() {
         // @ts-ignore
         const rzp = new window.Razorpay(options);
         rzp.on("payment.failed", function (response: any) {
-          toast.error("Payment failed. Please try again.");
+          toast.error("Payment failed. ");
           setBusy(false);
         });
         rzp.open();

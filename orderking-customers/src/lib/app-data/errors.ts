@@ -51,7 +51,7 @@ export function classifyCallToolError(
   }
   return {
     kind: "error",
-    message: detail ?? "Something went wrong. Try again.",
+    message: detail ?? "Something went wrong. ",
     detail,
   };
 }

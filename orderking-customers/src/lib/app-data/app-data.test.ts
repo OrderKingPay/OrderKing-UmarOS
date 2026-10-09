@@ -388,7 +388,7 @@ describe("classifyCallToolError", () => {
     assert.equal(state?.message, "boom");
     const empty = classifyCallToolError({ ok: false, data: null });
     assert.equal(empty?.kind, "error");
-    assert.equal(empty?.message, "Something went wrong. Try again.");
+    assert.equal(empty?.message, "Something went wrong. ");
     assert.equal(empty?.detail, undefined);
   });
 });

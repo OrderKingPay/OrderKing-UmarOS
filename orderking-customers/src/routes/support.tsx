@@ -107,7 +107,7 @@ export function SupportPage() {
       };
       setChatMessages((prev) => [...prev, botMsg]);
     } catch {
-      toast.error("AI assistant is momentarily busy. Please try again.");
+      toast.error("AI assistant is momentarily busy. ");
     } finally {
       setIsChatting(false);
     }

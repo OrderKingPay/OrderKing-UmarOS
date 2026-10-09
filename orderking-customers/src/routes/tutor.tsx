@@ -46,7 +46,7 @@ Rules:
       });
       
       const result = await response.json();
-      return { text: result.choices?.[0]?.message?.content || "Sorry, I couldn't process that. Try again!" };
+      return { text: result.choices?.[0]?.message?.content || "Sorry, I couldn't process that." };
     } catch (e) {
       return { text: "Connection error. Please check your internet." };
     }
