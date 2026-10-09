@@ -148,7 +148,7 @@ function authPopupPlugin(): Plugin {
 export default defineConfig(({ command, isPreview }) => ({
   build: {
     cssMinify: true,
-    rollupOptions: { external: ["@neondatabase/serverless"],
+    rollupOptions: { 
       treeshake: true,
     },
   },

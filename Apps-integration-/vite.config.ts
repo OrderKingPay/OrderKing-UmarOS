@@ -148,7 +148,7 @@ function authPopupPlugin(): Plugin {
 export default defineConfig(({ command, isPreview }) => ({
   build: {
     cssMinify: true,
-    rollupOptions: { external: ["@neondatabase/serverless"],
+    rollupOptions: { 
       treeshake: false,
       // pglite is a local dev-only fallback (used only when DATABASE_URL is
       // not set). Production always uses the Neon/pg path. Externalising it
