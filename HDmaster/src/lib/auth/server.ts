@@ -156,9 +156,8 @@ import { kyselyAdapter } from "@better-auth/kysely-adapter";
 // schema from `migrations/auth/0001_auth.sql`, copied into `migrations/` when
 // the app turns sign-in on.
 let pool = new Pool({ connectionString: databaseUrl });
-let database = kyselyAdapter(new Kysely({
-  dialect: new PostgresDialect({ pool })
-}));
+let kysely = new Kysely({ dialect: new PostgresDialect({ pool }) });
+let database = kyselyAdapter(kysely, { type: "postgres" });
 
 /** Session token cookie name — also read by the live-preview popup completion page. */
 export const SESSION_TOKEN_COOKIE = "__Host-grok-auth.session_token";
