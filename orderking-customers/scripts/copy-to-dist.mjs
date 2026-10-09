@@ -12,12 +12,20 @@ function copyDir(src, dest) {
 }
 
 function run(appDir) {
-    const src = path.join(appDir, '.vercel/output/static');
-    const dest = path.join(appDir, 'dist/client');
-    if (fs.existsSync(src)) {
-        console.log(`Copying ${src} to ${dest}`);
-        copyDir(src, dest);
+    const srcVercel = path.join(appDir, '.vercel/output/static');
+    const srcNitro = path.join(appDir, '.output/public');
+    const dest = path.join(appDir, 'dist');
+    const destClient = path.join(appDir, 'dist/client');
+    
+    // Cloudflare Pages uses dist, so we must copy from the output directory
+    if (fs.existsSync(srcNitro)) {
+        console.log(`Copying ${srcNitro} to ${dest}`);
+        copyDir(srcNitro, dest);
+    } else if (fs.existsSync(srcVercel)) {
+        console.log(`Copying ${srcVercel} to ${destClient}`);
+        copyDir(srcVercel, destClient);
     }
+}
 }
 
 const appDir = process.cwd();
