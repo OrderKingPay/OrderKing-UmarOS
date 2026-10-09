@@ -11,7 +11,7 @@ export class H3HexGridEngine {
   /**
    * Identifies the optimal riders within a specific hex grid resolution for a given restaurant pickup location.
    */
-  async findOptimalRidersInHex(restaurantGeohash: string, maxRiders: number = 5): Promise<{ id: string, name: string, distance_km: number }[]> {
+  async findOptimalRidersInHex(restaurantGeohash: string, restaurantLat: number, restaurantLon: number, maxRiders: number = 5): Promise<{ id: string, name: string, distance_km: number }[]> {
     const sql = await getSql();
     
     // In a real H3 environment, this would be: 
@@ -27,8 +27,12 @@ export class H3HexGridEngine {
       SELECT 
         u.id, 
         u.name,
-        /* Simulated Haversine or simple bounding distance calculation placeholder */
-        0.5 AS distance_km
+        ( 6371 * acos( cos( radians(${restaurantLat}) ) 
+          * cos( radians( u.latitude ) ) 
+          * cos( radians( u.longitude ) - radians(${restaurantLon}) ) 
+          + sin( radians(${restaurantLat}) ) 
+          * sin( radians( u.latitude ) ) ) 
+        ) AS distance_km
       FROM user_profiles u
       WHERE u.role = 'RIDER' 
       AND u.status = 'ONLINE'
