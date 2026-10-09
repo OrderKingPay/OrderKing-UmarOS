@@ -171,7 +171,12 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   
-  resolve: { tsconfigPaths: true },
+  resolve: { 
+    tsconfigPaths: true,
+    alias: {
+      'pg': '@neondatabase/serverless'
+    }
+  },
   plugins: [
     
     // Before tanstackStart so /auth/popup never falls through to the SPA.

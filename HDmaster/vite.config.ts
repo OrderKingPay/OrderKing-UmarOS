@@ -213,7 +213,12 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   
-  resolve: { tsconfigPaths: true },
+  resolve: { 
+    tsconfigPaths: true,
+    alias: {
+      'pg': '@neondatabase/serverless'
+    }
+  },
   plugins: [
     
     pglitePreviewAssetsPlugin(),
