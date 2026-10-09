@@ -18,7 +18,7 @@
                          "ethers":  "^6.17.0",
                          "express":  "^5.2.1"
                      },
-    "pnpm":  null,
+    
     "resolutions":  {
                         "nanostores":  "1.5.4"
                     }

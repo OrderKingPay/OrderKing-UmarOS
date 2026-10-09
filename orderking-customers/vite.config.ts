@@ -148,7 +148,7 @@ function authPopupPlugin(): Plugin {
 export default defineConfig(({ command, isPreview }) => ({
   build: {
     cssMinify: true,
-    rollupOptions: {
+    rollupOptions: { external: ["@neondatabase/serverless"],
       treeshake: true,
     },
   },
@@ -171,6 +171,7 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   
+  ssr: { noExternal: ['nanostores', '@nanostores/react'] },
   resolve: { 
     tsconfigPaths: true,
     alias: {
