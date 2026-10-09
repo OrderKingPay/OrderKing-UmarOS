@@ -37,9 +37,9 @@ export const ViralGrowthEngine = {
   /**
    * Generates native share intents optimized for maximum organic spread.
    */
-  createViralShareIntent(referralCode: string, amount: number = 100) {
+  createViralShareIntent(referralCode: string, amount: number = 500) {
     const link = this.generateDeepLink(referralCode);
-    const copy = `👑 I just got ₹${amount} free food credit on OrderKing!\n\nUse my invite link to claim your ₹${amount} welcome bonus instantly. No hidden fees, just real food at 0% markup.\n\nClaim here: ${link}`;
+    const copy = `👑 I just ordered free food on OrderKing! 🚀\n\nUse my VIP invite link to claim your ₹${amount} instant welcome bonus. Download now before it expires!\n\nClaim here: ${link}`;
     const encodedCopy = encodeURIComponent(copy);
 
     return {
@@ -71,6 +71,7 @@ export const ViralGrowthEngine = {
   /**
    * PROCESS REFERRAL (BANKING-GRADE)
    * Restored direct integration with KingPay Wallet Engine to prevent any schema mismatch.
+   * Funded directly by RESTAURANT_AD_REVENUE.
    */
   async processReferralActivation(referralCode: string, newUserId: string): Promise<{ success: boolean; message: string; amountCredited: number }> {
     const sql = await getSql();
@@ -102,31 +103,37 @@ export const ViralGrowthEngine = {
         return { success: false, message: "User has already claimed a welcome bonus.", amountCredited: 0 };
       }
 
-      // 3. Record the Referral Event Atomically
+      // 3. Deduct from Restaurant Ad Revenue Ledger to fund the acquisition
       await tx.query(
-        `INSERT INTO referrals (referrer_id, new_user_id, status, created_at) VALUES ($1, $2, 'COMPLETED', NOW())`,
+        `UPDATE system_ledgers SET balance = balance - 100000, updated_at = NOW() WHERE ledger_name = 'RESTAURANT_AD_REVENUE'`
+      );
+
+      // 4. Record the Referral Event Atomically
+      await tx.query(
+        `INSERT INTO referrals (referrer_id, new_user_id, status, funding_source, created_at) VALUES ($1, $2, 'COMPLETED', 'RESTAURANT_AD_REVENUE', NOW())`,
         [referrerId, newUserId]
       );
 
-      // 4. Execute the Wallet Credits via KingPay Wallet Engine (₹100 = 10000 paise)
-      const REWARD_PAISE = 10000;
+      // 5. Execute the Wallet Credits via KingPay Wallet Engine (₹500 = 50000 paise)
+      const REWARD_PAISE = 50000;
       
       const referrerCredit = await walletEngine.creditWallet(
         referrerId, 
         REWARD_PAISE, 
-        `ref_reward_${referrerId}_${newUserId}`
+        `ref_reward_${referrerId}_${newUserId}_ad_funded`
       );
 
       const newUserCredit = await walletEngine.creditWallet(
         newUserId, 
         REWARD_PAISE, 
-        `ref_reward_welcome_${newUserId}_${referrerId}`
+        `ref_reward_welcome_${newUserId}_${referrerId}_ad_funded`
       );
 
       if (referrerCredit.status !== "success" || newUserCredit.status !== "success") {
          throw new Error("Failed to credit wallets via KingPay engine");
       }
 
+      console.log(`[VIRAL ENGINE] EXPLOSIVE GROWTH: Successfully processed referral: ${referrerId} -> ${newUserId}. ₹1000 total injected from Ad Revenue.`);
       return { success: true, message: "Bonus successfully deployed to wallets.", amountCredited: REWARD_PAISE };
     });
   }

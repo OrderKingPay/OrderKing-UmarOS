@@ -37,19 +37,19 @@ export function CustomerShell({
     // If empty on first load, initialize with system preference
     const saved = localStorage.getItem("theme-storage");
     if (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      document.documentElement.classList.add("dark"); document.documentElement.style.backgroundColor = "#020617";
+      document.documentElement.classList.add("dark"); document.documentElement.style.backgroundColor = "#000000";
     }
   }, []);
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 pb-24 md:max-w-5xl transition-colors duration-300">
+    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-black pb-24 md:max-w-5xl transition-colors duration-300">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-surface focus:px-3 focus:py-2"
       >
         {t("a11y.skip")}
       </a>
-      <header className="sticky top-0 z-30 bg-gradient-to-r from-slate-900/90 via-indigo-950/90 to-slate-900/90 backdrop-blur-xl border-b border-amber-500/20 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+      <header className="sticky top-0 z-30 bg-black/95 backdrop-blur-2xl border-b border-primary/40 shadow-[0_4px_30px_rgba(212,175,55,0.15)] px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <div className="flex items-center justify-between gap-2 sm:gap-3">
           <div className="shrink-0 max-w-[50%]">
             <Wordmark />
@@ -163,21 +163,21 @@ export function CustomerShell({
                   {!path.startsWith("/king-pay") ? (
         <nav
             aria-label={brand.appName}
-            className="fixed bottom-4 left-4 right-4 z-40 bg-gradient-to-r from-slate-900/95 via-indigo-950/95 to-slate-900/95 backdrop-blur-2xl border border-amber-500/30 rounded-2xl shadow-[0_8px_40px_rgba(245,158,11,0.15)] overflow-hidden"
+            className="fixed bottom-4 left-4 right-4 z-40 bg-black/95 backdrop-blur-2xl border border-primary/50 rounded-2xl shadow-[0_8px_40px_rgba(212,175,55,0.25)] overflow-hidden"
           >
             <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-1">
-            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.8)] scale-110" />
-            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.8)] scale-110" />
+            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-primary drop-shadow-[0_0_12px_rgba(212,175,55,0.8)] scale-110" />
+            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-primary drop-shadow-[0_0_12px_rgba(212,175,55,0.8)] scale-110" />
             
             {/* 👑 Glowing KingPay Tab */}
             <li className="relative -top-2 flex w-full justify-center">
               <Link
                 to="/king-pay"
                 className={cn(
-                  "group relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-4 border-slate-900 text-xs no-underline shadow-lg transition-all active:scale-95 animate-pulse",
+                  "group relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-4 border-black text-xs no-underline shadow-lg transition-all active:scale-95 animate-pulse",
                   path.startsWith("/king-pay")
-                    ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-[0_4px_20px_rgba(245,158,11,0.5)]"
-                    : "bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 text-white shadow-[0_4px_15px_rgba(245,158,11,0.3)] hover:brightness-110"
+                    ? "bg-gradient-to-br from-[#FFD700] to-[#D4AF37] text-black shadow-[0_4px_20px_rgba(212,175,55,0.5)]"
+                    : "bg-gradient-to-br from-[#D4AF37] via-[#FFDF00] to-[#B8860B] text-black shadow-[0_4px_15px_rgba(212,175,55,0.3)] hover:brightness-110"
                 )}
               >
                 <span className="text-xl leading-none drop-shadow-sm mt-0.5">👑</span>
@@ -190,8 +190,8 @@ export function CustomerShell({
               </Link>
             </li>
             
-            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-violet-400 drop-shadow-[0_0_12px_rgba(167,139,250,0.8)] scale-110" />
-            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-rose-400 drop-shadow-[0_0_12px_rgba(251,113,133,0.8)] scale-110" />
+            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-primary drop-shadow-[0_0_12px_rgba(212,175,55,0.8)] scale-110" />
+            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-primary drop-shadow-[0_0_12px_rgba(212,175,55,0.8)] scale-110" />
           </ul>
         </nav>
       ) : (

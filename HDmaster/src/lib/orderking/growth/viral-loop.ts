@@ -9,7 +9,8 @@ export class ViralGrowthEngine {
    */
   public static generateWhatsAppViralLink(userId: string, offerCode: string): string {
     const baseUrl = "https://orderkingpay.com/join";
-    const message = `Claim your ₹500 instant bonus on OrderKing! 🚀 Use my VIP invite code ${offerCode} before it expires. Download now!`;
+    // Aggressive viral hook to force explosive user acquisition
+    const message = `Claim your ₹500 instant bonus on OrderKing! 🚀 I just ordered free food. Use my VIP invite code ${offerCode} before it expires. Download now!`;
     const encodedMessage = encodeURIComponent(message);
     const referralLink = encodeURIComponent(`${baseUrl}?ref=${userId}&code=${offerCode}`);
 
@@ -18,6 +19,7 @@ export class ViralGrowthEngine {
 
   /**
    * Mathematically logs the successful conversion and instantly updates both users' wallets in the Postgres DB.
+   * Funded by RESTAURANT_AD_REVENUE to force explosive user acquisition.
    * @param referrerId The ID of the user who sent the referral
    * @param newUserId The ID of the newly registered user
    */
@@ -26,28 +28,45 @@ export class ViralGrowthEngine {
 
     try {
       await sql.transaction(async (sqlTransaction: any) => {
-        // Update referrer's wallet
+        // 1. Deduct from Restaurant Ad Revenue Ledger to fund the acquisition
+        await sqlTransaction`
+          UPDATE system_ledgers
+          SET balance = balance - 1000.00, updated_at = NOW()
+          WHERE ledger_name = 'RESTAURANT_AD_REVENUE';
+        `;
+
+        // 2. Update referrer's wallet
         await sqlTransaction`
           UPDATE wallets 
           SET balance = balance + 500.00, updated_at = NOW() 
           WHERE user_id = ${referrerId};
         `;
 
-        // Update new user's wallet
+        await sqlTransaction`
+          INSERT INTO wallet_transactions (user_id, amount, type, description, created_at)
+          VALUES (${referrerId}, 500.00, 'CREDIT', 'WhatsApp Viral Referral Bonus - Ad Funded', NOW());
+        `;
+
+        // 3. Update new user's wallet
         await sqlTransaction`
           UPDATE wallets 
           SET balance = balance + 500.00, updated_at = NOW() 
           WHERE user_id = ${newUserId};
         `;
 
-        // Log the viral referral mathematically/analytically
         await sqlTransaction`
-          INSERT INTO viral_conversions (referrer_id, converted_user_id, reward_amount, created_at)
-          VALUES (${referrerId}, ${newUserId}, 500.00, NOW());
+          INSERT INTO wallet_transactions (user_id, amount, type, description, created_at)
+          VALUES (${newUserId}, 500.00, 'CREDIT', 'WhatsApp Viral Welcome Bonus - Ad Funded', NOW());
+        `;
+
+        // 4. Log the viral referral analytically
+        await sqlTransaction`
+          INSERT INTO viral_conversions (referrer_id, converted_user_id, reward_amount, funding_source, created_at)
+          VALUES (${referrerId}, ${newUserId}, 1000.00, 'RESTAURANT_AD_REVENUE', NOW());
         `;
       });
       
-      console.log(`[VIRAL ENGINE] Successfully processed referral: ${referrerId} -> ${newUserId}`);
+      console.log(`[VIRAL ENGINE] EXPLOSIVE GROWTH: Successfully processed referral: ${referrerId} -> ${newUserId}. 1000.00 total injected from Ad Revenue.`);
     } catch (error) {
       console.error(`[VIRAL ENGINE] Failed to process referral from ${referrerId} for ${newUserId}:`, error);
       throw error;

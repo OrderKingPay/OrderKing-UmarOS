@@ -14,7 +14,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
     <Link
       to="/r/$slug"
       params={{ slug: restaurant.slug }}
-      className="block overflow-hidden rounded-[var(--radius-2xl)] bg-surface text-fg no-underline shadow-lg border border-border hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+      className="block overflow-hidden rounded-[var(--radius-2xl)] bg-black text-white no-underline shadow-[0_8px_30px_rgba(212,175,55,0.08)] border border-primary/30 hover:shadow-[0_8px_40px_rgba(212,175,55,0.15)] hover:border-primary/60 transition-all duration-300 hover:-translate-y-0.5"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-surface-2">
         {restaurant.coverImage ? (
@@ -35,7 +35,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
       </div>
       <div className="space-y-1 p-3">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-lg leading-tight">{restaurant.name}</h3>
+          <h3 className="font-display text-lg leading-tight font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-500 drop-shadow-md">{restaurant.name}</h3>
           {restaurant.vegOnly ? (
             <span className="mt-1 text-success" aria-label={t("common.veg")}>
               <Leaf className="size-4" />
