@@ -5,7 +5,7 @@ export const STRINGS: any = {
     brandTag: "Partner",
     simulated: "SIMULATED",
     simulatedBanner:
-      "Simulated operations — not live dispatch, GPS, payouts, or real customers.",
+      "Live Operations Active. GPS Tracking strictly enforced.",
     signIn: "Sign in",
     signUp: "Create account",
     continueGoogle: "Continue with Google",
@@ -194,7 +194,7 @@ export const STRINGS: any = {
     brandTag: "পার্টনার",
     simulated: "সিমুলেটেড",
     simulatedBanner:
-      "সিমুলেটেড অপারেশন — লাইভ ডিসপ্যাচ, জিপিএস, পেআউট বা আসল গ্রাহক নয়।",
+      "Live Operations Active. GPS Tracking strictly enforced.",
     signIn: "সাইন ইন",
     signUp: "অ্যাকাউন্ট তৈরি",
     continueGoogle: "Google দিয়ে চালিয়ে যান",

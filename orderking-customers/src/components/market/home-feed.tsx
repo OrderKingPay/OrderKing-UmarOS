@@ -98,26 +98,33 @@ export function HomeFeed({
   const list = useQuery({
     queryKey: ["restaurants", location.zoneId, location.lat, location.lng, q, veg, openNow, category, lang],
     queryFn: async () => {
-      try {
-        const params = new URLSearchParams();
-        if (q) params.set("q", q);
-        if (veg) params.set("veg", "true");
-        if (openNow) params.set("openNow", "true");
-        if (category) params.set("category", category);
-        params.set("lat", location.lat.toString());
-        params.set("lng", location.lng.toString());
-        params.set("zoneId", location.zoneId);
-        if (lang) params.set("lang", lang);
+      const params = new URLSearchParams();
+      if (q) params.set("q", q);
+      if (veg) params.set("veg", "true");
+      if (openNow) params.set("openNow", "true");
+      if (category) params.set("category", category);
+      params.set("lat", location.lat.toString());
+      params.set("lng", location.lng.toString());
+      params.set("zoneId", location.zoneId);
+      if (lang) params.set("lang", lang);
 
+      const cacheKey = `hyperedge_list_${params.toString()}`;
+
+      try {
         const response = await fetch(`/api/search?${params.toString()}`);
         if (!response.ok) throw new Error("Failed to fetch restaurants");
         const res = await response.json();
-        if (res) await cacheSet("home_restaurants", res);
+        if (res) await cacheSet(cacheKey, res);
         return res;
       } catch (err) {
-        const cached = await cacheGet<any>("home_restaurants");
+        const cached = await cacheGet<any>(cacheKey);
         if (cached) return cached;
-        throw err;
+        // Aggressively fallback to empty state rather than breaking the UI with an error
+        return { 
+          restaurants: [], 
+          sections: { offers: [], popular: [], fast: [], budget: [], veg: [], newKitchens: [] },
+          marketContext: { sortStrategy: "lowest_price_first" }
+        };
       }
     },
   });
