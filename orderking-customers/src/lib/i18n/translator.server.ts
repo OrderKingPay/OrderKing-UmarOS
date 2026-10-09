@@ -1,6 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
-
-const ai = new GoogleGenAI({});
+import { GoogleGenAI } from '@google/genai/web';
 
 // In-memory cache
 // Map: <language> -> <text> -> <translated_text>
@@ -28,6 +26,7 @@ export async function translate(text: string, targetLang: 'hi' | 'ta' | 'te' | '
   const prompt = `Translate the following food menu item or description into ${langName}. Provide ONLY the translation, no extra text or markdown formatting.\n\nText: ${text}`;
   
   try {
+    const ai = new GoogleGenAI({});
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,

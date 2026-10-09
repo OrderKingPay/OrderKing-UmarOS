@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSql } from "@/lib/db";
-import { GoogleGenAI } from "@google/genai";
-
-// Initialize Gemini for Natural Language Ordering
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+import { GoogleGenAI } from "@google/genai/web";
 
 export const Route = createFileRoute("/api/whatsapp")({
   server: {
@@ -59,6 +56,7 @@ export const Route = createFileRoute("/api/whatsapp")({
             }
           `;
 
+          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
           const aiResponse = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,
