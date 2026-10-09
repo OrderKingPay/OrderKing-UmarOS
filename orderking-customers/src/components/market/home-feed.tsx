@@ -170,6 +170,37 @@ export function HomeFeed({
       {/* 👑 SPONSORED PAID RESTAURANT AD ZONE (AUTO-SCALING & AD-SPEND RANKED) */}
       {/* <PaidRestaurantAdZone /> */}
 
+      {/* 🔥 AGGRESSIVE VIRAL GROWTH BANNER 🔥 */}
+      {!q && !category && (
+        <div className="relative overflow-hidden rounded-[var(--radius-3xl)] border border-primary/50 bg-gradient-to-br from-black via-[#2a220a] to-black p-6 shadow-[0_10px_40px_rgba(212,175,55,0.25)] my-2">
+          <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/20 blur-3xl animate-pulse"></div>
+          <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-primary/20 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="relative z-10 flex flex-col items-center text-center">
+            <span className="mb-2 inline-block rounded-full bg-primary/10 border border-primary/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]">
+              👑 KING'S RANSOM UNLOCKED
+            </span>
+            <h2 className="font-display text-2xl font-black text-white leading-tight">
+              Destroy Zomato.<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 drop-shadow-lg">
+                Get ₹500 Free Food.
+              </span>
+            </h2>
+            <p className="mt-2 text-xs font-semibold text-slate-300">
+              Invite 1 Friend. 0% Platform Markup forever. Rule your city.
+            </p>
+            <button
+              onClick={() => {
+                toast.success("Viral link copied! Share to claim ₹500 instantly.");
+                navigator.clipboard.writeText("https://orderking.app/invite/KING500");
+              }}
+              className="mt-4 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 px-6 py-3 text-sm font-black text-black shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-all hover:scale-105 active:scale-95"
+            >
+              <span>🔥 Claim Your ₹500 Now</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 👑 3D GLOWING SWITCH BUTTON + SAME-LEVEL AI SUPPORT */}
       {/* <EcosystemSwitchBar /> */}
 
