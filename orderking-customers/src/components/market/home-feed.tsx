@@ -301,9 +301,9 @@ export function HomeFeed({
       </section>
 
 
-      {/* Unified Action Bar: Veg/Non-Veg, Share, AI Support */}
+      {/* Unified Action Bar: Veg/Non-Veg */}
       {isGeoActive && !q && !category && (
-        <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2 pt-2 scrollbar-hide px-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-2 scrollbar-hide px-2">
           <button
             type="button"
             onClick={() => setActiveFilter(activeFilter === "veg" ? "all" : "veg")}
@@ -316,30 +316,6 @@ export function HomeFeed({
             </span>
             Veg Only
           </button>
-
-          {useBrand().features?.viralReferrals !== false && (
-            <button
-              type="button"
-              onClick={() => {
-                void navigator.clipboard?.writeText("https://orderkingpay.com/?ref=KINGVIP");
-                toast.success("Link copied! Share to earn ₹40.");
-              }}
-              className="flex items-center gap-1.5 shrink-0 rounded-full px-4 py-1.5 transition shadow-sm text-sm font-semibold border bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-900 dark:text-amber-100 border-amber-200 dark:border-amber-800 hover:opacity-90 cursor-pointer"
-            >
-              <span>🎁</span>
-              Earn ₹40
-            </button>
-          )}
-
-          {useBrand().ai?.supportProvider !== 'Off' && (
-            <Link
-              to="/tutor"
-              className="flex items-center gap-1.5 shrink-0 rounded-full px-4 py-1.5 transition shadow-sm text-sm font-semibold border bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800 cursor-pointer"
-            >
-              <span>✨</span>
-              AI Support
-            </Link>
-          )}
         </div>
       )}
 

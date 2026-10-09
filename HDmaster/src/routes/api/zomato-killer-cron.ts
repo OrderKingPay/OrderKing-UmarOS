@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { runAlgorithmicAutoDispatch } from "@/lib/orderking/server/auto-dispatch-engine.server";
 import { IndiaExpansionEngine, PinCodeMetrics } from "@/lib/orderking/growth/IndiaExpansionEngine";
+import { getSql } from "@/lib/db";
 
 // @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/zomato-killer-cron")({
@@ -21,11 +22,19 @@ export const Route = createFileRoute("/api/zomato-killer-cron")({
           // 2. Run Zomato-Killer Expansion Engine across all candidate pincodes
           const expansionEngine = new IndiaExpansionEngine(process.env.PUBLIC_URL || 'https://orderking.in');
           
-          // MOCK: In production, fetch this from Postgres/Redis
-          const candidatePincodes: PinCodeMetrics[] = [
-            { pincode: '400050', tier: 'TIER_1', primaryLanguage: 'mr', averageLocalAOV_INR: 400, waitlistedCustomers: 950, interestedRestaurants: 28, availableRiders: 45 },
-            { pincode: '413001', tier: 'TIER_3', primaryLanguage: 'mr', averageLocalAOV_INR: 200, waitlistedCustomers: 260, interestedRestaurants: 10, availableRiders: 15 },
-          ];
+          const sql = await getSql();
+          const candidatePincodes = await sql<PinCodeMetrics>`
+            SELECT 
+              pincode, 
+              tier, 
+              primary_language as "primaryLanguage", 
+              average_local_aov_inr as "averageLocalAOV_INR", 
+              waitlisted_customers as "waitlistedCustomers", 
+              interested_restaurants as "interestedRestaurants", 
+              available_riders as "availableRiders" 
+            FROM candidate_pincodes 
+            WHERE status = 'CANDIDATE'
+          `;
 
           const newlyLaunchedPincodes = [];
           const influencerCampaignsDispatched = [];

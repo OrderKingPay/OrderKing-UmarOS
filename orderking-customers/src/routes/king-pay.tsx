@@ -43,9 +43,9 @@ function KingPayPage() {
           <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex items-start gap-3 text-left">
             <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-sm font-bold text-amber-400">RBI Compliant</h3>
+              <h3 className="text-sm font-bold text-amber-400">Secure Payments</h3>
               <p className="text-[10px] text-slate-400 mt-1">
-                Real financial services require KYC and RBI integration. All placeholder UI has been removed. Services will activate upon official integration.
+                Real financial services require payment gateway integration. All placeholder UI has been removed. Services will activate upon official integration.
               </p>
             </div>
           </div>
@@ -54,4 +54,3 @@ function KingPayPage() {
     </CustomerShell>
   );
 }
-

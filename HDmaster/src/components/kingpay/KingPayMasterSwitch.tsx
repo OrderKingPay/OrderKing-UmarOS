@@ -34,7 +34,7 @@ export function KingPayMasterSwitch() {
     { id: 'collect', label: 'Payment Links (Collect)', desc: 'Asynchronous P2M Collect' },
     { id: 'pay', label: 'Direct Pay / Checkout', desc: 'Synchronous Checkout Engine' },
     { id: 'autopay', label: 'AutoPay Mandates', desc: 'Recurring e-Mandates' },
-    { id: 'settlements', label: 'Merchant Settlements', desc: 'T+1 Nodal Settlements' },
+    { id: 'settlements', label: 'Merchant Settlements', desc: 'T+1 Settlements' },
   ];
 
   if (isLoading || !data) {

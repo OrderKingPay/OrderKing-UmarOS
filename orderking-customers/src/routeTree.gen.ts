@@ -23,8 +23,10 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as TutorRouteImport } from './routes/tutor'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
+import { Route as ApiCrmRouteImport } from './routes/api/crm'
 import { Route as ApiRestaurantRouteImport } from './routes/api/restaurant'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
+import { Route as ApiWhatsappRouteImport } from './routes/api/whatsapp'
 import { Route as AppFounderCommandRouteImport } from './routes/app/founder-command'
 import { Route as DevBrandRouteImport } from './routes/dev/brand'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
@@ -112,6 +114,11 @@ const AccountIndexRoute = AccountIndexRouteImport.update({
   path: '/account/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCrmRoute = ApiCrmRouteImport.update({
+  id: '/api/crm',
+  path: '/api/crm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRestaurantRoute = ApiRestaurantRouteImport.update({
   id: '/api/restaurant',
   path: '/api/restaurant',
@@ -120,6 +127,11 @@ const ApiRestaurantRoute = ApiRestaurantRouteImport.update({
 const ApiSearchRoute = ApiSearchRouteImport.update({
   id: '/api/search',
   path: '/api/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWhatsappRoute = ApiWhatsappRouteImport.update({
+  id: '/api/whatsapp',
+  path: '/api/whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppFounderCommandRoute = AppFounderCommandRouteImport.update({
@@ -217,8 +229,10 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/tutor': typeof TutorRoute
+  '/api/crm': typeof ApiCrmRoute
   '/api/restaurant': typeof ApiRestaurantRoute
   '/api/search': typeof ApiSearchRoute
+  '/api/whatsapp': typeof ApiWhatsappRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -251,8 +265,10 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/tutor': typeof TutorRoute
+  '/api/crm': typeof ApiCrmRoute
   '/api/restaurant': typeof ApiRestaurantRoute
   '/api/search': typeof ApiSearchRoute
+  '/api/whatsapp': typeof ApiWhatsappRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -286,8 +302,10 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
   '/tutor': typeof TutorRoute
+  '/api/crm': typeof ApiCrmRoute
   '/api/restaurant': typeof ApiRestaurantRoute
   '/api/search': typeof ApiSearchRoute
+  '/api/whatsapp': typeof ApiWhatsappRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -322,8 +340,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/tutor'
+    | '/api/crm'
     | '/api/restaurant'
     | '/api/search'
+    | '/api/whatsapp'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -356,8 +376,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/tutor'
+    | '/api/crm'
     | '/api/restaurant'
     | '/api/search'
+    | '/api/whatsapp'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -390,8 +412,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/support'
     | '/tutor'
+    | '/api/crm'
     | '/api/restaurant'
     | '/api/search'
+    | '/api/whatsapp'
     | '/app/founder-command'
     | '/dev/brand'
     | '/legal/privacy'
@@ -425,8 +449,10 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
   TutorRoute: typeof TutorRoute
+  ApiCrmRoute: typeof ApiCrmRoute
   ApiRestaurantRoute: typeof ApiRestaurantRoute
   ApiSearchRoute: typeof ApiSearchRoute
+  ApiWhatsappRoute: typeof ApiWhatsappRoute
   AppFounderCommandRoute: typeof AppFounderCommandRoute
   DevBrandRoute: typeof DevBrandRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
@@ -546,6 +572,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/crm': {
+      id: '/api/crm'
+      path: '/api/crm'
+      fullPath: '/api/crm'
+      preLoaderRoute: typeof ApiCrmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/restaurant': {
       id: '/api/restaurant'
       path: '/api/restaurant'
@@ -558,6 +591,13 @@ declare module '@tanstack/react-router' {
       path: '/api/search'
       fullPath: '/api/search'
       preLoaderRoute: typeof ApiSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/whatsapp': {
+      id: '/api/whatsapp'
+      path: '/api/whatsapp'
+      fullPath: '/api/whatsapp'
+      preLoaderRoute: typeof ApiWhatsappRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/founder-command': {
@@ -689,8 +729,10 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
   TutorRoute: TutorRoute,
+  ApiCrmRoute: ApiCrmRoute,
   ApiRestaurantRoute: ApiRestaurantRoute,
   ApiSearchRoute: ApiSearchRoute,
+  ApiWhatsappRoute: ApiWhatsappRoute,
   AppFounderCommandRoute: AppFounderCommandRoute,
   DevBrandRoute: DevBrandRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,

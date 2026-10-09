@@ -9,6 +9,13 @@ export async function processPayment(orderId: string, amountPaise: number, payme
     let transactionId = '';
 
     if (gateway === 'razorpay') {
+        const keyId = process.env.RAZORPAY_KEY_ID;
+        const keySecret = process.env.RAZORPAY_KEY_SECRET;
+        
+        if (!keyId || !keySecret) {
+            throw new Error('Financial Security: Live payment gateways are pending legal/provider authorization. Razorpay credentials missing.');
+        }
+
         const payload = {
             amount: amountPaise,
             currency: 'INR',
@@ -19,13 +26,18 @@ export async function processPayment(orderId: string, amountPaise: number, payme
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Basic ${btoa('YOUR_RAZORPAY_KEY:YOUR_RAZORPAY_SECRET')}`
+                'Authorization': `Basic ${btoa(`${keyId}:${keySecret}`)}`
             },
             body: JSON.stringify(payload)
         });
         responseData = await res.json();
         transactionId = responseData.id || `fallback_rzp_${Date.now()}`;
     } else if (gateway === 'stripe') {
+        const stripeSecret = process.env.STRIPE_SECRET_KEY;
+        if (!stripeSecret) {
+            throw new Error('Financial Security: Live payment gateways are pending legal/provider authorization. Stripe credentials missing.');
+        }
+
         const payload = new URLSearchParams({
             amount: amountPaise.toString(),
             currency: 'inr',
@@ -35,7 +47,7 @@ export async function processPayment(orderId: string, amountPaise: number, payme
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Bearer YOUR_STRIPE_SECRET_KEY`
+                'Authorization': `Bearer ${stripeSecret}`
             },
             body: payload
         });
@@ -58,9 +70,6 @@ export async function processPayment(orderId: string, amountPaise: number, payme
         `;
 
         if (order?.customer_id) {
-            // Automatically capture a 2% "KingPay" processing fee as a credit
-            // Wait, how can we insert user_id into kingpay_transactions if customer_id is from orders?
-            // "user" table has user_id. Let's assume customer_id maps to user_id.
             await tx`
                 INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
                 VALUES (

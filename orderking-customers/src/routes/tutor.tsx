@@ -108,7 +108,7 @@ function TutorPage() {
               <span className="bg-green-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider animate-pulse">Hiring</span>
               <span className="text-white font-bold text-sm">Data Annotation</span>
             </div>
-            <p className="text-amber-50 text-[10px] font-medium leading-tight">Earn $20/hr training AI. Remote.</p>
+            <p className="text-amber-50 text-[10px] font-medium leading-tight">Remote AI training tasks. Remote.</p>
             <div className="mt-2 text-white font-black text-xs flex items-center justify-between">
               Apply Now <span>→</span>
             </div>
@@ -141,7 +141,7 @@ function TutorPage() {
               <span className="bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">Trending</span>
               <span className="text-white font-bold text-sm">Appen & MTurk</span>
             </div>
-            <p className="text-amber-50 text-[10px] font-medium leading-tight">Easy micro-tasks. Guaranteed payout.</p>
+            <p className="text-amber-50 text-[10px] font-medium leading-tight">Easy micro-tasks. Competitive payout.</p>
             <div className="mt-2 text-white font-black text-xs flex items-center justify-between">
               Start Earning <span>→</span>
             </div>
@@ -311,7 +311,7 @@ function TutorPage() {
                     <Briefcase className="size-5" />
                     Data Annotation & AI Training
                   </h3>
-                  <p className="text-xs text-sky-700 mt-1">Earn ₹1500 - ₹3000/day. High-paying AI training tasks. Read instructions, evaluate AI responses, and get paid in USD via PayPal.</p>
+                  <p className="text-xs text-sky-700 mt-1">High-paying AI training tasks. Read instructions, evaluate AI responses, and get paid in USD via PayPal.</p>
                   <p className="text-[10px] text-sky-600 font-bold mt-2">Platforms: DataAnnotation.tech, Remotasks (Outlier)</p>
                   <button className="w-full mt-3 text-xs bg-sky-600 text-white px-3 py-2 rounded-lg font-bold">Apply Now</button>
                </div>
@@ -321,7 +321,7 @@ function TutorPage() {
                     <Briefcase className="size-5" />
                     Micro-tasking & Surveys
                   </h3>
-                  <p className="text-xs text-fuchsia-700 mt-1">Earn ₹300 - ₹800/day. Simple data entry, survey completion, and image categorization tasks. Guaranteed payout.</p>
+                  <p className="text-xs text-fuchsia-700 mt-1">Simple data entry, survey completion, and image categorization tasks. Competitive payout.</p>
                   <p className="text-[10px] text-fuchsia-600 font-bold mt-2">Platforms: Amazon MTurk, Appen, Clickworker</p>
                   <button className="w-full mt-3 text-xs bg-fuchsia-600 text-white px-3 py-2 rounded-lg font-bold">Start Earning</button>
                </div>
@@ -331,7 +331,7 @@ function TutorPage() {
                     <Briefcase className="size-5" />
                     Transcription & Translation
                   </h3>
-                  <p className="text-xs text-teal-700 mt-1">Earn ₹500 - ₹1200/day. Convert audio to text or translate documents in regional languages.</p>
+                  <p className="text-xs text-teal-700 mt-1">Convert audio to text or translate documents in regional languages.</p>
                   <p className="text-[10px] text-teal-600 font-bold mt-2">Platforms: Rev, TranscribeMe, Local Agencies</p>
                   <button className="w-full mt-3 text-xs bg-teal-600 text-white px-3 py-2 rounded-lg font-bold">Take Skill Test</button>
                </div>
@@ -395,7 +395,7 @@ function TutorPage() {
                      <Sparkles className="size-16" />
                   </div>
                   <h2 className="font-black text-xl mb-1 relative z-10">NEET/JEE Mastery</h2>
-                  <p className="text-amber-100 text-xs font-medium mb-4 relative z-10">Guaranteed Placements & Top Rank Materials.</p>
+                  <p className="text-amber-100 text-xs font-medium mb-4 relative z-10">Career Preparation & Study Materials.</p>
                   <div className="flex gap-2 relative z-10">
                      <span className="bg-white/20 px-2 py-1 rounded text-[10px] font-bold backdrop-blur-sm">PhysicsWallah</span>
                      <span className="bg-white/20 px-2 py-1 rounded text-[10px] font-bold backdrop-blur-sm">Testbook</span>

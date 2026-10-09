@@ -63,7 +63,7 @@ export type ProfitEngineInput = {
   offPeakHyperlocalDropsCount: number;
   offPeakDropMarginPaise: number; // e.g. 2000 for ₹20/drop
 
-  // 11. Treasury Float Arbitrage (RBI Regulated Liquid Escrow Sweep-in)
+  // 11. Treasury Float Arbitrage (Secure Liquid Escrow Sweep-in)
   averageDailyEscrowBalancePaise: number;
   annualizedTreasuryYieldBps: number; // e.g. 680 for 6.8% p.a.
 
@@ -196,7 +196,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
   const offPeakLogisticsPaise = input.offPeakHyperlocalDropsCount * input.offPeakDropMarginPaise;
   const totalB2bRevenuePaise = corporateCateringPaise + offPeakLogisticsPaise;
 
-  // --- STREAM 11: Treasury Float Escrow Yield (RBI Regulated Sweep-in) ---
+  // --- STREAM 11: Treasury Float Escrow Yield (Secure Sweep-in) ---
   const monthlyTreasuryYieldPaise = Math.round(
     (input.averageDailyEscrowBalancePaise * input.annualizedTreasuryYieldBps * 30) / (10000 * 365),
   );

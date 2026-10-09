@@ -8,8 +8,11 @@ packages:
 allowBuilds:
   '@google/genai': true
   '@parcel/watcher': true
+  cpu-features: true
   esbuild: true
+  msgpackr-extract: true
   protobufjs: true
+  ssh2: true
 minimumReleaseAgeExclude:
   - framer-motion@13.4.5
   - motion-dom@13.4.5

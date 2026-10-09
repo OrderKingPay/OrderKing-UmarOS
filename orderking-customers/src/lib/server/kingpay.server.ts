@@ -1,8 +1,8 @@
-
 import { getSql } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth/verify.server";
 import { createServerFn } from "@tanstack/react-start";
 import { randomUUID } from "node:crypto";
+import { loadConfig } from "@/lib/server/load-config";
 
 export const getKingpayBalance = createServerFn({ method: "GET" }).handler(async () => {
   try {
@@ -24,11 +24,24 @@ export const getKingpayBalance = createServerFn({ method: "GET" }).handler(async
 });
 
 export const addKingpayMoney = createServerFn({ method: "POST" })
-  
-.  validator((d: { amount: number; description: string }) => d)
+  .validator((d: { amount: number; description: string; gatewaySignature?: string }) => d)
   .handler(async ({ data }: any) => {
     const user = await getSessionUser();
     if (!user) throw new Error("Unauthorized");
+    
+    const cfg = await loadConfig();
+    
+    if (cfg.marketplace.launchMode === "live") {
+       if (!data.gatewaySignature) {
+           throw new Error("Financial Security: Payment gateway signature missing. Unauthorized minting blocked.");
+       }
+       throw new Error("Financial Security: Live payment gateways are pending legal/provider authorization. Minting blocked.");
+    }
+    
+    if (data.amount > 10000) {
+        throw new Error("Sandbox Security: Maximum test transaction limit exceeded.");
+    }
+
     const sql = await getSql();
     const amountPaise = Math.round(data.amount * 100);
     
@@ -41,11 +54,17 @@ export const addKingpayMoney = createServerFn({ method: "POST" })
   });
 
 export const deductKingpayMoney = createServerFn({ method: "POST" })
-  
-.  validator((d: { amount: number; description: string }) => d)
+  .validator((d: { amount: number; description: string }) => d)
   .handler(async ({ data }: any) => {
     const user = await getSessionUser();
     if (!user) throw new Error("Unauthorized");
+    
+    const cfg = await loadConfig();
+    
+    if (cfg.marketplace.launchMode === "live") {
+       throw new Error("Financial Security: Wallet deductions require backend cryptographic validation in live mode.");
+    }
+
     const sql = await getSql();
     const amountPaise = Math.round(data.amount * 100);
     

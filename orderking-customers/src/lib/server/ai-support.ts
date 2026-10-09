@@ -287,7 +287,7 @@ INSTRUCTION:
     // 2. Check if asking about KingPay or KingPay Later
     if (q.includes("kingpay") || q.includes("king pay") || q.includes("wallet") || q.includes("pay later") || q.includes("credit") || q.includes("interest")) {
       return {
-        reply: `KingPay is our dedicated fintech wallet providing 1-Tap checkout with zero OTP delays, saving 2% in payment gateway surcharges. KingPay Later offers eligible customers an instant ₹2,500 credit limit at 0% interest for 15 days, auto-repaid on the 1st and 16th of each month. All wallet balances are 100% safeguarded under RBI-compliant escrow invariant accounts.`,
+        reply: `KingPay is our dedicated fintech wallet providing 1-Tap checkout with zero OTP delays, saving 2% in payment gateway surcharges. KingPay Later offers eligible customers an instant ₹2,500 credit limit at 0% interest for 15 days, auto-repaid on the 1st and 16th of each month. All wallet balances are 100% safeguarded under secure wallet accounts.`,
         links: [
           { title: "Open KingPay Hub", url: "/king-pay", badge: "Fintech Hub" },
           { title: "RBI Banking Ombudsman (CMS)", url: "https://cms.rbi.org.in", badge: "Govt Portal" },

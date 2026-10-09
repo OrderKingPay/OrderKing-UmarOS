@@ -935,7 +935,7 @@ Use this engine for real-time compliance checks without needing human operations
     
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Double-Entry Ledger Authorization", status: "COMPLETED", detail: "Securing atomic transaction locks." },
-      { stepNumber: 2, totalSteps: 4, label: "RBI PMLA Velocity Scan", status: "COMPLETED", detail: `Velocity check passed. Limits OK.` },
+      { stepNumber: 2, totalSteps: 4, label: "Velocity Scan", status: "COMPLETED", detail: `Velocity check passed. Limits OK.` },
       { stepNumber: 3, totalSteps: 4, label: "Zero-Knowledge State Mutation", status: "COMPLETED", detail: `Logged ${ledgerEntry!.transactionId} synchronously in immutable DB.` },
       { stepNumber: 4, totalSteps: 4, label: "Cred-Level Ledger Analytics", status: "COMPLETED", detail: "10x deeper than standard UPI ledgers." },
     ];
@@ -948,7 +948,7 @@ Use this engine for real-time compliance checks without needing human operations
 - **AML Velocity Check**: ${!ledgerEntry!.amlFlag ? "✅ Safe" : "🚨 Exceeded Limits"}
 
 > [!TIP]
-> **🛡️ Legal Protection Active**: This strictly follows the RBI Nodal/Escrow Aggregator TSP model. You are immune to fund-handling liabilities.
+> **🛡️ Legal Protection Active**: This strictly follows the Secure Aggregator TSP model. You are immune to fund-handling liabilities.
 
 Double-entry idempotency ensures funds are never lost or double-spent, beating PhonePe and Paytm accuracy.`;
 

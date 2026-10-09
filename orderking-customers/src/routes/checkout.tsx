@@ -332,13 +332,13 @@ function CheckoutPage() {
                       Balance: ₹750.00
                     </span>
                   </div>
-                  <span className="block text-xs text-muted mt-0.5">Direct RBI escrow deduction. Saves 2% gateway surcharge.</span>
+                  <span className="block text-xs text-muted mt-0.5">Direct secure deduction. Saves 2% gateway surcharge.</span>
                 </div>
               </label>
 
               {method === "KING_PAY" && (
                 <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs">
-                  <span className="text-muted">Available Escrow Wallet: <strong className="text-foreground">₹750.00</strong></span>
+                  <span className="text-muted">Available Wallet: <strong className="text-foreground">₹750.00</strong></span>
                   <Link
                     to="/king-pay"
                     className="font-semibold text-primary hover:underline"

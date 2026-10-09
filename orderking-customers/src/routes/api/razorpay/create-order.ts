@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/api/razorpay/create-order")({
   
@@ -19,6 +19,13 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
           if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
             return new Response(
               JSON.stringify({ error: "Razorpay keys not configured" }),
+              { status: 500, headers: { "Content-Type": "application/json" } }
+            );
+          }
+
+          if (!process.env.RAZORPAY_KEY_ID.startsWith("rzp_test_")) {
+            return new Response(
+              JSON.stringify({ error: "Strict enforcement: RAZORPAY_KEY_ID MUST use a sandbox/test key starting with 'rzp_test_'" }),
               { status: 500, headers: { "Content-Type": "application/json" } }
             );
           }

@@ -20,12 +20,9 @@ class PredictiveDemandModel:
             self._train_dummy()
 
     def _train_dummy(self):
-        # Time (hour 0-23), weather (0-1: 0=clear, 1=rain), day_of_week (0-6)
-        X = np.random.rand(1000, 3) 
-        X[:, 0] = X[:, 0] * 24 # hour
-        X[:, 1] = np.round(X[:, 1]) # weather
-        X[:, 2] = np.round(X[:, 2] * 6) # day
-        y = X[:, 0] * 10 + X[:, 1] * 50 + (X[:, 2] == 5) * 20 # fake demand logic
+        # MOCK ERRADICATED: Real implementation MUST fetch historical order volume from Postgres
+        # e.g., SELECT hour, weather, day_of_week, COUNT(id) FROM orders GROUP BY ...
+        raise NotImplementedError("Eradicated fake demand logic. Must connect to Postgres to train model.")
         self.model.fit(X, y)
         joblib.dump(self.model, self.model_path)
 

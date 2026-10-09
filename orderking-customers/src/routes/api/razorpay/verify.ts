@@ -1,6 +1,8 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import crypto from "crypto";
+import { getSql } from "@/lib/db";
+import { getSessionUser } from "@/lib/auth/verify.server";
 
 export const Route = createFileRoute("/api/razorpay/verify")({
   
@@ -9,7 +11,7 @@ export const Route = createFileRoute("/api/razorpay/verify")({
       POST: async ({ request }: any) => {
         try {
           const body = await request.json();
-          const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
+          const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount } = body;
 
           const secret = process.env.RAZORPAY_KEY_SECRET;
 
@@ -24,9 +26,31 @@ export const Route = createFileRoute("/api/razorpay/verify")({
           hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
           const generatedSignature = hmac.digest("hex");
 
-          if (generatedSignature === razorpay_signature) {
+          let isValid = false;
+          try {
+            isValid = crypto.timingSafeEqual(
+              Buffer.from(generatedSignature, "hex"),
+              Buffer.from(razorpay_signature, "hex")
+            );
+          } catch (e) {
+            isValid = false;
+          }
+
+          if (isValid) {
             // Payment is verified
-            // Here you would typically update the user's wallet balance in the database
+            // Update the user's wallet balance in the database
+            const user = await getSessionUser();
+            if (user) {
+              const sql = await getSql();
+              const amountPaise = Math.round(amount * 100);
+              if (amountPaise > 0) {
+                await sql.transaction(async (tx) => {
+                  await tx`INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins) VALUES (${user.id}, 0, 0) ON CONFLICT DO NOTHING`;
+                  await tx`UPDATE kingpay_wallets SET balance_paise = balance_paise + ${amountPaise}, updated_at = NOW() WHERE user_id = ${user.id}`;
+                  await tx`INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description) VALUES (${crypto.randomUUID()}, ${user.id}, ${amountPaise}, 'CREDIT', 'Razorpay Add Money')`;
+                });
+              }
+            }
             
             return new Response(JSON.stringify({ success: true }), {
               status: 200,

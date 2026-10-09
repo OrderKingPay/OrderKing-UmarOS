@@ -28,6 +28,9 @@ type RazorpayPayment = {
 function required(name: string): string {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`${name} is not configured`);
+  if (name === "RAZORPAY_KEY_ID" && !value.startsWith("rzp_test_")) {
+    throw new Error(`Strict enforcement: ${name} MUST use a sandbox/test key starting with 'rzp_test_'`);
+  }
   return value;
 }
 

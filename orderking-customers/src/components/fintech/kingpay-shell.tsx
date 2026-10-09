@@ -48,7 +48,7 @@ export function KingPayShell({
               </div>
               <p className="text-[10px] text-muted leading-tight mt-0.5 flex items-center gap-1">
                 <ShieldCheck className="size-3 text-emerald-600" />
-                <span>RBI Escrow Protected · 256-Bit</span>
+                <span>Secure Payments · 256-Bit</span>
               </p>
             </div>
           </div>

@@ -38,19 +38,35 @@ export class MaskedCallingEngine {
     }
 
     private async getRealNumber(userId: string): Promise<string> {
-        // Mock DB call
-        return `+1555000${userId.substring(0, 4)}`;
+        const { getSql } = await import("../../db");
+        const sql = await getSql();
+        const rows = await sql<{ phone: string }>`SELECT phone FROM "user" WHERE id = ${userId} LIMIT 1`;
+        if (rows.length === 0) throw new Error("User not found");
+        return rows[0].phone;
     }
 
     private async saveCallRouting(proxyNumber: string, riderNumber: string, customerNumber: string, orderId: string) {
-        // Mock DB save
+        const { getSql } = await import("../../db");
+        const sql = await getSql();
+        await sql`
+            INSERT INTO call_routings (proxy_number, rider_number, customer_number, order_id, expires_at)
+            VALUES (${proxyNumber}, ${riderNumber}, ${customerNumber}, ${orderId}, NOW() + INTERVAL '2 hours')
+        `;
     }
 
     private async getRoutingSession(proxyNumber: string) {
-        // Mock DB retrieval
+        const { getSql } = await import("../../db");
+        const sql = await getSql();
+        const rows = await sql<{ rider_number: string, customer_number: string }>`
+            SELECT rider_number, customer_number 
+            FROM call_routings 
+            WHERE proxy_number = ${proxyNumber} AND expires_at > NOW() 
+            LIMIT 1
+        `;
+        if (rows.length === 0) return null;
         return {
-            riderNumber: '+15550000001',
-            customerNumber: '+15550000002'
+            riderNumber: rows[0].rider_number,
+            customerNumber: rows[0].customer_number
         };
     }
 }

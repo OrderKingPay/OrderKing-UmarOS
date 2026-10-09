@@ -129,7 +129,7 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       orderKingCta: "Open Order King - FOODS",
       orderKingHighlight: "🍗 0% Menu Markup · 25 Min Delivery · Free Delivery > ₹149",
       kingPayHeadline: "King Pay",
-      kingPayTagline: "Scan & pay at any restaurant or local bazaar with 0% extra fee. Instant 1-tap UPI with RBI escrow safety.",
+      kingPayTagline: "Scan & pay at any restaurant or local bazaar with 0% extra fee. Instant 1-tap UPI with secure safety.",
       kingPayCta: "Open King Pay",
       kingPayHighlight: "⚡ 1-Tap Scan & Pay · 0% Charges · Instant Soundbox",
     };
