@@ -5,7 +5,7 @@ export interface DigitalContractEngine {
 
 export interface ComplianceData {
   fssaiNumber: string;
-  gstin: string;
+  gstin?: string;
   signatureToken: string;
   agreementDocumentId: string;
 }
@@ -14,7 +14,7 @@ export class PartnerOnboardingGate {
   constructor(private readonly digitalContractEngine: DigitalContractEngine) {}
 
   /**
-   * Forcefully requires digital signatures, FSSAI verification, and GSTIN logging.
+   * Forcefully requires digital signatures and FSSAI verification.
    * Access to the dashboard is impossible without passing this gate.
    */
   public async processOnboarding(partnerId: string, data: ComplianceData): Promise<void> {
@@ -42,7 +42,7 @@ export class PartnerOnboardingGate {
     const complianceMet = await this.digitalContractEngine.verifyComplianceStatus(partnerId);
     
     if (!complianceMet) {
-      throw new Error("ACCESS DENIED: Mandatory compliance (FSSAI, GSTIN, Digital Agreement) not met. Dashboard access locked.");
+      throw new Error("ACCESS DENIED: Mandatory compliance (FSSAI, Digital Agreement) not met. Dashboard access locked.");
     }
     
     return true;
@@ -56,7 +56,8 @@ export class PartnerOnboardingGate {
     }
   }
 
-  private validateGSTIN(gstin: string): void {
+  private validateGSTIN(gstin?: string): void {
+    if (!gstin) return; // GSTIN is optional
     // Standard GSTIN format validation
     const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
     if (!gstinRegex.test(gstin)) {
@@ -66,6 +67,7 @@ export class PartnerOnboardingGate {
 
   private logCompliance(partnerId: string, data: ComplianceData): void {
     // Immutable log injection point for compliance
-    console.info(`[COMPLIANCE INJECTION] Partner ${partnerId} successfully verified FSSAI and logged GSTIN.`);
+    const gstinLog = data.gstin ? 'and logged GSTIN' : 'without optional GSTIN';
+    console.info(`[COMPLIANCE INJECTION] Partner ${partnerId} successfully verified FSSAI ${gstinLog}.`);
   }
 }
