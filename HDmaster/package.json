@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
+    "@better-auth/kysely-adapter": "~1.7.6",
     "@google-cloud/bigquery": "^9.2.0",
     "@google-cloud/kms": "^6.2.1",
     "@google-cloud/secret-manager": "^7.1.1",
