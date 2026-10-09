@@ -148,8 +148,8 @@ const grokAuthorizationUrl = `${issuerBase}/api/auth/oauth2/authorize`;
 const grokTokenUrl = `${issuerBase}/api/auth/oauth2/token`;
 const grokUserInfoUrl = `${issuerBase}/api/auth/oauth2/userinfo`;
 
-import { Kysely, PostgresDialect } from "kysely";
-import { kyselyAdapter } from "@better-auth/kysely-adapter";
+
+
 
 // Real Postgres when `DATABASE_URL` is set (deployed apps), else the app's
 // embedded PGLite (preview) via a Kysely dialect — so Better Auth persists to the
@@ -157,8 +157,8 @@ import { kyselyAdapter } from "@better-auth/kysely-adapter";
 // schema from `migrations/auth/0001_auth.sql`, copied into `migrations/` when
 // the app turns sign-in on.
 let pool = new Pool({ connectionString: databaseUrl });
-let kysely = new Kysely({ dialect: new PostgresDialect({ pool }) });
-let database = kyselyAdapter(kysely, { type: "postgres" });
+
+let database = pool;
 
 /** Session token cookie name — also read by the live-preview popup completion page. */
 export const SESSION_TOKEN_COOKIE = "__Host-grok-auth.session_token";

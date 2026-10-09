@@ -1,4 +1,4 @@
-import fs from 'fs';
+﻿import fs from 'fs';
 import path from 'path';
 
 function copyDir(src, dest) {
@@ -19,13 +19,12 @@ function run(appDir) {
     
     // Cloudflare Pages uses dist, so we must copy from the output directory
     if (fs.existsSync(srcNitro)) {
-        console.log(`Copying ${srcNitro} to ${dest}`);
+        console.log("Copying ${srcNitro} to ${dest}");
         copyDir(srcNitro, dest);
     } else if (fs.existsSync(srcVercel)) {
-        console.log(`Copying ${srcVercel} to ${destClient}`);
+        console.log("Copying ${srcVercel} to ${destClient}");
         copyDir(srcVercel, destClient);
     }
-}
 }
 
 const appDir = process.cwd();

@@ -175,7 +175,7 @@ export default defineConfig(({ command, isPreview }) => ({
   resolve: { 
     tsconfigPaths: true,
     alias: {
-      'pg': '@neondatabase/serverless'
+      'pg': '@neondatabase/serverless', '@better-auth/telemetry': join(__dirname, './scripts/empty.mjs')
     }
   },
   plugins: [
