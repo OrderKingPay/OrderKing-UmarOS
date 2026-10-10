@@ -219,6 +219,15 @@ function RestaurantPage() {
               <span className="text-[11px] text-muted">🌡️ Chef Temp: 98.4°F (Checked Today)</span>
             </div>
 
+            {/* WhatsApp Deep-Link Sharing Component */}
+            <WhatsAppShare 
+              variant="restaurant" 
+              restaurantName={restaurant.card.name} 
+              restaurantSlug={slug} 
+              cuisine={restaurant.card.cuisineSummary} 
+              className="mt-3" 
+            />
+
             <input
               value={menuQ}
               onChange={(e) => setMenuQ(e.target.value)}
@@ -317,6 +326,9 @@ function RestaurantPage() {
               OrderKing acts as a technology platform connecting customers with verified restaurants. Food preparation, hygiene standards, packaging integrity, and statutory licenses are managed directly by the licensed food business operator.
             </div>
           </div>
+
+          {/* 'Refer a Friend, Get ₹500' Gamified Viral Loop */}
+          <ReferralGamifiedLoop source="restaurant" className="mt-8 mb-4" />
 
           <CustomizeDialog
             item={custom}
