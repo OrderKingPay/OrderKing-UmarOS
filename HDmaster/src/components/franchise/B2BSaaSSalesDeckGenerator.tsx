@@ -686,9 +686,9 @@ export function B2BSaaSSalesDeckGenerator() {
                       </h4>
                       <Button
                         size="sm"
-                        variant="link"
+                        variant="ghost"
                         onClick={() => setViewMode("roi")}
-                        className="text-amber-400 text-xs p-0 h-auto"
+                        className="text-amber-400 hover:text-amber-300 text-xs p-0 h-auto hover:bg-transparent"
                       >
                         Adjust in ROI Calculator <ArrowRight className="h-3 w-3 ml-1" />
                       </Button>

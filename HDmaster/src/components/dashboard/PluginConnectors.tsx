@@ -1124,6 +1124,613 @@ export function PluginConnectors() {
             </div>
           )}
 
+          {/* STRIPE ATLAS (USD B2B SAAS - GLOBAL USD PAYMENT ROUTER) */}
+          {(activeTab === "all" || activeTab === "stripeAtlas") && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-500">
+                    <Globe className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="text-base font-semibold text-foreground">
+                        {cmsConfig.connectorStripeAtlasTitle || "Stripe Atlas (USD B2B SaaS)"}
+                      </h3>
+                      {(() => {
+                        const st = getConnectorStatus("stripeAtlas");
+                        return (
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-xs font-medium border ${
+                              st.tone === "emerald"
+                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                : st.tone === "amber"
+                                ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                : "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                            }`}
+                          >
+                            {st.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {cmsConfig.connectorStripeAtlasSubtitle ||
+                        "Delaware C-Corp global USD merchant rail. Powers recurring B2B SaaS licensing, monthly franchise subscriptions, automated W-8BEN/W-9 invoices, and Stripe Billing across US and overseas operators."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
+                    <span>{cmsConfig.connectorStripeAtlasToggleLabel || "Stripe Atlas Router Active"}</span>
+                    <input
+                      type="checkbox"
+                      checked={config.stripeAtlas.enabled}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          stripeAtlas: { ...prev.stripeAtlas, enabled: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTestConnection("stripeAtlas")}
+                    disabled={testingService === "stripeAtlas"}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+                  >
+                    <Zap className="h-3.5 w-3.5 text-indigo-500" />
+                    {testingService === "stripeAtlas" ? "Testing..." : (cmsConfig.connectorStripeAtlasTestBtnText || "Verify Stripe Atlas Handshake")}
+                  </button>
+                </div>
+              </div>
+
+              {/* Diagnostic Message */}
+              {testResults.stripeAtlas && (
+                <div
+                  className={`rounded-lg p-3 text-xs border flex items-center justify-between ${
+                    testResults.stripeAtlas.ok
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                      : "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {testResults.stripeAtlas.ok ? (
+                      <CheckCircle2 className="h-4 w-4 shrink-0" />
+                    ) : (
+                      <XCircle className="h-4 w-4 shrink-0" />
+                    )}
+                    <span>{testResults.stripeAtlas.message}</span>
+                  </div>
+                  <span className="font-mono text-[10px] opacity-75">
+                    Checked {testResults.stripeAtlas.timestamp}
+                  </span>
+                </div>
+              )}
+
+              {/* Form Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Environment Mode</label>
+                  <select
+                    value={config.stripeAtlas.mode}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        stripeAtlas: { ...prev.stripeAtlas, mode: e.target.value as "live" | "test" },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="live">Production Mode (Live Keys)</option>
+                    <option value="test">Sandbox Mode (Test Keys)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Delaware Platform Account ID (Stripe Connect)</label>
+                  <input
+                    type="text"
+                    value={config.stripeAtlas.accountId}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        stripeAtlas: { ...prev.stripeAtlas, accountId: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. acct_1Nxxxxxxxxxxxxxx"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">Stripe Publishable Key</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("stripe_pub")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.stripe_pub ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.stripe_pub ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.stripe_pub ? "text" : "password"}
+                    value={config.stripeAtlas.publishableKey}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        stripeAtlas: { ...prev.stripeAtlas, publishableKey: e.target.value },
+                      }))
+                    }
+                    placeholder={config.stripeAtlas.mode === "live" ? "pk_live_xxxxxxxxxxxxxxxx" : "pk_test_xxxxxxxxxxxxxxxx"}
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">Stripe Secret API Key</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("stripe_sec")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.stripe_sec ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.stripe_sec ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.stripe_sec ? "text" : "password"}
+                    value={config.stripeAtlas.secretKey}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        stripeAtlas: { ...prev.stripeAtlas, secretKey: e.target.value },
+                      }))
+                    }
+                    placeholder={config.stripeAtlas.mode === "live" ? "sk_live_xxxxxxxxxxxxxxxx" : "sk_test_xxxxxxxxxxxxxxxx"}
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">Stripe Webhook Signing Secret</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("stripe_wh")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.stripe_wh ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.stripe_wh ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.stripe_wh ? "text" : "password"}
+                    value={config.stripeAtlas.webhookSecret}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        stripeAtlas: { ...prev.stripeAtlas, webhookSecret: e.target.value },
+                      }))
+                    }
+                    placeholder="whsec_xxxxxxxxxxxxxxxxxxxxxxxx"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Statement Descriptor (Bank Card Billings)</label>
+                  <input
+                    type="text"
+                    value={config.stripeAtlas.statementDescriptor}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        stripeAtlas: { ...prev.stripeAtlas, statementDescriptor: e.target.value.toUpperCase().slice(0, 22) },
+                      }))
+                    }
+                    placeholder="ORDERKING SAAS (Max 22 chars)"
+                    maxLength={22}
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Monthly B2B SaaS Plan Price ID</label>
+                  <input
+                    type="text"
+                    value={config.stripeAtlas.monthlySaaSPlanId}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        stripeAtlas: { ...prev.stripeAtlas, monthlySaaSPlanId: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. price_1Nxxxxxxxxxxxxxx ($499/mo franchise tier)"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Settlement Currency</label>
+                  <div className="flex h-10 w-full items-center rounded-lg border border-border bg-secondary/30 px-3 text-sm font-mono text-foreground">
+                    <DollarSign className="h-4 w-4 text-emerald-500 mr-2 shrink-0" />
+                    <span>USD ($) — United States Dollar (B2B SaaS Default)</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 md:col-span-2 pt-2 border-t border-border/60">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={config.stripeAtlas.autoInvoicing}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          stripeAtlas: { ...prev.stripeAtlas, autoInvoicing: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <span>Automated W-8BEN & SaaS B2B PDF Invoicing</span>
+                  </label>
+                  <p className="text-[11px] text-muted-foreground pl-6">
+                    Automatically generates IRS-compliant W-8BEN/W-9 invoices with Delaware EIN and export tax credits upon successful monthly subscription charge.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={config.stripeAtlas.delawareTaxFiling}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          stripeAtlas: { ...prev.stripeAtlas, delawareTaxFiling: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <span>Delaware Franchise Tax & Foreign Revenue Allocation Track</span>
+                  </label>
+                  <p className="text-[11px] text-muted-foreground pl-6">
+                    Classifies US vs overseas Saudi franchise income separately for institutional tax compliance, protecting founder visa eligibility through clean cross-border commercial receipts.
+                  </p>
+                </div>
+              </div>
+
+              {/* Policy & Compliance Box */}
+              <div className="rounded-lg border border-indigo-500/20 bg-indigo-500/5 p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-indigo-500" />
+                  <span className="text-xs font-semibold text-foreground">
+                    {cmsConfig.connectorStripeAtlasPolicyTitle || "Delaware C-Corp B2B SaaS Invoicing & US Compliance"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {cmsConfig.connectorStripeAtlasPolicyNotice ||
+                    "Collects direct USD revenue into US corporate accounts, generating qualifying institutional business revenue for US entity expansion and visa compliance."}
+                </p>
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-indigo-500/10 text-[11px] text-muted-foreground">
+                  <span>
+                    {cmsConfig.connectorStripeAtlasWebhookNotice ||
+                      "Stripe Subscriptions & Invoice Webhook: Synchronizes recurring SaaS collections, payment intents, and customer lifecycle."}
+                  </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="font-mono bg-background px-2 py-0.5 rounded border border-border text-[10px]">
+                      /api/v1/kingpay/stripe-webhook
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("https://api.orderkingpay.com/api/v1/kingpay/stripe-webhook", "stripe_wh_url")}
+                      className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                      title="Copy Webhook Endpoint"
+                    >
+                      {copiedKey === "stripe_wh_url" ? <Check className="h-3 w-3 text-indigo-500" /> : <Copy className="h-3 w-3" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PAYONEER CROSS-BORDER ROUTING */}
+          {(activeTab === "all" || activeTab === "payoneer") && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500">
+                    <Landmark className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="text-base font-semibold text-foreground">
+                        {cmsConfig.connectorPayoneerTitle || "Payoneer Cross-Border Routing"}
+                      </h3>
+                      {(() => {
+                        const st = getConnectorStatus("payoneer");
+                        return (
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-xs font-medium border ${
+                              st.tone === "emerald"
+                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                : st.tone === "amber"
+                                ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                : "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                            }`}
+                          >
+                            {st.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {cmsConfig.connectorPayoneerSubtitle ||
+                        "Institutional cross-border ACH & wire clearing network. Provides US Virtual Fedwire/ABA routing numbers and multi-currency receiving accounts for Saudi Arabia (SAR/USD) and GCC restaurant franchise royalties."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
+                    <span>{cmsConfig.connectorPayoneerToggleLabel || "Payoneer Cross-Border Active"}</span>
+                    <input
+                      type="checkbox"
+                      checked={config.payoneer.enabled}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          payoneer: { ...prev.payoneer, enabled: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTestConnection("payoneer")}
+                    disabled={testingService === "payoneer"}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+                  >
+                    <Zap className="h-3.5 w-3.5 text-emerald-500" />
+                    {testingService === "payoneer" ? "Testing..." : (cmsConfig.connectorPayoneerTestBtnText || "Verify Payoneer ACH Rail")}
+                  </button>
+                </div>
+              </div>
+
+              {/* Diagnostic Message */}
+              {testResults.payoneer && (
+                <div
+                  className={`rounded-lg p-3 text-xs border flex items-center justify-between ${
+                    testResults.payoneer.ok
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                      : "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {testResults.payoneer.ok ? (
+                      <CheckCircle2 className="h-4 w-4 shrink-0" />
+                    ) : (
+                      <XCircle className="h-4 w-4 shrink-0" />
+                    )}
+                    <span>{testResults.payoneer.message}</span>
+                  </div>
+                  <span className="font-mono text-[10px] opacity-75">
+                    Checked {testResults.payoneer.timestamp}
+                  </span>
+                </div>
+              )}
+
+              {/* Form Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Payoneer Program ID</label>
+                  <input
+                    type="text"
+                    value={config.payoneer.programId}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        payoneer: { ...prev.payoneer, programId: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. 100xxxxxxx"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Payee ID / Merchant Identifier</label>
+                  <input
+                    type="text"
+                    value={config.payoneer.payeeId}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        payoneer: { ...prev.payoneer, payeeId: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. pay_orderking_global"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">API Client Secret / Key</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("payoneer_secret")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.payoneer_secret ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.payoneer_secret ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.payoneer_secret ? "text" : "password"}
+                    value={config.payoneer.clientSecret}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        payoneer: { ...prev.payoneer, clientSecret: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter Payoneer API Secret"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">US Virtual Fedwire / ABA Routing Number (9 Digits)</label>
+                  <input
+                    type="text"
+                    value={config.payoneer.routingNumber}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        payoneer: { ...prev.payoneer, routingNumber: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. 021000021 (First Century Bank / Citibank NA)"
+                    maxLength={9}
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">US Virtual Checking Account Number</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("payoneer_acct")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.payoneer_acct ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.payoneer_acct ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.payoneer_acct ? "text" : "password"}
+                    value={config.payoneer.accountNumber}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        payoneer: { ...prev.payoneer, accountNumber: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. 409174829103"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Receiving Currency Rail</label>
+                  <div className="flex h-10 w-full items-center rounded-lg border border-border bg-secondary/30 px-3 text-sm font-mono text-foreground">
+                    <DollarSign className="h-4 w-4 text-emerald-500 mr-2 shrink-0" />
+                    <span>USD ($) — Multi-Currency Global Receiving Network</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-xs font-semibold text-foreground">Receiving Bank BIC / SWIFT Code</label>
+                  <input
+                    type="text"
+                    value={config.payoneer.bankBic}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        payoneer: { ...prev.payoneer, bankBic: e.target.value.toUpperCase() },
+                      }))
+                    }
+                    placeholder="e.g. FCNBUS33"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5 md:col-span-2 pt-2 border-t border-border/60">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={config.payoneer.saudiSarConversionRail}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          payoneer: { ...prev.payoneer, saudiSarConversionRail: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <span>Saudi Arabia (SAR) Direct Local Receiving Rail</span>
+                  </label>
+                  <p className="text-[11px] text-muted-foreground pl-6">
+                    Enables franchise partners in Riyadh and Jeddah to pay in Saudi Riyals (SAR) via local SAMA/SARIE clearing without international FX friction, settling directly into founder treasury.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={config.payoneer.autoSweepTreasury}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          payoneer: { ...prev.payoneer, autoSweepTreasury: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <span>Automated Sweep to Delaware Corporate Treasury</span>
+                  </label>
+                  <p className="text-[11px] text-muted-foreground pl-6">
+                    Daily automatic liquidation and sweep of collected international wire funds directly into Delaware operating bank account, maintaining automated cash balance audit trails.
+                  </p>
+                </div>
+              </div>
+
+              {/* Policy & Compliance Box */}
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                  <span className="text-xs font-semibold text-foreground">
+                    {cmsConfig.connectorPayoneerPolicyTitle || "Global Cross-Border Liquidity & Commercial ACH Routing"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {cmsConfig.connectorPayoneerPolicyNotice ||
+                    "Enables direct collection of international franchise royalty fees from Saudi Arabia and North America without high intermediary bank conversion friction."}
+                </p>
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-emerald-500/10 text-[11px] text-muted-foreground">
+                  <span>
+                    {cmsConfig.connectorPayoneerWebhookNotice ||
+                      "Payoneer Global Payment Service Ingestion Webhook: Receives inbound wire clearing events and instant treasury deposits."}
+                  </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="font-mono bg-background px-2 py-0.5 rounded border border-border text-[10px]">
+                      /api/v1/kingpay/payoneer-webhook
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("https://api.orderkingpay.com/api/v1/kingpay/payoneer-webhook", "payoneer_wh_url")}
+                      className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                      title="Copy Webhook Endpoint"
+                    >
+                      {copiedKey === "payoneer_wh_url" ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* 2. WHATSAPP BUSINESS API INTEGRATION */}
           {(activeTab === "all" || activeTab === "whatsapp") && (
             <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-6">
