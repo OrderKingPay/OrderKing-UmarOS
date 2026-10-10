@@ -14,7 +14,7 @@ const PayoneerWebhookSchema = z.object({
   reference: z.string().optional(),
 }).passthrough();
 
-export const Route = createFileRoute("/api/v1/kingpay/payoneer-webhook" as any)({
+export const Route = createFileRoute("/api/v1/kingpay/payoneer-webhook")({
   server: {
     handlers: {
       POST: async ({ request }: any) => {

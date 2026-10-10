@@ -9,6 +9,8 @@ import { useLocationStore } from "@/lib/stores/location";
 import { getLoyalty } from "@/lib/server/account";
 import { toast } from "sonner";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
+import { CompetitorBounty } from "@/components/CompetitorBounty";
+import { RetentionRoulette } from "@/components/RetentionRoulette";
 
 export const Route = createFileRoute("/rewards")({ component: RewardsPage });
 
@@ -222,7 +224,6 @@ function RewardsPage() {
 
   const [activeTab, setActiveTab] = useState<"all" | "ecommerce" | "fuel" | "lpg" | "retail" | "fashion" | "edtech" | "health">("all");
   const [unlockedCodes, setUnlockedCodes] = useState<Record<string, boolean>>({});
-  const [scratchRevealed, setScratchRevealed] = useState(false);
 
   // User's King Coins (10 coins per ₹1 spent)
   const basePoints = loyalty.data?.loyalty.points ?? 1250;
@@ -314,76 +315,11 @@ function RewardsPage() {
         {/* WhatsApp Viral Bounties Acquisition Engine */}
         <WhatsAppViralBountiesWidget source="rewards_vault" />
 
-        {/* Mystery Scratch Card Section */}
-        <div className="rounded-[var(--radius-xl)] border border-primary/20 bg-surface p-4 shadow-xs">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="font-display text-base font-bold text-fg">
-                ✨ Mystery Scratch Card
-              </h2>
-              <p className="text-xs text-muted">
-                Scratch to reveal surprise affiliate & brand coupons!
-              </p>
-            </div>
-            <span className="text-2xl">🎁</span>
-          </div>
+        {/* Delete Zomato Bounty: ₹500 KingPay Wallet Switch Bounty */}
+        <CompetitorBounty className="mt-4" />
 
-          <div className="mt-3">
-            {!scratchRevealed ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setScratchRevealed(true);
-                  toast.success("🎉 Mystery Reward Unlocked!");
-                }}
-                className="group relative flex h-28 w-full items-center justify-center overflow-hidden rounded-xl border border-dashed border-amber-500/50 bg-gradient-to-r from-amber-500/10 via-primary/10 to-amber-500/10 p-4 text-center transition hover:border-amber-500 cursor-pointer"
-              >
-                <div className="space-y-1">
-                  <span className="text-3xl transition-transform group-hover:scale-125 inline-block">
-                    🎟️
-                  </span>
-                  <p className="font-bold text-sm text-fg">
-                    Tap to Scratch & Reveal
-                  </p>
-                  <p className="text-[11px] text-muted">
-                    Win up to 5,000 King Coins or Amazon / Fuel Vouchers
-                  </p>
-                </div>
-              </button>
-            ) : (
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
-                <span className="text-3xl">🎉</span>
-                <h3 className="mt-1 font-bold text-sm text-emerald-800 dark:text-emerald-200">
-                  Congratulations! You Won 2,500 King Coins + ₹50 Fuel Voucher!
-                </h3>
-                <p className="mt-0.5 text-xs text-muted">
-                  Use code <span className="font-mono font-bold text-fg">HPFUEL50</span> on HP Pay.
-                </p>
-                <div className="mt-3 flex justify-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      void navigator.clipboard?.writeText("HPFUEL50");
-                      toast.success("Voucher code copied!");
-                    }}
-                  >
-                    Copy Code
-                  </Button>
-                  <a
-                    href="https://hppay.in?ref=orderking"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-fg shadow-xs hover:bg-emerald-700 transition"
-                  >
-                    <span>Redeem on HP Pay</span>
-                    <span>↗</span>
-                  </a>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Post-Order Dopamine Wheel & Retention Engine */}
+        <RetentionRoulette orderId="rewards_vault_spin" className="mt-4" />
 
         {/* Category Filters */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">

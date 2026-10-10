@@ -33,7 +33,9 @@ import { Route as V1PaymentsSplatRouteImport } from './routes/v1/payments/$'
 import { Route as V1TravelSplatRouteImport } from './routes/v1/travel/$'
 import { Route as ApiV1AdminSettingsRouteImport } from './routes/api/v1/admin/settings'
 import { Route as ApiV1FounderSweepRouteImport } from './routes/api/v1/founder/sweep'
+import { Route as ApiV1KingpayPayoneerWebhookRouteImport } from './routes/api/v1/kingpay/payoneer-webhook'
 import { Route as ApiV1KingpayRazorpayWebhookRouteImport } from './routes/api/v1/kingpay/razorpay-webhook'
+import { Route as ApiV1KingpayStripeWebhookRouteImport } from './routes/api/v1/kingpay/stripe-webhook'
 import { Route as ApiV1KingpayTransferRouteImport } from './routes/api/v1/kingpay/transfer'
 import { Route as ApiV1TravelBookRouteImport } from './routes/api/v1/travel/book'
 import { Route as ApiV1TravelSearchRouteImport } from './routes/api/v1/travel/search'
@@ -164,10 +166,22 @@ const ApiV1FounderSweepRoute = ApiV1FounderSweepRouteImport.update({
   path: '/api/v1/founder/sweep',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1KingpayPayoneerWebhookRoute =
+  ApiV1KingpayPayoneerWebhookRouteImport.update({
+    id: '/api/v1/kingpay/payoneer-webhook',
+    path: '/api/v1/kingpay/payoneer-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1KingpayRazorpayWebhookRoute =
   ApiV1KingpayRazorpayWebhookRouteImport.update({
     id: '/api/v1/kingpay/razorpay-webhook',
     path: '/api/v1/kingpay/razorpay-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1KingpayStripeWebhookRoute =
+  ApiV1KingpayStripeWebhookRouteImport.update({
+    id: '/api/v1/kingpay/stripe-webhook',
+    path: '/api/v1/kingpay/stripe-webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiV1KingpayTransferRoute = ApiV1KingpayTransferRouteImport.update({
@@ -238,7 +252,9 @@ export interface FileRoutesByFullPath {
   '/v1/travel/$': typeof V1TravelSplatRoute
   '/api/v1/admin/settings': typeof ApiV1AdminSettingsRoute
   '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
+  '/api/v1/kingpay/payoneer-webhook': typeof ApiV1KingpayPayoneerWebhookRoute
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
+  '/api/v1/kingpay/stripe-webhook': typeof ApiV1KingpayStripeWebhookRoute
   '/api/v1/kingpay/transfer': typeof ApiV1KingpayTransferRoute
   '/api/v1/travel/book': typeof ApiV1TravelBookRoute
   '/api/v1/travel/search': typeof ApiV1TravelSearchRoute
@@ -272,7 +288,9 @@ export interface FileRoutesByTo {
   '/v1/travel/$': typeof V1TravelSplatRoute
   '/api/v1/admin/settings': typeof ApiV1AdminSettingsRoute
   '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
+  '/api/v1/kingpay/payoneer-webhook': typeof ApiV1KingpayPayoneerWebhookRoute
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
+  '/api/v1/kingpay/stripe-webhook': typeof ApiV1KingpayStripeWebhookRoute
   '/api/v1/kingpay/transfer': typeof ApiV1KingpayTransferRoute
   '/api/v1/travel/book': typeof ApiV1TravelBookRoute
   '/api/v1/travel/search': typeof ApiV1TravelSearchRoute
@@ -308,7 +326,9 @@ export interface FileRoutesById {
   '/v1/travel/$': typeof V1TravelSplatRoute
   '/api/v1/admin/settings': typeof ApiV1AdminSettingsRoute
   '/api/v1/founder/sweep': typeof ApiV1FounderSweepRoute
+  '/api/v1/kingpay/payoneer-webhook': typeof ApiV1KingpayPayoneerWebhookRoute
   '/api/v1/kingpay/razorpay-webhook': typeof ApiV1KingpayRazorpayWebhookRoute
+  '/api/v1/kingpay/stripe-webhook': typeof ApiV1KingpayStripeWebhookRoute
   '/api/v1/kingpay/transfer': typeof ApiV1KingpayTransferRoute
   '/api/v1/travel/book': typeof ApiV1TravelBookRoute
   '/api/v1/travel/search': typeof ApiV1TravelSearchRoute
@@ -345,7 +365,9 @@ export interface FileRouteTypes {
     | '/v1/travel/$'
     | '/api/v1/admin/settings'
     | '/api/v1/founder/sweep'
+    | '/api/v1/kingpay/payoneer-webhook'
     | '/api/v1/kingpay/razorpay-webhook'
+    | '/api/v1/kingpay/stripe-webhook'
     | '/api/v1/kingpay/transfer'
     | '/api/v1/travel/book'
     | '/api/v1/travel/search'
@@ -379,7 +401,9 @@ export interface FileRouteTypes {
     | '/v1/travel/$'
     | '/api/v1/admin/settings'
     | '/api/v1/founder/sweep'
+    | '/api/v1/kingpay/payoneer-webhook'
     | '/api/v1/kingpay/razorpay-webhook'
+    | '/api/v1/kingpay/stripe-webhook'
     | '/api/v1/kingpay/transfer'
     | '/api/v1/travel/book'
     | '/api/v1/travel/search'
@@ -414,7 +438,9 @@ export interface FileRouteTypes {
     | '/v1/travel/$'
     | '/api/v1/admin/settings'
     | '/api/v1/founder/sweep'
+    | '/api/v1/kingpay/payoneer-webhook'
     | '/api/v1/kingpay/razorpay-webhook'
+    | '/api/v1/kingpay/stripe-webhook'
     | '/api/v1/kingpay/transfer'
     | '/api/v1/travel/book'
     | '/api/v1/travel/search'
@@ -447,7 +473,9 @@ export interface RootRouteChildren {
   V1TravelSplatRoute: typeof V1TravelSplatRoute
   ApiV1AdminSettingsRoute: typeof ApiV1AdminSettingsRoute
   ApiV1FounderSweepRoute: typeof ApiV1FounderSweepRoute
+  ApiV1KingpayPayoneerWebhookRoute: typeof ApiV1KingpayPayoneerWebhookRoute
   ApiV1KingpayRazorpayWebhookRoute: typeof ApiV1KingpayRazorpayWebhookRoute
+  ApiV1KingpayStripeWebhookRoute: typeof ApiV1KingpayStripeWebhookRoute
   ApiV1KingpayTransferRoute: typeof ApiV1KingpayTransferRoute
   ApiV1TravelBookRoute: typeof ApiV1TravelBookRoute
   ApiV1TravelSearchRoute: typeof ApiV1TravelSearchRoute
@@ -626,11 +654,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1FounderSweepRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/kingpay/payoneer-webhook': {
+      id: '/api/v1/kingpay/payoneer-webhook'
+      path: '/api/v1/kingpay/payoneer-webhook'
+      fullPath: '/api/v1/kingpay/payoneer-webhook'
+      preLoaderRoute: typeof ApiV1KingpayPayoneerWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/kingpay/razorpay-webhook': {
       id: '/api/v1/kingpay/razorpay-webhook'
       path: '/api/v1/kingpay/razorpay-webhook'
       fullPath: '/api/v1/kingpay/razorpay-webhook'
       preLoaderRoute: typeof ApiV1KingpayRazorpayWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/kingpay/stripe-webhook': {
+      id: '/api/v1/kingpay/stripe-webhook'
+      path: '/api/v1/kingpay/stripe-webhook'
+      fullPath: '/api/v1/kingpay/stripe-webhook'
+      preLoaderRoute: typeof ApiV1KingpayStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/v1/kingpay/transfer': {
@@ -767,7 +809,9 @@ const rootRouteChildren: RootRouteChildren = {
   V1TravelSplatRoute: V1TravelSplatRoute,
   ApiV1AdminSettingsRoute: ApiV1AdminSettingsRoute,
   ApiV1FounderSweepRoute: ApiV1FounderSweepRoute,
+  ApiV1KingpayPayoneerWebhookRoute: ApiV1KingpayPayoneerWebhookRoute,
   ApiV1KingpayRazorpayWebhookRoute: ApiV1KingpayRazorpayWebhookRoute,
+  ApiV1KingpayStripeWebhookRoute: ApiV1KingpayStripeWebhookRoute,
   ApiV1KingpayTransferRoute: ApiV1KingpayTransferRoute,
   ApiV1TravelBookRoute: ApiV1TravelBookRoute,
   ApiV1TravelSearchRoute: ApiV1TravelSearchRoute,

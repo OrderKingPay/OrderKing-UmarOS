@@ -19,6 +19,8 @@ import { useLocationStore } from "@/lib/stores/location";
 import { toast } from "sonner";
 import { ReferralGamifiedLoop } from "@/components/market/referral-gamified-loop";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
+import { CompetitorBounty } from "@/components/CompetitorBounty";
+import { LifetimeRoyaltyMatrix } from "@/components/market/lifetime-royalty-matrix";
 
 export const Route = createFileRoute('/earn')({
   component: EarnPage,
@@ -253,157 +255,104 @@ function EarnPage() {
 
   return (
     <CustomerShell>
-      <div className="min-h-[100dvh] bg-black pb-32 text-white">
+      <div className="min-h-[100dvh] bg-slate-50 pb-36 text-slate-900">
         
-        {/* Header & Language Toggle */}
-        <div className="sticky top-0 z-20 bg-black/80 backdrop-blur-md border-b border-white/10 px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Wallet className="size-6 text-emerald-400" />
-            <h1 className="font-display text-xl font-bold tracking-tight text-white">
-              {t.title}
-            </h1>
+        {/* Header & Language Toggle (Pure Light Mode Corporate UI) */}
+        <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 py-3.5 flex items-center justify-between shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <div className="size-8 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center">
+              <Wallet className="size-4.5" />
+            </div>
+            <div>
+              <h1 className="font-display text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 leading-none">
+                {t.title}
+              </h1>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">
+                OrderKing Passive Wealth Network
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-1 bg-zinc-900 border border-white/10 rounded-full px-2 py-1">
-            <Languages className="size-3.5 text-zinc-400" />
+          <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 rounded-full px-2.5 py-1">
+            <Languages className="size-3.5 text-slate-500" />
             <select 
               value={lang} 
               onChange={(e) => setLang(e.target.value as LangKey)}
-              className="bg-transparent text-xs font-bold text-white outline-none cursor-pointer appearance-none pl-1 pr-2"
+              className="bg-transparent text-xs font-semibold text-slate-800 outline-none cursor-pointer appearance-none pl-1 pr-2"
             >
               {Object.keys(TRANSLATIONS).map(l => (
-                <option key={l} value={l} className="bg-zinc-900">{l}</option>
+                <option key={l} value={l} className="bg-white text-slate-900">{l}</option>
               ))}
             </select>
           </div>
         </div>
 
-        <div className="px-4 pt-6 pb-2">
+        <div className="px-4 pt-5 pb-2 max-w-5xl mx-auto space-y-6">
           
-          {/* Real Wallet Balance UI */}
-          <div className="mb-6 bg-zinc-900/50 border border-white/10 rounded-3xl p-5 shadow-inner">
-            <div className="flex justify-between items-start">
+          {/* FLAGSHIP MANDATE: THE LIFETIME ROYALTY MATRIX & RECRUITS DASHBOARD */}
+          <LifetimeRoyaltyMatrix />
+
+          {/* THE DELETE ZOMATO BOUNTY - PURE LIGHT MODE ZOMATO PARITY */}
+          <CompetitorBounty className="mb-6" />
+
+          {/* FEATURED: PURE LIGHT MODE WHATSAPP VIRAL BOUNTIES WIDGET */}
+          <WhatsAppViralBountiesWidget source="earn_hub" className="mb-6" />
+
+          {/* ADDITIONAL DIRECT EARNING CHANNELS (PURE LIGHT MODE CORPORATE UI) */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest">{t.balance}</p>
-                <h2 className="text-4xl font-black text-white mt-1">₹{balance}</h2>
+                <h3 className="text-base font-extrabold text-slate-900 tracking-tight">Active Work Channels</h3>
+                <p className="text-xs text-slate-500">{t.subtitle}</p>
               </div>
-              <button 
-                onClick={() => setShowWithdraw(!showWithdraw)}
-                className="bg-emerald-500 text-black px-4 py-2 rounded-xl text-xs font-bold active:scale-95 transition-transform"
-              >
-                {t.withdraw}
-              </button>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                Instant UPI Payout
+              </span>
             </div>
-            
-            <AnimatePresence>
-              {showWithdraw && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mt-4 pt-4 border-t border-white/10 overflow-hidden"
-                >
-                  <div className="flex gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="Enter UPI ID (e.g. 9876543210@ybl)"
-                      autoCapitalize="none"
-                      value={withdrawUpi}
-                      onChange={e => setWithdrawUpi(e.target.value)}
-                      className="flex-1 bg-black border border-white/20 rounded-xl px-3 py-2 text-sm outline-none focus:border-emerald-500"
-                    />
-                    <button 
-                      onClick={handleWithdraw}
-                      className="bg-white text-black px-4 font-bold text-sm rounded-xl"
-                    >
-                      Send
-                    </button>
-                  </div>
-                  {upiName && <p className="text-emerald-400 text-[10px] mt-2 font-bold">{upiName}</p>}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
 
-          <p className="text-zinc-400 text-sm font-medium leading-relaxed mb-6">
-            {t.subtitle}
-          </p>
-
-          <div className="space-y-4">
-            {/* FEATURED: PURE LIGHT MODE WHATSAPP VIRAL BOUNTIES WIDGET */}
-            <WhatsAppViralBountiesWidget source="earn_hub" className="mb-6" />
-
-            {/* Easiest: WhatsApp Affiliate */}
-            <motion.div 
-              whileTap={{ scale: 0.98 }}
-              className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/40 to-black p-5 shadow-[0_0_30px_rgba(16,185,129,0.1)]"
-            >
-              <div className="absolute top-0 right-0 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-bl-xl rounded-tr-3xl">
-                {t.affiliate.tag}
-              </div>
-              <div className="flex gap-4">
-                <div className="shrink-0 flex items-center justify-center size-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30">
-                  <Share2 className="size-6 text-emerald-400" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold text-white mb-1">{t.affiliate.title}</h2>
-                  <p className="text-xs text-zinc-400 font-medium leading-relaxed max-w-[90%] mb-4">
-                    {t.affiliate.desc}
-                  </p>
-                </div>
-              </div>
-              <button 
-                onClick={handleWhatsAppShare}
-                className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-95"
-              >
-                {t.affiliate.btn}
-                <ArrowRight className="size-4" />
-              </button>
-            </motion.div>
-
-            {/* Direct Job: Delivery */}
-            <div className="relative overflow-hidden rounded-3xl border border-[#D4AF37]/30 bg-gradient-to-b from-[#D4AF37]/10 to-black p-5 shadow-[0_0_30px_rgba(212,175,55,0.05)]">
-              <div className="absolute top-0 right-0 bg-[#D4AF37] text-black text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-bl-xl rounded-tr-3xl">
+            {/* Direct Job: Delivery Partner */}
+            <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs">
+              <div className="absolute top-0 right-0 bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-bl-xl rounded-tr-3xl">
                 {t.delivery.tag}
               </div>
               
               {!deliveryJoined ? (
                 <>
                   <div className="flex gap-4">
-                    <div className="shrink-0 flex items-center justify-center size-12 rounded-2xl bg-[#D4AF37]/20 border border-[#D4AF37]/30">
-                      <Bike className="size-6 text-[#D4AF37]" />
+                    <div className="shrink-0 flex items-center justify-center size-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700">
+                      <Bike className="size-6" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-bold text-white mb-1">{t.delivery.title}</h2>
+                      <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-1">{t.delivery.title}</h2>
                       <div className="flex items-center gap-1.5 mb-2">
-                        <MapPin className="size-3 text-zinc-400" />
-                        <span className="text-[10px] uppercase tracking-widest text-zinc-400 font-bold">{userCity}</span>
+                        <MapPin className="size-3 text-slate-400" />
+                        <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">{userCity}</span>
                       </div>
-                      <p className="text-xs text-zinc-400 font-medium leading-relaxed max-w-[90%] mb-4">
+                      <p className="text-xs text-slate-600 font-normal leading-relaxed max-w-[90%] mb-4">
                         {t.delivery.desc}
                       </p>
                     </div>
                   </div>
                   
                   {activeTask === "delivery" ? (
-                    <div className="mt-2 space-y-3 p-4 bg-black border border-white/10 rounded-2xl">
+                    <div className="mt-2 space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
                        <input 
                           type="text" 
                           placeholder={t.delivery.form.bike} 
                           value={bikeNo}
                           onChange={e => setBikeNo(e.target.value)}
-                          className="w-full bg-zinc-900 border border-white/20 rounded-xl px-3 py-3 text-sm outline-none focus:border-[#D4AF37]"
+                          className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-slate-900 text-slate-900 placeholder:text-slate-400 font-medium"
                        />
                        <input 
                           type="text" 
                           placeholder={t.delivery.form.license} 
-                          className="w-full bg-zinc-900 border border-white/20 rounded-xl px-3 py-3 text-sm outline-none focus:border-[#D4AF37]"
+                          className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-slate-900 text-slate-900 placeholder:text-slate-400 font-medium"
                        />
                        <button 
                          onClick={() => {
                            if(bikeNo.length > 3) setDeliveryJoined(true);
                            else toast.error("Enter bike number");
                          }}
-                         className="w-full bg-[#D4AF37] text-black font-bold text-sm py-3.5 rounded-xl active:scale-95"
+                         className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-3 rounded-xl active:scale-95 transition"
                        >
                          {t.delivery.form.submit}
                        </button>
@@ -411,7 +360,7 @@ function EarnPage() {
                   ) : (
                     <button 
                       onClick={() => setActiveTask("delivery")}
-                      className="w-full bg-[#D4AF37] hover:bg-[#F59E0B] text-black font-bold text-sm py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-95"
+                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-3 rounded-xl flex items-center justify-center gap-2 transition active:scale-95 shadow-2xs"
                     >
                       {t.delivery.btn}
                       <ArrowRight className="size-4" />
@@ -419,56 +368,56 @@ function EarnPage() {
                   )}
                 </>
               ) : (
-                <div className="flex items-center gap-4 bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-2xl">
-                  <div className="size-12 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                     <Check className="size-6 text-black" />
+                <div className="flex items-center gap-4 bg-emerald-50 border border-emerald-200 p-4 rounded-2xl">
+                  <div className="size-10 rounded-full bg-emerald-600 flex items-center justify-center shrink-0 text-white">
+                     <Check className="size-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-emerald-400">ID: {bikeNo.toUpperCase()}</h3>
-                    <p className="text-xs text-zinc-300 font-medium mt-0.5">{t.delivery.form.success}</p>
+                    <h3 className="font-bold text-emerald-800 text-sm">Active Partner ID: {bikeNo.toUpperCase()}</h3>
+                    <p className="text-xs text-emerald-700 mt-0.5">{t.delivery.form.success}</p>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Part-Time: Digital Tasks */}
-            <div className="relative overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-b from-cyan-950/40 to-black p-5">
-              <div className="absolute top-0 right-0 bg-cyan-500 text-black text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-bl-xl rounded-tr-3xl">
+            {/* Part-Time: Digital Micro-Tasks */}
+            <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs">
+              <div className="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-bl-xl rounded-tr-3xl">
                 {t.tasks.tag}
               </div>
               <div className="flex gap-4">
-                <div className="shrink-0 flex items-center justify-center size-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/30">
-                  <Smartphone className="size-6 text-cyan-400" />
+                <div className="shrink-0 flex items-center justify-center size-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700">
+                  <Smartphone className="size-6" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white mb-1">{t.tasks.title}</h2>
-                  <p className="text-xs text-zinc-400 font-medium leading-relaxed max-w-[90%] mb-4">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-1">{t.tasks.title}</h2>
+                  <p className="text-xs text-slate-600 font-normal leading-relaxed max-w-[90%] mb-4">
                     {t.tasks.desc}
                   </p>
                 </div>
               </div>
               
               {activeTask === "micro" ? (
-                <div className="mt-2 p-4 bg-zinc-900 border border-white/10 rounded-2xl">
+                <div className="mt-2 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
                   {taskCompleted ? (
-                    <div className="flex items-center justify-center py-4 gap-2 text-emerald-400 font-bold">
-                       <CheckCircle2 className="size-5" /> Task Verified! +₹10
+                    <div className="flex items-center justify-center py-4 gap-2 text-emerald-700 font-bold text-sm">
+                       <CheckCircle2 className="size-5 text-emerald-600" /> Task Verified! +₹10 Credited
                     </div>
                   ) : (
                     <>
-                      <p className="text-sm font-medium text-white mb-4 text-center">
+                      <p className="text-xs sm:text-sm font-semibold text-slate-800 mb-4 text-center">
                         "{t.tasks.taskExample}"
                       </p>
                       <div className="flex gap-2">
                          <button 
                            onClick={() => setActiveTask("none")}
-                           className="flex-1 border border-white/20 text-zinc-300 font-bold text-xs py-3 rounded-xl active:scale-95"
+                           className="flex-1 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs py-2.5 rounded-xl active:scale-95 transition"
                          >
                            {t.tasks.reject}
                          </button>
                          <button 
                            onClick={completeMicroTask}
-                           className="flex-1 bg-cyan-500 text-black font-bold text-xs py-3 rounded-xl active:scale-95 shadow-[0_0_15px_rgba(6,182,212,0.4)]"
+                           className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl active:scale-95 shadow-xs transition"
                          >
                            {t.tasks.approve}
                          </button>
@@ -479,22 +428,22 @@ function EarnPage() {
               ) : (
                 <button 
                   onClick={() => setActiveTask("micro")}
-                  className="w-full border border-cyan-500/50 hover:bg-cyan-500/10 text-cyan-400 font-bold text-sm py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-95"
+                  className="w-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-sm py-3 rounded-xl flex items-center justify-center gap-2 transition active:scale-95 shadow-2xs"
                 >
                   {t.tasks.btn}
-                  <ArrowRight className="size-4" />
+                  <ArrowRight className="size-4 text-slate-500" />
                 </button>
               )}
             </div>
 
           </div>
 
-          {/* 'Refer a Friend, Get ₹500' Gamified Viral Loop */}
-          <ReferralGamifiedLoop source="rewards" className="mt-8" />
+          {/* Gamified Viral Loop */}
+          <ReferralGamifiedLoop source="rewards" className="mt-6" />
           
-          <div className="mt-8 flex items-center justify-center gap-2 text-zinc-500">
-            <Banknote className="size-4" />
-            <span className="text-xs font-bold uppercase tracking-widest">100% Real Payouts</span>
+          <div className="mt-8 flex items-center justify-center gap-2 text-slate-400">
+            <Banknote className="size-4 text-slate-400" />
+            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">100% Real Payouts • Sovereign Ledger Protocol</span>
           </div>
 
         </div>

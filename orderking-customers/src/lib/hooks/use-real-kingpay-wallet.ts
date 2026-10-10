@@ -1,7 +1,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { getKingpayBalance, addKingpayMoney, deductKingpayMoney } from "@/lib/server/kingpay.server";
+import { getKingpayBalance, addKingpayMoney, deductKingpayMoney } from "@/lib/server/kingpay";
 import { supabase } from "@/lib/db-cloud";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 

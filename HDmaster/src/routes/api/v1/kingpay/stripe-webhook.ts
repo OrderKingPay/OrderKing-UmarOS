@@ -12,7 +12,7 @@ const StripeWebhookSchema = z.object({
   }),
 }).passthrough();
 
-export const Route = createFileRoute("/api/v1/kingpay/stripe-webhook" as any)({
+export const Route = createFileRoute("/api/v1/kingpay/stripe-webhook")({
   server: {
     handlers: {
       POST: async ({ request }: any) => {

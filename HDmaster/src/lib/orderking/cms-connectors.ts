@@ -132,6 +132,15 @@ export interface EcosystemCmsConfig {
   connectorMetaOmnichannelPolicyTitle: string;
   connectorMetaOmnichannelPolicyNotice: string;
   connectorMetaOmnichannelWebhookNotice: string;
+
+  // 14. AI Deepfake Media Engine (Synthesia / HeyGen API)
+  connectorAiMediaEngineTitle: string;
+  connectorAiMediaEngineSubtitle: string;
+  connectorAiMediaEngineToggleLabel: string;
+  connectorAiMediaEngineTestBtnText: string;
+  connectorAiMediaEnginePolicyTitle: string;
+  connectorAiMediaEnginePolicyNotice: string;
+  connectorAiMediaEngineWebhookNotice: string;
 }
 
 export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
@@ -266,6 +275,15 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   connectorMetaOmnichannelPolicyTitle: "Meta Platform Terms & Commercial Business Messaging Compliance",
   connectorMetaOmnichannelPolicyNotice: "Complies with Meta Business Policy, Instagram Messaging API Policies, and WhatsApp Business Messaging rate tiers. Dynamic 24-hour customer window management with verified template fallbacks.",
   connectorMetaOmnichannelWebhookNotice: "Meta Graph API Webhook (/api/v1/meta/webhook): Listens for incoming Direct Messages, story mentions, WhatsApp status callbacks, and quick-reply payload handshakes.",
+
+  // 14. AI Deepfake Media Engine (Synthesia / HeyGen API)
+  connectorAiMediaEngineTitle: "AI Deepfake Media Engine (Synthesia / HeyGen API)",
+  connectorAiMediaEngineSubtitle: "Autonomous viral avatar video generator. Programmatically scripts, voices, and renders photorealistic AI presenter MP4 files explaining the 'Delete Zomato Bounty' to blast directly into Instagram DMs, Facebook Messenger, and WhatsApp geographically.",
+  connectorAiMediaEngineToggleLabel: "AI Media Engine Active",
+  connectorAiMediaEngineTestBtnText: "Verify Synthesia / HeyGen Handshake",
+  connectorAiMediaEnginePolicyTitle: "Autonomous Synthetic Media & Regulatory Transparency Guard",
+  connectorAiMediaEnginePolicyNotice: "All AI-generated video outputs strictly observe synthetic media transparency standards and IT Rules 2021 labeling while executing high-conversion viral customer acquisition and restaurant partner onboarding.",
+  connectorAiMediaEngineWebhookNotice: "Synthesia / HeyGen Video Render Webhook (/api/v1/media/render-webhook): Receives real-time video rendering completion events, Cloudflare Stream / AWS S3 MP4 download URLs, and triggers immediate geospatial DM blasting.",
 };
 
 export interface GeospatialAdExchangeConnector {
@@ -514,6 +532,70 @@ export interface MetaOmnichannelConnector {
   lastBlastAt: string | null;
 }
 
+export interface RenderedVideoItem {
+  id: string;
+  provider: "heygen" | "synthesia" | "d_id";
+  title: string;
+  avatarId: string;
+  voiceId: string;
+  aspectRatio: "9:16" | "16:9" | "1:1";
+  durationSeconds: number;
+  mp4Url: string;
+  thumbnailUrl: string;
+  scriptSnippet: string;
+  bountyOfferInr: number;
+  status: "rendering" | "completed" | "failed";
+  createdAt: string;
+  blastCount: number;
+}
+
+export interface AiDeepfakeMediaConnector {
+  enabled: boolean;
+  mode: "live" | "sandbox";
+  provider: "heygen" | "synthesia" | "d_id";
+  heygenApiKey: string;
+  synthesiaApiKey: string;
+  webhookSecret: string;
+
+  // Avatar & Voice Selection
+  avatarId: string;
+  avatarPose: "half_body" | "close_up" | "full_body";
+  voiceId: string;
+  language: "hinglish" | "hi-IN" | "en-IN" | "ta-IN" | "te-IN" | "en-US";
+  voiceSpeed: number;
+  voicePitch: number;
+
+  // Video Formatting
+  aspectRatio: "9:16" | "16:9" | "1:1";
+  videoResolution: "1080p" | "720p" | "4k";
+  backgroundType: "studio_green" | "cyber_dark" | "kitchen_luxury" | "transparent";
+  backgroundColor: string;
+  enableSubtitles: boolean;
+
+  // Viral 'Delete Zomato Bounty' Campaign
+  bountyCampaignTitle: string;
+  bountyCashRewardInr: number;
+  bountyPromoCode: string;
+  bountyCtaUrl: string;
+  scriptTemplate: string;
+  systemPromptVoice: string;
+
+  // Render Queue & Archive
+  renderedVideos: RenderedVideoItem[];
+
+  // Meta DM Geo-Blast Automation
+  autoBlastOnRender: boolean;
+  dmDispatchChannel: "all" | "instagram" | "whatsapp" | "messenger";
+  targetGeoRadiusKm: number;
+  targetLocationLabel: string;
+  dailyRenderQuota: number;
+  rendersCompletedToday: number;
+
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+  lastRenderedAt: string | null;
+}
+
 export interface PluginConnectorsConfig {
   razorpay: RazorpayConnector;
   stripeAtlas: StripeAtlasConnector;
@@ -527,6 +609,7 @@ export interface PluginConnectorsConfig {
   telemarketing: AiTelemarketingConnector;
   geospatialAdExchange: GeospatialAdExchangeConnector;
   metaOmnichannel: MetaOmnichannelConnector;
+  aiMediaEngine: AiDeepfakeMediaConnector;
 }
 
 export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
@@ -778,6 +861,74 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     lastTestedAt: null,
     lastBlastAt: null,
   },
+  aiMediaEngine: {
+    enabled: false,
+    mode: "live",
+    provider: "heygen",
+    heygenApiKey: "",
+    synthesiaApiKey: "",
+    webhookSecret: "orderking_ai_media_render_webhook_secret",
+    avatarId: "kabir_growth_exec",
+    avatarPose: "half_body",
+    voiceId: "en-IN-PrabhatNeural",
+    language: "hinglish",
+    voiceSpeed: 1.05,
+    voicePitch: 1.0,
+    aspectRatio: "9:16",
+    videoResolution: "1080p",
+    backgroundType: "cyber_dark",
+    backgroundColor: "#0D3B2E",
+    enableSubtitles: true,
+    bountyCampaignTitle: "Delete Zomato ₹150 Bounty Viral Drop",
+    bountyCashRewardInr: 150,
+    bountyPromoCode: "DELETE_ZOMATO_150",
+    bountyCtaUrl: "https://orderking.delivery/bounty/delete-zomato?cash=150",
+    scriptTemplate: "Stop paying ₹45 surge pricing and 30% hidden markups to Zomato! Here is the official Delete Zomato Bounty from OrderKing. Uninstall Zomato right now, install OrderKing, and we immediately deposit ₹150 sovereign cash straight into your dining wallet. 0% restaurant commissions, authentic kitchen rates, and lightning-fast direct dispatch. Tap the link below, claim your ₹150 bounty, and eat like a King today!",
+    systemPromptVoice: "Energetic, authentic, authoritative, fluent Hinglish, consumer champion tone.",
+    renderedVideos: [
+      {
+        id: "VID-BOUNTY-001",
+        provider: "heygen",
+        title: "Delete Zomato ₹150 Direct Consumer Drop (9:16)",
+        avatarId: "kabir_growth_exec",
+        voiceId: "en-IN-PrabhatNeural",
+        aspectRatio: "9:16",
+        durationSeconds: 38,
+        mp4Url: "https://assets.orderking.delivery/media/ai-renders/delete_zomato_bounty_viral_9x16.mp4",
+        thumbnailUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+        scriptSnippet: "Stop paying ₹45 surge pricing! Uninstall Zomato right now and get ₹150 instant OrderKing cash...",
+        bountyOfferInr: 150,
+        status: "completed",
+        createdAt: "2026-10-10T14:30:00.000Z",
+        blastCount: 1420,
+      },
+      {
+        id: "VID-BOUNTY-002",
+        provider: "synthesia",
+        title: "Restaurant Owner Margin Liberation Pitch (16:9)",
+        avatarId: "priya_indian_anchor",
+        voiceId: "hi-IN-SwaraNeural",
+        aspectRatio: "16:9",
+        durationSeconds: 52,
+        mp4Url: "https://assets.orderking.delivery/media/ai-renders/restaurant_owner_liberation_16x9.mp4",
+        thumbnailUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+        scriptSnippet: "Why hand over 32% of your hard-earned restaurant revenue? OrderKing offers ₹0 setup and 0% commission...",
+        bountyOfferInr: 0,
+        status: "completed",
+        createdAt: "2026-10-09T18:15:00.000Z",
+        blastCount: 890,
+      },
+    ],
+    autoBlastOnRender: true,
+    dmDispatchChannel: "all",
+    targetGeoRadiusKm: 5.0,
+    targetLocationLabel: "Connaught Place & Central Catchment, New Delhi",
+    dailyRenderQuota: 50,
+    rendersCompletedToday: 4,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+    lastRenderedAt: null,
+  },
 };
 
 /** Load the full configuration bag from platform_settings */
@@ -937,7 +1088,19 @@ export async function loadPluginConnectorsData(): Promise<PluginConnectorsConfig
     ? (metaOmnichannel.enabled ? "CONNECTED" : "DEGRADED")
     : "NOT_CONFIGURED";
 
-  return { razorpay, stripeAtlas, payoneer, whatsapp, fssai, mapbox, cleartax, whatsappMarketing, b2bLeadGen, telemarketing, geospatialAdExchange, metaOmnichannel };
+  const aiMediaEngine: AiDeepfakeMediaConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.aiMediaEngine,
+    ...(raw.aiMediaEngine || {}),
+  };
+  const hasAiMediaAuth =
+    (aiMediaEngine.provider === "heygen" && !!aiMediaEngine.heygenApiKey) ||
+    (aiMediaEngine.provider === "synthesia" && !!aiMediaEngine.synthesiaApiKey) ||
+    (aiMediaEngine.provider === "d_id" && (!!aiMediaEngine.heygenApiKey || !!aiMediaEngine.synthesiaApiKey));
+  aiMediaEngine.status = hasAiMediaAuth
+    ? (aiMediaEngine.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  return { razorpay, stripeAtlas, payoneer, whatsapp, fssai, mapbox, cleartax, whatsappMarketing, b2bLeadGen, telemarketing, geospatialAdExchange, metaOmnichannel, aiMediaEngine };
 }
 
 /** Save Plugin Connectors */
@@ -956,6 +1119,7 @@ export async function savePluginConnectorsData(connectorsUpdates: Partial<Plugin
     telemarketing: { ...current.telemarketing, ...(connectorsUpdates.telemarketing || {}) },
     geospatialAdExchange: { ...current.geospatialAdExchange, ...(connectorsUpdates.geospatialAdExchange || {}) },
     metaOmnichannel: { ...current.metaOmnichannel, ...(connectorsUpdates.metaOmnichannel || {}) },
+    aiMediaEngine: { ...current.aiMediaEngine, ...(connectorsUpdates.aiMediaEngine || {}) },
   };
 
   await updatePlatformSettingsBag({ plugin_connectors: next });

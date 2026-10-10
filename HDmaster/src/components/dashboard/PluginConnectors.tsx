@@ -14,6 +14,7 @@ import {
   type AiTelemarketingConnector,
   type GeospatialAdExchangeConnector,
   type MetaOmnichannelConnector,
+  type AiDeepfakeMediaConnector,
   type EcosystemCmsConfig,
   DEFAULT_ECOSYSTEM_CMS,
 } from "@/lib/orderking/cms-connectors";
@@ -26,6 +27,7 @@ import {
 } from "@/lib/orderking/actions";
 import { GeospatialAdHub } from "./GeospatialAdHub";
 import { MetaOmnichannelHub } from "./MetaOmnichannelHub";
+import { AiMediaEngineHub } from "./AiMediaEngineHub";
 import {
   Cpu,
   CreditCard,
@@ -66,6 +68,7 @@ import {
   Crosshair,
   Radio,
   Share2,
+  Video,
 } from "lucide-react";
 
 type ConnectorTab =
@@ -81,7 +84,8 @@ type ConnectorTab =
   | "b2bLeadGen"
   | "telemarketing"
   | "geospatialAdExchange"
-  | "metaOmnichannel";
+  | "metaOmnichannel"
+  | "aiMediaEngine";
 
 export function PluginConnectors() {
   const [config, setConfig] = useState<PluginConnectorsConfig>(DEFAULT_PLUGIN_CONNECTORS);
@@ -280,6 +284,7 @@ export function PluginConnectors() {
       | "telemarketing"
       | "geospatialAdExchange"
       | "metaOmnichannel"
+      | "aiMediaEngine"
   ) => {
     try {
       setTestingService(service);
@@ -331,6 +336,7 @@ export function PluginConnectors() {
       | "telemarketing"
       | "geospatialAdExchange"
       | "metaOmnichannel"
+      | "aiMediaEngine"
   ) => {
     const item = config[service];
     let isConfigured = false;
@@ -371,6 +377,10 @@ export function PluginConnectors() {
         !!m.systemAccessToken &&
         !!m.whatsappBusinessAccountId;
     }
+    if (service === "aiMediaEngine") {
+      const a = item as unknown as AiDeepfakeMediaConnector;
+      isConfigured = !!a.heygenApiKey || !!a.synthesiaApiKey;
+    }
 
     if (!isConfigured) return { status: "NOT_CONFIGURED" as const, label: "NOT CONFIGURED", tone: "neutral" as const };
     if (!item.enabled) return { status: "STANDBY" as const, label: "Standby / Disabled", tone: "amber" as const };
@@ -394,12 +404,13 @@ export function PluginConnectors() {
       "telemarketing",
       "geospatialAdExchange",
       "metaOmnichannel",
+      "aiMediaEngine",
     ] as const).forEach((svc) => {
       const st = getConnectorStatus(svc);
       if (st.status !== "NOT_CONFIGURED") configuredCount++;
       if (st.status === "CONNECTED") activeCount++;
     });
-    return { configuredCount, activeCount, total: 12 };
+    return { configuredCount, activeCount, total: 13 };
   }, [config]);
 
   return (
@@ -1067,6 +1078,73 @@ export function PluginConnectors() {
                 className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
               />
             </div>
+
+            {/* AI Media Engine CMS */}
+            <div className="md:col-span-2 pt-2 border-t border-border">
+              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                AI Deepfake Media Engine (Synthesia / HeyGen API) Copy
+              </span>
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Connector Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorAiMediaEngineTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorAiMediaEngineTitle: e.target.value }))}
+                placeholder="AI Deepfake Media Engine (Synthesia / HeyGen API)"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Toggle Switch Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorAiMediaEngineToggleLabel || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorAiMediaEngineToggleLabel: e.target.value }))}
+                placeholder="Enable AI Media Engine"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">Connector Subtitle</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorAiMediaEngineSubtitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorAiMediaEngineSubtitle: e.target.value }))}
+                placeholder="Autonomous viral avatar video generator for the Founder..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Handshake Test Button Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorAiMediaEngineTestBtnText || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorAiMediaEngineTestBtnText: e.target.value }))}
+                placeholder="Verify Synthesia / HeyGen Handshake..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Policy Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorAiMediaEnginePolicyTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorAiMediaEnginePolicyTitle: e.target.value }))}
+                placeholder="Autonomous Synthetic Media Guard..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">Policy Notice</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorAiMediaEnginePolicyNotice || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorAiMediaEnginePolicyNotice: e.target.value }))}
+                placeholder="All AI-generated video outputs strictly observe synthetic media transparency..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -1075,6 +1153,7 @@ export function PluginConnectors() {
       <div className="flex flex-wrap gap-2 border-b border-border pb-3">
         {[
           { id: "all" as const, label: "All Integrations", icon: Layers },
+          { id: "aiMediaEngine" as const, label: "AI Deepfake Media Engine (Synthesia / HeyGen)", icon: Video },
           { id: "metaOmnichannel" as const, label: "Meta Omnichannel Geo-Blast (IG / WA / Messenger)", icon: Share2 },
           { id: "geospatialAdExchange" as const, label: "Telecom Carpet-Bombing Ad Exchange", icon: Crosshair },
           { id: "razorpay" as const, label: "Razorpay Payments", icon: CreditCard },
@@ -4410,6 +4489,24 @@ export function PluginConnectors() {
                   setConfig((prev) => ({
                     ...prev,
                     metaOmnichannel: { ...prev.metaOmnichannel, ...updates },
+                  }))
+                }
+                cmsConfig={cmsConfig}
+                onSave={handleSave}
+                isSaving={saving}
+              />
+            </div>
+          )}
+
+          {/* 14. AI DEEPFAKE MEDIA ENGINE (SYNTHESIA / HEYGEN API) */}
+          {(activeTab === "all" || activeTab === "aiMediaEngine") && (
+            <div className="rounded-xl border border-emerald-500/20 bg-card p-6 shadow-sm space-y-6">
+              <AiMediaEngineHub
+                config={config.aiMediaEngine}
+                onUpdate={(updates) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    aiMediaEngine: { ...prev.aiMediaEngine, ...updates },
                   }))
                 }
                 cmsConfig={cmsConfig}

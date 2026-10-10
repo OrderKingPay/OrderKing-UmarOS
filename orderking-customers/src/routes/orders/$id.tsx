@@ -7,6 +7,7 @@ import { CustomerShell } from "@/components/market/shell";
 import { QuoteLines } from "@/components/market/quote-lines";
 import { LiveDeliveryMap } from "@/components/market/live-delivery-map";
 import { Button } from "@/components/ui/button";
+import { RetentionRoulette } from "@/components/RetentionRoulette";
 import { useT } from "@/components/providers";
 import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -36,7 +37,6 @@ function OrderDetailPage() {
   const [appRating, setAppRating] = useState(5);
   const [selectedTags, setSelectedTags] = useState<string[]>(["Fresh & hot", "Super fast delivery"]);
   const [reviewComment, setReviewComment] = useState("");
-  const [scratched, setScratched] = useState(false);
   const [splitCount, setSplitCount] = useState(2);
 
   // Zomato-style Verified Customer Complaint Room State
@@ -236,61 +236,13 @@ function OrderDetailPage() {
           etaOverride={lastEvent?.eta}
         />
 
-        {/* Google Pay / CRED-Style Mystery Scratch Card on Delivery */}
+        {/* POST-ORDER RETENTION ROULETTE GAMIFICATION WHEEL */}
         {order.status === "DELIVERED" && (
-          <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-surface to-amber-500/5 p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-lg">
-                  🎁
-                </span>
-                <div>
-                  <h3 className="font-display font-bold text-fg">Delivery Mystery Scratch Card</h3>
-                  <p className="text-xs text-muted">You unlocked secret rewards on this order!</p>
-                </div>
-              </div>
-              <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-800 dark:text-amber-200">
-                King Club
-              </span>
-            </div>
-
-            <div className="mt-3">
-              {!scratched ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setScratched(true);
-                    toast.success("🎉 Mystery Reward Unlocked!");
-                  }}
-                  className="group flex h-24 w-full items-center justify-center rounded-xl border border-dashed border-amber-500/60 bg-gradient-to-r from-amber-500/10 via-primary/10 to-amber-500/10 text-center transition hover:border-amber-500 cursor-pointer"
-                >
-                  <div>
-                    <span className="text-2xl transition-transform group-hover:scale-125 inline-block">✨</span>
-                    <p className="font-bold text-sm text-fg">Tap to Scratch Your Reward</p>
-                    <p className="text-[11px] text-muted">Win King Coins, Fuel Vouchers & Brand Deals</p>
-                  </div>
-                </button>
-              ) : (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-center">
-                  <span className="text-2xl">🎉</span>
-                  <p className="font-bold text-sm text-emerald-800 dark:text-emerald-200">
-                    Reward campaign is not active in this pilot.
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted">
-                    No real voucher has been issued.
-                  </p>
-                  <div className="mt-2.5 flex flex-wrap justify-center gap-2">
-                    <span className="text-[11px] text-muted">
-                      Rewards will appear here after a verified campaign and redemption provider are connected.
-                    </span>
-                    <Button size="sm" variant="ghost" asChild>
-                      <Link to="/king-pay">KingPay Hub →</Link>
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          <RetentionRoulette
+            orderId={order.summary.publicId || id}
+            orderTotalPaise={order.summary.totalPaise}
+            className="mt-6"
+          />
         )}
 
         {/* Multi-Category Post-Delivery Review Card (Restaurant + Food + Rider + App) */}

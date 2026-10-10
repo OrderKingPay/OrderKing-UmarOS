@@ -1,8 +1,6 @@
-declare const assert: any;
-declare const it: any;
-declare const describe: any;
+import { describe, it } from "node:test";
+import assert from "node:assert";
 
-// @ts-ignore
 // @ts-ignore
 const viralGrowth: any = {}; const { generateViralShareUrl, GENUINE_SUBSIDIES_REGISTRY, PRESTIGE_AWARDS_REGISTRY, ACADEMIC_INVITATIONS_REGISTRY, generateMetaAdCampaignSpec, generateGoogleLocalSeoSchema, generateInstitutionalPitchDossier, OPPORTUNITY_RADAR_REGISTRY, scanAndRankOpportunities, generateAutoBookingDossier, generateMetaMarketingApiPayload, generateGoogleAdsPMaxPayload, generateViralReelsScripts, generateLocalInfluencerBarterPitch, ViralSharePayload } = viralGrowth;
 
