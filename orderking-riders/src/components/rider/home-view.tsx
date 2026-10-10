@@ -27,7 +27,7 @@ function GamificationPanel({ completed, earnings }: { completed: number; earning
   return (
     <section className="rounded-xl border border-primary/30 bg-surface p-4 shadow-neon glassmorphism">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-display text-sm font-bold text-primary neon-text flex items-center gap-1"><Flame className="size-4" /> Gig Engine Active</h3>
+        <h3 className="font-display text-sm font-bold text-primary neon-text flex items-center gap-1"><Flame className="size-4" /> Performance Active</h3>
         <Badge className="bg-primary text-black font-bold text-xs">{streak} Day Streak!</Badge>
       </div>
       <div className="mb-2 flex justify-between text-xs text-muted-foreground">

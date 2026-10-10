@@ -76,11 +76,11 @@ function DashboardPage() {
             <Cpu className="text-emerald-500 animate-pulse" size={28} />
             <div>
               <h1 className="text-2xl font-bold tracking-widest text-emerald-400 leading-none">ORDERKING // AI TERMINAL</h1>
-              <p className="text-[10px] text-zinc-500 mt-1 uppercase tracking-widest">Sys: v4.9.0-OMEGA | Node: OK-BLR-09</p>
+              <p className="text-[10px] text-zinc-500 mt-1 uppercase tracking-widest">Sys: v4.9.0-PROD | Node: OK-BLR-09</p>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 text-xs font-bold bg-zinc-900/50 px-3 py-2 rounded border border-zinc-800">
-            <span className="flex items-center gap-2 text-emerald-500"><RadioTower size={14} className="animate-pulse" /> SAT-LINK ACTIVE (12ms)</span>
+            <span className="flex items-center gap-2 text-emerald-500"><RadioTower size={14} className="animate-pulse" /> NETWORK ACTIVE (12ms)</span>
             <span className="text-zinc-400">ENCRYPTION: AES-256-GCM</span>
           </div>
         </div>
@@ -100,7 +100,7 @@ function DashboardPage() {
           <div className="lg:col-span-2 border border-zinc-800 bg-black p-4 rounded text-xs flex flex-col gap-4 shadow-inner">
             <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
               <div className="flex items-center gap-2 text-cyan-400 font-bold uppercase tracking-widest">
-                <Activity size={16} /> Neural Demand Projection
+                <Activity size={16} /> Demand Forecasting
               </div>
               <span className="text-zinc-500">ACCURACY: 98.4%</span>
             </div>

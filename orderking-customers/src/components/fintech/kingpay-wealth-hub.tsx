@@ -11,7 +11,7 @@ export function KingPayWealthHub() {
       {/* Header Section */}
       <div className="flex flex-col items-center justify-center text-center space-y-2 mb-8">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-500 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-          <Gem className="size-3.5" /> Elite Financial Services
+          <Gem className="size-3.5" /> Premium Financial Services
         </div>
         <h2 className="font-display text-3xl sm:text-4xl font-black text-fg tracking-tight">
           Wealth &amp; <span className="text-amber-500">Privilege</span>
