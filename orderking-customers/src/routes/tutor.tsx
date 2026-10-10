@@ -2,11 +2,21 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
 import { motion, LayoutGroup } from "framer-motion";
-import { Send, GraduationCap, Award, BookOpen, BrainCircuit, Loader2, Sparkles, Briefcase } from "lucide-react";
+import { Send, GraduationCap, Award, BookOpen, BrainCircuit, Loader2, Sparkles, Briefcase, Settings2, SlidersHorizontal } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 
 const askIntelligenceFn = createServerFn({ method: "POST" })
-  .validator((data: { message: string, board: string, stdClass: string, subject: string, language: string, history: any[] }) => data)
+  .validator((data: { 
+    message: string, 
+    board: string, 
+    stdClass: string, 
+    subject: string, 
+    language: string, 
+    difficulty: string,
+    tone: string,
+    goal: string,
+    history: any[] 
+  }) => data)
   .handler(async ({ data }: any) => {
     const apiKey = process.env.OPENAI_API_KEY;
 
@@ -14,14 +24,15 @@ const askIntelligenceFn = createServerFn({ method: "POST" })
       return { text: "Intelligence is currently resting (API Key not found in server)." };
     }
     
-    const systemPrompt = `You are the OrderKing Master Intelligence, an elite, strict but highly motivating academic consultant. 
+    const systemPrompt = `You are the OrderKing Master Intelligence, an elite academic consultant.
 Rules:
 1. **CRITICAL:** Speak EXACTLY in ${data.language}. Your ${data.language} must be grammatically perfect, precise, and highly authentic.
 2. The student is in ${data.stdClass}, studying ${data.subject} under the ${data.board} syllabus.
-3. NEVER give direct answers to homework. Guide them step-by-step using exact formulas and concepts from their syllabus.
-4. Keep answers concise, highly strategic, and academically rigorous.
-5. Emphasize textbook methods.
-6. If they ask about non-study topics, strictly guide them back to academic discipline.`;
+3. Their current goal is: ${data.goal}. Tailor your response strictly to this goal.
+4. The difficulty level is: ${data.difficulty}. Match your explanation depth to this level.
+5. Your tone should be: ${data.tone}. 
+6. NEVER give direct answers to homework. Guide them step-by-step using exact formulas and concepts from their syllabus.
+7. Emphasize textbook methods. If they ask about non-study topics, strictly guide them back to academic discipline.`;
 
     try {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -38,7 +49,7 @@ Rules:
             { role: "user", content: data.message }
           ],
           temperature: 0.7,
-          max_tokens: 600,
+          max_tokens: 800,
         })
       });
       
@@ -60,6 +71,10 @@ function IntelligencePage() {
   const [stdClass, setStdClass] = useState("Class 10");
   const [subject, setSubject] = useState("Mathematics");
   const [language, setLanguage] = useState("English");
+  const [difficulty, setDifficulty] = useState("Intermediate");
+  const [tone, setTone] = useState("Socratic (Ask Questions)");
+  const [goal, setGoal] = useState("Concept Mastery");
+  const [showConfig, setShowConfig] = useState(false);
   
   const [history, setHistory] = useState<{role: 'user' | 'assistant', content: string}[]>([
     { role: 'assistant', content: "Academic Intelligence initialized. Please specify your curriculum parameters and submit your query." }
@@ -81,7 +96,7 @@ function IntelligencePage() {
     
     try {
       const res = await askIntelligenceFn({
-        data: { message, board, stdClass, subject, language, history: history.slice(-6) }
+        data: { message, board, stdClass, subject, language, difficulty, tone, goal, history: history.slice(-6) }
       });
       setHistory([...newHistory, { role: 'assistant', content: res.text }]);
     } catch (e) {
@@ -96,31 +111,6 @@ function IntelligencePage() {
       <LayoutGroup>
         <motion.div layout className="flex flex-col h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-white selection:bg-zinc-800">
         
-        {/* Top Feature Bar */}
-        <div className="px-4 py-3 bg-zinc-950/80 backdrop-blur-md overflow-x-auto whitespace-nowrap hide-scrollbar flex gap-3 border-b border-zinc-900 shadow-sm">
-          <a href="#" className="inline-block bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 shrink-0 hover:bg-zinc-800/80 transition-all cursor-pointer min-w-[200px]">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="bg-zinc-800 text-zinc-300 text-[9px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wider border border-zinc-700">Recruiting</span>
-              <span className="text-white font-medium text-sm">AI Training Ops</span>
-            </div>
-            <p className="text-zinc-500 text-[10px] font-medium leading-tight mt-1.5">Remote data annotation. Global scale.</p>
-            <div className="mt-3 text-zinc-300 font-medium text-xs flex items-center justify-between">
-              Deploy Profile <span>→</span>
-            </div>
-          </a>
-
-          <a href="#" className="inline-block bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 shrink-0 hover:bg-zinc-800/80 transition-all cursor-pointer min-w-[200px]">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="bg-zinc-800 text-zinc-300 text-[9px] font-medium px-1.5 py-0.5 rounded uppercase tracking-wider border border-zinc-700">Financial</span>
-              <span className="text-white font-medium text-sm">Credit Acquisition</span>
-            </div>
-            <p className="text-zinc-500 text-[10px] font-medium leading-tight mt-1.5">Elite credit instruments. Zero fee.</p>
-            <div className="mt-3 text-zinc-300 font-medium text-xs flex items-center justify-between">
-              Acquire <span>→</span>
-            </div>
-          </a>
-        </div>
-        
         {/* Core Control Panel */}
         <div className="bg-zinc-950 border-b border-zinc-900 px-4 py-4 z-10 flex flex-col gap-4 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
@@ -130,12 +120,15 @@ function IntelligencePage() {
               <BrainCircuit className="text-zinc-400 size-5" />
               Academic Intelligence
             </h1>
-            <span className="bg-white/10 text-white text-[10px] font-medium px-2.5 py-1 rounded-full uppercase tracking-widest border border-white/20">
-              Active
-            </span>
+            <button 
+              onClick={() => setShowConfig(!showConfig)}
+              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 transition-colors text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md uppercase tracking-widest border border-white/20"
+            >
+              <SlidersHorizontal className="size-3" /> Config
+            </button>
           </div>
           
-          <div className="grid grid-cols-2 gap-2.5 relative z-10">
+          <div className={`grid grid-cols-2 gap-2.5 relative z-10 transition-all duration-300 ${showConfig ? 'max-h-96 opacity-100' : 'max-h-24 overflow-hidden'}`}>
              <select 
                 value={board} 
                 onChange={(e) => setBoard(e.target.value)}
@@ -203,6 +196,39 @@ function IntelligencePage() {
                 <option value="Kannada">Kannada</option>
                 <option value="Malayalam">Malayalam</option>
                 <option value="Assamese">Assamese</option>
+             </select>
+             
+             {/* Advanced Configurations */}
+             <select 
+                value={goal} 
+                onChange={(e) => setGoal(e.target.value)}
+                className={`bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+              >
+                <option value="Concept Mastery">Goal: Concept Mastery</option>
+                <option value="Exam Prep">Goal: Exam Prep</option>
+                <option value="Homework Help">Goal: Homework Help</option>
+                <option value="Doubt Clearance">Goal: Doubt Clearance</option>
+                <option value="Revision Summary">Goal: Revision Summary</option>
+             </select>
+             <select 
+                value={difficulty} 
+                onChange={(e) => setDifficulty(e.target.value)}
+                className={`bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+              >
+                <option value="Fundamental">Level: Fundamental</option>
+                <option value="Intermediate">Level: Intermediate</option>
+                <option value="Advanced">Level: Advanced</option>
+                <option value="Expert (Olympiad)">Level: Expert (Olympiad)</option>
+             </select>
+             <select 
+                value={tone} 
+                onChange={(e) => setTone(e.target.value)}
+                className={`col-span-2 bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+              >
+                <option value="Socratic (Ask Questions)">Tone: Socratic (Guides via questioning)</option>
+                <option value="Encouraging & Patient">Tone: Encouraging & Patient</option>
+                <option value="Strict & Direct">Tone: Strict & Direct</option>
+                <option value="Highly Detailed & Academic">Tone: Highly Detailed & Academic</option>
              </select>
           </div>
         </div>
