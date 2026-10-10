@@ -109,6 +109,8 @@ import { lazy, Suspense } from "react";
 const EducationDashboard = lazy(() => import("../education/EducationDashboard").then(m => ({ default: m.EducationDashboard })));
 const TravelPage = lazy(() => import("../travel/TravelPage").then(m => ({ default: m.TravelPage })));
 const WorkMarketplaceControlCenter = lazy(() => import("../jobs/WorkMarketplaceControlCenter").then(m => ({ default: m.WorkMarketplaceControlCenter })));
+const EcosystemCMS = lazy(() => import("../dashboard/EcosystemCMS").then(m => ({ default: m.EcosystemCMS })));
+const PluginConnectors = lazy(() => import("../dashboard/PluginConnectors").then(m => ({ default: m.PluginConnectors })));
 
 export function ModuleView({ module, id }: { module: string; id?: string }) {
   const emp = useEmployee();
@@ -1890,6 +1892,7 @@ function MarketingPage() {
 }
 
 function CmsPage() {
+  const [activeTab, setActiveTab] = useState<"ecosystem" | "connectors" | "banners">("ecosystem");
   const q = useQuery({ queryKey: ["cms"], queryFn: () => loadCms() });
   const inv = useInvalidate();
   const [title, setTitle] = useState("");
@@ -1901,37 +1904,99 @@ function CmsPage() {
   });
   if (q.data && !q.data.ok) return <Denied error={q.data.error} />;
   const rows = q.data && q.data.ok ? q.data.data : [];
+
   return (
-    <div className="space-y-4">
-      <h1 className="font-display text-3xl">CMS</h1>
-      <p className="text-sm text-muted">Customer, restaurant, rider, and admin surfaces. Sponsored slots are labelled and require the advertising flag.</p>
-      <DataTable
-        columns={[
-          { key: "surface", label: "Surface" },
-          { key: "slot", label: "Slot" },
-          { key: "title", label: "Title" },
-          { key: "ad", label: "Sponsored" },
-        ]}
-        rows={rows.map((c) => ({
-          surface: c.surface,
-          slot: c.slot,
-          title: c.title,
-          ad: c.sponsored ? <Badge tone="warning">Sponsored</Badge> : "—",
-        }))}
-      />
-      <div className="flex flex-wrap gap-2">
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="New banner title" />
-        <select className="h-10 rounded-[10px] border border-border bg-elevated px-2 text-sm" value={surface} onChange={(e) => setSurface(e.target.value)}>
-          <option value="customer">Customer</option>
-          <option value="restaurant">Restaurant</option>
-          <option value="rider">Rider</option>
-          <option value="admin">Admin</option>
-        </select>
-        <Button size="sm" variant={sponsored ? "primary" : "secondary"} onClick={() => setSponsored(!sponsored)}>
-          Sponsored {sponsored ? "ON" : "OFF"}
-        </Button>
-        <Button disabled={!title} onClick={() => save.mutate()}>Publish</Button>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+        <div>
+          <h1 className="font-display text-3xl">Ecosystem CMS & Plugin Switchboard</h1>
+          <p className="text-sm text-muted mt-1">
+            Institutional control for customer application copy, external gateway switchboard, and cross-surface promotional slots.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 bg-elevated p-1 rounded-xl border border-border">
+          <button
+            type="button"
+            onClick={() => setActiveTab("ecosystem")}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === "ecosystem"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-muted hover:text-foreground"
+            }`}
+          >
+            Ecosystem App Copy
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("connectors")}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === "connectors"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-muted hover:text-foreground"
+            }`}
+          >
+            Plugin Switchboard
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("banners")}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === "banners"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-muted hover:text-foreground"
+            }`}
+          >
+            Surface Banners ({rows.length})
+          </button>
+        </div>
       </div>
+
+      {activeTab === "ecosystem" && (
+        <Suspense fallback={<div className="p-8 text-center text-xs text-muted">Loading Ecosystem CMS...</div>}>
+          <EcosystemCMS />
+        </Suspense>
+      )}
+
+      {activeTab === "connectors" && (
+        <Suspense fallback={<div className="p-8 text-center text-xs text-muted">Loading Plugin Switchboard...</div>}>
+          <PluginConnectors />
+        </Suspense>
+      )}
+
+      {activeTab === "banners" && (
+        <div className="space-y-4">
+          <p className="text-sm text-muted">
+            Customer, restaurant, rider, and admin surfaces. Sponsored slots are labelled and require the advertising flag.
+          </p>
+          <DataTable
+            columns={[
+              { key: "surface", label: "Surface" },
+              { key: "slot", label: "Slot" },
+              { key: "title", label: "Title" },
+              { key: "ad", label: "Sponsored" },
+            ]}
+            rows={rows.map((c) => ({
+              surface: c.surface,
+              slot: c.slot,
+              title: c.title,
+              ad: c.sponsored ? <Badge tone="warning">Sponsored</Badge> : "—",
+            }))}
+          />
+          <div className="flex flex-wrap gap-2">
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="New banner title" />
+            <select className="h-10 rounded-[10px] border border-border bg-elevated px-2 text-sm" value={surface} onChange={(e) => setSurface(e.target.value)}>
+              <option value="customer">Customer</option>
+              <option value="restaurant">Restaurant</option>
+              <option value="rider">Rider</option>
+              <option value="admin">Admin</option>
+            </select>
+            <Button size="sm" variant={sponsored ? "primary" : "secondary"} onClick={() => setSponsored(!sponsored)}>
+              Sponsored {sponsored ? "ON" : "OFF"}
+            </Button>
+            <Button disabled={!title} onClick={() => save.mutate()}>Publish</Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

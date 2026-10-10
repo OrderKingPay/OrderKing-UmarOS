@@ -1,14 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
-import { Save, Server, Sparkles, Languages, Settings2, Percent, Loader2, CheckCircle2, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { Save, Server, Sparkles, Languages, Settings2, Percent, Loader2, CheckCircle2, ShieldCheck, ArrowLeft, FileText, Cpu } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
+import { EcosystemCMS } from '@/components/dashboard/EcosystemCMS';
+import { PluginConnectors } from '@/components/dashboard/PluginConnectors';
 
 export const Route = createFileRoute('/settings')({
   component: SettingsPage,
 });
 
 function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('features');
+  const [activeTab, setActiveTab] = useState('cms');
   const [config, setConfig] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -69,7 +71,7 @@ function SettingsPage() {
               Platform Settings
             </h1>
             <p className="text-slate-400 mt-2 text-sm">
-              Global Platform Governance: Configure core applications, fee structures, and AI routing in real-time.
+              Global Platform Governance: Ecosystem CMS copy, integration switchboards, core applications, and fee structures.
             </p>
           </div>
           {savedStatus && (
@@ -81,6 +83,8 @@ function SettingsPage() {
 
         <div className="flex flex-col md:flex-row gap-6">
           <nav className="w-full md:w-64 flex flex-col gap-2 shrink-0">
+            <TabButton id="cms" current={activeTab} set={setActiveTab} icon={FileText} label="Ecosystem CMS" />
+            <TabButton id="connectors" current={activeTab} set={setActiveTab} icon={Cpu} label="Plugin Connectors" />
             <TabButton id="features" current={activeTab} set={setActiveTab} icon={Server} label="Feature Flags" />
             <TabButton id="fees" current={activeTab} set={setActiveTab} icon={Percent} label="Fees & Commissions" />
             <TabButton id="ai" current={activeTab} set={setActiveTab} icon={Sparkles} label="AI & Models" />
@@ -88,6 +92,8 @@ function SettingsPage() {
           </nav>
 
           <main className="flex-1 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl p-6 md:p-8">
+            {activeTab === 'cms' && <EcosystemCMS />}
+            {activeTab === 'connectors' && <PluginConnectors />}
             {activeTab === 'features' && <FeatureFlagsPanel config={config} onSave={handleSave} saving={saving} />}
             {activeTab === 'fees' && <FeesPanel config={config} onSave={handleSave} saving={saving} />}
             {activeTab === 'ai' && <AIPanel config={config} onSave={handleSave} saving={saving} />}
