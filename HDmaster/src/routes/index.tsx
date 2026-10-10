@@ -3,7 +3,7 @@ import { Database, Server, GitBranch, CheckCircle2, AlertCircle, Users, ShieldCh
 import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
 import { KingPayMasterSwitch } from "@/components/kingpay/KingPayMasterSwitch";
-
+import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
 const getUmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
   const sql = await getSql();
   
@@ -62,14 +62,14 @@ function UmarOSDashboard() {
           <div>
             <h1 className="text-3xl md:text-4xl font-black text-white flex items-center gap-3">
               <ShieldCheck className="h-10 w-10 text-emerald-400" />
-              UMAR OS Control Center
+              UmarOS Administration
             </h1>
             <Link to="/settings" className="inline-flex items-center gap-2 mt-4 text-emerald-400 font-bold bg-emerald-900/30 px-4 py-2 rounded-lg hover:bg-emerald-800/40"><Settings className="h-4 w-4"/> Platform Settings</Link>
-            <p className="mt-2 text-slate-400 text-base">Real-time administrative control, onboarding approvals, and ecosystem metrics.</p>
+            <p className="mt-2 text-slate-400 text-base">Administrative control and ecosystem metrics.</p>
           </div>
           <div className="flex items-center gap-3 bg-slate-900/50 backdrop-blur-md border-white/5 p-3 rounded-xl shadow-sm border border-white/5">
-            <div className="h-3 w-3 rounded-full bg-emerald-900/300 animate-pulse"></div>
-            <span className="text-sm font-semibold text-slate-300">Ecosystem Online • PostGIS Active</span>
+            <div className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span className="text-sm font-semibold text-slate-300">System Online</span>
           </div>
         </header>
 
@@ -82,6 +82,10 @@ function UmarOSDashboard() {
         
         <div className="mt-8 mb-8">
           <KingPayMasterSwitch />
+        </div>
+
+        <div className="mt-8 mb-8">
+          <CentralPricingSwitch />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -118,10 +122,10 @@ function UmarOSDashboard() {
               <h2 className="text-lg font-bold flex items-center gap-2"><Settings className="h-5 w-5 text-slate-400"/> Core Engines</h2>
             </div>
             <div className="p-5 space-y-4">
-              <ToggleRow label="Surge Pricing Engine" description="Live active dynamic pricing" active={true} />
-              <ToggleRow label="AI Tutor Omniscience" description="Gemini Pro Live Monitoring" active={true} />
-              <ToggleRow label="PostGIS Live Tracking" description="Rider lat/lng websocket streaming" active={true} />
-              <ToggleRow label="Escrow T+1 Settlements" description="Automated payout gateway active" active={true} />
+              <ToggleRow label="Dynamic Pricing Engine" description="Active dynamic pricing" active={true} />
+              <ToggleRow label="AI Tutor Engine" description="Live support monitoring" active={true} />
+              <ToggleRow label="Location Tracking" description="Rider location streaming" active={true} />
+              <ToggleRow label="Automated Settlements" description="Payout gateway active" active={true} />
             </div>
           </div>
         </div>
@@ -164,8 +168,8 @@ function CapabilityRegistryPanel() {
   return (
     <div className="space-y-6 pb-20">
       <div className="flex flex-col gap-2">
-        <h3 className="text-2xl font-black text-white flex items-center gap-3"><Database className="text-emerald-500 h-7 w-7" /> System Capability Registry</h3>
-        <p className="text-sm text-slate-400 max-w-3xl">Strict factual matrix of maximum real-world technology capabilities supported by the current architecture. Automatically generated from core systems.</p>
+        <h3 className="text-2xl font-black text-white flex items-center gap-3"><Database className="text-emerald-500 h-7 w-7" /> System Capabilities</h3>
+        <p className="text-sm text-slate-400 max-w-3xl">Capabilities supported by the current architecture.</p>
       </div>
       
       <div className="grid gap-4 mt-6">

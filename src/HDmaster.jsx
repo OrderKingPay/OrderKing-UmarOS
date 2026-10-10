@@ -31,7 +31,7 @@ const HDmaster = () => {
         </header>
 
         <section className="mb-16">
-          <h2 className="text-sm uppercase tracking-widest text-gray-500 mb-8">System Overrides</h2>
+          <h2 className="text-sm uppercase tracking-widest text-gray-500 mb-8">System Settings</h2>
           <div className="space-y-6">
             
             {/* AI Tutor Pricing */}
@@ -56,7 +56,7 @@ const HDmaster = () => {
 
             {/* Automated Support */}
             <div className="flex justify-between items-center border-b border-gray-900 pb-4">
-              <span className="text-lg font-light">Automated AI Support (Employee-less)</span>
+              <span className="text-lg font-light">Automated AI Support</span>
               <button 
                 onClick={() => setAutomatedSupport(!automatedSupport)}
                 className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${automatedSupport ? 'bg-white' : 'bg-gray-800'}`}

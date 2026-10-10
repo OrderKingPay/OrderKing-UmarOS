@@ -44,19 +44,19 @@ export function KingPayMasterSwitch() {
   const state = data.state || {};
 
   return (
-    <div className="bg-[#111] border border-red-900/50 rounded-xl overflow-hidden text-slate-300 w-full max-w-4xl shadow-2xl">
-      <div className="bg-red-950/30 p-6 border-b border-red-900/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="bg-[#111] border border-white/10 rounded-xl overflow-hidden text-slate-300 w-full max-w-4xl shadow-2xl">
+      <div className="bg-slate-900/50 p-6 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-xl font-bold text-red-500 flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5" />
-            KingPay Integration Master Switch
+          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 text-emerald-400" />
+            KingPay Integration Switch
           </h2>
-          <p className="text-sm text-red-400/80 mt-1 max-w-2xl">
-            API capabilities and feature flags. Features are disabled by default requiring explicit Founder Authorization. Non-authorized activation attempts are logged.
+          <p className="text-sm text-slate-400 mt-1 max-w-2xl">
+            API capabilities and feature flags. Features are disabled by default requiring explicit authorization.
           </p>
         </div>
-        <Badge variant="outline" className="bg-red-950 text-red-400 border-red-800 uppercase tracking-widest font-mono text-xs py-1 px-3">
-          Level 4 Authorization
+        <Badge variant="outline" className="bg-slate-800 text-slate-300 border-slate-600 uppercase tracking-widest font-mono text-xs py-1 px-3">
+          Admin Access
         </Badge>
       </div>
       
@@ -65,23 +65,23 @@ export function KingPayMasterSwitch() {
           const isActive = state[feat.id] === true;
           
           return (
-            <div key={feat.id} className={`p-4 rounded-lg border flex flex-col gap-3 transition-colors ${isActive ? 'bg-green-950/10 border-green-900/30' : 'bg-black/40 border-red-900/20'}`}>
+            <div key={feat.id} className={`p-4 rounded-lg border flex flex-col gap-3 transition-colors ${isActive ? 'bg-emerald-900/10 border-emerald-900/30' : 'bg-slate-900/40 border-slate-700/20'}`}>
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="font-semibold flex items-center gap-2">
-                    {isActive ? <ShieldCheck className="w-4 h-4 text-green-500" /> : <ShieldAlert className="w-4 h-4 text-red-500" />}
-                    <span className={isActive ? 'text-green-400' : 'text-slate-400'}>{feat.label}</span>
+                    {isActive ? <ShieldCheck className="w-4 h-4 text-emerald-500" /> : <ShieldAlert className="w-4 h-4 text-slate-500" />}
+                    <span className={isActive ? 'text-emerald-400' : 'text-slate-400'}>{feat.label}</span>
                   </h3>
                   <p className="text-xs text-slate-500 mt-1">{feat.desc}</p>
                 </div>
                 
                 {isActive ? (
-                  <Badge variant="outline" className="bg-green-950 text-green-400 border-green-800 font-mono text-[10px]">
-                    LIVE
+                  <Badge variant="outline" className="bg-emerald-900/30 text-emerald-400 border-emerald-800 font-mono text-[10px]">
+                    ACTIVE
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="bg-red-950 text-red-500 border-red-900 font-mono text-[10px] animate-pulse">
-                    AWAITING AUTHORIZATION
+                  <Badge variant="outline" className="bg-slate-800 text-slate-400 border-slate-700 font-mono text-[10px]">
+                    DISABLED
                   </Badge>
                 )}
               </div>
@@ -93,9 +93,9 @@ export function KingPayMasterSwitch() {
                     size="sm"
                     onClick={() => mutation.mutate({ feature: feat.id, action: 'deactivate' })}
                     disabled={mutation.isPending}
-                    className="h-8 text-xs border-red-900/50 hover:bg-red-950 hover:text-red-400 transition-colors"
+                    className="h-8 text-xs border-slate-700 hover:bg-slate-800 hover:text-slate-300 transition-colors"
                   >
-                    Revoke Access
+                    Disable Feature
                   </Button>
                 ) : (
                   <Button 
@@ -103,10 +103,10 @@ export function KingPayMasterSwitch() {
                     size="sm"
                     onClick={() => mutation.mutate({ feature: feat.id, action: 'activate' })}
                     disabled={mutation.isPending}
-                    className="h-8 text-xs bg-red-900 hover:bg-red-800 text-white font-mono flex items-center gap-2"
+                    className="h-8 text-xs bg-slate-800 hover:bg-slate-700 text-white font-mono flex items-center gap-2 border border-slate-600"
                   >
                     <Key className="w-3 h-3" />
-                    AUTHORIZE OVERRIDE
+                    Enable Feature
                   </Button>
                 )}
               </div>

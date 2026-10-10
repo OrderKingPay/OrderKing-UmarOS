@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CreditCard, Sparkles, Zap, ShieldCheck, Share2, Gem, ArrowRight, TrendingUp, Gift, Briefcase, ChevronRight, CheckCircle2 } from "lucide-react";
+import { CreditCard, Sparkles, Zap, ShieldCheck, Share2, Gem, ArrowRight, TrendingUp, Gift, Briefcase, ChevronRight, CheckCircle2, MapPin, Store, Landmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function KingPayWealthHub() {
@@ -205,6 +205,88 @@ export function KingPayWealthHub() {
             </div>
             <Button className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-md font-bold">
               Get Quote <ChevronRight className="size-4 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. KingPay Digital Territory Franchise */}
+      <div className="rounded-3xl border border-violet-500/30 bg-gradient-to-br from-violet-500/10 to-transparent p-6 sm:p-8 shadow-xl">
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          <div className="flex-1 space-y-4">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-xs font-bold text-violet-500">
+              <MapPin className="size-3.5" /> Geographical Strategy
+            </div>
+            <h3 className="text-2xl font-black text-violet-400">Digital Territory Franchise</h3>
+            <p className="text-sm text-muted">
+              Claim a localized PIN Code and earn <strong className="text-fg">1% royalty</strong> on every OrderKing transaction within that zone. Become a digital landlord in the KingPay ecosystem.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <span className="flex items-center gap-1.5 text-xs font-medium text-violet-500/80">
+                <CheckCircle2 className="size-3.5" /> High-Yield Passive Income
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-medium text-violet-500/80">
+                <CheckCircle2 className="size-3.5" /> Exclusive Ownership
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-medium text-violet-500/80">
+                <CheckCircle2 className="size-3.5" /> Mutual Area Growth
+              </span>
+            </div>
+          </div>
+          <div className="w-full md:w-auto shrink-0">
+            <div className="bg-surface rounded-2xl p-5 border border-violet-500/20 text-center shadow-lg">
+              <h4 className="text-xs font-bold text-muted mb-1">Franchise Fee Starts At</h4>
+              <div className="text-3xl font-black text-fg mb-4">₹25,000</div>
+              <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all hover:scale-105 active:scale-95">
+                Claim PIN Code
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 6. Merchant Capital Fund */}
+      <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-tr from-amber-500/5 to-transparent p-6 sm:p-8 shadow-xl">
+        <div className="flex items-center gap-2 mb-2">
+          <Store className="size-5 text-amber-500" />
+          <h3 className="text-xl font-black text-fg">Merchant Capital Fund</h3>
+        </div>
+        <p className="text-sm text-muted mb-6">
+          Invest directly in verified local restaurants and kitchens. Earn stable yields while helping local businesses expand their operations.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="rounded-2xl border border-amber-500/20 bg-surface-2 p-5 flex flex-col justify-between hover:border-amber-500/50 transition-all">
+            <div>
+              <div className="flex justify-between items-start mb-4">
+                <span className="text-lg font-black text-amber-500 tracking-wider">KITCHEN UPGRADE</span>
+                <span className="text-[10px] font-bold bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded-full">12% APY</span>
+              </div>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-amber-500" /> Equipment Financing</li>
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-amber-500" /> 6-Month Lock-in</li>
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-amber-500" /> Daily Payouts</li>
+              </ul>
+            </div>
+            <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-md font-bold">
+              Invest Now
+            </Button>
+          </div>
+
+          <div className="rounded-2xl border border-orange-500/20 bg-surface-2 p-5 flex flex-col justify-between hover:border-orange-500/50 transition-all">
+            <div>
+              <div className="flex justify-between items-start mb-4">
+                <span className="text-lg font-black text-orange-500 tracking-wider">EXPANSION FUND</span>
+                <span className="text-[10px] font-bold bg-orange-500/20 text-orange-500 px-2 py-0.5 rounded-full">14% APY</span>
+              </div>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-orange-500" /> New Branch Capital</li>
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-orange-500" /> 12-Month Lock-in</li>
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-orange-500" /> KingPay Guaranteed</li>
+              </ul>
+            </div>
+            <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white rounded-xl shadow-md font-bold">
+              Invest Now
             </Button>
           </div>
         </div>
