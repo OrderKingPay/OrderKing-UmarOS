@@ -145,7 +145,7 @@ function EarnPage() {
     const text = encodeURIComponent(
       "Hey! Use my OrderKing link to get ₹500 free on your first order: https://orderking.app/KING500"
     );
-    window.open(\`https://wa.me/?text=\${text}\`, "_blank");
+    window.open("https://wa.me/?text=" + text, "_blank");
     toast.success("Opened WhatsApp!");
   };
 
