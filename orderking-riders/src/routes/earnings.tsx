@@ -8,17 +8,17 @@ import { formatPaise } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
 import { getEarningsFn, getSettlementsFn } from "@/lib/server/rider-fns";
 import { useEffect, useState } from "react";
+import {
+  STANDARD_DAILY_MILESTONES,
+  calculateDailyMilestoneProgress,
+  calculateStreakBonus,
+} from "@/lib/rider/gig-engine";
 
 export const Route = createFileRoute("/earnings")({ component: Page });
 
 type Preset = "today" | "yesterday" | "week" | "month";
 
-const MILESTONES = [
-  { orders: 4, bonusPaise: 6000, label: "₹60" },
-  { orders: 8, bonusPaise: 14000, label: "₹140" },
-  { orders: 12, bonusPaise: 25000, label: "₹250" },
-  { orders: 16, bonusPaise: 40000, label: "₹400" },
-];
+const MILESTONES = STANDARD_DAILY_MILESTONES;
 
 function Page() {
   const { t } = useI18n();
@@ -46,8 +46,8 @@ function Page() {
 
   const completedTrips =
     data?.lines.filter((l: any) => (l.kind as string) === "DELIVERY_PAYOUT" || (l.kind as string) === "DELIVERY" || Boolean(l.orderCode)).length ?? 0;
-  const currentMilestoneIndex = MILESTONES.findIndex((m) => completedTrips < m.orders);
-  const nextMilestone = currentMilestoneIndex === -1 ? null : MILESTONES[currentMilestoneIndex];
+  const milestoneProgress = calculateDailyMilestoneProgress(completedTrips, MILESTONES);
+  const nextMilestone = milestoneProgress.nextMilestone;
 
   return (
     <AppShell>

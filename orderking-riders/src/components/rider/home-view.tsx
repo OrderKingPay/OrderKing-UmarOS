@@ -378,6 +378,9 @@ export function HomeView() {
         </div>
       </section>
 
+      {/* Gamified Gig Engine Performance Panel */}
+      <GamificationPanel completed={home.completedToday} earnings={home.todayEarningsPaise} />
+
       {/* OrderKing Rider Advantage vs Zomato */}
       <section className="rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-emerald-500/5 p-4 shadow-sm">
         <div className="flex items-center gap-2 mb-2">
@@ -479,11 +482,14 @@ export function HomeView() {
           <MapPane
             pickup={home.active.pickupLocation}
             drop={home.active.dropLocation}
+            current={riderPos}
             pickupLabel={home.active.restaurant.name}
             dropLabel={home.active.customer.area}
             navigateLabel={t("mapsOpen")}
+            deliveryState={home.active.state}
           />
           <PredictiveRouting />
+          <ThermalBagTracker />
           <DeliveryActions
             delivery={home.active}
             cash={home.cash}

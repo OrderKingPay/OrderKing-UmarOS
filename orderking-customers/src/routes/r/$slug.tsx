@@ -108,24 +108,7 @@ function RestaurantPage() {
     void trackAnalytics({ data: { name: "add_to_cart", payload: { item: item.id } } });
   };
 
-  const jsonLd = restaurant
-    ? {
-        "@context": "https://schema.org",
-        "@type": "Restaurant",
-        name: restaurant.card.name,
-        description: restaurant.description,
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: restaurant.addressLine,
-          addressLocality: restaurant.area,
-          addressCountry: "IN",
-        },
-        servesCuisine: restaurant.card.cuisineSummary,
-        ...(restaurant.card.dataLabel === "REAL"
-          ? {}
-          : { additionalProperty: { "@type": "PropertyValue", name: "dataLabel", value: restaurant.card.dataLabel } }),
-      }
-    : null;
+  const jsonLd = restaurant ? buildRestaurantJsonLd(restaurant, slug, location) : null;
 
   return (
     <CustomerShell>
@@ -144,6 +127,7 @@ function RestaurantPage() {
         <p className="p-4 text-muted">{t("common.empty")}</p>
       ) : (
         <article>
+          <RestaurantSeo restaurant={restaurant} slug={slug} location={location} />
           {jsonLd ? (
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
           ) : null}
