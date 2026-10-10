@@ -8,6 +8,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { GrowthWidget } from "@/components/market/growth-widget";
+import { GeoViralWidget } from "@/components/market/geo-viral-widget";
+import { DailyStreakWidget } from "@/components/market/daily-streak";
+import { LiveActivityFeed } from "@/components/market/live-activity";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBrand, useT } from "@/components/providers";
 import { listCategories, listRestaurants } from "@/lib/server/catalog";
@@ -173,8 +176,15 @@ export function HomeFeed({
 
       {/* GAMIFIED GROWTH SYNDICATE WIDGET */}
       {!q && !category && (
+        <DailyStreakWidget />
+      )}
+      {!q && !category && (
+        <GeoViralWidget />
+      )}
+      {!q && !category && (
         <GrowthWidget />
       )}
+      <LiveActivityFeed />
       {/* 👑 3D GLOWING SWITCH BUTTON + SAME-LEVEL AI SUPPORT */}
       {/* <EcosystemSwitchBar /> */}
 
