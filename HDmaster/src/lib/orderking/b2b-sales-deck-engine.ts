@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getSql } from "@/lib/db";
+import { getSql } from "../db.ts";
 import { militaryAntiFraudShield } from "./security/military-anti-fraud-shield.ts";
 
 export type MarketRegion = "US" | "SAUDI" | "GLOBAL";

@@ -51,11 +51,34 @@ function Login() {
   }
 
   return (
-    <main className="mx-auto min-h-dvh max-w-lg px-4 py-10">
+    <main className="mx-auto min-h-dvh max-w-lg px-4 py-10 font-sans">
       <div className="mb-4 flex items-center justify-between">
-        
         <LanguageSelector />
       </div>
+
+      {/* RIDER POACHING PORTAL CALLOUT BANNER: ATTACK COMPETITOR LOW PAYOUTS */}
+      <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
+        <div className="flex items-center justify-between gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+            <span className="size-1.5 rounded-full bg-emerald-600 animate-pulse" />
+            Rider Acquisition Portal
+          </span>
+          <span className="text-[11px] font-bold text-emerald-800">Min ₹35 Guaranteed</span>
+        </div>
+        <h2 className="mt-2.5 text-base sm:text-lg font-extrabold text-slate-900 leading-tight">
+          Switch to OrderKing. Minimum ₹35 Base Payout. Fast Onboarding.
+        </h2>
+        <p className="mt-1 text-xs text-slate-600 leading-normal">
+          Already delivering with Zomato or Swiggy? Stop accepting ₹20 base pay. Switch in 2 minutes for ₹35 base payouts and instant daily settlements.
+        </p>
+        <Link
+          to="/onboarding"
+          className="mt-3.5 inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-slate-800 transition"
+        >
+          ⚡ 1-Click Zomato / Swiggy Switch
+        </Link>
+      </div>
+
       <img src={DEFAULT_BRANDING.logoUrl} alt="" className="size-14 rounded-lg" />
       <p className="mt-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">
         {DEFAULT_BRANDING.legalCompanyName}

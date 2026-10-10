@@ -11,6 +11,7 @@ import {
   type ClearTaxConnector,
   type WhatsAppMarketingConnector,
   type B2bLeadGenConnector,
+  type AiTelemarketingConnector,
   type EcosystemCmsConfig,
   DEFAULT_ECOSYSTEM_CMS,
 } from "@/lib/orderking/cms-connectors";
@@ -53,6 +54,11 @@ import {
   Landmark,
   DollarSign,
   ArrowRightLeft,
+  PhoneCall,
+  PhoneForwarded,
+  Bot,
+  Sparkles,
+  Mic,
 } from "lucide-react";
 
 type ConnectorTab =
@@ -65,7 +71,8 @@ type ConnectorTab =
   | "mapbox"
   | "cleartax"
   | "whatsappMarketing"
-  | "b2bLeadGen";
+  | "b2bLeadGen"
+  | "telemarketing";
 
 export function PluginConnectors() {
   const [config, setConfig] = useState<PluginConnectorsConfig>(DEFAULT_PLUGIN_CONNECTORS);
@@ -261,6 +268,7 @@ export function PluginConnectors() {
       | "cleartax"
       | "whatsappMarketing"
       | "b2bLeadGen"
+      | "telemarketing"
   ) => {
     try {
       setTestingService(service);
@@ -309,6 +317,7 @@ export function PluginConnectors() {
       | "cleartax"
       | "whatsappMarketing"
       | "b2bLeadGen"
+      | "telemarketing"
   ) => {
     const item = config[service];
     let isConfigured = false;
@@ -330,6 +339,10 @@ export function PluginConnectors() {
       const b = item as B2bLeadGenConnector;
       isConfigured = !!b.apolloApiKey || !!(b.linkedinClientId && b.linkedinClientSecret) || !!b.linkedinAccessToken;
     }
+    if (service === "telemarketing") {
+      const t = item as AiTelemarketingConnector;
+      isConfigured = !!t.apiKey || (!!t.accountSid && !!t.apiSecret);
+    }
 
     if (!isConfigured) return { status: "NOT_CONFIGURED" as const, label: "NOT CONFIGURED", tone: "neutral" as const };
     if (!item.enabled) return { status: "STANDBY" as const, label: "Standby / Disabled", tone: "amber" as const };
@@ -350,12 +363,13 @@ export function PluginConnectors() {
       "cleartax",
       "whatsappMarketing",
       "b2bLeadGen",
+      "telemarketing",
     ] as const).forEach((svc) => {
       const st = getConnectorStatus(svc);
       if (st.status !== "NOT_CONFIGURED") configuredCount++;
       if (st.status === "CONNECTED") activeCount++;
     });
-    return { configuredCount, activeCount, total: 9 };
+    return { configuredCount, activeCount, total: 10 };
   }, [config]);
 
   return (
@@ -377,7 +391,7 @@ export function PluginConnectors() {
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                {cmsConfig.connectorsHubSubtitle || "Institutional integration management. Securely configure Razorpay payment rails, WhatsApp Business API, FSSAI regulatory verification, Mapbox geospatial telemetry, ClearTax automated GST calculation, automated WhatsApp marketing campaigns, and B2B Franchise Lead Generation (Apollo / LinkedIn API)."}
+                {cmsConfig.connectorsHubSubtitle || "Institutional integration management. Securely configure Razorpay payment rails, WhatsApp Business API, FSSAI regulatory verification, Mapbox geospatial telemetry, ClearTax automated GST calculation, automated WhatsApp marketing campaigns, B2B Franchise Lead Generation, and Bland.ai / Twilio Voice autonomous restaurant telemarketing."}
               </p>
             </div>
           </div>
@@ -831,6 +845,68 @@ export function PluginConnectors() {
                 className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
               />
             </div>
+
+            {/* AI Telemarketing */}
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">AI Telemarketing Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorTelemarketingTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorTelemarketingTitle: e.target.value }))}
+                placeholder="Bland.ai / Twilio Voice (Autonomous Restaurant Pitching)..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">AI Telemarketing Toggle Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorTelemarketingToggleLabel || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorTelemarketingToggleLabel: e.target.value }))}
+                placeholder="AI Sales Engine Active..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">AI Telemarketing Subtitle</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorTelemarketingSubtitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorTelemarketingSubtitle: e.target.value }))}
+                placeholder="Autonomous AI sales force that dials Indian restaurant owners, pitches the Zero-Setup-Fee and 0% commission direct ordering platform..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">AI Telemarketing Test Button Text</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorTelemarketingTestBtnText || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorTelemarketingTestBtnText: e.target.value }))}
+                placeholder="Test AI Voice Dial Probe..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">AI Telemarketing Policy Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorTelemarketingPolicyTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorTelemarketingPolicyTitle: e.target.value }))}
+                placeholder="TRAI Telemarketing & DND Regulatory Compliance Guard..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">AI Telemarketing Policy Notice</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorTelemarketingPolicyNotice || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorTelemarketingPolicyNotice: e.target.value }))}
+                placeholder="Commercial communications strictly scrubbed against the National Do-Not-Call (NDNC) registry..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -848,6 +924,7 @@ export function PluginConnectors() {
           { id: "cleartax" as const, label: "Automated Tax (ClearTax)", icon: Calculator },
           { id: "whatsappMarketing" as const, label: "Automated WhatsApp Marketing", icon: Megaphone },
           { id: "b2bLeadGen" as const, label: "B2B Franchise Leads (Apollo/LinkedIn)", icon: Target },
+          { id: "telemarketing" as const, label: "AI Voice Telemarketing", icon: PhoneCall },
         ].map((tab) => {
           const Icon = tab.icon;
           const isSelected = activeTab === tab.id;
@@ -3423,6 +3500,720 @@ export function PluginConnectors() {
                       title="Copy Webhook Endpoint"
                     >
                       {copiedKey === "b2b_wh" ? <Check className="h-3 w-3 text-indigo-500" /> : <Copy className="h-3 w-3" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 8. AI TELEMARKETING CONNECTOR (BLAND.AI / TWILIO VOICE AUTONOMOUS RESTAURANT PITCHING) */}
+          {(activeTab === "all" || activeTab === "telemarketing") && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <PhoneCall className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="text-base font-semibold text-foreground">
+                        {cmsConfig.connectorTelemarketingTitle || "Bland.ai / Twilio Voice (Autonomous Restaurant Pitching)"}
+                      </h3>
+                      {(() => {
+                        const st = getConnectorStatus("telemarketing");
+                        return (
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide border ${
+                              st.tone === "emerald"
+                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                : st.tone === "amber"
+                                ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                : "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                            }`}
+                          >
+                            {st.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {cmsConfig.connectorTelemarketingSubtitle || "Autonomous AI sales force that dials Indian restaurant owners, pitches the Zero-Setup-Fee and 0% commission direct ordering platform, handles common aggregator objections, and books onboarding walkthroughs without human sales reps."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
+                    <span>{cmsConfig.connectorTelemarketingToggleLabel || "AI Sales Engine Active"}</span>
+                    <input
+                      type="checkbox"
+                      checked={config.telemarketing.enabled}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          telemarketing: { ...prev.telemarketing, enabled: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTestConnection("telemarketing")}
+                    disabled={testingService === "telemarketing"}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+                  >
+                    <Zap className="h-3.5 w-3.5 text-emerald-500" />
+                    {testingService === "telemarketing" ? "Dialing Voice Probe..." : (cmsConfig.connectorTelemarketingTestBtnText || "Test AI Voice Dial Probe")}
+                  </button>
+                </div>
+              </div>
+
+              {/* Diagnostic Message */}
+              {testResults.telemarketing && (
+                <div
+                  className={`rounded-lg p-3 text-xs border flex items-center justify-between ${
+                    testResults.telemarketing.ok
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                      : "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {testResults.telemarketing.ok ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
+                    )}
+                    <span>{testResults.telemarketing.message}</span>
+                  </div>
+                  <span className="text-[10px] opacity-75">{testResults.telemarketing.timestamp}</span>
+                </div>
+              )}
+
+              {/* Autonomous Restaurant Acquisition & Zero-Setup-Fee Hero Banner */}
+              <div className="rounded-lg border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-600 text-white shadow-xs">
+                      <Bot className="h-3.5 w-3.5" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                      Autonomous AI Sales Representative (SDR) — Zero-Setup-Fee Restaurant Acquisition
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-emerald-500" />
+                    100% Autonomous • Untiring Outbound Dialing • Direct UPI Pitch
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Acquire hundreds of Indian restaurants, cafes, and cloud kitchens without hiring human sales reps. The AI autonomously dials restaurant owners, asks for the decision-maker, pitches OrderKing's Zero-Setup-Fee ₹0 onboarding and 0% commission model (saving them 28% to 32% compared to Swiggy and Zomato), handles kitchen-rush objections with instant Hinglish conversational intelligence, and automatically drops a WhatsApp brochure link upon call completion.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                  <div className="flex items-center gap-2 rounded-md border border-emerald-500/20 bg-background/80 p-2 text-xs">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="font-medium text-foreground">₹0 Setup Fee Pitch</span>
+                    <span className="text-[10px] text-muted-foreground ml-auto">0% Commission Hook</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-md border border-emerald-500/20 bg-background/80 p-2 text-xs">
+                    <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                    <span className="font-medium text-foreground">Hinglish Conversational AI</span>
+                    <span className="text-[10px] text-muted-foreground ml-auto">Indian Business Persona</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-md border border-emerald-500/20 bg-background/80 p-2 text-xs">
+                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-pulse" />
+                    <span className="font-medium text-foreground">Instant WhatsApp Drop</span>
+                    <span className="text-[10px] text-muted-foreground ml-auto">Post-Call Brochure</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 1-Click Autonomous Sales Presets & Call Safeguards */}
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-emerald-600" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                      1-Click Autonomous Sales Presets & Call Automation
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground">High-Velocity Outbound SDR</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.telemarketing.autoPitchZeroSetupFee}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          telemarketing: { ...prev.telemarketing, autoPitchZeroSetupFee: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Auto-Pitch Zero Setup Fee (₹0 Onboarding)</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Emphasizes ₹0 upfront cost, ₹0 hardware lock-in, and instant UPI payouts to remove friction
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.telemarketing.autoSendWhatsappBrochure}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          telemarketing: { ...prev.telemarketing, autoSendWhatsappBrochure: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Instant WhatsApp Brochure Drop</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Auto-dispatches digital menu demo link & onboarding brochure to owner's WhatsApp immediately
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.telemarketing.autoBookOnboardingDemo}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          telemarketing: { ...prev.telemarketing, autoBookOnboardingDemo: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Auto-Book Onboarding Walkthrough</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        AI verifies owner's free time and reserves a 10-minute slot with OrderKing onboarding specialists
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.telemarketing.transferOnHighIntent}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          telemarketing: { ...prev.telemarketing, transferOnHighIntent: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Warm Live Transfer on High Intent</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Instantly rings the Founder's direct phone if the restaurant owner expresses high interest
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.telemarketing.dndScrubbingEnabled}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          telemarketing: { ...prev.telemarketing, dndScrubbingEnabled: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">TRAI NDNC Scrubbing & Compliance</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Filters telephone numbers against National Do-Not-Call registry before outbound dialing
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.telemarketing.recordCalls}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          telemarketing: { ...prev.telemarketing, recordCalls: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Dual-Channel Call Recording & Sentiment</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Saves high-res audio recordings and transcripts with merchant objection sentiment scoring
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Form Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Voice AI Provider Engine</label>
+                  <select
+                    value={config.telemarketing.provider}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, provider: e.target.value as any },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="bland_ai">Bland.ai Enterprise (Outbound Conversational Phone Agent)</option>
+                    <option value="twilio_voice">Twilio Voice + Custom Speech LLM WebSocket</option>
+                    <option value="vapi">Vapi.ai Voice Pipeline</option>
+                    <option value="retell">Retell AI Real-Time Conversational Engine</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Pitch Objective & Value Proposition</label>
+                  <select
+                    value={config.telemarketing.pitchObjective}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, pitchObjective: e.target.value as any },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="zero_setup_fee_acquisition">Zero Setup Fee & 0% Commission (Aggregator Alternative - Recommended)</option>
+                    <option value="commission_slashing">Aggregator Commission Slashing (Save 30% on Repeat Diners)</option>
+                    <option value="direct_ordering_migration">Direct Ordering QR Migration (Convert Dine-In into Regulars)</option>
+                    <option value="custom">Custom Bespoke Pitch Script</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">
+                      {config.telemarketing.provider === "twilio_voice" ? "Bland.ai / Voice API Key (Optional)" : "Bland.ai API Key"}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("tm_apiKey")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.tm_apiKey ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.tm_apiKey ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.tm_apiKey ? "text" : "password"}
+                    value={config.telemarketing.apiKey}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, apiKey: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter Bland.ai API Key (e.g. org_live_...)"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">
+                      Twilio Account SID {config.telemarketing.provider === "twilio_voice" ? "(Required)" : "(Optional)"}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("tm_accountSid")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.tm_accountSid ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.tm_accountSid ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.tm_accountSid ? "text" : "password"}
+                    value={config.telemarketing.accountSid}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, accountSid: e.target.value },
+                      }))
+                    }
+                    placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">
+                      Twilio Auth Token / API Secret {config.telemarketing.provider === "twilio_voice" ? "(Required)" : "(Optional)"}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("tm_apiSecret")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.tm_apiSecret ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.tm_apiSecret ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.tm_apiSecret ? "text" : "password"}
+                    value={config.telemarketing.apiSecret}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, apiSecret: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter Twilio Auth Token or Provider Secret"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Outbound Caller ID DID (E.164)</label>
+                  <input
+                    type="text"
+                    value={config.telemarketing.fromPhoneNumber}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, fromPhoneNumber: e.target.value },
+                      }))
+                    }
+                    placeholder="+91 80 4712 3456 (Verified Indian Outbound Caller ID)"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Founder Direct Mobile for Warm Transfer</label>
+                  <input
+                    type="text"
+                    value={config.telemarketing.transferPhoneNumber}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, transferPhoneNumber: e.target.value },
+                      }))
+                    }
+                    placeholder="+91 98765 43210 (Founder personal phone for live transfer)"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">AI Voice Persona & Model</label>
+                  <select
+                    value={config.telemarketing.voiceId}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, voiceId: e.target.value },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="nat_indian_exec">Kabir (Natural Indian Male - Executive & Confident)</option>
+                    <option value="priya_indian_consultative">Priya (Natural Indian Female - Warm & Consultative)</option>
+                    <option value="rohit_indian_energetic">Rohit (Energetic Indian Male - High Growth Focus)</option>
+                    <option value="ananya_indian_concise">Ananya (Polite Indian Female - Crisp & Professional)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Primary Language & Regional Dialect</label>
+                  <select
+                    value={config.telemarketing.language}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, language: e.target.value as any },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="hinglish">Hinglish (Hindi + English Conversational Blend - Recommended for Metro Restaurants)</option>
+                    <option value="en-IN">Indian English (Formal Business English - Pan India)</option>
+                    <option value="hi-IN">Hindi (North India & Tier 2/3 Regions)</option>
+                    <option value="mr-IN">Marathi + Hinglish (Maharashtra / Mumbai / Pune)</option>
+                    <option value="ta-IN">Tamil + English (Tamil Nadu / Chennai)</option>
+                    <option value="te-IN">Telugu + English (Telangana / Hyderabad / AP)</option>
+                    <option value="bn-IN">Bengali + English (West Bengal / Kolkata)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Objection Handling Stance</label>
+                  <select
+                    value={config.telemarketing.objectionHandlingMode}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, objectionHandlingMode: e.target.value as any },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="aggressive_roi">Aggressive ROI (Focus on saving ₹30k - ₹50k/month lost to Swiggy/Zomato commission)</option>
+                    <option value="consultative_polite">Consultative & Respectful (Educate on owning customer data and direct UPI payouts)</option>
+                    <option value="urgency_limited_slots">Limited Cohort Urgency (Only 5 zero-commission slots available in this pin code)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Voice Pacing / Speech Rate</label>
+                  <select
+                    value={config.telemarketing.voiceSpeed.toString()}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, voiceSpeed: parseFloat(e.target.value) || 1.0 },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="0.85">0.85x (Deliberate & Slow)</option>
+                    <option value="0.95">0.95x (Clear & Calm)</option>
+                    <option value="1">1.0x (Natural Conversational Speed - Default)</option>
+                    <option value="1.08">1.08x (Brisk & Dynamic)</option>
+                    <option value="1.15">1.15x (Fast Executive Pacing)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Voice Temperature / Spontaneity</label>
+                  <select
+                    value={config.telemarketing.voiceTemperature.toString()}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, voiceTemperature: parseFloat(e.target.value) || 0.7 },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="0.3">0.3 (Strict Script Adherence - Low Variance)</option>
+                    <option value="0.5">0.5 (Balanced Conversational Flow)</option>
+                    <option value="0.7">0.7 (Dynamic & Natural Objection Handling - Recommended)</option>
+                    <option value="0.9">0.9 (Highly Spontaneous & Adaptive)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Max Concurrent Outbound Lines</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={config.telemarketing.maxConcurrentCalls}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, maxConcurrentCalls: parseInt(e.target.value, 10) || 5 },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Max Call Duration Limit (Minutes)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="15"
+                    value={config.telemarketing.maxCallDurationMinutes}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, maxCallDurationMinutes: parseInt(e.target.value, 10) || 4 },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Calling Window Start Time (IST)</label>
+                  <input
+                    type="text"
+                    value={config.telemarketing.callingWindowStart}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, callingWindowStart: e.target.value },
+                      }))
+                    }
+                    placeholder="10:30 AM (Avoid early kitchen prep)"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Calling Window End Time (IST)</label>
+                  <input
+                    type="text"
+                    value={config.telemarketing.callingWindowEnd}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, callingWindowEnd: e.target.value },
+                      }))
+                    }
+                    placeholder="05:00 PM (Avoid dinner rush)"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Unanswered Call Retry Attempts</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="5"
+                    value={config.telemarketing.retryAttempts}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, retryAttempts: parseInt(e.target.value, 10) || 2 },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Unanswered Retry Delay (Minutes)</label>
+                  <input
+                    type="number"
+                    min="15"
+                    max="240"
+                    value={config.telemarketing.retryDelayMinutes}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, retryDelayMinutes: parseInt(e.target.value, 10) || 60 },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5 md:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">HMAC Webhook Secret</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("tm_webhookSecret")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.tm_webhookSecret ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.tm_webhookSecret ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.tm_webhookSecret ? "text" : "password"}
+                    value={config.telemarketing.webhookSecret}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        telemarketing: { ...prev.telemarketing, webhookSecret: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter HMAC Webhook Secret"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Full Width Script Customization: First Sentence Opener */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <Mic className="h-3.5 w-3.5 text-emerald-500" />
+                    First Sentence Opener (Immediate 3-Second Hook)
+                  </label>
+                  <span className="text-[11px] text-muted-foreground">Spoken the millisecond the merchant picks up</span>
+                </div>
+                <input
+                  type="text"
+                  value={config.telemarketing.firstSentence}
+                  onChange={(e) =>
+                    setConfig((prev) => ({
+                      ...prev,
+                      telemarketing: { ...prev.telemarketing, firstSentence: e.target.value },
+                    }))
+                  }
+                  placeholder="Namaste! Am I speaking with the restaurant owner or general manager? Quick question regarding your online delivery commission rates."
+                  className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              {/* Full Width Script Customization: System Prompt & Objection Handling Playbook */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <Bot className="h-3.5 w-3.5 text-emerald-500" />
+                    Autonomous Sales Agent System Prompt & Objection Handling Playbook
+                  </label>
+                  <span className="text-[11px] text-muted-foreground">Comprehensive Zero-Setup-Fee Pitch Instructions</span>
+                </div>
+                <textarea
+                  rows={10}
+                  value={config.telemarketing.systemPrompt}
+                  onChange={(e) =>
+                    setConfig((prev) => ({
+                      ...prev,
+                      telemarketing: { ...prev.telemarketing, systemPrompt: e.target.value },
+                    }))
+                  }
+                  placeholder="Enter full system prompt for the AI telemarketing sales agent..."
+                  className="w-full rounded-lg border border-border bg-background p-3 text-xs font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary leading-relaxed"
+                />
+              </div>
+
+              {/* Policy & Compliance Box */}
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                  <span className="text-xs font-semibold text-foreground">
+                    {cmsConfig.connectorTelemarketingPolicyTitle || "TRAI Telemarketing & DND Regulatory Compliance Guard"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {cmsConfig.connectorTelemarketingPolicyNotice || "Commercial communications strictly scrubbed against the National Do-Not-Call (NDNC) registry. Calling windows enforced between 10:30 AM and 05:00 PM to avoid kitchen rush periods."}
+                </p>
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-emerald-500/10 text-[11px] text-muted-foreground">
+                  <span>{cmsConfig.connectorTelemarketingWebhookNotice || "Autonomous Call Webhook: Streams real-time call transcripts, audio recordings, owner sentiment scores, and auto-dispatches WhatsApp onboarding links upon hangup."}</span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="font-mono bg-background px-2 py-0.5 rounded border border-border text-[10px]">
+                      /api/v1/telemarketing/bland-voice-webhook
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("https://api.orderking.in/api/v1/telemarketing/bland-voice-webhook", "tm_wh")}
+                      className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                      title="Copy Webhook Endpoint"
+                    >
+                      {copiedKey === "tm_wh" ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
                     </button>
                   </div>
                 </div>

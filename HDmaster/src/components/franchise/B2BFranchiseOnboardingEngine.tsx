@@ -26,6 +26,7 @@ import {
   Layers,
   Percent,
   Trash2,
+  Crown,
 } from "lucide-react";
 import {
   getFranchiseOnboardingData,
@@ -422,6 +423,17 @@ export function B2BFranchiseOnboardingEngine() {
               Strategy
             </span>
           </button>
+
+          <a
+            href="#b2b-sales-deck-generator"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300"
+          >
+            <Crown className="h-4 w-4 text-amber-600" />
+            <span>B2B SaaS Sales Deck Generator</span>
+            <span className="rounded-full bg-amber-200 text-amber-900 text-[9px] px-1.5 py-0.2 uppercase font-semibold">
+              Pitch
+            </span>
+          </a>
         </div>
       </div>
 

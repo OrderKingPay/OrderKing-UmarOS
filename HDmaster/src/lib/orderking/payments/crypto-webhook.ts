@@ -61,3 +61,24 @@ export function verifyStripeWebhook(payloadStr: string, signatureHeader: string,
 
   return true;
 }
+
+/**
+ * Verifies a Payoneer webhook signature.
+ * Throws an error if the signature is invalid.
+ */
+export function verifyPayoneerWebhook(payloadStr: string, signature: string, secret: string): boolean {
+  if (!payloadStr || !signature || !secret) {
+    throw new Error('Missing payload, signature, or secret for Payoneer verification');
+  }
+
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(payloadStr)
+    .digest('hex');
+
+  if (expectedSignature !== signature) {
+    throw new Error('Invalid Payoneer webhook signature');
+  }
+
+  return true;
+}

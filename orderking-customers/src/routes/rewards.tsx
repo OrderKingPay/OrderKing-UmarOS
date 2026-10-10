@@ -8,6 +8,7 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { useLocationStore } from "@/lib/stores/location";
 import { getLoyalty } from "@/lib/server/account";
 import { toast } from "sonner";
+import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
 
 export const Route = createFileRoute("/rewards")({ component: RewardsPage });
 
@@ -309,6 +310,9 @@ function RewardsPage() {
             <Link to="/king-pay">Open Pay</Link>
           </Button>
         </div>
+
+        {/* WhatsApp Viral Bounties Acquisition Engine */}
+        <WhatsAppViralBountiesWidget source="rewards_vault" />
 
         {/* Mystery Scratch Card Section */}
         <div className="rounded-[var(--radius-xl)] border border-primary/20 bg-surface p-4 shadow-xs">

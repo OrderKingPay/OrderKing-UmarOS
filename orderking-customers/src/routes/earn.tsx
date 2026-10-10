@@ -18,6 +18,7 @@ import {
 import { useLocationStore } from "@/lib/stores/location";
 import { toast } from "sonner";
 import { ReferralGamifiedLoop } from "@/components/market/referral-gamified-loop";
+import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
 
 export const Route = createFileRoute('/earn')({
   component: EarnPage,
@@ -218,12 +219,12 @@ function EarnPage() {
   const [taskCompleted, setTaskCompleted] = useState(false);
 
   const handleWhatsAppShare = () => {
-    // High fidelity share track
+    // Exact 1-Click WhatsApp forward template
     const text = encodeURIComponent(
-      "Hey! Use my OrderKing link to get ₹500 free on your first order: https://orderking.app/KING500"
+      "I am using OrderKing for better food. Use my link for ₹50 KingPay Cash. https://orderking.in/?ref=KING50&src=whatsapp_bounty"
     );
     window.open("https://wa.me/?text=" + text, "_blank");
-    toast.success("Opened WhatsApp! Share to earn ₹50.");
+    toast.success("Opened WhatsApp! Forward to earn ₹50 KingPay Cash.");
   };
 
   const completeMicroTask = () => {
@@ -328,7 +329,9 @@ function EarnPage() {
           </p>
 
           <div className="space-y-4">
-            
+            {/* FEATURED: PURE LIGHT MODE WHATSAPP VIRAL BOUNTIES WIDGET */}
+            <WhatsAppViralBountiesWidget source="earn_hub" className="mb-6" />
+
             {/* Easiest: WhatsApp Affiliate */}
             <motion.div 
               whileTap={{ scale: 0.98 }}

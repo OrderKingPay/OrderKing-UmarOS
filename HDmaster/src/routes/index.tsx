@@ -3,7 +3,7 @@ import { useState, lazy, Suspense } from "react";
 import { 
   Database, Server, GitBranch, CheckCircle2, AlertCircle, Users, 
   ShieldCheck, Store, Bike, Activity, Settings, RefreshCw, 
-  ArrowUpRight, Clock, FileCheck2, Cpu, Lock, FileText, Palette, Landmark, SlidersHorizontal, Receipt
+  ArrowUpRight, Clock, FileCheck2, Cpu, Lock, FileText, Palette, Landmark, SlidersHorizontal, Receipt, Crown
 } from "lucide-react";
 import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
@@ -16,6 +16,7 @@ import { LiveFounderProfitDashboard } from "@/components/dashboard/LiveFounderPr
 import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSettings";
 import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
 import { B2BFranchiseOnboardingEngine } from "@/components/franchise/B2BFranchiseOnboardingEngine";
+import { B2BSaaSSalesDeckGenerator } from "@/components/franchise/B2BSaaSSalesDeckGenerator";
 
 const LazyGlobalGodEyeMap = lazy(() =>
   import("@/components/dashboard/GlobalGodEyeMap").then((m) => ({ default: m.GlobalGodEyeMap }))
@@ -174,6 +175,12 @@ function UmarOSDashboard() {
                 <Cpu className="h-4 w-4 text-primary"/> Plugin Switchboard
               </a>
               <a 
+                href="#b2b-sales-deck-generator" 
+                className="inline-flex items-center gap-2 text-slate-900 font-black bg-gradient-to-r from-amber-400 to-orange-400 px-4 py-2 rounded-xl hover:from-amber-300 hover:to-orange-300 transition-all text-xs shadow-md shadow-amber-500/20"
+              >
+                <Crown className="h-4 w-4 text-slate-950"/> B2B SaaS Pitch Deck
+              </a>
+              <a 
                 href="#b2b-franchise-onboarding" 
                 className="inline-flex items-center gap-2 text-slate-900 font-bold bg-emerald-50 border border-emerald-300 px-4 py-2 rounded-xl hover:bg-emerald-100 transition-all text-xs shadow-sm"
               >
@@ -280,6 +287,16 @@ function UmarOSDashboard() {
         {/* External Plugin Connectors Section */}
         <div id="plugin-connectors" className="mt-8 mb-8 scroll-mt-6">
           <PluginConnectors />
+        </div>
+
+        {/* B2B SaaS Sales Deck Generator (Godfather of B2B Sales) */}
+        <div id="b2b-sales-deck-generator" className="mt-8 mb-8 scroll-mt-6">
+          <B2BSaaSSalesDeckGenerator />
+        </div>
+
+        {/* B2B Franchise Contract Lifecycle Management */}
+        <div id="b2b-franchise-onboarding" className="mt-8 mb-8 scroll-mt-6">
+          <B2BFranchiseOnboardingEngine />
         </div>
 
         {/* Operational Section: Pending Approvals & Core Engines */}

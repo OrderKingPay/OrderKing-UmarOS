@@ -25,6 +25,7 @@ import { useLocationStore } from "@/lib/stores/location";
 import { useCartStore } from "@/lib/stores/cart";
 import type { RestaurantCard } from "@/lib/market-types";
 import { cn } from "@/lib/utils";
+import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
 
 // Curated high-resolution categories for Zomato-parity "Inspiration for your first order"
 const CURATED_FOOD_CATEGORIES = [
@@ -486,7 +487,14 @@ export function HomeFeed({
         </section>
       )}
 
-      {/* 5. RESTAURANTS GRID: MASSIVE EDGE-TO-EDGE CARDS */}
+      {/* 5. WHATSAPP VIRAL BOUNTIES: REAL-WORLD CUSTOMER ACQUISITION ENGINE */}
+      {!q && (
+        <section aria-label="WhatsApp Viral Bounties" className="pt-2">
+          <WhatsAppViralBountiesWidget source="home_feed" />
+        </section>
+      )}
+
+      {/* 6. RESTAURANTS GRID: MASSIVE EDGE-TO-EDGE CARDS */}
       <section aria-label="Restaurants Grid" className="pt-2">
         <div className="flex items-center justify-between mb-3.5">
           <div>

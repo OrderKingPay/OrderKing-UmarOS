@@ -114,6 +114,15 @@ export interface EcosystemCmsConfig {
   connectorTelemarketingPolicyTitle: string;
   connectorTelemarketingPolicyNotice: string;
   connectorTelemarketingWebhookNotice: string;
+
+  // 12. UmarOS Carpet-Bombing Ad Exchange & Telecom DSP (JioAds / Airtel / InMobi)
+  connectorGeospatialAdTitle: string;
+  connectorGeospatialAdSubtitle: string;
+  connectorGeospatialAdToggleLabel: string;
+  connectorGeospatialAdTestBtnText: string;
+  connectorGeospatialAdPolicyTitle: string;
+  connectorGeospatialAdPolicyNotice: string;
+  connectorGeospatialAdWebhookNotice: string;
 }
 
 export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
@@ -230,7 +239,62 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   connectorTelemarketingPolicyTitle: "TRAI Telemarketing & DND Regulatory Compliance Guard",
   connectorTelemarketingPolicyNotice: "Commercial communications strictly scrubbed against the National Do-Not-Call (NDNC) registry. Calling windows enforced between 10:30 AM and 05:00 PM to avoid kitchen rush periods.",
   connectorTelemarketingWebhookNotice: "Autonomous Call Webhook: Streams real-time call transcripts, audio recordings, owner sentiment scores, and auto-dispatches WhatsApp onboarding links upon hangup.",
+
+  // 12. UmarOS Carpet-Bombing Ad Exchange & Telecom DSP (JioAds / Airtel / InMobi)
+  connectorGeospatialAdTitle: "UmarOS Carpet-Bombing Ad Exchange (Telecom & DSP)",
+  connectorGeospatialAdSubtitle: "Geospatial programmatic ad network. Forcefully reaches every smartphone in an exact geographic polygon through JioAds cell-tower triangulation, Airtel Xstream geofences, and InMobi OpenRTB 2.5 DSP rails. Enables the Founder to operate an autonomous ad network and monetize third-party placement.",
+  connectorGeospatialAdToggleLabel: "Geospatial Ad Exchange Active",
+  connectorGeospatialAdTestBtnText: "Verify Telecom & DSP Handshake",
+  connectorGeospatialAdPolicyTitle: "TRAI TCCCPR 2018 & Indian Telegraph Act Geofence Compliance",
+  connectorGeospatialAdPolicyNotice: "Commercial communications strictly bound to TRAI DLT Principal Entity headers. Geofence radius sweeps verified via authorized Telecom LBS APIs with automated DND scrubbing and consent-governed instant incentive delivery.",
+  connectorGeospatialAdWebhookNotice: "Telecom LBS & OpenRTB Bid Stream Ingestion Webhook: Receives real-time cell-tower ping responses, win notifications, and conversion tracking.",
 };
+
+export interface GeospatialAdExchangeConnector {
+  enabled: boolean;
+  mode: "live" | "test";
+  // JioAds Cell-Tower Targeting
+  jioAdsClientId: string;
+  jioAdsClientSecret: string;
+  jioAdsCircle: string;
+  jioAdsCellTowerLbsKey: string;
+  jioAdsEnodebCellRange: string;
+  // Airtel Xstream Geofence
+  airtelPartnerId: string;
+  airtelXstreamToken: string;
+  airtelPolygonBoundaryId: string;
+  airtelPrecisionMode: "tower_triangulation" | "gps_assisted" | "hybrid";
+  airtelLbsWebhookSecret: string;
+  // InMobi DSP (Programmatic OpenRTB 2.5)
+  inmobiAccountId: string;
+  inmobiDspSecret: string;
+  inmobiOpenRtbEndpoint: string;
+  inmobiSeatId: string;
+  inmobiBidFloorCpmInr: number;
+  // Campaign Trigger Defaults
+  defaultRadiusKm: number;
+  targetLat: number;
+  targetLng: number;
+  targetLocationLabel: string;
+  firstOrderGiftIncentiveInr: number;
+  campaignHeadline: string;
+  campaignBody: string;
+  ctaDeepLink: string;
+  // Ad-Network Placement Monetization ("Charge Others for Placement")
+  adNetworkMode: "sovereign_internal" | "commercial_ad_network" | "hybrid_exchange";
+  thirdPartyAdvertiserMonetization: boolean;
+  thirdPartyWholesaleCpmCostInr: number;
+  thirdPartyRetailCpmRateInr: number;
+  thirdPartyMinBudgetInr: number;
+  thirdPartyWhitelistedAdvertisers: string[];
+  // Regulatory & Compliance
+  traiDltPrincipalEntityId: string;
+  tcccprConsentHeader: string;
+  dndScrubbingEnforced: boolean;
+  // Telemetry status
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
 
 export interface StripeAtlasConnector {
   enabled: boolean;
@@ -407,6 +471,7 @@ export interface PluginConnectorsConfig {
   whatsappMarketing: WhatsAppMarketingConnector;
   b2bLeadGen: B2bLeadGenConnector;
   telemarketing: AiTelemarketingConnector;
+  geospatialAdExchange: GeospatialAdExchangeConnector;
 }
 
 export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
@@ -585,6 +650,49 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     status: "NOT_CONFIGURED",
     lastTestedAt: null,
   },
+  geospatialAdExchange: {
+    enabled: false,
+    mode: "live",
+    jioAdsClientId: "",
+    jioAdsClientSecret: "",
+    jioAdsCircle: "DELHI_NCR",
+    jioAdsCellTowerLbsKey: "",
+    jioAdsEnodebCellRange: "404-850-ENB-CELL-AUTO",
+    airtelPartnerId: "",
+    airtelXstreamToken: "",
+    airtelPolygonBoundaryId: "GEOFENCE_POLY_001",
+    airtelPrecisionMode: "tower_triangulation",
+    airtelLbsWebhookSecret: "",
+    inmobiAccountId: "",
+    inmobiDspSecret: "",
+    inmobiOpenRtbEndpoint: "https://dsp-api.inmobi.com/v2/openrtb",
+    inmobiSeatId: "SEAT_ORDERKING_PRIME",
+    inmobiBidFloorCpmInr: 45.0,
+    defaultRadiusKm: 5.0,
+    targetLat: 28.6315,
+    targetLng: 77.2167,
+    targetLocationLabel: "Connaught Place, New Delhi (Central Circle)",
+    firstOrderGiftIncentiveInr: 150.0,
+    campaignHeadline: "₹150 Fresh Food Credit Just Landed on Your Smartphone!",
+    campaignBody: "OrderKing direct from local kitchens with 0% markups. Use your ₹150 pre-loaded welcome voucher now.",
+    ctaDeepLink: "orderking://order?gift=150&ref=carpet_bombing",
+    adNetworkMode: "commercial_ad_network",
+    thirdPartyAdvertiserMonetization: true,
+    thirdPartyWholesaleCpmCostInr: 45.0,
+    thirdPartyRetailCpmRateInr: 110.0,
+    thirdPartyMinBudgetInr: 10000.0,
+    thirdPartyWhitelistedAdvertisers: [
+      "Haldiram's Express Hub",
+      "Bikanervala Cloud Operations",
+      "Chaayos Direct",
+      "Third-Party Brand Placement",
+    ],
+    traiDltPrincipalEntityId: "DLT-PE-110156942000",
+    tcccprConsentHeader: "OKING-PROMO",
+    dndScrubbingEnforced: true,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+  },
 };
 
 /** Load the full configuration bag from platform_settings */
@@ -719,7 +827,19 @@ export async function loadPluginConnectorsData(): Promise<PluginConnectorsConfig
     ? (telemarketing.enabled ? "CONNECTED" : "DEGRADED")
     : "NOT_CONFIGURED";
 
-  return { razorpay, stripeAtlas, payoneer, whatsapp, fssai, mapbox, cleartax, whatsappMarketing, b2bLeadGen, telemarketing };
+  const geospatialAdExchange: GeospatialAdExchangeConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.geospatialAdExchange,
+    ...(raw.geospatialAdExchange || {}),
+  };
+  const hasGeospatialAuth =
+    (!!geospatialAdExchange.jioAdsClientId && !!geospatialAdExchange.jioAdsClientSecret) ||
+    (!!geospatialAdExchange.airtelPartnerId && !!geospatialAdExchange.airtelXstreamToken) ||
+    (!!geospatialAdExchange.inmobiAccountId && !!geospatialAdExchange.inmobiDspSecret);
+  geospatialAdExchange.status = hasGeospatialAuth
+    ? (geospatialAdExchange.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  return { razorpay, stripeAtlas, payoneer, whatsapp, fssai, mapbox, cleartax, whatsappMarketing, b2bLeadGen, telemarketing, geospatialAdExchange };
 }
 
 /** Save Plugin Connectors */
@@ -736,6 +856,7 @@ export async function savePluginConnectorsData(connectorsUpdates: Partial<Plugin
     whatsappMarketing: { ...current.whatsappMarketing, ...(connectorsUpdates.whatsappMarketing || {}) },
     b2bLeadGen: { ...current.b2bLeadGen, ...(connectorsUpdates.b2bLeadGen || {}) },
     telemarketing: { ...current.telemarketing, ...(connectorsUpdates.telemarketing || {}) },
+    geospatialAdExchange: { ...current.geospatialAdExchange, ...(connectorsUpdates.geospatialAdExchange || {}) },
   };
 
   await updatePlatformSettingsBag({ plugin_connectors: next });
