@@ -162,14 +162,27 @@ function IntelligencePage() {
              </select>
              
              {/* Dynamic Text Input for Subject to cover "ALL Subjects" perfectly */}
-             <div className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-lg flex items-center px-2.5 focus-within:border-zinc-500 transition-colors">
+             <div className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-lg flex flex-col focus-within:border-zinc-500 transition-colors">
                 <input 
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Subject (e.g. Mathematics)"
-                  className="bg-transparent text-xs font-medium text-zinc-200 outline-none w-full py-2.5 placeholder:text-zinc-500"
+                  placeholder="Subject (e.g. Mathematics, Spoken English)"
+                  className="bg-transparent text-xs font-medium text-zinc-200 outline-none w-full px-2.5 py-2.5 placeholder:text-zinc-500"
                 />
+                {showConfig && (
+                  <div className="flex flex-wrap gap-1 px-2 pb-2">
+                    {["Spoken English", "Higher Math", "Science", "Projects & Assignments", "Interview Prep"].map(s => (
+                      <button 
+                        key={s} 
+                        onClick={() => setSubject(s)}
+                        className="text-[9px] bg-zinc-800 text-zinc-300 px-1.5 py-0.5 rounded hover:bg-white hover:text-black transition-colors"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
              </div>
              
              <select 
