@@ -164,24 +164,24 @@ function Root() {
         <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(()=>{}))}` }} />
 
         <div className="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-2 z-50">
-           <Link to="/" className="flex flex-col items-center text-gray-500 hover:text-[#E23744] [&.active]:text-[#E23744]">
-             <Home className="w-6 h-6" />
+           <Link to="/" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to Delivery">
+             <Home className="w-6 h-6" aria-hidden="true" />
              <span className="text-[10px] mt-1 font-medium">Delivery</span>
            </Link>
-           <Link to="/dining" className="flex flex-col items-center text-gray-500 hover:text-[#E23744] [&.active]:text-[#E23744]">
-             <Utensils className="w-6 h-6" />
+           <Link to="/dining" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to Dining">
+             <Utensils className="w-6 h-6" aria-hidden="true" />
              <span className="text-[10px] mt-1 font-medium">Dining</span>
            </Link>
-           <Link to="/king-pay" className="flex flex-col items-center text-gray-500 hover:text-[#E23744] [&.active]:text-[#E23744]">
-             <Wallet className="w-6 h-6" />
+           <Link to="/king-pay" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to KingPay">
+             <Wallet className="w-6 h-6" aria-hidden="true" />
              <span className="text-[10px] mt-1 font-medium">KingPay</span>
            </Link>
-           <Link to="/tutor" className="flex flex-col items-center text-gray-500 hover:text-[#E23744] [&.active]:text-[#E23744]">
-             <GraduationCap className="w-6 h-6" />
+           <Link to="/tutor" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to AI Tutor">
+             <GraduationCap className="w-6 h-6" aria-hidden="true" />
              <span className="text-[10px] mt-1 font-medium">AI Tutor</span>
            </Link>
-           <Link to="/account" className="flex flex-col items-center text-gray-500 hover:text-[#E23744] [&.active]:text-[#E23744]">
-             <User className="w-6 h-6" />
+           <Link to="/account" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to Profile">
+             <User className="w-6 h-6" aria-hidden="true" />
              <span className="text-[10px] mt-1 font-medium">Profile</span>
            </Link>
         </div>

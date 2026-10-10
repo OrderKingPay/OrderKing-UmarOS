@@ -505,17 +505,17 @@ export function HomeFeed({
                 ? "Pure Vegetarian Restaurants"
                 : dietFilter === "non-veg"
                 ? "Non-Veg Specialty Kitchens"
-                : "Restaurants delivering to your area"}
+                : `Top-Rated Restaurants in ${location.cityName || "Your Area"}`}
             </h2>
             <p className="text-xs text-gray-500 font-medium">
-              Real-time available restaurants matching your preferences
+              Real-time culinary excellence available in {location.cityName || "your neighborhood"}
             </p>
           </div>
         </div>
 
         {list.isPending ? (
           /* High-Contrast Light Mode Skeletons */
-          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2" aria-busy="true" aria-label="Loading restaurants">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}

@@ -97,6 +97,13 @@ export interface TerminalMessage {
   richMedia?: RichMediaOutput[];
 }
 
+export interface AuditLogEntry {
+  id: string;
+  timestamp: string;
+  action: string;
+  authorizedBy: string;
+}
+
 // =========================================================================
 // RICH MEDIA SUB-COMPONENTS (PURE LIGHT MODE - EXTREME HIGH CONTRAST)
 // =========================================================================
@@ -621,6 +628,7 @@ export function UmarOS_AI_Terminal() {
 
   // Audit Report State
   const [auditReport, setAuditReport] = useState<any | null>(null);
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
 
   // Message History
   const [messages, setMessages] = useState<TerminalMessage[]>([
@@ -1000,6 +1008,15 @@ export function UmarOS_AI_Terminal() {
       [key]: !engineSettings[key]
     };
     setEngineSettings(updated);
+
+    const logEntry: AuditLogEntry = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+      action: `Setting '${String(key)}' changed to ${updated[key] ? "ENABLED" : "DISABLED"}`,
+      authorizedBy: "Authorized by Founder"
+    };
+    setAuditLogs((prev) => [logEntry, ...prev]);
+
     try {
       await updateUmarOsSettings({ data: updated });
       toast.success(`Orchestration Engine: ${String(key)} set to ${updated[key] ? "ENABLED" : "DISABLED"}`);
@@ -1903,6 +1920,32 @@ export function UmarOS_AI_Terminal() {
                   />
                 </button>
               </div>
+            </div>
+
+            {/* Audit Log Component */}
+            <div className="mt-6 border-t border-slate-200 pt-6">
+              <h3 className="text-sm font-bold text-slate-900 mb-4">Action-Intent Engine Audit Log</h3>
+              {auditLogs.length > 0 ? (
+                <div className="space-y-3 max-h-60 overflow-y-auto">
+                  {auditLogs.map(log => (
+                    <div key={log.id} className="p-3 bg-white border border-slate-300 rounded-lg text-xs flex justify-between items-center shadow-2xs">
+                      <div>
+                        <span className="font-bold text-slate-900">{log.action}</span>
+                        <div className="text-slate-600 mt-1">
+                          <span className="font-mono text-[10px]">{log.timestamp}</span>
+                          <span className="mx-2">•</span>
+                          <span className="text-emerald-700 font-medium">{log.authorizedBy}</span>
+                        </div>
+                      </div>
+                      <ShieldCheck className="h-5 w-5 text-emerald-500 opacity-50" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 text-center text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg">
+                  No actions recorded in current session.
+                </div>
+              )}
             </div>
           </div>
         )}
