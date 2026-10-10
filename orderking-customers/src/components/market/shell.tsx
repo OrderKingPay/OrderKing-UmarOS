@@ -167,7 +167,7 @@ export function CustomerShell({
           >
             <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-1">
             <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-fg" />
-            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-fg" />
+            <NavItem to="/earn" icon={Gift} label="Earn" active={path.startsWith("/earn")} colorClass="text-emerald-400" />
             
             
             <li className="relative -top-2 flex w-full justify-center">

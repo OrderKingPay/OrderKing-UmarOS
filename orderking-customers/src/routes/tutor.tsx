@@ -72,12 +72,12 @@ function IntelligencePage() {
   const [subject, setSubject] = useState("");
   const [language, setLanguage] = useState("Auto (Detect Native Language)");
   const [difficulty, setDifficulty] = useState("Intermediate");
-  const [tone, setTone] = useState("Socratic (Ask Questions)");
+  const [tone, setTone] = useState("Direct Easy Exam Answers");
   const [goal, setGoal] = useState("Concept Mastery");
   const [showConfig, setShowConfig] = useState(false);
   
   const [history, setHistory] = useState<{role: 'user' | 'assistant', content: string}[]>([
-    { role: 'assistant', content: "Academic Intelligence initialized. Please specify your curriculum parameters and submit your query." }
+    { role: 'assistant', content: "Indian Exams AI Tutor (100% Native) initialized. Please specify your curriculum parameters and submit your query." }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -118,7 +118,7 @@ function IntelligencePage() {
           <div className="flex items-center justify-between relative z-10">
             <h1 className="text-xl font-medium text-white flex items-center gap-2 tracking-tight">
               <BrainCircuit className="text-zinc-400 size-5" />
-              Academic Intelligence
+              Indian Exams AI Tutor (100% Native)
             </h1>
             <button 
               onClick={() => setShowConfig(!showConfig)}
