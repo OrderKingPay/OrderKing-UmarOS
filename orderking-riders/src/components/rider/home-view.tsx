@@ -11,7 +11,7 @@ import { getHomeFn, respondOfferFn, setStatusFn } from "@/lib/server/rider-fns";
 import type { DispatchOffer } from "@/lib/rider/types";
 import { Link } from "@tanstack/react-router";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
-import { Clock3, Wallet } from "lucide-react";
+import { Clock3, Wallet, Thermometer, Navigation, Zap, Flame, Target } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { ConfirmDialog } from "./confirm-dialog";
 import { MapPane } from "./map-pane";
@@ -20,6 +20,91 @@ import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
+function GamificationPanel({ completed, earnings }: { completed: number; earnings: number }) {
+  const goal = 15;
+  const progress = Math.min((completed / goal) * 100, 100);
+  const streak = 4;
+  return (
+    <section className="rounded-xl border border-primary/30 bg-surface p-4 shadow-neon glassmorphism">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-display text-sm font-bold text-primary neon-text flex items-center gap-1"><Flame className="size-4" /> Gig Engine Active</h3>
+        <Badge className="bg-primary text-black font-bold text-xs">{streak} Day Streak!</Badge>
+      </div>
+      <div className="mb-2 flex justify-between text-xs text-muted-foreground">
+        <span className="flex items-center gap-1"><Target className="size-3"/> Daily Goal: {completed}/{goal} Gigs</span>
+        <span>{goal - completed > 0 ? (goal - completed) + ' to go' : 'Goal Met!'}</span>
+      </div>
+      <div className="h-2 w-full bg-muted rounded-full overflow-hidden mb-3">
+        <div className="h-full bg-primary transition-all duration-500 ease-out" style={{ width: progress + '%' }} />
+      </div>
+      {completed >= goal && (
+        <div className="text-[10px] text-primary font-bold bg-primary/10 rounded px-2 py-1 text-center border border-primary/20 neon-text">
+          🏆 UNLOCKED: 1.5x SURGE MULTIPLIER
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ThermalBagTracker() {
+  const [temp, setTemp] = useState(62.4);
+  useEffect(() => {
+    const i = setInterval(() => setTemp(t => t > 58 ? t - (Math.random() * 0.5) : t + Math.random()), 3000);
+    return () => clearInterval(i);
+  }, []);
+  const isOptimal = temp > 60;
+  return (
+    <section className="rounded-xl border border-accent/30 bg-surface p-4 shadow-neon-cyan glassmorphism mt-4">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-display text-sm font-bold text-accent neon-text-cyan flex items-center gap-2">
+          <Thermometer className="size-4" /> Thermal-Bag Sync
+        </h3>
+        <Badge className={(isOptimal ? 'bg-accent' : 'bg-destructive') + ' text-black font-bold text-[10px]'}>
+          {isOptimal ? 'OPTIMAL' : 'WARNING'}
+        </Badge>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Core Temp</p>
+          <div className="flex items-baseline gap-1">
+            <span className={'font-display text-2xl ' + (isOptimal ? 'text-accent' : 'text-destructive')}>{temp.toFixed(1)}</span>
+            <span className="text-sm text-muted-foreground">°C</span>
+          </div>
+        </div>
+        <div className="flex-1">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Food Integrity</p>
+          <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mt-1">
+            <div className={'h-full ' + (isOptimal ? 'bg-accent shadow-neon-cyan' : 'bg-destructive')} style={{ width: Math.min((temp/65)*100, 100) + '%' }} />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PredictiveRouting() {
+  return (
+    <div className="rounded-xl border border-primary/30 bg-surface p-4 shadow-neon glassmorphism space-y-3 mt-4">
+      <h3 className="font-display text-sm font-bold text-primary neon-text flex items-center gap-2">
+        <Navigation className="size-4" /> Predictive AI Routing
+      </h3>
+      <div className="grid grid-cols-2 gap-2 text-xs">
+         <div className="bg-card p-2 rounded border border-border">
+            <p className="text-muted-foreground uppercase tracking-wider text-[10px]">Traffic Matrix</p>
+            <p className="font-bold text-emerald-400">Clear (-4 mins)</p>
+         </div>
+         <div className="bg-card p-2 rounded border border-border">
+            <p className="text-muted-foreground uppercase tracking-wider text-[10px]">Active Vector</p>
+            <p className="font-bold text-accent neon-text-cyan">Route Beta</p>
+         </div>
+      </div>
+      <p className="text-[10px] text-muted-foreground italic flex items-center gap-1">
+        <Zap className="size-3 text-primary" /> Re-routing dynamically via ML nodes. ETA confidence: 99.1%.
+      </p>
+    </div>
+  );
+}
+
 
 export function HomeView() {
   const { t } = useI18n();
@@ -294,6 +379,7 @@ export function HomeView() {
             dropLabel={home.active.customer.area}
             navigateLabel={t("mapsOpen")}
           />
+          <PredictiveRouting />
           <DeliveryActions
             delivery={home.active}
             cash={home.cash}

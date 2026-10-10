@@ -7,7 +7,7 @@ import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export type KingPaySection = "pay" | "garage" | "loan" | "travel" | "bills" | "passbook" | "account";
+export type KingPaySection = "pay" | "garage" | "loan" | "travel" | "bills" | "passbook" | "account" | "wealth";
 
 type Props = {
   children: ReactNode;
@@ -55,6 +55,23 @@ export function KingPayShell({
 
           {/* Right Controls: Wallet Balance, Travel Shortcut & Notifications */}
           <div className="flex items-center gap-2">
+            {/* Wealth & Affiliate Quick Pill */}
+            <button
+              type="button"
+              onClick={() => onSelectSection("wealth")}
+              className={`hidden sm:flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold transition shadow-xs ${
+                activeSection === "wealth"
+                  ? "border-amber-500/50 bg-amber-500/15 text-amber-500 ring-1 ring-amber-500/30"
+                  : "border-border bg-surface-2 text-muted hover:text-fg"
+              }`}
+            >
+              <Sparkles className="size-3.5 text-amber-500" />
+              <span>Wealth</span>
+              <span className="rounded-full bg-emerald-500/10 text-emerald-500 px-1 py-0.2 text-[9px] font-extrabold">
+                Earn
+              </span>
+            </button>
+
             {/* Travel / Flights Quick Pill */}
             <button
               type="button"
@@ -66,7 +83,7 @@ export function KingPayShell({
               }`}
             >
               <Plane className="size-3.5 text-cyan-500" />
-              <span>Flights &amp; Travel</span>
+              <span>Travel</span>
               <span className="rounded-full bg-[#D4AF37]/10 text-emerald-600 dark:text-emerald-300 px-1 py-0.2 text-[9px] font-extrabold">
                 ₹0 Fee
               </span>
