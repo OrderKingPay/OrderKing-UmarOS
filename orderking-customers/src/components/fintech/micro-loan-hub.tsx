@@ -52,7 +52,7 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
       <div className="relative overflow-hidden rounded-3xl border-2 border-emerald-500/30 bg-emerald-500/5 p-6 sm:p-10 shadow-xl">
         <div className="flex flex-col md:flex-row gap-8 items-center">
           <div className="flex-1 space-y-4 text-center md:text-left">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-600">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-[#D4AF37]/10 px-3 py-1 text-xs font-bold text-emerald-600">
               <Zap className="size-3.5" /> Powered by NBFC Partners
             </div>
             <h2 className="font-display text-3xl sm:text-4xl font-black text-emerald-700 dark:text-emerald-400">
@@ -76,13 +76,13 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
               <div className="bg-surface rounded-2xl p-6 border border-border shadow-sm text-center">
                 <h3 className="text-xl font-bold mb-2">Check Eligibility</h3>
                 <p className="text-sm text-muted mb-6">Takes only 2 minutes. Does not affect your CIBIL score.</p>
-                <Button onClick={() => setShowApply(true)} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl py-6 text-lg font-bold">
+                <Button onClick={() => setShowApply(true)} className="w-full bg-emerald-600 hover:bg-emerald-700 text-fg rounded-xl py-6 text-lg font-bold">
                   Start Application
                 </Button>
               </div>
             ) : result ? (
               <div className="bg-emerald-500/10 rounded-2xl p-6 border border-emerald-500/30 text-center animate-in zoom-in-95">
-                <div className="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-emerald-500 text-fg rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 className="w-10 h-10" />
                 </div>
                 <h3 className="text-2xl font-black text-emerald-600 mb-2">₹{result.disbursedAmount.toLocaleString("en-IN")} Approved!</h3>
@@ -149,7 +149,7 @@ export function MicroLoanHub({ walletBalance, onDisburseToWallet }: MicroLoanHub
                       onChange={e => setAmount(e.target.value)}
                     />
                   </div>
-                  <Button type="submit" disabled={loading} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl py-6 font-bold mt-2">
+                  <Button type="submit" disabled={loading} className="w-full bg-emerald-600 hover:bg-emerald-700 text-fg rounded-xl py-6 font-bold mt-2">
                     {loading ? <Loader2 className="animate-spin mr-2" /> : "Verify & Disburse"}
                   </Button>
                 </div>

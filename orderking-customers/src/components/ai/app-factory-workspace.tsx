@@ -116,7 +116,7 @@ export function AppFactoryWorkspace({
             size="sm"
             onClick={handleRunBuild}
             disabled={isBuilding}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold"
+            className="bg-emerald-600 hover:bg-emerald-700 text-fg text-xs font-bold"
           >
             {isBuilding ? (
               <>
@@ -141,7 +141,7 @@ export function AppFactoryWorkspace({
               onClick={() => handleSelectBlueprint(bp)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${
                 selectedBlueprint.id === bp.id
-                  ? "bg-primary text-white shadow-xs"
+                  ? "bg-primary text-fg shadow-xs"
                   : "bg-surface-2 text-muted hover:text-fg border border-border"
               }`}
             >

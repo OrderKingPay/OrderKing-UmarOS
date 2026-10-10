@@ -17,7 +17,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="text-4xl">😕</div>
           <h2 className="text-xl font-semibold">Something went wrong</h2>
           <p className="max-w-sm text-sm text-muted">{this.state.error?.message ?? "An unexpected error occurred"}</p>
-          <button className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white" onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}>Reload Experience</button>
+          <button className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-fg" onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}>Reload Experience</button>
         </div>
       );
     }

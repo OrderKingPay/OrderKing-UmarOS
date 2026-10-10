@@ -46,7 +46,7 @@ export function DependencyInspectorHub() {
           <div>
             <div className="flex items-center gap-2">
               <Key className="h-6 w-6 text-sky-400" />
-              <h2 className="text-xl font-bold text-white">Dependency Inspector & Ecosystem Discovery (§27, §30)</h2>
+              <h2 className="text-xl font-bold text-fg">Dependency Inspector & Ecosystem Discovery (§27, §30)</h2>
               <Badge tone="primary">Zero-Fabrication Reality</Badge>
             </div>
             <p className="mt-1 text-sm text-slate-300">
@@ -69,7 +69,7 @@ export function DependencyInspectorHub() {
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-sky-500/20 pt-4">
           <div className="rounded-lg bg-black/40 p-3 border border-sky-500/20">
             <span className="text-xs text-slate-400">Total Connectors</span>
-            <div className="text-2xl font-bold text-white">{data.total}</div>
+            <div className="text-2xl font-bold text-fg">{data.total}</div>
           </div>
           <div className="rounded-lg bg-black/40 p-3 border border-sky-500/20">
             <span className="text-xs text-slate-400">Direct API Configured</span>
@@ -93,7 +93,7 @@ export function DependencyInspectorHub() {
           className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
             activeTab === "DEPENDENCIES"
               ? "bg-sky-500 text-black font-bold"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-fg"
           }`}
         >
           Environment Dependencies ({data.total})
@@ -103,7 +103,7 @@ export function DependencyInspectorHub() {
           className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
             activeTab === "ECOSYSTEM"
               ? "bg-sky-500 text-black font-bold"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-fg"
           }`}
         >
           Newly Discovered AI & APIs ({DISCOVERED_ECOSYSTEM_CAPABILITIES.length})
@@ -128,7 +128,7 @@ export function DependencyInspectorHub() {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">{dep.name}</span>
+                      <span className="font-semibold text-fg">{dep.name}</span>
                       <span className="font-mono text-xs text-sky-400">{dep.envVar}</span>
                     </div>
                     <p className="mt-1 text-xs text-slate-400">{dep.description}</p>
@@ -173,7 +173,7 @@ export function DependencyInspectorHub() {
                       {selectedDep.status}
                     </Badge>
                   </div>
-                  <h3 className="mt-1 text-lg font-bold text-white">{selectedDep.name}</h3>
+                  <h3 className="mt-1 text-lg font-bold text-fg">{selectedDep.name}</h3>
                   <p className="font-mono text-xs text-slate-400">{selectedDep.envVar}</p>
                 </div>
 
@@ -205,7 +205,7 @@ export function DependencyInspectorHub() {
                     href={selectedDep.setupGuideUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-xs font-semibold text-white hover:bg-sky-500"
+                    className="flex items-center justify-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-xs font-semibold text-fg hover:bg-sky-500"
                   >
                     Open Official Key Console
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -238,7 +238,7 @@ export function DependencyInspectorHub() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-amber-400" />
-                  <h3 className="font-bold text-white">{cap.name}</h3>
+                  <h3 className="font-bold text-fg">{cap.name}</h3>
                 </div>
                 <Badge tone={cap.status === "INTEGRATED" ? "primary" : "neutral"}>
                   {cap.status}

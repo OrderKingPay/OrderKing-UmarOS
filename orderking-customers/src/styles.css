@@ -1,3 +1,4 @@
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @source "./**/*.{js,ts,jsx,tsx}";
@@ -6,19 +7,19 @@
   --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Playfair Display", ui-serif, Georgia, "Times New Roman", serif;
   --color-bg: #000000;
-  --color-surface: #111111;
-  --color-surface-2: #222222;
-  --color-fg: #F8FAFC;
-  --color-muted: #94A3B8;
-  --color-subtle: #64748B;
+  --color-surface: #0f0f0f;
+  --color-surface-2: #1a1a1a;
+  --color-fg: #ffffff;
+  --color-muted: #a1a1aa;
+  --color-subtle: #71717a;
   --color-primary: #D4AF37;
   --color-primary-fg: #000000;
   --color-accent: #F59E0B;
-  --color-border: color-mix(in oklab, var(--color-fg) 10%, transparent);
-  --color-border-strong: color-mix(in oklab, var(--color-fg) 20%, transparent);
-  --color-danger: #DC2626;
-  --color-success: #16A34A;
-  --color-warn: #D97706;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-strong: rgba(212, 175, 55, 0.3);
+  --color-danger: #EF4444;
+  --color-success: #10B981;
+  --color-warn: #F59E0B;
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -49,8 +50,8 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    font-weight: 550;
-    letter-spacing: -0.03em;
+    font-weight: 500;
+    letter-spacing: -0.02em;
     line-height: 1.15;
     text-wrap: balance;
   }
@@ -59,7 +60,7 @@
     cursor: pointer;
   }
   :focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 1px solid var(--color-primary);
     outline-offset: 2px;
   }
 }
@@ -73,3 +74,4 @@
     transition-duration: 0.01ms !important;
   }
 }
+

@@ -96,11 +96,11 @@ export function SystemMasterSettingsModal({ isOpen, onClose }: Props) {
               <Server className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">System External Dependencies</h2>
-              <p className="text-[10px] text-zinc-400">Manage real API keys to unlock platform capabilities</p>
+              <h2 className="text-sm font-bold text-fg">System External Dependencies</h2>
+              <p className="text-[10px] text-muted">Manage real API keys to unlock platform capabilities</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-white/10">
+          <button onClick={onClose} className="p-2 text-muted hover:text-fg rounded-lg hover:bg-white/10">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -116,55 +116,55 @@ export function SystemMasterSettingsModal({ isOpen, onClose }: Props) {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-xs font-bold text-white flex items-center gap-2">
+            <h3 className="text-xs font-bold text-fg flex items-center gap-2">
               <Key className="w-4 h-4 text-emerald-400" />
               LLM Provider API Keys
             </h3>
 
             {/* OpenAI */}
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-zinc-400">OPENAI_API_KEY (GPT-4o, o3-mini)</label>
+              <label className="text-[10px] font-mono text-muted">OPENAI_API_KEY (GPT-4o, o3-mini)</label>
               <input
                 type="password"
                 value={openaiKey}
                 onChange={(e) => setOpenaiKey(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500 font-mono"
+                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
                 placeholder="sk-proj-..."
               />
             </div>
 
             {/* Anthropic */}
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-zinc-400">ANTHROPIC_API_KEY (Claude 3.7)</label>
+              <label className="text-[10px] font-mono text-muted">ANTHROPIC_API_KEY (Claude 3.7)</label>
               <input
                 type="password"
                 value={anthropicKey}
                 onChange={(e) => setAnthropicKey(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500 font-mono"
+                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
                 placeholder="sk-ant-..."
               />
             </div>
 
             {/* Gemini */}
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-zinc-400">GEMINI_API_KEY (Gemini 2.0)</label>
+              <label className="text-[10px] font-mono text-muted">GEMINI_API_KEY (Gemini 2.0)</label>
               <input
                 type="password"
                 value={geminiKey}
                 onChange={(e) => setGeminiKey(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500 font-mono"
+                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
                 placeholder="AIza..."
               />
             </div>
 
             {/* xAI */}
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-zinc-400">XAI_API_KEY (Grok 2)</label>
+              <label className="text-[10px] font-mono text-muted">XAI_API_KEY (Grok 2)</label>
               <input
                 type="password"
                 value={xaiKey}
                 onChange={(e) => setXaiKey(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500 font-mono"
+                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
                 placeholder="xai-..."
               />
             </div>
@@ -183,17 +183,17 @@ export function SystemMasterSettingsModal({ isOpen, onClose }: Props) {
           {/* Results */}
           {testResults.length > 0 && (
             <div className="space-y-2 mt-4 p-4 bg-black/40 border border-white/5 rounded-xl">
-              <h3 className="text-xs font-bold text-white mb-3">Live Server Verification Logs</h3>
+              <h3 className="text-xs font-bold text-fg mb-3">Live Server Verification Logs</h3>
               {testResults.map((r, idx) => (
                 <div key={idx} className="flex items-start justify-between text-[11px] pb-2 border-b border-white/5 last:border-0 last:pb-0">
                   <div className="flex items-start gap-2">
                     {r.success ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 mt-0.5" /> : <X className="w-3.5 h-3.5 text-red-500 mt-0.5" />}
                     <div>
-                      <span className="font-bold text-zinc-300">{r.modelId}</span>
-                      <p className="text-zinc-500 font-mono">{r.message}</p>
+                      <span className="font-bold text-gray-300">{r.modelId}</span>
+                      <p className="text-subtle font-mono">{r.message}</p>
                     </div>
                   </div>
-                  <span className={`font-mono ${r.success ? "text-emerald-400" : "text-zinc-500"}`}>{r.latencyMs}ms</span>
+                  <span className={`font-mono ${r.success ? "text-emerald-400" : "text-subtle"}`}>{r.latencyMs}ms</span>
                 </div>
               ))}
             </div>

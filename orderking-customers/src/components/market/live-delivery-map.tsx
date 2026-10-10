@@ -66,7 +66,7 @@ export function LiveDeliveryMap({
       </div>
 
       {/* Vector Live Route Simulation */}
-      <div className="relative h-44 w-full bg-zinc-900/95 p-4 text-white">
+      <div className="relative h-44 w-full bg-surface/95 p-4 text-fg">
         {/* Road Track Line */}
         <div className="absolute left-8 right-8 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-zinc-700">
           <div
@@ -77,10 +77,10 @@ export function LiveDeliveryMap({
 
         {/* Restaurant Pin */}
         <div className="absolute left-6 top-1/2 -translate-y-1/2 text-center">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-md">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-fg shadow-md">
             🍳
           </div>
-          <span className="mt-1 block max-w-[70px] truncate text-[10px] text-zinc-300 font-medium">
+          <span className="mt-1 block max-w-[70px] truncate text-[10px] text-gray-300 font-medium">
             {restaurantName}
           </span>
         </div>
@@ -91,7 +91,7 @@ export function LiveDeliveryMap({
             className="absolute top-1/2 -translate-y-1/2 transition-all duration-1000 ease-out"
             style={{ left: `calc(2rem + ${currentProgress * 75}%)` }}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-success text-white shadow-lg">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-success text-fg shadow-lg">
               🛵
             </div>
             <span className="mt-1 block -translate-x-3 text-[10px] font-bold text-success-light">
@@ -102,10 +102,10 @@ export function LiveDeliveryMap({
 
         {/* Destination Customer Pin */}
         <div className="absolute right-6 top-1/2 -translate-y-1/2 text-center">
-          <div className={`flex h-8 w-8 items-center justify-center rounded-full text-white shadow-md ${isDelivered ? "bg-success" : "bg-zinc-600"}`}>
+          <div className={`flex h-8 w-8 items-center justify-center rounded-full text-fg shadow-md ${isDelivered ? "bg-success" : "bg-zinc-600"}`}>
             📍
           </div>
-          <span className="mt-1 block max-w-[70px] truncate text-[10px] text-zinc-300 font-medium">
+          <span className="mt-1 block max-w-[70px] truncate text-[10px] text-gray-300 font-medium">
             You
           </span>
         </div>

@@ -56,9 +56,9 @@ function TrackingRoute() {
     <div className="relative w-full h-dvh bg-black flex flex-col">
       <div className="absolute top-0 left-0 w-full p-4 z-10 flex items-center gap-4 bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
         <Link to="/" className="pointer-events-auto p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors backdrop-blur">
-          <ArrowLeft className="w-5 h-5 text-white" />
+          <ArrowLeft className="w-5 h-5 text-fg" />
         </Link>
-        <h1 className="text-white font-semibold text-lg tracking-wide drop-shadow-md">
+        <h1 className="text-fg font-semibold text-lg tracking-wide drop-shadow-md">
           Live Tracking <span className="text-primary ml-2 text-sm uppercase">Live Realtime</span>
         </h1>
       </div>
@@ -71,7 +71,7 @@ function TrackingRoute() {
             initialLng={position.lng}
           />
         ) : (
-          <div className="flex h-full items-center justify-center px-6 text-center text-white/80">
+          <div className="flex h-full items-center justify-center px-6 text-center text-fg/80">
             {loading
               ? "Loading live tracking…"
               : "Live rider location is not available yet. Tracking will start when verified telemetry arrives."}

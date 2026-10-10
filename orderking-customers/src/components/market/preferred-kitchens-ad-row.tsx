@@ -120,7 +120,7 @@ export function PreferredKitchensAdRow({ className = "" }: { className?: string 
               <span className="text-2xl group-hover:scale-110 transition-transform">{k.emoji}</span>
               
               {/* Star Rating Badge */}
-              <span className="absolute -bottom-1 -right-1 flex items-center gap-0.5 rounded-full bg-emerald-600 px-1 py-0.2 text-[9px] font-black text-white shadow-xs">
+              <span className="absolute -bottom-1 -right-1 flex items-center gap-0.5 rounded-full bg-emerald-600 px-1 py-0.2 text-[9px] font-black text-fg shadow-xs">
                 <span>★</span>
                 <span>{k.rating}</span>
               </span>

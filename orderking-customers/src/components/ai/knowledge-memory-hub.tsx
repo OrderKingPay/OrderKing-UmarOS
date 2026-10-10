@@ -92,7 +92,7 @@ export function KnowledgeMemoryHub() {
           <div>
             <div className="flex items-center gap-2">
               <BookOpen className="h-6 w-6 text-teal-400" />
-              <h2 className="text-xl font-bold text-white">Searchable Knowledge Engine & Layered Memory (§20, §21)</h2>
+              <h2 className="text-xl font-bold text-fg">Searchable Knowledge Engine & Layered Memory (§20, §21)</h2>
               <Badge tone="primary">Founder Controllable</Badge>
             </div>
             <p className="mt-1 text-sm text-slate-300">
@@ -103,7 +103,7 @@ export function KnowledgeMemoryHub() {
             <Button
               variant="primary"
               onClick={() => setShowAddDoc((prev) => !prev)}
-              className="flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold"
+              className="flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-fg font-semibold"
             >
               <Upload className="h-4 w-4" />
               Ingest Document
@@ -115,7 +115,7 @@ export function KnowledgeMemoryHub() {
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-teal-500/20 pt-4">
           <div className="rounded-lg bg-black/40 p-3 border border-teal-500/20">
             <span className="text-xs text-slate-400">Ingested Documents</span>
-            <div className="text-2xl font-bold text-white">{docs.length}</div>
+            <div className="text-2xl font-bold text-fg">{docs.length}</div>
           </div>
           <div className="rounded-lg bg-black/40 p-3 border border-teal-500/20">
             <span className="text-xs text-slate-400">Indexed Tokens</span>
@@ -141,7 +141,7 @@ export function KnowledgeMemoryHub() {
           className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
             activeTab === "KNOWLEDGE_BASE"
               ? "bg-teal-500 text-black font-bold"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-fg"
           }`}
         >
           Knowledge Base & Documents ({docs.length})
@@ -151,7 +151,7 @@ export function KnowledgeMemoryHub() {
           className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
             activeTab === "AGENT_MEMORY"
               ? "bg-teal-500 text-black font-bold"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-fg"
           }`}
         >
           Layered Agent Memory ({memories.length})
@@ -163,7 +163,7 @@ export function KnowledgeMemoryHub() {
           {/* Document Ingestion Form */}
           {showAddDoc && (
             <div className="rounded-xl border border-teal-500/40 bg-slate-950/90 p-5 space-y-4">
-              <h3 className="font-bold text-white">Ingest New Document into Knowledge Base</h3>
+              <h3 className="font-bold text-fg">Ingest New Document into Knowledge Base</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-slate-400">Document Title</label>
@@ -171,7 +171,7 @@ export function KnowledgeMemoryHub() {
                     placeholder="e.g. White-Label Delivery Platform SLA"
                     value={newDocTitle}
                     onChange={(e) => setNewDocTitle(e.target.value)}
-                    className="mt-1 bg-black/50 border-slate-700 text-white"
+                    className="mt-1 bg-black/50 border-slate-700 text-fg"
                   />
                 </div>
                 <div>
@@ -179,7 +179,7 @@ export function KnowledgeMemoryHub() {
                   <select
                     value={newDocCategory}
                     onChange={(e) => setNewDocCategory(e.target.value as any)}
-                    className="mt-1 w-full rounded-md border border-slate-700 bg-black/50 px-3 py-2 text-sm text-white"
+                    className="mt-1 w-full rounded-md border border-slate-700 bg-black/50 px-3 py-2 text-sm text-fg"
                   >
                     <option value="SPEC">Specification</option>
                     <option value="CONTRACT">Contract & Agreement</option>
@@ -197,7 +197,7 @@ export function KnowledgeMemoryHub() {
                   placeholder="Paste raw markdown, contract text, or technical guidelines..."
                   value={newDocContent}
                   onChange={(e) => setNewDocContent(e.target.value)}
-                  className="mt-1 w-full rounded-md border border-slate-700 bg-black/50 p-3 text-sm text-white font-mono"
+                  className="mt-1 w-full rounded-md border border-slate-700 bg-black/50 p-3 text-sm text-fg font-mono"
                 />
               </div>
 
@@ -219,7 +219,7 @@ export function KnowledgeMemoryHub() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              className="bg-black/40 border-slate-700 text-white"
+              className="bg-black/40 border-slate-700 text-fg"
             />
             <Button variant="primary" onClick={handleSearch} className="shrink-0 bg-teal-600 hover:bg-teal-500">
               <Search className="h-4 w-4 mr-1.5" />
@@ -246,7 +246,7 @@ export function KnowledgeMemoryHub() {
                   <Badge tone="primary">{doc.category}</Badge>
                   <span className="text-[11px] text-slate-500 font-mono">{doc.id}</span>
                 </div>
-                <h4 className="mt-2 font-semibold text-white text-sm line-clamp-1">{doc.title}</h4>
+                <h4 className="mt-2 font-semibold text-fg text-sm line-clamp-1">{doc.title}</h4>
                 <p className="mt-1 text-xs text-slate-400 line-clamp-3">{doc.content}</p>
 
                 <div className="mt-3 flex items-center justify-between border-t border-slate-900 pt-2 text-[11px] text-slate-500">
@@ -262,7 +262,7 @@ export function KnowledgeMemoryHub() {
             <div className="rounded-xl border border-slate-800 bg-slate-950/90 p-5 space-y-3">
               <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                 <div>
-                  <h3 className="text-lg font-bold text-white">{selectedDoc.title}</h3>
+                  <h3 className="text-lg font-bold text-fg">{selectedDoc.title}</h3>
                   <span className="text-xs text-slate-400">Category: {selectedDoc.category}</span>
                 </div>
                 <Button variant="outline" onClick={() => setSelectedDoc(null)}>

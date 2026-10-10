@@ -63,7 +63,7 @@ export function TrainBookingEngine() {
 
         <Button 
           onClick={handleRedirect}
-          className="w-full text-lg px-8 py-7 rounded-2xl shadow-lg shadow-indigo-500/25 bg-indigo-600 hover:bg-indigo-700 text-white font-black"
+          className="w-full text-lg px-8 py-7 rounded-2xl shadow-lg shadow-indigo-500/25 bg-indigo-600 hover:bg-indigo-700 text-fg font-black"
         >
           Search Trains (₹0 PG Fee) <ArrowRight className="ml-2 size-5" />
         </Button>

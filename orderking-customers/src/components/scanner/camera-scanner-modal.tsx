@@ -406,7 +406,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 backdrop-blur-md">
       <div className="w-full max-w-md rounded-3xl border-2 border-amber-400/80 bg-surface shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-[#0D3B2E] via-emerald-900 to-[#07241C] p-4 text-white">
+        <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-[#0D3B2E] via-emerald-900 to-[#07241C] p-4 text-fg">
           <div className="flex items-center gap-2.5">
             <div className="flex size-9 items-center justify-center rounded-xl bg-amber-400 text-slate-950 font-black shadow-sm">
               <Camera className="size-5" />
@@ -432,7 +432,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
               stopCamera();
               onClose();
             }}
-            className="rounded-full p-1.5 text-white/80 hover:bg-white/10 transition text-lg"
+            className="rounded-full p-1.5 text-fg/80 hover:bg-white/10 transition text-lg"
             aria-label="Close Scanner"
           >
             <X className="size-5" />
@@ -446,7 +446,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
             onClick={() => setScanMode("camera")}
             className={`flex-1 rounded-lg py-1.5 transition flex items-center justify-center gap-1.5 ${
               scanMode === "camera"
-                ? "bg-primary text-white shadow-xs"
+                ? "bg-primary text-fg shadow-xs"
                 : "text-muted hover:text-fg"
             }`}
           >
@@ -475,7 +475,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
             }}
             className={`flex-1 rounded-lg py-1.5 transition flex items-center justify-center gap-1.5 ${
               scanMode === "manual"
-                ? "bg-primary text-white shadow-xs"
+                ? "bg-primary text-fg shadow-xs"
                 : "text-muted hover:text-fg"
             }`}
           >
@@ -538,7 +538,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
                   className={`rounded-full px-2.5 py-1 text-[11px] font-bold backdrop-blur-md transition flex items-center gap-1 shadow-md ${
                     isFarZoomActive
                       ? "bg-amber-400 text-black border border-amber-500 font-extrabold"
-                      : "bg-black/60 text-white/90 border border-white/20"
+                      : "bg-black/60 text-fg/90 border border-white/20"
                   }`}
                   title="Toggle Far Distance Super-Resolution"
                 >
@@ -554,7 +554,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
                     className={`rounded-full p-2 backdrop-blur-md transition shadow-md ${
                       isTorchOn
                         ? "bg-amber-400 text-black"
-                        : "bg-black/60 text-white/90 border border-white/20"
+                        : "bg-black/60 text-fg/90 border border-white/20"
                     }`}
                     title="Toggle Flashlight"
                   >
@@ -576,7 +576,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
                         className={`rounded-full px-2 py-0.5 text-[10px] font-mono font-bold transition ${
                           zoomLevel === z
                             ? "bg-amber-400 text-black"
-                            : "text-white/80 hover:text-white"
+                            : "text-fg/80 hover:text-fg"
                         }`}
                       >
                         {z}x
@@ -584,14 +584,14 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
                     ))}
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1 text-[10px] text-white/80 bg-black/60 px-2.5 py-1 rounded-full border border-white/20 backdrop-blur-md">
+                  <div className="flex items-center gap-1 text-[10px] text-fg/80 bg-black/60 px-2.5 py-1 rounded-full border border-white/20 backdrop-blur-md">
                     <ZoomIn className="size-3" />
                     <span>Auto-Focus Active</span>
                   </div>
                 )}
 
                 {/* Upload QR Image from Gallery */}
-                <label className="cursor-pointer rounded-full bg-black/70 hover:bg-black/90 px-3 py-1 text-[11px] font-bold text-white border border-white/20 backdrop-blur-md flex items-center gap-1.5 transition">
+                <label className="cursor-pointer rounded-full bg-black/70 hover:bg-black/90 px-3 py-1 text-[11px] font-bold text-fg border border-white/20 backdrop-blur-md flex items-center gap-1.5 transition">
                   <ImageIcon className="size-3.5 text-amber-300" />
                   <span>Gallery</span>
                   <input
@@ -656,7 +656,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
             <Button
               type="submit"
               variant="primary"
-              className="w-full font-bold text-xs py-2.5 bg-primary text-white shadow"
+              className="w-full font-bold text-xs py-2.5 bg-primary text-fg shadow"
             >
               ⚡ Proceed to Pay
             </Button>

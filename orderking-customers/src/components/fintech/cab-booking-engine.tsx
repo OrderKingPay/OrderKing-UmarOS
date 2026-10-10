@@ -68,7 +68,7 @@ export function CabBookingEngine() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button 
             onClick={handleUber}
-            className="w-full sm:w-auto text-base px-8 py-6 rounded-2xl shadow-lg bg-black hover:bg-gray-800 text-white font-black"
+            className="w-full sm:w-auto text-base px-8 py-6 rounded-2xl shadow-lg bg-black hover:bg-gray-800 text-fg font-black"
           >
             Book Uber <ArrowRight className="ml-2 size-5" />
           </Button>

@@ -67,7 +67,7 @@ export function KingPayShell({
             >
               <Plane className="size-3.5 text-cyan-500" />
               <span>Flights &amp; Travel</span>
-              <span className="rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 px-1 py-0.2 text-[9px] font-extrabold">
+              <span className="rounded-full bg-[#D4AF37]/10 text-emerald-600 dark:text-emerald-300 px-1 py-0.2 text-[9px] font-extrabold">
                 ₹0 Fee
               </span>
             </button>
@@ -81,7 +81,7 @@ export function KingPayShell({
               <button
                 type="button"
                 onClick={onAddMoneyClick}
-                className="rounded-full bg-primary px-1.5 py-0.2 text-[9px] font-bold text-white hover:bg-primary/90 transition"
+                className="rounded-full bg-primary px-1.5 py-0.2 text-[9px] font-bold text-fg hover:bg-primary/90 transition"
               >
                 + Add
               </button>
@@ -97,7 +97,7 @@ export function KingPayShell({
             >
               <Bell className="size-4.5" />
               {alertsCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-rose-600 text-[9px] font-bold text-white shadow-xs animate-pulse">
+                <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-rose-600 text-[9px] font-bold text-fg shadow-xs animate-pulse">
                   {alertsCount}
                 </span>
               )}
@@ -132,7 +132,7 @@ export function KingPayShell({
           <li className="relative -top-2 flex w-full justify-center">
             <Link
               to="/king-pay"
-              className="group relative flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-full border-2 border-amber-400 bg-gradient-to-br from-amber-400 to-yellow-600 text-white shadow-[0_0_15px_rgba(251,191,36,0.4)] text-xs no-underline transition-all active:scale-95"
+              className="group relative flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-full border-2 border-amber-400 bg-gradient-to-br from-amber-400 to-yellow-600 text-fg shadow-[0_0_15px_rgba(251,191,36,0.4)] text-xs no-underline transition-all active:scale-95"
             >
               <span className="text-lg leading-none">👑</span>
               <span className="text-[8px] font-black tracking-tight leading-none">KingPay</span>

@@ -13,7 +13,7 @@ export function OfflineDetector() {
   }, []);
   if (online) return null;
   return (
-    <div className="fixed inset-x-0 top-0 z-[9999] bg-warn px-4 py-2 text-center text-sm font-medium text-white shadow-md">
+    <div className="fixed inset-x-0 top-0 z-[9999] bg-warn px-4 py-2 text-center text-sm font-medium text-fg shadow-md">
       You are offline. Some features may not work.
     </div>
   );

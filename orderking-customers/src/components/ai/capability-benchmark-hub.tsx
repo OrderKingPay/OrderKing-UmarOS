@@ -55,7 +55,7 @@ export function CapabilityBenchmarkHub() {
           <div>
             <div className="flex items-center gap-2">
               <Cpu className="h-6 w-6 text-emerald-400" />
-              <h2 className="text-xl font-bold text-white">System Capability Benchmarking Suite (§26)</h2>
+              <h2 className="text-xl font-bold text-fg">System Capability Benchmarking Suite (§26)</h2>
               <Badge tone="primary">Measured Reality Standard</Badge>
             </div>
             <p className="mt-1 text-sm text-slate-300">
@@ -66,7 +66,7 @@ export function CapabilityBenchmarkHub() {
             variant="primary"
             disabled={isRunning}
             onClick={handleRunBenchmarks}
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-fg font-semibold"
           >
             {isRunning ? (
               <>
@@ -91,7 +91,7 @@ export function CapabilityBenchmarkHub() {
             </div>
             <div className="rounded-lg bg-black/40 p-3 border border-emerald-500/20">
               <span className="text-xs text-slate-400">Tests Passing</span>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-fg">
                 {report.passedTests} / {report.totalTests}
               </div>
             </div>
@@ -146,14 +146,14 @@ export function CapabilityBenchmarkHub() {
                 <div className="flex items-center gap-3">
                   <div
                     className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                      res.passed ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"
+                      res.passed ? "bg-[#D4AF37]/10 text-emerald-400" : "bg-red-500/20 text-red-400"
                     }`}
                   >
                     {res.passed ? <CheckCircle2 className="h-5 w-5" /> : <Flame className="h-5 w-5" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">{res.name}</span>
+                      <span className="font-semibold text-fg">{res.name}</span>
                       <span className="text-xs font-mono text-slate-400">[{res.testId}]</span>
                       <Badge tone={res.passed ? "primary" : "danger"}>
                         {res.passed ? "PASSED" : "FAILED"}
@@ -187,7 +187,7 @@ export function CapabilityBenchmarkHub() {
         ) : (
           <div className="rounded-xl border border-dashed border-slate-800 p-10 text-center">
             <Sparkles className="mx-auto h-8 w-8 text-slate-500" />
-            <h3 className="mt-2 text-sm font-semibold text-white">No Benchmark Run Executed Yet</h3>
+            <h3 className="mt-2 text-sm font-semibold text-fg">No Benchmark Run Executed Yet</h3>
             <p className="mt-1 text-xs text-slate-400">
               Click &quot;Run Benchmark Suite&quot; above to execute the live 11-discipline performance tests.
             </p>

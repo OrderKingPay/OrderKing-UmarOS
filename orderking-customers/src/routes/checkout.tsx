@@ -226,7 +226,7 @@ function CheckoutPage() {
                     onClick={() => toggleInstruction(chip)}
                     className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                       active
-                        ? "border-primary bg-primary text-white"
+                        ? "border-primary bg-primary text-fg"
                         : "border-border bg-surface text-muted hover:border-primary/50"
                     }`}
                   >
@@ -262,7 +262,7 @@ function CheckoutPage() {
                     onClick={() => setTipPaise(opt.value)}
                     className={`flex flex-col items-center justify-center rounded-[var(--radius-lg)] border py-2 text-center transition ${
                       selected
-                        ? "border-primary bg-primary font-bold text-white shadow-sm"
+                        ? "border-primary bg-primary font-bold text-fg shadow-sm"
                         : "border-border bg-surface text-sm font-medium hover:bg-surface/80"
                     }`}
                   >

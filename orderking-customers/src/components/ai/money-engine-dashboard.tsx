@@ -70,7 +70,7 @@ export function MoneyEngineDashboard({
               onClick={() => setTimeframe(tf)}
               className={`px-3 py-1.5 rounded-lg transition ${
                 timeframe === tf
-                  ? "bg-primary text-white shadow-xs"
+                  ? "bg-primary text-fg shadow-xs"
                   : "text-muted hover:text-fg"
               }`}
             >
@@ -198,7 +198,7 @@ export function MoneyEngineDashboard({
 
                   <Button
                     size="sm"
-                    className="text-xs font-bold bg-primary text-white hover:bg-primary/90"
+                    className="text-xs font-bold bg-primary text-fg hover:bg-primary/90"
                     onClick={() => {
                       toast.success(`Action initiated: ${opp.nextAction}`);
                     }}

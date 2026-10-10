@@ -82,7 +82,7 @@ export function BusinessIntelligenceHub() {
           <div>
             <div className="flex items-center gap-2">
               <BarChart3 className="h-6 w-6 text-indigo-400" />
-              <h2 className="text-xl font-bold text-white">Business Intelligence & Autonomous Schedules (§15, §16)</h2>
+              <h2 className="text-xl font-bold text-fg">Business Intelligence & Autonomous Schedules (§15, §16)</h2>
               <Badge tone="primary">Empirical Reality</Badge>
             </div>
             <p className="mt-1 text-sm text-slate-300">
@@ -112,7 +112,7 @@ export function BusinessIntelligenceHub() {
           </div>
           <div className="rounded-lg bg-black/40 p-3 border border-indigo-500/20">
             <span className="text-xs text-slate-400">Total Repeat Revenue</span>
-            <div className="text-2xl font-bold text-white">
+            <div className="text-2xl font-bold text-fg">
               ₹{(report.totalRepeatRevenueInr / 100000).toFixed(2)} Lakhs
             </div>
           </div>
@@ -152,7 +152,7 @@ export function BusinessIntelligenceHub() {
         {/* Service Performance Leaderboard */}
         <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 className="font-bold text-white">Service Margin & Revenue Ranking</h3>
+            <h3 className="font-bold text-fg">Service Margin & Revenue Ranking</h3>
             <span className="text-xs text-slate-400">Ranked by Revenue</span>
           </div>
 
@@ -163,7 +163,7 @@ export function BusinessIntelligenceHub() {
                 className="rounded-lg border border-slate-800 bg-black/30 p-3 space-y-2"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-white text-sm">{svc.name}</span>
+                  <span className="font-semibold text-fg text-sm">{svc.name}</span>
                   <Badge tone="primary">{svc.averageMarginPct}% Margin</Badge>
                 </div>
                 <div className="flex items-center justify-between text-xs text-slate-400">
@@ -183,7 +183,7 @@ export function BusinessIntelligenceHub() {
           {/* Acquisition Channels */}
           <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-white">Acquisition Channel Conversion</h3>
+              <h3 className="font-bold text-fg">Acquisition Channel Conversion</h3>
               <span className="text-xs text-slate-400">Proposals to Won Deals</span>
             </div>
 
@@ -197,7 +197,7 @@ export function BusinessIntelligenceHub() {
                   <div className="flex items-center gap-4">
                     <span className="text-slate-400">{ch.wonDeals} deals won</span>
                     <span className="font-bold text-emerald-400">{ch.conversionRatePct}%</span>
-                    <span className="font-mono text-white">₹{(ch.totalRevenueInr / 1000).toFixed(0)}k</span>
+                    <span className="font-mono text-fg">₹{(ch.totalRevenueInr / 1000).toFixed(0)}k</span>
                   </div>
                 </div>
               ))}
@@ -208,7 +208,7 @@ export function BusinessIntelligenceHub() {
           <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 space-y-3">
             <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
               <AlertTriangle className="h-4 w-4 text-amber-400" />
-              <h3 className="font-bold text-white">Delivery Bottleneck Diagnosis</h3>
+              <h3 className="font-bold text-fg">Delivery Bottleneck Diagnosis</h3>
             </div>
 
             <div className="space-y-2">
@@ -232,7 +232,7 @@ export function BusinessIntelligenceHub() {
       <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 space-y-4">
         <div className="flex items-center justify-between border-b border-slate-800 pb-3">
           <div>
-            <h3 className="font-bold text-white">Autonomous Background Schedules (§16)</h3>
+            <h3 className="font-bold text-fg">Autonomous Background Schedules (§16)</h3>
             <p className="text-xs text-slate-400">
               Autonomous execution loops for opportunity hunting, prospect enrichment, and payment sweeps.
             </p>
@@ -255,7 +255,7 @@ export function BusinessIntelligenceHub() {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => handleToggleJob(job.id)}
-                    className="rounded p-1 text-slate-400 hover:text-white hover:bg-slate-800"
+                    className="rounded p-1 text-slate-400 hover:text-fg hover:bg-slate-800"
                     title={job.enabled ? "Pause Schedule" : "Resume Schedule"}
                   >
                     {job.enabled ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
@@ -276,7 +276,7 @@ export function BusinessIntelligenceHub() {
               </div>
 
               <div>
-                <h4 className="font-semibold text-white text-sm">{job.name}</h4>
+                <h4 className="font-semibold text-fg text-sm">{job.name}</h4>
                 <p className="mt-1 text-xs text-slate-400">{job.description}</p>
               </div>
 

@@ -65,7 +65,7 @@ function SettingsPage() {
                   <div className="flex items-center justify-between w-full">
                     <span className="font-display text-base font-bold">{item.native}</span>
                     {isActive && (
-                      <span className="flex size-4 items-center justify-center rounded-full bg-primary text-white">
+                      <span className="flex size-4 items-center justify-center rounded-full bg-primary text-fg">
                         <Check className="size-2.5" />
                       </span>
                     )}

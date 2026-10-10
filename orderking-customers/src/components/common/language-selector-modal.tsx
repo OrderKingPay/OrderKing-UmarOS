@@ -111,7 +111,7 @@ export function LanguageSelectorModal({
                   <div
                     className={`flex size-8 items-center justify-center rounded-lg text-xs font-bold ${
                       isSelected
-                        ? "bg-primary text-white"
+                        ? "bg-primary text-fg"
                         : "bg-surface-2 border border-border text-muted"
                     }`}
                   >
@@ -128,7 +128,7 @@ export function LanguageSelectorModal({
 
                 <div className="flex items-center gap-2">
                   {isSelected && (
-                    <span className="flex size-5 items-center justify-center rounded-full bg-primary text-white text-xs">
+                    <span className="flex size-5 items-center justify-center rounded-full bg-primary text-fg text-xs">
                       <Check className="size-3 stroke-[3]" />
                     </span>
                   )}

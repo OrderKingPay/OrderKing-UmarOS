@@ -84,7 +84,7 @@ export function RemoteWorkBoard({
         </div>
 
         <div className="flex items-center gap-2">
-          <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-mono text-xs">
+          <Badge className="bg-[#D4AF37]/10 text-emerald-700 dark:text-emerald-300 font-mono text-xs">
             ⚡ {gigs.length} Verified Contracts Available
           </Badge>
         </div>
@@ -114,7 +114,7 @@ export function RemoteWorkBoard({
                   onClick={() => setSkillFilter(skill)}
                   className={`px-2.5 py-1 rounded-lg font-bold transition shrink-0 ${
                     skillFilter === skill
-                      ? "bg-primary text-white"
+                      ? "bg-primary text-fg"
                       : "bg-surface-2 text-muted hover:text-fg border border-border"
                   }`}
                 >
@@ -175,7 +175,7 @@ export function RemoteWorkBoard({
                           : gig.applicationStatus === "INTERVIEWING"
                             ? "bg-purple-500/20 text-purple-700 dark:text-purple-300"
                             : gig.applicationStatus === "OFFER_RECEIVED"
-                              ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
+                              ? "bg-[#D4AF37]/10 text-emerald-700 dark:text-emerald-300"
                               : "bg-surface-2 text-muted"
                       }`}
                     >
@@ -281,7 +281,7 @@ export function RemoteWorkBoard({
                     <Button
                       size="sm"
                       variant={selectedGig.applicationStatus === "OFFER_RECEIVED" ? "primary" : "outline"}
-                      className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white"
+                      className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-fg"
                       onClick={() => handleUpdateStatus(selectedGig.id, "OFFER_RECEIVED")}
                     >
                       🎉 Offer Received

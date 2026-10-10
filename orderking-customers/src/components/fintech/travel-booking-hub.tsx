@@ -22,25 +22,25 @@ export function TravelBookingHub({ walletBalance, onDeductWallet, defaultTab = "
       <div className="flex gap-2 overflow-x-auto p-4 border-b border-border bg-surface hide-scrollbar">
         <button 
           onClick={() => setActiveTab("flights")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition whitespace-nowrap \${activeTab === "flights" ? "bg-primary text-white" : "bg-bg text-muted hover:text-fg"}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition whitespace-nowrap \${activeTab === "flights" ? "bg-primary text-fg" : "bg-bg text-muted hover:text-fg"}`}
         >
           <Plane className="size-4" /> Flights
         </button>
         <button 
           onClick={() => setActiveTab("trains")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition whitespace-nowrap \${activeTab === "trains" ? "bg-primary text-white" : "bg-bg text-muted hover:text-fg"}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition whitespace-nowrap \${activeTab === "trains" ? "bg-primary text-fg" : "bg-bg text-muted hover:text-fg"}`}
         >
           <Train className="size-4" /> Trains (IRCTC)
         </button>
         <button 
           onClick={() => setActiveTab("buses")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition whitespace-nowrap \${activeTab === "buses" ? "bg-primary text-white" : "bg-bg text-muted hover:text-fg"}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition whitespace-nowrap \${activeTab === "buses" ? "bg-primary text-fg" : "bg-bg text-muted hover:text-fg"}`}
         >
           <Bus className="size-4" /> Buses
         </button>
         <button 
           onClick={() => setActiveTab("cabs")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition whitespace-nowrap \${activeTab === "cabs" ? "bg-primary text-white" : "bg-bg text-muted hover:text-fg"}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition whitespace-nowrap \${activeTab === "cabs" ? "bg-primary text-fg" : "bg-bg text-muted hover:text-fg"}`}
         >
           <Car className="size-4" /> Cabs
         </button>

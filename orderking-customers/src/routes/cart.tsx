@@ -51,7 +51,7 @@ function CartPage() {
           <p className="text-sm text-muted max-w-sm mx-auto">
             Food delivery is 1,000x strictly restricted to active operational hubs. Enjoy 0% fee UPI and nationwide bill payments on King Pay!
           </p>
-          <Button asChild className="bg-primary text-white font-bold px-6 py-2 rounded-xl">
+          <Button asChild className="bg-primary text-fg font-bold px-6 py-2 rounded-xl">
             <Link to="/king-pay">Open King Pay 👑</Link>
           </Button>
         </div>

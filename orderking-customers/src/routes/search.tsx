@@ -46,7 +46,7 @@ function SearchPage() {
           <p className="text-sm text-muted max-w-sm mx-auto">
             Order King food catalog is 1,000x strictly geofenced. You can search utilities, FASTag, bills, flights, and UPI on King Pay!
           </p>
-          <Button asChild className="bg-primary text-white font-bold px-6 py-2 rounded-xl">
+          <Button asChild className="bg-primary text-fg font-bold px-6 py-2 rounded-xl">
             <Link to="/king-pay">Search on King Pay 👑</Link>
           </Button>
         </div>

@@ -49,14 +49,14 @@ function Login() {
           <div className="space-y-3 pb-3">
             <Button
               type="button"
-              className="w-full bg-[#25D366] text-white hover:bg-[#128C7E]"
+              className="w-full bg-[#25D366] text-fg hover:bg-[#128C7E]"
               onClick={() => console.log('Initiate WhatsApp OTP flow')}
             >
               Sign in with WhatsApp OTP
             </Button>
             <Button
               type="button"
-              className="w-full bg-[#0052FF] text-white hover:bg-[#0038FF]"
+              className="w-full bg-[#0052FF] text-fg hover:bg-[#0038FF]"
               onClick={() => console.log('Initiate Truecaller One-Tap flow')}
             >
               Truecaller 1-Tap Login

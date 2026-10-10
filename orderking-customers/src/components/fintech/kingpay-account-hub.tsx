@@ -94,7 +94,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-black text-fg">{displayName}</h2>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold text-emerald-600 dark:text-emerald-300 border border-emerald-500/40">
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#D4AF37]/10 px-2 py-0.5 text-[10px] font-extrabold text-emerald-600 dark:text-emerald-300 border border-emerald-500/40">
                   <CheckCircle2 className="size-3" />
                   Verified Sovereign KYC
                 </span>
@@ -159,7 +159,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
               <Button type="button" variant="outline" size="sm" onClick={() => setIsEditingProfile(false)}>
                 Cancel
               </Button>
-              <Button type="submit" size="sm" className="bg-primary text-white font-bold">
+              <Button type="submit" size="sm" className="bg-primary text-fg font-bold">
                 Save Changes
               </Button>
             </div>
@@ -219,7 +219,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
           {/* Bank 1: HDFC Bank */}
           <div className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-surface-2/50">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-blue-600 text-white font-black text-xs">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-blue-600 text-fg font-black text-xs">
                 HDFC
               </div>
               <div>
@@ -238,7 +238,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
           {/* Bank 2: State Bank of India */}
           <div className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-surface-2/50">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-sky-700 text-white font-black text-xs">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-sky-700 text-fg font-black text-xs">
                 SBI
               </div>
               <div>
@@ -252,7 +252,7 @@ export function KingPayAccountHub({ walletBalance, onOpenScanner }: KingPayAccou
           {/* Bank 3: ICICI Bank */}
           <div className="flex items-center justify-between p-3 rounded-xl border border-border/80 bg-surface-2/50">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-amber-700 text-white font-black text-xs">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-amber-700 text-fg font-black text-xs">
                 ICICI
               </div>
               <div>

@@ -126,7 +126,7 @@ export function CompanyFactoryHub() {
             size="sm"
             onClick={handleGenerateNext}
             disabled={isGenerating}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold"
+            className="bg-emerald-600 hover:bg-emerald-700 text-fg text-xs font-bold"
           >
             {isGenerating ? (
               <>

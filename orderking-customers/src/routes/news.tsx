@@ -78,7 +78,7 @@ function GovtSchemesNewsModule() {
         </div>
 
         {/* Hero Section */}
-        <div className="bg-emerald-600 px-4 py-8 text-white text-center shadow-inner relative overflow-hidden">
+        <div className="bg-emerald-600 px-4 py-8 text-fg text-center shadow-inner relative overflow-hidden">
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,white_0%,transparent_100%)]"></div>
           <ShieldCheck className="size-12 mx-auto mb-3 text-emerald-200 opacity-90" />
           <h2 className="text-2xl font-black mb-2 relative z-10 drop-shadow-md">Verified Govt Benefits</h2>
@@ -123,7 +123,7 @@ function GovtSchemesNewsModule() {
                 href={scheme.link}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-slate-900 text-white rounded-xl py-3 font-bold text-sm hover:bg-slate-800 transition shadow-sm"
+                className="w-full flex items-center justify-center gap-2 bg-slate-900 text-fg rounded-xl py-3 font-bold text-sm hover:bg-slate-800 transition shadow-sm"
               >
                 <FileText className="size-4" />
                 Apply / Learn More

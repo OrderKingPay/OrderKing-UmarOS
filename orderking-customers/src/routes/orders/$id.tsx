@@ -465,7 +465,7 @@ function OrderDetailPage() {
                           }}
                           className={`rounded-full px-2.5 py-1 text-xs font-semibold transition-all ${
                             isSelected
-                              ? "bg-emerald-600 text-white shadow-xs"
+                              ? "bg-emerald-600 text-fg shadow-xs"
                               : "bg-surface border border-border text-muted hover:text-foreground"
                           }`}
                         >
@@ -492,7 +492,7 @@ function OrderDetailPage() {
                     setStarRating(avg);
                     submitReview.mutate();
                   }}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl shadow-md transition"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-fg font-bold py-2 rounded-xl shadow-md transition"
                 >
                   {submitReview.isPending ? "Submitting..." : "Submit Verified Review (Supports Local Kitchens & Riders) 🌟"}
                 </Button>
@@ -614,7 +614,7 @@ function OrderDetailPage() {
                         <button
                           type="button"
                           onClick={() => setComplaintImage(null)}
-                          className="absolute top-0 right-0 bg-black/70 text-white rounded-bl px-1 text-[10px]"
+                          className="absolute top-0 right-0 bg-black/70 text-fg rounded-bl px-1 text-[10px]"
                         >
                           ✕
                         </button>
@@ -708,7 +708,7 @@ function OrderDetailPage() {
                   key={cnt}
                   type="button"
                   onClick={() => setSplitCount(cnt)}
-                  className={`size-7 rounded-md text-xs font-bold transition ${splitCount === cnt ? "bg-primary text-white" : "border border-border bg-surface text-muted"}`}
+                  className={`size-7 rounded-md text-xs font-bold transition ${splitCount === cnt ? "bg-primary text-fg" : "border border-border bg-surface text-muted"}`}
                 >
                   {cnt}
                 </button>

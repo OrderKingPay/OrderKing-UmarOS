@@ -203,7 +203,7 @@ export function ClientPortalHub({
                     <Button
                       size="sm"
                       onClick={() => handlePayMilestone(m)}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1"
+                      className="bg-emerald-600 hover:bg-emerald-700 text-fg text-xs font-bold flex items-center gap-1"
                     >
                       <QrCode className="size-3.5" /> Pay Milestone
                     </Button>

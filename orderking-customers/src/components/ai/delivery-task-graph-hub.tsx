@@ -75,7 +75,7 @@ export function DeliveryTaskGraphHub() {
             size="sm"
             onClick={handleRunQa}
             disabled={isRunningQa}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold"
+            className="bg-emerald-600 hover:bg-emerald-700 text-fg text-xs font-bold"
           >
             {isRunningQa ? (
               <>
@@ -180,7 +180,7 @@ export function DeliveryTaskGraphHub() {
             {selectedTask.status !== "COMPLETED" && (
               <Button
                 size="sm"
-                className="w-full text-xs font-bold bg-primary text-white"
+                className="w-full text-xs font-bold bg-primary text-fg"
                 onClick={() => handleAdvanceTask(selectedTask.id)}
               >
                 ✓ Complete Task &amp; Verify Artifact

@@ -385,7 +385,7 @@ export function KingPayFinanceSearch({
           type="button"
           onClick={handleVoiceSearch}
           title="Voice Search"
-          className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all"
+          className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-[#D4AF37]/10 active:scale-95 transition-all"
         >
           <Mic className="size-4 sm:size-4.5 animate-pulse" />
         </button>
@@ -400,7 +400,7 @@ export function KingPayFinanceSearch({
             onClick={() => setSelectedCategory(cat.id)}
             className={`flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold transition-all ${
               selectedCategory === cat.id
-                ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm ring-1 ring-emerald-300"
+                ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-fg shadow-sm ring-1 ring-emerald-300"
                 : "bg-surface/80 border border-border/80 text-muted hover:text-foreground hover:bg-surface"
             }`}
           >

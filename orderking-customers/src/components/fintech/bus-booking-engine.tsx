@@ -63,7 +63,7 @@ export function BusBookingEngine() {
 
         <Button 
           onClick={handleRedirect}
-          className="w-full text-lg px-8 py-7 rounded-2xl shadow-lg shadow-rose-500/25 bg-rose-600 hover:bg-rose-700 text-white font-black"
+          className="w-full text-lg px-8 py-7 rounded-2xl shadow-lg shadow-rose-500/25 bg-rose-600 hover:bg-rose-700 text-fg font-black"
         >
           Search Buses (₹0 Fee) <ArrowRight className="ml-2 size-5" />
         </Button>

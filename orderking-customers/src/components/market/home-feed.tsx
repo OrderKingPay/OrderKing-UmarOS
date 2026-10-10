@@ -181,14 +181,14 @@ export function HomeFeed({
       {/* 1-Tap Quick Re-Order (Zero-Friction Simplicity) */}
       {pastOrders.data?.orders?.[0] && !q && !veg && !openNow && !category ? (
         <section aria-label="Recent Selection">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black p-5">
             <div className="flex items-center gap-3">
               <div>
-                <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-medium uppercase tracking-wider text-muted bg-surface px-2 py-0.5 rounded-full">
                   Recent Selection
                 </span>
-                <h3 className="font-medium text-white mt-1">{pastOrders.data.orders[0].restaurantName}</h3>
-                <p className="text-xs text-zinc-400">
+                <h3 className="font-medium text-fg mt-1">{pastOrders.data.orders[0].restaurantName}</h3>
+                <p className="text-xs text-muted">
                   {pastOrders.data.orders[0].itemPreview || "Past Order"} · {formatPaise(pastOrders.data.orders[0].totalPaise, { locale })}
                 </p>
               </div>
@@ -207,16 +207,16 @@ export function HomeFeed({
       {/* Zomato-style Active Live Order Tracker Banner */}
       {activeOrder && !q && !veg && !openNow && !category ? (
         <section aria-label="Active Order">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black p-5">
             <div className="flex items-center gap-3">
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-zinc-300"></span>
               </span>
               <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Active Order</p>
-                <h3 className="font-medium text-white">{activeOrder.restaurantName} · #{activeOrder.publicId}</h3>
-                <p className="text-xs text-zinc-500">Status: {activeOrder.status.replace(/_/g, " ")}</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted">Active Order</p>
+                <h3 className="font-medium text-fg">{activeOrder.restaurantName} · #{activeOrder.publicId}</h3>
+                <p className="text-xs text-subtle">Status: {activeOrder.status.replace(/_/g, " ")}</p>
               </div>
             </div>
             <Link
@@ -235,10 +235,10 @@ export function HomeFeed({
         <section aria-label="Reorder">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h2 className="font-display text-xl text-white">Reorder</h2>
-              <p className="text-xs text-zinc-400">Reorder past selections effortlessly.</p>
+              <h2 className="font-display text-xl text-fg">Reorder</h2>
+              <p className="text-xs text-muted">Reorder past selections effortlessly.</p>
             </div>
-            <Link to="/orders" className="text-xs font-medium text-zinc-300 hover:text-white hover:underline">
+            <Link to="/orders" className="text-xs font-medium text-gray-300 hover:text-fg hover:underline">
               {t("common.viewAll")}
             </Link>
           </div>
@@ -246,19 +246,19 @@ export function HomeFeed({
             {pastOrders.data.orders.slice(0, 5).map((o) => (
               <div
                 key={o.id}
-                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950 p-4 transition hover:border-zinc-600"
+                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-white/10 bg-black p-4 transition hover:border-zinc-600"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="line-clamp-1 text-sm font-medium text-white">{o.restaurantName}</h3>
-                    <span className="text-[11px] font-medium text-zinc-300">
+                    <h3 className="line-clamp-1 text-sm font-medium text-fg">{o.restaurantName}</h3>
+                    <span className="text-[11px] font-medium text-gray-300">
                       {formatPaise(o.totalPaise, { locale: lang === "bn" ? "bn-IN" : "en-IN" })}
                     </span>
                   </div>
-                  <p className="mt-1 line-clamp-2 text-xs text-zinc-400">{o.itemPreview || "Curated selection"}</p>
+                  <p className="mt-1 line-clamp-2 text-xs text-muted">{o.itemPreview || "Curated selection"}</p>
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t border-zinc-800 pt-2">
-                  <span className="text-[10px] text-zinc-500">
+                <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2">
+                  <span className="text-[10px] text-subtle">
                     {new Date(o.placedAt).toLocaleDateString(lang === "bn" ? "bn-IN" : "en-IN", {
                       month: "short",
                       day: "numeric",
@@ -267,7 +267,7 @@ export function HomeFeed({
                   <button
                     type="button"
                     onClick={() => void handleReorder(o.id)}
-                    className="inline-flex items-center gap-1 rounded-full bg-zinc-900 px-2.5 py-1 text-xs font-medium text-white transition hover:bg-white hover:text-black"
+                    className="inline-flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-fg transition hover:bg-white hover:text-black"
                   >
                     Reorder
                   </button>
@@ -288,10 +288,10 @@ export function HomeFeed({
       ) : null}
 
       <section aria-label={t("home.categories")}>
-        <h2 className="mb-4 font-display text-2xl font-medium text-white">{t("home.categories")}</h2>
+        <h2 className="mb-4 font-display text-2xl font-medium text-fg">{t("home.categories")}</h2>
         <div className="flex gap-3 overflow-x-auto pb-1">
           {cats.isPending
-            ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 w-24 shrink-0 rounded-[var(--radius-2xl)] bg-zinc-900 border border-zinc-800 animate-pulse" />)
+            ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 w-24 shrink-0 rounded-[var(--radius-2xl)] bg-surface border border-white/10 animate-pulse" />)
             : (cats.data?.categories ?? []).map((c: any) => (
                 <Link
                   key={c.id}
@@ -299,7 +299,7 @@ export function HomeFeed({
                   search={{ category: c.id }}
                   className="w-24 shrink-0 text-center text-fg no-underline"
                 >
-                  <div className="aspect-square overflow-hidden rounded-[var(--radius-2xl)] bg-zinc-950 border border-zinc-800 p-1">
+                  <div className="aspect-square overflow-hidden rounded-[var(--radius-2xl)] bg-black border border-white/10 p-1">
                     {c.imageUrl ? (
                       <img loading="lazy" src={c.imageUrl} alt="" className="h-full w-full object-cover" />
                     ) : null}
@@ -318,7 +318,7 @@ export function HomeFeed({
             type="button"
             onClick={() => setActiveFilter(activeFilter === "veg" ? "all" : "veg")}
             className={`flex items-center gap-1.5 shrink-0 rounded-full px-4 py-1.5 transition shadow-sm text-sm font-semibold border ${
-              activeFilter === "veg" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
+              activeFilter === "veg" ? "bg-[#D4AF37]/10 text-emerald-400 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
             }`}
           >
             <span className={`w-3 h-3 rounded-sm border flex items-center justify-center ${activeFilter === "veg" ? "border-white" : "border-green-600"}`}>
@@ -331,12 +331,12 @@ export function HomeFeed({
 
       {/* RESTAURANT SUGGESTIONS: STRICTLY GATED BY 100% ACCURATE REAL-TIME GEO-LOCATION */}
       {!isGeoActive ? (
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-center space-y-3 shadow-md my-4">
-          <div className="flex size-14 items-center justify-center rounded-full bg-zinc-900 text-zinc-400 text-xl mx-auto">
+        <div className="rounded-2xl border border-white/10 bg-black p-6 text-center space-y-3 shadow-md my-4">
+          <div className="flex size-14 items-center justify-center rounded-full bg-surface text-muted text-xl mx-auto">
             📍
           </div>
-          <h3 className="font-display text-lg font-medium text-white">Location Services Required</h3>
-          <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
+          <h3 className="font-display text-lg font-medium text-fg">Location Services Required</h3>
+          <p className="text-xs text-muted max-w-sm mx-auto leading-relaxed">
             Please enable location services to discover curated culinary partners in your vicinity.
           </p>
           <button
@@ -357,7 +357,7 @@ export function HomeFeed({
         <motion.div className="grid gap-4 md:grid-cols-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
           {Array.from({ length: 4 }).map((_, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-              <div className="h-64 w-full rounded-[var(--radius-3xl)] bg-zinc-950 border border-zinc-800 overflow-hidden flex flex-col"><div className="h-40 w-full bg-primary/10 animate-pulse" /><div className="p-4 space-y-3"><div className="h-5 w-2/3 bg-primary/10 rounded-full animate-pulse" /><div className="h-4 w-1/3 bg-primary/10 rounded-full animate-pulse" /></div></div>
+              <div className="h-64 w-full rounded-[var(--radius-3xl)] bg-black border border-white/10 overflow-hidden flex flex-col"><div className="h-40 w-full bg-primary/10 animate-pulse" /><div className="p-4 space-y-3"><div className="h-5 w-2/3 bg-primary/10 rounded-full animate-pulse" /><div className="h-4 w-1/3 bg-primary/10 rounded-full animate-pulse" /></div></div>
             </motion.div>
           ))}
         </motion.div>

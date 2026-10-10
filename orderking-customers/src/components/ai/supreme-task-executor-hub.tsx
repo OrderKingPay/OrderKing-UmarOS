@@ -95,7 +95,7 @@ export function SupremeTaskExecutorHub() {
           <div>
             <div className="flex items-center gap-2">
               <Crown className="h-6 w-6 text-amber-400" />
-              <h2 className="text-xl font-bold text-white">The Supreme Task Executor (§28)</h2>
+              <h2 className="text-xl font-bold text-fg">The Supreme Task Executor (§28)</h2>
               <Badge tone="primary">14-Stage Full Execution Graph</Badge>
             </div>
             <p className="mt-1 text-sm text-slate-300">
@@ -113,7 +113,7 @@ export function SupremeTaskExecutorHub() {
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-amber-500/20 pt-4">
           <div className="rounded-lg bg-black/40 p-3 border border-amber-500/20">
             <span className="text-xs text-slate-400">Total Stages</span>
-            <div className="text-2xl font-bold text-white">{plan.totalStages} Stages</div>
+            <div className="text-2xl font-bold text-fg">{plan.totalStages} Stages</div>
           </div>
           <div className="rounded-lg bg-black/40 p-3 border border-amber-500/20">
             <span className="text-xs text-slate-400">Completed Stages</span>
@@ -134,19 +134,19 @@ export function SupremeTaskExecutorHub() {
 
       {/* Goal Input & Blueprints */}
       <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 space-y-4">
-        <label className="text-sm font-semibold text-white">Enter Sovereign Founder Goal:</label>
+        <label className="text-sm font-semibold text-fg">Enter Sovereign Founder Goal:</label>
         <div className="flex gap-2">
           <Input
             value={goalPrompt}
             onChange={(e) => setGoalPrompt(e.target.value)}
             placeholder="e.g. Build me a legitimate online business around this opportunity..."
-            className="bg-black/50 border-slate-700 text-white font-medium"
+            className="bg-black/50 border-slate-700 text-fg font-medium"
           />
           <Button
             variant="primary"
             disabled={isDecomposing}
             onClick={() => handleDecomposeGoal()}
-            className="shrink-0 bg-amber-600 hover:bg-amber-500 text-white font-semibold flex items-center gap-1.5"
+            className="shrink-0 bg-amber-600 hover:bg-amber-500 text-fg font-semibold flex items-center gap-1.5"
           >
             {isDecomposing ? (
               <RefreshCw className="h-4 w-4 animate-spin" />
@@ -182,7 +182,7 @@ export function SupremeTaskExecutorHub() {
             <Lock className="h-6 w-6 text-amber-400 shrink-0" />
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-white text-sm">Autonomous Execution Paused at Human Gate</span>
+                <span className="font-bold text-fg text-sm">Autonomous Execution Paused at Human Gate</span>
                 <Badge tone="warn">Founder Action Required</Badge>
               </div>
               <p className="mt-0.5 text-xs text-slate-300">{plan.pauseReason}</p>
@@ -191,7 +191,7 @@ export function SupremeTaskExecutorHub() {
           <Button
             variant="primary"
             onClick={() => handleApproveHumanGate("GATE-PAYMENT-AUTH")}
-            className="bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs"
+            className="bg-amber-600 hover:bg-amber-500 text-fg font-semibold text-xs"
           >
             Confirm Bank VPA (orderking@okhdfcbank)
           </Button>
@@ -202,7 +202,7 @@ export function SupremeTaskExecutorHub() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Stage List */}
         <div className="lg:col-span-2 space-y-2.5">
-          <h3 className="font-bold text-white text-sm uppercase tracking-wider">
+          <h3 className="font-bold text-fg text-sm uppercase tracking-wider">
             14-Stage Execution Graph (§28)
           </h3>
           {plan.stages.map((stg, i) => (
@@ -220,7 +220,7 @@ export function SupremeTaskExecutorHub() {
                   <div
                     className={`flex h-7 w-7 items-center justify-center rounded-md font-mono text-xs font-bold ${
                       stg.status === "COMPLETED"
-                        ? "bg-emerald-500/20 text-emerald-400"
+                        ? "bg-[#D4AF37]/10 text-emerald-400"
                         : stg.status === "PAUSED_FOR_HUMAN"
                         ? "bg-amber-500/20 text-amber-400"
                         : "bg-slate-800 text-slate-400"
@@ -230,7 +230,7 @@ export function SupremeTaskExecutorHub() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white text-sm">{stg.title}</span>
+                      <span className="font-semibold text-fg text-sm">{stg.title}</span>
                       <span className="font-mono text-[11px] text-slate-500">[{stg.stage}]</span>
                     </div>
                     <p className="text-xs text-slate-400 line-clamp-1">{stg.description}</p>
@@ -274,7 +274,7 @@ export function SupremeTaskExecutorHub() {
                     {selectedStage.status}
                   </Badge>
                 </div>
-                <h3 className="mt-1 text-lg font-bold text-white">{selectedStage.title}</h3>
+                <h3 className="mt-1 text-lg font-bold text-fg">{selectedStage.title}</h3>
                 <p className="text-xs text-slate-400">{selectedStage.description}</p>
               </div>
 

@@ -109,10 +109,10 @@ export function EcosystemSwitchBar({
           <div className="relative flex items-center justify-between rounded-2xl bg-gradient-to-r from-amber-500/25 via-neutral-950/95 to-emerald-500/25 h-full ring-2 ring-amber-400/90 shadow-[0_6px_25px_rgba(245,158,11,0.45)] px-3 sm:px-4">
             <div className="flex items-center gap-2 truncate">
               <span className="text-xl sm:text-2xl leading-none animate-bounce shrink-0">👑</span>
-              <span className="font-display font-black text-sm sm:text-base md:text-lg text-white tracking-tight whitespace-nowrap">
+              <span className="font-display font-black text-sm sm:text-base md:text-lg text-fg tracking-tight whitespace-nowrap">
                 King <span className="text-emerald-400">Pay</span>
               </span>
-              <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[9px] font-extrabold px-2 py-0.5 whitespace-nowrap">
+              <span className="rounded-full bg-[#D4AF37]/10 border border-emerald-400/40 text-emerald-300 text-[9px] font-extrabold px-2 py-0.5 whitespace-nowrap">
                 0% Fee UPI · Live India
               </span>
             </div>
@@ -125,11 +125,11 @@ export function EcosystemSwitchBar({
             {/* FOODS Segment */}
             {isFood ? (
               <div
-                className="relative flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 w-full h-full px-1 text-center font-black text-white shadow-[0_8px_32px_rgba(249,115,22,0.95),inset_0_2px_6px_rgba(255,255,255,0.6)] ring-1 ring-white/70 select-none cursor-default overflow-hidden"
+                className="relative flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 w-full h-full px-1 text-center font-black text-fg shadow-[0_8px_32px_rgba(249,115,22,0.95),inset_0_2px_6px_rgba(255,255,255,0.6)] ring-1 ring-white/70 select-none cursor-default overflow-hidden"
                 aria-current="page"
               >
                 <span className="text-lg sm:text-2xl leading-none animate-bounce shrink-0">🍔</span>
-                <span className="font-display font-black text-sm sm:text-base md:text-lg lg:text-xl text-white tracking-tight leading-none whitespace-nowrap drop-shadow-[0_2px_0_#c2410c] drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]">
+                <span className="font-display font-black text-sm sm:text-base md:text-lg lg:text-xl text-fg tracking-tight leading-none whitespace-nowrap drop-shadow-[0_2px_0_#c2410c] drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]">
                   Order King <span className="text-amber-200 drop-shadow-[0_1px_0_#ea580c]">FOODS</span>
                 </span>
                 <span className="absolute top-1 right-1 size-2 rounded-full bg-white shadow-[0_0_10px_#ffffff] animate-ping" />
@@ -138,7 +138,7 @@ export function EcosystemSwitchBar({
               <Link
                 to="/"
                 onClick={triggerHaptic}
-                className="group relative flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl w-full h-full px-1 text-center font-black text-slate-200 hover:text-white transition-all duration-200 active:scale-95 touch-manipulation cursor-pointer no-underline overflow-hidden"
+                className="group relative flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl w-full h-full px-1 text-center font-black text-slate-200 hover:text-fg transition-all duration-200 active:scale-95 touch-manipulation cursor-pointer no-underline overflow-hidden"
                 title="Switch to Order King FOODS"
               >
                 <span className="text-lg sm:text-2xl leading-none opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-transform shrink-0">
@@ -166,7 +166,7 @@ export function EcosystemSwitchBar({
               <Link
                 to="/king-pay"
                 onClick={triggerHaptic}
-                className="group relative flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl w-full h-full px-1 text-center font-black text-slate-200 hover:text-white transition-all duration-200 active:scale-95 touch-manipulation cursor-pointer no-underline overflow-hidden"
+                className="group relative flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl w-full h-full px-1 text-center font-black text-slate-200 hover:text-fg transition-all duration-200 active:scale-95 touch-manipulation cursor-pointer no-underline overflow-hidden"
                 title="Switch to King Pay"
               >
                 <span className="text-lg sm:text-2xl leading-none opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-transform shrink-0">
@@ -187,7 +187,7 @@ export function EcosystemSwitchBar({
         onClick={handleAiClick}
         title={isFood ? "Food AI Support" : "King Pay AI Support"}
         aria-label={isFood ? "Open Food AI Concierge" : "Open King Pay Royal AI Concierge"}
-        className={`group relative flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-full text-white shadow-[0_4px_22px_rgba(16,185,129,0.6)] transition-all duration-200 active:scale-95 hover:scale-105 touch-manipulation cursor-pointer ${
+        className={`group relative flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-full text-fg shadow-[0_4px_22px_rgba(16,185,129,0.6)] transition-all duration-200 active:scale-95 hover:scale-105 touch-manipulation cursor-pointer ${
           isFood
             ? "border-2 border-primary/90 bg-gradient-to-tr from-primary via-emerald-700 to-[#07241C] ring-2 ring-emerald-400/80 hover:border-emerald-300"
             : "border-2 border-amber-400 bg-gradient-to-tr from-[#0D3B2E] via-emerald-700 to-[#07241C] ring-2 ring-amber-300/80 hover:border-yellow-200"

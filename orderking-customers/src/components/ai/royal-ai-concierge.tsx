@@ -1102,7 +1102,7 @@ export function RoyalAiConcierge({
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="group relative flex items-center gap-2 rounded-full border-2 border-amber-400/90 bg-gradient-to-tr from-[#0D3B2E] via-emerald-700 to-[#07241C] px-3.5 py-2.5 shadow-[0_6px_25px_rgba(13,59,46,0.5)] transition-all hover:scale-105 active:scale-95 text-white"
+            className="group relative flex items-center gap-2 rounded-full border-2 border-amber-400/90 bg-gradient-to-tr from-[#0D3B2E] via-emerald-700 to-[#07241C] px-3.5 py-2.5 shadow-[0_6px_25px_rgba(13,59,46,0.5)] transition-all hover:scale-105 active:scale-95 text-fg"
             aria-label="Open KingPay Multilingual Royal AI Assistant"
           >
             {/* Animated Glowing Crown */}
@@ -1131,7 +1131,7 @@ export function RoyalAiConcierge({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md">
           <div className="w-full max-w-lg h-[90vh] max-h-[680px] rounded-3xl border-2 border-amber-500/50 bg-surface shadow-2xl flex flex-col overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-[#0D3B2E] via-emerald-900 to-[#07241C] p-3 sm:p-4 text-white">
+            <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-[#0D3B2E] via-emerald-900 to-[#07241C] p-3 sm:p-4 text-fg">
               <div className="flex items-center gap-3">
                 <div className="relative flex size-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-200 text-black shadow-md">
                   <Crown className="size-6 text-amber-950" />
@@ -1158,7 +1158,7 @@ export function RoyalAiConcierge({
                   onClick={toggleCallMode}
                   className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-black shadow-md transition ${
                     isCallMode
-                      ? "bg-rose-600 hover:bg-rose-700 text-white animate-pulse"
+                      ? "bg-rose-600 hover:bg-rose-700 text-fg animate-pulse"
                       : "bg-amber-400 hover:bg-amber-300 text-slate-950"
                   }`}
                   title={isCallMode ? "End Voice Call" : "Start Live Voice Call"}
@@ -1184,7 +1184,7 @@ export function RoyalAiConcierge({
                     setVoiceEnabled(!voiceEnabled);
                   }}
                   className={`rounded-full p-2 transition ${
-                    voiceEnabled ? "bg-amber-400 text-black" : "bg-white/10 text-white/70"
+                    voiceEnabled ? "bg-amber-400 text-black" : "bg-white/10 text-fg/70"
                   }`}
                   title={voiceEnabled ? "Voice Output ON" : "Voice Output OFF"}
                 >
@@ -1199,7 +1199,7 @@ export function RoyalAiConcierge({
                     stopSpeaking();
                     setIsOpen(false);
                   }}
-                  className="rounded-full p-2 text-white/80 hover:bg-white/10 transition"
+                  className="rounded-full p-2 text-fg/80 hover:bg-white/10 transition"
                 >
                   <X className="size-5" />
                 </button>
@@ -1208,7 +1208,7 @@ export function RoyalAiConcierge({
 
             {/* Live Continuous Voice Call Mode Banner */}
             {isCallMode && (
-              <div className="flex items-center justify-between bg-gradient-to-r from-amber-600 via-emerald-700 to-amber-800 px-4 py-2.5 text-xs font-bold text-white shadow-lg border-b border-amber-400/30">
+              <div className="flex items-center justify-between bg-gradient-to-r from-amber-600 via-emerald-700 to-amber-800 px-4 py-2.5 text-xs font-bold text-fg shadow-lg border-b border-amber-400/30">
                 <div className="flex items-center gap-2.5">
                   <span className="relative flex size-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75"></span>
@@ -1227,7 +1227,7 @@ export function RoyalAiConcierge({
                 <button
                   type="button"
                   onClick={toggleCallMode}
-                  className="rounded-full bg-rose-600 hover:bg-rose-700 px-3 py-1 text-[11px] font-black text-white shadow-md transition flex items-center gap-1"
+                  className="rounded-full bg-rose-600 hover:bg-rose-700 px-3 py-1 text-[11px] font-black text-fg shadow-md transition flex items-center gap-1"
                 >
                   <PhoneOff className="size-3.5" />
                   <span>End Call</span>
@@ -1336,7 +1336,7 @@ export function RoyalAiConcierge({
                   <div
                     className={`max-w-[85%] rounded-2xl p-3.5 text-xs shadow-xs space-y-1.5 ${
                       msg.sender === "user"
-                        ? "bg-emerald-600 text-white rounded-br-none shadow-sm"
+                        ? "bg-emerald-600 text-fg rounded-br-none shadow-sm"
                         : "bg-surface-2/80 border border-border/80 text-foreground rounded-bl-none shadow-sm"
                     }`}
                   >
@@ -1369,7 +1369,7 @@ export function RoyalAiConcierge({
                           size="sm"
                           disabled={!consentGiven}
                           onClick={() => handleActionClick({ type: "SUBMIT_FINANCIAL_DISPUTE", label: "Submit" })}
-                          className="w-full text-xs font-bold bg-primary text-white hover:bg-primary/90"
+                          className="w-full text-xs font-bold bg-primary text-fg hover:bg-primary/90"
                         >
                           <ShieldCheck className="size-3.5 mr-1" />
                           Confirm Consent &amp; Route to Founder Desk
@@ -1393,7 +1393,7 @@ export function RoyalAiConcierge({
 
                     <span
                       className={`text-[9px] block text-right font-mono ${
-                        msg.sender === "user" ? "text-white/70" : "text-muted"
+                        msg.sender === "user" ? "text-fg/70" : "text-muted"
                       }`}
                     >
                       {msg.timestamp}
@@ -1449,7 +1449,7 @@ export function RoyalAiConcierge({
 
             {/* Real-time Listening Waveform Banner */}
             {isListening && (
-              <div className="flex items-center justify-between bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-inner animate-pulse">
+              <div className="flex items-center justify-between bg-rose-600 px-4 py-2 text-xs font-bold text-fg shadow-inner animate-pulse">
                 <div className="flex items-center gap-2.5">
                   <span className="flex size-3 rounded-full bg-white animate-ping" />
                   <span>🎙️ Listening in {selectedLang.name}... Speak now! (Tap mic to stop)</span>
@@ -1457,7 +1457,7 @@ export function RoyalAiConcierge({
                 <button
                   type="button"
                   onClick={toggleSpeechRecognition}
-                  className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-white/30"
+                  className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold text-fg hover:bg-white/30"
                 >
                   Cancel
                 </button>
@@ -1526,7 +1526,7 @@ export function RoyalAiConcierge({
                   onClick={toggleSpeechRecognition}
                   className={`flex size-9 items-center justify-center rounded-full transition shrink-0 ${
                     isListening
-                      ? "bg-red-600 text-white animate-pulse"
+                      ? "bg-red-600 text-fg animate-pulse"
                       : "text-muted hover:bg-surface hover:text-foreground"
                   }`}
                   title={isListening ? "Listening... Tap to stop" : "Speak in your language"}
@@ -1547,7 +1547,7 @@ export function RoyalAiConcierge({
                 <button
                   type="submit"
                   disabled={!inputText.trim() && attachedFiles.length === 0}
-                  className="flex size-9 items-center justify-center rounded-full bg-emerald-600 text-white disabled:opacity-30 shadow-md hover:bg-emerald-500 active:scale-95 transition shrink-0"
+                  className="flex size-9 items-center justify-center rounded-full bg-emerald-600 text-fg disabled:opacity-30 shadow-md hover:bg-emerald-500 active:scale-95 transition shrink-0"
                   title="Send message"
                 >
                   <ArrowUp className="size-4.5 stroke-[2.5]" />

@@ -261,21 +261,21 @@ export function FounderCommandPage() {
   return (
     <div className="min-h-screen bg-[#0C0C0E] text-zinc-100 p-3 sm:p-5 space-y-4 font-sans">
       {/* Top Sovereign Banner */}
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800/80 pb-4">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10/80 pb-4">
         <div className="flex items-center gap-3">
           <div className="flex size-11 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-400/40 shadow-[0_0_20px_rgba(245,158,11,0.25)]">
             <Crown className="size-6 text-amber-400" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-display text-2xl font-black tracking-tight text-white">
+              <h1 className="font-display text-2xl font-black tracking-tight text-fg">
                 Umar OS
               </h1>
               <Badge className="bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-extrabold uppercase">
                 FOUNDER CORE
               </Badge>
             </div>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-muted mt-0.5">
               Single Founder Control System · Multi-Model AI Capable · Legal Status: NOT VERIFIED
             </p>
           </div>
@@ -285,7 +285,7 @@ export function FounderCommandPage() {
           <Button
             size="sm"
             onClick={() => setShowSettings(true)}
-            className="hidden sm:flex bg-zinc-800 text-zinc-100 hover:bg-zinc-700 font-bold border border-white/10"
+            className="hidden sm:flex bg-surface-2 text-zinc-100 hover:bg-zinc-700 font-bold border border-white/10"
           >
             <Server className="w-4 h-4 mr-1.5 text-emerald-400" />
             System Connect
@@ -309,13 +309,13 @@ export function FounderCommandPage() {
             <Button
               size="sm"
               variant="outline"
-              className="rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-200 hover:bg-zinc-700 px-3.5 py-1.5 text-xs font-bold transition flex items-center gap-1.5"
+              className="rounded-xl border border-white/20 bg-surface-2/80 text-zinc-200 hover:bg-zinc-700 px-3.5 py-1.5 text-xs font-bold transition flex items-center gap-1.5"
             >
               <LayoutGrid className="size-3.5 text-amber-400" />
               <span>Specialized Hubs</span>
             </Button>
-            <div className="absolute right-0 top-full mt-1.5 hidden group-hover:block z-50 w-64 rounded-xl border border-zinc-700 bg-zinc-900 p-2 shadow-2xl space-y-1">
-              <span className="text-[10px] font-bold uppercase text-zinc-400 px-2 block">
+            <div className="absolute right-0 top-full mt-1.5 hidden group-hover:block z-50 w-64 rounded-xl border border-white/20 bg-surface p-2 shadow-2xl space-y-1">
+              <span className="text-[10px] font-bold uppercase text-muted px-2 block">
                 System Subsystems
               </span>
               {[
@@ -339,7 +339,7 @@ export function FounderCommandPage() {
                       setDeckTab(hub.id as any);
                       toast.info(`Opened ${hub.label}`);
                     }}
-                    className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-zinc-300 hover:text-white hover:bg-zinc-800 text-left transition"
+                    className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-gray-300 hover:text-fg hover:bg-surface-2 text-left transition"
                   >
                     <Icon className="size-3.5 text-amber-400 shrink-0" />
                     <span>{hub.label}</span>
@@ -351,7 +351,7 @@ export function FounderCommandPage() {
 
           <Link
             to="/"
-            className="rounded-xl border border-zinc-700/80 bg-zinc-800/80 px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-700 hover:text-white transition flex items-center gap-1.5"
+            className="rounded-xl border border-white/20/80 bg-surface-2/80 px-3.5 py-1.5 text-xs font-semibold text-gray-300 hover:bg-zinc-700 hover:text-fg transition flex items-center gap-1.5"
           >
             <span>🍔</span>
             <span className="hidden sm:inline">Customer Food App</span>
@@ -367,9 +367,9 @@ export function FounderCommandPage() {
       </header>
 
       {/* Executive Financial Truth & Zero-Fabrication Telemetry Bar (Clean, Eye-Friendly Graphite) */}
-      <div className="flex flex-wrap items-center justify-between text-xs px-1 text-zinc-400 gap-2">
+      <div className="flex flex-wrap items-center justify-between text-xs px-1 text-muted gap-2">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-zinc-300">Financial Ledger Mode:</span>
+          <span className="font-semibold text-gray-300">Financial Ledger Mode:</span>
           <Badge
             tone={useDemoRecords ? "warn" : "primary"}
             className={
@@ -402,8 +402,8 @@ export function FounderCommandPage() {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-        <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
+        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
+          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
             Confirmed Revenue
           </span>
           <p className="text-base font-extrabold text-emerald-400 font-mono">
@@ -412,8 +412,8 @@ export function FounderCommandPage() {
           <span className="text-[9px] text-emerald-400/80 font-medium block">✓ Bank Settlements</span>
         </div>
 
-        <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
+        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
+          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
             Invoiced (Pending)
           </span>
           <p className="text-base font-extrabold text-amber-300 font-mono">
@@ -422,8 +422,8 @@ export function FounderCommandPage() {
           <span className="text-[9px] text-amber-400/80 font-medium block">⏳ Client Invoices</span>
         </div>
 
-        <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
+        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
+          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
             Active Contracts
           </span>
           <p className="text-base font-extrabold text-cyan-300 font-mono">
@@ -432,138 +432,138 @@ export function FounderCommandPage() {
           <span className="text-[9px] text-cyan-400/80 font-medium block">🎯 Direct Clients</span>
         </div>
 
-        <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
+        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
+          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
             Food Geofence
           </span>
           <p className="text-base font-extrabold text-zinc-200 font-mono">
             Sribhumi 12km
           </p>
-          <span className="text-[9px] text-zinc-400 font-medium block">🛡️ Pan-India KingPay</span>
+          <span className="text-[9px] text-muted font-medium block">🛡️ Pan-India KingPay</span>
         </div>
 
-        <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
+        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
+          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
             Payment Cut
           </span>
           <p className="text-base font-extrabold text-emerald-400 font-mono">
             0% Gateway Fee
           </p>
-          <span className="text-[9px] text-zinc-400 font-medium block">⚡ Instant UPI Escrow</span>
+          <span className="text-[9px] text-muted font-medium block">⚡ Instant UPI Escrow</span>
         </div>
 
-        <div className="rounded-xl border border-zinc-800 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
+        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
+          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
             System Health
           </span>
-          <p className="text-base font-extrabold text-zinc-400 font-mono">
+          <p className="text-base font-extrabold text-muted font-mono">
             EVIDENCE-BASED HEALTH CHECK REQUIRED
           </p>
-          <span className="text-[9px] text-zinc-400 font-medium block">🛡️ Legal Status: DO NOT REPRESENT AS LEGAL CERTIFICATION</span>
+          <span className="text-[9px] text-muted font-medium block">🛡️ Legal Status: DO NOT REPRESENT AS LEGAL CERTIFICATION</span>
         </div>
       </div>
 
       {/* MAIN VIEW: SUPREME UMAR OS CHAT (DEFAULT) OR SPECIALIZED HUB */}
       {deckTab === "supreme_ai" && (
-        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB SUPREME EXECUTOR: 14-STAGE GOAL DECOMPOSER WITH HUMAN GATES */}
       {deckTab === "supreme_executor" && (
-        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB MONEY DASHBOARD: REAL-MONEY OPERATING ENGINE & LEDGER */}
       {deckTab === "money_dashboard" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB RADAR: ALWAYS-ON OPPORTUNITY RADAR */}
       {deckTab === "radar" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB CRM: CLIENT ACQUISITION & 12-STAGE PIPELINE */}
       {deckTab === "crm" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB CLIENT PORTAL: DEDICATED TRUST & DELIVERABLES PORTAL */}
       {deckTab === "client_portal" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB SERVICE PRODUCTIZER: HIGH-MARGIN READY-TO-SELL PACKAGES */}
       {deckTab === "service_productizer" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB REMOTE WORK: OPPORTUNITY DISCOVERY & GIGS */}
       {deckTab === "remote_work" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB APP FACTORY: ENTERPRISE SOFTWARE GENERATION & CODING WORKSPACE */}
       {deckTab === "app_factory" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB DELIVERY GRAPH: MULTI-AGENT TASK GRAPH & SELF-QA */}
       {deckTab === "delivery_graph" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB COMPANY FACTORY: AI COMPANY FACTORY & BUSINESS ORCHESTRATOR */}
       {deckTab === "company_factory" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
         </div>
       )}
 
       {/* TAB BUSINESS INTEL: BI ENGINE & AUTONOMOUS SCHEDULES */}
       {deckTab === "business_intel" && (
-        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB KNOWLEDGE MEMORY: SEARCHABLE KNOWLEDGE & LAYERED MEMORY */}
       {deckTab === "knowledge_memory" && (
-        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB BENCHMARKS: RIGOROUS MEASURED CAPABILITY BENCHMARK SUITE */}
       {deckTab === "benchmarks" && (
-        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB DEPENDENCIES: CONTINUOUS DEPENDENCY INSPECTOR & ECOSYSTEM */}
       {deckTab === "dependencies" && (
-        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB RECOVERY: EMERGENCY RECOVERY & ROLLBACK ENGINE */}
       {deckTab === "recovery" && (
-        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB REVENUE OPS: AUTOMATIC APPLICATION ENGINE, INVOICING, REPEAT BIZ & COST CONTROL */}
       {deckTab === "revenue_ops" && (
-        <div className="p-4 text-center text-zinc-500 font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
       )}
 
       {/* TAB 0: PRACTICAL BUSINESS LAUNCH & FIELD OPS COCKPIT */}
@@ -577,10 +577,10 @@ export function FounderCommandPage() {
                   <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-500 text-black font-black text-lg shadow-md">
                     🚀
                   </span>
-                  <h2 className="text-xl font-black text-white tracking-tight">
+                  <h2 className="text-xl font-black text-fg tracking-tight">
                     Hyperlocal Pilot Launch &amp; Field Ops Cockpit
                   </h2>
-                  <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[10px] font-extrabold uppercase">
+                  <Badge className="bg-[#D4AF37]/10 text-emerald-300 border border-emerald-400/40 text-[10px] font-extrabold uppercase">
                     PRACTICAL LAUNCH READY
                   </Badge>
                 </div>
@@ -595,7 +595,7 @@ export function FounderCommandPage() {
                   onClick={() => {
                     toast.success(`🚀 Hyperlocal pilot activated in ${launchTown} with ${geofenceRadiusKm}km geofence!`);
                   }}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-fg font-bold text-xs shadow-lg"
                 >
                   <Sparkles className="size-3.5 mr-1.5" />
                   Activate Pilot Market
@@ -611,7 +611,7 @@ export function FounderCommandPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <MapPin className="size-5 text-amber-400" />
-                  <h3 className="font-bold text-sm text-white">1. Pilot Town &amp; Delivery Geofence</h3>
+                  <h3 className="font-bold text-sm text-fg">1. Pilot Town &amp; Delivery Geofence</h3>
                 </div>
                 <Badge className="bg-amber-500/15 text-amber-300 border-amber-500/30 text-[10px]">
                   Dense Cluster Strategy
@@ -627,7 +627,7 @@ export function FounderCommandPage() {
                     value={launchTown}
                     onChange={(e) => setLaunchTown(e.target.value)}
                     placeholder="Enter pilot town (e.g. Karimganj, Silchar, Guwahati)"
-                    className="bg-surface-2 border-border text-xs text-white"
+                    className="bg-surface-2 border-border text-xs text-fg"
                   />
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {["Karimganj / Sribhumi", "Silchar", "Guwahati", "Kolkata", "Delhi", "Bangalore"].map((town) => (
@@ -685,7 +685,7 @@ export function FounderCommandPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Wallet className="size-5 text-emerald-400" />
-                  <h3 className="font-bold text-sm text-white">2. Live UPI Revenue Receiver</h3>
+                  <h3 className="font-bold text-sm text-fg">2. Live UPI Revenue Receiver</h3>
                 </div>
                 <Badge className="bg-emerald-500/15 text-emerald-300 border-emerald-500/30 text-[10px]">
                   0% Gateway Cut
@@ -702,14 +702,14 @@ export function FounderCommandPage() {
                       value={merchantUpiVpa}
                       onChange={(e) => setMerchantUpiVpa(e.target.value)}
                       placeholder="e.g. orderking@okhdfcbank or yourname@icici"
-                      className="bg-surface-2 border-border text-xs text-white flex-1 font-mono"
+                      className="bg-surface-2 border-border text-xs text-fg flex-1 font-mono"
                     />
                     <Button
                       size="sm"
                       onClick={() => {
                         toast.success(`Merchant UPI VPA set to ${merchantUpiVpa}! All direct UPI orders will settle here.`);
                       }}
-                      className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
+                      className="bg-emerald-600 hover:bg-emerald-500 text-fg font-bold text-xs"
                     >
                       Save VPA
                     </Button>
@@ -752,7 +752,7 @@ export function FounderCommandPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Store className="size-5 text-amber-400" />
-                  <h3 className="font-bold text-sm text-white">3. Merchant Acquisition Blitz (15–20 Kitchens)</h3>
+                  <h3 className="font-bold text-sm text-fg">3. Merchant Acquisition Blitz (15–20 Kitchens)</h3>
                 </div>
                 <Badge className="bg-amber-500/15 text-amber-300 border-amber-500/30 text-[10px]">
                   {activeKitchensCount} Kitchens Active
@@ -761,7 +761,7 @@ export function FounderCommandPage() {
 
               <div className="space-y-3">
                 <div className="rounded-xl border border-border bg-surface-2 p-3 space-y-2">
-                  <span className="text-xs font-bold text-white block">The 0% Commission Merchant Proposition:</span>
+                  <span className="text-xs font-bold text-fg block">The 0% Commission Merchant Proposition:</span>
                   <ul className="text-xs text-slate-300 space-y-1 list-disc list-inside">
                     <li><strong>0% Commission</strong> for first 90 days (vs 25–35% Zomato/Swiggy tax).</li>
                     <li><strong>True Dine-In Price Parity</strong>: Customers pay exact menu prices.</li>
@@ -804,7 +804,7 @@ export function FounderCommandPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Truck className="size-5 text-sky-400" />
-                  <h3 className="font-bold text-sm text-white">4. Rider Fleet Mobilization (10–15 Partners)</h3>
+                  <h3 className="font-bold text-sm text-fg">4. Rider Fleet Mobilization (10–15 Partners)</h3>
                 </div>
                 <Badge className="bg-sky-500/15 text-sky-300 border-sky-500/30 text-[10px]">
                   {activeRidersCount} Riders Online
@@ -813,7 +813,7 @@ export function FounderCommandPage() {
 
               <div className="space-y-3">
                 <div className="rounded-xl border border-border bg-surface-2 p-3 space-y-1.5">
-                  <span className="text-xs font-bold text-white block">Rider Daily Target Incentive Ladder:</span>
+                  <span className="text-xs font-bold text-fg block">Rider Daily Target Incentive Ladder:</span>
                   <div className="grid grid-cols-4 gap-1.5 text-center text-xs">
                     <div className="rounded-lg bg-surface border border-border p-1.5">
                       <span className="text-[10px] text-muted block">4 Drops</span>
@@ -840,7 +840,7 @@ export function FounderCommandPage() {
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Button
                     size="sm"
-                    className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white shadow-sm"
+                    className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-500 text-fg shadow-sm"
                     onClick={() => {
                       const link = `${window.location.origin}/rider`;
                       void navigator.clipboard?.writeText(link);
@@ -873,7 +873,7 @@ export function FounderCommandPage() {
               <div className="flex items-center gap-2.5">
                 <Megaphone className="size-6 text-amber-400" />
                 <div>
-                  <h3 className="font-bold text-base text-white">5. Customer Viral WhatsApp Launch Campaign</h3>
+                  <h3 className="font-bold text-base text-fg">5. Customer Viral WhatsApp Launch Campaign</h3>
                   <p className="text-xs text-muted">
                     Broadcast this high-converting launch offer to local foodie groups and contacts with 1 tap.
                   </p>
@@ -893,7 +893,7 @@ export function FounderCommandPage() {
                   <Input
                     value={launchVoucherCode}
                     onChange={(e) => setLaunchVoucherCode(e.target.value.toUpperCase())}
-                    className="bg-surface-2 border-border text-xs text-white font-mono font-bold"
+                    className="bg-surface-2 border-border text-xs text-fg font-mono font-bold"
                   />
                 </div>
                 <div>
@@ -905,7 +905,7 @@ export function FounderCommandPage() {
                       type="number"
                       value={launchVoucherDiscount}
                       onChange={(e) => setLaunchVoucherDiscount(Number(e.target.value))}
-                      className="bg-surface-2 border-border text-xs text-white font-bold"
+                      className="bg-surface-2 border-border text-xs text-fg font-bold"
                     />
                     <span className="text-xs text-muted">₹ OFF</span>
                   </div>
@@ -932,7 +932,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md"
+                    className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-fg shadow-md"
                     onClick={() => {
                       const msg = `👑 OrderKing is LIVE in ${launchTown}!\n🍗 Tired of paying 30% extra on Zomato & Swiggy?\nOrder authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKUP (True Dine-In Prices)!\n\n🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!\n⚡ 25-minute fast delivery to your door.\n\n👉 Order now: ${window.location.origin}`;
                       void navigator.clipboard?.writeText(msg);
@@ -988,7 +988,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                   onClick={handleToggleFreeze}
                   className={`rounded-lg px-3 py-1.5 text-xs font-black transition ${
                     platformFrozen
-                      ? "bg-rose-600 text-white animate-pulse"
+                      ? "bg-rose-600 text-fg animate-pulse"
                       : "bg-surface-2 border border-border text-fg hover:bg-rose-500/20 hover:text-rose-400"
                   }`}
                 >
@@ -1042,7 +1042,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                   <span className="text-xs font-bold text-fg block">Production Sandbox</span>
                   <span className="text-[10px] text-muted">{productionMode}</span>
                 </div>
-                <span className="rounded-full bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 text-xs font-bold">
+                <span className="rounded-full bg-[#D4AF37]/10 text-emerald-400 px-2.5 py-0.5 text-xs font-bold">
                   ● LIVE
                 </span>
               </div>
@@ -1061,7 +1061,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                 <span className="flex size-2 rounded-full bg-emerald-500 animate-ping" />
               </div>
               <div>
-                <p className="text-2xl font-black text-white font-mono">1,842</p>
+                <p className="text-2xl font-black text-fg font-mono">1,842</p>
                 <span className="text-[11px] text-muted">Active diners online</span>
               </div>
               <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
@@ -1090,7 +1090,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                 <span className="flex size-2 rounded-full bg-emerald-500" />
               </div>
               <div>
-                <p className="text-2xl font-black text-white font-mono">86</p>
+                <p className="text-2xl font-black text-fg font-mono">86</p>
                 <span className="text-[11px] text-muted">Active commercial kitchens</span>
               </div>
               <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
@@ -1119,7 +1119,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                 <span className="flex size-2 rounded-full bg-emerald-500" />
               </div>
               <div>
-                <p className="text-2xl font-black text-white font-mono">142</p>
+                <p className="text-2xl font-black text-fg font-mono">142</p>
                 <span className="text-[11px] text-muted">Riders on road</span>
               </div>
               <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
@@ -1148,7 +1148,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                 <span className="flex size-2 rounded-full bg-emerald-500" />
               </div>
               <div>
-                <p className="text-2xl font-black text-white font-mono">0.00%</p>
+                <p className="text-2xl font-black text-fg font-mono">0.00%</p>
                 <span className="text-[11px] text-muted">Deadlocks &amp; Failures</span>
               </div>
               <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
@@ -1223,7 +1223,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
             <div className="flex items-center gap-3">
               <Rocket className="size-6 text-amber-400" />
               <div>
-                <h2 className="text-lg font-bold text-white">1-Command Sovereign App &amp; Website Deployer</h2>
+                <h2 className="text-lg font-bold text-fg">1-Command Sovereign App &amp; Website Deployer</h2>
                 <p className="text-xs text-muted">
                   Type any natural language instruction. HDmaster instantly creates complete code, routes, schema &amp; edge deployment.
                 </p>
@@ -1254,7 +1254,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                   <span className="text-xs font-bold text-emerald-400">⚠️ DEPLOYMENT STATUS: NOT VERIFIED</span>
                   <span className="text-xs font-mono text-muted">{createdProject.timestamp}</span>
                 </div>
-                <h4 className="font-bold text-white">{createdProject.name}</h4>
+                <h4 className="font-bold text-fg">{createdProject.name}</h4>
                 <p className="text-xs text-slate-300 font-mono">Live Edge URL: {createdProject.liveUrl}</p>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {createdProject.routes.map((r) => (
@@ -1277,13 +1277,13 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
               <div className="flex items-center gap-3">
                 <Banknote className="size-6 text-emerald-400" />
                 <div>
-                  <h2 className="text-lg font-bold text-white">Founder Direct Legal Income &amp; Paid Products</h2>
+                  <h2 className="text-lg font-bold text-fg">Founder Direct Legal Income &amp; Paid Products</h2>
                   <p className="text-xs text-muted">
                     Turnkey software licenses, developer APIs and consulting with direct 100% legal payouts to founder account.
                   </p>
                 </div>
               </div>
-              <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-400 text-xs font-mono">
+              <Badge className="bg-[#D4AF37]/10 text-emerald-300 border border-emerald-400 text-xs font-mono">
                 Verified earnings: awaiting live ledger data
               </Badge>
             </div>
@@ -1293,11 +1293,11 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                 <div key={p.id} className="rounded-xl border border-border bg-surface-2 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono font-bold text-amber-400">{p.id}</span>
-                    <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                    <span className="rounded-full bg-[#D4AF37]/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
                       {p.status}
                     </span>
                   </div>
-                  <h4 className="font-bold text-white text-sm">{p.name}</h4>
+                  <h4 className="font-bold text-fg text-sm">{p.name}</h4>
                   <div className="border-t border-border/60 pt-2 space-y-1 text-xs">
                     <div className="flex justify-between">
                       <span className="text-muted">License Price:</span>
@@ -1336,7 +1336,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
             <div className="flex items-center gap-3">
               <Cpu className="size-6 text-purple-400" />
               <div>
-                <h2 className="text-lg font-bold text-white">Autonomous Continuous Self-Coding &amp; Tuning</h2>
+                <h2 className="text-lg font-bold text-fg">Autonomous Continuous Self-Coding &amp; Tuning</h2>
                 <p className="text-xs text-muted">
                   Self-healing diagnostics, automatic memory tuning, and zero-downtime hot-patching.
                 </p>
@@ -1372,7 +1372,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
             <div className="flex items-center gap-3">
               <ShieldCheck className="size-6 text-emerald-400" />
               <div>
-                <h2 className="text-lg font-bold text-white">Automated GST Returns &amp; Section 79 Privacy Shield</h2>
+                <h2 className="text-lg font-bold text-fg">Automated GST Returns &amp; Section 79 Privacy Shield</h2>
                 <p className="text-xs text-muted">
                   GSTR-1, GSTR-3B compilation, Section 194-O (1% TDS) ledger &amp; intermediary safe harbor protection.
                 </p>

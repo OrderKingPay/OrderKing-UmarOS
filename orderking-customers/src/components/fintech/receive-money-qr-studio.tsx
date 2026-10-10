@@ -268,18 +268,18 @@ export function ReceiveMoneyQrStudio({
                 <span>{activeTheme.icon}</span>
                 <span className={activeTheme.accentText}>{activeTheme.tagline}</span>
               </div>
-              <h3 className="font-display text-xl font-black text-white tracking-tight">
+              <h3 className="font-display text-xl font-black text-fg tracking-tight">
                 King<span className="text-amber-400">Pay</span> Sovereign QR
               </h3>
-              <p className="text-xs text-white/80 font-medium">
+              <p className="text-xs text-fg/80 font-medium">
                 {payeeName || "OrderKing User"}
               </p>
-              <div className="flex items-center justify-center gap-1 text-[11px] font-mono text-white/70">
+              <div className="flex items-center justify-center gap-1 text-[11px] font-mono text-fg/70">
                 <span>{upiId}</span>
                 <button
                   type="button"
                   onClick={handleCopyUpi}
-                  className="p-1 hover:text-white transition"
+                  className="p-1 hover:text-fg transition"
                   title="Copy UPI ID"
                 >
                   {copiedUpi ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
@@ -309,18 +309,18 @@ export function ReceiveMoneyQrStudio({
             {/* Amount & Custom Note Display on Card */}
             <div className="relative z-10 mt-4 space-y-1">
               {amount ? (
-                <div className="font-mono text-2xl font-black text-white tracking-tight flex items-center justify-center gap-1">
+                <div className="font-mono text-2xl font-black text-fg tracking-tight flex items-center justify-center gap-1">
                   <span className="text-amber-400 text-xl">₹</span>
                   <span>{Number(amount).toLocaleString("en-IN")}.00</span>
                 </div>
               ) : (
-                <div className="text-xs text-white/70 italic">
+                <div className="text-xs text-fg/70 italic">
                   Payer enters any amount
                 </div>
               )}
 
               {note && (
-                <p className="text-xs text-white/90 bg-white/10 rounded-xl px-3 py-1.5 backdrop-blur-md mx-auto max-w-xs border border-white/10 font-medium">
+                <p className="text-xs text-fg/90 bg-white/10 rounded-xl px-3 py-1.5 backdrop-blur-md mx-auto max-w-xs border border-white/10 font-medium">
                   "{note}"
                 </p>
               )}
@@ -328,10 +328,10 @@ export function ReceiveMoneyQrStudio({
 
             {/* Accepted Payment Apps Banner */}
             <div className="relative z-10 mt-5 pt-3 border-t border-white/15 flex flex-col items-center gap-1.5">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-white/70">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-fg/70">
                 Scan with any app
               </span>
-              <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-black text-white/90">
+              <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-black text-fg/90">
                 <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">GPay</span>
                 <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">PhonePe</span>
                 <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">Paytm</span>
@@ -444,7 +444,7 @@ export function ReceiveMoneyQrStudio({
                   onClick={() => setAmount(amt)}
                   className={`rounded-full px-3 py-1 text-xs font-bold font-mono transition ${
                     amount === amt
-                      ? "bg-primary text-white"
+                      ? "bg-primary text-fg"
                       : "bg-surface-2 text-fg hover:bg-surface-3"
                   }`}
                 >

@@ -84,7 +84,7 @@ export function EmergencyRecoveryHub() {
           <div>
             <div className="flex items-center gap-2">
               <ShieldAlert className="h-6 w-6 text-rose-400" />
-              <h2 className="text-xl font-bold text-white">Emergency Recovery & Deployment Rollback (§23)</h2>
+              <h2 className="text-xl font-bold text-fg">Emergency Recovery & Deployment Rollback (§23)</h2>
               <Badge tone="danger">Circuit Breaker Equipped</Badge>
             </div>
             <p className="mt-1 text-sm text-slate-300">
@@ -96,7 +96,7 @@ export function EmergencyRecoveryHub() {
               variant="danger"
               disabled={isSimulating}
               onClick={handleSimulateIncident}
-              className="flex items-center gap-2 bg-rose-600 hover:bg-rose-500 text-white font-semibold"
+              className="flex items-center gap-2 bg-rose-600 hover:bg-rose-500 text-fg font-semibold"
             >
               {isSimulating ? (
                 <>
@@ -117,7 +117,7 @@ export function EmergencyRecoveryHub() {
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-rose-500/20 pt-4">
           <div className="rounded-lg bg-black/40 p-3 border border-rose-500/20">
             <span className="text-xs text-slate-400">Current Deployment</span>
-            <div className="text-2xl font-bold text-white">{history[0].version}</div>
+            <div className="text-2xl font-bold text-fg">{history[0].version}</div>
           </div>
           <div className="rounded-lg bg-black/40 p-3 border border-rose-500/20">
             <span className="text-xs text-slate-400">System Health</span>
@@ -137,7 +137,7 @@ export function EmergencyRecoveryHub() {
       {/* 8-Stage Recovery State Machine Visualizer */}
       <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 space-y-4">
         <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <h3 className="font-bold text-white">8-Stage Autonomous Recovery Loop</h3>
+          <h3 className="font-bold text-fg">8-Stage Autonomous Recovery Loop</h3>
           <span className="text-xs text-slate-400">
             {activeIncident ? "Status: INCIDENT RESOLVED" : "Status: STANDBY (MONITORING)"}
           </span>
@@ -166,7 +166,7 @@ export function EmergencyRecoveryHub() {
         {activeIncident && (
           <div className="mt-4 rounded-xl border border-slate-800 bg-black/60 p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-white text-sm">
+              <span className="font-semibold text-fg text-sm">
                 Incident Diagnostic Summary [{activeIncident.id}]
               </span>
               <Badge tone="primary">RESOLVED</Badge>
@@ -193,7 +193,7 @@ export function EmergencyRecoveryHub() {
       <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 space-y-4">
         <div className="flex items-center justify-between border-b border-slate-800 pb-3">
           <div>
-            <h3 className="font-bold text-white">Deployment Snapshot History</h3>
+            <h3 className="font-bold text-fg">Deployment Snapshot History</h3>
             <p className="text-xs text-slate-400">
               Immutable deployment hashes ready for zero-downtime rollback.
             </p>
@@ -209,7 +209,7 @@ export function EmergencyRecoveryHub() {
             >
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-white">{dep.version}</span>
+                  <span className="font-bold text-fg">{dep.version}</span>
                   <span className="font-mono text-xs text-slate-400">({dep.commitHash})</span>
                   <Badge tone={dep.status === "HEALTHY" ? "primary" : "warn"}>{dep.status}</Badge>
                 </div>

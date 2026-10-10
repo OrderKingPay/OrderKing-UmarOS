@@ -145,7 +145,7 @@ export function OpportunityRadarHub({
             size="sm"
             onClick={handleScanRadar}
             disabled={isScanning}
-            className="bg-primary text-white hover:bg-primary/90 text-xs font-bold"
+            className="bg-primary text-fg hover:bg-primary/90 text-xs font-bold"
           >
             {isScanning ? (
               <>
@@ -184,7 +184,7 @@ export function OpportunityRadarHub({
                   onClick={() => setFilterCategory(cat)}
                   className={`px-2.5 py-1 rounded-lg font-bold capitalize transition shrink-0 ${
                     filterCategory === cat
-                      ? "bg-primary text-white"
+                      ? "bg-primary text-fg"
                       : "bg-surface-2 text-muted hover:text-fg border border-border"
                   }`}
                 >
@@ -225,7 +225,7 @@ export function OpportunityRadarHub({
                     <span
                       className={`px-2 py-0.5 rounded-full font-bold ${
                         opp.stage === "REVENUE_RECORDED" || opp.stage === "PAYMENT_CONFIRMED"
-                          ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
+                          ? "bg-[#D4AF37]/10 text-emerald-700 dark:text-emerald-300"
                           : opp.stage === "INVOICED" || opp.stage === "PAYMENT_PENDING"
                             ? "bg-amber-500/20 text-amber-700 dark:text-amber-300"
                             : "bg-surface-2 text-muted border border-border"
@@ -366,7 +366,7 @@ export function OpportunityRadarHub({
                   </Button>
                   <Button
                     size="sm"
-                    className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white"
+                    className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-fg"
                     onClick={() => handleAdvanceStage(selectedOpp.id, "REVENUE_RECORDED")}
                   >
                     ✓ Confirm Payment &amp; Record Revenue

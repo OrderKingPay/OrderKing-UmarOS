@@ -42,18 +42,18 @@ export function CustomerShell({
   }, []);
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-zinc-950 pb-24 md:max-w-5xl transition-colors duration-300">
+    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-black pb-24 md:max-w-5xl transition-colors duration-300">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-surface focus:px-3 focus:py-2"
       >
         {t("a11y.skip")}
       </a>
-      <header className="sticky top-0 z-30 bg-zinc-950 border-b border-zinc-800 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+      <header className="sticky top-0 z-30 bg-black border-b border-white/10 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <div className="flex items-center justify-between gap-2 sm:gap-3">
           <div className="shrink-0 max-w-[50%]">
             <Wordmark />
-            <span className="block text-[10px] font-medium tracking-wide text-zinc-400 break-words text-wrap">
+            <span className="block text-[10px] font-medium tracking-wide text-muted break-words text-wrap">
               {isDeliveryActive ? "Culinary Excellence" : "Secure Payments"}
             </span>
           </div>
@@ -61,7 +61,7 @@ export function CustomerShell({
           {/* 👑 DYNAMIC TRAVEL & Pay PILL */}
             <Link
               to="/king-pay"
-              className="group flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/30 transition-all active:scale-95 hover:scale-105 no-underline ml-auto border border-white/20"
+              className="group flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-fg shadow-lg shadow-orange-500/30 transition-all active:scale-95 hover:scale-105 no-underline ml-auto border border-white/20"
             >
               <span className="text-sm drop-shadow-md">👑</span>
               <span className="text-sm drop-shadow-md">✈️</span>
@@ -73,7 +73,7 @@ export function CustomerShell({
             {/* Share/Promotion */}
             <Link
               to="/rewards"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-white hover:bg-zinc-800"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-surface text-fg hover:bg-surface-2"
               aria-label="Share & Earn"
             >
               <Gift className="h-4 w-4" />
@@ -112,14 +112,14 @@ export function CustomerShell({
             className={`flex h-11 min-w-0 max-w-[40%] items-center justify-center rounded-full px-3 text-left shrink-0 border ${
               isDeliveryActive
                 ? "bg-surface border-border hover:bg-surface-2 transition-colors"
-                : "bg-zinc-900 border-zinc-800"
+                : "bg-surface border-white/10"
             }`}
           >
             <div className="flex flex-col min-w-0 w-full">
-              <span className="text-[9px] uppercase tracking-wide text-zinc-400 font-medium truncate">
+              <span className="text-[9px] uppercase tracking-wide text-muted font-medium truncate">
                 {isDeliveryActive ? t("home.deliveringTo") : "Payments"}
               </span>
-              <span className="text-xs font-medium truncate text-white">
+              <span className="text-xs font-medium truncate text-fg">
                 {isDeliveryActive ? location.label : location.cityName || location.label}
               </span>
             </div>
@@ -163,11 +163,11 @@ export function CustomerShell({
                   {!path.startsWith("/king-pay") ? (
         <nav
             aria-label={brand.appName}
-            className="fixed bottom-4 left-4 right-4 z-40 bg-zinc-950 border border-zinc-800 rounded-2xl shadow-md overflow-hidden"
+            className="fixed bottom-4 left-4 right-4 z-40 bg-black border border-white/10 rounded-2xl shadow-md overflow-hidden"
           >
             <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-1">
-            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-white" />
-            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-white" />
+            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-fg" />
+            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-fg" />
             
             
             <li className="relative -top-2 flex w-full justify-center">
@@ -177,28 +177,28 @@ export function CustomerShell({
                   "group relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-4 border-zinc-950 text-xs no-underline shadow-lg transition-all active:scale-95",
                   path.startsWith("/king-pay")
                     ? "bg-white text-black"
-                    : "bg-zinc-800 text-white hover:bg-zinc-700"
+                    : "bg-surface-2 text-fg hover:bg-zinc-700"
                 )}
               >
                 <Wallet className="h-5 w-5" />
                 <span className="text-[10px] font-medium mt-1">Pay</span>
                 {!path.startsWith("/king-pay") && (
-                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border border-zinc-950 text-[10px] font-bold text-white shadow-sm">
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border border-zinc-950 text-[10px] font-bold text-fg shadow-sm">
                     1
                   </span>
                 )}
               </Link>
             </li>
             
-            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-white" />
-            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-white" />
+            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-fg" />
+            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-fg" />
           </ul>
         </nav>
       ) : (
         <div className="fixed bottom-6 left-4 right-4 z-50 flex justify-center pointer-events-none">
           <Link
             to="/"
-            className="pointer-events-auto flex items-center justify-center gap-3 w-full max-w-sm rounded-full bg-gradient-to-r from-orange-500 via-red-500 to-rose-600 px-6 py-4 text-lg font-black text-white shadow-[0_10px_40px_rgba(249,115,22,0.5)] active:scale-95 transition-all no-underline border-2 border-white/20 hover:brightness-110"
+            className="pointer-events-auto flex items-center justify-center gap-3 w-full max-w-sm rounded-full bg-gradient-to-r from-orange-500 via-red-500 to-rose-600 px-6 py-4 text-lg font-black text-fg shadow-[0_10px_40px_rgba(249,115,22,0.5)] active:scale-95 transition-all no-underline border-2 border-white/20 hover:brightness-110"
             style={{ animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
           >
             <span className="text-2xl drop-shadow-lg">🍔</span>
@@ -241,13 +241,13 @@ function NavItem({
           to={to}
           className={cn(
             "flex flex-col items-center justify-center gap-1 text-[10px] sm:text-[11px] no-underline relative transition-colors",
-            active ? (colorClass || "text-emerald-400") + " font-black drop-shadow-md scale-105" : "text-slate-300 hover:text-white font-medium",
+            active ? (colorClass || "text-emerald-400") + " font-black drop-shadow-md scale-105" : "text-slate-300 hover:text-fg font-medium",
           )}
       >
         <div className="relative flex items-center justify-center h-6 w-6">
           <Icon className={cn("size-5 sm:size-5.5 transition-transform", active && "scale-110")} aria-hidden />
           {badge !== undefined && (
-            <span className="absolute -right-2 -top-1 flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white shadow-xs">
+            <span className="absolute -right-2 -top-1 flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-fg shadow-xs">
               {badge}
             </span>
           )}

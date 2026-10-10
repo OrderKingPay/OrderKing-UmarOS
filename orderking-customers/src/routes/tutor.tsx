@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
 import { motion, LayoutGroup } from "framer-motion";
-import { Send, GraduationCap, Award, BookOpen, BrainCircuit, Loader2, Sparkles, Briefcase, Settings2, SlidersHorizontal } from "lucide-react";
+import { Send, BrainCircuit, Loader2, SlidersHorizontal } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 
 const askIntelligenceFn = createServerFn({ method: "POST" })
@@ -65,7 +65,6 @@ export const Route = createFileRoute('/tutor')({
 });
 
 function IntelligencePage() {
-  const [activeTab, setActiveTab] = useState<"chat" | "jobs" | "schemes" | "premium">("chat");
   const [message, setMessage] = useState("");
   const [board, setBoard] = useState("CBSE");
   const [stdClass, setStdClass] = useState("Class 10");
@@ -109,20 +108,20 @@ function IntelligencePage() {
   return (
     <CustomerShell>
       <LayoutGroup>
-        <motion.div layout className="flex flex-col h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-white selection:bg-zinc-800">
+        <motion.div layout className="flex flex-col h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-fg selection:bg-surface-2">
         
         {/* Core Control Panel */}
-        <div className="bg-zinc-950 border-b border-zinc-900 px-4 py-4 z-10 flex flex-col gap-4 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
+        <div className="bg-black border-b border-zinc-900 px-4 py-4 z-10 flex flex-col gap-4 shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-surface-2/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
           
           <div className="flex items-center justify-between relative z-10">
-            <h1 className="text-xl font-medium text-white flex items-center gap-2 tracking-tight">
-              <BrainCircuit className="text-zinc-400 size-5" />
+            <h1 className="text-xl font-medium text-fg flex items-center gap-2 tracking-tight">
+              <BrainCircuit className="text-muted size-5" />
               Academic Intelligence
             </h1>
             <button 
               onClick={() => setShowConfig(!showConfig)}
-              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 transition-colors text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md uppercase tracking-widest border border-white/20"
+              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 transition-colors text-fg text-[10px] font-medium px-2.5 py-1.5 rounded-md uppercase tracking-widest border border-white/20"
             >
               <SlidersHorizontal className="size-3" /> Config
             </button>
@@ -132,7 +131,7 @@ function IntelligencePage() {
              <select 
                 value={board} 
                 onChange={(e) => setBoard(e.target.value)}
-                className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
+                className="bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
               >
                 <option value="CBSE">CBSE</option>
                 <option value="ICSE">ICSE</option>
@@ -152,7 +151,7 @@ function IntelligencePage() {
              <select 
                 value={stdClass} 
                 onChange={(e) => setStdClass(e.target.value)}
-                className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
+                className="bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
               >
                 {[...Array(12)].map((_, i) => (
                   <option key={i+1} value={`Class ${i+1}`}>Class {i+1}</option>
@@ -160,30 +159,22 @@ function IntelligencePage() {
                 <option value="Undergraduate">Undergraduate</option>
                 <option value="Postgraduate">Postgraduate</option>
              </select>
-             <select 
-                value={subject} 
-                onChange={(e) => setSubject(e.target.value)}
-                className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
-              >
-                <option value="Mathematics">Mathematics</option>
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-                <option value="Biology">Biology</option>
-                <option value="Science">General Science</option>
-                <option value="Computer Science">Computer Science</option>
-                <option value="History">History</option>
-                <option value="Geography">Geography</option>
-                <option value="Economics">Economics</option>
-                <option value="Political Science">Political Science</option>
-                <option value="Accountancy">Accountancy</option>
-                <option value="Business Studies">Business Studies</option>
-                <option value="English">English</option>
-                <option value="Literature">Literature</option>
-             </select>
+             
+             {/* Dynamic Text Input for Subject to cover "ALL Subjects" perfectly */}
+             <div className="col-span-1 bg-surface/80 border border-white/10 rounded-lg flex items-center px-2.5 focus-within:border-zinc-500 transition-colors">
+                <input 
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Subject (e.g. Mathematics)"
+                  className="bg-transparent text-xs font-medium text-zinc-200 outline-none w-full py-2.5 placeholder:text-subtle"
+                />
+             </div>
+             
              <select 
                 value={language} 
                 onChange={(e) => setLanguage(e.target.value)}
-                className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
+                className="bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
               >
                 <option value="English">English</option>
                 <option value="Hindi">Hindi</option>
@@ -202,7 +193,7 @@ function IntelligencePage() {
              <select 
                 value={goal} 
                 onChange={(e) => setGoal(e.target.value)}
-                className={`bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+                className={`bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
               >
                 <option value="Concept Mastery">Goal: Concept Mastery</option>
                 <option value="Exam Prep">Goal: Exam Prep</option>
@@ -213,7 +204,7 @@ function IntelligencePage() {
              <select 
                 value={difficulty} 
                 onChange={(e) => setDifficulty(e.target.value)}
-                className={`bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+                className={`bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
               >
                 <option value="Fundamental">Level: Fundamental</option>
                 <option value="Intermediate">Level: Intermediate</option>
@@ -223,7 +214,7 @@ function IntelligencePage() {
              <select 
                 value={tone} 
                 onChange={(e) => setTone(e.target.value)}
-                className={`col-span-2 bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+                className={`col-span-2 bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
               >
                 <option value="Socratic (Ask Questions)">Tone: Socratic (Guides via questioning)</option>
                 <option value="Encouraging & Patient">Tone: Encouraging & Patient</option>
@@ -233,189 +224,65 @@ function IntelligencePage() {
           </div>
         </div>
 
-        {/* Tactical Navigation */}
-        <div className="flex px-4 pt-1 bg-zinc-950 border-b border-zinc-900 overflow-x-auto whitespace-nowrap hide-scrollbar">
-           <button 
-             onClick={() => setActiveTab('chat')}
-             className={`flex-none px-4 py-3 text-xs font-medium border-b-2 transition-all duration-300 ${activeTab === 'chat' ? 'border-white text-white' : 'border-transparent text-zinc-600 hover:text-zinc-400'}`}
-           >
-             <GraduationCap className="size-4 inline-block mr-1.5 mb-0.5 opacity-70"/> Intelligence
-           </button>
-           <button 
-             onClick={() => setActiveTab('jobs')}
-             className={`flex-none px-4 py-3 text-xs font-medium border-b-2 transition-all duration-300 ${activeTab === 'jobs' ? 'border-white text-white' : 'border-transparent text-zinc-600 hover:text-zinc-400'}`}
-           >
-             <Briefcase className="size-4 inline-block mr-1.5 mb-0.5 opacity-70"/> Placements
-           </button>
-           <button 
-             onClick={() => setActiveTab('schemes')}
-             className={`flex-none px-4 py-3 text-xs font-medium border-b-2 transition-all duration-300 ${activeTab === 'schemes' ? 'border-white text-white' : 'border-transparent text-zinc-600 hover:text-zinc-400'}`}
-           >
-             <Award className="size-4 inline-block mr-1.5 mb-0.5 opacity-70"/> State Programs
-           </button>
-           <button 
-             onClick={() => setActiveTab('premium')}
-             className={`flex-none px-4 py-3 text-xs font-medium border-b-2 transition-all duration-300 ${activeTab === 'premium' ? 'border-white text-white' : 'border-transparent text-zinc-600 hover:text-zinc-400'}`}
-           >
-             <Sparkles className="size-4 inline-block mr-1.5 mb-0.5 opacity-70"/> Elite Access
-           </button>
-        </div>
-
         {/* Active Workspace */}
         <div className="flex-1 overflow-hidden relative">
           
-          {/* Intelligence Matrix */}
-          {activeTab === 'chat' && (
-            <div className="h-full flex flex-col">
-              <div className="flex-1 overflow-y-auto p-4 space-y-5">
-                {history.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed whitespace-pre-wrap shadow-sm ${
-                      msg.role === 'user' 
-                        ? 'bg-white text-black rounded-br-sm font-medium' 
-                        : 'bg-zinc-900 border border-zinc-800 text-zinc-200 rounded-bl-sm'
-                    }`}>
-                      {msg.content}
-                    </div>
+          <div className="h-full flex flex-col">
+            <div className="flex-1 overflow-y-auto p-4 space-y-5">
+              {history.map((msg, i) => (
+                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed whitespace-pre-wrap shadow-sm ${
+                    msg.role === 'user' 
+                      ? 'bg-white text-black rounded-br-sm font-medium' 
+                      : 'bg-surface border border-white/10 text-zinc-200 rounded-bl-sm'
+                  }`}>
+                    {msg.content}
                   </div>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start">
-                     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm flex items-center gap-3">
-                        <Loader2 className="size-4 animate-spin text-zinc-400" />
-                        <span className="text-xs text-zinc-400 font-medium tracking-wide">Processing tactical data...</span>
-                     </div>
-                  </div>
-                )}
-                <div ref={bottomRef} />
-              </div>
-              <div className="p-3 bg-zinc-950 border-t border-zinc-900 pb-24">
-                 <div className="flex items-end gap-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-1.5 focus-within:border-zinc-600 transition-colors shadow-inner">
-                    <textarea 
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Initialize academic query..."
-                      className="flex-1 max-h-32 min-h-[44px] bg-transparent resize-none outline-none text-[13px] p-2.5 text-white placeholder:text-zinc-600"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          void handleSend();
-                        }
-                      }}
-                    />
-                    <button 
-                      onClick={() => void handleSend()}
-                      disabled={!message.trim() || isLoading}
-                      className="bg-white text-black p-3 rounded-xl disabled:opacity-50 active:scale-95 transition-transform shrink-0 m-0.5"
-                    >
-                      <Send className="size-4" />
-                    </button>
-                 </div>
-                 <div className="flex justify-between items-center px-2 mt-3">
-                   <p className="text-[10px] text-zinc-600 font-medium tracking-widest uppercase">
-                     End-to-End Encrypted
-                   </p>
-                   <p className="text-[10px] text-zinc-600 font-medium tracking-widest uppercase">
-                     Verified Syllabi
-                   </p>
-                 </div>
-              </div>
+                </div>
+              ))}
+              {isLoading && (
+                <div className="flex justify-start">
+                   <div className="bg-surface border border-white/10 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm flex items-center gap-3">
+                      <Loader2 className="size-4 animate-spin text-muted" />
+                      <span className="text-xs text-muted font-medium tracking-wide">Processing tactical data...</span>
+                   </div>
+                </div>
+              )}
+              <div ref={bottomRef} />
             </div>
-          )}
-
-          {/* Placements Matrix */}
-          {activeTab === 'jobs' && (
-            <div className="h-full overflow-y-auto p-4 pb-24 space-y-4">
-               <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 hover:bg-zinc-900 transition-colors">
-                  <h3 className="font-medium text-white flex items-center gap-2 text-sm tracking-tight">
-                    <Briefcase className="size-4 text-zinc-400" />
-                    Data Annotation & AI Training
-                  </h3>
-                  <p className="text-[11px] text-zinc-400 mt-2 leading-relaxed">High-paying AI training tasks. Read instructions, evaluate AI responses, and get paid in USD via PayPal.</p>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-[9px] text-zinc-500 font-medium uppercase tracking-widest border border-zinc-800 px-2 py-1 rounded">Verified Platforms</span>
-                    <button className="text-xs bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-zinc-200 transition-colors">Initialize</button>
-                  </div>
-               </div>
-
-               <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 hover:bg-zinc-900 transition-colors">
-                  <h3 className="font-medium text-white flex items-center gap-2 text-sm tracking-tight">
-                    <Briefcase className="size-4 text-zinc-400" />
-                    Micro-tasking & Surveys
-                  </h3>
-                  <p className="text-[11px] text-zinc-400 mt-2 leading-relaxed">Simple data entry, survey completion, and image categorization tasks. Competitive payout structures.</p>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-[9px] text-zinc-500 font-medium uppercase tracking-widest border border-zinc-800 px-2 py-1 rounded">Global Scope</span>
-                    <button className="text-xs bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-zinc-200 transition-colors">Initialize</button>
-                  </div>
-               </div>
-               
-               <div className="text-center p-6">
-                  <p className="text-[10px] text-zinc-600 font-medium tracking-widest uppercase">Connecting to global verified platforms... Zero joining fees.</p>
-               </div>
-            </div>
-          )}
-
-          {/* State Programs Matrix */}
-          {activeTab === 'schemes' && (
-            <div className="h-full overflow-y-auto p-4 pb-24 space-y-4">
-               <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 hover:bg-zinc-900 transition-colors">
-                  <h3 className="font-medium text-white flex items-center gap-2 text-sm tracking-tight">
-                    <Award className="size-4 text-zinc-400" />
-                    Ayushman Bharat (PMJAY)
-                  </h3>
-                  <p className="text-[11px] text-zinc-400 mt-2 leading-relaxed">Health cover of ₹5 lakhs per family per year for secondary and tertiary care hospitalization across empaneled hospitals.</p>
-                  <button className="w-full mt-4 text-xs bg-white text-black px-4 py-2.5 rounded-lg font-medium hover:bg-zinc-200 transition-colors">Verify Eligibility</button>
-               </div>
-               
-               <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 hover:bg-zinc-900 transition-colors">
-                  <h3 className="font-medium text-white flex items-center gap-2 text-sm tracking-tight">
-                    <Award className="size-4 text-zinc-400" />
-                    PM Kisan Samman Nidhi
-                  </h3>
-                  <p className="text-[11px] text-zinc-400 mt-2 leading-relaxed">Income support of ₹6,000 per year in three equal installments to all land holding eligible farmer families.</p>
-                  <button className="w-full mt-4 text-xs bg-zinc-800 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-zinc-700 transition-colors border border-zinc-700">Check Status</button>
-               </div>
-
-               <div className="text-center p-6">
-                  <p className="text-[10px] text-zinc-600 font-medium tracking-widest uppercase leading-relaxed">Synchronizing with National Government Services Portal (india.gov.in) to fetch 300+ programs...</p>
-               </div>
-            </div>
-          )}
-
-          {/* Elite Status Matrix */}
-          {activeTab === 'premium' && (
-            <div className="h-full overflow-y-auto p-4 pb-24 space-y-4">
-               <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 text-white shadow-sm relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl pointer-events-none -mr-4 -mt-4"></div>
-                  <h2 className="font-medium text-lg mb-1 relative z-10 tracking-tight">Advanced Engineering Mastery</h2>
-                  <p className="text-zinc-400 text-[11px] font-medium mb-5 relative z-10">Elite Career Preparation & Proprietary Study Materials.</p>
-                  <div className="flex gap-2 relative z-10">
-                     <span className="bg-zinc-950 border border-zinc-800 px-2.5 py-1 rounded-md text-[10px] font-medium text-zinc-300">PhysicsWallah Alliance</span>
-                     <span className="bg-zinc-950 border border-zinc-800 px-2.5 py-1 rounded-md text-[10px] font-medium text-zinc-300">Testbook Integrated</span>
-                  </div>
-                  <button className="w-full mt-6 bg-white text-black font-medium py-3 rounded-xl shadow-sm hover:bg-zinc-200 active:scale-95 transition-all text-xs">
-                    Acquire Elite Access
+            
+            <div className="p-3 bg-black border-t border-zinc-900 pb-24">
+               <div className="flex items-end gap-2 bg-surface border border-white/10 rounded-2xl p-1.5 focus-within:border-zinc-600 transition-colors shadow-inner">
+                  <textarea 
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Initialize academic query..."
+                    className="flex-1 max-h-32 min-h-[44px] bg-transparent resize-none outline-none text-[13px] p-2.5 text-fg placeholder:text-subtle"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        void handleSend();
+                      }
+                    }}
+                  />
+                  <button 
+                    onClick={() => void handleSend()}
+                    disabled={!message.trim() || isLoading}
+                    className="bg-white text-black p-3 rounded-xl disabled:opacity-50 active:scale-95 transition-transform shrink-0 m-0.5"
+                  >
+                    <Send className="size-4" />
                   </button>
                </div>
-               
-               <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 text-white shadow-sm relative overflow-hidden">
-                  <h2 className="font-medium text-lg mb-1 relative z-10 tracking-tight">Global IT Diplomas</h2>
-                  <p className="text-zinc-400 text-[11px] font-medium mb-5 relative z-10">Learn Software Engineering, AI & Business from Harvard, Google & IBM.</p>
-                  <div className="flex gap-2 relative z-10">
-                     <span className="bg-zinc-950 border border-zinc-800 px-2.5 py-1 rounded-md text-[10px] font-medium text-zinc-300">Coursera Verified</span>
-                     <span className="bg-zinc-950 border border-zinc-800 px-2.5 py-1 rounded-md text-[10px] font-medium text-zinc-300">Simplilearn</span>
-                  </div>
-                  <button className="w-full mt-6 bg-zinc-800 text-white border border-zinc-700 font-medium py-3 rounded-xl shadow-sm hover:bg-zinc-700 active:scale-95 transition-all text-xs">
-                    View Placement Directives
-                  </button>
-               </div>
-               
-               <div className="text-center p-6">
-                 <p className="text-[9px] text-zinc-600 uppercase tracking-widest font-medium">100% Verified Partners • Zero Fake Certificates</p>
+               <div className="flex justify-between items-center px-2 mt-3">
+                 <p className="text-[10px] text-subtle font-medium tracking-widest uppercase">
+                   End-to-End Encrypted
+                 </p>
+                 <p className="text-[10px] text-subtle font-medium tracking-widest uppercase">
+                   Verified Syllabi
+                 </p>
                </div>
             </div>
-          )}
+          </div>
 
         </div>
     </motion.div></LayoutGroup></CustomerShell>

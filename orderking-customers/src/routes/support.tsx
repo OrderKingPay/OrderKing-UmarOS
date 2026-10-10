@@ -183,7 +183,7 @@ export function SupportPage() {
                 <div
                   className={`max-w-[85%] rounded-2xl p-3 shadow-2xs leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-primary text-white rounded-br-xs"
+                      ? "bg-primary text-fg rounded-br-xs"
                       : "bg-surface-2 border border-border text-fg rounded-bl-xs"
                   }`}
                 >
@@ -290,7 +290,7 @@ export function SupportPage() {
             <button
               type="button"
               onClick={() => void handleSendChat("I want to speak with executive support regarding my delivery.")}
-              className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-800 dark:text-emerald-300 hover:bg-emerald-500/20 transition"
+              className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-800 dark:text-emerald-300 hover:bg-[#D4AF37]/10 transition"
             >
               🎧 Talk to Support Executive
             </button>
@@ -309,7 +309,7 @@ export function SupportPage() {
               href="https://wa.me/919223166166?text=Hi%20OrderKing%20Support%20I%20need%20help%20with%20my%20order"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md bg-emerald-600 hover:bg-emerald-700 px-3 py-1 text-[11px] font-bold text-white shadow-xs transition"
+              className="rounded-md bg-emerald-600 hover:bg-emerald-700 px-3 py-1 text-[11px] font-bold text-fg shadow-xs transition"
             >
               Open WhatsApp ↗
             </a>

@@ -125,7 +125,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
           <div>
             <div className="flex items-center gap-2">
               <Receipt className="h-6 w-6 text-emerald-400" />
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-fg">
                 Revenue Collection, Growth &amp; Cost Control (§5, §10, §13, §14, §24)
               </h2>
               <Badge tone="primary">End-to-End Execution</Badge>
@@ -140,7 +140,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-emerald-500/20 pt-4">
           <div className="rounded-lg bg-black/40 p-3 border border-emerald-500/20">
             <span className="text-xs text-slate-400">Total Invoiced</span>
-            <div className="text-2xl font-bold text-white">
+            <div className="text-2xl font-bold text-fg">
               ₹{(invoices.reduce((acc, inv) => acc + inv.totalInr, 0) / 1000).toFixed(0)}k
             </div>
           </div>
@@ -172,7 +172,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
           className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
             activeSubTab === "APPLICATIONS"
               ? "bg-emerald-500 text-black font-bold"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-fg"
           }`}
         >
           💼 Automatic Application Engine (§5)
@@ -182,7 +182,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
           className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
             activeSubTab === "PAYMENTS"
               ? "bg-emerald-500 text-black font-bold"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-fg"
           }`}
         >
           💳 Invoicing &amp; Webhooks (§10)
@@ -192,7 +192,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
           className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
             activeSubTab === "REPEAT_BIZ"
               ? "bg-emerald-500 text-black font-bold"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-fg"
           }`}
         >
           🔄 Repeat Business &amp; Retainers (§13, §14)
@@ -202,7 +202,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
           className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
             activeSubTab === "COST_CONTROL"
               ? "bg-emerald-500 text-black font-bold"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-fg"
           }`}
         >
           📉 Cost Control &amp; Zero-Cost Infra (§24)
@@ -214,7 +214,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Opportunity Selector */}
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">Select Opportunity to Apply</h3>
+            <h3 className="text-sm font-bold text-fg uppercase tracking-wider">Select Opportunity to Apply</h3>
             {VERIFIED_OPPORTUNITIES.map((opp) => (
               <div
                 key={opp.id}
@@ -231,7 +231,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                     ₹{(opp.statedBudget ?? 0).toLocaleString()}
                   </span>
                 </div>
-                <h4 className="mt-1 text-sm font-semibold text-white line-clamp-1">{opp.title}</h4>
+                <h4 className="mt-1 text-sm font-semibold text-fg line-clamp-1">{opp.title}</h4>
                 <p className="mt-1 text-xs text-slate-400">Client: {opp.client ?? "Direct Enterprise"}</p>
               </div>
             ))}
@@ -244,7 +244,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                 <span className="text-xs font-semibold text-emerald-400 uppercase">
                   Customized Proposal Draft (§5)
                 </span>
-                <h3 className="text-lg font-bold text-white">{applicationDraft.opportunityTitle}</h3>
+                <h3 className="text-lg font-bold text-fg">{applicationDraft.opportunityTitle}</h3>
               </div>
               <div className="flex items-center gap-2">
                 <Badge tone={applicationDraft.status === "SUBMITTED" ? "primary" : "warn"}>
@@ -273,7 +273,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
               </div>
               <div className="rounded-lg bg-black/40 p-2.5 border border-slate-800 text-xs">
                 <span className="text-slate-400">Estimated Effort</span>
-                <div className="font-bold text-white text-sm">
+                <div className="font-bold text-fg text-sm">
                   {applicationDraft.estimatedEffortHours} Hours ({Math.ceil(applicationDraft.estimatedEffortHours / 40)}w)
                 </div>
               </div>
@@ -303,7 +303,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                     className="rounded-lg border border-slate-800 bg-black/40 p-3 text-xs space-y-1"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-white">{item.title}</span>
+                      <span className="font-semibold text-fg">{item.title}</span>
                       <span className="font-mono text-[11px] text-emerald-400">{item.liveUrl}</span>
                     </div>
                     <p className="text-slate-400">{item.description}</p>
@@ -322,7 +322,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
           {/* Invoices List */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">Client Invoices</h3>
+              <h3 className="text-sm font-bold text-fg uppercase tracking-wider">Client Invoices</h3>
               <Button
                 variant="outline"
                 onClick={handleSimulateWebhook}
@@ -346,7 +346,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                   <span className="font-mono text-xs font-bold text-slate-300">{inv.id}</span>
                   <Badge tone={inv.status === "RECEIVED" ? "primary" : "warn"}>{inv.status}</Badge>
                 </div>
-                <h4 className="mt-1 font-semibold text-white text-sm">{inv.clientName}</h4>
+                <h4 className="mt-1 font-semibold text-fg text-sm">{inv.clientName}</h4>
                 <div className="mt-2 flex items-center justify-between text-xs text-slate-400 border-t border-slate-900 pt-2">
                   <span>Method: {inv.paymentMethod}</span>
                   <span className="font-mono text-emerald-400 font-bold">₹{inv.totalInr.toLocaleString()}</span>
@@ -362,7 +362,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                 <span className="text-xs font-semibold text-emerald-400 uppercase font-mono">
                   {selectedInvoice.id} • {selectedInvoice.status}
                 </span>
-                <h3 className="text-lg font-bold text-white">{selectedInvoice.projectName}</h3>
+                <h3 className="text-lg font-bold text-fg">{selectedInvoice.projectName}</h3>
                 <p className="text-xs text-slate-400">
                   Client: {selectedInvoice.clientName} ({selectedInvoice.clientEmail})
                 </p>
@@ -390,7 +390,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                       <td className="p-2.5 text-right font-mono">₹{item.totalInr.toLocaleString()}</td>
                     </tr>
                   ))}
-                  <tr className="font-bold text-white bg-black/40">
+                  <tr className="font-bold text-fg bg-black/40">
                     <td colSpan={2} className="p-2.5 text-right">
                       Total Due:
                     </td>
@@ -407,7 +407,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <QrCode className="h-5 w-5 text-emerald-400" />
-                  <span className="font-bold text-white text-sm">Sovereign Direct UPI QR Code</span>
+                  <span className="font-bold text-fg text-sm">Sovereign Direct UPI QR Code</span>
                 </div>
                 <p className="text-xs text-slate-400">
                   Scan with GPay, PhonePe, Paytm, or BHIM. Zero gateway commissions.
@@ -418,7 +418,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
               <div className="flex items-center gap-2">
                 <a
                   href={selectedInvoice.paymentLink}
-                  className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500"
+                  className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-fg hover:bg-emerald-500"
                 >
                   Pay via UPI App
                 </a>
@@ -439,7 +439,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
       {activeSubTab === "REPEAT_BIZ" && (
         <div className="space-y-4">
           <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-            <h3 className="font-bold text-white text-sm uppercase tracking-wider">
+            <h3 className="font-bold text-fg text-sm uppercase tracking-wider">
               Post-Project Repeat &amp; Retainer Opportunities (§13, §14)
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -459,7 +459,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-white text-sm">{opp.title}</h4>
+                  <h4 className="font-bold text-fg text-sm">{opp.title}</h4>
                   <p className="text-xs text-slate-400 mt-1">Client: {opp.clientName}</p>
                 </div>
 
@@ -472,7 +472,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                   </div>
                   <div>
                     <span className="text-slate-400">Expected Annual LTV</span>
-                    <div className="font-bold text-white">₹{opp.expectedAnnualLtvInr.toLocaleString()}</div>
+                    <div className="font-bold text-fg">₹{opp.expectedAnnualLtvInr.toLocaleString()}</div>
                   </div>
                 </div>
 
@@ -504,7 +504,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
         <div className="space-y-4">
           <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h3 className="font-bold text-white text-sm uppercase tracking-wider">
+              <h3 className="font-bold text-fg text-sm uppercase tracking-wider">
                 Cost Control &amp; Expense Optimization (§24)
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -526,7 +526,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                 className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white text-sm">{exp.name}</span>
+                  <span className="font-bold text-fg text-sm">{exp.name}</span>
                   <Badge tone={exp.isOptimized ? "primary" : "warn"}>
                     {exp.isOptimized ? "OPTIMIZED" : "SAVINGS AVAILABLE"}
                   </Badge>

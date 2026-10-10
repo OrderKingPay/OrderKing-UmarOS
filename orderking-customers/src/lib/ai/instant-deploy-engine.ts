@@ -57,27 +57,27 @@ export class InstantDeployEngine {
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between p-6">
-  <header class="max-w-4xl mx-auto w-full flex justify-between items-center py-4 border-b border-zinc-800">
+  <header class="max-w-4xl mx-auto w-full flex justify-between items-center py-4 border-b border-white/10">
     <div class="flex items-center gap-2">
       <span class="text-2xl">👑</span>
       <span class="font-bold text-lg text-amber-400">Umar OS Engine</span>
     </div>
-    <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-mono font-semibold">Interactive Sandbox Ready</span>
+    <span class="px-3 py-1 rounded-full bg-[#D4AF37]/10 text-emerald-400 text-xs font-mono font-semibold">Interactive Sandbox Ready</span>
   </header>
   <main class="max-w-4xl mx-auto w-full my-auto py-12 text-center space-y-6">
     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold">
       <span>⚡ 1-Command Autonomously Scaffolded System</span>
     </div>
     <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight gold-glow">${prompt}</h1>
-    <p class="text-zinc-400 text-base max-w-xl mx-auto">
+    <p class="text-muted text-base max-w-xl mx-auto">
       Standalone reactive bundle compiled live in your browser. All assets, structure, and event loops are 100% operational locally with zero external DNS dependencies.
     </p>
     <div class="flex flex-wrap justify-center gap-4 pt-4">
       <a href="https://orderking.in/king-pay" target="_blank" rel="noreferrer" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold shadow-lg hover:scale-105 transition">Open via King Pay UPI</a>
-      <button onclick="alert('Umar OS Local Sandbox operational! All reactive states functional.')" class="px-6 py-3 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 font-semibold text-zinc-200 transition">Verify Local State</button>
+      <button onclick="alert('Umar OS Local Sandbox operational! All reactive states functional.')" class="px-6 py-3 rounded-xl border border-white/20 bg-surface hover:bg-surface-2 font-semibold text-zinc-200 transition">Verify Local State</button>
     </div>
   </main>
-  <footer class="max-w-4xl mx-auto w-full text-center text-xs text-zinc-500 border-t border-zinc-800 pt-4">
+  <footer class="max-w-4xl mx-auto w-full text-center text-xs text-subtle border-t border-white/10 pt-4">
     Powered by Umar OS · Sovereign Autonomous Founder Infrastructure · Zero Mock Verification
   </footer>
 </body>

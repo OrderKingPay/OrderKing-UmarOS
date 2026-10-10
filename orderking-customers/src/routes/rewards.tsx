@@ -370,7 +370,7 @@ function RewardsPage() {
                     href="https://hppay.in?ref=orderking"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
+                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-fg shadow-xs hover:bg-emerald-700 transition"
                   >
                     <span>Redeem on HP Pay</span>
                     <span>↗</span>
@@ -401,7 +401,7 @@ function RewardsPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition ${
                 activeTab === tab.id
-                  ? "bg-primary text-white shadow-xs"
+                  ? "bg-primary text-fg shadow-xs"
                   : "bg-surface text-muted hover:bg-surface-2"
               }`}
             >

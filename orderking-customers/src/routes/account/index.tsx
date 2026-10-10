@@ -193,7 +193,7 @@ function AccountPage() {
           <section className="mt-4 rounded-[var(--radius-xl)] border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-surface to-emerald-500/5 p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/20 text-xl">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-[#D4AF37]/10 text-xl">
                   🎁
                 </span>
                 <div>
@@ -225,7 +225,7 @@ function AccountPage() {
                 href={`https://wa.me/?text=${encodeURIComponent("Hey! Use my referral code KINGVIP to get ₹40 OFF + Free Delivery on your first delicious food order on OrderKing: https://orderking.in/?ref=KINGVIP")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
+                className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-fg shadow-xs hover:bg-emerald-700 transition"
               >
                 <span>💬</span>
                 <span>Invite via WhatsApp</span>

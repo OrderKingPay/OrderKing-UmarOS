@@ -347,14 +347,14 @@ export default function HospitalPortal() {
           <h1 className="text-2xl font-bold text-emerald-400">Sribhumi Hospital &amp; OPD Hub</h1>
           <p className="text-xs text-slate-400">ABDM Compliant · Instant QR Check-in · 100% Digital Health Records</p>
         </div>
-        <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 px-3 py-1 rounded-full text-xs font-mono">
+        <span className="bg-[#D4AF37]/10 text-emerald-300 border border-emerald-400/40 px-3 py-1 rounded-full text-xs font-mono">
           Live OPD Queue: {queue.length} Active
         </span>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4">
-          <h2 className="text-sm font-bold text-white uppercase tracking-wider">Fast-Track OPD Registration</h2>
+          <h2 className="text-sm font-bold text-fg uppercase tracking-wider">Fast-Track OPD Registration</h2>
           <form onSubmit={handleRegister} className="space-y-3">
             <div>
               <label className="text-xs text-slate-400 block mb-1">Patient Full Name</label>
@@ -372,16 +372,16 @@ export default function HospitalPortal() {
         </div>
 
         <div className="md:col-span-2 bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4">
-          <h2 className="text-sm font-bold text-white uppercase tracking-wider">Real-Time Doctor Queue Console</h2>
+          <h2 className="text-sm font-bold text-fg uppercase tracking-wider">Real-Time Doctor Queue Console</h2>
           <div className="space-y-2">
             {queue.map((item) => (
               <div key={item.token} className="flex justify-between items-center bg-slate-800/80 p-3 rounded-lg border border-slate-700">
                 <div className="flex items-center gap-3">
-                  <span className="bg-emerald-500/20 text-emerald-300 font-mono font-bold px-2 py-1 rounded text-xs">
+                  <span className="bg-[#D4AF37]/10 text-emerald-300 font-mono font-bold px-2 py-1 rounded text-xs">
                     #{item.token}
                   </span>
                   <div>
-                    <h4 className="font-bold text-sm text-white">{item.name}</h4>
+                    <h4 className="font-bold text-sm text-fg">{item.name}</h4>
                     <p className="text-xs text-slate-400">{item.doctor}</p>
                   </div>
                 </div>
@@ -508,7 +508,7 @@ export default function HyperlocalMarketplace() {
     <div className="min-h-screen bg-[#07130F] text-slate-100 p-6">
       <header className="border-b border-amber-500/30 pb-4 flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-black text-white">OrderKing Direct Marketplace</h1>
+          <h1 className="text-2xl font-black text-fg">OrderKing Direct Marketplace</h1>
           <p className="text-xs text-amber-400">0% Commission · True Dine-In Price Parity · 20-Min Fast Dispatch</p>
         </div>
         <div className="bg-amber-500/20 text-amber-300 border border-amber-400/40 px-3 py-1.5 rounded-xl font-mono text-xs font-bold">
@@ -521,7 +521,7 @@ export default function HyperlocalMarketplace() {
           {items.map((item) => (
             <div key={item.id} className="bg-surface/80 border border-border p-4 rounded-xl space-y-2">
               <span className="text-[10px] text-amber-400 font-bold uppercase">{item.restaurant}</span>
-              <h3 className="font-bold text-white text-sm">{item.name}</h3>
+              <h3 className="font-bold text-fg text-sm">{item.name}</h3>
               <div className="flex justify-between items-center pt-2">
                 <span className="text-emerald-400 font-bold font-mono">₹{item.price}</span>
                 <button
@@ -536,7 +536,7 @@ export default function HyperlocalMarketplace() {
         </div>
 
         <div className="bg-surface border border-border p-5 rounded-xl space-y-4">
-          <h3 className="font-bold text-white text-sm">Checkout with King Pay (0% Fees)</h3>
+          <h3 className="font-bold text-fg text-sm">Checkout with King Pay (0% Fees)</h3>
           {cart.length === 0 ? (
             <p className="text-xs text-muted">Your cart is empty. Add items to checkout.</p>
           ) : (
@@ -669,7 +669,7 @@ export default function FinTechLedgerPortal() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4">
-          <h3 className="font-bold text-white text-sm uppercase">Active Milestone Escrows</h3>
+          <h3 className="font-bold text-fg text-sm uppercase">Active Milestone Escrows</h3>
           <div className="space-y-3">
             {escrows.map((esc) => (
               <div key={esc.id} className="bg-slate-800/80 p-3.5 rounded-lg border border-slate-700 flex justify-between items-center">
@@ -681,12 +681,12 @@ export default function FinTechLedgerPortal() {
                 {esc.status === "LOCKED" ? (
                   <button
                     onClick={() => releaseEscrow(esc.id)}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-fg font-bold text-xs px-3 py-1.5 rounded-lg"
                   >
                     Release Payout ➔
                   </button>
                 ) : (
-                  <span className="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-2.5 py-1 rounded-full">
+                  <span className="bg-[#D4AF37]/10 text-emerald-400 text-xs font-bold px-2.5 py-1 rounded-full">
                     ✓ Settled
                   </span>
                 )}
@@ -696,7 +696,7 @@ export default function FinTechLedgerPortal() {
         </div>
 
         <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4">
-          <h3 className="font-bold text-white text-sm uppercase">Double-Entry Cryptographic Audit Trail</h3>
+          <h3 className="font-bold text-fg text-sm uppercase">Double-Entry Cryptographic Audit Trail</h3>
           <div className="space-y-2 text-xs font-mono">
             <div className="bg-slate-800 p-2.5 rounded border border-slate-700 text-slate-300">
               [DEBIT] Merchant Escrow Holding → ₹74,999 (REF: ORD-901)

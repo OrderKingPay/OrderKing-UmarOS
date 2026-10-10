@@ -288,7 +288,7 @@ function RadialOrbVisualizer({
               ? "bg-amber-500/20 text-amber-300 border-amber-400/50 animate-pulse"
               : isListening
               ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/50 animate-pulse"
-              : "bg-emerald-500/20 text-emerald-300 border-emerald-400/40"
+              : "bg-[#D4AF37]/10 text-emerald-300 border-emerald-400/40"
           }`}
         >
           {isSpeaking ? "AI Speaking (100% Real)" : isListening ? "Listening to Founder..." : "Duplex Voice Ready"}
@@ -374,7 +374,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
           <Badge className="bg-purple-500/20 text-purple-300 border-purple-400/40 text-[10px] font-bold">
             {blueprint.category.toUpperCase()}
           </Badge>
-          <h4 className="text-xs font-bold text-white tracking-wide">{blueprint.title}</h4>
+          <h4 className="text-xs font-bold text-fg tracking-wide">{blueprint.title}</h4>
           <span className="text-[11px] font-mono text-emerald-400 font-bold">
             ₹{blueprint.commercialValueInr.toLocaleString("en-IN")} Value
           </span>
@@ -386,7 +386,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             variant={activeTab === "preview" ? "primary" : "outline"}
             onClick={() => setActiveTab("preview")}
             className={`h-7 px-2.5 text-[11px] font-bold ${
-              activeTab === "preview" ? "bg-purple-600 text-white" : "text-slate-300"
+              activeTab === "preview" ? "bg-purple-600 text-fg" : "text-slate-300"
             }`}
           >
             <Eye className="size-3 mr-1" />
@@ -398,7 +398,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             variant={activeTab === "code" ? "primary" : "outline"}
             onClick={() => setActiveTab("code")}
             className={`h-7 px-2.5 text-[11px] font-bold ${
-              activeTab === "code" ? "bg-purple-600 text-white" : "text-slate-300"
+              activeTab === "code" ? "bg-purple-600 text-fg" : "text-slate-300"
             }`}
           >
             <Code2 className="size-3 mr-1" />
@@ -410,7 +410,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             variant={activeTab === "edit" ? "primary" : "outline"}
             onClick={() => setActiveTab("edit")}
             className={`h-7 px-2.5 text-[11px] font-bold ${
-              activeTab === "edit" ? "bg-amber-600 text-white" : "text-amber-300 border-amber-500/40"
+              activeTab === "edit" ? "bg-amber-600 text-fg" : "text-amber-300 border-amber-500/40"
             }`}
           >
             <Edit3 className="size-3 mr-1" />
@@ -422,7 +422,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             variant={activeTab === "handoff" ? "primary" : "outline"}
             onClick={() => setActiveTab("handoff")}
             className={`h-7 px-2.5 text-[11px] font-bold ${
-              activeTab === "handoff" ? "bg-purple-600 text-white" : "text-slate-300"
+              activeTab === "handoff" ? "bg-purple-600 text-fg" : "text-slate-300"
             }`}
           >
             <ShieldCheck className="size-3 mr-1" />
@@ -462,7 +462,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
-                  <span className="text-xs font-bold text-white block">Fast-Track Patient Triage</span>
+                  <span className="text-xs font-bold text-fg block">Fast-Track Patient Triage</span>
                   <div className="flex gap-2">
                     <Input
                       value={newPatient}
@@ -472,7 +472,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                     />
                     <Button
                       size="sm"
-                      className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shrink-0"
+                      className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-fg shrink-0"
                       onClick={() => {
                         if (!newPatient.trim()) return;
                         const nextToken = hospitalTokens + 1;
@@ -492,7 +492,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                 </div>
 
                 <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
-                  <span className="text-xs font-bold text-white block">Live OPD Call Board</span>
+                  <span className="text-xs font-bold text-fg block">Live OPD Call Board</span>
                   <div className="space-y-1 max-h-24 overflow-y-auto pr-1">
                     {hospitalQueue.map((item) => (
                       <div
@@ -582,12 +582,12 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
 
               <div className="rounded-lg bg-surface-2 p-3 border border-border flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-white block">Instant ₹50,000 Vendor Disbursal Test</span>
+                  <span className="text-xs font-bold text-fg block">Instant ₹50,000 Vendor Disbursal Test</span>
                   <p className="text-[10px] text-muted">Atomic transaction with double-entry cryptographic debit &amp; credit</p>
                 </div>
                 <Button
                   size="sm"
-                  className="h-8 text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white"
+                  className="h-8 text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-fg"
                   onClick={() => {
                     setLedgerBalance((prev) => prev - 50000);
                     setDisbursedCount((prev) => prev + 1);
@@ -659,7 +659,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
           <div className="flex items-center justify-between border-b border-border/60 pb-2 text-xs">
             <div className="flex items-center gap-2">
               <FileEdit className="size-3.5 text-amber-400" />
-              <span className="font-bold text-white">Live Editing:</span>
+              <span className="font-bold text-fg">Live Editing:</span>
               <select
                 value={selectedFile}
                 onChange={(e) => setSelectedFile(e.target.value)}
@@ -678,7 +678,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                 size="sm"
                 variant="outline"
                 onClick={handleResetFileCode}
-                className="h-6 px-2 text-[10px] text-muted hover:text-white"
+                className="h-6 px-2 text-[10px] text-muted hover:text-fg"
               >
                 <RotateCcw className="size-3 mr-1" />
                 Reset File
@@ -689,7 +689,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                   supremeAudioDsp.playTone("success_chime");
                   toast.success(`Saved customized ${selectedFile}! Included in download bundle.`);
                 }}
-                className="h-6 px-2.5 text-[10px] font-bold bg-amber-600 hover:bg-amber-500 text-white"
+                className="h-6 px-2.5 text-[10px] font-bold bg-amber-600 hover:bg-amber-500 text-fg"
               >
                 <Save className="size-3 mr-1" />
                 Save Edits
@@ -719,10 +719,10 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
         <div className="p-4 bg-slate-950/90 text-xs space-y-3.5">
           <div className="flex items-center justify-between pb-2 border-b border-border/50">
             <div>
-              <span className="text-xs font-bold text-white block">Commercial Turnkey Delivery Package</span>
+              <span className="text-xs font-bold text-fg block">Commercial Turnkey Delivery Package</span>
               <p className="text-[10px] text-muted">Ready to deliver to client with zero technical debt</p>
             </div>
-            <Badge className="bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">
+            <Badge className="bg-[#D4AF37]/10 text-emerald-300 font-mono text-[10px]">
               Ready for Production Deploy
             </Badge>
           </div>
@@ -772,7 +772,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
           <div className="flex gap-2 pt-1">
             <Button
               size="sm"
-              className="flex-1 text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white"
+              className="flex-1 text-xs font-bold bg-purple-600 hover:bg-purple-500 text-fg"
               onClick={() => {
                 const pitch = `Turnkey Delivery Package for ${blueprint.title}:\n- Commercial Valuation: ₹${blueprint.commercialValueInr.toLocaleString("en-IN")}\n- Complete React 19 / Next.js Source Code\n- Live Architecture & Admin Access\n\nDirect Deployment Link: ${blueprint.livePreviewUrl}`;
                 void navigator.clipboard?.writeText(pitch);
@@ -872,7 +872,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-emerald-400">💵 Invoice: {invoice.invoiceNumber}</span>
-            <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px]">0% Gateway Cut</Badge>
+            <Badge className="bg-[#D4AF37]/10 text-emerald-300 text-[10px]">0% Gateway Cut</Badge>
           </div>
           <span className="text-[10px] text-muted">Due: {invoice.dueDate}</span>
         </div>
@@ -880,7 +880,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="rounded bg-surface-2 p-2">
             <span className="text-muted block text-[10px]">Total Contract Value:</span>
-            <span className="font-bold text-white font-mono text-sm">
+            <span className="font-bold text-fg font-mono text-sm">
               ₹{invoice.amountInr.toLocaleString("en-IN")}
             </span>
           </div>
@@ -906,7 +906,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         <div className="flex gap-2 pt-1">
           <Button
             size="sm"
-            className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
+            className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-fg"
             onClick={() => {
               void navigator.clipboard?.writeText(invoice.upiPaymentLink);
               supremeAudioDsp.playTone("success_chime");
@@ -947,7 +947,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
             <span className="text-xs font-bold text-sky-300">{gig.title}</span>
             <Badge className="bg-sky-500/20 text-sky-300 text-[10px]">{gig.platform}</Badge>
           </div>
-          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+          <Badge className="bg-[#D4AF37]/10 text-emerald-300 text-[10px] font-bold">
             {gig.matchScore}% Match
           </Badge>
         </div>
@@ -959,13 +959,13 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
           </div>
           <div className="rounded bg-surface-2 p-2">
             <span className="text-muted block text-[10px]">Estimated Budget:</span>
-            <span className="font-bold text-white font-mono text-sm">
+            <span className="font-bold text-fg font-mono text-sm">
               ${gig.fixedBudgetUsd?.toLocaleString() || "Hourly"}
             </span>
           </div>
           <div className="rounded bg-surface-2 p-2">
             <span className="text-muted block text-[10px]">Client Location:</span>
-            <span className="font-bold text-white">{gig.clientLocation}</span>
+            <span className="font-bold text-fg">{gig.clientLocation}</span>
           </div>
         </div>
 
@@ -980,7 +980,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         <div className="flex gap-2 pt-1">
           <Button
             size="sm"
-            className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white"
+            className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-500 text-fg"
             onClick={() => {
               void navigator.clipboard?.writeText(gig.proposalTemplate);
               supremeAudioDsp.playTone("interruption_ping");
@@ -1006,9 +1006,9 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BarChart3 className="size-4 text-emerald-400" />
-            <span className="text-xs font-bold text-white">Capability Benchmark Telemetry</span>
+            <span className="text-xs font-bold text-fg">Capability Benchmark Telemetry</span>
           </div>
-          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold">
+          <Badge className="bg-[#D4AF37]/10 text-emerald-300 text-[10px] font-mono font-bold">
             {report.averageScore.toFixed(1)} / 100 Score
           </Badge>
         </div>
@@ -1040,10 +1040,10 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
               key={r.testId}
               className="flex items-center justify-between text-[11px] bg-surface-2/60 p-1.5 rounded border border-border/40"
             >
-              <span className="font-bold text-white">{r.name}</span>
+              <span className="font-bold text-fg">{r.name}</span>
               <div className="flex items-center gap-2">
                 <span className="font-mono text-muted text-[10px]">{r.latencyMs.toFixed(0)}ms</span>
-                <Badge className="bg-emerald-500/20 text-emerald-300 text-[9px] font-mono">
+                <Badge className="bg-[#D4AF37]/10 text-emerald-300 text-[9px] font-mono">
                   {r.score}/100
                 </Badge>
               </div>
@@ -1054,7 +1054,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         <div className="flex gap-2 pt-1">
           <Button
             size="sm"
-            className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
+            className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-fg"
             onClick={() => {
               void navigator.clipboard?.writeText(JSON.stringify(report, null, 2));
               supremeAudioDsp.playTone("success_chime");
@@ -1077,9 +1077,9 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TrendingUp className="size-4 text-amber-400" />
-            <span className="text-xs font-bold text-white">Expense Optimization Audit (§24)</span>
+            <span className="text-xs font-bold text-fg">Expense Optimization Audit (§24)</span>
           </div>
-          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+          <Badge className="bg-[#D4AF37]/10 text-emerald-300 text-[10px] font-bold">
             ₹{rep.totalProjectedSavingsInr.toLocaleString("en-IN")}/mo Savings
           </Badge>
         </div>
@@ -1124,7 +1124,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Zap className="size-4 text-cyan-400" />
-            <span className="text-xs font-bold text-white line-clamp-1">{graph.goal || "14-Stage Execution Plan"}</span>
+            <span className="text-xs font-bold text-fg line-clamp-1">{graph.goal || "14-Stage Execution Plan"}</span>
           </div>
           <Badge className="bg-cyan-500/20 text-cyan-300 text-[10px] font-mono shrink-0">
             {graph.completedStages} / {graph.totalStages} Stages
@@ -1144,7 +1144,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
               <Badge
                 className={`text-[9px] font-mono shrink-0 ${
                   s.status === "COMPLETED"
-                    ? "bg-emerald-500/20 text-emerald-300"
+                    ? "bg-[#D4AF37]/10 text-emerald-300"
                     : s.status === "PAUSED_FOR_HUMAN"
                     ? "bg-amber-500/20 text-amber-300 animate-pulse"
                     : "bg-surface text-muted"
@@ -1163,33 +1163,33 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === "ensemble_consensus") {
     const res = card.data as EnsembleConsensusResult;
     return (
-      <div className="rounded-xl border border-cyan-500/40 bg-zinc-900/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-cyan-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Cpu className="size-4 text-cyan-400" />
-            <span className="text-sm font-bold text-white">6-Model Ensemble Consensus</span>
+            <span className="text-sm font-bold text-fg">6-Model Ensemble Consensus</span>
           </div>
           <Badge className="bg-cyan-500/20 text-cyan-300 text-[10px] font-mono">
             {res.overallConsensusAgreement}% Agreement · {res.verificationStatus}
           </Badge>
         </div>
 
-        <div className="p-3 rounded-lg bg-zinc-800/80 border border-zinc-700/60 space-y-1.5">
-          <span className="text-xs text-zinc-400 block font-medium">Primary Elected Lead:</span>
+        <div className="p-3 rounded-lg bg-surface-2/80 border border-white/20/60 space-y-1.5">
+          <span className="text-xs text-muted block font-medium">Primary Elected Lead:</span>
           <span className="text-sm font-bold text-cyan-300">{res.primaryModelWinner}</span>
-          <p className="text-xs text-zinc-300 leading-relaxed mt-1">{res.unifiedSynthesis}</p>
+          <p className="text-xs text-gray-300 leading-relaxed mt-1">{res.unifiedSynthesis}</p>
         </div>
 
         <div className="space-y-1.5">
-          <span className="text-xs font-bold text-zinc-400 block">Cross-Evaluated Frontier Models:</span>
+          <span className="text-xs font-bold text-muted block">Cross-Evaluated Frontier Models:</span>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {res.modelsBreakdown?.map((m: any) => (
-              <div key={m.modelId} className="p-2.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-xs space-y-1">
+              <div key={m.modelId} className="p-2.5 rounded bg-surface-2/60 border border-white/20/50 text-xs space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-zinc-200">{m.modelName}</span>
                   <span className="text-emerald-400 font-mono text-[11px]">{m.confidenceScore}%</span>
                 </div>
-                <p className="text-[11px] text-zinc-400 line-clamp-1">{m.suggestedAction}</p>
+                <p className="text-[11px] text-muted line-clamp-1">{m.suggestedAction}</p>
               </div>
             ))}
           </div>
@@ -1202,28 +1202,28 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === "instant_deploy") {
     const deploy = card.data as DeployTarget;
     return (
-      <div className="rounded-xl border border-emerald-500/40 bg-zinc-900/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-emerald-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Rocket className="size-4 text-emerald-400" />
-            <span className="text-sm font-bold text-white">Interactive Sandbox Ready</span>
+            <span className="text-sm font-bold text-fg">Interactive Sandbox Ready</span>
           </div>
-          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+          <Badge className="bg-[#D4AF37]/10 text-emerald-300 text-[10px] font-bold">
             {deploy.status}
           </Badge>
         </div>
 
-        <div className="p-3 rounded-lg bg-zinc-800/80 border border-zinc-700/60 space-y-2">
+        <div className="p-3 rounded-lg bg-surface-2/80 border border-white/20/60 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-400">Project Name:</span>
+            <span className="text-xs text-muted">Project Name:</span>
             <span className="text-sm font-bold text-zinc-100">{deploy.projectName}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-400">Target Domain:</span>
-            <span className="text-xs font-mono text-zinc-300">{deploy.targetDomain || "localhost:8080"}</span>
+            <span className="text-xs text-muted">Target Domain:</span>
+            <span className="text-xs font-mono text-gray-300">{deploy.targetDomain || "localhost:8080"}</span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-zinc-400">Runtime:</span>
+            <span className="text-muted">Runtime:</span>
             <span className="text-zinc-200">🔒 {deploy.sslCertificate} ({deploy.edgeLatencyMs}ms sandbox)</span>
           </div>
         </div>
@@ -1242,7 +1242,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
           <Button
             size="sm"
             variant="outline"
-            className="text-xs font-bold border-zinc-700 text-zinc-200 hover:bg-zinc-800"
+            className="text-xs font-bold border-white/20 text-zinc-200 hover:bg-surface-2"
             onClick={() => {
               void navigator.clipboard?.writeText(deploy.deployScriptVercel);
               toast.success("Vercel production deploy command copied to clipboard!");
@@ -1260,11 +1260,11 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === "model_updates") {
     const report = card.data;
     return (
-      <div className="rounded-xl border border-amber-500/40 bg-zinc-900/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-amber-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 text-amber-400" />
-            <span className="text-sm font-bold text-white">Frontier Model Self-Evolution</span>
+            <span className="text-sm font-bold text-fg">Frontier Model Self-Evolution</span>
           </div>
           <Badge className="bg-amber-500/20 text-amber-300 text-[10px] font-bold">
             {report.availableUpgrades?.length || 0} Upgrades Ready
@@ -1273,13 +1273,13 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
 
         <div className="space-y-2">
           {report.availableUpgrades?.map((u: any) => (
-            <div key={u.id} className="p-3 rounded-lg bg-zinc-800/80 border border-zinc-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div key={u.id} className="p-3 rounded-lg bg-surface-2/80 border border-white/20/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-sm text-zinc-100">{u.name}</span>
-                  <Badge tone="neutral" className="text-[10px] text-zinc-400 border border-zinc-600">{u.provider} · {u.generation}</Badge>
+                  <Badge tone="neutral" className="text-[10px] text-muted border border-zinc-600">{u.provider} · {u.generation}</Badge>
                 </div>
-                <p className="text-xs text-zinc-400 mt-0.5">{u.improvements?.join(" · ")}</p>
+                <p className="text-xs text-muted mt-0.5">{u.improvements?.join(" · ")}</p>
                 <div className="flex items-center gap-2 mt-1 text-[11px] text-emerald-400 font-medium">
                   <span>+{u.performanceGainPct}% Benchmark Gain</span>
                   <span>·</span>
@@ -1309,27 +1309,27 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === "geofence_status") {
     const { zones } = card.data || {};
     return (
-      <div className="rounded-xl border border-emerald-500/40 bg-zinc-900/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-emerald-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ShieldCheck className="size-4 text-emerald-400" />
-            <span className="text-sm font-bold text-white">1,000x Strict Geofence Status</span>
+            <span className="text-sm font-bold text-fg">1,000x Strict Geofence Status</span>
           </div>
-          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+          <Badge className="bg-[#D4AF37]/10 text-emerald-300 text-[10px] font-bold">
             Active: {zones?.[0]?.name || "Sribhumi / Karimganj"}
           </Badge>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          <div className="p-3 rounded-lg bg-zinc-800/80 border border-zinc-700/60 space-y-1">
+          <div className="p-3 rounded-lg bg-surface-2/80 border border-white/20/60 space-y-1">
             <span className="font-bold text-emerald-400 block">🟢 Food Delivery Territory</span>
-            <p className="text-zinc-300">Active strictly within 12km radius of Karimganj / Sribhumi core.</p>
-            <span className="text-[11px] text-zinc-400 font-mono block">Zero surge · 15-min delivery</span>
+            <p className="text-gray-300">Active strictly within 12km radius of Karimganj / Sribhumi core.</p>
+            <span className="text-[11px] text-muted font-mono block">Zero surge · 15-min delivery</span>
           </div>
-          <div className="p-3 rounded-lg bg-zinc-800/80 border border-zinc-700/60 space-y-1">
+          <div className="p-3 rounded-lg bg-surface-2/80 border border-white/20/60 space-y-1">
             <span className="font-bold text-amber-400 block">👑 Pan-India Outside Zone</span>
-            <p className="text-zinc-300">Food delivery is 100% invisible. Users see ONLY King Pay UPI & soundbox.</p>
-            <span className="text-[11px] text-zinc-400 font-mono block">Section 79 IT Act Compliant</span>
+            <p className="text-gray-300">Food delivery is 100% invisible. Users see ONLY King Pay UPI & soundbox.</p>
+            <span className="text-[11px] text-muted font-mono block">Section 79 IT Act Compliant</span>
           </div>
         </div>
       </div>
@@ -1339,17 +1339,17 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   // Card: Auto-Clean & Self-Correction
   if (card.type === "auto_clean") {
     return (
-      <div className="rounded-xl border border-emerald-500/40 bg-zinc-900/95 p-4 space-y-2.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-emerald-500/40 bg-surface/95 p-4 space-y-2.5 shadow-xl text-zinc-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="size-4 text-emerald-400" />
-            <span className="text-sm font-bold text-white">State Clean & Verified</span>
+            <span className="text-sm font-bold text-fg">State Clean & Verified</span>
           </div>
-          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+          <Badge className="bg-[#D4AF37]/10 text-emerald-300 text-[10px] font-bold">
             EVIDENCE CHECK REQ
           </Badge>
         </div>
-        <p className="text-xs text-zinc-300">
+        <p className="text-xs text-gray-300">
           All state discrepancies, transient errors, and cache invalidations resolved. Clean sovereign baseline restored.
         </p>
       </div>
@@ -1385,7 +1385,7 @@ function InChatCredentialCard({ onSave }: { onSave?: (keys: FounderCredentials) 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Key className="size-4 text-amber-400" />
-          <span className="text-xs font-bold text-white">Founder Credential Vault (Local Storage)</span>
+          <span className="text-xs font-bold text-fg">Founder Credential Vault (Local Storage)</span>
         </div>
         <Badge className="bg-amber-500/20 text-amber-300 text-[10px]">Client-Side Only</Badge>
       </div>
@@ -1897,10 +1897,10 @@ You can ask me anything across software engineering, architecture, business anal
   const currentPersonaObj = VOICE_PERSONAS[selectedPersona];
 
   return (
-    <div className="relative flex h-[720px] max-h-[85vh] w-full rounded-2xl border border-zinc-800 bg-[#121214] text-zinc-100 shadow-2xl overflow-hidden font-sans">
+    <div className="relative flex h-[720px] max-h-[85vh] w-full rounded-2xl border border-white/10 bg-[#121214] text-zinc-100 shadow-2xl overflow-hidden font-sans">
       {/* 1. LEFT COLLAPSIBLE CHATGPT SIDEBAR */}
       {sidebarOpen && (
-        <aside className="w-72 shrink-0 border-r border-zinc-800/80 bg-[#18181B] flex flex-col justify-between transition-all duration-300 z-20">
+        <aside className="w-72 shrink-0 border-r border-white/10/80 bg-[#18181B] flex flex-col justify-between transition-all duration-300 z-20">
           <div className="p-3.5 space-y-3 flex-1 overflow-y-auto">
             {/* Brand Header */}
             <div className="flex items-center justify-between">
@@ -1909,14 +1909,14 @@ You can ask me anything across software engineering, architecture, business anal
                   <Crown className="size-4" />
                 </div>
                 <div>
-                  <span className="font-extrabold text-sm tracking-tight text-white block">Umar OS</span>
-                  <span className="text-[10px] text-zinc-400 block font-medium">Single Founder Control</span>
+                  <span className="font-extrabold text-sm tracking-tight text-fg block">Umar OS</span>
+                  <span className="text-[10px] text-muted block font-medium">Single Founder Control</span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setSidebarOpen(false)}
-                className="p-1 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition"
+                className="p-1 rounded-lg text-muted hover:text-zinc-200 hover:bg-surface-2 transition"
                 title="Collapse sidebar"
               >
                 <PanelLeftClose className="size-4" />
@@ -1925,12 +1925,12 @@ You can ask me anything across software engineering, architecture, business anal
 
             {/* Search Box */}
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 size-3.5 text-zinc-400" />
+              <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted" />
               <Input
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 placeholder="Search chats & commands..."
-                className="h-8 pl-8 text-xs bg-zinc-900 border-zinc-700/70 text-zinc-200 placeholder:text-zinc-500 rounded-lg focus-visible:ring-amber-500/50"
+                className="h-8 pl-8 text-xs bg-surface border-white/20/70 text-zinc-200 placeholder:text-subtle rounded-lg focus-visible:ring-amber-500/50"
               />
             </div>
 
@@ -1949,7 +1949,7 @@ You can ask me anything across software engineering, architecture, business anal
                 ]);
                 toast.success("Started a fresh Umar OS session");
               }}
-              className="w-full justify-start h-8 text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/60 rounded-lg transition"
+              className="w-full justify-start h-8 text-xs font-semibold bg-surface-2 hover:bg-zinc-700 text-zinc-100 border border-white/20/60 rounded-lg transition"
             >
               <Plus className="size-3.5 mr-2 text-amber-400" />
               New Founder Chat
@@ -1957,7 +1957,7 @@ You can ask me anything across software engineering, architecture, business anal
 
             {/* Pinned Sovereign Commands */}
             <div className="space-y-1 pt-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 px-1 block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted px-1 block">
                 Frontier Capabilities
               </span>
               {[
@@ -2010,7 +2010,7 @@ You can ask me anything across software engineering, architecture, business anal
                     key={item.label}
                     type="button"
                     onClick={() => handleSendQuery(item.query)}
-                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/80 transition text-left"
+                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-gray-300 hover:text-fg hover:bg-surface-2/80 transition text-left"
                   >
                     <Icon className={`size-3.5 shrink-0 ${item.color}`} />
                     <span className="truncate">{item.label}</span>
@@ -2020,8 +2020,8 @@ You can ask me anything across software engineering, architecture, business anal
             </div>
 
             {/* Chat History Sessions */}
-            <div className="space-y-1 pt-2 border-t border-zinc-800">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 px-1 block">
+            <div className="space-y-1 pt-2 border-t border-white/10">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted px-1 block">
                 Recent Chats
               </span>
               {[
@@ -2042,9 +2042,9 @@ You can ask me anything across software engineering, architecture, business anal
                     key={session.id}
                     type="button"
                     onClick={() => handleSendQuery(`Review ${session.title}`)}
-                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition text-left truncate"
+                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-muted hover:text-zinc-200 hover:bg-surface-2/50 transition text-left truncate"
                   >
-                    <MessageSquare className="size-3.5 text-zinc-500 shrink-0" />
+                    <MessageSquare className="size-3.5 text-subtle shrink-0" />
                     <span className="truncate">{session.title}</span>
                   </button>
                 ))}
@@ -2052,15 +2052,15 @@ You can ask me anything across software engineering, architecture, business anal
           </div>
 
           {/* Sidebar Footer: Founder Identity Mask & System Health */}
-          <div className="p-3 border-t border-zinc-800/80 bg-zinc-950/60 space-y-2">
+          <div className="p-3 border-t border-white/10/80 bg-black/60 space-y-2">
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="font-bold text-zinc-200">Founder Sovereign</span>
               </div>
-              <Badge className="bg-zinc-800 text-[10px] text-zinc-400 border-zinc-700">Masked</Badge>
+              <Badge className="bg-surface-2 text-[10px] text-muted border-white/20">Masked</Badge>
             </div>
-            <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+            <div className="flex items-center justify-between text-[11px] text-muted font-mono">
               <span>Edge Status:</span>
               <span className="text-emerald-400">EVIDENCE CHECK REQ</span>
             </div>
@@ -2071,13 +2071,13 @@ You can ask me anything across software engineering, architecture, business anal
       {/* 2. MAIN CHATGPT WORKSPACE */}
       <main className="flex-1 flex flex-col h-full bg-[#121214] overflow-hidden">
         {/* Top Cockpit Bar */}
-        <header className="h-14 border-b border-zinc-800/80 bg-[#18181B]/80 px-4 flex items-center justify-between gap-3 shrink-0">
+        <header className="h-14 border-b border-white/10/80 bg-[#18181B]/80 px-4 flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-2.5">
             {!sidebarOpen && (
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition mr-1"
+                className="p-1.5 rounded-lg text-muted hover:text-zinc-200 hover:bg-surface-2 transition mr-1"
                 title="Open sidebar"
               >
                 <PanelLeftOpen className="size-4" />
@@ -2092,7 +2092,7 @@ You can ask me anything across software engineering, architecture, business anal
                 className={`hidden md:flex items-center px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
                   doubleEngineEnabled 
                     ? "bg-amber-500/20 text-amber-500 border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                    : "bg-zinc-900 text-zinc-400 border-zinc-700 hover:text-zinc-200"
+                    : "bg-surface text-muted border-white/20 hover:text-zinc-200"
                 }`}
                 title="Double Engine Consensus Validator (100x Realism)"
               >
@@ -2107,7 +2107,7 @@ You can ask me anything across software engineering, architecture, business anal
                   supremeAudioDsp.playTone("interruption_ping");
                   toast.success(`Active Model: ${m.toUpperCase()}`);
                 }}
-                className="h-8 rounded-lg bg-zinc-900 border border-zinc-700 px-3 text-xs font-bold text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="h-8 rounded-lg bg-surface border border-white/20 px-3 text-xs font-bold text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
               >
                 <option value="auto-supreme-orchestrator">⚡ Auto Supreme Orchestrator (Autonomous Best)</option>
                 <option value="ensemble-consensus">🧠 Multi-Model Consensus (Real Verification)</option>
@@ -2124,7 +2124,7 @@ You can ask me anything across software engineering, architecture, business anal
               <button
                 type="button"
                 onClick={() => handleSendQuery("Check frontier AI model releases and available generation upgrades")}
-                className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-700/80 text-[11px] font-medium text-amber-400 hover:bg-zinc-800 transition"
+                className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface border border-white/20/80 text-[11px] font-medium text-amber-400 hover:bg-surface-2 transition"
               >
                 <Sparkles className="size-3 text-amber-400" />
                 <span>Auto-Updater Armed</span>
@@ -2142,7 +2142,7 @@ You can ask me anything across software engineering, architecture, business anal
                 supremeAudioDsp.playTone("interruption_ping");
                 toast.success(`Voice set to ${VOICE_PERSONAS[pid].name}`);
               }}
-              className="hidden lg:block h-8 rounded-lg bg-zinc-900 border border-zinc-700 px-2 text-xs text-zinc-300 focus:outline-none"
+              className="hidden lg:block h-8 rounded-lg bg-surface border border-white/20 px-2 text-xs text-gray-300 focus:outline-none"
             >
               <option value="aria">🎙️ Aria (Global Executive)</option>
               <option value="priya">🎙️ Priya (Indian Founder)</option>
@@ -2157,7 +2157,7 @@ You can ask me anything across software engineering, architecture, business anal
                 supremeAudioDsp.playTone("interruption_ping");
                 toast.info(`Language set to ${e.target.value}`);
               }}
-              className="hidden sm:block h-8 rounded-lg bg-zinc-900 border border-zinc-700 px-2 text-xs text-zinc-300 focus:outline-none"
+              className="hidden sm:block h-8 rounded-lg bg-surface border border-white/20 px-2 text-xs text-gray-300 focus:outline-none"
             >
               <option value="en-IN">🇮🇳 Indian English</option>
               <option value="bn-IN">🇮🇳 Bengali (বাংলা)</option>
@@ -2176,7 +2176,7 @@ You can ask me anything across software engineering, architecture, business anal
                 if (voiceEnabled) stopSpeaking();
               }}
               className={`h-8 px-2.5 text-xs ${
-                voiceEnabled ? "text-amber-400 border-amber-500/40 bg-zinc-900" : "text-zinc-500 border-zinc-800 bg-zinc-900"
+                voiceEnabled ? "text-amber-400 border-amber-500/40 bg-surface" : "text-subtle border-white/10 bg-surface"
               }`}
               title={voiceEnabled ? "Mute voice response" : "Unmute voice response"}
             >
@@ -2188,8 +2188,8 @@ You can ask me anything across software engineering, architecture, business anal
               onClick={toggleCallMode}
               className={`h-8 px-3 font-bold text-xs shadow-md transition ${
                 isCallMode
-                  ? "bg-rose-600 hover:bg-rose-500 text-white animate-pulse"
-                  : "bg-emerald-600 hover:bg-emerald-500 text-white"
+                  ? "bg-rose-600 hover:bg-rose-500 text-fg animate-pulse"
+                  : "bg-emerald-600 hover:bg-emerald-500 text-fg"
               }`}
             >
               {isCallMode ? (
@@ -2209,7 +2209,7 @@ You can ask me anything across software engineering, architecture, business anal
 
         {/* Embedded Voice Call Banner (when active and not immersive) */}
         {isCallMode && !isImmersiveCall && (
-          <div className="bg-zinc-900/90 border-b border-zinc-800 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fadeIn">
+          <div className="bg-surface/90 border-b border-white/10 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fadeIn">
             <div className="flex items-center gap-4">
               <RadialOrbVisualizer
                 isSpeaking={isSpeaking}
@@ -2221,18 +2221,18 @@ You can ask me anything across software engineering, architecture, business anal
               <div>
                 <div className="flex items-center gap-2">
                   <span className="flex size-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
+                  <span className="text-xs font-bold text-fg uppercase tracking-wider">
                     Hands-Free Voice Call Active
                   </span>
-                  <Badge className="bg-zinc-800 text-amber-300 text-[10px] font-mono border-zinc-700">
+                  <Badge className="bg-surface-2 text-amber-300 text-[10px] font-mono border-white/20">
                     {currentPersonaObj.name} Voice
                   </Badge>
                 </div>
-                <p className="text-xs text-zinc-400 mt-0.5">
+                <p className="text-xs text-muted mt-0.5">
                   Speak naturally. Auto-turn-taking and zero-delay interruption active.
                 </p>
                 {liveTranscript && (
-                  <div className="mt-1.5 text-xs font-mono text-cyan-300 bg-zinc-950 px-2 py-0.5 rounded border border-cyan-500/30">
+                  <div className="mt-1.5 text-xs font-mono text-cyan-300 bg-black px-2 py-0.5 rounded border border-cyan-500/30">
                     🎤 &quot;{liveTranscript}&quot;
                   </div>
                 )}
@@ -2244,7 +2244,7 @@ You can ask me anything across software engineering, architecture, business anal
                 size="sm"
                 variant="outline"
                 onClick={() => setIsImmersiveCall(true)}
-                className="h-8 text-xs font-bold text-amber-300 border-zinc-700 bg-zinc-800"
+                className="h-8 text-xs font-bold text-amber-300 border-white/20 bg-surface-2"
               >
                 <Maximize2 className="size-3.5 mr-1" />
                 Immersive View
@@ -2256,7 +2256,7 @@ You can ask me anything across software engineering, architecture, business anal
                 className={`h-8 text-xs font-bold ${
                   isListening
                     ? "bg-cyan-500/20 text-cyan-300 border-cyan-400 animate-pulse"
-                    : "bg-zinc-800 text-white border-zinc-700"
+                    : "bg-surface-2 text-fg border-white/20"
                 }`}
               >
                 {isListening ? <Mic className="size-3.5 mr-1 text-cyan-400" /> : <MicOff className="size-3.5 mr-1" />}
@@ -2278,26 +2278,26 @@ You can ask me anything across software engineering, architecture, business anal
         {/* FULL-SCREEN / IMMERSIVE VOICE TELECONFERENCE */}
         {isCallMode && isImmersiveCall && (
           <div className="absolute inset-0 z-50 bg-[#121214] flex flex-col justify-between p-6 animate-fadeIn">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
                 <Crown className="size-5 text-amber-400" />
                 <div>
-                  <h4 className="text-sm font-bold text-white">Full-Duplex Executive Teleconference</h4>
-                  <p className="text-xs text-zinc-400">
+                  <h4 className="text-sm font-bold text-fg">Full-Duplex Executive Teleconference</h4>
+                  <p className="text-xs text-muted">
                     {currentPersonaObj.name} · {currentPersonaObj.tagline}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <Badge className="bg-zinc-800 text-emerald-300 text-xs font-mono border-zinc-700">
+                <Badge className="bg-surface-2 text-emerald-300 text-xs font-mono border-white/20">
                   Duration: {Math.floor(callDuration / 60)}:{(callDuration % 60).toString().padStart(2, "0")}
                 </Badge>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => setIsImmersiveCall(false)}
-                  className="h-8 text-xs font-bold text-zinc-300 border-zinc-700 bg-zinc-800"
+                  className="h-8 text-xs font-bold text-gray-300 border-white/20 bg-surface-2"
                 >
                   <Minimize2 className="size-3.5 mr-1" />
                   Minimize
@@ -2320,13 +2320,13 @@ You can ask me anything across software engineering, architecture, business anal
                   ) : isSpeaking ? (
                     <span className="text-amber-300">Umar OS is speaking...</span>
                   ) : (
-                    <span className="text-zinc-500">Speak freely in English, Hindi, Bengali, or any language...</span>
+                    <span className="text-subtle">Speak freely in English, Hindi, Bengali, or any language...</span>
                   )}
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 border-t border-zinc-800 pt-4">
+            <div className="flex flex-wrap items-center justify-center gap-4 border-t border-white/10 pt-4">
               <Button
                 size="lg"
                 variant="outline"
@@ -2334,7 +2334,7 @@ You can ask me anything across software engineering, architecture, business anal
                 className={`h-11 px-5 text-xs font-bold rounded-full ${
                   isListening
                     ? "bg-cyan-500/20 text-cyan-300 border-cyan-400 animate-pulse"
-                    : "bg-zinc-800 text-white border-zinc-700"
+                    : "bg-surface-2 text-fg border-white/20"
                 }`}
               >
                 {isListening ? <Mic className="size-4 mr-2 text-cyan-400" /> : <MicOff className="size-4 mr-2" />}
@@ -2345,7 +2345,7 @@ You can ask me anything across software engineering, architecture, business anal
                   size="lg"
                   variant="outline"
                   onClick={stopSpeaking}
-                  className="h-11 px-5 text-xs font-bold rounded-full text-amber-300 border-amber-500/40 bg-zinc-800"
+                  className="h-11 px-5 text-xs font-bold rounded-full text-amber-300 border-amber-500/40 bg-surface-2"
                 >
                   <VolumeX className="size-4 mr-2" />
                   Interrupt AI
@@ -2354,7 +2354,7 @@ You can ask me anything across software engineering, architecture, business anal
               <Button
                 size="lg"
                 onClick={toggleCallMode}
-                className="h-11 px-6 text-xs font-bold rounded-full bg-rose-600 hover:bg-rose-500 text-white shadow-xl"
+                className="h-11 px-6 text-xs font-bold rounded-full bg-rose-600 hover:bg-rose-500 text-fg shadow-xl"
               >
                 <PhoneOff className="size-4 mr-2" />
                 Disconnect Call
@@ -2370,7 +2370,7 @@ You can ask me anything across software engineering, architecture, business anal
               key={m.id}
               className={`flex flex-col ${m.sender === "founder" ? "items-end" : "items-start"} space-y-1.5`}
             >
-              <div className="flex items-center gap-2 text-[10px] text-zinc-400 px-1">
+              <div className="flex items-center gap-2 text-[10px] text-muted px-1">
                 <span className="font-semibold uppercase">
                   {m.sender === "founder" ? "👑 You (Founder)" : `⚡ Umar OS (${currentPersonaObj.name})`}
                 </span>
@@ -2381,8 +2381,8 @@ You can ask me anything across software engineering, architecture, business anal
               <div
                 className={`rounded-2xl p-4 max-w-[95%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed ${
                   m.sender === "founder"
-                    ? "bg-zinc-800 text-zinc-100 font-medium shadow-md border border-zinc-700/60 rounded-br-none"
-                    : "bg-zinc-900/90 border border-zinc-800 text-zinc-200 shadow-md rounded-bl-none"
+                    ? "bg-surface-2 text-zinc-100 font-medium shadow-md border border-white/20/60 rounded-br-none"
+                    : "bg-surface/90 border border-white/10 text-zinc-200 shadow-md rounded-bl-none"
                 }`}
               >
                 <div className="whitespace-pre-line prose prose-invert prose-zinc max-w-none text-zinc-200">
@@ -2396,7 +2396,7 @@ You can ask me anything across software engineering, architecture, business anal
 
                 {/* Render Action Card if Available */}
                 {m.actionCard && (
-                  <div className="mt-3.5 pt-3.5 border-t border-zinc-800">
+                  <div className="mt-3.5 pt-3.5 border-t border-white/10">
                     <ActionCardView card={m.actionCard} onSaveKeys={() => setShowCredentialDrawer(false)} />
                   </div>
                 )}
@@ -2415,10 +2415,10 @@ You can ask me anything across software engineering, architecture, business anal
         </div>
 
         {/* Bottom ChatGPT Prompt Dock */}
-        <div className="p-3 sm:p-4 bg-[#121214] border-t border-zinc-800/80 space-y-2 shrink-0">
+        <div className="p-3 sm:p-4 bg-[#121214] border-t border-white/10/80 space-y-2 shrink-0">
           {/* Preset Action Chips Bar */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs scrollbar-none">
-            <span className="text-[10px] uppercase font-bold text-zinc-500 shrink-0 mr-1">Quick:</span>
+            <span className="text-[10px] uppercase font-bold text-subtle shrink-0 mr-1">Quick:</span>
             {[
               {
                 label: "🧠 Run Model Consensus",
@@ -2453,7 +2453,7 @@ You can ask me anything across software engineering, architecture, business anal
                 key={chip.label}
                 type="button"
                 onClick={() => handleSendQuery(chip.query)}
-                className="rounded-full border border-zinc-700 bg-zinc-800/80 px-2.5 py-1 text-zinc-300 hover:text-white hover:border-zinc-500 hover:bg-zinc-700 transition shrink-0 font-medium text-[11px]"
+                className="rounded-full border border-white/20 bg-surface-2/80 px-2.5 py-1 text-gray-300 hover:text-fg hover:border-zinc-500 hover:bg-zinc-700 transition shrink-0 font-medium text-[11px]"
               >
                 {chip.label}
               </button>
@@ -2462,20 +2462,20 @@ You can ask me anything across software engineering, architecture, business anal
 
           {/* Attachments Preview Row */}
           {attachments.length > 0 && (
-            <div className="flex gap-2 p-2 mb-2 bg-zinc-900/50 rounded-xl overflow-x-auto border border-zinc-800 shadow-inner">
+            <div className="flex gap-2 p-2 mb-2 bg-surface/50 rounded-xl overflow-x-auto border border-white/10 shadow-inner">
               {attachments.map((att, i) => (
-                <div key={i} className="relative group shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800 flex items-center justify-center">
+                <div key={i} className="relative group shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-white/20 bg-surface-2 flex items-center justify-center">
                   {att.type === 'image' ? (
                     <img loading="lazy" src={att.url} alt="upload" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="text-[10px] text-zinc-400 text-center px-1 truncate">
+                    <div className="text-[10px] text-muted text-center px-1 truncate">
                       {att.file.name}
                     </div>
                   )}
                   <button
                     type="button"
                     onClick={() => setAttachments(prev => prev.filter((_, idx) => idx !== i))}
-                    className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition shadow-lg z-10"
+                    className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-fg rounded-full p-1 opacity-0 group-hover:opacity-100 transition shadow-lg z-10"
                   >
                     <Plus className="size-3 rotate-45" />
                   </button>
@@ -2496,7 +2496,7 @@ You can ask me anything across software engineering, architecture, business anal
               type="button"
               size="sm"
               variant="ghost"
-              className="text-zinc-400 hover:text-zinc-200 p-2 h-auto mr-1 hover:bg-zinc-700/50 rounded-full"
+              className="text-muted hover:text-zinc-200 p-2 h-auto mr-1 hover:bg-zinc-700/50 rounded-full"
               title="Attach files or datasets"
               onClick={() => {
                 const input = document.createElement("input");
@@ -2520,7 +2520,7 @@ You can ask me anything across software engineering, architecture, business anal
               type="button"
               size="sm"
               variant="ghost"
-              className={`p-2 h-auto mr-1 rounded-full transition ${webSearchEnabled ? 'text-blue-400 bg-blue-500/10' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50'}`}
+              className={`p-2 h-auto mr-1 rounded-full transition ${webSearchEnabled ? 'text-blue-400 bg-blue-500/10' : 'text-muted hover:text-zinc-200 hover:bg-zinc-700/50'}`}
               title="Toggle Web Search"
               onClick={() => setWebSearchEnabled(!webSearchEnabled)}
             >
@@ -2531,7 +2531,7 @@ You can ask me anything across software engineering, architecture, business anal
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               placeholder="Message Umar OS... Ask anything, deploy apps, or give an executive order"
-              className="flex-1 bg-transparent border-0 text-xs sm:text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-0 shadow-none px-2"
+              className="flex-1 bg-transparent border-0 text-xs sm:text-sm text-zinc-100 placeholder:text-subtle focus-visible:ring-0 shadow-none px-2"
             />
 
             <Button
@@ -2540,7 +2540,7 @@ You can ask me anything across software engineering, architecture, business anal
               variant="ghost"
               onClick={isListening ? stopListening : startListening}
               className={`p-1.5 h-auto rounded-full mr-1.5 transition ${
-                isListening ? "text-cyan-400 bg-cyan-500/20 animate-pulse" : "text-zinc-400 hover:text-zinc-200"
+                isListening ? "text-cyan-400 bg-cyan-500/20 animate-pulse" : "text-muted hover:text-zinc-200"
               }`}
               title="Voice dictation"
             >
@@ -2557,7 +2557,7 @@ You can ask me anything across software engineering, architecture, business anal
             </Button>
           </form>
 
-          <p className="text-[10px] text-center text-zinc-500">
+          <p className="text-[10px] text-center text-subtle">
             Umar OS · Sovereign Autonomous Founder Core · Free &amp; Unlimited Forever · Section 79 IT Act Protected
           </p>
         </div>

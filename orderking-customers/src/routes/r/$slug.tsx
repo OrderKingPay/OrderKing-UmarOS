@@ -386,7 +386,7 @@ function RestaurantPage() {
             navigator.clipboard?.writeText(window.location.href);
             toast.success("Restaurant link copied to share!");
           }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white text-[10px] font-bold active:scale-95"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-fg text-[10px] font-bold active:scale-95"
         >
           <span>🔗</span> Share
         </button>

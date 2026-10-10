@@ -183,7 +183,7 @@ export function FounderCrmHub({
           <Button
             size="sm"
             onClick={() => setShowNewLeadModal(true)}
-            className="bg-primary text-white hover:bg-primary/90 text-xs font-bold"
+            className="bg-primary text-fg hover:bg-primary/90 text-xs font-bold"
           >
             <Plus className="size-3.5 mr-1" /> Add Prospect
           </Button>
@@ -214,7 +214,7 @@ export function FounderCrmHub({
                   onClick={() => setFilterCategory(cat)}
                   className={`px-2.5 py-1 rounded-lg font-bold capitalize transition shrink-0 ${
                     filterCategory === cat
-                      ? "bg-primary text-white"
+                      ? "bg-primary text-fg"
                       : "bg-surface-2 text-muted hover:text-fg border border-border"
                   }`}
                 >
@@ -406,7 +406,7 @@ export function FounderCrmHub({
                   <Button
                     size="sm"
                     onClick={() => handleAdvanceStage(selectedLead.id)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-fg text-xs font-bold"
                   >
                     Advance to Next Stage ➔
                   </Button>
@@ -501,7 +501,7 @@ export function FounderCrmHub({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="bg-primary text-white font-bold">
+                <Button type="submit" size="sm" className="bg-primary text-fg font-bold">
                   Save Prospect
                 </Button>
               </div>
