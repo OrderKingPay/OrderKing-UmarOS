@@ -15,6 +15,9 @@ import {
   type GeospatialAdExchangeConnector,
   type MetaOmnichannelConnector,
   type AiDeepfakeMediaConnector,
+  type GlobalAdSyndicateConnector,
+  type OemLockScreenConnector,
+  type WifiCaptivePortalConnector,
   type EcosystemCmsConfig,
   DEFAULT_ECOSYSTEM_CMS,
 } from "@/lib/orderking/cms-connectors";
@@ -28,6 +31,9 @@ import {
 import { GeospatialAdHub } from "./GeospatialAdHub";
 import { MetaOmnichannelHub } from "./MetaOmnichannelHub";
 import { AiMediaEngineHub } from "./AiMediaEngineHub";
+import { GlobalAdSyndicateHub } from "./GlobalAdSyndicateHub";
+import { OemLockScreenHub } from "./OemLockScreenHub";
+import { WifiCaptivePortalHub } from "./WifiCaptivePortalHub";
 import {
   Cpu,
   CreditCard,
@@ -69,10 +75,15 @@ import {
   Radio,
   Share2,
   Video,
+  Smartphone,
+  Wifi,
 } from "lucide-react";
 
 type ConnectorTab =
   | "all"
+  | "globalAdSyndicate"
+  | "oemLockScreen"
+  | "wifiCaptivePortal"
   | "razorpay"
   | "stripeAtlas"
   | "payoneer"
@@ -337,6 +348,9 @@ export function PluginConnectors() {
       | "geospatialAdExchange"
       | "metaOmnichannel"
       | "aiMediaEngine"
+      | "globalAdSyndicate"
+      | "oemLockScreen"
+      | "wifiCaptivePortal"
   ) => {
     const item = config[service];
     let isConfigured = false;
@@ -381,6 +395,17 @@ export function PluginConnectors() {
       const a = item as unknown as AiDeepfakeMediaConnector;
       isConfigured = !!a.heygenApiKey || !!a.synthesiaApiKey;
     }
+    if (service === "globalAdSyndicate") {
+      isConfigured = !!item.enabled;
+    }
+    if (service === "oemLockScreen") {
+      const o = item as unknown as OemLockScreenConnector;
+      isConfigured = !!o.glancePublisherApiKey || !!o.samsungKnoxAdvertiserId;
+    }
+    if (service === "wifiCaptivePortal") {
+      const w = item as unknown as WifiCaptivePortalConnector;
+      isConfigured = !!w.apiAuthToken || (w.routers && w.routers.length > 0) || !!w.routerMacAddress;
+    }
 
     if (!isConfigured) return { status: "NOT_CONFIGURED" as const, label: "NOT CONFIGURED", tone: "neutral" as const };
     if (!item.enabled) return { status: "STANDBY" as const, label: "Standby / Disabled", tone: "amber" as const };
@@ -392,6 +417,9 @@ export function PluginConnectors() {
     let configuredCount = 0;
     let activeCount = 0;
     ([
+      "globalAdSyndicate",
+      "oemLockScreen",
+      "wifiCaptivePortal",
       "razorpay",
       "stripeAtlas",
       "payoneer",
@@ -410,7 +438,7 @@ export function PluginConnectors() {
       if (st.status !== "NOT_CONFIGURED") configuredCount++;
       if (st.status === "CONNECTED") activeCount++;
     });
-    return { configuredCount, activeCount, total: 13 };
+    return { configuredCount, activeCount, total: 16 };
   }, [config]);
 
   return (
@@ -1153,6 +1181,9 @@ export function PluginConnectors() {
       <div className="flex flex-wrap gap-2 border-b border-border pb-3">
         {[
           { id: "all" as const, label: "All Integrations", icon: Layers },
+          { id: "globalAdSyndicate" as const, label: "Global Ad Syndicate Hub (4 Streams)", icon: Landmark },
+          { id: "oemLockScreen" as const, label: "OEM Lock-Screen Ads (Glance / InMobi)", icon: Smartphone },
+          { id: "wifiCaptivePortal" as const, label: "Wi-Fi Captive Portal (UmarOS)", icon: Wifi },
           { id: "aiMediaEngine" as const, label: "AI Deepfake Media Engine (Synthesia / HeyGen)", icon: Video },
           { id: "metaOmnichannel" as const, label: "Meta Omnichannel Geo-Blast (IG / WA / Messenger)", icon: Share2 },
           { id: "geospatialAdExchange" as const, label: "Telecom Carpet-Bombing Ad Exchange", icon: Crosshair },
@@ -4507,6 +4538,60 @@ export function PluginConnectors() {
                   setConfig((prev) => ({
                     ...prev,
                     aiMediaEngine: { ...prev.aiMediaEngine, ...updates },
+                  }))
+                }
+                cmsConfig={cmsConfig}
+                onSave={handleSave}
+                isSaving={saving}
+              />
+            </div>
+          )}
+
+          {/* 15. GLOBAL AD SYNDICATE HUB (4 REVENUE STREAMS) */}
+          {(activeTab === "all" || activeTab === "globalAdSyndicate") && (
+            <div className="rounded-xl border border-slate-200 bg-white shadow-sm space-y-6">
+              <GlobalAdSyndicateHub
+                config={config.globalAdSyndicate}
+                onUpdate={(updates) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    globalAdSyndicate: { ...prev.globalAdSyndicate, ...updates },
+                  }))
+                }
+                cmsConfig={cmsConfig}
+                onSave={handleSave}
+                isSaving={saving}
+              />
+            </div>
+          )}
+
+          {/* 16. OEM LOCK-SCREEN AD HUB (GLANCE & INMOBI) */}
+          {(activeTab === "all" || activeTab === "oemLockScreen") && (
+            <div className="rounded-xl border border-purple-200 bg-white shadow-sm space-y-6">
+              <OemLockScreenHub
+                config={config.oemLockScreen}
+                onUpdate={(updates) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    oemLockScreen: { ...prev.oemLockScreen, ...updates },
+                  }))
+                }
+                cmsConfig={cmsConfig}
+                onSave={handleSave}
+                isSaving={saving}
+              />
+            </div>
+          )}
+
+          {/* 17. WI-FI CAPTIVE PORTAL AD NETWORK (UMAROS) */}
+          {(activeTab === "all" || activeTab === "wifiCaptivePortal") && (
+            <div className="rounded-xl border border-blue-200 bg-white shadow-sm space-y-6">
+              <WifiCaptivePortalHub
+                config={config.wifiCaptivePortal}
+                onUpdate={(updates) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    wifiCaptivePortal: { ...prev.wifiCaptivePortal, ...updates },
                   }))
                 }
                 cmsConfig={cmsConfig}

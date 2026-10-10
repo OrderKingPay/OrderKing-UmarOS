@@ -596,6 +596,233 @@ export interface AiDeepfakeMediaConnector {
   lastRenderedAt: string | null;
 }
 
+// ==========================================
+// 15. GLOBAL AD SYNDICATE HUB INTERFACES
+// ==========================================
+export interface SyndicatePlacementBooking {
+  id: string;
+  restaurantId: string;
+  restaurantName: string;
+  cityCircle: string;
+  dailyPlacementFeeInr: number;
+  durationDays: number;
+  totalFeeInr: number;
+  status: "ACTIVE" | "COMPLETED" | "PENDING";
+  startDate: string;
+  endDate: string;
+}
+
+export interface SyndicateRiderAdSponsor {
+  id: string;
+  sponsorName: string;
+  category: "personal_loan" | "two_wheeler_insurance" | "ev_battery_swap" | "health_cover" | "banking";
+  monthlyFeeInr: number;
+  cpmRateInr: number;
+  status: "ACTIVE" | "PENDING" | "EXPIRED";
+  contractMonths: number;
+  totalImpressions: number;
+  startDate: string;
+}
+
+export interface PromotedPlacementsStream {
+  enabled: boolean;
+  dailyPlacementFeeInr: number; // Pricing slider (charge restaurants daily fees for top placement)
+  activeRestaurantsCount: number; // Zero fake data - starts at 0
+  totalPlacementsDelivered: number; // Zero fake data - starts at 0
+  grossRevenueInr: number; // Zero fake data - starts at 0
+  bookings: SyndicatePlacementBooking[];
+}
+
+export interface RiderFinancialAdsStream {
+  enabled: boolean;
+  monthlySponsorFeeInr: number; // Pricing slider
+  cpmRateInr: number; // Pricing slider
+  activeSponsorsCount: number; // Zero fake data - starts at 0
+  impressionsDelivered: number; // Zero fake data - starts at 0
+  grossRevenueInr: number; // Zero fake data - starts at 0
+  sponsors: SyndicateRiderAdSponsor[];
+}
+
+export interface GeospatialTelecomStream {
+  enabled: boolean;
+  wholesaleCpmInr: number; // Wholesale from JioAds (e.g. 45.0)
+  retailCpmInr: number; // Pricing slider: retail markup charged to advertisers
+  deliveredImpressions: number; // Zero fake data - starts at 0
+  grossRevenueInr: number; // Zero fake data - starts at 0
+  wholesaleCostInr: number; // Zero fake data - starts at 0
+  netFounderProfitInr: number; // Zero fake data - starts at 0
+}
+
+export interface OemLockScreenStream {
+  enabled: boolean;
+  wholesaleCpmInr: number; // Wholesale from Glance/InMobi (e.g. 48.0)
+  retailCpmInr: number; // Pricing slider: retail markup charged to local businesses
+  deliveredImpressions: number; // Zero fake data - starts at 0
+  grossRevenueInr: number; // Zero fake data - starts at 0
+  wholesaleCostInr: number; // Zero fake data - starts at 0
+  netFounderProfitInr: number; // Zero fake data - starts at 0
+}
+
+export interface GlobalAdSyndicateConnector {
+  enabled: boolean;
+  currency: string;
+  autoSettlement: boolean;
+  syndicateNetworkName: string;
+  promotedPlacements: PromotedPlacementsStream;
+  riderFinancialAds: RiderFinancialAdsStream;
+  geospatialTelecom: GeospatialTelecomStream;
+  oemLockScreen: OemLockScreenStream;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastAuditedAt: string | null;
+}
+
+// ==========================================
+// 16. OEM LOCK-SCREEN AD HUB INTERFACES
+// ==========================================
+export interface OemLockScreenCampaign {
+  id: string;
+  advertiserName: string;
+  contactPhone: string;
+  businessCategory: string;
+  cityCircle: string;
+  pincode: string;
+  adHeadline: string;
+  adSubtext: string;
+  ctaText: string;
+  ctaDeepLink: string;
+  targetXiaomi: boolean;
+  targetSamsung: boolean;
+  targetVivo: boolean;
+  targetOppo: boolean;
+  adFormat: "glance_story_card" | "full_bleed_wallpaper" | "interactive_widget";
+  budgetInr: number;
+  retailCpmInr: number;
+  wholesaleCpmInr: number;
+  totalImpressions: number;
+  wholesaleCostInr: number;
+  founderProfitInr: number;
+  profitMarginPercent: number;
+  impressionsDelivered: number;
+  swipesCount: number;
+  ctrPercent: number;
+  status: "ACTIVE" | "COMPLETED" | "PAUSED";
+  createdAt: string;
+  upiPaymentLink?: string;
+}
+
+export interface OemLockScreenConnector {
+  enabled: boolean;
+  mode: "live" | "sandbox";
+
+  // InMobi / Glance Credentials & Samsung Knox
+  glancePublisherApiKey: string;
+  samsungKnoxAdvertiserId: string;
+  glancePartnerId: string;
+  inmobiDspSecret: string;
+  webhookSecret: string;
+
+  // Direct OEM SSP / Wallpaper Carousel Endpoints
+  xiaomiSspPublisherId: string;
+  samsungKnoxAdNetworkId: string;
+  oppoVivoCommercialId: string;
+
+  // Ad-Network Reselling & Founder Profit Engine
+  resellingEnabled: boolean;
+  wholesaleCostCpmInr: number; // Wholesale cost from InMobi/Glance
+  retailMarkupPriceInr: number; // Retail price charged to local businesses (Pricing Slider)
+  retailMarkupPercentage: number;
+  minCampaignBudgetInr: number;
+  currency: string;
+  autoBillingInvoiceEnabled: boolean;
+  instantUpiPaymentLink: boolean;
+
+  // Targeting & Device Coverage
+  targetXiaomiHyperOs: boolean;
+  targetSamsungOneUi: boolean;
+  targetVivoFuntouch: boolean;
+  targetOppoRealmeColorOs: boolean;
+  dailyLockScreenImpressionCap: number;
+  frequencyCapPerDevice: number;
+  defaultAdFormat: "glance_story_card" | "full_bleed_wallpaper" | "interactive_widget";
+  defaultDeepLinkAction: "direct_menu_claim" | "first_order_discount" | "whatsapp_click_to_chat" | "custom_url";
+  defaultCtaText: string;
+
+  // Active / Booked Campaigns Ledger (ZERO FAKE DATA - starts as empty array [])
+  campaigns: OemLockScreenCampaign[];
+
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+  lastSyncedAt: string | null;
+}
+
+// ==========================================
+// 17. WI-FI CAPTIVE PORTAL AD NETWORK
+// ==========================================
+export interface WifiCaptiveRouter {
+  id: string;
+  locationName: string; // Partner Location Name (Input)
+  routerMacAddress: string; // Router MAC Address (Input)
+  portalTemplate: "orderking_voucher_splash" | "interstitial_video_unlock" | "quick_survey_perk" | "minimal_fast_connect"; // Portal Template selector
+  venueType: "cafe" | "restaurant" | "food_court" | "retail_mall" | "transit_hub";
+  status: "ACTIVE" | "OFFLINE" | "CONFIGURING";
+  registeredAt: string;
+  totalUnlocks: number; // starts at 0
+  todayUnlocks: number; // starts at 0
+}
+
+export interface WifiBrandAdCampaign {
+  id: string;
+  brandName: string;
+  headline: string;
+  description: string;
+  creativeUrl: string;
+  targetUrl: string;
+  ctaText: string;
+  retailCpmInr: number; // Pricing per 1k impressions
+  costPerImpressionInr: number; // Pricing slider: charge per impression for Wi-Fi unlock screens
+  budgetInr: number;
+  targetImpressions: number;
+  impressionsDelivered: number; // starts at 0
+  unlocksTriggered: number; // starts at 0
+  revenueCollectedInr: number; // starts at 0
+  status: "ACTIVE" | "PAUSED" | "COMPLETED";
+  createdAt: string;
+  upiPaymentLink?: string;
+}
+
+export interface WifiCaptivePortalConnector {
+  enabled: boolean;
+  mode: "live" | "sandbox";
+  gatewayDomain: string;
+  sharedRadiusSecret: string;
+  apiAuthToken: string;
+
+  // New Router Inputs
+  partnerLocationName: string;
+  routerMacAddress: string;
+  portalTemplate: "orderking_voucher_splash" | "interstitial_video_unlock" | "quick_survey_perk" | "minimal_fast_connect";
+
+  // B2B Ad Reselling Pricing Sliders & Configuration
+  adResellingEnabled: boolean;
+  costPerImpressionInr: number; // Pricing slider (charge per impression for Wi-Fi unlock screens)
+  retailCpmInr: number; // Pricing slider: retail CPM
+  minAdBookingBudgetInr: number;
+  mandatoryAdDurationSeconds: number; // e.g. 5 seconds countdown before unlocking internet
+
+  // Zero Fake Data: Registrations and Campaigns start empty
+  routers: WifiCaptiveRouter[];
+  brandCampaigns: WifiBrandAdCampaign[];
+
+  // Aggregated live metrics (start at 0)
+  totalCaptiveUnlocks: number;
+  totalAdImpressionsServed: number;
+  totalAdRevenueInr: number;
+
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+  lastSyncAt: string | null;
+}
+
 export interface PluginConnectorsConfig {
   razorpay: RazorpayConnector;
   stripeAtlas: StripeAtlasConnector;
@@ -610,6 +837,9 @@ export interface PluginConnectorsConfig {
   geospatialAdExchange: GeospatialAdExchangeConnector;
   metaOmnichannel: MetaOmnichannelConnector;
   aiMediaEngine: AiDeepfakeMediaConnector;
+  globalAdSyndicate: GlobalAdSyndicateConnector;
+  oemLockScreen: OemLockScreenConnector;
+  wifiCaptivePortal: WifiCaptivePortalConnector;
 }
 
 export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
@@ -929,6 +1159,105 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     lastTestedAt: null,
     lastRenderedAt: null,
   },
+  globalAdSyndicate: {
+    enabled: false,
+    currency: "INR",
+    autoSettlement: true,
+    syndicateNetworkName: "OrderKing Sovereign Global Ad Syndicate",
+    promotedPlacements: {
+      enabled: true,
+      dailyPlacementFeeInr: 450,
+      activeRestaurantsCount: 0,
+      totalPlacementsDelivered: 0,
+      grossRevenueInr: 0,
+      bookings: [],
+    },
+    riderFinancialAds: {
+      enabled: true,
+      monthlySponsorFeeInr: 18500,
+      cpmRateInr: 120,
+      activeSponsorsCount: 0,
+      impressionsDelivered: 0,
+      grossRevenueInr: 0,
+      sponsors: [],
+    },
+    geospatialTelecom: {
+      enabled: true,
+      wholesaleCpmInr: 45.0,
+      retailCpmInr: 165.0,
+      deliveredImpressions: 0,
+      grossRevenueInr: 0,
+      wholesaleCostInr: 0,
+      netFounderProfitInr: 0,
+    },
+    oemLockScreen: {
+      enabled: true,
+      wholesaleCpmInr: 48.0,
+      retailCpmInr: 185.0,
+      deliveredImpressions: 0,
+      grossRevenueInr: 0,
+      wholesaleCostInr: 0,
+      netFounderProfitInr: 0,
+    },
+    status: "NOT_CONFIGURED",
+    lastAuditedAt: null,
+  },
+  oemLockScreen: {
+    enabled: false,
+    mode: "live",
+    glancePublisherApiKey: "",
+    samsungKnoxAdvertiserId: "",
+    glancePartnerId: "",
+    inmobiDspSecret: "",
+    webhookSecret: "orderking_glance_telemetry_webhook_secret",
+    xiaomiSspPublisherId: "",
+    samsungKnoxAdNetworkId: "",
+    oppoVivoCommercialId: "",
+    resellingEnabled: true,
+    wholesaleCostCpmInr: 48.0,
+    retailMarkupPriceInr: 185.0,
+    retailMarkupPercentage: 150,
+    minCampaignBudgetInr: 2500,
+    currency: "INR",
+    autoBillingInvoiceEnabled: true,
+    instantUpiPaymentLink: true,
+    targetXiaomiHyperOs: true,
+    targetSamsungOneUi: true,
+    targetVivoFuntouch: true,
+    targetOppoRealmeColorOs: true,
+    dailyLockScreenImpressionCap: 500000,
+    frequencyCapPerDevice: 4,
+    defaultAdFormat: "glance_story_card",
+    defaultDeepLinkAction: "direct_menu_claim",
+    defaultCtaText: "Swipe Up To Order • 20% OFF",
+    campaigns: [],
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+    lastSyncedAt: null,
+  },
+  wifiCaptivePortal: {
+    enabled: false,
+    mode: "live",
+    gatewayDomain: "wifi.orderking.delivery",
+    sharedRadiusSecret: "orderking_radius_auth_secret",
+    apiAuthToken: "",
+    partnerLocationName: "",
+    routerMacAddress: "",
+    portalTemplate: "orderking_voucher_splash",
+    adResellingEnabled: true,
+    costPerImpressionInr: 2.5,
+    retailCpmInr: 2500,
+    minAdBookingBudgetInr: 1500,
+    mandatoryAdDurationSeconds: 5,
+    routers: [],
+    brandCampaigns: [],
+    totalCaptiveUnlocks: 0,
+    totalAdImpressionsServed: 0,
+    totalAdRevenueInr: 0,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+    lastSyncAt: null,
+  },
 };
 
 /** Load the full configuration bag from platform_settings */
@@ -1100,7 +1429,48 @@ export async function loadPluginConnectorsData(): Promise<PluginConnectorsConfig
     ? (aiMediaEngine.enabled ? "CONNECTED" : "DEGRADED")
     : "NOT_CONFIGURED";
 
-  return { razorpay, stripeAtlas, payoneer, whatsapp, fssai, mapbox, cleartax, whatsappMarketing, b2bLeadGen, telemarketing, geospatialAdExchange, metaOmnichannel, aiMediaEngine };
+  const globalAdSyndicate: GlobalAdSyndicateConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.globalAdSyndicate,
+    ...(raw.globalAdSyndicate || {}),
+  };
+  globalAdSyndicate.status = globalAdSyndicate.enabled ? "CONNECTED" : "NOT_CONFIGURED";
+
+  const oemLockScreen: OemLockScreenConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.oemLockScreen,
+    ...(raw.oemLockScreen || {}),
+  };
+  const hasOemAuth = !!oemLockScreen.glancePublisherApiKey || !!oemLockScreen.samsungKnoxAdvertiserId;
+  oemLockScreen.status = hasOemAuth
+    ? (oemLockScreen.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  const wifiCaptivePortal: WifiCaptivePortalConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.wifiCaptivePortal,
+    ...(raw.wifiCaptivePortal || {}),
+  };
+  const hasWifiAuth = !!wifiCaptivePortal.apiAuthToken || (wifiCaptivePortal.routers && wifiCaptivePortal.routers.length > 0) || !!wifiCaptivePortal.routerMacAddress;
+  wifiCaptivePortal.status = hasWifiAuth
+    ? (wifiCaptivePortal.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  return {
+    razorpay,
+    stripeAtlas,
+    payoneer,
+    whatsapp,
+    fssai,
+    mapbox,
+    cleartax,
+    whatsappMarketing,
+    b2bLeadGen,
+    telemarketing,
+    geospatialAdExchange,
+    metaOmnichannel,
+    aiMediaEngine,
+    globalAdSyndicate,
+    oemLockScreen,
+    wifiCaptivePortal,
+  };
 }
 
 /** Save Plugin Connectors */
@@ -1120,6 +1490,9 @@ export async function savePluginConnectorsData(connectorsUpdates: Partial<Plugin
     geospatialAdExchange: { ...current.geospatialAdExchange, ...(connectorsUpdates.geospatialAdExchange || {}) },
     metaOmnichannel: { ...current.metaOmnichannel, ...(connectorsUpdates.metaOmnichannel || {}) },
     aiMediaEngine: { ...current.aiMediaEngine, ...(connectorsUpdates.aiMediaEngine || {}) },
+    globalAdSyndicate: { ...current.globalAdSyndicate, ...(connectorsUpdates.globalAdSyndicate || {}) },
+    oemLockScreen: { ...current.oemLockScreen, ...(connectorsUpdates.oemLockScreen || {}) },
+    wifiCaptivePortal: { ...current.wifiCaptivePortal, ...(connectorsUpdates.wifiCaptivePortal || {}) },
   };
 
   await updatePlatformSettingsBag({ plugin_connectors: next });

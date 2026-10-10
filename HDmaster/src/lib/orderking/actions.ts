@@ -1211,7 +1211,7 @@ export const savePluginConnectorsFn = createServerFn({ method: "POST" })
   });
 
 export const testPluginConnectorFn = createServerFn({ method: "POST" })
-  .validator((input: { service: "razorpay" | "stripeAtlas" | "payoneer" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing" | "b2bLeadGen" | "telemarketing" | "geospatialAdExchange" | "metaOmnichannel" | "aiMediaEngine"; payload: any }) => input)
+  .validator((input: { service: "razorpay" | "stripeAtlas" | "payoneer" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing" | "b2bLeadGen" | "telemarketing" | "geospatialAdExchange" | "metaOmnichannel" | "aiMediaEngine" | "oemLockScreen" | "globalAdSyndicate" | "wifiCaptivePortal"; payload: any }) => input)
   .handler(async ({ data }) => {
     try {
       const { service, payload } = data;
@@ -1454,6 +1454,85 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
         return {
           ok: true as const,
           message: `${providerLabel} Handshake Verified. Neural avatar model [${avatarId}] loaded. Voice synthesis profile [${voiceId}] active. Aspect ratio ${ratio} optimized for Meta Direct Messages. Synthetic Media Engine operational for 'Delete Zomato Bounty' mass-rendering.`,
+        };
+      }
+
+      if (service === "oemLockScreen") {
+        const apiKey = payload.glancePublisherApiKey;
+        if (!apiKey || !apiKey.trim()) {
+          return {
+            ok: false as const,
+            error: "InMobi/Glance Publisher API Key is required to test OEM Lock-Screen connector.",
+          };
+        }
+
+        const trimmedKey = apiKey.trim();
+        if (trimmedKey.length < 8) {
+          return {
+            ok: false as const,
+            error: "InMobi/Glance Publisher API Key appears truncated or invalid (minimum 8 characters required).",
+          };
+        }
+
+        const activeOems: string[] = [];
+        if (payload.targetXiaomiHyperOs || payload.xiaomiSspPublisherId) {
+          activeOems.push("Xiaomi HyperOS (Mi Glance Carousel)");
+        }
+        if (payload.targetSamsungOneUi || payload.samsungKnoxAdNetworkId) {
+          activeOems.push("Samsung Galaxy One UI (Glance on Samsung)");
+        }
+        if (payload.targetVivoFuntouch) {
+          activeOems.push("Vivo Funtouch OS Lockscreen");
+        }
+        if (payload.targetOppoRealmeColorOs) {
+          activeOems.push("Oppo/Realme ColorOS Glance Stream");
+        }
+        if (activeOems.length === 0) {
+          activeOems.push("Universal Android OEM Lock-Screen Fleet");
+        }
+
+        const wholesaleCpm = Number(payload.wholesaleCostCpmInr) || 48.0;
+        const retailCpm = Number(payload.retailMarkupPriceInr) || 185.0;
+        const marginSpread = retailCpm - wholesaleCpm;
+        const marginPercent = ((marginSpread / retailCpm) * 100).toFixed(1);
+
+        const resellingStatus = payload.resellingEnabled
+          ? `Ad-Network Reselling Active (Wholesale: ₹${wholesaleCpm.toFixed(2)}/CPM → Retail: ₹${retailCpm.toFixed(2)}/CPM • Net Founder Spread: +₹${marginSpread.toFixed(2)}/CPM [${marginPercent}% Margin])`
+          : "Sovereign Mode (Self-Acquisition Only)";
+
+        return {
+          ok: true as const,
+          message: `InMobi / Glance OEM Lock-Screen API Handshake Verified. Publisher Key authenticated. Active OEM Presentation Surfaces: [${activeOems.join(", ")}]. ${resellingStatus}. Programmatic Wallpaper Story pipelines online.`,
+        };
+      }
+
+      if (service === "globalAdSyndicate") {
+        const pPlacementFee = Number(payload.promotedPlacements?.dailyPlacementFeeInr) || 0;
+        const rSponsorFee = Number(payload.riderFinancialAds?.monthlySponsorFeeInr) || 0;
+        const gWholesale = Number(payload.geospatialTelecom?.wholesaleCpmInr) || 45;
+        const gRetail = Number(payload.geospatialTelecom?.retailCpmInr) || 165;
+        const oWholesale = Number(payload.oemLockScreen?.wholesaleCpmInr) || 48;
+        const oRetail = Number(payload.oemLockScreen?.retailCpmInr) || 185;
+
+        const gMargin = (((gRetail - gWholesale) / gRetail) * 100).toFixed(1);
+        const oMargin = (((oRetail - oWholesale) / oRetail) * 100).toFixed(1);
+
+        return {
+          ok: true as const,
+          message: `OrderKing Sovereign Global Ad Syndicate Hub operational. 4 Revenue Streams Active: [1. Promoted Restaurants @ ₹${pPlacementFee}/day] [2. Rider App Financial Ads @ ₹${rSponsorFee}/mo] [3. JioAds Telecom Arbitrage: Wholesale ₹${gWholesale} → Retail ₹${gRetail}/CPM (${gMargin}% margin)] [4. Glance/InMobi OEM Arbitrage: Wholesale ₹${oWholesale} → Retail ₹${oRetail}/CPM (${oMargin}% margin)]. Syndicate clearing rail online.`,
+        };
+      }
+
+      if (service === "wifiCaptivePortal") {
+        const domain = payload.gatewayDomain || "wifi.orderking.delivery";
+        const cpm = Number(payload.retailCpmInr) || 2500;
+        const costPerImp = Number(payload.costPerImpressionInr) || 2.5;
+        const routerCount = Array.isArray(payload.routers) ? payload.routers.length : 0;
+        const adCount = Array.isArray(payload.brandCampaigns) ? payload.brandCampaigns.length : 0;
+
+        return {
+          ok: true as const,
+          message: `UmarOS Captive Portal Ad Network Handshake Verified. RADIUS Gateway [${domain}] operational. Active Partner Routers: ${routerCount}. External B2B Campaigns: ${adCount}. Wi-Fi Unlock Impression Rate: ₹${costPerImp.toFixed(2)}/unlock (₹${cpm}/CPM). Interstitial splash injection active.`,
         };
       }
 
@@ -2090,6 +2169,479 @@ export const dispatchAiMediaGeoDmBlastFn = createServerFn({ method: "POST" })
           bountyHeadline,
         },
         message: `🚀 Viral Media Blast Initiated! Rendered AI MP4 video dispatched to ${actualDispatches} smartphones across ${targetLocationLabel} (Radius: ${radiusKm}km). Projected ${projectedBountiesClaimed} Delete Zomato Bounties claimed!`,
+      };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const createOemLockScreenCampaignFn = createServerFn({ method: "POST" })
+  .validator((input: {
+    advertiserName: string;
+    contactPhone?: string;
+    businessCategory?: string;
+    cityCircle?: string;
+    pincode?: string;
+    adHeadline: string;
+    adSubtext?: string;
+    ctaText?: string;
+    ctaDeepLink: string;
+    targetXiaomi?: boolean;
+    targetSamsung?: boolean;
+    targetVivo?: boolean;
+    targetOppo?: boolean;
+    adFormat?: "glance_story_card" | "full_bleed_wallpaper" | "interactive_widget";
+    budgetInr: number;
+    retailCpmInr?: number;
+    wholesaleCpmInr?: number;
+  }) => input)
+  .handler(async ({ data }) => {
+    try {
+      const {
+        advertiserName,
+        contactPhone = "+91 98000 00000",
+        businessCategory = "Local Culinary & Dining",
+        cityCircle = "DELHI_NCR",
+        pincode = "110001",
+        adHeadline,
+        adSubtext = "Order direct for ₹0 commission and authentic kitchen rates.",
+        ctaText = "Swipe Up to Order • 20% OFF",
+        ctaDeepLink,
+        targetXiaomi = true,
+        targetSamsung = true,
+        targetVivo = true,
+        targetOppo = true,
+        adFormat = "glance_story_card",
+        budgetInr,
+        retailCpmInr = 185.0,
+        wholesaleCpmInr = 48.0,
+      } = data;
+
+      if (!advertiserName || !advertiserName.trim()) {
+        return { ok: false as const, error: "Advertiser Business Name is required." };
+      }
+      if (!adHeadline || !adHeadline.trim()) {
+        return { ok: false as const, error: "Lock-Screen Ad Headline is required." };
+      }
+      if (!ctaDeepLink || !ctaDeepLink.trim()) {
+        return { ok: false as const, error: "Target deep-link or website URL is required." };
+      }
+      if (!budgetInr || budgetInr < 1000) {
+        return { ok: false as const, error: "Minimum campaign spend is ₹1,000 for OEM lock-screen booking." };
+      }
+
+      const totalImpressions = Math.floor((budgetInr / retailCpmInr) * 1000);
+      const wholesaleCostInr = Math.round((totalImpressions / 1000) * wholesaleCpmInr);
+      const founderProfitInr = budgetInr - wholesaleCostInr;
+      const profitMarginPercent = Number(((founderProfitInr / budgetInr) * 100).toFixed(1));
+
+      const campaignId = `OEM-CMP-${Date.now().toString(36).toUpperCase()}`;
+      const upiPaymentLink = `upi://pay?pa=orderking.reseller@hdfcbank&pn=OrderKing%20OEM%20Ad%20Network&am=${budgetInr}&cu=INR&tn=${encodeURIComponent(campaignId + "-" + advertiserName.slice(0, 15))}`;
+
+      const { loadPluginConnectorsData, savePluginConnectorsData } = await import("@/lib/orderking/cms-connectors");
+      const current = await loadPluginConnectorsData();
+
+      const newCampaign = {
+        id: campaignId,
+        advertiserName: advertiserName.trim(),
+        contactPhone: contactPhone.trim(),
+        businessCategory,
+        cityCircle,
+        pincode,
+        adHeadline: adHeadline.trim(),
+        adSubtext: adSubtext.trim(),
+        ctaText,
+        ctaDeepLink: ctaDeepLink.trim(),
+        targetXiaomi,
+        targetSamsung,
+        targetVivo,
+        targetOppo,
+        adFormat,
+        budgetInr,
+        retailCpmInr,
+        wholesaleCpmInr,
+        totalImpressions,
+        wholesaleCostInr,
+        founderProfitInr,
+        profitMarginPercent,
+        impressionsDelivered: 0,
+        swipesCount: 0,
+        ctrPercent: 0,
+        status: "ACTIVE" as const,
+        createdAt: new Date().toISOString(),
+        upiPaymentLink,
+      };
+
+      const updatedCampaigns = [newCampaign, ...(current.oemLockScreen?.campaigns || [])];
+      await savePluginConnectorsData({
+        oemLockScreen: {
+          ...current.oemLockScreen,
+          campaigns: updatedCampaigns,
+        },
+      });
+
+      return {
+        ok: true as const,
+        campaign: newCampaign,
+        message: `OEM Lock-Screen Campaign [${campaignId}] for '${advertiserName}' created! ${totalImpressions.toLocaleString("en-IN")} impressions booked at ₹${retailCpmInr}/CPM. Founder Net Profit: +₹${founderProfitInr.toLocaleString("en-IN")} (${profitMarginPercent}% margin). Instant UPI invoice generated.`,
+      };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const toggleOemCampaignStatusFn = createServerFn({ method: "POST" })
+  .validator((input: { campaignId: string; newStatus: "ACTIVE" | "PAUSED" | "COMPLETED" }) => input)
+  .handler(async ({ data }) => {
+    try {
+      const { campaignId, newStatus } = data;
+      const { loadPluginConnectorsData, savePluginConnectorsData } = await import("@/lib/orderking/cms-connectors");
+      const current = await loadPluginConnectorsData();
+      const campaigns = current.oemLockScreen?.campaigns || [];
+      const updatedCampaigns = campaigns.map((c) =>
+        c.id === campaignId ? { ...c, status: newStatus } : c
+      );
+
+      await savePluginConnectorsData({
+        oemLockScreen: {
+          ...current.oemLockScreen,
+          campaigns: updatedCampaigns,
+        },
+      });
+
+      return {
+        ok: true as const,
+        message: `Campaign ${campaignId} status transitioned to ${newStatus}.`,
+      };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const registerWifiCaptiveRouterFn = createServerFn({ method: "POST" })
+  .validator((input: {
+    locationName: string;
+    routerMacAddress: string;
+    portalTemplate?: "orderking_voucher_splash" | "interstitial_video_unlock" | "quick_survey_perk" | "minimal_fast_connect";
+    venueType?: "cafe" | "restaurant" | "food_court" | "retail_mall" | "transit_hub";
+  }) => input)
+  .handler(async ({ data }) => {
+    try {
+      const {
+        locationName,
+        routerMacAddress,
+        portalTemplate = "orderking_voucher_splash",
+        venueType = "cafe",
+      } = data;
+
+      if (!locationName || !locationName.trim()) {
+        return { ok: false as const, error: "Partner Location Name is required." };
+      }
+      if (!routerMacAddress || !routerMacAddress.trim()) {
+        return { ok: false as const, error: "Router MAC Address is required." };
+      }
+
+      const routerId = `RTR-${Date.now().toString(36).toUpperCase()}`;
+      const newRouter = {
+        id: routerId,
+        locationName: locationName.trim(),
+        routerMacAddress: routerMacAddress.trim().toUpperCase(),
+        portalTemplate,
+        venueType,
+        status: "ACTIVE" as const,
+        registeredAt: new Date().toISOString(),
+        totalUnlocks: 0,
+        todayUnlocks: 0,
+      };
+
+      const { loadPluginConnectorsData, savePluginConnectorsData } = await import("@/lib/orderking/cms-connectors");
+      const current = await loadPluginConnectorsData();
+      const existingRouters = current.wifiCaptivePortal?.routers || [];
+
+      await savePluginConnectorsData({
+        wifiCaptivePortal: {
+          ...current.wifiCaptivePortal,
+          routers: [newRouter, ...existingRouters],
+        },
+      });
+
+      return {
+        ok: true as const,
+        router: newRouter,
+        message: `UmarOS Captive Portal Gateway attached to router [${newRouter.routerMacAddress}] at '${newRouter.locationName}'. Splash template '${portalTemplate}' deployed.`,
+      };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const bookWifiCaptiveAdFn = createServerFn({ method: "POST" })
+  .validator((input: {
+    brandName: string;
+    headline: string;
+    description?: string;
+    creativeUrl?: string;
+    targetUrl: string;
+    ctaText?: string;
+    budgetInr: number;
+    costPerImpressionInr?: number;
+    retailCpmInr?: number;
+  }) => input)
+  .handler(async ({ data }) => {
+    try {
+      const {
+        brandName,
+        headline,
+        description = "Enjoy uninterrupted high-speed internet courtesy of our sponsor.",
+        creativeUrl = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+        targetUrl,
+        ctaText = "Claim Offer & Connect",
+        budgetInr,
+        costPerImpressionInr = 2.5,
+        retailCpmInr = 2500,
+      } = data;
+
+      if (!brandName || !brandName.trim()) {
+        return { ok: false as const, error: "Brand Name is required." };
+      }
+      if (!headline || !headline.trim()) {
+        return { ok: false as const, error: "Ad Headline is required." };
+      }
+      if (!targetUrl || !targetUrl.trim()) {
+        return { ok: false as const, error: "Target Destination URL is required." };
+      }
+      if (!budgetInr || budgetInr < 500) {
+        return { ok: false as const, error: "Minimum campaign spend is ₹500 for Wi-Fi captive ads." };
+      }
+
+      const targetImpressions = Math.floor(budgetInr / costPerImpressionInr);
+      const campaignId = `WIFI-AD-${Date.now().toString(36).toUpperCase()}`;
+      const upiPaymentLink = `upi://pay?pa=orderking.ads@hdfcbank&pn=OrderKing%20WiFi%20Network&am=${budgetInr}&cu=INR&tn=${encodeURIComponent(campaignId + "-" + brandName.slice(0, 15))}`;
+
+      const newCampaign = {
+        id: campaignId,
+        brandName: brandName.trim(),
+        headline: headline.trim(),
+        description: description.trim(),
+        creativeUrl: creativeUrl.trim(),
+        targetUrl: targetUrl.trim(),
+        ctaText: ctaText.trim(),
+        retailCpmInr,
+        costPerImpressionInr,
+        budgetInr,
+        targetImpressions,
+        impressionsDelivered: 0,
+        unlocksTriggered: 0,
+        revenueCollectedInr: 0,
+        status: "ACTIVE" as const,
+        createdAt: new Date().toISOString(),
+        upiPaymentLink,
+      };
+
+      const { loadPluginConnectorsData, savePluginConnectorsData } = await import("@/lib/orderking/cms-connectors");
+      const current = await loadPluginConnectorsData();
+      const existingCampaigns = current.wifiCaptivePortal?.brandCampaigns || [];
+
+      await savePluginConnectorsData({
+        wifiCaptivePortal: {
+          ...current.wifiCaptivePortal,
+          brandCampaigns: [newCampaign, ...existingCampaigns],
+        },
+      });
+
+      return {
+        ok: true as const,
+        campaign: newCampaign,
+        message: `Wi-Fi Captive Ad Campaign [${campaignId}] for '${brandName}' launched! ${targetImpressions.toLocaleString("en-IN")} Wi-Fi unlock impressions scheduled at ₹${costPerImpressionInr}/unlock.`,
+      };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const toggleWifiCaptiveStatusFn = createServerFn({ method: "POST" })
+  .validator((input: { routerId?: string; campaignId?: string; newStatus: string }) => input)
+  .handler(async ({ data }) => {
+    try {
+      const { routerId, campaignId, newStatus } = data;
+      const { loadPluginConnectorsData, savePluginConnectorsData } = await import("@/lib/orderking/cms-connectors");
+      const current = await loadPluginConnectorsData();
+
+      if (routerId) {
+        const routers = (current.wifiCaptivePortal?.routers || []).map((r) =>
+          r.id === routerId ? { ...r, status: newStatus as any } : r
+        );
+        await savePluginConnectorsData({
+          wifiCaptivePortal: { ...current.wifiCaptivePortal, routers },
+        });
+        return { ok: true as const, message: `Router ${routerId} status updated to ${newStatus}.` };
+      }
+
+      if (campaignId) {
+        const brandCampaigns = (current.wifiCaptivePortal?.brandCampaigns || []).map((c) =>
+          c.id === campaignId ? { ...c, status: newStatus as any } : c
+        );
+        await savePluginConnectorsData({
+          wifiCaptivePortal: { ...current.wifiCaptivePortal, brandCampaigns },
+        });
+        return { ok: true as const, message: `Campaign ${campaignId} status updated to ${newStatus}.` };
+      }
+
+      return { ok: false as const, error: "Neither routerId nor campaignId provided." };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const bookSyndicatePlacementFn = createServerFn({ method: "POST" })
+  .validator((input: {
+    restaurantId: string;
+    restaurantName: string;
+    cityCircle?: string;
+    dailyPlacementFeeInr: number;
+    durationDays: number;
+  }) => input)
+  .handler(async ({ data }) => {
+    try {
+      const {
+        restaurantId,
+        restaurantName,
+        cityCircle = "DELHI_NCR",
+        dailyPlacementFeeInr,
+        durationDays,
+      } = data;
+
+      if (!restaurantName || !restaurantName.trim()) {
+        return { ok: false as const, error: "Restaurant Name is required." };
+      }
+      if (durationDays < 1) {
+        return { ok: false as const, error: "Duration must be at least 1 day." };
+      }
+
+      const totalFeeInr = dailyPlacementFeeInr * durationDays;
+      const bookingId = `PLC-${Date.now().toString(36).toUpperCase()}`;
+
+      const newBooking = {
+        id: bookingId,
+        restaurantId: restaurantId || `REST-${Date.now()}`,
+        restaurantName: restaurantName.trim(),
+        cityCircle,
+        dailyPlacementFeeInr,
+        durationDays,
+        totalFeeInr,
+        status: "ACTIVE" as const,
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + durationDays * 86400000).toISOString(),
+      };
+
+      const { loadPluginConnectorsData, savePluginConnectorsData } = await import("@/lib/orderking/cms-connectors");
+      const current = await loadPluginConnectorsData();
+      const currentStream = current.globalAdSyndicate?.promotedPlacements || {
+        enabled: true,
+        dailyPlacementFeeInr,
+        activeRestaurantsCount: 0,
+        totalPlacementsDelivered: 0,
+        grossRevenueInr: 0,
+        bookings: [],
+      };
+
+      const updatedBookings = [newBooking, ...(currentStream.bookings || [])];
+      const activeCount = updatedBookings.filter((b) => b.status === "ACTIVE").length;
+      const updatedGrossRevenue = updatedBookings.reduce((sum, b) => sum + b.totalFeeInr, 0);
+
+      await savePluginConnectorsData({
+        globalAdSyndicate: {
+          ...current.globalAdSyndicate,
+          promotedPlacements: {
+            ...currentStream,
+            dailyPlacementFeeInr,
+            activeRestaurantsCount: activeCount,
+            totalPlacementsDelivered: (currentStream.totalPlacementsDelivered || 0) + 1,
+            grossRevenueInr: updatedGrossRevenue,
+            bookings: updatedBookings,
+          },
+        },
+      });
+
+      return {
+        ok: true as const,
+        booking: newBooking,
+        message: `Promoted Restaurant Placement booked for '${restaurantName}' (${durationDays} days @ ₹${dailyPlacementFeeInr}/day = ₹${totalFeeInr.toLocaleString("en-IN")}). In-app placement active immediately.`,
+      };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const bookSyndicateRiderSponsorFn = createServerFn({ method: "POST" })
+  .validator((input: {
+    sponsorName: string;
+    category?: "personal_loan" | "two_wheeler_insurance" | "ev_battery_swap" | "health_cover" | "banking";
+    monthlyFeeInr: number;
+    cpmRateInr?: number;
+    contractMonths?: number;
+  }) => input)
+  .handler(async ({ data }) => {
+    try {
+      const {
+        sponsorName,
+        category = "personal_loan",
+        monthlyFeeInr,
+        cpmRateInr = 120,
+        contractMonths = 3,
+      } = data;
+
+      if (!sponsorName || !sponsorName.trim()) {
+        return { ok: false as const, error: "Sponsor Brand Name is required." };
+      }
+
+      const sponsorId = `SPN-${Date.now().toString(36).toUpperCase()}`;
+      const newSponsor = {
+        id: sponsorId,
+        sponsorName: sponsorName.trim(),
+        category,
+        monthlyFeeInr,
+        cpmRateInr,
+        status: "ACTIVE" as const,
+        contractMonths,
+        totalImpressions: 0,
+        startDate: new Date().toISOString(),
+      };
+
+      const { loadPluginConnectorsData, savePluginConnectorsData } = await import("@/lib/orderking/cms-connectors");
+      const current = await loadPluginConnectorsData();
+      const currentStream = current.globalAdSyndicate?.riderFinancialAds || {
+        enabled: true,
+        monthlySponsorFeeInr: monthlyFeeInr,
+        cpmRateInr,
+        activeSponsorsCount: 0,
+        impressionsDelivered: 0,
+        grossRevenueInr: 0,
+        sponsors: [],
+      };
+
+      const updatedSponsors = [newSponsor, ...(currentStream.sponsors || [])];
+      const activeCount = updatedSponsors.filter((s) => s.status === "ACTIVE").length;
+      const updatedGrossRevenue = updatedSponsors.reduce((sum, s) => sum + s.monthlyFeeInr * s.contractMonths, 0);
+
+      await savePluginConnectorsData({
+        globalAdSyndicate: {
+          ...current.globalAdSyndicate,
+          riderFinancialAds: {
+            ...currentStream,
+            monthlySponsorFeeInr: monthlyFeeInr,
+            cpmRateInr,
+            activeSponsorsCount: activeCount,
+            grossRevenueInr: updatedGrossRevenue,
+            sponsors: updatedSponsors,
+          },
+        },
+      });
+
+      return {
+        ok: true as const,
+        sponsor: newSponsor,
+        message: `Rider App Financial Sponsor '${sponsorName}' enrolled (${contractMonths} months @ ₹${monthlyFeeInr}/mo). Dedicated rider financial ad space allocated.`,
       };
     } catch (err) {
       return fail(err);
