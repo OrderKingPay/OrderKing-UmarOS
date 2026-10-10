@@ -7,6 +7,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { KitchenCard } from "@/components/market/restaurant-card";
+import { GrowthWidget } from "@/components/market/growth-widget";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBrand, useT } from "@/components/providers";
 import { listCategories, listRestaurants } from "@/lib/server/catalog";
@@ -170,7 +171,10 @@ export function HomeFeed({
       {/* 👑 SPONSORED PAID RESTAURANT AD ZONE (AUTO-SCALING & AD-SPEND RANKED) */}
       {/* <PaidRestaurantAdZone /> */}
 
-
+      {/* GAMIFIED GROWTH SYNDICATE WIDGET */}
+      {!q && !category && (
+        <GrowthWidget />
+      )}
       {/* 👑 3D GLOWING SWITCH BUTTON + SAME-LEVEL AI SUPPORT */}
       {/* <EcosystemSwitchBar /> */}
 
