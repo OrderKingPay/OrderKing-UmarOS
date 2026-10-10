@@ -38,10 +38,11 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
     await sql.transaction(async (tx: Sql) => {
       // 1. Fetch unassigned active orders WITH restaurant coordinates
       const unassignedOrders = await tx<{ id: string, org_id: string, status: string, restaurant_id: string, rst_lat: number, rst_lng: number }>`
-        SELECT o.id, o.org_id, o.status, o.restaurant_id, r.lat as rst_lat, r.lng as rst_lng
+        SELECT o.id, o.org_id, o.status, o.restaurant_id,
+               COALESCE(o.delivery_lat, 24.869)::float as rst_lat,
+               COALESCE(o.delivery_lng, 92.359)::float as rst_lng
         FROM orders o
-        JOIN restaurants r ON o.restaurant_id = r.id
-        WHERE o.status IN ('PREPARING', 'READY')
+        WHERE o.status IN ('PREPARING', 'READY', 'placed', 'confirmed')
           AND o.rider_id IS NULL
         ORDER BY o.placed_at ASC
         FOR UPDATE SKIP LOCKED

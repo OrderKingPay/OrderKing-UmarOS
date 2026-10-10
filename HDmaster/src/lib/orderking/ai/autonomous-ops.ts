@@ -109,13 +109,13 @@ export async function auditFinancialIntegrity(sql: Sql): Promise<FinancialAuditR
   }>`
     SELECT 
       id,
-      order_value_paise,
-      restaurant_settlement_paise,
-      rider_payout_paise,
-      commission_paise,
-      tax_paise,
-      restaurant_discount_paise,
-      platform_discount_paise
+      COALESCE(total_paise, 0)::int as order_value_paise,
+      COALESCE(restaurant_payable_paise, 0)::int as restaurant_settlement_paise,
+      COALESCE(rider_payout_paise, 0)::int as rider_payout_paise,
+      COALESCE(commission_paise, 0)::int as commission_paise,
+      COALESCE(tax_paise, 0)::int as tax_paise,
+      COALESCE(restaurant_discount_paise, 0)::int as restaurant_discount_paise,
+      COALESCE(platform_discount_paise, 0)::int as platform_discount_paise
     FROM orders
     ORDER BY created_at DESC
     LIMIT 100;

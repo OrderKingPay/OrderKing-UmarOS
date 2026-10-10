@@ -11,10 +11,15 @@ import {
   ChevronDown,
   Compass,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Wordmark } from "@/components/brand/wordmark";
-import { LocationDialog } from "@/components/market/location-dialog";
-import { LanguageSelectorModal } from "@/components/common/language-selector-modal";
+
+const LazyLocationDialog = lazy(() =>
+  import("@/components/market/location-dialog").then((m) => ({ default: m.LocationDialog }))
+);
+const LazyLanguageSelectorModal = lazy(() =>
+  import("@/components/common/language-selector-modal").then((m) => ({ default: m.LanguageSelectorModal }))
+);
 import { useBrand, useT } from "@/components/providers";
 import { cartCount, useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
@@ -187,15 +192,23 @@ export function CustomerShell({
         </ul>
       </nav>
 
-      <LocationDialog open={locOpen} onOpenChange={setLocOpen} />
-      <LanguageSelectorModal
-        isOpen={langOpen}
-        onClose={() => setLangOpen(false)}
-        selectedCode={lang}
-        onSelectLanguage={(l) => {
-          setLang(l.code as any);
-        }}
-      />
+      {locOpen ? (
+        <Suspense fallback={null}>
+          <LazyLocationDialog open={locOpen} onOpenChange={setLocOpen} />
+        </Suspense>
+      ) : null}
+      {langOpen ? (
+        <Suspense fallback={null}>
+          <LazyLanguageSelectorModal
+            isOpen={langOpen}
+            onClose={() => setLangOpen(false)}
+            selectedCode={lang}
+            onSelectLanguage={(l) => {
+              setLang(l.code as any);
+            }}
+          />
+        </Suspense>
+      ) : null}
     </div>
   );
 }

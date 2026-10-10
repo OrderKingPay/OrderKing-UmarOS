@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState, Suspense, type CSSProperties } from "react";
 import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -319,7 +319,9 @@ export function CommandShell() {
             </div>
           </header>
           <main id="main" className="flex-1 px-3 py-4 md:px-6 md:py-6">
-            <Outlet />
+            <Suspense fallback={<CommandContentSkeleton />}>
+              <Outlet />
+            </Suspense>
           </main>
         </div>
       </div>
@@ -354,4 +356,21 @@ export function CommandShell() {
 export function useEmployee() {
   const q = useQuery({ queryKey: ["session"], queryFn: () => bootstrapSession() });
   return q.data && q.data.ok ? q.data.employee : null;
+}
+
+function CommandContentSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse" aria-busy="true" aria-label="Loading workspace module">
+      <div className="flex items-center justify-between border-b border-border pb-4">
+        <div className="h-7 w-48 bg-surface rounded-lg" />
+        <div className="h-8 w-24 bg-surface rounded-lg" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-28 bg-surface rounded-xl border border-border" />
+        ))}
+      </div>
+      <div className="h-80 w-full bg-surface rounded-xl border border-border" />
+    </div>
+  );
 }

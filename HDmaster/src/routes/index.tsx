@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { 
   Database, Server, GitBranch, CheckCircle2, AlertCircle, Users, 
   ShieldCheck, Store, Bike, Activity, Settings, RefreshCw, 
@@ -9,7 +9,20 @@ import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
 import { KingPayMasterSwitch } from "@/components/kingpay/KingPayMasterSwitch";
 import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
-import { GlobalGodEyeMap } from "@/components/dashboard/GlobalGodEyeMap";
+
+const LazyGlobalGodEyeMap = lazy(() =>
+  import("@/components/dashboard/GlobalGodEyeMap").then((m) => ({ default: m.GlobalGodEyeMap }))
+);
+
+function GodEyeMapSkeleton() {
+  return (
+    <div className="w-full rounded-2xl bg-slate-900 border border-slate-800 p-8 flex flex-col items-center justify-center text-center animate-pulse min-h-[380px]">
+      <div className="h-10 w-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4" />
+      <p className="text-xs font-mono uppercase tracking-widest text-emerald-400">Loading Geospatial Radar…</p>
+      <p className="text-xs text-slate-500 mt-1">Calibrating Pan-India Telemetry Vector</p>
+    </div>
+  );
+}
 
 const getUmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
   const sql = await getSql();
@@ -181,7 +194,9 @@ function UmarOSDashboard() {
         
         {/* Live Fleet Geospatial Radar Component */}
         <div className="mt-8 mb-8">
-          <GlobalGodEyeMap />
+          <Suspense fallback={<GodEyeMapSkeleton />}>
+            <LazyGlobalGodEyeMap />
+          </Suspense>
         </div>
 
         {/* KingPay Switch Section */}

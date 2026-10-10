@@ -1,11 +1,14 @@
 import { createRootRoute, HeadContent, Outlet, Scripts, ErrorComponent } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { Toaster } from "sonner";
-import { MasterAICommandTerminal } from "@/components/MasterAICommandTerminal";
 import appCss from "../styles.css?url";
+
+const LazyMasterAITerminal = lazy(() =>
+  import("@/components/MasterAICommandTerminal").then((m) => ({ default: m.MasterAICommandTerminal }))
+);
 
 const APP_NAME = "Umar OS";
 
@@ -22,10 +25,16 @@ export const Route = createRootRoute({
       },
     ],
     links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://vitals.vercel-insights.com" },
       { rel: "preconnect", href: "https://xezsqsptomcndbksxrvu.supabase.co" },
       { rel: "icon", type: 'image/png', href: '/icon-192.png' },
       { rel: "stylesheet", href: appCss },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap",
+      },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/icon-192.png" },
     ],
@@ -51,6 +60,30 @@ export const Route = createRootRoute({
     );
   }
 });
+
+function AdminRootSkeleton() {
+  return (
+    <div className="flex min-h-screen w-full flex-col bg-bg p-6 animate-pulse" aria-busy="true" aria-label="Loading admin ecosystem">
+      <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
+        <div className="h-8 w-44 bg-surface rounded-lg border border-border" />
+        <div className="flex gap-3">
+          <div className="h-9 w-28 bg-surface rounded-lg border border-border" />
+          <div className="h-9 w-9 bg-surface rounded-full border border-border" />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-28 bg-surface rounded-xl border border-border" />
+        ))}
+      </div>
+      <div className="h-72 w-full bg-surface rounded-2xl border border-border mb-6" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="h-64 bg-surface rounded-xl border border-border" />
+        <div className="h-64 bg-surface rounded-xl border border-border" />
+      </div>
+    </div>
+  );
+}
 
 function RootDocument() {
   const [queryClient] = useState(
@@ -79,8 +112,12 @@ function RootDocument() {
         <PreviewHostBridge />
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
-            <Outlet />
-            <MasterAICommandTerminal />
+            <Suspense fallback={<AdminRootSkeleton />}>
+              <Outlet />
+            </Suspense>
+            <Suspense fallback={null}>
+              <LazyMasterAITerminal />
+            </Suspense>
             <Toaster
               theme="light"
               position="bottom-right"

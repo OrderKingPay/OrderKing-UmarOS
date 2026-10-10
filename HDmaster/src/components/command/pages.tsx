@@ -96,6 +96,7 @@ import { useEmployee } from "./shell";
 import { GrowthVaultView } from "./growth-vault";
 import { FounderSovereignDeck } from "./founder-sovereign-deck";
 import { FounderEconomics } from "../dashboard/FounderEconomics";
+import { UmarOS_Supreme_AI } from "../dashboard/UmarOS_Supreme_AI";
 
 
 function useInvalidate() {
@@ -171,6 +172,9 @@ export function DashboardPage() {
   const t = data?.today;
   return (
     <div className="space-y-6">
+      {/* UMAR OS SUPREME AI COMMAND CENTER */}
+      <UmarOS_Supreme_AI />
+
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.16em] text-muted">Today</p>
@@ -273,6 +277,7 @@ function CeoPage() {
   return (
     <div className="space-y-4">
       {/* UMAR OS: SOVEREIGN FOUNDER CONTROL DECK */}
+      <UmarOS_Supreme_AI />
       <FounderEconomics />
       <FounderSovereignDeck />
     </div>

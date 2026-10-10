@@ -1,10 +1,22 @@
 
-import { createFileRoute } from "@tanstack/react-router";
-import { LiveTrackingMap } from "@/components/tracking/live-tracking-map";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { supabase } from "@/lib/db-cloud";
+
+const LazyLiveTrackingMap = lazy(() =>
+  import("@/components/tracking/live-tracking-map").then((m) => ({ default: m.LiveTrackingMap }))
+);
+
+function TrackingMapSkeleton() {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center bg-zinc-950 text-white/70 animate-pulse">
+      <div className="h-10 w-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4" />
+      <p className="text-xs font-mono uppercase tracking-widest text-emerald-400">Connecting Satellite Telemetry…</p>
+      <p className="text-[11px] text-zinc-500 mt-1">Streaming dispatch vector over 3G network</p>
+    </div>
+  );
+}
 
 type TrackingPosition = { lat: number; lng: number };
 
@@ -65,11 +77,13 @@ function TrackingRoute() {
 
       <div className="flex-1 w-full relative">
         {position ? (
-          <LiveTrackingMap
-            dispatchJobId={dispatchJobId}
-            initialLat={position.lat}
-            initialLng={position.lng}
-          />
+          <Suspense fallback={<TrackingMapSkeleton />}>
+            <LazyLiveTrackingMap
+              dispatchJobId={dispatchJobId}
+              initialLat={position.lat}
+              initialLng={position.lng}
+            />
+          </Suspense>
         ) : (
           <div className="flex h-full items-center justify-center px-6 text-center text-fg/80">
             {loading
