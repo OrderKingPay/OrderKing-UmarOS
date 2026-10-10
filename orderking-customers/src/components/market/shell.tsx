@@ -42,23 +42,23 @@ export function CustomerShell({
   }, []);
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-black pb-24 md:max-w-5xl transition-colors duration-300">
+    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-zinc-950 pb-24 md:max-w-5xl transition-colors duration-300">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:bg-surface focus:px-3 focus:py-2"
       >
         {t("a11y.skip")}
       </a>
-      <header className="sticky top-0 z-30 bg-black/95 backdrop-blur-2xl border-b border-primary/40 shadow-[0_4px_30px_rgba(212,175,55,0.15)] px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+      <header className="sticky top-0 z-30 bg-zinc-950 border-b border-zinc-800 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <div className="flex items-center justify-between gap-2 sm:gap-3">
           <div className="shrink-0 max-w-[50%]">
             <Wordmark />
-            <span className="block text-[10px] font-medium tracking-wide text-primary/80 break-words text-wrap">
-              {isDeliveryActive ? "Have It Your Way" : "King Pay · Sovereign UPI Across India 👑"}
+            <span className="block text-[10px] font-medium tracking-wide text-zinc-400 break-words text-wrap">
+              {isDeliveryActive ? "Culinary Excellence" : "Secure Payments"}
             </span>
           </div>
 
-          {/* 👑 DYNAMIC TRAVEL & KINGPAY PILL */}
+          {/* 👑 DYNAMIC TRAVEL & Pay PILL */}
             <Link
               to="/king-pay"
               className="group flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/30 transition-all active:scale-95 hover:scale-105 no-underline ml-auto border border-white/20"
@@ -73,7 +73,7 @@ export function CustomerShell({
             {/* Share/Promotion */}
             <Link
               to="/rewards"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 hover:bg-amber-500/20"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-white hover:bg-zinc-800"
               aria-label="Share & Earn"
             >
               <Gift className="h-4 w-4" />
@@ -112,14 +112,14 @@ export function CustomerShell({
             className={`flex h-11 min-w-0 max-w-[40%] items-center justify-center rounded-full px-3 text-left shrink-0 border ${
               isDeliveryActive
                 ? "bg-surface border-border hover:bg-surface-2 transition-colors"
-                : "bg-amber-500/10 border-amber-400/40"
+                : "bg-zinc-900 border-zinc-800"
             }`}
           >
             <div className="flex flex-col min-w-0 w-full">
-              <span className="text-[9px] uppercase tracking-wide text-amber-400 font-bold truncate">
-                {isDeliveryActive ? t("home.deliveringTo") : "👑 King Pay"}
+              <span className="text-[9px] uppercase tracking-wide text-zinc-400 font-medium truncate">
+                {isDeliveryActive ? t("home.deliveringTo") : "Payments"}
               </span>
-              <span className="text-xs font-bold truncate text-white drop-shadow-sm">
+              <span className="text-xs font-medium truncate text-white">
                 {isDeliveryActive ? location.label : location.cityName || location.label}
               </span>
             </div>
@@ -133,7 +133,7 @@ export function CustomerShell({
             >
               <Search className="size-4 shrink-0 text-primary" aria-hidden />
               <span className="text-xs truncate">
-                {isDeliveryActive ? t("home.searchPlaceholder") : "Search King Pay, Bills..."}
+                {isDeliveryActive ? t("home.searchPlaceholder") : "Search payments..."}
               </span>
             </button>
           ) : (
@@ -163,35 +163,35 @@ export function CustomerShell({
                   {!path.startsWith("/king-pay") ? (
         <nav
             aria-label={brand.appName}
-            className="fixed bottom-4 left-4 right-4 z-40 bg-black/95 backdrop-blur-2xl border border-primary/50 rounded-2xl shadow-[0_8px_40px_rgba(212,175,55,0.25)] overflow-hidden"
+            className="fixed bottom-4 left-4 right-4 z-40 bg-zinc-950 border border-zinc-800 rounded-2xl shadow-md overflow-hidden"
           >
             <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-1">
-            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-primary drop-shadow-[0_0_12px_rgba(212,175,55,0.8)] scale-110" />
-            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-primary drop-shadow-[0_0_12px_rgba(212,175,55,0.8)] scale-110" />
+            <NavItem to="/" icon={House} label="Home" active={path === "/"} colorClass="text-white" />
+            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} colorClass="text-white" />
             
-            {/* 👑 Glowing KingPay Tab */}
+            
             <li className="relative -top-2 flex w-full justify-center">
               <Link
                 to="/king-pay"
                 className={cn(
-                  "group relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-4 border-black text-xs no-underline shadow-lg transition-all active:scale-95 animate-pulse",
+                  "group relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-4 border-zinc-950 text-xs no-underline shadow-lg transition-all active:scale-95",
                   path.startsWith("/king-pay")
-                    ? "bg-gradient-to-br from-[#FFD700] to-[#D4AF37] text-black shadow-[0_4px_20px_rgba(212,175,55,0.5)]"
-                    : "bg-gradient-to-br from-[#D4AF37] via-[#FFDF00] to-[#B8860B] text-black shadow-[0_4px_15px_rgba(212,175,55,0.3)] hover:brightness-110"
+                    ? "bg-white text-black"
+                    : "bg-zinc-800 text-white hover:bg-zinc-700"
                 )}
               >
-                <span className="text-xl leading-none drop-shadow-sm mt-0.5">👑</span>
-                <span className="text-[10px] font-black tracking-tight leading-none drop-shadow-sm mt-0.5">KingPay</span>
+                <Wallet className="h-5 w-5" />
+                <span className="text-[10px] font-medium mt-1">Pay</span>
                 {!path.startsWith("/king-pay") && (
-                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border border-white text-[10px] font-bold text-white shadow-sm">
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border border-zinc-950 text-[10px] font-bold text-white shadow-sm">
                     1
                   </span>
                 )}
               </Link>
             </li>
             
-            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-primary drop-shadow-[0_0_12px_rgba(212,175,55,0.8)] scale-110" />
-            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-primary drop-shadow-[0_0_12px_rgba(212,175,55,0.8)] scale-110" />
+            <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={path.startsWith("/tutor")} colorClass="text-white" />
+            <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} colorClass="text-white" />
           </ul>
         </nav>
       ) : (

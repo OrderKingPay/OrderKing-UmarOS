@@ -170,52 +170,21 @@ export function HomeFeed({
       {/* 👑 SPONSORED PAID RESTAURANT AD ZONE (AUTO-SCALING & AD-SPEND RANKED) */}
       {/* <PaidRestaurantAdZone /> */}
 
-      {/* 🔥 AGGRESSIVE VIRAL GROWTH BANNER 🔥 */}
-      {!q && !category && (
-        <div className="relative overflow-hidden rounded-[var(--radius-3xl)] border border-primary/50 bg-gradient-to-br from-black via-[#2a220a] to-black p-6 shadow-[0_10px_40px_rgba(212,175,55,0.25)] my-2">
-          <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/20 blur-3xl animate-pulse"></div>
-          <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-primary/20 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="relative z-10 flex flex-col items-center text-center">
-            <span className="mb-2 inline-block rounded-full bg-primary/10 border border-primary/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]">
-              👑 KING'S RANSOM UNLOCKED
-            </span>
-            <h2 className="font-display text-2xl font-black text-white leading-tight">
-              Destroy Zomato.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 drop-shadow-lg">
-                Get ₹500 Free Food.
-              </span>
-            </h2>
-            <p className="mt-2 text-xs font-semibold text-slate-300">
-              Invite 1 Friend. 0% Platform Markup forever. Rule your city.
-            </p>
-            <button
-              onClick={() => {
-                toast.success("Viral link copied! Share to claim ₹500 instantly.");
-                navigator.clipboard.writeText("https://orderking.app/invite/KING500");
-              }}
-              className="mt-4 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 px-6 py-3 text-sm font-black text-black shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-all hover:scale-105 active:scale-95"
-            >
-              <span>🔥 Claim Your ₹500 Now</span>
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* 👑 3D GLOWING SWITCH BUTTON + SAME-LEVEL AI SUPPORT */}
       {/* <EcosystemSwitchBar /> */}
 
       {/* 1-Tap Quick Re-Order (Zero-Friction Simplicity) */}
       {pastOrders.data?.orders?.[0] && !q && !veg && !openNow && !category ? (
-        <section aria-label="1-Tap Quick Re-Order">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--radius-3xl)] border border-primary/30 bg-black backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(212,175,55,0.1)]">
+        <section aria-label="Recent Selection">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">⚡</span>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                  1-Tap Quick Re-Order
+                <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded-full">
+                  Recent Selection
                 </span>
-                <h3 className="font-bold text-foreground mt-0.5">{pastOrders.data.orders[0].restaurantName}</h3>
-                <p className="text-xs text-muted">
+                <h3 className="font-medium text-white mt-1">{pastOrders.data.orders[0].restaurantName}</h3>
+                <p className="text-xs text-zinc-400">
                   {pastOrders.data.orders[0].itemPreview || "Past Order"} · {formatPaise(pastOrders.data.orders[0].totalPaise, { locale })}
                 </p>
               </div>
@@ -223,10 +192,9 @@ export function HomeFeed({
             <button
               type="button"
               onClick={() => handleReorder(pastOrders.data.orders[0].id)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white shadow transition"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-white hover:bg-zinc-200 px-4 py-2.5 text-xs font-medium text-black transition"
             >
-              <span>⚡ Re-Order in 1-Tap</span>
-              <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-mono">Instant</span>
+              <span>Reorder</span>
             </button>
           </div>
         </section>
@@ -234,25 +202,25 @@ export function HomeFeed({
 
       {/* Zomato-style Active Live Order Tracker Banner */}
       {activeOrder && !q && !veg && !openNow && !category ? (
-        <section aria-label="Active live order">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-[var(--radius-3xl)] border border-primary/30 bg-black backdrop-blur-3xl p-5 shadow-[0_8px_32px_rgba(212,175,55,0.1)]">
+        <section aria-label="Active Order">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
             <div className="flex items-center gap-3">
               <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-zinc-300"></span>
               </span>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-primary">Live Order Active</p>
-                <h3 className="font-bold text-foreground">{activeOrder.restaurantName} · #{activeOrder.publicId}</h3>
-                <p className="text-xs text-muted">Status: {activeOrder.status.replace(/_/g, " ")}</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Active Order</p>
+                <h3 className="font-medium text-white">{activeOrder.restaurantName} · #{activeOrder.publicId}</h3>
+                <p className="text-xs text-zinc-500">Status: {activeOrder.status.replace(/_/g, " ")}</p>
               </div>
             </div>
             <Link
               to="/orders/$id"
               params={{ id: activeOrder.id }}
-              className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-primary/90"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-xs font-medium text-black transition hover:bg-zinc-200"
             >
-              Track Order Live ➔
+              Track Order
             </Link>
           </div>
         </section>
@@ -260,13 +228,13 @@ export function HomeFeed({
 
       {/* Zomato-style Order Again / Past Order Carousel */}
       {pastOrders.data?.orders && pastOrders.data.orders.length > 0 && !q && !veg && !openNow && !category ? (
-        <section aria-label={t("home.reorder")}>
+        <section aria-label="Reorder">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h2 className="font-display text-xl">{t("home.reorder")}</h2>
-              <p className="text-xs text-muted">Repeat your favourite meals in 1 tap</p>
+              <h2 className="font-display text-xl text-white">Reorder</h2>
+              <p className="text-xs text-zinc-400">Reorder past selections effortlessly.</p>
             </div>
-            <Link to="/orders" className="text-xs font-semibold text-primary hover:underline">
+            <Link to="/orders" className="text-xs font-medium text-zinc-300 hover:text-white hover:underline">
               {t("common.viewAll")}
             </Link>
           </div>
@@ -274,19 +242,19 @@ export function HomeFeed({
             {pastOrders.data.orders.slice(0, 5).map((o) => (
               <div
                 key={o.id}
-                className="flex w-64 shrink-0 flex-col justify-between rounded-[var(--radius-2xl)] border border-primary/20 bg-black backdrop-blur-2xl p-4 shadow-[0_4px_20px_rgba(212,175,55,0.05)] transition hover:shadow-[0_4px_25px_rgba(212,175,55,0.15)] hover:border-primary/40"
+                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-950 p-4 transition hover:border-zinc-600"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="line-clamp-1 text-sm font-semibold">{o.restaurantName}</h3>
-                    <span className="text-[11px] font-bold text-primary">
+                    <h3 className="line-clamp-1 text-sm font-medium text-white">{o.restaurantName}</h3>
+                    <span className="text-[11px] font-medium text-zinc-300">
                       {formatPaise(o.totalPaise, { locale: lang === "bn" ? "bn-IN" : "en-IN" })}
                     </span>
                   </div>
-                  <p className="mt-1 line-clamp-2 text-xs text-muted">{o.itemPreview || "Delicious meal"}</p>
+                  <p className="mt-1 line-clamp-2 text-xs text-zinc-400">{o.itemPreview || "Curated selection"}</p>
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2">
-                  <span className="text-[10px] text-muted">
+                <div className="mt-3 flex items-center justify-between border-t border-zinc-800 pt-2">
+                  <span className="text-[10px] text-zinc-500">
                     {new Date(o.placedAt).toLocaleDateString(lang === "bn" ? "bn-IN" : "en-IN", {
                       month: "short",
                       day: "numeric",
@@ -295,9 +263,9 @@ export function HomeFeed({
                   <button
                     type="button"
                     onClick={() => void handleReorder(o.id)}
-                    className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-primary hover:text-white"
+                    className="inline-flex items-center gap-1 rounded-full bg-zinc-900 px-2.5 py-1 text-xs font-medium text-white transition hover:bg-white hover:text-black"
                   >
-                    Reorder ➔
+                    Reorder
                   </button>
                 </div>
               </div>
@@ -316,10 +284,10 @@ export function HomeFeed({
       ) : null}
 
       <section aria-label={t("home.categories")}>
-        <h2 className="mb-4 font-display text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-500 drop-shadow-lg">{t("home.categories")}</h2>
+        <h2 className="mb-4 font-display text-2xl font-medium text-white">{t("home.categories")}</h2>
         <div className="flex gap-3 overflow-x-auto pb-1">
           {cats.isPending
-            ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 w-24 shrink-0 rounded-[var(--radius-2xl)] bg-black/50 backdrop-blur-xl border border-primary/20 animate-pulse shadow-[0_0_10px_rgba(212,175,55,0.05)]" />)
+            ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 w-24 shrink-0 rounded-[var(--radius-2xl)] bg-zinc-900 border border-zinc-800 animate-pulse" />)
             : (cats.data?.categories ?? []).map((c: any) => (
                 <Link
                   key={c.id}
@@ -327,7 +295,7 @@ export function HomeFeed({
                   search={{ category: c.id }}
                   className="w-24 shrink-0 text-center text-fg no-underline"
                 >
-                  <div className="aspect-square overflow-hidden rounded-[var(--radius-2xl)] bg-black backdrop-blur-xl border border-primary/30 shadow-[inset_0_0_15px_rgba(212,175,55,0.1)] p-1">
+                  <div className="aspect-square overflow-hidden rounded-[var(--radius-2xl)] bg-zinc-950 border border-zinc-800 p-1">
                     {c.imageUrl ? (
                       <img loading="lazy" src={c.imageUrl} alt="" className="h-full w-full object-cover" />
                     ) : null}
@@ -359,22 +327,22 @@ export function HomeFeed({
 
       {/* RESTAURANT SUGGESTIONS: STRICTLY GATED BY 100% ACCURATE REAL-TIME GEO-LOCATION */}
       {!isGeoActive ? (
-        <div className="rounded-2xl border-2 border-primary/30 bg-surface p-6 text-center space-y-3 shadow-md my-4">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/15 text-primary text-2xl mx-auto shadow-inner">
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-center space-y-3 shadow-md my-4">
+          <div className="flex size-14 items-center justify-center rounded-full bg-zinc-900 text-zinc-400 text-xl mx-auto">
             📍
           </div>
-          <h3 className="font-display text-lg font-black text-fg">Enable Live GPS Location</h3>
-          <p className="text-xs text-muted max-w-sm mx-auto leading-relaxed">
-            To guarantee 25-minute royal delivery, 0% food spoilage, and verified kitchen authenticity, restaurant suggestions strictly appear only when 100% real-time accurate GPS tracking is active.
+          <h3 className="font-display text-lg font-medium text-white">Location Services Required</h3>
+          <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
+            Please enable location services to discover curated culinary partners in your vicinity.
           </p>
           <button
             type="button"
             onClick={requestLiveGps}
             disabled={isRequestingGeo}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary/90 px-6 py-2.5 text-xs font-black text-white shadow-md transition active:scale-95"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-6 py-2.5 text-xs font-medium text-black transition active:scale-95"
           >
             <span>📍</span>
-            <span>{isRequestingGeo ? "Verifying Live GPS..." : "Turn On 100% Real-Time GPS"}</span>
+            <span>{isRequestingGeo ? "Acquiring Location..." : "Enable Location"}</span>
           </button>
         </div>
       ) : list.isError ? (
@@ -385,7 +353,7 @@ export function HomeFeed({
         <motion.div className="grid gap-4 md:grid-cols-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
           {Array.from({ length: 4 }).map((_, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-              <div className="h-64 w-full rounded-[var(--radius-3xl)] bg-black backdrop-blur-2xl border border-primary/20 shadow-[0_4px_20px_rgba(212,175,55,0.05)] overflow-hidden flex flex-col"><div className="h-40 w-full bg-primary/10 animate-pulse" /><div className="p-4 space-y-3"><div className="h-5 w-2/3 bg-primary/10 rounded-full animate-pulse" /><div className="h-4 w-1/3 bg-primary/10 rounded-full animate-pulse" /></div></div>
+              <div className="h-64 w-full rounded-[var(--radius-3xl)] bg-zinc-950 border border-zinc-800 overflow-hidden flex flex-col"><div className="h-40 w-full bg-primary/10 animate-pulse" /><div className="p-4 space-y-3"><div className="h-5 w-2/3 bg-primary/10 rounded-full animate-pulse" /><div className="h-4 w-1/3 bg-primary/10 rounded-full animate-pulse" /></div></div>
             </motion.div>
           ))}
         </motion.div>
@@ -395,16 +363,16 @@ export function HomeFeed({
         <Section
           title={
             activeFilter === "fast"
-              ? "⚡ Fastest Delivering Restaurants"
+              ? "Expedited Delivery"
               : activeFilter === "rating"
-              ? "⭐ Top-Rated Restaurants (4.0+)"
+              ? "Highest Ratings"
               : activeFilter === "veg"
-              ? "🥗 Pure Veg Verified Kitchens"
+              ? "Vegetarian Selection"
               : activeFilter === "offers"
-              ? "🏷️ Restaurants with Maximum Offers"
+              ? "Special Privileges"
               : activeFilter === "budget"
-              ? "💰 Budget Friendly Picks"
-              : "👑 Verified Restaurants (Ranked Best to Down)"
+              ? "Accessible Dining"
+              : "Curated Culinary Partners"
           }
           items={(() => {
             const raw = list.data?.restaurants ?? [];
