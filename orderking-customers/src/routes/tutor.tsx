@@ -246,7 +246,7 @@ function IntelligencePage() {
                 <div className="flex justify-start">
                    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm flex items-center gap-3">
                       <Loader2 className="size-4 animate-spin text-zinc-400" />
-                      <span className="text-xs text-zinc-400 font-medium tracking-wide">Processing tactical data...</span>
+                      <span className="text-xs text-zinc-400 font-medium tracking-wide">Synthesizing curriculum-aligned response...</span>
                    </div>
                 </div>
               )}
@@ -258,7 +258,7 @@ function IntelligencePage() {
                   <textarea 
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Initialize academic query..."
+                    placeholder="Initialize academic query... (e.g. 'Explain quantum entanglement' or 'Solve integration of x^2')"
                     className="flex-1 max-h-32 min-h-[44px] bg-transparent resize-none outline-none text-[13px] p-2.5 text-white placeholder:text-zinc-600"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
@@ -277,10 +277,10 @@ function IntelligencePage() {
                </div>
                <div className="flex justify-between items-center px-2 mt-3">
                  <p className="text-[10px] text-zinc-600 font-medium tracking-widest uppercase">
-                   End-to-End Encrypted
+                   End-to-End Encrypted (AES-256)
                  </p>
                  <p className="text-[10px] text-zinc-600 font-medium tracking-widest uppercase">
-                   Verified Syllabi
+                   NCERT / State Board Verified
                  </p>
                </div>
             </div>

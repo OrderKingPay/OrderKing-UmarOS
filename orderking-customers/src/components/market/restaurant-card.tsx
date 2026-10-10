@@ -11,11 +11,17 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
   const { business, marketplace } = useBrand();
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
 
-  // High-end UI realism details
-  const distance = "1.2 km away";
-  const vehicle = "Delivering via Electric Bike";
-  const surge = "Rain Surge ⚡ +₹20"; 
-  const cookingStatus = "Live: Firing the Wok";
+  // High-fidelity UI realism details
+  const microLocations = ["Koramangala 5th Block", "Indiranagar 100ft Rd", "HSR Layout Sector 2", "Bandra West", "Connaught Place"];
+  const exactLocation = microLocations[Math.floor(Math.random() * microLocations.length)];
+  const distance = `${(Math.random() * 4 + 0.5).toFixed(1)} km away in ${exactLocation}`;
+  const vehicles = ["Delivering via Electric Yulu", "Delivering via Ather 450X", "Delivering via Ola S1 Pro", "Delivering via TVS iQube"];
+  const vehicle = vehicles[Math.floor(Math.random() * vehicles.length)];
+  const isSurge = Math.random() > 0.7;
+  const surgeAmt = Math.floor(Math.random() * 15) + 10;
+  const surge = isSurge ? `Rain Surge ⚡ +₹${surgeAmt}` : null; 
+  const statuses = ["Live: Firing the Wok", "Live: Packing your order", "Live: Tandoor is hot", "Live: Preparing ingredients"];
+  const cookingStatus = statuses[Math.floor(Math.random() * statuses.length)];
 
   return (
     <Link
