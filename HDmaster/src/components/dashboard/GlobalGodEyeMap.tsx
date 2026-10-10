@@ -679,7 +679,7 @@ export function GlobalGodEyeMap() {
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-bold tracking-wider uppercase text-white flex items-center gap-2">
                 <Crosshair className="w-4 h-4 text-emerald-400" />
-                GLOBAL GOD-EYE // LIVE GEOSPATIAL RADAR
+                GLOBAL FLEET RADAR // LIVE GEOSPATIAL DISPATCH
               </h2>
               <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 tracking-widest animate-pulse">
                 SUB-SECOND TELEMETRY
@@ -1112,7 +1112,7 @@ export function GlobalGodEyeMap() {
             {/* Tactical Override Actions */}
             <div className="mt-3 pt-3 border-t border-white/10 grid grid-cols-2 gap-2">
               <button 
-                onClick={() => alert(`[GOD-EYE OVERRIDE] High-frequency GPS ping sent to ${selectedRider.id}. Telemetry refresh synchronized.`)}
+                onClick={() => alert(`[DISPATCH TELEMETRY] High-frequency GPS ping sent to ${selectedRider.id}. Telemetry refresh synchronized.`)}
                 className="px-2.5 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] tracking-wider uppercase transition shadow"
               >
                 Ping Telemetry

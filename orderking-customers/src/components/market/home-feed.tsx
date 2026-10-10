@@ -1,33 +1,84 @@
-
-import { Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import {
+  Clock,
+  Star,
+  Zap,
+  Percent,
+  Coins,
+  ArrowRight,
+  RotateCcw,
+  MapPin,
+  Utensils,
+  ChevronRight,
+} from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
-import { GrowthWidget } from "@/components/market/growth-widget";
-import { GeoViralWidget } from "@/components/market/geo-viral-widget";
-import { DailyStreakWidget } from "@/components/market/daily-streak";
-import { LiveActivityFeed } from "@/components/market/live-activity";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useBrand, useT } from "@/components/providers";
-import { listCategories, listRestaurants } from "@/lib/server/catalog";
+import { listCategories } from "@/lib/server/catalog";
 import { listMyOrders, reorderItems } from "@/lib/server/orders";
 import { formatPaise } from "@/lib/money";
 import { useLocationStore } from "@/lib/stores/location";
 import { useCartStore } from "@/lib/stores/cart";
 import type { RestaurantCard } from "@/lib/market-types";
+import { cn } from "@/lib/utils";
 
-import { getNetworkSpeed, cacheGet, cacheSet, type NetworkSpeed } from "@/lib/low-network-cache";
-import { getCurrentFestiveContext } from "@/lib/brand/calendar-festive-engine";
-import { EcosystemSwitchBar } from "@/components/common/ecosystem-switch-bar";
-import { PaidRestaurantAdZone } from "@/components/market/paid-restaurant-ad-zone";
-
-
-
-
+// Curated high-resolution categories for Zomato-parity "Inspiration for your first order"
+const CURATED_FOOD_CATEGORIES = [
+  {
+    name: "Biryani",
+    slug: "biryani",
+    imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Pizza",
+    slug: "pizza",
+    imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Thali",
+    slug: "thali",
+    imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Burgers",
+    slug: "burger",
+    imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Curry",
+    slug: "north-indian",
+    imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Rolls",
+    slug: "rolls",
+    imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Chinese",
+    slug: "chinese",
+    imageUrl: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "South Indian",
+    slug: "south-indian",
+    imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Desserts",
+    slug: "desserts",
+    imageUrl: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=240&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Cakes",
+    slug: "cake",
+    imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=240&auto=format&fit=crop&q=80",
+  },
+];
 
 export function HomeFeed({
   q,
@@ -42,100 +93,88 @@ export function HomeFeed({
 }) {
   const { t, lang } = useT();
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
-  const { marketplace, brand } = useBrand();
+  const { marketplace } = useBrand();
   const location = useLocationStore((s) => s.location);
-  const setLocation = useLocationStore((s) => s.setLocation);
-  const [isGeoActive, setIsGeoActive] = useState<boolean>(true);
-  const [isRequestingGeo, setIsRequestingGeo] = useState<boolean>(false);
-  const [activeFilter, setActiveFilter] = useState<"all" | "fast" | "rating" | "veg" | "offers" | "budget">("all");
+  const cart = useCartStore();
+  const navigate = useNavigate();
 
-  const requestLiveGps = () => {
-    if (typeof navigator !== "undefined" && "geolocation" in navigator) {
-      setIsRequestingGeo(true);
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setIsRequestingGeo(false);
-          setIsGeoActive(true);
-          setLocation({
-            ...location,
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            line1: `Verified GPS (${pos.coords.latitude.toFixed(3)}, ${pos.coords.longitude.toFixed(3)})`,
-          });
-          toast.success("100% Real-Time GPS Active! Verifying restaurants in your vicinity...");
-        },
-        (err) => {
-          setIsRequestingGeo(false);
-          setIsGeoActive(false);
-          toast.error("Accurate GPS location required to show verified restaurants.");
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    } else {
-      setIsGeoActive(false);
-      toast.error("Geolocation is not supported by your browser.");
-    }
-  };
+  // Diet switch state: "all" | "veg" | "non-veg"
+  const [dietFilter, setDietFilter] = useState<"all" | "veg" | "non-veg">(veg ? "veg" : "all");
 
-  const [networkSpeed, setNetworkSpeed] = useState<NetworkSpeed>("NORMAL");
-  useEffect(() => {
-    setNetworkSpeed(getNetworkSpeed());
-    const handleOnline = () => setNetworkSpeed(getNetworkSpeed());
-    const handleOffline = () => setNetworkSpeed("OFFLINE");
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
+  // Secondary quick filter tags
+  const [filterFast, setFilterFast] = useState(false);
+  const [filterRating, setFilterRating] = useState(false);
+  const [filterOffers, setFilterOffers] = useState(false);
+  const [filterBudget, setFilterBudget] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(category || null);
 
+  // Past orders for reorder
   const pastOrders = useQuery({
     queryKey: ["pastOrders"],
     queryFn: () => listMyOrders(),
     retry: false,
   });
+
+  // Database categories
   const cats = useQuery({
     queryKey: ["categories", lang],
     queryFn: () => listCategories({ data: { lang } }),
   });
+
+  // Display categories: DB categories merged with curated fallback items
+  const displayCategories = useMemo(() => {
+    const dbCats = cats.data?.categories ?? [];
+    if (dbCats.length > 0) {
+      return dbCats.map((c) => ({
+        id: c.id,
+        slug: c.slug,
+        name: c.name,
+        imageUrl:
+          c.imageUrl ||
+          CURATED_FOOD_CATEGORIES.find((cc) => cc.slug.toLowerCase().includes(c.slug.toLowerCase()))
+            ?.imageUrl ||
+          CURATED_FOOD_CATEGORIES[0].imageUrl,
+      }));
+    }
+    return CURATED_FOOD_CATEGORIES.map((c, i) => ({
+      id: `cat-${i}`,
+      slug: c.slug,
+      name: c.name,
+      imageUrl: c.imageUrl,
+    }));
+  }, [cats.data?.categories]);
+
+  // Main restaurant catalog query
   const list = useQuery({
-    queryKey: ["restaurants", location.zoneId, location.lat, location.lng, q, veg, openNow, category, lang],
+    queryKey: [
+      "restaurants",
+      location.zoneId,
+      location.lat,
+      location.lng,
+      q,
+      dietFilter,
+      openNow,
+      selectedCategory,
+      lang,
+    ],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (q) params.set("q", q);
-      if (veg) params.set("veg", "true");
+      if (dietFilter === "veg") params.set("veg", "true");
       if (openNow) params.set("openNow", "true");
-      if (category) params.set("category", category);
+      if (selectedCategory) params.set("category", selectedCategory);
       params.set("lat", location.lat.toString());
       params.set("lng", location.lng.toString());
-      params.set("zoneId", location.zoneId);
+      params.set("zoneId", location.zoneId || "");
       if (lang) params.set("lang", lang);
 
-      const cacheKey = `hyperedge_list_${params.toString()}`;
-
-      try {
-        const response = await fetch(`/api/search?${params.toString()}`);
-        if (!response.ok) throw new Error("Failed to fetch restaurants");
-        const res = await response.json();
-        if (res) await cacheSet(cacheKey, res);
-        return res;
-      } catch (err) {
-        const cached = await cacheGet<any>(cacheKey);
-        if (cached) return cached;
-        // Aggressively fallback to empty state rather than breaking the UI with an error
-        return { 
-          restaurants: [], 
-          sections: { offers: [], popular: [], fast: [], budget: [], veg: [], newKitchens: [] },
-          marketContext: { sortStrategy: "lowest_price_first" }
-        };
-      }
+      const response = await fetch(`/api/search?${params.toString()}`);
+      if (!response.ok) throw new Error("Failed to fetch restaurants");
+      return (await response.json()) as { restaurants: RestaurantCard[] };
     },
   });
 
-  const cart = useCartStore();
-  const navigate = useNavigate();
-
+  // Handle reorder click
   const handleReorder = async (orderId: string) => {
     try {
       const res = await reorderItems({ data: { orderId } });
@@ -148,128 +187,286 @@ export function HomeFeed({
   };
 
   const activeOrder = pastOrders.data?.orders?.find((o) =>
-    ["PENDING", "PLACED", "CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "OUT_FOR_DELIVERY", "ARRIVED"].includes(o.status)
+    ["PENDING", "PLACED", "CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "OUT_FOR_DELIVERY", "ARRIVED"].includes(
+      o.status
+    )
   );
 
-  const festive = getCurrentFestiveContext();
+  // Filtered and sorted restaurants based on active controls
+  const filteredRestaurants = useMemo(() => {
+    const raw: RestaurantCard[] = list.data?.restaurants ?? [];
+    return raw
+      .filter((r) => {
+        if (dietFilter === "veg" && !r.vegOnly) return false;
+        if (dietFilter === "non-veg" && r.vegOnly) return false;
+        if (filterRating && (r.ratingAvg ?? 0) < 4.0) return false;
+        if (filterOffers && !r.hasOffer) return false;
+        if (filterBudget && (r.minOrderPaise ?? 0) > 20000) return false;
+        if (filterFast && (r.etaMinutes ?? 35) > 30) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        if (filterFast) return (a.etaMinutes ?? 30) - (b.etaMinutes ?? 30);
+        if (filterBudget) return (a.minOrderPaise ?? 20000) - (b.minOrderPaise ?? 20000);
+        const scoreA = (a.ratingAvg ?? 4.0) * Math.log10(Math.max(10, a.ratingCount ?? 10));
+        const scoreB = (b.ratingAvg ?? 4.0) * Math.log10(Math.max(10, b.ratingCount ?? 10));
+        return scoreB - scoreA;
+      });
+  }, [list.data?.restaurants, dietFilter, filterRating, filterOffers, filterBudget, filterFast]);
 
   return (
-    <div className="space-y-2 px-2 py-2 sm:px-3 sm:py-3">
-
-        
-        {/* 2G / Low-Network Offline-First Resilience Banner */}
-      {networkSpeed !== "NORMAL" ? (
-        <div className="flex items-center justify-between rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
-          <div className="flex items-center gap-2">
-            <span>⚡</span>
-            <span className="font-semibold">2G / Low-Network Mode Active</span>
-            <span className="text-[11px] text-muted hidden sm:inline">· Instant 0ms cached browsing &amp; background sync</span>
-          </div>
-          <span className="font-mono text-[10px] uppercase font-bold bg-amber-500/20 px-1.5 py-0.5 rounded">
-            {networkSpeed}
-          </span>
-        </div>
-      ) : null}
-
-      {/* 👑 SPONSORED PAID RESTAURANT AD ZONE (AUTO-SCALING & AD-SPEND RANKED) */}
-      {/* <PaidRestaurantAdZone /> */}
-
-      {/* GAMIFIED GROWTH SYNDICATE WIDGET */}
-      {!q && !category && (
-        <DailyStreakWidget />
-      )}
-      {!q && !category && (
-        <GeoViralWidget />
-      )}
-      {!q && !category && (
-        <GrowthWidget />
-      )}
-      <LiveActivityFeed />
-      {/* 👑 3D GLOWING SWITCH BUTTON + SAME-LEVEL AI SUPPORT */}
-      {/* <EcosystemSwitchBar /> */}
-
-      {/* 1-Tap Quick Re-Order (Zero-Friction Simplicity) */}
-      {pastOrders.data?.orders?.[0] && !q && !veg && !openNow && !category ? (
-        <section aria-label="Recent Selection">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black p-5">
-            <div className="flex items-center gap-3">
-              <div>
-                <span className="text-[10px] font-medium uppercase tracking-wider text-muted bg-surface px-2 py-0.5 rounded-full">
-                  Recent Selection
-                </span>
-                <h3 className="font-medium text-fg mt-1">{pastOrders.data.orders[0].restaurantName}</h3>
-                <p className="text-xs text-muted">
-                  {pastOrders.data.orders[0].itemPreview || "Past Order"} · {formatPaise(pastOrders.data.orders[0].totalPaise, { locale })}
-                </p>
-              </div>
-            </div>
+    <div className="space-y-5 px-3 py-3 sm:px-4 sm:py-4 bg-white text-gray-900">
+      {/* 1. SLIDING VEG / NON-VEG SWITCH & QUICK FILTER BAR */}
+      <div className="sticky top-[4.5rem] z-30 bg-white/95 backdrop-blur-md -mx-3 px-3 py-2 border-b border-gray-100 flex flex-col gap-2.5 sm:-mx-4 sm:px-4">
+        <div className="flex items-center justify-between gap-2">
+          {/* Sliding Segmented Pill Switch */}
+          <div className="inline-flex items-center rounded-full bg-gray-100 p-1 border border-gray-200 shadow-xs relative">
+            {/* Option: All */}
             <button
               type="button"
-              onClick={() => handleReorder(pastOrders.data.orders[0].id)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-white hover:bg-gray-200 px-4 py-2.5 text-xs font-medium text-black transition"
+              onClick={() => setDietFilter("all")}
+              className={cn(
+                "relative z-10 px-3 py-1.5 rounded-full text-xs font-bold transition-colors select-none",
+                dietFilter === "all" ? "text-gray-900" : "text-gray-500 hover:text-gray-800"
+              )}
             >
-              <span>Reorder</span>
+              {dietFilter === "all" && (
+                <motion.div
+                  layoutId="diet-pill-active"
+                  className="absolute inset-0 rounded-full bg-white shadow-sm border border-gray-200/80 -z-10"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
+              All
+            </button>
+
+            {/* Option: Veg Only */}
+            <button
+              type="button"
+              onClick={() => setDietFilter("veg")}
+              className={cn(
+                "relative z-10 px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 select-none",
+                dietFilter === "veg" ? "text-emerald-700" : "text-gray-500 hover:text-gray-800"
+              )}
+            >
+              {dietFilter === "veg" && (
+                <motion.div
+                  layoutId="diet-pill-active"
+                  className="absolute inset-0 rounded-full bg-white shadow-sm border border-emerald-200 -z-10"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
+              <span className="size-3.5 rounded-xs border border-emerald-600 flex items-center justify-center p-0.5 bg-white">
+                <span className="size-1.5 rounded-full bg-emerald-600" />
+              </span>
+              <span>Veg</span>
+            </button>
+
+            {/* Option: Non-Veg */}
+            <button
+              type="button"
+              onClick={() => setDietFilter("non-veg")}
+              className={cn(
+                "relative z-10 px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 select-none",
+                dietFilter === "non-veg" ? "text-rose-700" : "text-gray-500 hover:text-gray-800"
+              )}
+            >
+              {dietFilter === "non-veg" && (
+                <motion.div
+                  layoutId="diet-pill-active"
+                  className="absolute inset-0 rounded-full bg-white shadow-sm border border-rose-200 -z-10"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
+              <span className="size-3.5 rounded-xs border border-rose-600 flex items-center justify-center p-0.5 bg-white">
+                <span className="size-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-b-[5px] border-b-rose-600" />
+              </span>
+              <span>Non-Veg</span>
             </button>
           </div>
-        </section>
-      ) : null}
 
-      {/* Zomato-style Active Live Order Tracker Banner */}
-      {activeOrder && !q && !veg && !openNow && !category ? (
+          {/* Result Count Indicator */}
+          <span className="text-[11px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+            {filteredRestaurants.length} places
+          </span>
+        </div>
+
+        {/* Secondary Quick Filter Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+          <button
+            type="button"
+            onClick={() => setFilterFast(!filterFast)}
+            className={cn(
+              "flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border shadow-xs select-none",
+              filterFast
+                ? "bg-[#E23744] text-white border-[#E23744]"
+                : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+            )}
+          >
+            <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-[#E23744]")} />
+            <span>Fast Delivery</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilterRating(!filterRating)}
+            className={cn(
+              "flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border shadow-xs select-none",
+              filterRating
+                ? "bg-emerald-700 text-white border-emerald-700"
+                : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+            )}
+          >
+            <Star className={cn("size-3.5", filterRating ? "fill-white text-white" : "text-amber-500 fill-amber-500")} />
+            <span>Rating 4.0+</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilterOffers(!filterOffers)}
+            className={cn(
+              "flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border shadow-xs select-none",
+              filterOffers
+                ? "bg-blue-600 text-white border-blue-600"
+                : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+            )}
+          >
+            <Percent className={cn("size-3.5", filterOffers ? "text-white" : "text-blue-600")} />
+            <span>Great Offers</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilterBudget(!filterBudget)}
+            className={cn(
+              "flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border shadow-xs select-none",
+              filterBudget
+                ? "bg-gray-900 text-white border-gray-900"
+                : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+            )}
+          >
+            <Coins className={cn("size-3.5", filterBudget ? "text-white" : "text-gray-600")} />
+            <span>Under ₹200</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 2. ZOMATO HORIZONTAL CIRCULAR FOOD CATEGORIES ("Eat what makes you happy") */}
+      {!q && (
+        <section aria-label="Food Categories" className="pt-1">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight">
+                Inspiration for your first order
+              </h2>
+              <p className="text-xs text-gray-500 font-medium">Explore popular dishes and cuisines</p>
+            </div>
+            <Link
+              to="/search"
+              className="text-xs font-bold text-[#E23744] hover:underline flex items-center gap-0.5"
+            >
+              See all <ChevronRight className="size-3.5" />
+            </Link>
+          </div>
+
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none pt-1">
+            {displayCategories.map((c) => {
+              const isSelected = selectedCategory === c.id || selectedCategory === c.slug;
+              return (
+                <button
+                  type="button"
+                  key={c.slug}
+                  onClick={() => setSelectedCategory(isSelected ? null : c.id || c.slug)}
+                  className="group flex flex-col items-center shrink-0 w-18 sm:w-20 text-center select-none focus:outline-none"
+                >
+                  <div
+                    className={cn(
+                      "size-18 sm:size-20 rounded-full overflow-hidden border-2 p-0.5 transition-all duration-300 shadow-sm",
+                      isSelected
+                        ? "border-[#E23744] ring-2 ring-[#E23744]/20 scale-105"
+                        : "border-gray-200 group-hover:border-gray-300 group-hover:scale-105"
+                    )}
+                  >
+                    <img
+                      src={c.imageUrl}
+                      alt={c.name}
+                      className="size-full object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span
+                    className={cn(
+                      "mt-1.5 text-xs font-bold truncate w-full transition-colors",
+                      isSelected ? "text-[#E23744]" : "text-gray-800 group-hover:text-black"
+                    )}
+                  >
+                    {c.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* 3. ACTIVE ORDER BANNER (Real Data Only) */}
+      {activeOrder && !q && (
         <section aria-label="Active Order">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black p-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 shadow-sm">
             <div className="flex items-center gap-3">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-300"></span>
+              <span className="relative flex h-3.5 w-3.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-600"></span>
               </span>
               <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-muted">Active Order</p>
-                <h3 className="font-medium text-fg">{activeOrder.restaurantName} · #{activeOrder.publicId}</h3>
-                <p className="text-xs text-subtle">Status: {activeOrder.status.replace(/_/g, " ")}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Live Order in Progress</p>
+                <h3 className="font-extrabold text-sm text-gray-900">{activeOrder.restaurantName}</h3>
+                <p className="text-xs text-emerald-900/80 font-medium capitalize">
+                  Status: {activeOrder.status.replace(/_/g, " ").toLowerCase()}
+                </p>
               </div>
             </div>
             <Link
               to="/orders/$id"
               params={{ id: activeOrder.id }}
-              className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-xs font-medium text-black transition hover:bg-gray-200"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-emerald-700 hover:bg-emerald-800 px-4 py-2 text-xs font-bold text-white transition shadow-sm no-underline"
             >
               Track Order
             </Link>
           </div>
         </section>
-      ) : null}
+      )}
 
-      {/* Zomato-style Order Again / Past Order Carousel */}
-      {pastOrders.data?.orders && pastOrders.data.orders.length > 0 && !q && !veg && !openNow && !category ? (
-        <section aria-label="Reorder">
-          <div className="flex items-center justify-between mb-3">
+      {/* 4. REORDER CAROUSEL (Real Past Orders Only) */}
+      {pastOrders.data?.orders && pastOrders.data.orders.length > 0 && !q && (
+        <section aria-label="Order Again">
+          <div className="flex items-center justify-between mb-2.5">
             <div>
-              <h2 className="font-display text-xl text-fg">Reorder</h2>
-              <p className="text-xs text-muted">Reorder past selections effortlessly.</p>
+              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight">Order Again</h2>
+              <p className="text-xs text-gray-500 font-medium">From your past favorite kitchens</p>
             </div>
-            <Link to="/orders" className="text-xs font-medium text-gray-300 hover:text-fg hover:underline">
-              {t("common.viewAll")}
+            <Link to="/orders" className="text-xs font-bold text-[#E23744] hover:underline">
+              View all orders
             </Link>
           </div>
-          <div className="flex gap-3 overflow-x-auto pb-2">
-            {pastOrders.data.orders.slice(0, 5).map((o) => (
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+            {pastOrders.data.orders.slice(0, 4).map((o) => (
               <div
                 key={o.id}
-                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-white/10 bg-black p-4 transition hover:border-gray-600"
+                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-gray-200 bg-white p-3.5 shadow-sm transition hover:shadow-md"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="line-clamp-1 text-sm font-medium text-fg">{o.restaurantName}</h3>
-                    <span className="text-[11px] font-medium text-gray-300">
-                      {formatPaise(o.totalPaise, { locale: lang === "bn" ? "bn-IN" : "en-IN" })}
+                    <h3 className="line-clamp-1 text-sm font-bold text-gray-900">{o.restaurantName}</h3>
+                    <span className="text-xs font-bold text-gray-700">
+                      {formatPaise(o.totalPaise, { locale })}
                     </span>
                   </div>
-                  <p className="mt-1 line-clamp-2 text-xs text-muted">{o.itemPreview || "Curated selection"}</p>
+                  <p className="mt-1 line-clamp-1 text-xs text-gray-500">{o.itemPreview || "Past culinary order"}</p>
                 </div>
-                <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2">
-                  <span className="text-[10px] text-subtle">
-                    {new Date(o.placedAt).toLocaleDateString(lang === "bn" ? "bn-IN" : "en-IN", {
+                <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5">
+                  <span className="text-[10px] text-gray-400 font-medium">
+                    {new Date(o.placedAt).toLocaleDateString(locale, {
                       month: "short",
                       day: "numeric",
                     })}
@@ -277,192 +474,101 @@ export function HomeFeed({
                   <button
                     type="button"
                     onClick={() => void handleReorder(o.id)}
-                    className="inline-flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-fg transition hover:bg-white hover:text-black"
+                    className="inline-flex items-center gap-1 rounded-full bg-gray-100 hover:bg-[#E23744] hover:text-white px-3 py-1 text-xs font-bold text-gray-800 transition"
                   >
-                    Reorder
+                    <RotateCcw className="size-3" />
+                    <span>Reorder</span>
                   </button>
                 </div>
               </div>
             ))}
           </div>
         </section>
-      ) : null}
-
-      {/* Preferred & Top-Rated Kitchens Ad Row (Ranked by Ad Spend + Performance) */}
-      {!q && !veg && !openNow && !category ? null : null}
-
-
-
-      {marketplace.sampleCatalogueBanner ? (
-        <p className="rounded-[var(--radius-lg)] bg-surface px-3 py-3 text-sm text-muted">{t("home.sampleBanner")}</p>
-      ) : null}
-
-      <section aria-label={t("home.categories")}>
-        <h2 className="mb-4 font-display text-2xl font-medium text-fg">{t("home.categories")}</h2>
-        <div className="flex gap-3 overflow-x-auto pb-1">
-          {cats.isPending
-            ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 w-24 shrink-0 rounded-[var(--radius-2xl)] bg-surface border border-white/10 animate-pulse" />)
-            : (cats.data?.categories ?? []).map((c: any) => (
-                <Link
-                  key={c.id}
-                  to="/search"
-                  search={{ category: c.id }}
-                  className="w-24 shrink-0 text-center text-fg no-underline"
-                >
-                  <div className="aspect-square overflow-hidden rounded-[var(--radius-2xl)] bg-black border border-white/10 p-1">
-                    {c.imageUrl ? (
-                      <img loading="lazy" src={c.imageUrl} alt="" className="h-full w-full object-cover" />
-                    ) : null}
-                  </div>
-                  <span className="mt-1 block text-xs font-medium">{c.name}</span>
-                </Link>
-              ))}
-        </div>
-      </section>
-
-
-      {/* Unified Action Bar: Veg/Non-Veg */}
-      {isGeoActive && !q && !category && (
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-2 scrollbar-hide px-2">
-          <button
-            type="button"
-            onClick={() => setActiveFilter(activeFilter === "veg" ? "all" : "veg")}
-            className={`flex items-center gap-1.5 shrink-0 rounded-full px-4 py-1.5 transition shadow-sm text-sm font-semibold border ${
-              activeFilter === "veg" ? "bg-[#D4AF37]/10 text-emerald-400 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]" : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
-            }`}
-          >
-            <span className={`w-3 h-3 rounded-sm border flex items-center justify-center ${activeFilter === "veg" ? "border-white" : "border-green-600"}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${activeFilter === "veg" ? "bg-white" : "bg-green-600"}`}></span>
-            </span>
-            Veg Only
-          </button>
-        </div>
       )}
 
-      {/* RESTAURANT SUGGESTIONS: STRICTLY GATED BY 100% ACCURATE REAL-TIME GEO-LOCATION */}
-      {!isGeoActive ? (
-        <div className="rounded-2xl border border-white/10 bg-black p-6 text-center space-y-3 shadow-md my-4">
-          <div className="flex size-14 items-center justify-center rounded-full bg-surface text-muted text-xl mx-auto">
-            📍
+      {/* 5. RESTAURANTS GRID: MASSIVE EDGE-TO-EDGE CARDS */}
+      <section aria-label="Restaurants Grid" className="pt-2">
+        <div className="flex items-center justify-between mb-3.5">
+          <div>
+            <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">
+              {selectedCategory
+                ? "Category Selections"
+                : dietFilter === "veg"
+                ? "Pure Vegetarian Restaurants"
+                : dietFilter === "non-veg"
+                ? "Non-Veg Specialty Kitchens"
+                : "Restaurants delivering to your area"}
+            </h2>
+            <p className="text-xs text-gray-500 font-medium">
+              Real-time available restaurants matching your preferences
+            </p>
           </div>
-          <h3 className="font-display text-lg font-medium text-fg">Location Services Required</h3>
-          <p className="text-xs text-muted max-w-sm mx-auto leading-relaxed">
-            Please enable location services to discover curated culinary partners in your vicinity.
-          </p>
-          <button
-            type="button"
-            onClick={requestLiveGps}
-            disabled={isRequestingGeo}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-gray-200 px-6 py-2.5 text-xs font-medium text-black transition active:scale-95"
-          >
-            <span>📍</span>
-            <span>{isRequestingGeo ? "Acquiring Location..." : "Enable Location"}</span>
-          </button>
         </div>
-      ) : list.isError ? (
-        <button type="button" className="text-sm text-primary" onClick={() => void list.refetch()}>
-          {t("common.retry")}
-        </button>
-      ) : list.isPending ? (
-        <motion.div className="grid gap-4 md:grid-cols-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-              <div className="h-64 w-full rounded-[var(--radius-3xl)] bg-black border border-white/10 overflow-hidden flex flex-col"><div className="h-40 w-full bg-primary/10 animate-pulse" /><div className="p-4 space-y-3"><div className="h-5 w-2/3 bg-primary/10 rounded-full animate-pulse" /><div className="h-4 w-1/3 bg-primary/10 rounded-full animate-pulse" /></div></div>
-            </motion.div>
-          ))}
-        </motion.div>
-      ) : q || veg || openNow || category ? (
-        <Section title={t("common.search")} items={list.data?.restaurants ?? []} empty={t("home.noResults")} />
-      ) : (
-        <Section
-          title={
-            activeFilter === "fast"
-              ? "Expedited Delivery"
-              : activeFilter === "rating"
-              ? "Highest Ratings"
-              : activeFilter === "veg"
-              ? "Vegetarian Selection"
-              : activeFilter === "offers"
-              ? "Special Privileges"
-              : activeFilter === "budget"
-              ? "Accessible Dining"
-              : "Curated Culinary Partners"
-          }
-          items={(() => {
-            const raw = list.data?.restaurants ?? [];
-            return [...raw]
-              .filter((r) => {
-                if (activeFilter === "veg" && !r.vegOnly) return false;
-                if (activeFilter === "rating" && (r.ratingAvg ?? 0) < 4.0) return false;
-                if (activeFilter === "offers" && !r.hasOffer) return false;
-                return true;
-              })
-              .sort((a, b) => {
-                if (activeFilter === "fast") {
-                  return (a.etaMinutes ?? 30) - (b.etaMinutes ?? 30);
-                }
-                if (activeFilter === "budget") {
-                  return (a.minOrderPaise ?? 20000) - (b.minOrderPaise ?? 20000);
-                }
-                const scoreA = (a.ratingAvg ?? 4.0) * Math.log10(Math.max(10, a.ratingCount ?? 10));
-                const scoreB = (b.ratingAvg ?? 4.0) * Math.log10(Math.max(10, b.ratingCount ?? 10));
-                return scoreB - scoreA;
-              });
-          })()}
-        />
-      )}
+
+        {list.isPending ? (
+          /* High-Contrast Light Mode Skeletons */
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="overflow-hidden rounded-2xl sm:rounded-3xl border border-gray-200 bg-white shadow-sm flex flex-col"
+              >
+                <div className="aspect-[16/10] sm:aspect-[16/9] w-full bg-gray-200 animate-pulse" />
+                <div className="p-4 space-y-2.5">
+                  <div className="h-5 w-2/3 bg-gray-200 rounded-md animate-pulse" />
+                  <div className="h-4 w-1/3 bg-gray-100 rounded-md animate-pulse" />
+                  <div className="h-3 w-1/2 bg-gray-100 rounded-md animate-pulse pt-2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : list.isError ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
+            <p className="text-sm font-semibold text-red-700">Unable to load restaurants right now</p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-3 bg-white text-gray-900"
+              onClick={() => void list.refetch()}
+            >
+              Try Again
+            </Button>
+          </div>
+        ) : filteredRestaurants.length === 0 ? (
+          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-8 text-center space-y-3">
+            <div className="flex size-14 items-center justify-center rounded-full bg-white shadow-sm text-2xl mx-auto">
+              🍽️
+            </div>
+            <h3 className="font-extrabold text-base text-gray-900">No restaurants match your filters</h3>
+            <p className="text-xs text-gray-500 max-w-xs mx-auto">
+              Try switching back to 'All Foods' or clearing your filter selection to view more available kitchens.
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="bg-white border-gray-300 font-bold"
+              onClick={() => {
+                setDietFilter("all");
+                setFilterFast(false);
+                setFilterRating(false);
+                setFilterOffers(false);
+                setFilterBudget(false);
+                setSelectedCategory(null);
+              }}
+            >
+              Clear All Filters
+            </Button>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+            {filteredRestaurants.map((restaurant) => (
+              <KitchenCard key={restaurant.id} restaurant={restaurant} />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
-
-function Section({ title, items, empty }: { title: string; items: RestaurantCard[]; empty?: string }) {
-  const [visibleCount, setVisibleCount] = useState(10);
-  const observer = useRef<IntersectionObserver | null>(null);
-  const lastElementRef = useCallback((node: HTMLDivElement | null) => {
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && visibleCount < items.length) {
-        setVisibleCount((prev) => prev + 10);
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [visibleCount, items.length]);
-
-  if (!items.length) {
-    return empty ? <p className="text-sm text-muted">{empty}</p> : null;
-  }
-  return (
-    <section>
-      <h2 className="mb-3 font-display text-xl">{title}</h2>
-      <motion.div 
-        className="grid gap-4 md:grid-cols-2"
-        initial="hidden" animate="visible"
-        variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
-      >
-        <AnimatePresence>
-          {items.slice(0, visibleCount).map((r, i) => (
-            <motion.div
-              key={r.id}
-              ref={i === visibleCount - 1 ? lastElementRef : null}
-              layout
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <KitchenCard restaurant={r} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
-      {visibleCount < items.length && (
-        <div className="mt-6 flex justify-center">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        </div>
-      )}
-    </section>
-  );
-}
-

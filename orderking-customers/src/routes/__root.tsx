@@ -1,4 +1,5 @@
 
+import { Suspense } from "react";
 import { createServerFn } from "@tanstack/react-start";
 import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
@@ -47,7 +48,15 @@ export const Route = createRootRoute({
     return { sessionUser, config };
   },
   errorComponent: ({ error }) => {
-    return <div style={{ padding: '2rem', background: '#111', color: 'white', height: '100vh' }}><h2>OrderKing Initialization Error</h2><p>Please check the database connection strings and environment variables.</p><pre style={{ background: '#222', padding: '1rem', color: '#ff7777', whiteSpace: 'pre-wrap' }}>{(error as Error)?.message || String(error)}</pre></div>;
+    return (
+      <div className="min-h-screen bg-white p-8 text-gray-900 flex flex-col items-center justify-center text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">OrderKing Initialization Error</h2>
+        <p className="text-sm text-gray-600 mb-4 max-w-md">Please check the database connection strings and environment variables.</p>
+        <pre className="max-w-lg rounded-xl bg-red-50 border border-red-200 p-4 text-xs text-red-600 text-left overflow-auto">
+          {(error as Error)?.message || String(error)}
+        </pre>
+      </div>
+    );
   },
   head: ({ loaderData, match }) => {
     const config = (match?.context as { config?: typeof DEFAULT_CONFIG } | undefined)?.config ?? DEFAULT_CONFIG;
@@ -58,11 +67,10 @@ export const Route = createRootRoute({
         { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
         { title: config.brand.seoTitle },
         { name: "description", content: config.brand.seoDescription },
-        { name: "theme-color", content: config.brand.primaryColor },
+        { name: "theme-color", content: "#FFFFFF" },
         { name: "mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-capable", content: "yes" },
-        { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-        { name: "apple-mobile-web-app-title", content: "OrderKing" },
+        { name: "apple-mobile-web-app-status-bar-style", content: "default" },
         { name: "application-name", content: "OrderKing" },
 
 
@@ -76,15 +84,16 @@ export const Route = createRootRoute({
         
       ],
       links: [
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
         { rel: "preconnect", href: "https://xezsqsptomcndbksxrvu.supabase.co" },
         { rel: "icon", type: "image/png", href: "/icon-192.png" },
         { rel: "stylesheet", href: appCss },
         { rel: "manifest", href: "/manifest.json" },
-
         { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
         {
           rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;1,400&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap",
+          href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap",
         },
       ],
     };
@@ -92,18 +101,45 @@ export const Route = createRootRoute({
   component: Root,
 });
 
+function CustomerAppSkeleton() {
+  return (
+    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-black pb-24 md:max-w-5xl animate-pulse" aria-busy="true" aria-label="Loading application">
+      <div className="sticky top-0 z-30 bg-black border-b border-white/10 px-4 py-3 flex items-center justify-between">
+        <div className="h-6 w-28 bg-white/10 rounded-md" />
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-20 bg-white/10 rounded-full" />
+          <div className="h-8 w-8 bg-white/10 rounded-full" />
+        </div>
+      </div>
+      <div className="px-4 py-4 space-y-4">
+        <div className="h-11 w-full bg-white/5 rounded-xl border border-white/10" />
+        <div className="flex gap-3 overflow-hidden">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-20 w-20 shrink-0 bg-white/5 rounded-2xl border border-white/10" />
+          ))}
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-56 w-full bg-white/5 rounded-3xl border border-white/10" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Root() {
   const context = Route.useRouteContext();
   const config = context.config ?? DEFAULT_CONFIG;
   const location = useRouterState({ select: (s) => s.location });
   return (
-    <html lang="en" className="antialiased" suppressHydrationWarning>
+    <html lang="en" className="antialiased bg-white text-gray-900" suppressHydrationWarning>
       <head>
         <HeadContent />
         <NextGenSeo config={config} />
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
       </head>
-      <body>
+      <body className="bg-white text-gray-900 min-h-screen">
         <PreviewHostBridge />
         <OfflineDetector />
         <PwaInstallPrompt />
@@ -113,13 +149,15 @@ function Root() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={location.pathname}
-                  initial={{ opacity: 0, scale: 0.98, filter: "blur(5px)" }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 1.02, filter: "blur(5px)" }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  initial={{ opacity: 0, scale: 0.99 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.01 }}
+                  transition={{ duration: 0.2 }}
                   style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
                 >
-                  <Outlet />
+                  <Suspense fallback={<CustomerAppSkeleton />}>
+                    <Outlet />
+                  </Suspense>
                 </motion.div>
               </AnimatePresence>
             </ErrorBoundary>

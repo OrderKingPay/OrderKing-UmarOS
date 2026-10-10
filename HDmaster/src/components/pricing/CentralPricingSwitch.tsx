@@ -44,6 +44,12 @@ export function CentralPricingSwitch() {
     }
   };
 
+  const products = [
+    { id: 'orderKing', name: 'OrderKing Core', description: 'Restaurant order management & delivery routing' },
+    { id: 'kingPay', name: 'KingPay', description: 'Payment processing & settlements' },
+    { id: 'aiTutor', name: 'AI Tutor', description: 'Intelligent support and training' },
+  ];
+
   const updatePricing = (product: string, model: string) => {
     setPricingState(prev => ({ ...prev, [product]: model }));
     const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
@@ -52,7 +58,6 @@ export function CentralPricingSwitch() {
     const modelLabel = pricingModels.find(m => m.id === model)?.label || model;
     setActiveNotice(`Updated ${productName} to ${modelLabel} at ${timestamp}`);
     setTimeout(() => setActiveNotice(null), 4000);
-    // In a real application, this would make an API call to update the central configuration
   };
 
   const resetAllToStandard = () => {
@@ -67,30 +72,24 @@ export function CentralPricingSwitch() {
     setTimeout(() => setActiveNotice(null), 4000);
   };
 
-  const products = [
-    { id: 'orderKing', name: 'OrderKing Core', description: 'Restaurant order management & delivery routing' },
-    { id: 'kingPay', name: 'KingPay', description: 'Payment processing & settlements' },
-    { id: 'aiTutor', name: 'AI Tutor', description: 'Intelligent support and training' },
-  ];
-
   return (
-    <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl w-full">
+    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm w-full">
       {/* Enterprise Card Header */}
-      <div className="p-6 border-b border-white/10 bg-slate-800/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 border-b border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+          <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700">
             <DollarSign className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-white tracking-tight">
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
                 Pricing Configuration Control
               </h2>
-              <span className="bg-emerald-950/80 text-emerald-400 border border-emerald-800/50 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 LIVE PRODUCTION
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-600 mt-1">
               Centralized platform monetization, commission rates, and fee policy engine
             </p>
           </div>
@@ -98,19 +97,19 @@ export function CentralPricingSwitch() {
 
         <div className="flex items-center gap-3">
           {activeNotice && (
-            <div className="flex items-center gap-1.5 text-xs font-mono bg-emerald-950/60 text-emerald-300 border border-emerald-700/50 px-3 py-1.5 rounded-lg animate-pulse">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="flex items-center gap-1.5 text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-300 px-3 py-1.5 rounded-lg animate-pulse">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               <span>{activeNotice}</span>
             </div>
           )}
           <button 
             onClick={resetAllToStandard}
-            className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 px-3 py-1.5 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-300 px-3 py-1.5 rounded-lg transition-colors shadow-sm"
           >
             <RefreshCw className="w-3 h-3" />
             <span>Reset to Standard</span>
           </button>
-          <span className="bg-slate-800 text-slate-300 border border-slate-700 text-xs font-mono px-3 py-1.5 rounded-lg">
+          <span className="bg-slate-100 text-slate-700 border border-slate-300 text-xs font-mono px-3 py-1.5 rounded-lg">
             Global Settings
           </span>
         </div>
@@ -118,12 +117,12 @@ export function CentralPricingSwitch() {
       
       {/* Content Body */}
       <div className="p-6 md:p-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 text-xs text-slate-400">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 text-xs text-slate-600">
           <p>
             Configure the active pricing model for each core platform service. Changes take effect across active dispatch and settlement clusters immediately.
           </p>
           {lastUpdated && (
-            <span className="font-mono text-emerald-400 shrink-0">
+            <span className="font-mono text-emerald-700 shrink-0">
               LAST SYNC: {lastUpdated} UTC
             </span>
           )}
@@ -137,25 +136,25 @@ export function CentralPricingSwitch() {
             return (
               <div 
                 key={product.id} 
-                className="bg-slate-950/60 rounded-xl p-6 border border-white/10 hover:border-white/15 transition-all shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+                className="bg-slate-50/70 rounded-xl p-6 border border-slate-200 hover:border-slate-300 transition-all shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6"
               >
                 {/* Product Meta */}
                 <div className="space-y-2 max-w-md">
                   <div className="flex items-center gap-3">
-                    <h3 className="text-white text-lg font-bold flex items-center gap-2">
+                    <h3 className="text-slate-900 text-lg font-bold flex items-center gap-2">
                       {product.name}
                     </h3>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-900 border border-white/10 text-slate-300 uppercase">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600 uppercase">
                       ID: {product.id}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed">
                     {product.description}
                   </p>
                   
                   {/* Active Tier Dynamic Spec */}
                   <div className="inline-flex items-center gap-2 pt-1">
-                    <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-md bg-emerald-950/50 border border-emerald-900/60 text-emerald-400">
+                    <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800">
                       {spec.badge}
                     </span>
                     <span className="text-[11px] text-slate-500 hidden sm:inline">
@@ -169,7 +168,7 @@ export function CentralPricingSwitch() {
                   <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
                     SELECT ACTIVE TARIFF MODEL
                   </span>
-                  <div className="flex bg-slate-900/90 rounded-xl p-1.5 border border-white/10 overflow-x-auto w-full lg:w-auto shadow-inner">
+                  <div className="flex bg-slate-200/80 rounded-xl p-1.5 border border-slate-300 overflow-x-auto w-full lg:w-auto shadow-inner">
                     {pricingModels.map(model => {
                       const isSelected = currentModel === model.id;
                       return (
@@ -178,8 +177,8 @@ export function CentralPricingSwitch() {
                           onClick={() => updatePricing(product.id, model.id)}
                           className={`px-4 py-2 text-xs font-semibold rounded-lg whitespace-nowrap transition-all duration-200 ${
                             isSelected
-                              ? 'bg-emerald-500 text-slate-950 shadow-md font-bold'
-                              : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                              ? 'bg-slate-900 text-white shadow-sm font-bold'
+                              : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
                           }`}
                         >
                           {model.label}
@@ -194,9 +193,9 @@ export function CentralPricingSwitch() {
         </div>
 
         {/* Enterprise Bottom Telemetry Ribbon */}
-        <div className="pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-slate-500">
+        <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-slate-500">
           <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-slate-400" />
+            <Shield className="w-4 h-4 text-slate-500" />
             <span>AUTHORIZATION LEVEL: ROOT ADMINISTRATOR</span>
           </div>
           <div>AUDIT TRAIL LOGGING: ACTIVE (HMAC-SHA256 SIGNED)</div>

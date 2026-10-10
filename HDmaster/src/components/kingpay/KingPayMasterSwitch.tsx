@@ -40,142 +40,176 @@ export function KingPayMasterSwitch() {
       id: 'upi', 
       label: 'UPI Integration', 
       desc: 'Real-time UPI Payments',
-      spec: 'NPCI UPI 2.0 / Intent & Dynamic QR Protocol'
+      spec: 'NPCI UPI 2.0 / Intent & Dynamic QR Protocol',
+      locked: false
     },
     { 
       id: 'collect', 
       label: 'Payment Links (Collect)', 
       desc: 'Asynchronous P2M Collect',
-      spec: 'Multi-rail SMS & WhatsApp Payment Links with 15-min TTL'
+      spec: 'Multi-rail SMS & WhatsApp Payment Links with 15-min TTL',
+      locked: false
     },
     { 
       id: 'pay', 
       label: 'Direct Pay / Checkout', 
       desc: 'Synchronous Checkout Engine',
-      spec: 'Low-latency checkout with tokenized card vault and netbanking'
+      spec: 'Low-latency checkout with tokenized card vault and netbanking',
+      locked: false
     },
     { 
       id: 'autopay', 
       label: 'AutoPay Mandates', 
       desc: 'Recurring e-Mandates',
-      spec: 'RBI compliant recurring mandate engine up to ₹15,000 threshold'
+      spec: 'RBI compliant recurring mandate engine up to ₹15,000 threshold',
+      locked: false
     },
     { 
       id: 'settlements', 
       label: 'Merchant Settlements', 
       desc: 'T+1 Settlements',
-      spec: 'Automated IMPS/NEFT automated payout batches at 06:00 IST'
+      spec: 'Automated IMPS/NEFT automated payout batches at 06:00 IST',
+      locked: false
+    },
+    { 
+      id: 'p2p', 
+      label: 'P2P Transfers (License Pending)', 
+      desc: 'Peer-to-Peer Fund Transfers',
+      spec: 'Prepaid Payment Instruments (PPI) License Authorization Required (Strictly Locked)',
+      locked: true
     },
   ];
 
   if (isLoading || !data) {
     return (
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-12 flex flex-col items-center justify-center text-slate-400 shadow-2xl">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-400 mb-3" />
-        <span className="font-mono text-xs uppercase tracking-widest text-slate-400">Loading KingPay Banking Infrastructure...</span>
+      <div className="bg-white border border-slate-200 rounded-2xl p-12 flex flex-col items-center justify-center text-slate-600 shadow-sm">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-800 mb-3" />
+        <span className="font-mono text-xs uppercase tracking-widest text-slate-500">Loading KingPay Banking Infrastructure...</span>
       </div>
     );
   }
 
   const state = data.state || {};
-  const activeCount = features.filter(f => state[f.id] === true).length;
+  const activeCount = features.filter(f => !f.locked && state[f.id] === true).length;
 
   return (
-    <div className="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden text-slate-300 w-full shadow-2xl">
+    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden text-slate-800 w-full shadow-sm">
       {/* Banking & Compliance Ribbon */}
-      <div className="bg-slate-950/80 px-6 py-2.5 border-b border-white/10 flex flex-wrap items-center justify-between gap-4 text-[11px] font-mono text-slate-400">
+      <div className="bg-slate-50 px-6 py-2.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4 text-[11px] font-mono text-slate-600">
         <div className="flex items-center gap-3">
-          <Landmark className="w-3.5 h-3.5 text-emerald-400" />
+          <Landmark className="w-3.5 h-3.5 text-emerald-600" />
           <span>NPCI 2.0 & RBI COMPLIANT GATEWAY</span>
         </div>
         <div className="flex items-center gap-6">
           <span>PCI-DSS LEVEL 1 v4.0</span>
-          <span>UPTIME: <strong className="text-emerald-400">99.995%</strong></span>
-          <span>LATENCY: <strong className="text-slate-200">38ms</strong></span>
+          <span>UPTIME: <strong className="text-emerald-700">99.995%</strong></span>
+          <span>LATENCY: <strong className="text-slate-900">38ms</strong></span>
         </div>
       </div>
 
       {/* Main Header */}
-      <div className="bg-slate-800/40 p-6 md:p-8 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="p-6 md:p-8 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white">
         <div>
           <div className="flex items-center gap-3">
-            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
-              <ShieldAlert className="w-6 h-6 text-emerald-400" />
+            <h2 className="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <ShieldAlert className="w-6 h-6 text-emerald-600" />
               KingPay Integration Switch
             </h2>
-            <span className="bg-emerald-950/80 text-emerald-400 border border-emerald-800 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full">
+            <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full">
               {activeCount} / {features.length} ACTIVE
             </span>
           </div>
-          <p className="text-sm text-slate-400 mt-1 max-w-3xl">
+          <p className="text-sm text-slate-600 mt-1 max-w-3xl">
             API capabilities and feature flags. Features are disabled by default requiring explicit authorization.
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="outline" className="bg-slate-800 text-slate-300 border-slate-600 uppercase tracking-widest font-mono text-xs py-1.5 px-3">
+          <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 uppercase tracking-widest font-mono text-xs py-1.5 px-3">
             Admin Access
           </Badge>
         </div>
       </div>
       
       {/* Grid of features */}
-      <div className="p-6 md:p-8 grid gap-4 grid-cols-1 md:grid-cols-2">
+      <div className="p-6 md:p-8 grid gap-4 grid-cols-1 md:grid-cols-2 bg-slate-50/30">
         {features.map((feat) => {
-          const isActive = state[feat.id] === true;
+          const isLocked = Boolean(feat.locked);
+          const isActive = !isLocked && state[feat.id] === true;
           const isPending = mutation.isPending && activePendingFeature === feat.id;
           
           return (
             <div 
               key={feat.id} 
               className={`p-5 rounded-xl border flex flex-col justify-between gap-4 transition-all ${
-                isActive 
-                  ? 'bg-slate-950/70 border-emerald-900/50 shadow-md shadow-emerald-950/20' 
-                  : 'bg-slate-950/40 border-white/5 opacity-80'
+                isLocked
+                  ? 'bg-slate-50 border-slate-200 opacity-90'
+                  : isActive 
+                    ? 'bg-emerald-50/40 border-emerald-300 shadow-sm' 
+                    : 'bg-white border-slate-200 hover:border-slate-300'
               }`}
             >
               <div>
                 <div className="flex justify-between items-start gap-3">
                   <div>
                     <h3 className="font-semibold text-base flex items-center gap-2">
-                      {isActive ? (
-                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                      {isLocked ? (
+                        <Lock className="w-4 h-4 text-amber-600" />
+                      ) : isActive ? (
+                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
                       ) : (
-                        <ShieldAlert className="w-4 h-4 text-slate-500" />
+                        <ShieldAlert className="w-4 h-4 text-slate-400" />
                       )}
-                      <span className={isActive ? 'text-white' : 'text-slate-400'}>{feat.label}</span>
+                      <span className={isActive ? 'text-slate-900 font-bold' : isLocked ? 'text-slate-700' : 'text-slate-800'}>
+                        {feat.label}
+                      </span>
                     </h3>
-                    <p className="text-xs text-slate-400 mt-1">{feat.desc}</p>
+                    <p className="text-xs text-slate-600 mt-1">{feat.desc}</p>
                   </div>
                   
-                  {isActive ? (
-                    <Badge variant="outline" className="bg-emerald-950/80 text-emerald-400 border-emerald-800 font-mono text-[10px] px-2 py-0.5 shrink-0">
+                  {isLocked ? (
+                    <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-300 font-mono text-[10px] px-2 py-0.5 shrink-0 flex items-center gap-1">
+                      <Lock className="w-2.5 h-2.5 text-amber-700" />
+                      LOCKED (OFF)
+                    </Badge>
+                  ) : isActive ? (
+                    <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-300 font-mono text-[10px] px-2 py-0.5 shrink-0">
                       ACTIVE
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="bg-slate-900 text-slate-500 border-slate-700 font-mono text-[10px] px-2 py-0.5 shrink-0">
+                    <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-300 font-mono text-[10px] px-2 py-0.5 shrink-0">
                       DISABLED
                     </Badge>
                   )}
                 </div>
 
                 {/* Technical specification subline */}
-                <div className="mt-3 pt-3 border-t border-white/5 text-[11px] font-mono text-slate-500">
+                <div className="mt-3 pt-3 border-t border-slate-200/70 text-[11px] font-mono text-slate-500">
                   {feat.spec}
                 </div>
               </div>
               
-              <div className="mt-2 flex items-center justify-between pt-2 border-t border-white/5">
+              <div className="mt-2 flex items-center justify-between pt-2 border-t border-slate-200/70">
                 <span className="text-[10px] font-mono text-slate-500 uppercase">
-                  STATUS: {isActive ? 'ROUTING TRAFFIC' : 'SUSPENDED'}
+                  {isLocked ? 'STATUS: REGULATORY LOCK (LICENSE PENDING)' : `STATUS: ${isActive ? 'ROUTING TRAFFIC' : 'SUSPENDED'}`}
                 </span>
 
-                {isActive ? (
+                {isLocked ? (
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    disabled
+                    className="h-8 text-xs bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-80 font-mono flex items-center gap-1.5"
+                  >
+                    <Lock className="w-3 h-3" />
+                    Locked (License Pending)
+                  </Button>
+                ) : isActive ? (
                   <Button 
                     variant="outline"
                     size="sm"
                     onClick={() => mutation.mutate({ feature: feat.id, action: 'deactivate' })}
                     disabled={mutation.isPending}
-                    className="h-8 text-xs border-rose-900/40 text-rose-300 hover:bg-rose-950/40 hover:text-white transition-colors"
+                    className="h-8 text-xs border-rose-300 text-rose-700 hover:bg-rose-50 hover:text-rose-800 transition-colors"
                   >
                     {isPending ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
                     Disable Feature
@@ -186,7 +220,7 @@ export function KingPayMasterSwitch() {
                     size="sm"
                     onClick={() => mutation.mutate({ feature: feat.id, action: 'activate' })}
                     disabled={mutation.isPending}
-                    className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-mono flex items-center gap-1.5 border border-emerald-500/30 shadow-md"
+                    className="h-8 text-xs bg-slate-900 hover:bg-slate-800 text-white font-mono flex items-center gap-1.5 shadow-sm"
                   >
                     {isPending ? (
                       <Loader2 className="w-3 h-3 animate-spin" />
@@ -203,9 +237,9 @@ export function KingPayMasterSwitch() {
       </div>
 
       {/* Footer Security Seal */}
-      <div className="px-6 py-4 bg-slate-950/60 border-t border-white/5 flex flex-wrap items-center justify-between text-xs font-mono text-slate-500">
+      <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs font-mono text-slate-500">
         <div className="flex items-center gap-2">
-          <Lock className="w-3.5 h-3.5 text-slate-400" />
+          <Lock className="w-3.5 h-3.5 text-slate-600" />
           <span>CRYPTOGRAPHIC VERIFICATION: SHA-256 HMAC SECURED</span>
         </div>
         <div>MUTATION LOGS FORWARDED TO SEC-AUDIT-VAULT</div>

@@ -71,7 +71,7 @@ export function LocationDialog({ open, onOpenChange }: { open: boolean; onOpenCh
         <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto rounded-t-3xl bg-surface p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:inset-auto md:left-1/2 md:top-1/2 md:w-[28rem] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl">
           <Dialog.Title className="font-display text-2xl font-bold tracking-tight text-fg">{t("location.title")}</Dialog.Title>
           <p className="mt-1 text-sm text-muted-foreground">Select your delivery location for accurate pricing and ETA.</p>
-          <Button className="mt-6 w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-fg shadow-lg text-md rounded-xl font-bold transition-transform active:scale-95" onClick={() => void useGeo()} disabled={locating}>
+          <Button className="mt-6 w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white shadow-md text-md rounded-xl font-bold transition-transform active:scale-95" onClick={() => void useGeo()} disabled={locating}>
             📍 {locating ? "Locating you..." : "Use Current Location"}
           </Button>
           

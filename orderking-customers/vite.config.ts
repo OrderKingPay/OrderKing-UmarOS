@@ -147,10 +147,33 @@ function authPopupPlugin(): Plugin {
 // AGENTS.md § "First scaffold".
 export default defineConfig(({ command, isPreview }) => ({
   build: {
-    cssMinify: true,
+    target: "es2022",
+    cssMinify: "lightningcss",
     rollupOptions: { 
       treeshake: true,
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('mapbox-gl')) {
+              return 'mapbox-vendor';
+            }
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@tanstack')) {
+              return 'tanstack-vendor';
+            }
+            if (id.includes('lucide-react') || id.includes('framer-motion') || id.includes('@radix-ui')) {
+              return 'ui-vendor';
+            }
+            return 'vendor';
+          }
+        }
+      }
     },
+  },
+  css: {
+    transformer: "lightningcss",
   },
   
   // @ts-expect-error

@@ -176,7 +176,8 @@ function authPopupPlugin(): Plugin {
 // AGENTS.md § "First scaffold".
 export default defineConfig(({ command, isPreview }) => ({
   build: {
-    cssMinify: true,
+    target: "es2022",
+    cssMinify: "lightningcss",
     rollupOptions: {
       treeshake: true,
       output: {
@@ -196,6 +197,9 @@ export default defineConfig(({ command, isPreview }) => ({
         }
       }
     },
+  },
+  css: {
+    transformer: "lightningcss",
   },
   
   // @ts-expect-error

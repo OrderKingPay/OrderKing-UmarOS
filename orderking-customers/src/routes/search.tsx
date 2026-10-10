@@ -38,15 +38,15 @@ function SearchPage() {
   if (!isDeliveryActive) {
     return (
       <CustomerShell onSearch={() => undefined}>
-        <div className="px-4 py-12 text-center space-y-4">
+        <div className="px-4 py-12 text-center space-y-4 bg-white text-gray-900">
           <span className="text-4xl block animate-bounce">👑</span>
-          <h1 className="font-display text-2xl font-bold text-fg">
+          <h1 className="font-extrabold text-2xl text-gray-900">
             Food Search is not active in {location.cityName || "your region"}
           </h1>
-          <p className="text-sm text-muted max-w-sm mx-auto">
-            Order King food catalog is 1,000x strictly geofenced. You can search utilities, FASTag, bills, flights, and UPI on King Pay!
+          <p className="text-sm text-gray-500 max-w-sm mx-auto">
+            Order King food catalog is strictly geofenced. You can explore utilities, bills, and payments on King Pay!
           </p>
-          <Button asChild className="bg-primary text-fg font-bold px-6 py-2 rounded-xl">
+          <Button asChild className="bg-[#E23744] hover:bg-[#c92f3b] text-white font-bold px-6 py-2 rounded-xl">
             <Link to="/king-pay">Search on King Pay 👑</Link>
           </Button>
         </div>
@@ -56,7 +56,7 @@ function SearchPage() {
 
   return (
     <CustomerShell onSearch={() => undefined}>
-      <div className="px-3 pt-3 sm:px-4 sm:pt-4">
+      <div className="px-3 pt-3 sm:px-4 sm:pt-4 bg-white">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -68,6 +68,7 @@ function SearchPage() {
             onChange={(e) => setDraft(e.target.value)}
             placeholder={t("home.searchPlaceholder")}
             aria-label={t("common.search")}
+            className="bg-gray-50 border-gray-200 text-gray-900 focus:bg-white focus:border-[#E23744] rounded-xl h-11 text-sm font-medium"
             autoFocus
           />
         </form>
@@ -116,7 +117,11 @@ function FilterChip({ active, onClick, label }: { active: boolean; onClick: () =
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-11 shrink-0 rounded-full px-3 text-sm ${active ? "bg-primary text-primary-fg" : "bg-surface text-fg"}`}
+      className={`min-h-9 shrink-0 rounded-full px-3.5 text-xs font-bold transition-all border ${
+        active
+          ? "bg-[#E23744] text-white border-[#E23744] shadow-xs"
+          : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
+      }`}
     >
       {label}
     </button>

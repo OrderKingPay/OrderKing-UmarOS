@@ -11,28 +11,27 @@ export const useThemeStore = create<ThemeState>()(
   persist(
     (set) => ({
       theme: "light",
-      toggleTheme: () => set((state) => {
-        const next = state.theme === "light" ? "dark" : "light";
+      toggleTheme: () => set(() => {
         if (typeof document !== "undefined") {
-          if (next === "dark") document.documentElement.classList.add("dark");
-          else document.documentElement.classList.remove("dark");
+          document.documentElement.classList.remove("dark");
+          document.documentElement.style.backgroundColor = "#FFFFFF";
         }
-        return { theme: next };
+        return { theme: "light" };
       }),
-      setTheme: (theme) => set(() => {
+      setTheme: () => set(() => {
         if (typeof document !== "undefined") {
-          if (theme === "dark") document.documentElement.classList.add("dark");
-          else document.documentElement.classList.remove("dark");
+          document.documentElement.classList.remove("dark");
+          document.documentElement.style.backgroundColor = "#FFFFFF";
         }
-        return { theme };
+        return { theme: "light" };
       }),
     }),
     {
       name: "theme-storage",
-      onRehydrateStorage: () => (state) => {
-        if (state && typeof document !== "undefined") {
-          if (state.theme === "dark") document.documentElement.classList.add("dark");
-          else document.documentElement.classList.remove("dark");
+      onRehydrateStorage: () => () => {
+        if (typeof document !== "undefined") {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.style.backgroundColor = "#FFFFFF";
         }
       }
     }

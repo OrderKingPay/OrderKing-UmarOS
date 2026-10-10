@@ -15,10 +15,10 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: APP_NAME },
-      { name: "theme-color", content: "#0c0d0c" },
+      { name: "theme-color", content: "#ffffff" },
       {
         name: "description",
-        content: "Umar OS — Sovereign Supreme Founder Operating System & Command Core.",
+        content: "Umar OS — Enterprise Operating System & Central Control Hub.",
       },
     ],
     links: [
@@ -41,7 +41,7 @@ export const Route = createRootRoute({
           <div className="flex h-screen flex-col items-center justify-center p-8 text-center">
             <h1 className="text-2xl font-bold text-red-500 mb-2">Something went wrong</h1>
             <p className="text-muted-foreground mb-4">We encountered an unexpected error, but we're keeping the app running.</p>
-            <pre className="text-xs bg-black/50 p-4 rounded text-left max-w-2xl overflow-auto text-red-400">
+            <pre className="text-xs bg-slate-100 p-4 rounded text-left max-w-2xl overflow-auto text-red-600 border border-slate-200">
               {error instanceof Error ? error.message : "Unknown error"}
             </pre>
           </div>
@@ -82,13 +82,13 @@ function RootDocument() {
             <Outlet />
             <MasterAICommandTerminal />
             <Toaster
-              theme="dark"
+              theme="light"
               position="bottom-right"
               toastOptions={{
                 style: {
-                  background: "#1c1e1c",
-                  border: "1px solid #2a2c2a",
-                  color: "#f2f0ea",
+                  background: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                  color: "#0f172a",
                 },
               }}
             />
