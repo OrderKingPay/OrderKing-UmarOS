@@ -27,10 +27,10 @@ export function DietaryAllergenEditor({
   const [classification, setClassification] = useState<DietaryAllergenConfig["dietaryClassification"]>(
     initialConfig?.dietaryClassification || "NON_VEG"
   );
-  const [isGlutenFree, setIsGlutenFree] = useState(initialConfig?.isGlutenFree || false);
-  const [isKetoFriendly, setIsKetoFriendly] = useState(initialConfig?.isKetoFriendly || false);
-  const [isDiabeticFriendly, setIsDiabeticFriendly] = useState(initialConfig?.isDiabeticFriendly || false);
-  const [isHighProtein, setIsHighProtein] = useState(initialConfig?.isHighProtein || true);
+  const [isGlutenFree, setIsGlutenFree] = useState<boolean>(Boolean(initialConfig?.isGlutenFree || false));
+  const [isKetoFriendly, setIsKetoFriendly] = useState<boolean>(Boolean(initialConfig?.isKetoFriendly || false));
+  const [isDiabeticFriendly, setIsDiabeticFriendly] = useState<boolean>(Boolean(initialConfig?.isDiabeticFriendly || false));
+  const [isHighProtein, setIsHighProtein] = useState<boolean>(Boolean(initialConfig?.isHighProtein ?? true));
   const [spiceLevel, setSpiceLevel] = useState(initialConfig?.spiceLevel || 3);
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>(
     initialConfig?.allergens || ["Dairy / Butter", "Mustard Seeds"]

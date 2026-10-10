@@ -9,6 +9,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
 import { KingPayMasterSwitch } from "@/components/kingpay/KingPayMasterSwitch";
 import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
+import { GlobalGodEyeMap } from "@/components/dashboard/GlobalGodEyeMap";
 
 const getUmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
   const sql = await getSql();
@@ -174,6 +175,11 @@ function UmarOSDashboard() {
           />
         </div>
         
+        {/* Global God-Eye Live Geospatial Map Component */}
+        <div className="mt-8 mb-8">
+          <GlobalGodEyeMap />
+        </div>
+
         {/* KingPay Switch Section */}
         <div className="mt-8 mb-8">
           <KingPayMasterSwitch />

@@ -19,6 +19,9 @@ import {
   saveItem,
   setAvailability,
 } from "@/lib/server/api-menu";
+import { OneTapStockToggle } from "@/components/one-tap-stock-toggle";
+import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
+import { Search, Flame, Sparkles, RotateCcw, Zap, Filter, CheckCircle2, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/menu")({ component: MenuPage });
 
@@ -50,11 +53,33 @@ function MenuPage() {
     variants: { name: string; price: string }[];
   }>(null);
 
+  const [stockFilter, setStockFilter] = useState<"ALL" | "IN_STOCK" | "OUT_OF_STOCK">("ALL");
+  const [searchFilter, setSearchFilter] = useState("");
+  const [kitchenRushMode, setKitchenRushMode] = useState(false);
+
+  const allItems = useMemo(() => menu.data?.items ?? [], [menu.data]);
+  const inStockCount = useMemo(() => allItems.filter((i) => i.availability === "available").length, [allItems]);
+  const outOfStockCount = useMemo(() => allItems.filter((i) => i.availability !== "available").length, [allItems]);
+
   const grouped = useMemo(() => {
     const cats = menu.data?.categories ?? [];
     const items = menu.data?.items ?? [];
-    return cats.map((c) => ({ ...c, items: items.filter((i) => i.category_id === c.id) }));
-  }, [menu.data]);
+    return cats.map((c) => {
+      const catItems = items.filter((i) => {
+        if (i.category_id !== c.id) return false;
+        if (stockFilter === "IN_STOCK" && i.availability !== "available") return false;
+        if (stockFilter === "OUT_OF_STOCK" && i.availability === "available") return false;
+        if (searchFilter.trim()) {
+          const q = searchFilter.toLowerCase();
+          const matchName = i.name.toLowerCase().includes(q);
+          const matchDesc = i.description ? i.description.toLowerCase().includes(q) : false;
+          return matchName || matchDesc;
+        }
+        return true;
+      });
+      return { ...c, items: catItems };
+    }).filter((c) => c.items.length > 0 || (!searchFilter.trim() && stockFilter === "ALL"));
+  }, [menu.data, stockFilter, searchFilter]);
 
   async function bulk(status: "sold_out" | "available") {
     if (!selected.length) return;
@@ -65,12 +90,126 @@ function MenuPage() {
     void qc.invalidateQueries({ queryKey: ["menu"] });
   }
 
+  async function restoreAllOutOfStock() {
+    const outOfStockIds = allItems.filter((i) => i.availability !== "available").map((i) => i.id);
+    if (!outOfStockIds.length) return;
+    await setAvailability({
+      data: { restaurantId: vendor.restaurantId, itemIds: outOfStockIds, status: "available" },
+    });
+    void qc.invalidateQueries({ queryKey: ["menu"] });
+  }
+
   return (
     <VendorShell
       title={t("menu.title")}
       dataLabel={menu.data?.dataLabel ?? vendor.dataLabel}
       restaurantName={vendor.selected?.restaurantName}
     >
+      {/* FSSAI Statutory Food Safety Regulatory Compliance Banner */}
+      <FssaiExpiryBanner />
+
+      {/* 1-Tap Quick Stock Action Bar & Real-time Filter HUD */}
+      {canAvail && (
+        <div className="rounded-xl border border-border bg-surface-1 p-3.5 shadow-sm space-y-3 font-mono">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Left: Stock Status Count Pills */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted flex items-center gap-1.5">
+                <Zap className="size-3.5 text-amber-500" />
+                1-Tap Stock Desk:
+              </span>
+              <button
+                type="button"
+                onClick={() => setStockFilter("ALL")}
+                className={`px-2.5 py-1 rounded-md text-xs font-bold transition ${
+                  stockFilter === "ALL"
+                    ? "bg-slate-800 text-white border border-slate-600"
+                    : "text-muted hover:text-foreground"
+                }`}
+              >
+                All ({allItems.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setStockFilter("IN_STOCK")}
+                className={`px-2.5 py-1 rounded-md text-xs font-bold transition flex items-center gap-1 ${
+                  stockFilter === "IN_STOCK"
+                    ? "bg-emerald-950 text-emerald-300 border border-emerald-500/50"
+                    : "text-leaf hover:bg-leaf/10"
+                }`}
+              >
+                <CheckCircle2 className="size-3" />
+                In Stock ({inStockCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setStockFilter("OUT_OF_STOCK")}
+                className={`px-2.5 py-1 rounded-md text-xs font-bold transition flex items-center gap-1 ${
+                  stockFilter === "OUT_OF_STOCK"
+                    ? "bg-rose-950 text-rose-300 border border-rose-500/50"
+                    : outOfStockCount > 0
+                    ? "text-rose-400 bg-rose-500/10 border border-rose-500/30"
+                    : "text-muted hover:text-foreground"
+                }`}
+              >
+                <XCircle className="size-3" />
+                Out of Stock ({outOfStockCount})
+              </button>
+            </div>
+
+            {/* Right: Quick Restore & Rush Mode */}
+            <div className="flex items-center gap-2">
+              {outOfStockCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => void restoreAllOutOfStock()}
+                  title="1-Tap restore all sold-out items to in-stock"
+                  className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-1.5"
+                >
+                  <RotateCcw className="size-3.5" />
+                  Restore All ({outOfStockCount})
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setKitchenRushMode(!kitchenRushMode)}
+                title="Toggle large tactile hit-targets for kitchen rush hours"
+                className={`px-2.5 py-1 rounded-lg border text-xs font-bold transition flex items-center gap-1 ${
+                  kitchenRushMode
+                    ? "bg-amber-500 text-black border-amber-400 shadow-md font-extrabold"
+                    : "border-border bg-surface-2 text-muted hover:text-foreground"
+                }`}
+              >
+                <Flame className="size-3.5" />
+                {kitchenRushMode ? "Rush Mode ON" : "Rush Mode"}
+              </button>
+            </div>
+          </div>
+
+          {/* Search bar inside stock desk */}
+          <div className="relative">
+            <Search className="size-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
+              placeholder="Search dishes to toggle stock (e.g. Butter Naan, Paneer, Biryani)..."
+              className="w-full pl-9 pr-4 py-1.5 bg-background border border-border rounded-lg text-xs placeholder:text-muted focus:outline-none focus:border-emerald-500 font-sans"
+            />
+            {searchFilter && (
+              <button
+                type="button"
+                onClick={() => setSearchFilter("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-foreground text-xs"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {canEdit ? (
         <form
           className="flex gap-2"
@@ -165,91 +304,14 @@ function MenuPage() {
                   </label>
                   <div className="flex flex-wrap items-center gap-2">
                     {canAvail ? (
-                      item.availability === "available" ? (
-                        <>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-leaf/10 px-2.5 py-1 text-xs font-semibold text-leaf">
-                            <span className="size-1.5 rounded-full bg-leaf" />
-                            In Stock
-                          </span>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            title="Turn off for 2 hours (auto-resets)"
-                            onClick={() =>
-                              void setAvailability({
-                                data: {
-                                  restaurantId: vendor.restaurantId,
-                                  itemIds: [item.id],
-                                  status: "temporarily_unavailable",
-                                  nextAvailableAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-                                },
-                              }).then(() => qc.invalidateQueries({ queryKey: ["menu"] }))
-                            }
-                          >
-                            Off 2h
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            title="Turn off for today"
-                            onClick={() =>
-                              void setAvailability({
-                                data: {
-                                  restaurantId: vendor.restaurantId,
-                                  itemIds: [item.id],
-                                  status: "temporarily_unavailable",
-                                  nextAvailableAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-                                },
-                              }).then(() => qc.invalidateQueries({ queryKey: ["menu"] }))
-                            }
-                          >
-                            Off Today
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() =>
-                              void setAvailability({
-                                data: {
-                                  restaurantId: vendor.restaurantId,
-                                  itemIds: [item.id],
-                                  status: "sold_out",
-                                  nextAvailableAt: null,
-                                },
-                              }).then(() => qc.invalidateQueries({ queryKey: ["menu"] }))
-                            }
-                          >
-                            {t("menu.soldOut")}
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-danger/10 px-2.5 py-1 text-xs font-semibold text-danger">
-                            <span className="size-1.5 rounded-full bg-danger" />
-                            {item.availability === "temporarily_unavailable"
-                              ? item.nextAvailableAt
-                                ? `Off until ${new Date(item.nextAvailableAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-                                : "Temporarily Off"
-                              : t("menu.soldOut")}
-                          </span>
-                          <Button
-                            size="sm"
-                            variant="leaf"
-                            onClick={() =>
-                              void setAvailability({
-                                data: {
-                                  restaurantId: vendor.restaurantId,
-                                  itemIds: [item.id],
-                                  status: "available",
-                                  nextAvailableAt: null,
-                                },
-                              }).then(() => qc.invalidateQueries({ queryKey: ["menu"] }))
-                            }
-                          >
-                            Turn On (In Stock)
-                          </Button>
-                        </>
-                      )
+                      <OneTapStockToggle
+                        itemId={item.id}
+                        itemName={item.name}
+                        availability={item.availability as any}
+                        nextAvailableAt={item.nextAvailableAt}
+                        restaurantId={vendor.restaurantId}
+                        size={kitchenRushMode ? "lg" : "md"}
+                      />
                     ) : (
                       <span className="text-xs text-muted">
                         {item.availability === "available" ? "In Stock" : t("menu.soldOut")}

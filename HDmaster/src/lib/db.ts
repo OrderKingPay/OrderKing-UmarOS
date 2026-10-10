@@ -103,7 +103,7 @@ function createNeonSql(): Promise<Sql> {
       const res = await pool.query(text, params);
       return res.rows as T[];
     };
-    const makeClientSql = (client: import("pg").PoolClient) =>
+    const makeClientSql = (client: any) =>
       toSql(async <T>(text: string, params: unknown[]) => {
         const res = await client.query(text, params);
         return res.rows as T[];

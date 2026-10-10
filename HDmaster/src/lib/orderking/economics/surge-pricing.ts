@@ -9,7 +9,7 @@ export class SurgePricingEngine {
     const sql = await getSql();
 
     // 1. Get pending orders in this zone
-    const pendingOrders = await sql<{ count: string }[]>`
+    const pendingOrders = await sql<{ count: string }>`
       SELECT COUNT(*) as count 
       FROM orders 
       WHERE status IN ('PLACED', 'ACCEPTED', 'PREPARING')
@@ -17,7 +17,7 @@ export class SurgePricingEngine {
     `;
 
     // 2. Get active riders in this zone
-    const activeRiders = await sql<{ count: string }[]>`
+    const activeRiders = await sql<{ count: string }>`
       SELECT COUNT(*) as count 
       FROM user_profiles 
       WHERE role = 'RIDER' 

@@ -3,7 +3,7 @@ import { getSql } from "@/lib/db";
 import { ensureWorkspace } from "@/lib/orderking/server/workspace.server";
 
 export const APIRoute = createAPIFileRoute("/api/v1/loyalty")({
-  GET: async ({ request }) => {
+  GET: async ({ request }: { request: Request }) => {
     try {
       const url = new URL(request.url);
       const customerRef = url.searchParams.get("customerRef");

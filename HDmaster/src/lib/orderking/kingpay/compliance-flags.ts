@@ -4,6 +4,9 @@ export type KingPayFeature =
   | 'upi' 
   | 'collect' 
   | 'pay' 
+  | 'scan'
+  | 'wallet'
+  | 'recharge'
   | 'autopay' 
   | 'settlements';
 
@@ -21,6 +24,9 @@ export class KingPayComplianceMaster {
       upi: false,
       collect: false,
       pay: false,
+      scan: false,
+      wallet: false,
+      recharge: false,
       autopay: false,
       settlements: false,
     }, secrets.KINGPAY_FEATURES || {});

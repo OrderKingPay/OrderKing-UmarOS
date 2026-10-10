@@ -9,8 +9,9 @@ import { useVendor } from "@/components/use-vendor";
 import { getDashboard, quickThrottleKitchen } from "@/lib/server/api-orders";
 import { cn } from "@/lib/utils";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts";
-import { Cpu, Zap, RadioTower, Banknote, ShieldAlert, ArrowUpRight, TrendingUp, IndianRupee, Activity, Smartphone, Server } from "lucide-react";
+import { Cpu, Zap, RadioTower, Banknote, ShieldAlert, ArrowUpRight, TrendingUp, IndianRupee, Activity, Smartphone, Server, AlertTriangle } from "lucide-react";
 import { useState } from "react";
+import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
 
 export const Route = createFileRoute("/dashboard")({ component: DashboardPage });
 
@@ -85,12 +86,23 @@ function DashboardPage() {
           </div>
         </div>
 
+        {/* FSSAI Statutory Food Safety Regulatory Compliance Banner */}
+        <FssaiExpiryBanner fssaiNumber={dash.data?.fssaiNumber} />
+
         {/* Top KPI Grid (Bloomberg Style) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 z-10 relative">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 z-10 relative">
           <TerminalStat label="LIVE ORDERS" value="142" sub="↑ 24% vs last hr" color="emerald" />
           <TerminalStat label="GROSS VOLUME (INR)" value="₹3,42,901" sub="Target: ₹400k" color="cyan" />
           <TerminalStat label="AVG PREP TIME" value="11m 04s" sub="Excellent" color="emerald" />
           <TerminalStat label="CANCELLATION RISK" value="1.2%" sub="Optimal" color="zinc" />
+          <Link to="/menu" className="block">
+            <TerminalStat 
+              label="OUT OF STOCK" 
+              value={String(dash.data?.today?.unavailableItems ?? 0)} 
+              sub="1-Tap Toggle →" 
+              color={(dash.data?.today?.unavailableItems ?? 0) > 0 ? "rose" : "zinc"} 
+            />
+          </Link>
         </div>
 
         {/* Middle Section: AI Chart & Surge Pricing */}
@@ -269,11 +281,12 @@ function DashboardPage() {
   );
 }
 
-function TerminalStat({ label, value, sub, color }: { label: string, value: string, sub: string, color: "emerald" | "cyan" | "zinc" }) {
+function TerminalStat({ label, value, sub, color }: { label: string, value: string, sub: string, color: "emerald" | "cyan" | "zinc" | "rose" }) {
   const colors = {
     emerald: "text-emerald-500 border-emerald-500/30 bg-emerald-950/10",
     cyan: "text-cyan-500 border-cyan-500/30 bg-cyan-950/10",
     zinc: "text-zinc-300 border-zinc-700 bg-zinc-900",
+    rose: "text-rose-400 border-rose-500/40 bg-rose-950/20",
   };
   
   return (

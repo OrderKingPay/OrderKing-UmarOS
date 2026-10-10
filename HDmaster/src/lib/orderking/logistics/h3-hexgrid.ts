@@ -95,7 +95,7 @@ export class H3HexGridEngine {
 
     // Advanced Geospatial Routing Matrix Query
     // Assumes user_profiles maintains an updated current_hex_id via the telemetry pipeline.
-    const riders = await sql<{ id: string, name: string, distance_km: number, hex_id: string }[]>`
+    const riders = await sql<{ id: string, name: string, distance_km: number, hex_id: string }>`
       SELECT 
         u.id, 
         u.name,
@@ -127,7 +127,7 @@ export class H3HexGridEngine {
     this.validateIndianCoordinates(lat, lon);
     const hexId = this.getHexId(lat, lon);
 
-    const batched = await sql<{ order_id: string }[]>`
+    const batched = await sql<{ order_id: string }>`
       SELECT id as order_id
       FROM orders
       WHERE status = 'PREPARING'
