@@ -27,7 +27,7 @@ const HDmaster = () => {
             <h1 className="text-4xl font-light tracking-widest uppercase text-gray-100">HDmaster</h1>
             <p className="text-xs text-gray-500 tracking-widest mt-2">UmarOS Central Control</p>
           </div>
-          <div className="text-xs text-gray-500 tracking-widest uppercase">God Mode: Active</div>
+          <div className="text-xs text-gray-500 tracking-widest uppercase">System Status: Active</div>
         </header>
 
         <section className="mb-16">
