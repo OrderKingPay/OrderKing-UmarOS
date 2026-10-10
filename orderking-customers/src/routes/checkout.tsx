@@ -19,6 +19,8 @@ import { useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { newId } from "@/lib/ids";
 import { createRazorpayOrder } from "@/lib/server/razorpay-order";
+import { WhatsAppShare } from "@/components/market/whatsapp-share";
+import { ReferralGamifiedLoop } from "@/components/market/referral-gamified-loop";
 
 export const Route = createFileRoute("/checkout")({ component: CheckoutPage });
 
@@ -170,6 +172,13 @@ function CheckoutPage() {
               <p className="mt-0.5 text-xs font-medium text-rose-600/80 dark:text-rose-300/80">Kitchen is closing soon. Complete order now to secure delivery.</p>
             </div>
           </div>
+
+          {/* WhatsApp Deep-Link Sharing Component */}
+          <WhatsAppShare 
+            variant="checkout" 
+            orderTotalPaise={totalPayable} 
+            className="mt-4" 
+          />
 
           {/* Ordering for someone else? (Zomato-style) */}
           <section className="mt-4 rounded-[var(--radius-xl)] border border-border bg-surface p-4">
@@ -501,6 +510,9 @@ function CheckoutPage() {
               </>
             ) : <p>{t("common.loading")}</p>}
           </div>
+
+          {/* 'Refer a Friend, Get ₹500' Gamified Viral Loop */}
+          <ReferralGamifiedLoop source="checkout" className="mt-6" />
 
           {quote.data?.quote.blockers.length ? <p className="mt-3 text-sm text-warn">{quote.data.quote.blockers.includes("MIN_ORDER") ? t("cart.minOrder", { amount: formatPaise(quote.data.quote.minOrderPaise, { locale }) }) : t("checkout.blocked")}</p> : null}
           <Button className="mt-6 w-full h-14 text-lg font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-95" disabled={busy || !quote.data || !quote.data.isDeliverable} onClick={() => void submit()}>

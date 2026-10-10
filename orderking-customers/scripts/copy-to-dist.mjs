@@ -1,4 +1,4 @@
-﻿import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 function copyDir(src, dest) {
@@ -24,6 +24,13 @@ function run(appDir) {
     } else if (fs.existsSync(srcVercel)) {
         console.log("Copying ${srcVercel} to ${destClient}");
         copyDir(srcVercel, destClient);
+    }
+
+    // Ensure all static assets from public (manifest.json, sw.js, offline.html, icons) are copied to dest
+    const srcPublic = path.join(appDir, 'public');
+    if (fs.existsSync(srcPublic)) {
+        console.log("Copying public assets to " + dest);
+        copyDir(srcPublic, dest);
     }
 }
 

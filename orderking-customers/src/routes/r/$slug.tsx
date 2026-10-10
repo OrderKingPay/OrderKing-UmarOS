@@ -20,6 +20,7 @@ import { useLocationStore } from "@/lib/stores/location";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
 import { WhatsAppShare } from "@/components/market/whatsapp-share";
 import { ReferralGamifiedLoop } from "@/components/market/referral-gamified-loop";
+import { RestaurantSeo, buildRestaurantJsonLd } from "@/components/seo/RestaurantSeo";
 
 export const Route = createFileRoute("/r/$slug")({
   head: ({ params }) => {

@@ -8,7 +8,7 @@ import { errorMessage, newIdempotencyKey, withRetry } from "@/lib/client/errors"
 import { formatPaise } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
 import { getHomeFn, respondOfferFn, setStatusFn } from "@/lib/server/rider-fns";
-import type { DispatchOffer } from "@/lib/rider/types";
+import type { DispatchOffer, GeoPoint } from "@/lib/rider/types";
 import { Link } from "@tanstack/react-router";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
 import { Clock3, Wallet, Thermometer, Navigation, Zap, Flame, Target } from "lucide-react";
@@ -18,6 +18,13 @@ import { MapPane } from "./map-pane";
 import { DeliveryActions } from "./delivery-actions";
 import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
+import {
+  calculateDailyMilestoneProgress,
+  calculateStreakBonus,
+  calculateCourierPerformance,
+  getRiderTier,
+  calculateCompositeSurge,
+} from "@/lib/rider/gig-engine";
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
 function GamificationPanel({ completed, earnings }: { completed: number; earnings: number }) {
