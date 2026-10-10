@@ -152,6 +152,17 @@ function CheckoutPage() {
         {!items.length ? <p className="mt-6 text-muted">{t("cart.empty")}</p> : <>
           <section className="mt-6"><h2 className="text-sm font-medium text-muted">{t("checkout.address")}</h2><p className="mt-1 font-medium">{location.label}</p><p className="text-sm text-muted">{location.line1}</p></section>
           
+          {/* Urgency Banner */}
+          <div className="mt-4 animate-pulse flex items-center gap-3 rounded-2xl bg-gradient-to-r from-rose-500/10 to-orange-500/10 border border-rose-500/20 p-3.5 shadow-sm">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-600 text-xl shadow-inner">
+              🔥
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-bold tracking-tight text-rose-700 dark:text-rose-400">High Demand in your area</h3>
+              <p className="mt-0.5 text-xs font-medium text-rose-600/80 dark:text-rose-300/80">Kitchen is closing soon. Complete order now to secure delivery.</p>
+            </div>
+          </div>
+
           {/* Ordering for someone else? (Zomato-style) */}
           <section className="mt-4 rounded-[var(--radius-xl)] border border-border bg-surface p-4">
             <label className="flex cursor-pointer items-center justify-between">
@@ -349,31 +360,35 @@ function CheckoutPage() {
               )}
             </div>
             
-            {/* Online UPI & Cards (Zomato-standard) */}
-            <div className={`mt-2 rounded-[var(--radius-lg)] border-2 transition ${method === "RAZORPAY_ONLINE" ? "border-primary bg-primary/5 p-3.5" : "border-border bg-surface p-3"}`}>
-              <label className="flex cursor-pointer items-start gap-3">
+            {/* Ultra-Premium 1-Click UPI */}
+            <div className={`mt-3 overflow-hidden rounded-2xl border transition-all duration-300 ${method === "RAZORPAY_ONLINE" ? "border-black dark:border-white shadow-xl bg-gradient-to-br from-zinc-50 to-zinc-100/50 dark:from-zinc-900 dark:to-black" : "border-border bg-surface hover:border-zinc-300 dark:hover:border-zinc-700"}`}>
+              <label className="flex cursor-pointer items-start gap-4 p-4">
                 <input
                   type="radio"
                   name="pay"
-                  className="mt-1 size-4 text-primary focus:ring-primary"
+                  className="mt-1.5 size-4 accent-black dark:accent-white focus:ring-black dark:focus:ring-white"
                   checked={method === "RAZORPAY_ONLINE"}
                   onChange={() => setMethod("RAZORPAY_ONLINE")}
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="block font-semibold text-foreground">UPI / Cards / NetBanking (Instant)</span>
-                    <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                      Fastest & Safe
+                    <span className="block font-bold tracking-tight text-zinc-900 dark:text-zinc-50">UPI 1-Tap Checkout</span>
+                    <span className="flex items-center gap-1 rounded-full bg-black px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm dark:bg-white dark:text-black">
+                      <span className="relative flex h-1.5 w-1.5">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                      </span>
+                      Lightning
                     </span>
                   </div>
-                  <span className="block text-xs text-muted mt-0.5">Zero convenience fee · Protected by 256-bit encryption</span>
+                  <span className="mt-1 block text-[11px] font-medium text-zinc-500 dark:text-zinc-400">Zero processing fee · 256-bit Bank Grade Security</span>
                 </div>
               </label>
 
               {method === "RAZORPAY_ONLINE" && (
-                <div className="mt-3.5 border-t border-border/60 pt-3">
-                  <p className="text-xs font-medium text-muted">Preferred UPI Payment Apps:</p>
-                  <div className="mt-2 grid grid-cols-4 gap-2">
+                <div className="border-t border-black/5 bg-white/50 px-4 pb-4 pt-3 backdrop-blur-sm dark:border-white/5 dark:bg-black/50">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Select Partner App</p>
+                  <div className="mt-3 grid grid-cols-4 gap-2.5">
                     <button
                       type="button"
                       onClick={() => {
@@ -381,10 +396,11 @@ function CheckoutPage() {
                         if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
                         else toast.info("Google Pay selected. Click 'Place Order' below to proceed.");
                       }}
-                      className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
+                      className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 text-center shadow-sm transition-all hover:border-black hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-white"
                     >
-                      <span className="text-lg">🟢</span>
-                      <span className="mt-1 text-[11px] font-medium">Google Pay</span>
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-green-500/10 opacity-0 transition-opacity group-hover:opacity-100"></div>
+                      <span className="relative z-10 text-2xl drop-shadow-sm">🟢</span>
+                      <span className="relative z-10 mt-1.5 text-[10px] font-bold tracking-tight text-zinc-700 dark:text-zinc-300">GPay</span>
                     </button>
                     <button
                       type="button"
@@ -393,10 +409,11 @@ function CheckoutPage() {
                         if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
                         else toast.info("PhonePe selected. Click 'Place Order' below to proceed.");
                       }}
-                      className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
+                      className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 text-center shadow-sm transition-all hover:border-black hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-white"
                     >
-                      <span className="text-lg">🟣</span>
-                      <span className="mt-1 text-[11px] font-medium">PhonePe</span>
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-purple-600/10 opacity-0 transition-opacity group-hover:opacity-100"></div>
+                      <span className="relative z-10 text-2xl drop-shadow-sm">🟣</span>
+                      <span className="relative z-10 mt-1.5 text-[10px] font-bold tracking-tight text-zinc-700 dark:text-zinc-300">PhonePe</span>
                     </button>
                     <button
                       type="button"
@@ -405,18 +422,20 @@ function CheckoutPage() {
                         if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
                         else toast.info("Paytm selected. Click 'Place Order' below to proceed.");
                       }}
-                      className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
+                      className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 text-center shadow-sm transition-all hover:border-black hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-white"
                     >
-                      <span className="text-lg">🔵</span>
-                      <span className="mt-1 text-[11px] font-medium">Paytm</span>
+                      <div className="absolute inset-0 bg-gradient-to-br from-sky-400/10 to-blue-600/10 opacity-0 transition-opacity group-hover:opacity-100"></div>
+                      <span className="relative z-10 text-2xl drop-shadow-sm">🔵</span>
+                      <span className="relative z-10 mt-1.5 text-[10px] font-bold tracking-tight text-zinc-700 dark:text-zinc-300">Paytm</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => toast.info("Cards / NetBanking selected. Click 'Place Order' below to proceed.")}
-                      className="flex flex-col items-center justify-center rounded-lg border border-border bg-surface p-2 text-center transition hover:border-primary/60 hover:bg-primary/5"
+                      className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 text-center shadow-sm transition-all hover:border-black hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-white"
                     >
-                      <span className="text-lg">💳</span>
-                      <span className="mt-1 text-[11px] font-medium">Cards / Net</span>
+                      <div className="absolute inset-0 bg-zinc-100/50 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-zinc-800/50"></div>
+                      <span className="relative z-10 text-2xl opacity-90 grayscale drop-shadow-sm">💳</span>
+                      <span className="relative z-10 mt-1.5 text-[10px] font-bold tracking-tight text-zinc-700 dark:text-zinc-300">More</span>
                     </button>
                   </div>
                 </div>
