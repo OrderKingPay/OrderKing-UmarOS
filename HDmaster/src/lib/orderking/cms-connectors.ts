@@ -123,6 +123,15 @@ export interface EcosystemCmsConfig {
   connectorGeospatialAdPolicyTitle: string;
   connectorGeospatialAdPolicyNotice: string;
   connectorGeospatialAdWebhookNotice: string;
+
+  // 13. Meta Omnichannel Geo-Blast Engine (Meta Graph API v21.0 & WhatsApp Cloud API)
+  connectorMetaOmnichannelTitle: string;
+  connectorMetaOmnichannelSubtitle: string;
+  connectorMetaOmnichannelToggleLabel: string;
+  connectorMetaOmnichannelTestBtnText: string;
+  connectorMetaOmnichannelPolicyTitle: string;
+  connectorMetaOmnichannelPolicyNotice: string;
+  connectorMetaOmnichannelWebhookNotice: string;
 }
 
 export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
@@ -248,6 +257,15 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   connectorGeospatialAdPolicyTitle: "TRAI TCCCPR 2018 & Indian Telegraph Act Geofence Compliance",
   connectorGeospatialAdPolicyNotice: "Commercial communications strictly bound to TRAI DLT Principal Entity headers. Geofence radius sweeps verified via authorized Telecom LBS APIs with automated DND scrubbing and consent-governed instant incentive delivery.",
   connectorGeospatialAdWebhookNotice: "Telecom LBS & OpenRTB Bid Stream Ingestion Webhook: Receives real-time cell-tower ping responses, win notifications, and conversion tracking.",
+
+  // 13. Meta Omnichannel Geo-Blast Engine (Meta Graph API v21.0 & WhatsApp Cloud API)
+  connectorMetaOmnichannelTitle: "Official Meta Graph API & WhatsApp Cloud API Engine",
+  connectorMetaOmnichannelSubtitle: "Omnichannel automated restaurant acquisition radar. Direct Messaged geo-blasts across Instagram Direct, Facebook Messenger, and WhatsApp Cloud API to onboard kitchens with Zero-Fee and 0% commission propositions.",
+  connectorMetaOmnichannelToggleLabel: "Meta Omnichannel Geo-Blast Active",
+  connectorMetaOmnichannelTestBtnText: "Verify Meta Graph API Handshake",
+  connectorMetaOmnichannelPolicyTitle: "Meta Platform Terms & Commercial Business Messaging Compliance",
+  connectorMetaOmnichannelPolicyNotice: "Complies with Meta Business Policy, Instagram Messaging API Policies, and WhatsApp Business Messaging rate tiers. Dynamic 24-hour customer window management with verified template fallbacks.",
+  connectorMetaOmnichannelWebhookNotice: "Meta Graph API Webhook (/api/v1/meta/webhook): Listens for incoming Direct Messages, story mentions, WhatsApp status callbacks, and quick-reply payload handshakes.",
 };
 
 export interface GeospatialAdExchangeConnector {
@@ -460,6 +478,42 @@ export interface AiTelemarketingConnector {
   lastTestedAt: string | null;
 }
 
+export interface MetaOmnichannelConnector {
+  enabled: boolean;
+  mode: "live" | "sandbox";
+  metaAppId: string;
+  appSecret: string;
+  systemAccessToken: string;
+  whatsappBusinessAccountId: string;
+  instagramBusinessAccountId: string;
+  facebookPageId: string;
+  webhookVerifyToken: string;
+  apiGraphVersion: string;
+
+  // Geospatial Blast Targeting
+  targetLat: number;
+  targetLng: number;
+  radiusKm: number;
+  targetLocationLabel: string;
+  targetInstagram: boolean;
+  targetMessenger: boolean;
+  targetWhatsapp: boolean;
+
+  // Zero-Fee Acquisition DM Payload
+  acquisitionHeadline: string;
+  acquisitionPitchBody: string;
+  acquisitionCtaUrl: string;
+  acquisitionOfferCode: string;
+  dailyDmQuota: number;
+  rateLimitPerMinute: number;
+  dndFilterEnforced: boolean;
+  autoAiFollowUp: boolean;
+
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+  lastBlastAt: string | null;
+}
+
 export interface PluginConnectorsConfig {
   razorpay: RazorpayConnector;
   stripeAtlas: StripeAtlasConnector;
@@ -472,6 +526,7 @@ export interface PluginConnectorsConfig {
   b2bLeadGen: B2bLeadGenConnector;
   telemarketing: AiTelemarketingConnector;
   geospatialAdExchange: GeospatialAdExchangeConnector;
+  metaOmnichannel: MetaOmnichannelConnector;
 }
 
 export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
@@ -693,6 +748,36 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     status: "NOT_CONFIGURED",
     lastTestedAt: null,
   },
+  metaOmnichannel: {
+    enabled: false,
+    mode: "live",
+    metaAppId: "",
+    appSecret: "",
+    systemAccessToken: "",
+    whatsappBusinessAccountId: "",
+    instagramBusinessAccountId: "",
+    facebookPageId: "",
+    webhookVerifyToken: "orderking_meta_omnichannel_verify_token",
+    apiGraphVersion: "v21.0",
+    targetLat: 28.6315,
+    targetLng: 77.2167,
+    radiusKm: 5.0,
+    targetLocationLabel: "Connaught Place & Central Catchment, New Delhi",
+    targetInstagram: true,
+    targetMessenger: true,
+    targetWhatsapp: true,
+    acquisitionHeadline: "Eliminate 30% Aggregator Commission • ₹0 Setup Fee Onboarding",
+    acquisitionPitchBody: "Namaste {{restaurant_name}} Team! Why sacrifice 28-32% margins to Swiggy & Zomato? OrderKing delivers 0% commission direct online ordering with ₹0 setup fee and direct instant UPI bank settlements. We have pre-configured a branded digital menu for your kitchen at {{portal_claim_url}}. Claim your verified owner profile in 60 seconds.",
+    acquisitionCtaUrl: "https://orderking.delivery/partner-claim?ref=omnichannel_geoblast",
+    acquisitionOfferCode: "ZERO_FEE_DIRECT_2026",
+    dailyDmQuota: 500,
+    rateLimitPerMinute: 30,
+    dndFilterEnforced: true,
+    autoAiFollowUp: true,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+    lastBlastAt: null,
+  },
 };
 
 /** Load the full configuration bag from platform_settings */
@@ -839,7 +924,20 @@ export async function loadPluginConnectorsData(): Promise<PluginConnectorsConfig
     ? (geospatialAdExchange.enabled ? "CONNECTED" : "DEGRADED")
     : "NOT_CONFIGURED";
 
-  return { razorpay, stripeAtlas, payoneer, whatsapp, fssai, mapbox, cleartax, whatsappMarketing, b2bLeadGen, telemarketing, geospatialAdExchange };
+  const metaOmnichannel: MetaOmnichannelConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.metaOmnichannel,
+    ...(raw.metaOmnichannel || {}),
+  };
+  const hasMetaAuth =
+    !!metaOmnichannel.metaAppId &&
+    !!metaOmnichannel.appSecret &&
+    !!metaOmnichannel.systemAccessToken &&
+    !!metaOmnichannel.whatsappBusinessAccountId;
+  metaOmnichannel.status = hasMetaAuth
+    ? (metaOmnichannel.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  return { razorpay, stripeAtlas, payoneer, whatsapp, fssai, mapbox, cleartax, whatsappMarketing, b2bLeadGen, telemarketing, geospatialAdExchange, metaOmnichannel };
 }
 
 /** Save Plugin Connectors */
@@ -857,6 +955,7 @@ export async function savePluginConnectorsData(connectorsUpdates: Partial<Plugin
     b2bLeadGen: { ...current.b2bLeadGen, ...(connectorsUpdates.b2bLeadGen || {}) },
     telemarketing: { ...current.telemarketing, ...(connectorsUpdates.telemarketing || {}) },
     geospatialAdExchange: { ...current.geospatialAdExchange, ...(connectorsUpdates.geospatialAdExchange || {}) },
+    metaOmnichannel: { ...current.metaOmnichannel, ...(connectorsUpdates.metaOmnichannel || {}) },
   };
 
   await updatePlatformSettingsBag({ plugin_connectors: next });

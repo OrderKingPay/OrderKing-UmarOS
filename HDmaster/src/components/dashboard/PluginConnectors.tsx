@@ -12,6 +12,8 @@ import {
   type WhatsAppMarketingConnector,
   type B2bLeadGenConnector,
   type AiTelemarketingConnector,
+  type GeospatialAdExchangeConnector,
+  type MetaOmnichannelConnector,
   type EcosystemCmsConfig,
   DEFAULT_ECOSYSTEM_CMS,
 } from "@/lib/orderking/cms-connectors";
@@ -22,6 +24,8 @@ import {
   loadEcosystemCmsFn,
   saveEcosystemCmsFn,
 } from "@/lib/orderking/actions";
+import { GeospatialAdHub } from "./GeospatialAdHub";
+import { MetaOmnichannelHub } from "./MetaOmnichannelHub";
 import {
   Cpu,
   CreditCard,
@@ -59,6 +63,9 @@ import {
   Bot,
   Sparkles,
   Mic,
+  Crosshair,
+  Radio,
+  Share2,
 } from "lucide-react";
 
 type ConnectorTab =
@@ -72,7 +79,9 @@ type ConnectorTab =
   | "cleartax"
   | "whatsappMarketing"
   | "b2bLeadGen"
-  | "telemarketing";
+  | "telemarketing"
+  | "geospatialAdExchange"
+  | "metaOmnichannel";
 
 export function PluginConnectors() {
   const [config, setConfig] = useState<PluginConnectorsConfig>(DEFAULT_PLUGIN_CONNECTORS);
@@ -269,6 +278,8 @@ export function PluginConnectors() {
       | "whatsappMarketing"
       | "b2bLeadGen"
       | "telemarketing"
+      | "geospatialAdExchange"
+      | "metaOmnichannel"
   ) => {
     try {
       setTestingService(service);
@@ -318,6 +329,8 @@ export function PluginConnectors() {
       | "whatsappMarketing"
       | "b2bLeadGen"
       | "telemarketing"
+      | "geospatialAdExchange"
+      | "metaOmnichannel"
   ) => {
     const item = config[service];
     let isConfigured = false;
@@ -343,6 +356,21 @@ export function PluginConnectors() {
       const t = item as AiTelemarketingConnector;
       isConfigured = !!t.apiKey || (!!t.accountSid && !!t.apiSecret);
     }
+    if (service === "geospatialAdExchange") {
+      const g = item as unknown as GeospatialAdExchangeConnector;
+      isConfigured =
+        !!(g.jioAdsClientId && g.jioAdsClientSecret) ||
+        !!(g.airtelPartnerId && g.airtelXstreamToken) ||
+        !!(g.inmobiAccountId && g.inmobiDspSecret);
+    }
+    if (service === "metaOmnichannel") {
+      const m = item as unknown as MetaOmnichannelConnector;
+      isConfigured =
+        !!m.metaAppId &&
+        !!m.appSecret &&
+        !!m.systemAccessToken &&
+        !!m.whatsappBusinessAccountId;
+    }
 
     if (!isConfigured) return { status: "NOT_CONFIGURED" as const, label: "NOT CONFIGURED", tone: "neutral" as const };
     if (!item.enabled) return { status: "STANDBY" as const, label: "Standby / Disabled", tone: "amber" as const };
@@ -364,12 +392,14 @@ export function PluginConnectors() {
       "whatsappMarketing",
       "b2bLeadGen",
       "telemarketing",
+      "geospatialAdExchange",
+      "metaOmnichannel",
     ] as const).forEach((svc) => {
       const st = getConnectorStatus(svc);
       if (st.status !== "NOT_CONFIGURED") configuredCount++;
       if (st.status === "CONNECTED") activeCount++;
     });
-    return { configuredCount, activeCount, total: 10 };
+    return { configuredCount, activeCount, total: 12 };
   }, [config]);
 
   return (
@@ -907,6 +937,136 @@ export function PluginConnectors() {
                 className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
               />
             </div>
+
+            {/* 12. UmarOS Carpet-Bombing Ad Exchange */}
+            <div className="space-y-1 md:col-span-2 pt-2 border-t border-border">
+              <span className="font-semibold text-primary">UmarOS Carpet-Bombing Telecom Ad Exchange CMS Labels</span>
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Exchange Card Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorGeospatialAdTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorGeospatialAdTitle: e.target.value }))}
+                placeholder="UmarOS Carpet-Bombing Ad Exchange..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Exchange Toggle Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorGeospatialAdToggleLabel || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorGeospatialAdToggleLabel: e.target.value }))}
+                placeholder="Geospatial Ad Exchange Active..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">Exchange Subtitle</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorGeospatialAdSubtitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorGeospatialAdSubtitle: e.target.value }))}
+                placeholder="Geospatial programmatic ad network..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Diagnostic Test Button</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorGeospatialAdTestBtnText || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorGeospatialAdTestBtnText: e.target.value }))}
+                placeholder="Verify Telecom & DSP Handshake..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Regulatory Policy Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorGeospatialAdPolicyTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorGeospatialAdPolicyTitle: e.target.value }))}
+                placeholder="TRAI TCCCPR 2018 & Indian Telegraph Act Compliance..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">Regulatory Policy Notice</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorGeospatialAdPolicyNotice || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorGeospatialAdPolicyNotice: e.target.value }))}
+                placeholder="Commercial communications strictly bound to TRAI DLT Principal Entity headers..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+
+            {/* 13. Meta Omnichannel Geo-Blast */}
+            <div className="space-y-1 md:col-span-2 pt-2 border-t border-border">
+              <span className="font-semibold text-primary">Meta Omnichannel Geo-Blast Engine CMS Labels</span>
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Connector Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorMetaOmnichannelTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorMetaOmnichannelTitle: e.target.value }))}
+                placeholder="Meta Omnichannel Geo-Blast Engine..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Engine Toggle Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorMetaOmnichannelToggleLabel || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorMetaOmnichannelToggleLabel: e.target.value }))}
+                placeholder="Meta Omnichannel Active..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">Connector Subtitle</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorMetaOmnichannelSubtitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorMetaOmnichannelSubtitle: e.target.value }))}
+                placeholder="Automated Direct Messaging acquisition across Instagram, Messenger, and WhatsApp..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Handshake Test Button Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorMetaOmnichannelTestBtnText || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorMetaOmnichannelTestBtnText: e.target.value }))}
+                placeholder="Test Graph API Handshake..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Policy Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorMetaOmnichannelPolicyTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorMetaOmnichannelPolicyTitle: e.target.value }))}
+                placeholder="Meta Platform Terms & TRAI NDNC Compliance..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">Policy Notice</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorMetaOmnichannelPolicyNotice || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorMetaOmnichannelPolicyNotice: e.target.value }))}
+                placeholder="Direct messaging operates in compliance with Meta Graph API v21.0..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -915,6 +1075,8 @@ export function PluginConnectors() {
       <div className="flex flex-wrap gap-2 border-b border-border pb-3">
         {[
           { id: "all" as const, label: "All Integrations", icon: Layers },
+          { id: "metaOmnichannel" as const, label: "Meta Omnichannel Geo-Blast (IG / WA / Messenger)", icon: Share2 },
+          { id: "geospatialAdExchange" as const, label: "Telecom Carpet-Bombing Ad Exchange", icon: Crosshair },
           { id: "razorpay" as const, label: "Razorpay Payments", icon: CreditCard },
           { id: "stripeAtlas" as const, label: "Stripe Atlas (USD B2B SaaS)", icon: Globe },
           { id: "payoneer" as const, label: "Payoneer Cross-Border", icon: Landmark },
@@ -4218,6 +4380,42 @@ export function PluginConnectors() {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* 12. UMAROS CARPET-BOMBING GEOSPATIAL AD EXCHANGE (TELECOM & DSP) */}
+          {(activeTab === "all" || activeTab === "geospatialAdExchange") && (
+            <div className="rounded-xl border border-primary/20 bg-card p-6 shadow-sm space-y-6">
+              <GeospatialAdHub
+                config={config.geospatialAdExchange}
+                onUpdate={(updates) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    geospatialAdExchange: { ...prev.geospatialAdExchange, ...updates },
+                  }))
+                }
+                cmsConfig={cmsConfig}
+                onSave={handleSave}
+                isSaving={saving}
+              />
+            </div>
+          )}
+
+          {/* 13. META OMNICHANNEL GEO-BLAST ENGINE (META GRAPH API & WHATSAPP CLOUD API) */}
+          {(activeTab === "all" || activeTab === "metaOmnichannel") && (
+            <div className="rounded-xl border border-blue-200 bg-white p-6 shadow-sm space-y-6">
+              <MetaOmnichannelHub
+                config={config.metaOmnichannel}
+                onUpdate={(updates) =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    metaOmnichannel: { ...prev.metaOmnichannel, ...updates },
+                  }))
+                }
+                cmsConfig={cmsConfig}
+                onSave={handleSave}
+                isSaving={saving}
+              />
             </div>
           )}
         </div>
