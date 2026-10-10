@@ -355,7 +355,7 @@ export function KingPayWealthHub() {
                 {cat.badge && (
                   <span
                     className={`rounded-full px-1.5 py-0.2 text-[9px] font-extrabold ${
-                      isActive ? "bg-black/20 text-black" : "bg-amber-500/15 text-amber-400"
+                      isActive ? "bg-white/20 text-black" : "bg-amber-500/15 text-amber-400"
                     }`}
                   >
                     {cat.badge}

@@ -115,19 +115,19 @@ export function EmergencyRecoveryHub() {
 
         {/* Telemetry Bar */}
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-rose-500/20 pt-4">
-          <div className="rounded-lg bg-black/40 p-3 border border-rose-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-rose-500/20">
             <span className="text-xs text-slate-400">Current Deployment</span>
             <div className="text-2xl font-bold text-fg">{history[0].version}</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-rose-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-rose-500/20">
             <span className="text-xs text-slate-400">System Health</span>
             <div className="text-2xl font-bold text-emerald-400">HEALTHY</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-rose-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-rose-500/20">
             <span className="text-xs text-slate-400">Rollback Target</span>
             <div className="text-2xl font-bold text-amber-400">{history[1]?.version ?? "None"}</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-rose-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-rose-500/20">
             <span className="text-xs text-slate-400">MTTR (Mean Time to Recover)</span>
             <div className="text-2xl font-bold text-teal-400">&lt; 15 seconds</div>
           </div>
@@ -152,7 +152,7 @@ export function EmergencyRecoveryHub() {
                 className={`rounded-lg border p-2 text-center text-xs space-y-1 transition-all ${
                   isCompleted
                     ? "border-emerald-500/40 bg-emerald-950/30 text-emerald-300"
-                    : "border-slate-800 bg-black/40 text-slate-500"
+                    : "border-slate-800 bg-white/40 text-slate-500"
                 }`}
               >
                 <div className="font-mono text-[10px] text-slate-400">{i + 1}</div>
@@ -164,7 +164,7 @@ export function EmergencyRecoveryHub() {
 
         {/* Incident Details & Log Stream */}
         {activeIncident && (
-          <div className="mt-4 rounded-xl border border-slate-800 bg-black/60 p-4 space-y-3">
+          <div className="mt-4 rounded-xl border border-slate-800 bg-white/60 p-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-fg text-sm">
                 Incident Diagnostic Summary [{activeIncident.id}]
@@ -205,7 +205,7 @@ export function EmergencyRecoveryHub() {
           {history.map((dep, idx) => (
             <div
               key={dep.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-black/30 p-4"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-white/30 p-4"
             >
               <div>
                 <div className="flex items-center gap-2">

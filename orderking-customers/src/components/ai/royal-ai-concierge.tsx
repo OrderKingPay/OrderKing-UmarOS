@@ -923,7 +923,7 @@ export function RoyalAiConcierge({
       q.includes("scam") ||
       q.includes("cheat") ||
       q.includes("phishing") ||
-      q.includes("fake") ||
+      q.includes("Demo") ||
       q.includes("otp") ||
       q.includes("suraksha") ||
       q.includes("safe") ||
@@ -1123,7 +1123,7 @@ export function RoyalAiConcierge({
 
       {/* FULL AI VOICE & TEXT CHAT MODAL */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-3 sm:p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 p-3 sm:p-4 backdrop-blur-xs">
           <div className="w-full max-w-lg h-[90vh] max-h-[680px] rounded-3xl border border-slate-200 bg-white shadow-2xl flex flex-col overflow-hidden text-slate-900">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 p-3 sm:p-4 text-slate-900">

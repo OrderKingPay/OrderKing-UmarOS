@@ -13,7 +13,7 @@ interface EcosystemSwitchBarProps {
 }
 
 /**
- * 👑 SUPREME 3D GLOWING + HAPTIC + MAGNETIC SWITCH BAR
+ * 👑 Enterprise 3D GLOWING + HAPTIC + MAGNETIC SWITCH BAR
  * 
  * Strict Final Work Order Requirements:
  * - Text must be mixed case: “Order King FOODS” ↔️ “King Pay”

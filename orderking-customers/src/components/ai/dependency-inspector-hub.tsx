@@ -67,19 +67,19 @@ export function DependencyInspectorHub() {
 
         {/* Telemetry Bar */}
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-sky-500/20 pt-4">
-          <div className="rounded-lg bg-black/40 p-3 border border-sky-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-sky-500/20">
             <span className="text-xs text-slate-400">Total Connectors</span>
             <div className="text-2xl font-bold text-fg">{data.total}</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-sky-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-sky-500/20">
             <span className="text-xs text-slate-400">Direct API Configured</span>
             <div className="text-2xl font-bold text-emerald-400">{data.configured}</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-sky-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-sky-500/20">
             <span className="text-xs text-slate-400">Local Fallback Active</span>
             <div className="text-2xl font-bold text-amber-400">{data.fallbackActive}</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-sky-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-sky-500/20">
             <span className="text-xs text-slate-400">System Availability</span>
             <div className="text-2xl font-bold text-teal-400">100% (No Crash)</div>
           </div>
@@ -212,7 +212,7 @@ export function DependencyInspectorHub() {
                   </a>
                   <button
                     onClick={() => handleCopyEnv(selectedDep.envVar)}
-                    className="flex items-center justify-center gap-2 rounded-lg border border-slate-700 bg-black/40 px-4 py-2 text-xs text-slate-300 hover:bg-black/60"
+                    className="flex items-center justify-center gap-2 rounded-lg border border-slate-700 bg-white/40 px-4 py-2 text-xs text-slate-300 hover:bg-white/60"
                   >
                     <Copy className="h-3.5 w-3.5" />
                     Copy Env Line

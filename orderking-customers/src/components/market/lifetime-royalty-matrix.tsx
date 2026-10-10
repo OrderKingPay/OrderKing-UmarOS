@@ -93,7 +93,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
     },
   });
 
-  // Live real data fallbacks (Zero fake data)
+  // Live real data fallbacks (Zero Demo data)
   const referralCode = data?.referralCode || "KING50";
   const shareUrl = data?.shareUrl || `https://orderking.in/r/${referralCode}?src=lifetime_royalty`;
   const walletBalanceRupees = (data?.walletBalancePaise || 0) / 100;
@@ -276,7 +276,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
         </div>
       </div>
 
-      {/* 2. REAL FINANCIAL METRICS AUDIT HUB (ZERO FAKE DATA) */}
+      {/* 2. REAL FINANCIAL METRICS AUDIT HUB (ZERO Demo DATA) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Metric 1: Lifetime Royalty Earned */}
         <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xs space-y-2">
@@ -504,7 +504,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
         </div>
       </div>
 
-      {/* 4. RECRUITS DASHBOARD & AUDIT LEDGER (ZERO FAKE DATA) */}
+      {/* 4. RECRUITS DASHBOARD & AUDIT LEDGER (ZERO Demo DATA) */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div className="space-y-0.5">
@@ -683,7 +683,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
 
       {/* QR CODE MODAL */}
       {showQrModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/50 p-4 backdrop-blur-xs">
           <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-5 text-center">
             <div className="space-y-1">
               <h3 className="text-lg font-bold text-slate-900">Your In-Person Recruitment QR</h3>
@@ -716,7 +716,7 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
 
       {/* INSTANT UPI WITHDRAWAL MODAL */}
       {showWithdrawModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/50 p-4 backdrop-blur-xs">
           <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-5">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-emerald-700">

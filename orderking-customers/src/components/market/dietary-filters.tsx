@@ -207,7 +207,7 @@ export function DietaryFilters({
 
       {/* Dietary Detail Modal */}
       {activeInfo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-4 backdrop-blur-xs">
           <div className="w-full max-w-sm rounded-2xl border border-border bg-surface p-5 shadow-2xl space-y-4">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2.5">

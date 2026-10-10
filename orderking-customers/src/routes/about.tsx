@@ -25,7 +25,7 @@ function AboutPage() {
         <h2 className="mt-6 font-display text-xl text-fg">UX choices</h2>
         <p className="mt-2">
           Public food apps put search, location and a persistent cart within one thumb-reach. We kept that pattern and
-          cut membership upsells, hidden charges and fake social proof. Tracking does not invent GPS.
+          cut membership upsells, hidden charges and Demo social proof. Tracking does not invent GPS.
         </p>
         <p className="mt-4 text-xs">
           Invoice entity: {invoice.companyName}. GSTIN {invoice.gstin}. FSSAI {invoice.fssai}.

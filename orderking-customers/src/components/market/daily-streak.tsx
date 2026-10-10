@@ -44,7 +44,7 @@ export function DailyStreakWidget() {
                     ? "bg-[#D4AF37]/5 border-[#D4AF37]/40 shadow-[0_0_10px_rgba(212,175,55,0.05)] text-[#D4AF37]" 
                     : isToday && !isClaimedToday
                     ? "bg-white border-white animate-pulse shadow-[0_0_15px_rgba(255,255,255,0.2)] text-black"
-                    : "bg-black border-zinc-900 text-zinc-700"
+                    : "bg-white border-zinc-900 text-zinc-700"
                 ].join(" ")}>
                   {isCompleted ? (
                     <ShieldCheck className="size-4" strokeWidth={2.5} />

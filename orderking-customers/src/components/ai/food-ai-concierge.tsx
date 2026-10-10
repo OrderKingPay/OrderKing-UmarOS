@@ -1137,7 +1137,7 @@ export function FoodAiConcierge({
 
       {/* FULL FOOD AI VOICE & TEXT CHAT MODAL */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 p-3 sm:p-4 backdrop-blur-md">
           <div className="w-full max-w-lg h-[90vh] max-h-[680px] rounded-3xl border-2 border-primary/50 bg-surface shadow-2xl flex flex-col overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-primary via-emerald-900 to-[#07241C] p-3 sm:p-4 text-fg">

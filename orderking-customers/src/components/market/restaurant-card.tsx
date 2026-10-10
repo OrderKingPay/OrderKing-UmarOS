@@ -37,7 +37,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
         {/* Top Badges */}
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 z-10">
           {restaurant.promoted && (
-            <span className="rounded-md bg-black/70 backdrop-blur-xs px-2 py-0.5 text-[10px] font-extrabold text-white uppercase tracking-wider shadow-xs">
+            <span className="rounded-md bg-white/70 backdrop-blur-xs px-2 py-0.5 text-[10px] font-extrabold text-white uppercase tracking-wider shadow-xs">
               Ad
             </span>
           )}

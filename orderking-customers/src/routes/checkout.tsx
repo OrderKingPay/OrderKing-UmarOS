@@ -401,7 +401,7 @@ function CheckoutPage() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <span className="block font-bold tracking-tight text-zinc-900 dark:text-zinc-50">UPI 1-Tap Checkout</span>
-                    <span className="flex items-center gap-1 rounded-full bg-black px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm dark:bg-white dark:text-black">
+                    <span className="flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm dark:bg-white dark:text-black">
                       <span className="relative flex h-1.5 w-1.5">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                         <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
@@ -414,7 +414,7 @@ function CheckoutPage() {
               </label>
 
               {method === "RAZORPAY_ONLINE" && (
-                <div className="border-t border-black/5 bg-white/50 px-4 pb-4 pt-3 backdrop-blur-sm dark:border-white/5 dark:bg-black/50">
+                <div className="border-t border-black/5 bg-white/50 px-4 pb-4 pt-3 backdrop-blur-sm dark:border-white/5 dark:bg-white/50">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Select Partner App</p>
                   <div className="mt-3 grid grid-cols-4 gap-2.5">
                     <button

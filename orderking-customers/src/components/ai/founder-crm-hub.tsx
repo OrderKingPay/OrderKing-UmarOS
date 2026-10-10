@@ -26,7 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ClientLead } from "@/lib/ai/supreme-founder-ai-core";
+import { ClientLead } from "@/lib/ai/Enterprise-founder-ai-core";
 import { getCuratedClientLeadsFn } from "@/lib/server/founder-actions";
 
 export type CrmStage =
@@ -423,7 +423,7 @@ export function FounderCrmHub({
 
       {/* New Lead Modal */}
       {showNewLeadModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 p-4 backdrop-blur-xs">
           <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-5 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-2">
               <h3 className="font-bold text-sm text-fg">Add New Client Prospect</h3>

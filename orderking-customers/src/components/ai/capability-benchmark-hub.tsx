@@ -85,21 +85,21 @@ export function CapabilityBenchmarkHub() {
         {/* Aggregate Metrics Bar */}
         {report && (
           <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-emerald-500/20 pt-4">
-            <div className="rounded-lg bg-black/40 p-3 border border-emerald-500/20">
+            <div className="rounded-lg bg-white/40 p-3 border border-emerald-500/20">
               <span className="text-xs text-slate-400">Average Score</span>
               <div className="text-2xl font-bold text-emerald-400">{report.averageScore} / 100</div>
             </div>
-            <div className="rounded-lg bg-black/40 p-3 border border-emerald-500/20">
+            <div className="rounded-lg bg-white/40 p-3 border border-emerald-500/20">
               <span className="text-xs text-slate-400">Tests Passing</span>
               <div className="text-2xl font-bold text-fg">
                 {report.passedTests} / {report.totalTests}
               </div>
             </div>
-            <div className="rounded-lg bg-black/40 p-3 border border-emerald-500/20">
+            <div className="rounded-lg bg-white/40 p-3 border border-emerald-500/20">
               <span className="text-xs text-slate-400">Average Latency</span>
               <div className="text-2xl font-bold text-amber-400">{report.averageLatencyMs} ms</div>
             </div>
-            <div className="rounded-lg bg-black/40 p-3 border border-emerald-500/20">
+            <div className="rounded-lg bg-white/40 p-3 border border-emerald-500/20">
               <span className="text-xs text-slate-400">Reality Verified</span>
               <div className="text-2xl font-bold text-teal-400">100%</div>
             </div>
@@ -114,7 +114,7 @@ export function CapabilityBenchmarkHub() {
           className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
             selectedCategory === "ALL"
               ? "bg-emerald-500 text-black font-bold"
-              : "bg-black/40 text-slate-300 hover:bg-black/60 border border-slate-700"
+              : "bg-white/40 text-slate-300 hover:bg-white/60 border border-slate-700"
           }`}
         >
           All Disciplines ({BENCHMARK_TEST_SUITE.length})
@@ -126,7 +126,7 @@ export function CapabilityBenchmarkHub() {
             className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize transition-all ${
               selectedCategory === cat
                 ? "bg-emerald-500 text-black font-bold"
-                : "bg-black/40 text-slate-300 hover:bg-black/60 border border-slate-700"
+                : "bg-white/40 text-slate-300 hover:bg-white/60 border border-slate-700"
             }`}
           >
             {cat.replace("_", " ")}
@@ -178,7 +178,7 @@ export function CapabilityBenchmarkHub() {
               </div>
 
               {/* Evidence Bar */}
-              <div className="mt-3 rounded-lg bg-black/50 p-2.5 text-xs font-mono text-slate-300 border border-slate-800">
+              <div className="mt-3 rounded-lg bg-white/50 p-2.5 text-xs font-mono text-slate-300 border border-slate-800">
                 <span className="text-emerald-400 font-semibold">Evidence: </span>
                 {res.evidence}
               </div>

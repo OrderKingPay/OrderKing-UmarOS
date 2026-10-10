@@ -10,7 +10,7 @@ export function GeoViralWidget() {
   const percentage = Math.floor((currentOrders / ordersNeeded) * 100);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-black p-6 my-4 shadow-[0_0_50px_rgba(212,175,55,0.1)]">
+    <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-white p-6 my-4 shadow-[0_0_50px_rgba(212,175,55,0.1)]">
       <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-[#D4AF37]/15 blur-[60px] pointer-events-none"></div>
       
       <div className="relative z-10">

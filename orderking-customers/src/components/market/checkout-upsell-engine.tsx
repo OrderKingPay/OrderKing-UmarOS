@@ -53,7 +53,7 @@ export function CheckoutUpsellEngine({
 
   const upsellItems: CheckoutUpsellItem[] = data?.upsells ?? [];
 
-  // Strictly ZERO fake data: If no genuine menu items or add-ons exist in the database, render nothing.
+  // Strictly ZERO Demo data: If no genuine menu items or add-ons exist in the database, render nothing.
   if (!isLoading && upsellItems.length === 0) {
     return null;
   }
@@ -247,7 +247,7 @@ export function CheckoutUpsellEngine({
           <ShieldCheck className="h-3 w-3" />
           1-Click Instant Addition • Live Bill Update
         </span>
-        <span>Zero fake listings • Fresh from kitchen</span>
+        <span>Zero Demo listings • Fresh from kitchen</span>
       </div>
     </section>
   );

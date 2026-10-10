@@ -106,21 +106,21 @@ export function BusinessIntelligenceHub() {
 
         {/* Executive Telemetry Grid */}
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-indigo-500/20 pt-4">
-          <div className="rounded-lg bg-black/40 p-3 border border-indigo-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-indigo-500/20">
             <span className="text-xs text-slate-400">Client Retention</span>
             <div className="text-2xl font-bold text-emerald-400">{report.clientRetentionRatePct}%</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-indigo-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-indigo-500/20">
             <span className="text-xs text-slate-400">Total Repeat Revenue</span>
             <div className="text-2xl font-bold text-fg">
               ₹{(report.totalRepeatRevenueInr / 100000).toFixed(2)} Lakhs
             </div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-indigo-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-indigo-500/20">
             <span className="text-xs text-slate-400">Top Channel Conversion</span>
             <div className="text-2xl font-bold text-amber-400">87.5% (Referral)</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-indigo-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-indigo-500/20">
             <span className="text-xs text-slate-400">Active Schedules</span>
             <div className="text-2xl font-bold text-teal-400">
               {jobs.filter((j) => j.enabled).length} / {jobs.length} Active
@@ -138,7 +138,7 @@ export function BusinessIntelligenceHub() {
           {report.insights.map((insight, idx) => (
             <div
               key={idx}
-              className="flex items-start gap-2.5 rounded-lg border border-slate-800 bg-black/40 p-3 text-xs text-slate-300"
+              className="flex items-start gap-2.5 rounded-lg border border-slate-800 bg-white/40 p-3 text-xs text-slate-300"
             >
               <TrendingUp className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
               <span>{insight}</span>
@@ -160,7 +160,7 @@ export function BusinessIntelligenceHub() {
             {report.topRevenueServices.map((svc) => (
               <div
                 key={svc.serviceId}
-                className="rounded-lg border border-slate-800 bg-black/30 p-3 space-y-2"
+                className="rounded-lg border border-slate-800 bg-white/30 p-3 space-y-2"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-fg text-sm">{svc.name}</span>
@@ -191,7 +191,7 @@ export function BusinessIntelligenceHub() {
               {report.channelConversionRates.map((ch) => (
                 <div
                   key={ch.channel}
-                  className="flex items-center justify-between rounded-lg border border-slate-800 bg-black/30 p-2.5 text-xs"
+                  className="flex items-center justify-between rounded-lg border border-slate-800 bg-white/30 p-2.5 text-xs"
                 >
                   <span className="font-medium text-slate-200">{ch.channel.replace("_", " ")}</span>
                   <div className="flex items-center gap-4">
@@ -213,7 +213,7 @@ export function BusinessIntelligenceHub() {
 
             <div className="space-y-2">
               {report.deliveryBottlenecks.map((bn, idx) => (
-                <div key={idx} className="rounded-lg bg-black/40 p-3 border border-slate-800 text-xs space-y-1">
+                <div key={idx} className="rounded-lg bg-white/40 p-3 border border-slate-800 text-xs space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-amber-300">{bn.stage}</span>
                     <span className="text-slate-400">
@@ -246,8 +246,8 @@ export function BusinessIntelligenceHub() {
               key={job.id}
               className={`rounded-xl border p-4 space-y-3 transition-all ${
                 job.enabled
-                  ? "border-slate-800 bg-black/40"
-                  : "border-slate-900 bg-black/20 opacity-60"
+                  ? "border-slate-800 bg-white/40"
+                  : "border-slate-900 bg-white/20 opacity-60"
               }`}
             >
               <div className="flex items-center justify-between">
@@ -290,7 +290,7 @@ export function BusinessIntelligenceHub() {
 
         {/* Execution Log Table */}
         {executionLogs.length > 0 && (
-          <div className="mt-4 rounded-lg border border-slate-800 bg-black/50 p-3 space-y-2">
+          <div className="mt-4 rounded-lg border border-slate-800 bg-white/50 p-3 space-y-2">
             <span className="text-xs font-semibold text-indigo-400">Recent Execution Events:</span>
             <div className="space-y-1 font-mono text-xs">
               {executionLogs.map((log) => (

@@ -149,7 +149,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
       
       {/* HUD Overlay */}
       <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none">
-        <div className="bg-black/80 backdrop-blur border border-white/10 rounded-lg p-3">
+        <div className="bg-white/80 backdrop-blur border border-white/10 rounded-lg p-3">
           <div className="text-xs text-muted/80 font-semibold uppercase tracking-wider mb-1">Live Telemetry</div>
           <div className="flex gap-4">
             <div>

@@ -403,7 +403,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-4 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/85 p-3 sm:p-4 backdrop-blur-md">
       <div className="w-full max-w-md rounded-3xl border-2 border-amber-400/80 bg-surface shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-[#0D3B2E] via-emerald-900 to-[#07241C] p-4 text-fg">
@@ -491,7 +491,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
         ) : scanMode === "camera" ? (
           <div className="px-4 pb-4 space-y-3">
             {/* Viewfinder Video Container */}
-            <div className="relative mx-auto flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl bg-black border-2 border-amber-400/60 shadow-inner">
+            <div className="relative mx-auto flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl bg-white border-2 border-amber-400/60 shadow-inner">
               <video
                 ref={videoRef}
                 playsInline
@@ -522,7 +522,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
 
                   {/* Center Target Indicator */}
                   <div className="text-center space-y-1">
-                    <span className="text-[10px] font-mono font-black text-amber-300 bg-black/70 px-2.5 py-0.5 rounded-full border border-amber-400/40">
+                    <span className="text-[10px] font-mono font-black text-amber-300 bg-white/70 px-2.5 py-0.5 rounded-full border border-amber-400/40">
                       {isFarZoomActive ? "🎯 FAR DISTANCE MODE" : "✨ ALIGN QR CODE"}
                     </span>
                   </div>
@@ -538,7 +538,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
                   className={`rounded-full px-2.5 py-1 text-[11px] font-bold backdrop-blur-md transition flex items-center gap-1 shadow-md ${
                     isFarZoomActive
                       ? "bg-amber-400 text-black border border-amber-500 font-extrabold"
-                      : "bg-black/60 text-fg/90 border border-white/20"
+                      : "bg-white/60 text-fg/90 border border-white/20"
                   }`}
                   title="Toggle Far Distance Super-Resolution"
                 >
@@ -554,7 +554,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
                     className={`rounded-full p-2 backdrop-blur-md transition shadow-md ${
                       isTorchOn
                         ? "bg-amber-400 text-black"
-                        : "bg-black/60 text-fg/90 border border-white/20"
+                        : "bg-white/60 text-fg/90 border border-white/20"
                     }`}
                     title="Toggle Flashlight"
                   >
@@ -567,7 +567,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
               <div className="absolute bottom-3 inset-x-3 flex items-center justify-between text-xs">
                 {/* Hardware Zoom Selector */}
                 {maxZoom > 1 ? (
-                  <div className="flex items-center gap-1 rounded-full bg-black/70 p-1 border border-white/20 backdrop-blur-md">
+                  <div className="flex items-center gap-1 rounded-full bg-white/70 p-1 border border-white/20 backdrop-blur-md">
                     {[1, 2, Math.min(3, maxZoom)].map((z) => (
                       <button
                         key={z}
@@ -584,14 +584,14 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
                     ))}
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1 text-[10px] text-fg/80 bg-black/60 px-2.5 py-1 rounded-full border border-white/20 backdrop-blur-md">
+                  <div className="flex items-center gap-1 text-[10px] text-fg/80 bg-white/60 px-2.5 py-1 rounded-full border border-white/20 backdrop-blur-md">
                     <ZoomIn className="size-3" />
                     <span>Auto-Focus Active</span>
                   </div>
                 )}
 
                 {/* Upload QR Image from Gallery */}
-                <label className="cursor-pointer rounded-full bg-black/70 hover:bg-black/90 px-3 py-1 text-[11px] font-bold text-fg border border-white/20 backdrop-blur-md flex items-center gap-1.5 transition">
+                <label className="cursor-pointer rounded-full bg-white/70 hover:bg-white/90 px-3 py-1 text-[11px] font-bold text-fg border border-white/20 backdrop-blur-md flex items-center gap-1.5 transition">
                   <ImageIcon className="size-3.5 text-amber-300" />
                   <span>Gallery</span>
                   <input

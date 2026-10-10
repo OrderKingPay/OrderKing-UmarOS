@@ -119,7 +119,7 @@ export function LiveChatSupportModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4 backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-white/60 p-0 sm:p-4 backdrop-blur-xs">
       <div className="flex h-[90vh] sm:h-[600px] w-full max-w-lg flex-col rounded-t-3xl sm:rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden">
         {/* Chat Header */}
         <div className="flex items-center justify-between border-b border-border bg-surface-2 px-4 py-3.5">

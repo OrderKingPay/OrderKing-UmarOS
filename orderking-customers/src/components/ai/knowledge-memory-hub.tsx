@@ -113,21 +113,21 @@ export function KnowledgeMemoryHub() {
 
         {/* Telemetry Bar */}
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-teal-500/20 pt-4">
-          <div className="rounded-lg bg-black/40 p-3 border border-teal-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-teal-500/20">
             <span className="text-xs text-slate-400">Ingested Documents</span>
             <div className="text-2xl font-bold text-fg">{docs.length}</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-teal-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-teal-500/20">
             <span className="text-xs text-slate-400">Indexed Tokens</span>
             <div className="text-2xl font-bold text-teal-400">
               {docs.reduce((acc, d) => acc + d.tokens.length, 0)}
             </div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-teal-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-teal-500/20">
             <span className="text-xs text-slate-400">Stored Memories</span>
             <div className="text-2xl font-bold text-emerald-400">{memories.length}</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-teal-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-teal-500/20">
             <span className="text-xs text-slate-400">Memory Control</span>
             <div className="text-2xl font-bold text-amber-400">100% Deletable</div>
           </div>
@@ -171,7 +171,7 @@ export function KnowledgeMemoryHub() {
                     placeholder="e.g. White-Label Delivery Platform SLA"
                     value={newDocTitle}
                     onChange={(e) => setNewDocTitle(e.target.value)}
-                    className="mt-1 bg-black/50 border-slate-700 text-fg"
+                    className="mt-1 bg-white/50 border-slate-700 text-fg"
                   />
                 </div>
                 <div>
@@ -179,7 +179,7 @@ export function KnowledgeMemoryHub() {
                   <select
                     value={newDocCategory}
                     onChange={(e) => setNewDocCategory(e.target.value as any)}
-                    className="mt-1 w-full rounded-md border border-slate-700 bg-black/50 px-3 py-2 text-sm text-fg"
+                    className="mt-1 w-full rounded-md border border-slate-700 bg-white/50 px-3 py-2 text-sm text-fg"
                   >
                     <option value="SPEC">Specification</option>
                     <option value="CONTRACT">Contract & Agreement</option>
@@ -197,7 +197,7 @@ export function KnowledgeMemoryHub() {
                   placeholder="Paste raw markdown, contract text, or technical guidelines..."
                   value={newDocContent}
                   onChange={(e) => setNewDocContent(e.target.value)}
-                  className="mt-1 w-full rounded-md border border-slate-700 bg-black/50 p-3 text-sm text-fg font-mono"
+                  className="mt-1 w-full rounded-md border border-slate-700 bg-white/50 p-3 text-sm text-fg font-mono"
                 />
               </div>
 
@@ -219,7 +219,7 @@ export function KnowledgeMemoryHub() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              className="bg-black/40 border-slate-700 text-fg"
+              className="bg-white/40 border-slate-700 text-fg"
             />
             <Button variant="primary" onClick={handleSearch} className="shrink-0 bg-teal-600 hover:bg-teal-500">
               <Search className="h-4 w-4 mr-1.5" />
@@ -269,7 +269,7 @@ export function KnowledgeMemoryHub() {
                   Close
                 </Button>
               </div>
-              <div className="rounded-lg bg-black/50 p-4 text-xs font-mono text-slate-300 whitespace-pre-wrap border border-slate-800">
+              <div className="rounded-lg bg-white/50 p-4 text-xs font-mono text-slate-300 whitespace-pre-wrap border border-slate-800">
                 {selectedDoc.content}
               </div>
             </div>
@@ -285,7 +285,7 @@ export function KnowledgeMemoryHub() {
               className={`rounded-lg px-3 py-1.5 text-xs font-medium ${
                 selectedLayer === "ALL"
                   ? "bg-teal-500 text-black font-bold"
-                  : "bg-black/40 text-slate-300 border border-slate-800"
+                  : "bg-white/40 text-slate-300 border border-slate-800"
               }`}
             >
               All Layers ({memories.length})
@@ -297,7 +297,7 @@ export function KnowledgeMemoryHub() {
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize ${
                   selectedLayer === layer
                     ? "bg-teal-500 text-black font-bold"
-                    : "bg-black/40 text-slate-300 border border-slate-800"
+                    : "bg-white/40 text-slate-300 border border-slate-800"
                 }`}
               >
                 {layer.replace("_", " ")}

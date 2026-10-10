@@ -84,7 +84,7 @@ export function DishReviewModal({
   if (!open && !isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-4 backdrop-blur-xs">
       <div className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border bg-surface-2 px-5 py-4">
@@ -227,7 +227,7 @@ export function DishReviewModal({
                   <button
                     type="button"
                     onClick={() => setPhotos((prev) => prev.filter((_, i) => i !== idx))}
-                    className="absolute top-0 right-0 bg-black/70 p-0.5 text-white"
+                    className="absolute top-0 right-0 bg-white/70 p-0.5 text-white"
                   >
                     <X className="size-3" />
                   </button>

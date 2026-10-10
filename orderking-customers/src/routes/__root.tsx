@@ -1,7 +1,6 @@
-
 import { Suspense } from "react";
 import { createServerFn } from "@tanstack/react-start";
-import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState, Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
@@ -12,6 +11,7 @@ import { OfflineDetector } from "@/components/offline-detector";
 import { PwaInstallPrompt } from "@/components/pwa/install-prompt";
 import appCss from "../styles.css?url";
 import { NextGenSeo } from "@/components/seo/NextGenSeo";
+import { Home, Utensils, Wallet, GraduationCap, User } from "lucide-react";
 
 const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
   try {
@@ -72,16 +72,13 @@ export const Route = createRootRoute({
         { name: "apple-mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-status-bar-style", content: "default" },
         { name: "application-name", content: "OrderKing" },
-
-
-          { property: "og:description", content: config.brand.seoDescription },
-          { property: "og:image", content: config.brand.ogImageUrl },
-          { property: "og:type", content: "website" },
-          { name: "twitter:card", content: "summary_large_image" },
-          { name: "twitter:title", content: config.brand.seoTitle },
-          { name: "twitter:description", content: config.brand.seoDescription },
-          { name: "twitter:image", content: config.brand.ogImageUrl },
-        
+        { property: "og:description", content: config.brand.seoDescription },
+        { property: "og:image", content: config.brand.ogImageUrl },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: config.brand.seoTitle },
+        { name: "twitter:description", content: config.brand.seoDescription },
+        { name: "twitter:image", content: config.brand.ogImageUrl },
       ],
       links: [
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -103,24 +100,24 @@ export const Route = createRootRoute({
 
 function CustomerAppSkeleton() {
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-black pb-24 md:max-w-5xl animate-pulse" aria-busy="true" aria-label="Loading application">
-      <div className="sticky top-0 z-30 bg-black border-b border-white/10 px-4 py-3 flex items-center justify-between">
-        <div className="h-6 w-28 bg-white/10 rounded-md" />
+    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-white pb-24 md:max-w-5xl animate-pulse" aria-busy="true" aria-label="Loading application">
+      <div className="sticky top-0 z-30 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+        <div className="h-6 w-28 bg-gray-100 rounded-md" />
         <div className="flex items-center gap-2">
-          <div className="h-8 w-20 bg-white/10 rounded-full" />
-          <div className="h-8 w-8 bg-white/10 rounded-full" />
+          <div className="h-8 w-20 bg-gray-100 rounded-full" />
+          <div className="h-8 w-8 bg-gray-100 rounded-full" />
         </div>
       </div>
       <div className="px-4 py-4 space-y-4">
-        <div className="h-11 w-full bg-white/5 rounded-xl border border-white/10" />
+        <div className="h-11 w-full bg-gray-50 rounded-xl border border-gray-100" />
         <div className="flex gap-3 overflow-hidden">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-20 w-20 shrink-0 bg-white/5 rounded-2xl border border-white/10" />
+             <div key={i} className="h-20 w-20 shrink-0 bg-gray-50 rounded-2xl border border-gray-100" />
           ))}
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-56 w-full bg-white/5 rounded-3xl border border-white/10" />
+             <div key={i} className="h-56 w-full bg-gray-50 rounded-3xl border border-gray-100" />
           ))}
         </div>
       </div>
@@ -132,15 +129,14 @@ function Root() {
   const context = Route.useRouteContext();
   const config = context.config ?? DEFAULT_CONFIG;
   const location = useRouterState({ select: (s) => s.location });
-  const isDark = config.brand?.themeMode === "dark";
   return (
-    <html lang="en" className={`antialiased ${isDark ? "dark bg-slate-900 text-slate-100" : "bg-white text-gray-900"}`} suppressHydrationWarning>
+    <html lang="en" className="antialiased bg-white text-gray-900" suppressHydrationWarning>
       <head>
         <HeadContent />
         <NextGenSeo config={config} />
         <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
       </head>
-      <body className={`${isDark ? "bg-slate-900 text-slate-100" : "bg-white text-gray-900"} min-h-screen`}>
+      <body className="bg-white text-gray-900 min-h-screen pb-20">
         <PreviewHostBridge />
         <OfflineDetector />
         <PwaInstallPrompt />
@@ -167,9 +163,29 @@ function Root() {
         <Scripts />
         <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(()=>{}))}` }} />
 
+        <div className="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-2 z-50">
+           <Link to="/" className="flex flex-col items-center text-gray-500 hover:text-[#E23744] [&.active]:text-[#E23744]">
+             <Home className="w-6 h-6" />
+             <span className="text-[10px] mt-1 font-medium">Delivery</span>
+           </Link>
+           <Link to="/dining" className="flex flex-col items-center text-gray-500 hover:text-[#E23744] [&.active]:text-[#E23744]">
+             <Utensils className="w-6 h-6" />
+             <span className="text-[10px] mt-1 font-medium">Dining</span>
+           </Link>
+           <Link to="/king-pay" className="flex flex-col items-center text-gray-500 hover:text-[#E23744] [&.active]:text-[#E23744]">
+             <Wallet className="w-6 h-6" />
+             <span className="text-[10px] mt-1 font-medium">KingPay</span>
+           </Link>
+           <Link to="/tutor" className="flex flex-col items-center text-gray-500 hover:text-[#E23744] [&.active]:text-[#E23744]">
+             <GraduationCap className="w-6 h-6" />
+             <span className="text-[10px] mt-1 font-medium">AI Tutor</span>
+           </Link>
+           <Link to="/account" className="flex flex-col items-center text-gray-500 hover:text-[#E23744] [&.active]:text-[#E23744]">
+             <User className="w-6 h-6" />
+             <span className="text-[10px] mt-1 font-medium">Profile</span>
+           </Link>
+        </div>
       </body>
     </html>
   );
 }
-
-

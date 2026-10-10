@@ -65,8 +65,8 @@ export const Route = createFileRoute("/app/founder-command")({
 export function FounderCommandPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [deckTab, setDeckTab] = useState<
-    | "supreme_ai"
-    | "supreme_executor"
+    | "Enterprise_ai"
+    | "Enterprise_executor"
     | "money_dashboard"
     | "radar"
     | "crm"
@@ -88,7 +88,7 @@ export function FounderCommandPage() {
     | "upgrader"
     | "accounting"
     | "launch"
-  >("supreme_ai");
+  >("Enterprise_ai");
 
   const [useDemoRecords, setUseDemoRecords] = useState<boolean>(() => {
     if (typeof window !== "undefined" && window.localStorage) {
@@ -248,7 +248,7 @@ export function FounderCommandPage() {
       setAuditLog((prev) => [
         {
           id: `HD-${Date.now()}`,
-          action: "SUPREME_CREATOR_DEPLOYMENT",
+          action: "Enterprise_CREATOR_DEPLOYMENT",
           timestamp: "Just now",
           status: "BLOCKED",
           detail: `Deployment blocked for '${deployTarget.projectName}'. Missing provider credentials.`,
@@ -290,11 +290,11 @@ export function FounderCommandPage() {
             <Server className="w-4 h-4 mr-1.5 text-slate-600" />
             System Connect
           </Button>
-          {deckTab !== "supreme_ai" && (
+          {deckTab !== "Enterprise_ai" && (
             <Button
               size="sm"
               onClick={() => {
-                setDeckTab("supreme_ai");
+                setDeckTab("Enterprise_ai");
                 toast.success("Returned to Executive Chat");
               }}
               className="rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-800 px-3.5 py-1.5 text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
@@ -462,13 +462,13 @@ export function FounderCommandPage() {
         </div>
       </div>
 
-      {/* MAIN VIEW: SUPREME UMAR OS CHAT (DEFAULT) OR SPECIALIZED HUB */}
-      {deckTab === "supreme_ai" && (
+      {/* MAIN VIEW: Enterprise UMAR OS CHAT (DEFAULT) OR SPECIALIZED HUB */}
+      {deckTab === "Enterprise_ai" && (
         <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}
 
-      {/* TAB SUPREME EXECUTOR: 14-STAGE GOAL DECOMPOSER WITH HUMAN GATES */}
-      {deckTab === "supreme_executor" && (
+      {/* TAB Enterprise EXECUTOR: 14-STAGE GOAL DECOMPOSER WITH HUMAN GATES */}
+      {deckTab === "Enterprise_executor" && (
         <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}
 
@@ -916,7 +916,7 @@ export function FounderCommandPage() {
                   <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block">
                     Message Preview:
                   </span>
-                  <p className="font-mono text-[11px] text-slate-200 whitespace-pre-line leading-relaxed bg-black/40 p-2.5 rounded-lg border border-border/50">
+                  <p className="font-mono text-[11px] text-slate-200 whitespace-pre-line leading-relaxed bg-white/40 p-2.5 rounded-lg border border-border/50">
                     {`👑 OrderKing is LIVE in ${launchTown}!
 🍗 Tired of paying 30% extra on Zomato & Swiggy?
 Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKUP (True Dine-In Prices)!
@@ -977,7 +977,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Killswitch */}
-              <div className="rounded-xl border border-border bg-black/40 p-3 flex items-center justify-between">
+              <div className="rounded-xl border border-border bg-white/40 p-3 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-fg block">Emergency Platform Kill-Switch</span>
                   <span className="text-[10px] text-muted">Blocks all incoming orders/payments</span>
@@ -996,7 +996,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
               </div>
 
               {/* Surge Control */}
-              <div className="rounded-xl border border-border bg-black/40 p-3 flex items-center justify-between">
+              <div className="rounded-xl border border-border bg-white/40 p-3 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-fg block">Surge Multiplier</span>
                   <span className="text-[10px] text-muted">Current: {surgeMultiplier}</span>
@@ -1017,7 +1017,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
               </div>
 
               {/* Dispatch Mode */}
-              <div className="rounded-xl border border-border bg-black/40 p-3 flex items-center justify-between">
+              <div className="rounded-xl border border-border bg-white/40 p-3 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-fg block">Fleet Dispatch Mode</span>
                   <span className="text-[10px] text-muted">{dispatchMode}</span>
@@ -1036,7 +1036,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
               </div>
 
               {/* Environment */}
-              <div className="rounded-xl border border-border bg-black/40 p-3 flex items-center justify-between">
+              <div className="rounded-xl border border-border bg-white/40 p-3 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-fg block">Production Sandbox</span>
                   <span className="text-[10px] text-muted">{productionMode}</span>
@@ -1215,7 +1215,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
         </div>
       )}
 
-      {/* TAB 2: 1-COMMAND SUPREME CREATOR ENGINE */}
+      {/* TAB 2: 1-COMMAND Enterprise CREATOR ENGINE */}
       {deckTab === "creator" && (
         <div className="space-y-6">
           <div className="rounded-2xl border-2 border-amber-500/40 bg-surface p-6 shadow-xl space-y-4">
@@ -1257,7 +1257,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                 <p className="text-xs text-slate-300 font-mono">Live Edge URL: {createdProject.liveUrl}</p>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {createdProject.routes.map((r) => (
-                    <span key={r} className="rounded bg-black/40 px-2 py-0.5 text-[10px] font-mono text-emerald-300">
+                    <span key={r} className="rounded bg-white/40 px-2 py-0.5 text-[10px] font-mono text-emerald-300">
                       {r}
                     </span>
                   ))}

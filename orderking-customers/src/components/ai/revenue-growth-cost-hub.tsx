@@ -138,25 +138,25 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
 
         {/* Telemetry Bar */}
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-emerald-500/20 pt-4">
-          <div className="rounded-lg bg-black/40 p-3 border border-emerald-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-emerald-500/20">
             <span className="text-xs text-slate-400">Total Invoiced</span>
             <div className="text-2xl font-bold text-fg">
               ₹{(invoices.reduce((acc, inv) => acc + inv.totalInr, 0) / 1000).toFixed(0)}k
             </div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-emerald-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-emerald-500/20">
             <span className="text-xs text-slate-400">Verified Received</span>
             <div className="text-2xl font-bold text-emerald-400">
               ₹{(invoices.filter((i) => i.status === "RECEIVED").reduce((acc, inv) => acc + inv.totalInr, 0) / 1000).toFixed(0)}k
             </div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-emerald-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-emerald-500/20">
             <span className="text-xs text-slate-400">Projected Monthly Savings</span>
             <div className="text-2xl font-bold text-amber-400">
               ₹{(costReport.totalProjectedSavingsInr / 1000).toFixed(0)}k /mo
             </div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-emerald-500/20">
+          <div className="rounded-lg bg-white/40 p-3 border border-emerald-500/20">
             <span className="text-xs text-slate-400">Repeat Pipeline</span>
             <div className="text-2xl font-bold text-teal-400">
               ₹{(repeatOpportunities.reduce((acc, o) => acc + o.proposedMonthlyInr, 0) / 1000).toFixed(0)}k /mo
@@ -265,19 +265,19 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
 
             {/* Commercials Summary */}
             <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-lg bg-black/40 p-2.5 border border-slate-800 text-xs">
+              <div className="rounded-lg bg-white/40 p-2.5 border border-slate-800 text-xs">
                 <span className="text-slate-400">Proposed Pricing</span>
                 <div className="font-bold text-emerald-400 text-sm">
                   ₹{applicationDraft.proposedPriceInr.toLocaleString()} (${applicationDraft.proposedPriceUsd})
                 </div>
               </div>
-              <div className="rounded-lg bg-black/40 p-2.5 border border-slate-800 text-xs">
+              <div className="rounded-lg bg-white/40 p-2.5 border border-slate-800 text-xs">
                 <span className="text-slate-400">Estimated Effort</span>
                 <div className="font-bold text-fg text-sm">
                   {applicationDraft.estimatedEffortHours} Hours ({Math.ceil(applicationDraft.estimatedEffortHours / 40)}w)
                 </div>
               </div>
-              <div className="rounded-lg bg-black/40 p-2.5 border border-slate-800 text-xs">
+              <div className="rounded-lg bg-white/40 p-2.5 border border-slate-800 text-xs">
                 <span className="text-slate-400">Contribution Margin</span>
                 <div className="font-bold text-amber-400 text-sm">{applicationDraft.marginPct}% Margin</div>
               </div>
@@ -286,7 +286,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
             {/* Cover Letter Content */}
             <div>
               <label className="text-xs font-semibold text-slate-300 uppercase">Custom Cover Letter:</label>
-              <div className="mt-1.5 rounded-lg bg-black/60 p-4 text-xs font-mono text-slate-300 whitespace-pre-wrap border border-slate-800">
+              <div className="mt-1.5 rounded-lg bg-white/60 p-4 text-xs font-mono text-slate-300 whitespace-pre-wrap border border-slate-800">
                 {applicationDraft.customCoverLetter}
               </div>
             </div>
@@ -300,7 +300,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                 {applicationDraft.verifiedPortfolioAttachments.map((item, idx) => (
                   <div
                     key={idx}
-                    className="rounded-lg border border-slate-800 bg-black/40 p-3 text-xs space-y-1"
+                    className="rounded-lg border border-slate-800 bg-white/40 p-3 text-xs space-y-1"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-fg">{item.title}</span>
@@ -373,9 +373,9 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
             </div>
 
             {/* Items Table */}
-            <div className="rounded-lg border border-slate-800 bg-black/40 overflow-hidden">
+            <div className="rounded-lg border border-slate-800 bg-white/40 overflow-hidden">
               <table className="w-full text-xs text-left">
-                <thead className="border-b border-slate-800 bg-black/60 text-slate-400">
+                <thead className="border-b border-slate-800 bg-white/60 text-slate-400">
                   <tr>
                     <th className="p-2.5">Item Description</th>
                     <th className="p-2.5 text-right">Quantity</th>
@@ -390,7 +390,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                       <td className="p-2.5 text-right font-mono">₹{item.totalInr.toLocaleString()}</td>
                     </tr>
                   ))}
-                  <tr className="font-bold text-fg bg-black/40">
+                  <tr className="font-bold text-fg bg-white/40">
                     <td colSpan={2} className="p-2.5 text-right">
                       Total Due:
                     </td>
@@ -403,7 +403,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
             </div>
 
             {/* UPI QR & Direct Payment Link */}
-            <div className="rounded-xl border border-emerald-500/30 bg-black/50 p-4 flex flex-wrap items-center justify-between gap-4">
+            <div className="rounded-xl border border-emerald-500/30 bg-white/50 p-4 flex flex-wrap items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <QrCode className="h-5 w-5 text-emerald-400" />
@@ -426,7 +426,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
             </div>
 
             {selectedInvoice.providerEventId && (
-              <div className="rounded-lg bg-black/60 p-3 text-xs font-mono text-emerald-400 border border-emerald-500/20">
+              <div className="rounded-lg bg-white/60 p-3 text-xs font-mono text-emerald-400 border border-emerald-500/20">
                 ✓ Provider Event Verified: {selectedInvoice.providerEventId} (Paid at:{" "}
                 {new Date(selectedInvoice.paidAt!).toLocaleString()})
               </div>
@@ -476,7 +476,7 @@ export function RevenueGrowthCostHub({ founderUpiVpa = "orderking@okhdfcbank" }:
                   </div>
                 </div>
 
-                <div className="rounded-lg bg-black/50 p-2.5 text-[11px] font-mono text-slate-400 border border-slate-800">
+                <div className="rounded-lg bg-white/50 p-2.5 text-[11px] font-mono text-slate-400 border border-slate-800">
                   {opp.proposalDraft}
                 </div>
 

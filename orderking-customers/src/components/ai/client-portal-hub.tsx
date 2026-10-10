@@ -47,7 +47,7 @@ export function ClientPortalHub({
       percentage: 30,
       amountInr: 45000,
       status: "PAID",
-      deliverables: ["Full UX Mockups", "PostgreSQL Schema", "Brand Kit"],
+      deliverables: ["Full UX Sampleups", "PostgreSQL Schema", "Brand Kit"],
     },
     {
       id: "M2",

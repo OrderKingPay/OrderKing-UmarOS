@@ -455,7 +455,7 @@ function OrderDetailPage() {
 
         
           {order.status === "DELIVERED" && (
-            <div className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-[#D4AF37]/30 bg-black p-5 shadow-[0_0_30px_rgba(212,175,55,0.15)] relative">
+            <div className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-[#D4AF37]/30 bg-white p-5 shadow-[0_0_30px_rgba(212,175,55,0.15)] relative">
               <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#D4AF37]/10 blur-[50px] pointer-events-none"></div>
               <div className="flex items-start gap-4 relative z-10">
                 <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#F59E0B] shadow-lg">
@@ -592,7 +592,7 @@ function OrderDetailPage() {
                         <button
                           type="button"
                           onClick={() => setComplaintImage(null)}
-                          className="absolute top-0 right-0 bg-black/70 text-fg rounded-bl px-1 text-[10px]"
+                          className="absolute top-0 right-0 bg-white/70 text-fg rounded-bl px-1 text-[10px]"
                         >
                           ✕
                         </button>

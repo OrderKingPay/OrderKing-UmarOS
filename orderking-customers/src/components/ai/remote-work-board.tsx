@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import {
   CURATED_REMOTE_GIGS,
   RemoteContractGig,
-} from "@/lib/ai/supreme-founder-ai-core";
+} from "@/lib/ai/Enterprise-founder-ai-core";
 
 export function RemoteWorkBoard({
   onSelectAction,

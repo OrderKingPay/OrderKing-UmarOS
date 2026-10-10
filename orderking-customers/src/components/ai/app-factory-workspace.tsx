@@ -24,7 +24,7 @@ import {
   ENTERPRISE_BLUEPRINTS,
   EnterpriseProjectBlueprint,
   ProjectFileArtifact,
-} from "@/lib/ai/supreme-founder-ai-core";
+} from "@/lib/ai/Enterprise-founder-ai-core";
 
 export function AppFactoryWorkspace({
   onSelectAction,

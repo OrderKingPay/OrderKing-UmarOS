@@ -72,25 +72,25 @@ import {
   EnterpriseProjectBlueprint,
   ProjectFileArtifact,
   RemoteContractGig,
-  SupremeAiMessage,
-} from "@/lib/ai/supreme-founder-ai-core";
+  EnterpriseAiMessage,
+} from "@/lib/ai/Enterprise-founder-ai-core";
 import {
-  supremeAudioDsp,
+  EnterpriseAudioDsp,
   selectBestBrowserVoice,
   VOICE_PERSONAS,
   VoicePersonaId,
   SUPPORTED_LANGUAGES,
   SupportedLanguage,
-} from "@/lib/ai/supreme-voice-engine";
+} from "@/lib/ai/Enterprise-voice-engine";
 import { BenchmarkRunReport } from "@/lib/ai/capability-benchmark";
 import { CostControlReport } from "@/lib/ai/cost-control-engine";
-import { SupremeExecutionPlan, SupremeStageNode } from "@/lib/ai/supreme-task-executor";
+import { EnterpriseExecutionPlan, EnterpriseStageNode } from "@/lib/ai/Enterprise-task-executor";
 import { EnsembleConsensusEngine, type EnsembleConsensusResult } from "@/lib/ai/ensemble-consensus-engine";
 import { InstantDeployEngine, type DeployTarget } from "@/lib/ai/instant-deploy-engine";
 import { AutonomousModelUpdater, autonomousModelUpdater } from "@/lib/ai/autonomous-model-updater";
 import { isDeliveryActiveInLocation, ACTIVE_DELIVERY_ZONES } from "@/lib/geo/geofence-guard";
 
-interface SupremeFounderAiChatProps {
+interface EnterpriseFounderAiChatProps {
   founderUpiVpa?: string;
   onSelectAction?: (action: string, payload: any) => void;
   defaultCallMode?: boolean;
@@ -362,12 +362,12 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
     a.download = `${blueprint.id}-full-production-bundle.json`;
     a.click();
     URL.revokeObjectURL(url);
-    supremeAudioDsp.playTone("success_chime");
+    EnterpriseAudioDsp.playTone("success_chime");
     toast.success("Complete production codebase bundle downloaded!");
   };
 
   return (
-    <div className="rounded-xl border border-purple-500/40 bg-black/60 overflow-hidden shadow-2xl mt-3">
+    <div className="rounded-xl border border-purple-500/40 bg-white/60 overflow-hidden shadow-2xl mt-3">
       {/* Top Header & Navigation Tabs */}
       <div className="border-b border-border/70 bg-surface-2/80 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -468,7 +468,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                       value={newPatient}
                       onChange={(e) => setNewPatient(e.target.value)}
                       placeholder="Patient name (e.g. Joya Das)..."
-                      className="h-8 text-xs bg-black/40"
+                      className="h-8 text-xs bg-white/40"
                     />
                     <Button
                       size="sm"
@@ -482,7 +482,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                           { token: nextToken, name: newPatient, doctor: "General OPD Triage", status: "WAITING" },
                         ]);
                         setNewPatient("");
-                        supremeAudioDsp.playTone("success_chime");
+                        EnterpriseAudioDsp.playTone("success_chime");
                         toast.success(`Token #${nextToken} generated for ${newPatient}!`);
                       }}
                     >
@@ -497,7 +497,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                     {hospitalQueue.map((item) => (
                       <div
                         key={item.token}
-                        className="flex items-center justify-between text-[11px] bg-black/40 px-2 py-1 rounded"
+                        className="flex items-center justify-between text-[11px] bg-white/40 px-2 py-1 rounded"
                       >
                         <span className="font-mono text-emerald-400 font-bold">#{item.token}</span>
                         <span className="font-semibold">{item.name}</span>
@@ -547,7 +547,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                         className="flex-1 h-8 text-[11px] bg-surface-2"
                         onClick={() => {
                           setCartTotal((prev) => prev + price);
-                          supremeAudioDsp.playTone("interruption_ping");
+                          EnterpriseAudioDsp.playTone("interruption_ping");
                           toast.success(`Added ${item} to test cart!`);
                         }}
                       >
@@ -591,7 +591,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                   onClick={() => {
                     setLedgerBalance((prev) => prev - 50000);
                     setDisbursedCount((prev) => prev + 1);
-                    supremeAudioDsp.playTone("success_chime");
+                    EnterpriseAudioDsp.playTone("success_chime");
                     toast.success("₹50,000 disbursed atomically! SHA-256 block hash recorded.");
                   }}
                 >
@@ -606,7 +606,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
       {/* TAB 2: MULTI-FILE CODEBASE VIEWER */}
       {activeTab === "code" && (
         <div className="flex flex-col bg-slate-950">
-          <div className="flex items-center gap-1 overflow-x-auto border-b border-border/60 bg-black/60 px-3 py-1.5 text-xs scrollbar-none">
+          <div className="flex items-center gap-1 overflow-x-auto border-b border-border/60 bg-white/60 px-3 py-1.5 text-xs scrollbar-none">
             {blueprint.files.map((f) => (
               <button
                 key={f.filename}
@@ -645,7 +645,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             </div>
           </div>
 
-          <div className="p-3 font-mono text-xs text-slate-200 max-h-72 overflow-y-auto bg-black/80">
+          <div className="p-3 font-mono text-xs text-slate-200 max-h-72 overflow-y-auto bg-white/80">
             <pre className="whitespace-pre overflow-x-auto leading-relaxed">
               <code>{currentCode}</code>
             </pre>
@@ -686,7 +686,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
               <Button
                 size="sm"
                 onClick={() => {
-                  supremeAudioDsp.playTone("success_chime");
+                  EnterpriseAudioDsp.playTone("success_chime");
                   toast.success(`Saved customized ${selectedFile}! Included in download bundle.`);
                 }}
                 className="h-6 px-2.5 text-[10px] font-bold bg-amber-600 hover:bg-amber-500 text-fg"
@@ -704,7 +704,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
               setFileCodes((prev) => ({ ...prev, [selectedFile]: val }));
             }}
             rows={12}
-            className="w-full rounded-lg bg-black/90 border border-border p-3 font-mono text-xs text-amber-100 focus:outline-none focus:border-amber-500/70 resize-y leading-relaxed"
+            className="w-full rounded-lg bg-white/90 border border-border p-3 font-mono text-xs text-amber-100 focus:outline-none focus:border-amber-500/70 resize-y leading-relaxed"
             placeholder="Write or modify TypeScript, SQL or JSON code here..."
           />
           <div className="flex justify-between items-center text-[10px] text-muted font-mono">
@@ -799,11 +799,11 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
 }
 
 // Action Card Renderer Component
-function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessage["actionCard"]>; onSaveKeys?: (keys: FounderCredentials) => void }) {
+function ActionCardView({ card, onSaveKeys }: { card: NonNullable<EnterpriseAiMessage["actionCard"]>; onSaveKeys?: (keys: FounderCredentials) => void }) {
   if (card.type === "lead_pitch") {
     const { lead, invoice } = card.data as { lead: ClientLead; invoice: ClientInvoice };
     return (
-      <div className="rounded-xl border border-amber-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
+      <div className="rounded-xl border border-amber-500/40 bg-white/60 p-3.5 space-y-3 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-amber-400">🏢 {lead.businessName}</span>
@@ -827,7 +827,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
             onClick={() => {
               const pitch = `Respected Management at ${lead.businessName},\n\nTired of losing high margins to aggregator commissions? OrderKing provides you with a turnkey white-label direct ordering app with 0% commission and direct UPI settlements.\n\nReview your custom solution and 50% advance invoice (₹${invoice.advanceRequiredInr.toLocaleString("en-IN")}) here:\n${invoice.upiPaymentLink}\n\nLet's schedule a 10-minute setup call today.`;
               void navigator.clipboard?.writeText(pitch);
-              supremeAudioDsp.playTone("interruption_ping");
+              EnterpriseAudioDsp.playTone("interruption_ping");
               toast.success("Client WhatsApp pitch & invoice link copied to clipboard!");
             }}
           >
@@ -841,7 +841,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
             className="text-xs font-bold text-emerald-300 border-emerald-500/40"
             onClick={() => {
               void navigator.clipboard?.writeText(invoice.upiPaymentLink);
-              supremeAudioDsp.playTone("interruption_ping");
+              EnterpriseAudioDsp.playTone("interruption_ping");
               toast.success("Direct UPI deep link copied!");
             }}
           >
@@ -868,7 +868,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === "invoice_pay") {
     const invoice = card.data as ClientInvoice;
     return (
-      <div className="rounded-xl border border-emerald-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
+      <div className="rounded-xl border border-emerald-500/40 bg-white/60 p-3.5 space-y-3 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-emerald-400">💵 Invoice: {invoice.invoiceNumber}</span>
@@ -909,7 +909,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
             className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-fg"
             onClick={() => {
               void navigator.clipboard?.writeText(invoice.upiPaymentLink);
-              supremeAudioDsp.playTone("success_chime");
+              EnterpriseAudioDsp.playTone("success_chime");
               toast.success("King Pay UPI link copied! Send to client for instant advance payment.");
             }}
           >
@@ -941,7 +941,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === "remote_gig_bid") {
     const gig = card.data as RemoteContractGig;
     return (
-      <div className="rounded-xl border border-sky-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
+      <div className="rounded-xl border border-sky-500/40 bg-white/60 p-3.5 space-y-3 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-sky-300">{gig.title}</span>
@@ -983,7 +983,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
             className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-500 text-fg"
             onClick={() => {
               void navigator.clipboard?.writeText(gig.proposalTemplate);
-              supremeAudioDsp.playTone("interruption_ping");
+              EnterpriseAudioDsp.playTone("interruption_ping");
               toast.success("Tailored Upwork/Toptal proposal copied to clipboard!");
             }}
           >
@@ -1002,7 +1002,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
     const softwareLatency = report.categoryScores?.software_generation?.latencyMs ?? 85;
 
     return (
-      <div className="rounded-xl border border-emerald-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
+      <div className="rounded-xl border border-emerald-500/40 bg-white/60 p-3.5 space-y-3 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BarChart3 className="size-4 text-emerald-400" />
@@ -1057,7 +1057,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
             className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-fg"
             onClick={() => {
               void navigator.clipboard?.writeText(JSON.stringify(report, null, 2));
-              supremeAudioDsp.playTone("success_chime");
+              EnterpriseAudioDsp.playTone("success_chime");
               toast.success("Benchmark JSON evidence copied to clipboard!");
             }}
           >
@@ -1073,7 +1073,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === ("cost_optimization" as any)) {
     const rep = card.data as CostControlReport;
     return (
-      <div className="rounded-xl border border-amber-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
+      <div className="rounded-xl border border-amber-500/40 bg-white/60 p-3.5 space-y-3 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TrendingUp className="size-4 text-amber-400" />
@@ -1118,9 +1118,9 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
 
   // Card: Delivery Task Graph (§28)
   if (card.type === ("delivery_graph" as any)) {
-    const graph = card.data as SupremeExecutionPlan;
+    const graph = card.data as EnterpriseExecutionPlan;
     return (
-      <div className="rounded-xl border border-cyan-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
+      <div className="rounded-xl border border-cyan-500/40 bg-white/60 p-3.5 space-y-3 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Zap className="size-4 text-cyan-400" />
@@ -1132,7 +1132,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         </div>
 
         <div className="space-y-1 max-h-36 overflow-y-auto pr-1">
-          {graph.stages.map((s: SupremeStageNode, idx: number) => (
+          {graph.stages.map((s: EnterpriseStageNode, idx: number) => (
             <div
               key={s.id || s.stage}
               className="flex items-center justify-between text-[11px] bg-surface-2/60 p-1.5 rounded border border-border/40"
@@ -1291,7 +1291,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
                 className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shrink-0 shadow-md"
                 onClick={() => {
                   autonomousModelUpdater.applyUpgrade(u.id);
-                  supremeAudioDsp.playTone("success_chime");
+                  EnterpriseAudioDsp.playTone("success_chime");
                   toast.success(`Hot-Upgraded Umar OS to ${u.name}! Zero downtime.`);
                 }}
               >
@@ -1376,7 +1376,7 @@ function InChatCredentialCard({ onSave }: { onSave?: (keys: FounderCredentials) 
       localStorage.setItem("orderking_founder_credentials", JSON.stringify(keys));
     }
     if (onSave) onSave(keys);
-    supremeAudioDsp.playTone("success_chime");
+    EnterpriseAudioDsp.playTone("success_chime");
     toast.success("Credentials securely saved to local storage.");
   };
 
@@ -1449,12 +1449,12 @@ function ExecutionStepsViewer({ steps }: { steps: AgentExecutionStep[] }) {
   return null;
 }
 
-export function SupremeFounderAiChat({
+export function EnterpriseFounderAiChat({
   founderUpiVpa = "orderking@okhdfcbank",
   onSelectAction,
   defaultCallMode = false,
-}: SupremeFounderAiChatProps) {
-  const [selectedModel, setSelectedModel] = useState<AiModelId>("auto-supreme-orchestrator");
+}: EnterpriseFounderAiChatProps) {
+  const [selectedModel, setSelectedModel] = useState<AiModelId>("auto-Enterprise-orchestrator");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchFilter, setSearchFilter] = useState("");
   const [selectedPersona, setSelectedPersona] = useState<VoicePersonaId>("aria");
@@ -1474,7 +1474,7 @@ export function SupremeFounderAiChat({
   const [webSearchEnabled, setWebSearchEnabled] = useState(true);
 
   // Chat history with initial professional greeting
-  const [messages, setMessages] = useState<SupremeAiMessage[]>([
+  const [messages, setMessages] = useState<EnterpriseAiMessage[]>([
     {
       id: "msg-init",
       sender: "ai",
@@ -1482,7 +1482,7 @@ export function SupremeFounderAiChat({
 
 You can ask me anything across software engineering, architecture, business analytics, operations, strategic planning, or general inquiries. Type a message or use the microphone to begin.`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      modelUsed: "auto-supreme-orchestrator",
+      modelUsed: "auto-Enterprise-orchestrator",
     },
   ]);
 
@@ -1537,9 +1537,9 @@ You can ask me anything across software engineering, architecture, business anal
       window.speechSynthesis.cancel();
       window.speechSynthesis.resume();
 
-      supremeAudioDsp.init();
+      EnterpriseAudioDsp.init();
       const persona = VOICE_PERSONAS[selectedPersona];
-      supremeAudioDsp.applyDspProfile(persona.dspProfile);
+      EnterpriseAudioDsp.applyDspProfile(persona.dspProfile);
 
       // Strip markdown formatting, symbols, and bullets before sending to speech synthesis
       const cleanText = text
@@ -1626,7 +1626,7 @@ You can ask me anything across software engineering, architecture, business anal
     // Auto-interruption: If AI is speaking and user speaks or taps mic, stop AI speech immediately
     if (window.speechSynthesis && window.speechSynthesis.speaking) {
       stopSpeaking();
-      supremeAudioDsp.playTone("interruption_ping");
+      EnterpriseAudioDsp.playTone("interruption_ping");
     }
 
     if (recognitionRef.current) {
@@ -1695,7 +1695,7 @@ You can ask me anything across software engineering, architecture, business anal
     if (!text) return;
 
     // Add user message
-    const userMsg: SupremeAiMessage = {
+    const userMsg: EnterpriseAiMessage = {
       id: `msg-${Date.now()}`,
       sender: "founder",
       text,
@@ -1711,7 +1711,7 @@ You can ask me anything across software engineering, architecture, business anal
     stopSpeaking();
 
     const aiMsgId = `msg-ai-${Date.now()}`;
-    const initialAiMsg: SupremeAiMessage = {
+    const initialAiMsg: EnterpriseAiMessage = {
       id: aiMsgId,
       sender: "ai",
       text: "",
@@ -1840,7 +1840,7 @@ You can ask me anything across software engineering, architecture, business anal
             : m
         )
       );
-      supremeAudioDsp.playTone("interruption_ping");
+      EnterpriseAudioDsp.playTone("interruption_ping");
 
       if (voiceEnabled) {
         const cleanSpoken = streamedText
@@ -1860,7 +1860,7 @@ You can ask me anything across software engineering, architecture, business anal
       console.error("[ai-chat] AI Service unavailable:", err);
       setIsProcessing(false);
       
-      const aiMsg: SupremeAiMessage = {
+      const aiMsg: EnterpriseAiMessage = {
         id: aiMsgId,
         sender: "ai",
         text: `⚠️ **Critical System Fault**\n\nThe Founder AI engine could not be reached. The system strictly operates in Fail-Closed mode to guarantee security and prevent the emission of unauthorized simulated offline responses.\n\n**Error Details:** ${err instanceof Error ? err.message : String(err)}`,
@@ -1870,7 +1870,7 @@ You can ask me anything across software engineering, architecture, business anal
       };
 
       setMessages((prev) => prev.map((m) => (m.id === aiMsgId ? aiMsg : m)));
-      supremeAudioDsp.playTone(("error" as any));
+      EnterpriseAudioDsp.playTone(("error" as any));
       toast.error("Fail-Closed Protection Triggered: AI response aborted.");
     }
   };
@@ -1879,14 +1879,14 @@ You can ask me anything across software engineering, architecture, business anal
     const next = !isCallMode;
     setIsCallMode(next);
     if (next) {
-      supremeAudioDsp.playTone("call_connected");
+      EnterpriseAudioDsp.playTone("call_connected");
       toast.error("📞 VOICE BLOCKED: WebRTC Provider Configuration Missing");
       speakText(
         "Voice call connected. How can I help you today?",
         selectedLanguage
       );
     } else {
-      supremeAudioDsp.playTone("call_ended");
+      EnterpriseAudioDsp.playTone("call_ended");
       stopSpeaking();
       stopListening();
       setIsImmersiveCall(false);
@@ -2031,7 +2031,7 @@ You can ask me anything across software engineering, architecture, business anal
           </div>
 
           {/* Sidebar Footer: Identity & System Health */}
-          <div className="p-3 border-t border-white/10/80 bg-black/60 space-y-2">
+          <div className="p-3 border-t border-white/10/80 bg-white/60 space-y-2">
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -2083,18 +2083,18 @@ You can ask me anything across software engineering, architecture, business anal
                 onChange={(e) => {
                   const m = e.target.value as AiModelId;
                   setSelectedModel(m);
-                  supremeAudioDsp.playTone("interruption_ping");
+                  EnterpriseAudioDsp.playTone("interruption_ping");
                   toast.success(`Active Model: ${m.toUpperCase()}`);
                 }}
                 className="h-8 rounded-lg bg-surface border border-white/20 px-3 text-xs font-bold text-gray-400 focus:outline-none focus:ring-1 focus:ring-amber-500"
               >
-                <option value="auto-supreme-orchestrator">⚡ Auto Core Orchestrator (Autonomous Best)</option>
+                <option value="auto-Enterprise-orchestrator">⚡ Auto Core Orchestrator (Autonomous Best)</option>
                 <option value="ensemble-consensus">🧠 Multi-Model Consensus (Real Verification)</option>
                 <option value="gpt-5-6-sol">🔮 OpenAI GPT-5.6 Sol</option>
                 <option value="claude-4-6-opus">⚡ Anthropic Claude 3.7 Sonnet (Hybrid Reasoning)</option>
                 <option value="grok-4-6-super">🚀 xAI Grok 2 (Real-Time Intelligence)</option>
                 <option value="gemini-3-8-ultra">💎 Google Gemini 2.0 Flash (Fast Reasoning)</option>
-                <option value="codex-supreme">💻 Codex Architecture Engine</option>
+                <option value="codex-Enterprise">💻 Codex Architecture Engine</option>
                 <option value="deepseek-r1-sovereign">🛡️ DeepSeek R1 (Reasoning)</option>
                 <option value="sovereign-ultra">⚡ Local Processing Core</option>
               </select>
@@ -2118,7 +2118,7 @@ You can ask me anything across software engineering, architecture, business anal
               onChange={(e) => {
                 const pid = e.target.value as VoicePersonaId;
                 setSelectedPersona(pid);
-                supremeAudioDsp.playTone("interruption_ping");
+                EnterpriseAudioDsp.playTone("interruption_ping");
                 toast.success(`Voice set to ${VOICE_PERSONAS[pid].name}`);
               }}
               className="hidden lg:block h-8 rounded-lg bg-surface border border-white/20 px-2 text-xs text-gray-300 focus:outline-none"
@@ -2133,7 +2133,7 @@ You can ask me anything across software engineering, architecture, business anal
               value={selectedLanguage}
               onChange={(e) => {
                 setSelectedLanguage(e.target.value);
-                supremeAudioDsp.playTone("interruption_ping");
+                EnterpriseAudioDsp.playTone("interruption_ping");
                 toast.info(`Language set to ${e.target.value}`);
               }}
               className="hidden sm:block h-8 rounded-lg bg-surface border border-white/20 px-2 text-xs text-gray-300 focus:outline-none"
@@ -2211,7 +2211,7 @@ You can ask me anything across software engineering, architecture, business anal
                   Speak naturally. Auto-turn-taking and zero-delay interruption active.
                 </p>
                 {liveTranscript && (
-                  <div className="mt-1.5 text-xs font-mono text-cyan-300 bg-black px-2 py-0.5 rounded border border-cyan-500/30">
+                  <div className="mt-1.5 text-xs font-mono text-cyan-300 bg-white px-2 py-0.5 rounded border border-cyan-500/30">
                     🎤 &quot;{liveTranscript}&quot;
                   </div>
                 )}

@@ -485,7 +485,7 @@ export function CompetitorBounty({ className = "" }: { className?: string }) {
                     </p>
 
                     <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-                      <label className="inline-flex items-center gap-1.5 rounded-xl bg-gray-900 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-black cursor-pointer transition active:scale-95">
+                      <label className="inline-flex items-center gap-1.5 rounded-xl bg-gray-900 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-white cursor-pointer transition active:scale-95">
                         <UploadCloud className="size-4" />
                         <span>Select Screenshot</span>
                         <input

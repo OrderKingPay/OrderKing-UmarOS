@@ -47,7 +47,7 @@ export function NutritionAllergenDrawer({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4 backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-white/60 p-0 sm:p-4 backdrop-blur-xs">
       <div className="w-full max-w-md rounded-t-3xl sm:rounded-2xl border border-border bg-surface p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
         {/* Header */}
         <div className="flex items-start justify-between">

@@ -118,7 +118,7 @@ export function CuratedCollections({
 
             {/* Top Badge */}
             <div className="absolute top-2.5 left-2.5">
-              <span className="rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs">
+              <span className="rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs">
                 {col.badge}
               </span>
             </div>

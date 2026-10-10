@@ -21,21 +21,21 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   decomposeFounderGoal,
-  type SupremeExecutionPlan,
-  type SupremeStageNode,
+  type EnterpriseExecutionPlan,
+  type EnterpriseStageNode,
   type HumanGate,
-} from "@/lib/ai/supreme-task-executor";
+} from "@/lib/ai/Enterprise-task-executor";
 import { toast } from "sonner";
 
-export function SupremeTaskExecutorHub() {
+export function EnterpriseTaskExecutorHub() {
   const [goalPrompt, setGoalPrompt] = useState(
     "Build me a legitimate online business around 0% commission food delivery and King Pay UPI settlement in Karimganj"
   );
-  const [plan, setPlan] = useState<SupremeExecutionPlan>(() =>
+  const [plan, setPlan] = useState<EnterpriseExecutionPlan>(() =>
     decomposeFounderGoal(goalPrompt)
   );
   const [isDecomposing, setIsDecomposing] = useState(false);
-  const [selectedStage, setSelectedStage] = useState<SupremeStageNode | null>(
+  const [selectedStage, setSelectedStage] = useState<EnterpriseStageNode | null>(
     plan.stages[7] // Stage 8: Payment System (Paused for human)
   );
 
@@ -141,7 +141,7 @@ export function SupremeTaskExecutorHub() {
             value={goalPrompt}
             onChange={(e) => setGoalPrompt(e.target.value)}
             placeholder="e.g. Build me a legitimate online business around this opportunity..."
-            className="bg-black/50 border-slate-700 text-fg font-medium"
+            className="bg-white/50 border-slate-700 text-fg font-medium"
           />
           <Button
             variant="primary"
@@ -168,7 +168,7 @@ export function SupremeTaskExecutorHub() {
                 setGoalPrompt(preset);
                 handleDecomposeGoal(preset);
               }}
-              className="rounded-lg border border-slate-800 bg-black/40 px-2.5 py-1 text-xs text-slate-300 hover:border-amber-500/40 hover:text-amber-300 transition-all"
+              className="rounded-lg border border-slate-800 bg-white/40 px-2.5 py-1 text-xs text-slate-300 hover:border-amber-500/40 hover:text-amber-300 transition-all"
             >
               {preset.slice(0, 48)}...
             </button>
@@ -319,7 +319,7 @@ export function SupremeTaskExecutorHub() {
 
               {/* Evidence if completed */}
               {selectedStage.evidence && (
-                <div className="rounded-lg bg-black/50 p-3 text-xs font-mono text-slate-300 border border-slate-800">
+                <div className="rounded-lg bg-white/50 p-3 text-xs font-mono text-slate-300 border border-slate-800">
                   <span className="text-emerald-400 font-semibold">Evidence: </span>
                   {selectedStage.evidence}
                 </div>

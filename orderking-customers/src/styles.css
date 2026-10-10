@@ -44,13 +44,7 @@
     background-color: #FFFFFF;
     color: #1C1C1C;
   }
-  html.dark,
-  html.dark body,
-  html.dark #app {
-    color-scheme: dark;
-    background-color: #0f172a;
-    color: #f8fafc;
-  }
+  
   body {
     font-family: var(--font-sans);
     line-height: 1.5;
@@ -65,11 +59,7 @@
     text-wrap: balance;
     color: #1C1C1C;
   }
-  html.dark h1,
-  html.dark h2,
-  html.dark h3 {
-    color: #f8fafc;
-  }
+  
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -89,4 +79,5 @@
     transition-duration: 0.01ms !important;
   }
 }
+
 

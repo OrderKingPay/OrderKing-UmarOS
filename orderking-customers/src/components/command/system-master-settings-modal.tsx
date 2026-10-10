@@ -86,7 +86,7 @@ export function SystemMasterSettingsModal({ isOpen, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 p-4 backdrop-blur-md">
       <div className="w-full max-w-2xl bg-[#09090b] border border-white/10 rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
         
         {/* Header */}
@@ -128,7 +128,7 @@ export function SystemMasterSettingsModal({ isOpen, onClose }: Props) {
                 type="password"
                 value={openaiKey}
                 onChange={(e) => setOpenaiKey(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
+                className="w-full bg-white/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
                 placeholder="sk-proj-..."
               />
             </div>
@@ -140,7 +140,7 @@ export function SystemMasterSettingsModal({ isOpen, onClose }: Props) {
                 type="password"
                 value={anthropicKey}
                 onChange={(e) => setAnthropicKey(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
+                className="w-full bg-white/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
                 placeholder="sk-ant-..."
               />
             </div>
@@ -152,7 +152,7 @@ export function SystemMasterSettingsModal({ isOpen, onClose }: Props) {
                 type="password"
                 value={geminiKey}
                 onChange={(e) => setGeminiKey(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
+                className="w-full bg-white/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
                 placeholder="AIza..."
               />
             </div>
@@ -164,7 +164,7 @@ export function SystemMasterSettingsModal({ isOpen, onClose }: Props) {
                 type="password"
                 value={xaiKey}
                 onChange={(e) => setXaiKey(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
+                className="w-full bg-white/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-fg focus:border-indigo-500 font-mono"
                 placeholder="xai-..."
               />
             </div>
@@ -182,7 +182,7 @@ export function SystemMasterSettingsModal({ isOpen, onClose }: Props) {
 
           {/* Results */}
           {testResults.length > 0 && (
-            <div className="space-y-2 mt-4 p-4 bg-black/40 border border-white/5 rounded-xl">
+            <div className="space-y-2 mt-4 p-4 bg-white/40 border border-white/5 rounded-xl">
               <h3 className="text-xs font-bold text-fg mb-3">Live Server Verification Logs</h3>
               {testResults.map((r, idx) => (
                 <div key={idx} className="flex items-start justify-between text-[11px] pb-2 border-b border-white/5 last:border-0 last:pb-0">
