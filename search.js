@@ -3,7 +3,8 @@ const path = require('path');
 
 const dirs = ['HDmaster', 'orderking-customers', 'orderking-partners', 'orderking-riders'];
 const pattern = /(TODO|lorem|mockData|mock)/i;
-const excludeDirs = new Set(['.git', 'node_modules', 'dist', 'build', '.next', '.netlify', '.vercel']);
+const excludeDirs = new Set(['.git', 'node_modules', 'dist', 'build', '.next', '.netlify', '.vercel', '.output']);
+let results = [];
 
 function searchDir(dirPath) {
     if (!fs.existsSync(dirPath)) return;
@@ -20,7 +21,7 @@ function searchDir(dirPath) {
                 const lines = content.split('\n');
                 for (let i = 0; i < lines.length; i++) {
                     if (pattern.test(lines[i])) {
-                        console.log(`${filePath}:${i + 1}:${lines[i].trim()}`);
+                        results.push(`${filePath}:${i + 1}:${lines[i].trim()}`);
                     }
                 }
             } catch (e) {}
@@ -29,3 +30,4 @@ function searchDir(dirPath) {
 }
 
 dirs.forEach(searchDir);
+fs.writeFileSync('search_results.txt', results.join('\n'), 'utf8');

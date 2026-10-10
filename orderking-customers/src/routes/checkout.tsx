@@ -526,7 +526,12 @@ function CheckoutPage() {
           <ReferralGamifiedLoop source="checkout" className="mt-6" />
 
           {quote.data?.quote.blockers.length ? <p className="mt-3 text-sm text-warn">{quote.data.quote.blockers.includes("MIN_ORDER") ? t("cart.minOrder", { amount: formatPaise(quote.data.quote.minOrderPaise, { locale }) }) : t("checkout.blocked")}</p> : null}
-          <Button className="mt-6 w-full h-14 text-lg font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-95" disabled={busy || !quote.data || !quote.data.isDeliverable} onClick={() => void submit()}>
+          <Button 
+            className="mt-6 w-full h-14 text-lg font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-95" 
+            aria-label="Place Order" 
+            disabled={busy || !quote.data || !quote.data.isDeliverable} 
+            onClick={() => void submit()}
+          >
             {busy ? (
               <span className="flex items-center gap-2">
                 <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
