@@ -18,8 +18,36 @@ import type { MenuItemView } from "@/lib/market-types";
 import { cartKey, useCartStore, type CartItem } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
+import { WhatsAppShare } from "@/components/market/whatsapp-share";
+import { ReferralGamifiedLoop } from "@/components/market/referral-gamified-loop";
 
-export const Route = createFileRoute("/r/$slug")({ component: RestaurantPage });
+export const Route = createFileRoute("/r/$slug")({
+  head: ({ params }) => {
+    const slug = (params as { slug?: string })?.slug ?? "";
+    const cleanName = slug
+      ? slug
+          .split("-")
+          .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ")
+      : "Restaurant";
+    const title = `${cleanName} - Food Delivery Near Me | Order Online | OrderKing`;
+    const desc = `Order food online from ${cleanName}. Fast 30-min food delivery near me, live order tracking, discounts and best offers on OrderKing.`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { name: "keywords", content: `${cleanName}, food delivery near me, order food online near me, restaurants near me, online food order, best food delivery, OrderKing` },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        { property: "og:type", content: "restaurant.restaurant" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: desc },
+      ],
+    };
+  },
+  component: RestaurantPage,
+});
 
 function RestaurantPage() {
   const { slug } = Route.useParams();

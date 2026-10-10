@@ -2,27 +2,87 @@
   "name": "OrderKing",
   "short_name": "OrderKing",
   "description": "Order food, book flights, pay bills — all in one app",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0a0a0a",
   "theme_color": "#f97316",
-  "orientation": "portrait",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Food & Restaurants",
+      "short_name": "Food",
+      "description": "Order food from top restaurants",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Track Orders",
+      "short_name": "Orders",
+      "description": "View active and past orders",
+      "url": "/orders",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "King Pay",
+      "short_name": "King Pay",
+      "description": "UPI and wallet payments",
+      "url": "/king-pay",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "categories": [
     "food",
     "shopping",
-    "finance"
+    "finance",
+    "lifestyle"
   ],
-  "lang": "en-IN"
+  "lang": "en-IN",
+  "dir": "ltr"
 }

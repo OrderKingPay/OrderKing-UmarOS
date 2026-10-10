@@ -27,11 +27,11 @@ const askIntelligenceFn = createServerFn({ method: "POST" })
     const systemPrompt = `You are the OrderKing Master Intelligence, an elite academic consultant for students in INDIA.
 Rules:
 1. **CRITICAL (LANGUAGE):** If language is 'Auto (Detect Native Language)', strictly auto-detect the user's native Indian or global language (Hindi, Tamil, Telugu, Bengali, English, etc.) and speak EXACTLY in it flawlessly. Otherwise, speak EXACTLY in \${data.language}.
-2. **INDIAN CONTEXT:** The student is in \${data.stdClass}, studying \${data.subject} under the \${data.board} syllabus in India. You must have deep, granular knowledge of NCERT, Indian State Boards, and Indian marking schemes.
+2. **INDIAN CONTEXT:** The student is in \${data.stdClass}, studying \${data.subject} under the \${data.board} syllabus in India. You must have deep, granular knowledge of NCERT, CBSE, ICSE, and Indian State Boards (including Maharashtra Board, UP Board, Bihar Board, West Bengal Board, Tamil Nadu State Board, Karnataka Board, etc.), and Indian marking schemes.
 3. Their current goal is: \${data.goal}. Tailor your response strictly to this goal.
 4. The difficulty level is: \${data.difficulty}. If "Expert", align with JEE Advanced, NEET, UPSC, or Olympiad level standards in India.
 5. Your tone should be: \${data.tone}. 
-6. **EXAM FOCUS:** Your primary directive is to help the student easily prepare for their REAL Indian school and board exams (CBSE, ICSE, State). Break down complex topics into highly digestible, extremely easy-to-understand components. Provide mnemonics, exam tips, and predictable patterns to help them score maximum marks easily.
+6. **EXAM FOCUS:** Your primary directive is to help the student easily prepare for their REAL Indian school and board exams (CBSE, ICSE, State Boards). For Advanced Mathematics modules (such as Differential Calculus, Integral Calculus, Coordinate Geometry, Vectors & 3D, Advanced Algebra, Trigonometry, Probability & Statistics, Linear Algebra), break down concepts with step-by-step mathematical precision, verified textbook formulas, standard proofs, and marking-scheme-aligned solutions. Provide mnemonics, exam tips, and predictable patterns to help them score maximum marks easily.
 7. NEVER give direct answers to homework. Guide them step-by-step using exact formulas and concepts from their syllabus.
 8. Emphasize textbook methods. If they ask about non-study topics, strictly guide them back to academic discipline.`;
 
@@ -60,6 +60,157 @@ Rules:
       return { text: "Secure connection interrupted. Please verify your network." };
     }
   });
+
+export interface AdvancedMathModule {
+  id: string;
+  name: string;
+  category: string;
+  subtopics: readonly string[];
+}
+
+export const STATE_BOARDS = [
+  "CBSE",
+  "ICSE",
+  "Maharashtra Board",
+  "UP Board",
+  "Bihar Board",
+  "West Bengal Board",
+  "Tamil Nadu State Board",
+  "Karnataka Board",
+  "Andhra Pradesh Board",
+  "Telangana Board",
+  "Gujarat Board",
+  "Kerala Board",
+  "Rajasthan Board",
+  "Madhya Pradesh Board",
+  "Punjab Board",
+  "Haryana Board",
+  "Odisha Board",
+  "Assam Board",
+  "Jharkhand Board",
+  "Chhattisgarh Board",
+  "Goa Board",
+  "Uttarakhand Board",
+  "Himachal Pradesh Board",
+  "Jammu & Kashmir Board",
+  "NCERT",
+  "State (Maharashtra)",
+  "State (UP)",
+  "State (Bihar)",
+  "State (West Bengal)",
+  "State (Tamil Nadu)",
+  "State (Karnataka)",
+  "State (Andhra Pradesh)",
+  "State (Telangana)",
+  "State (Gujarat)",
+  "State (Kerala)",
+  "State (Assam)",
+  "Other State Boards"
+] as const;
+
+export const ADVANCED_MATHEMATICS_MODULES: readonly AdvancedMathModule[] = [
+  {
+    id: "differential-calculus",
+    name: "Differential Calculus",
+    category: "Calculus",
+    subtopics: [
+      "Limits, Continuity & Differentiability",
+      "Mean Value Theorems (Rolle's & Lagrange's)",
+      "Derivatives & Chain Rule",
+      "Applications of Derivatives (Tangents & Normals)",
+      "Maxima and Minima & Optimization",
+      "Monotonicity & Curve Sketching"
+    ]
+  },
+  {
+    id: "integral-calculus",
+    name: "Integral Calculus",
+    category: "Calculus",
+    subtopics: [
+      "Indefinite Integrals & Standard Substitution",
+      "Integration by Parts & Partial Fractions",
+      "Definite Integrals & Properties",
+      "Fundamental Theorem of Calculus",
+      "Area Under Curves (Quadrature)",
+      "Differential Equations (First Order, Homogeneous & Linear)"
+    ]
+  },
+  {
+    id: "coordinate-geometry",
+    name: "Coordinate Geometry (2D & Conics)",
+    category: "Coordinate Geometry",
+    subtopics: [
+      "Straight Lines & Angle Between Lines",
+      "Circles & Equations of Tangents",
+      "Parabola (Standard Equation & Latus Rectum)",
+      "Ellipse (Eccentricity, Foci & Directrix)",
+      "Hyperbola & Rectangular Hyperbola"
+    ]
+  },
+  {
+    id: "vectors-and-3d",
+    name: "Vectors & 3D Geometry",
+    category: "Vector & 3D Space",
+    subtopics: [
+      "Scalar Dot Product & Vector Cross Product",
+      "Scalar Triple Product & Vector Triple Product",
+      "Direction Cosines & Direction Ratios",
+      "Straight Lines in Three Dimensions",
+      "Planes in Three Dimensions & Intersections",
+      "Shortest Distance Between Skew Lines"
+    ]
+  },
+  {
+    id: "advanced-algebra",
+    name: "Advanced Algebra",
+    category: "Algebra",
+    subtopics: [
+      "Complex Numbers & De Moivre's Theorem",
+      "Quadratic Equations & Location of Roots",
+      "Sequences and Series (AP, GP, HP & AGP)",
+      "Permutations and Combinations",
+      "Binomial Theorem & General Term",
+      "Matrices and Determinants & Cramer's Rule"
+    ]
+  },
+  {
+    id: "trigonometry",
+    name: "Trigonometry & Inverse Trigonometry",
+    category: "Trigonometry",
+    subtopics: [
+      "Trigonometric Identities & Multiple Angles",
+      "Trigonometric Equations & General Solutions",
+      "Inverse Trigonometric Functions & Properties",
+      "Properties & Solutions of Triangles"
+    ]
+  },
+  {
+    id: "probability-and-statistics",
+    name: "Probability & Statistics",
+    category: "Probability",
+    subtopics: [
+      "Axiomatic Probability & Addition Theorem",
+      "Conditional Probability & Bayes' Theorem",
+      "Independent Events & Multiplication Rule",
+      "Random Variables & Probability Distributions",
+      "Binomial & Bernoulli Distribution",
+      "Measures of Central Tendency, Variance & Standard Deviation"
+    ]
+  },
+  {
+    id: "linear-algebra-discrete",
+    name: "Linear Algebra & Discrete Mathematics",
+    category: "Higher Mathematics",
+    subtopics: [
+      "Set Theory, Relations & Equivalence",
+      "Functions (Invertibility & Composition)",
+      "Mathematical Reasoning & Boolean Logic",
+      "Vector Spaces & Subspaces",
+      "Eigenvalues & Eigenvectors",
+      "Systems of Linear Equations (Gaussian Elimination)"
+    ]
+  }
+] as const;
 
 export const Route = createFileRoute('/tutor')({
   component: IntelligencePage,
@@ -128,27 +279,15 @@ function IntelligencePage() {
             </button>
           </div>
           
-          <div className={`grid grid-cols-2 gap-2.5 relative z-10 transition-all duration-300 ${showConfig ? 'max-h-96 opacity-100' : 'max-h-24 overflow-hidden'}`}>
+          <div className={`grid grid-cols-2 gap-2.5 relative z-10 transition-all duration-300 ${showConfig ? 'max-h-[500px] overflow-y-auto opacity-100' : 'max-h-24 overflow-hidden'}`}>
              <select 
                 value={board} 
                 onChange={(e) => setBoard(e.target.value)}
                 className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
               >
-                <option value="NCERT">NCERT</option>
-                <option value="CBSE">CBSE</option>
-                <option value="ICSE">ICSE</option>
-                <option value="State (Andhra Pradesh)">State (Andhra Pradesh)</option>
-                <option value="State (Assam)">State (Assam)</option>
-                <option value="State (Bihar)">State (Bihar)</option>
-                <option value="State (Gujarat)">State (Gujarat)</option>
-                <option value="State (Karnataka)">State (Karnataka)</option>
-                <option value="State (Kerala)">State (Kerala)</option>
-                <option value="State (Maharashtra)">State (Maharashtra)</option>
-                <option value="State (Tamil Nadu)">State (Tamil Nadu)</option>
-                <option value="State (Telangana)">State (Telangana)</option>
-                <option value="State (UP)">State (UP)</option>
-                <option value="State (West Bengal)">State (West Bengal)</option>
-                <option value="Other State Boards">Other State Boards</option>
+                {STATE_BOARDS.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
              </select>
              <select 
                 value={stdClass} 
@@ -172,16 +311,37 @@ function IntelligencePage() {
                   className="bg-transparent text-xs font-medium text-zinc-200 outline-none w-full px-2.5 py-2.5 placeholder:text-zinc-500"
                 />
                 {showConfig && (
-                  <div className="flex flex-wrap gap-1 px-2 pb-2">
-                    {["English Learning Fast", "Mathematics", "Science", "Projects & Assignments", "Interview Prep"].map(s => (
-                      <button 
-                        key={s} 
-                        onClick={() => setSubject(s)}
-                        className="text-[9px] bg-zinc-800 text-zinc-300 px-1.5 py-0.5 rounded hover:bg-white hover:text-black transition-colors"
-                      >
-                        {s}
-                      </button>
-                    ))}
+                  <div className="flex flex-col gap-1.5 px-2 pb-2">
+                    <div className="flex flex-wrap gap-1">
+                      {["English Learning Fast", "Mathematics", "Science", "Projects & Assignments", "Interview Prep"].map(s => (
+                        <button 
+                          key={s} 
+                          type="button"
+                          onClick={() => setSubject(s)}
+                          className="text-[9px] bg-zinc-800 text-zinc-300 px-1.5 py-0.5 rounded hover:bg-white hover:text-black transition-colors"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="pt-1.5 border-t border-zinc-800/80">
+                      <div className="text-[9px] font-medium text-zinc-500 uppercase tracking-wider mb-1">
+                        Advanced Mathematics Modules
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {ADVANCED_MATHEMATICS_MODULES.map(m => (
+                          <button
+                            key={m.id}
+                            type="button"
+                            onClick={() => setSubject(m.name)}
+                            className="text-[9px] bg-zinc-800/60 border border-zinc-700/60 text-zinc-300 hover:border-zinc-400 hover:text-white px-1.5 py-0.5 rounded transition-colors"
+                            title={m.subtopics.join(", ")}
+                          >
+                            {m.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
              </div>

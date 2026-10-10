@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { errorMessage } from "@/lib/client/errors";
 import { useI18n } from "@/lib/rider/i18n-context";
 import { getDeliveryFn } from "@/lib/server/rider-fns";
+import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
+import type { GeoPoint } from "@/lib/rider/types";
 import { useCallback, useEffect, useState } from "react";
 
 export const Route = createFileRoute("/delivery/$id")({ component: Page });
@@ -15,6 +17,7 @@ function Page() {
   const { t } = useI18n();
   const [pack, setPack] = useState<Awaited<ReturnType<typeof getDeliveryFn>> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [riderPos, setRiderPos] = useState<GeoPoint | null>(null);
 
   const load = useCallback(() => {
     void getDeliveryFn({ data: { deliveryId: id } })
@@ -25,6 +28,14 @@ function Page() {
   useEffect(() => {
     load();
   }, [load]);
+
+  useGpsHeartbeat(
+    Boolean(pack && pack.delivery),
+    2000,
+    (pos) => setRiderPos({ lat: pos.lat, lng: pos.lng }),
+    pack?.delivery.riderId,
+    id,
+  );
 
   return (
     <AppShell>
@@ -38,9 +49,11 @@ function Page() {
           <MapPane
             pickup={pack.delivery.pickupLocation}
             drop={pack.delivery.dropLocation}
+            current={riderPos}
             pickupLabel={pack.delivery.restaurant.name}
             dropLabel={pack.delivery.customer.area}
             navigateLabel={t("mapsOpen")}
+            deliveryState={pack.delivery.state}
           />
           <DeliveryActions
             delivery={pack.delivery}

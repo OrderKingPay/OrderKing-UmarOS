@@ -249,6 +249,16 @@ const FINANCE_SEARCH_INDEX: FinanceSearchItem[] = [
     actionType: "url",
     actionPayload: "https://www.makemytrip.com/flights?utm_source=orderking_affiliate",
   },
+  {
+    id: "fixed_deposits",
+    title: "High-Yield Fixed Deposits (Up to 9.5% p.a.)",
+    subtitle: "DICGC-insured bank & AAA corporate FDs with zero market risk",
+    category: "wealth",
+    icon: "🏛️",
+    badge: "DICGC Insured",
+    actionType: "url",
+    actionPayload: "https://unitybank.co.in/fixed-deposits?utm_source=orderking_affiliate",
+  },
 ];
 
 interface KingPayFinanceSearchProps {

@@ -8,6 +8,7 @@ import { AppProviders } from "@/components/providers";
 import { DEFAULT_CONFIG } from "@/lib/config/defaults";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { OfflineDetector } from "@/components/offline-detector";
+import { PwaInstallPrompt } from "@/components/pwa/install-prompt";
 import appCss from "../styles.css?url";
 import { NextGenSeo } from "@/components/seo/NextGenSeo";
 
@@ -58,6 +59,11 @@ export const Route = createRootRoute({
         { title: config.brand.seoTitle },
         { name: "description", content: config.brand.seoDescription },
         { name: "theme-color", content: config.brand.primaryColor },
+        { name: "mobile-web-app-capable", content: "yes" },
+        { name: "apple-mobile-web-app-capable", content: "yes" },
+        { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+        { name: "apple-mobile-web-app-title", content: "OrderKing" },
+        { name: "application-name", content: "OrderKing" },
 
 
           { property: "og:description", content: config.brand.seoDescription },
@@ -100,6 +106,7 @@ function Root() {
       <body>
         <PreviewHostBridge />
         <OfflineDetector />
+        <PwaInstallPrompt />
         <AuthProvider>
           <AppProviders config={config}>
             <ErrorBoundary>
@@ -119,7 +126,7 @@ function Root() {
           </AppProviders>
         </AuthProvider>
         <Scripts />
-        <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}` }} />
+        <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(()=>{}))}` }} />
 
       </body>
     </html>
