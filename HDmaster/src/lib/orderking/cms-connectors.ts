@@ -78,6 +78,42 @@ export interface EcosystemCmsConfig {
   connectorWhatsappMarketingPolicyTitle: string;
   connectorWhatsappMarketingPolicyNotice: string;
   connectorWhatsappMarketingOptInNotice: string;
+
+  // 8. B2B Franchise Lead Generation (Apollo / LinkedIn API)
+  connectorB2bLeadGenTitle: string;
+  connectorB2bLeadGenSubtitle: string;
+  connectorB2bLeadGenToggleLabel: string;
+  connectorB2bLeadGenTestBtnText: string;
+  connectorB2bLeadGenPolicyTitle: string;
+  connectorB2bLeadGenPolicyNotice: string;
+  connectorB2bLeadGenWebhookNotice: string;
+
+  // 9. Global USD Payment Router (Stripe Atlas Delaware C-Corp)
+  connectorStripeAtlasTitle: string;
+  connectorStripeAtlasSubtitle: string;
+  connectorStripeAtlasToggleLabel: string;
+  connectorStripeAtlasTestBtnText: string;
+  connectorStripeAtlasPolicyTitle: string;
+  connectorStripeAtlasPolicyNotice: string;
+  connectorStripeAtlasWebhookNotice: string;
+
+  // 10. Global Cross-Border Routing (Payoneer Multi-Currency Virtual Routing)
+  connectorPayoneerTitle: string;
+  connectorPayoneerSubtitle: string;
+  connectorPayoneerToggleLabel: string;
+  connectorPayoneerTestBtnText: string;
+  connectorPayoneerPolicyTitle: string;
+  connectorPayoneerPolicyNotice: string;
+  connectorPayoneerWebhookNotice: string;
+
+  // 11. AI Telemarketing Connector (Bland.ai / Twilio Voice Autonomous Restaurant Pitching)
+  connectorTelemarketingTitle: string;
+  connectorTelemarketingSubtitle: string;
+  connectorTelemarketingToggleLabel: string;
+  connectorTelemarketingTestBtnText: string;
+  connectorTelemarketingPolicyTitle: string;
+  connectorTelemarketingPolicyNotice: string;
+  connectorTelemarketingWebhookNotice: string;
 }
 
 export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
@@ -158,7 +194,74 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   connectorWhatsappMarketingPolicyTitle: "Strict DND & Anti-Spam Marketing Policy",
   connectorWhatsappMarketingPolicyNotice: "Ensures all automated promotional broadcasts respect 10:00 AM - 09:00 PM regulatory delivery windows and honour instant opt-out requests without exception.",
   connectorWhatsappMarketingOptInNotice: "Automatic Unsubscribe Handler: Customers replying STOP or UNSUBSCRIBE are instantly purged from promotional broadcast audiences.",
+
+  // 8. B2B Franchise Lead Generation (Apollo / LinkedIn API)
+  connectorB2bLeadGenTitle: "B2B Franchise Lead Generation (Apollo / LinkedIn API)",
+  connectorB2bLeadGenSubtitle: "Enterprise B2B prospecting rail. Automatically query Apollo.io and LinkedIn Sales Navigator to identify multi-unit restaurant operators and franchise owners across Saudi Arabia and the United States to sell the SaaS engine directly.",
+  connectorB2bLeadGenToggleLabel: "Lead Gen Engine Active",
+  connectorB2bLeadGenTestBtnText: "Verify Prospecting Handshake",
+  connectorB2bLeadGenPolicyTitle: "High-Ticket Enterprise Outreach & Compliance Guard",
+  connectorB2bLeadGenPolicyNotice: "Automated prospecting strictly targeting enterprise Multi-Unit Franchisees & C-Suite restaurant groups. Compliant with US CAN-SPAM and Saudi CITC electronic communications frameworks.",
+  connectorB2bLeadGenWebhookNotice: "Apollo & LinkedIn Lead Enrichment Ingestion Webhook: Receives enriched franchise profiles, verified direct dials, and corporate emails.",
+
+  // 9. Global USD Payment Router (Stripe Atlas Delaware C-Corp)
+  connectorStripeAtlasTitle: "Stripe Atlas (USD B2B SaaS)",
+  connectorStripeAtlasSubtitle: "Delaware C-Corp global USD merchant rail. Powers recurring B2B SaaS licensing, monthly franchise subscriptions, automated W-8BEN/W-9 invoices, and Stripe Billing across US and overseas operators.",
+  connectorStripeAtlasToggleLabel: "Stripe Atlas Router Active",
+  connectorStripeAtlasTestBtnText: "Verify Stripe Atlas Handshake",
+  connectorStripeAtlasPolicyTitle: "Delaware C-Corp B2B SaaS Invoicing & US Compliance",
+  connectorStripeAtlasPolicyNotice: "Collects direct USD revenue into US corporate accounts, generating qualifying institutional business revenue for US entity expansion and visa compliance.",
+  connectorStripeAtlasWebhookNotice: "Stripe Subscriptions & Invoice Webhook: Synchronizes recurring SaaS collections, payment intents, and customer lifecycle.",
+
+  // 10. Global Cross-Border Routing (Payoneer Multi-Currency Virtual Routing)
+  connectorPayoneerTitle: "Payoneer Cross-Border Routing",
+  connectorPayoneerSubtitle: "Institutional cross-border ACH & wire clearing network. Provides US Virtual Fedwire/ABA routing numbers and multi-currency receiving accounts for Saudi Arabia (SAR/USD) and GCC restaurant franchise royalties.",
+  connectorPayoneerToggleLabel: "Payoneer Cross-Border Active",
+  connectorPayoneerTestBtnText: "Verify Payoneer ACH Rail",
+  connectorPayoneerPolicyTitle: "Global Cross-Border Liquidity & Commercial ACH Routing",
+  connectorPayoneerPolicyNotice: "Enables direct collection of international franchise royalty fees from Saudi Arabia and North America without high intermediary bank conversion friction.",
+  connectorPayoneerWebhookNotice: "Payoneer Global Payment Service Ingestion Webhook: Receives inbound wire clearing events and instant treasury deposits.",
+
+  // 11. AI Telemarketing Connector (Bland.ai / Twilio Voice Autonomous Restaurant Pitching)
+  connectorTelemarketingTitle: "Bland.ai / Twilio Voice (Autonomous Restaurant Pitching)",
+  connectorTelemarketingSubtitle: "Autonomous AI sales force that dials Indian restaurant owners, pitches the Zero-Setup-Fee and 0% commission direct ordering platform, handles common aggregator objections, and books onboarding walkthroughs without human sales reps.",
+  connectorTelemarketingToggleLabel: "AI Sales Engine Active",
+  connectorTelemarketingTestBtnText: "Test AI Voice Dial Probe",
+  connectorTelemarketingPolicyTitle: "TRAI Telemarketing & DND Regulatory Compliance Guard",
+  connectorTelemarketingPolicyNotice: "Commercial communications strictly scrubbed against the National Do-Not-Call (NDNC) registry. Calling windows enforced between 10:30 AM and 05:00 PM to avoid kitchen rush periods.",
+  connectorTelemarketingWebhookNotice: "Autonomous Call Webhook: Streams real-time call transcripts, audio recordings, owner sentiment scores, and auto-dispatches WhatsApp onboarding links upon hangup.",
 };
+
+export interface StripeAtlasConnector {
+  enabled: boolean;
+  mode: "live" | "test";
+  publishableKey: string;
+  secretKey: string;
+  webhookSecret: string;
+  accountId: string;
+  statementDescriptor: string;
+  monthlySaaSPlanId: string;
+  currency: "USD";
+  autoInvoicing: boolean;
+  delawareTaxFiling: boolean;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
+
+export interface PayoneerConnector {
+  enabled: boolean;
+  programId: string;
+  payeeId: string;
+  clientSecret: string;
+  accountNumber: string;
+  routingNumber: string;
+  receivingCurrency: "USD";
+  bankBic: string;
+  autoSweepTreasury: boolean;
+  saudiSarConversionRail: boolean;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
 
 export interface RazorpayConnector {
   enabled: boolean;
@@ -243,13 +346,67 @@ export interface WhatsAppMarketingConnector {
   lastTestedAt: string | null;
 }
 
+export interface B2bLeadGenConnector {
+  enabled: boolean;
+  provider: "apollo_linkedin" | "apollo" | "linkedin" | "proxycurl";
+  apolloApiKey: string;
+  linkedinClientId: string;
+  linkedinClientSecret: string;
+  linkedinAccessToken: string;
+  targetRegions: ("saudi_arabia" | "united_states")[];
+  targetPersona: string;
+  minRestaurantUnits: number;
+  webhookSecret: string;
+  autoEnrichDirectDials: boolean;
+  autoExportToCrm: boolean;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
+
+export interface AiTelemarketingConnector {
+  enabled: boolean;
+  provider: "bland_ai" | "twilio_voice" | "vapi" | "retell";
+  apiKey: string;
+  apiSecret: string;
+  accountSid: string;
+  fromPhoneNumber: string;
+  transferPhoneNumber: string;
+  voiceId: string;
+  language: "hinglish" | "en-IN" | "hi-IN" | "bn-IN" | "ta-IN" | "te-IN" | "mr-IN";
+  voiceSpeed: number;
+  voiceTemperature: number;
+  pitchObjective: "zero_setup_fee_acquisition" | "commission_slashing" | "direct_ordering_migration" | "custom";
+  firstSentence: string;
+  systemPrompt: string;
+  objectionHandlingMode: "aggressive_roi" | "consultative_polite" | "urgency_limited_slots";
+  maxCallDurationMinutes: number;
+  maxConcurrentCalls: number;
+  callingWindowStart: string;
+  callingWindowEnd: string;
+  retryAttempts: number;
+  retryDelayMinutes: number;
+  recordCalls: boolean;
+  autoPitchZeroSetupFee: boolean;
+  autoSendWhatsappBrochure: boolean;
+  autoBookOnboardingDemo: boolean;
+  transferOnHighIntent: boolean;
+  dndScrubbingEnabled: boolean;
+  webhookSecret: string;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
+
 export interface PluginConnectorsConfig {
   razorpay: RazorpayConnector;
+  stripeAtlas: StripeAtlasConnector;
+  payoneer: PayoneerConnector;
   whatsapp: WhatsAppConnector;
   fssai: FssaiConnector;
   mapbox: MapboxConnector;
   cleartax: ClearTaxConnector;
   whatsappMarketing: WhatsAppMarketingConnector;
+  b2bLeadGen: B2bLeadGenConnector;
+  telemarketing: AiTelemarketingConnector;
 }
 
 export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
@@ -262,6 +419,35 @@ export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
     merchantAccountId: "",
     autoCapture: true,
     settlementCycle: "T1",
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+  },
+  stripeAtlas: {
+    enabled: false,
+    mode: "live",
+    publishableKey: "",
+    secretKey: "",
+    webhookSecret: "",
+    accountId: "",
+    statementDescriptor: "",
+    monthlySaaSPlanId: "",
+    currency: "USD",
+    autoInvoicing: false,
+    delawareTaxFiling: false,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+  },
+  payoneer: {
+    enabled: false,
+    programId: "",
+    payeeId: "",
+    clientSecret: "",
+    accountNumber: "",
+    routingNumber: "",
+    receivingCurrency: "USD",
+    bankBic: "",
+    autoSweepTreasury: false,
+    saudiSarConversionRail: false,
     status: "NOT_CONFIGURED",
     lastTestedAt: null,
   },
@@ -327,6 +513,75 @@ export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
     autoFeedbackDrop: false,
     weekendChefSpecials: false,
     dormantCustomerReengagement: false,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+  },
+  b2bLeadGen: {
+    enabled: false,
+    provider: "apollo_linkedin",
+    apolloApiKey: "",
+    linkedinClientId: "",
+    linkedinClientSecret: "",
+    linkedinAccessToken: "",
+    targetRegions: ["saudi_arabia", "united_states"],
+    targetPersona: "",
+    minRestaurantUnits: 3,
+    webhookSecret: "",
+    autoEnrichDirectDials: false,
+    autoExportToCrm: false,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+  },
+  telemarketing: {
+    enabled: false,
+    provider: "bland_ai",
+    apiKey: "",
+    apiSecret: "",
+    accountSid: "",
+    fromPhoneNumber: "",
+    transferPhoneNumber: "",
+    voiceId: "nat_indian_exec",
+    language: "hinglish",
+    voiceSpeed: 1.0,
+    voiceTemperature: 0.7,
+    pitchObjective: "zero_setup_fee_acquisition",
+    firstSentence: "Namaste! Am I speaking with the restaurant owner or general manager? Quick question regarding your online delivery commission rates.",
+    systemPrompt: `You are Kabir, Senior Restaurant Growth Director at OrderKing (India's premier 0% commission direct restaurant ordering network).
+You are calling Indian independent restaurant owners, cloud kitchens, and QSR managers to pitch OrderKing's Zero-Setup-Fee direct online ordering platform.
+
+CORE VALUE PROPOSITION:
+1. ZERO SETUP FEE: ₹0 onboarding cost, ₹0 upfront software fee, ₹0 tablet hardware lock-in.
+2. 0% COMMISSION: Unlike Swiggy and Zomato charging 28% to 32% on every single order, OrderKing charges 0% commission. The restaurant keeps 100% of their food revenue.
+3. DIRECT INSTANT UPI SETTLEMENTS: Payments settle directly into the restaurant's ICICI/HDFC/SBI bank account within seconds via NPCI UPI rails—no 7-day aggregator withholding.
+4. FREE DIGITAL MENU & QR SYSTEM: OrderKing generates dynamic QR table menus, WhatsApp order drops, and a branded white-label ordering portal in under 15 minutes.
+5. RESTAURANT OWNS CUSTOMER DATA: Full access to diner phone numbers and order history for repeat marketing, unlike aggregators who hide customer identities.
+
+OBJECTION HANDLING PROTOCOL:
+- If owner says "We are already on Swiggy / Zomato":
+  Respond: "That is great! Keep Swiggy and Zomato for initial discovery, but why give them 30% of your loyal repeat customers? Use OrderKing for your direct diners and WhatsApp regulars, and save ₹25,000 to ₹50,000 every single month in commission drain."
+- If owner says "Is there any hidden monthly fee or AMC?":
+  Respond: "Absolutely zero hidden fees. There is no monthly rental, no setup charge, and no annual maintenance contract. We only make money when you thrive through optional micro-fees on value-added marketing tools."
+- If owner says "Who delivers the food?":
+  Respond: "You can either use your existing staff riders, or toggle our 1-click on-demand fleet integration powered by Dunzo/Shadowfax at direct pass-through rates with zero markup."
+- If owner is busy:
+  Respond: "I completely understand you are managing service right now. Can I send a 2-minute overview video and sample digital menu directly to your WhatsApp number right now?"
+
+CALL GOAL:
+Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 10-minute demo walkthrough with our onboarding team today. Always be respectful, enthusiastic, energetic, and professional in fluent Hinglish.`,
+    objectionHandlingMode: "aggressive_roi",
+    maxCallDurationMinutes: 4,
+    maxConcurrentCalls: 5,
+    callingWindowStart: "10:30 AM",
+    callingWindowEnd: "05:00 PM",
+    retryAttempts: 2,
+    retryDelayMinutes: 60,
+    recordCalls: true,
+    autoPitchZeroSetupFee: true,
+    autoSendWhatsappBrochure: true,
+    autoBookOnboardingDemo: true,
+    transferOnHighIntent: false,
+    dndScrubbingEnabled: true,
+    webhookSecret: "",
     status: "NOT_CONFIGURED",
     lastTestedAt: null,
   },
@@ -432,7 +687,39 @@ export async function loadPluginConnectorsData(): Promise<PluginConnectorsConfig
     ? (whatsappMarketing.enabled ? "CONNECTED" : "DEGRADED")
     : "NOT_CONFIGURED";
 
-  return { razorpay, whatsapp, fssai, mapbox, cleartax, whatsappMarketing };
+  const b2bLeadGen: B2bLeadGenConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.b2bLeadGen,
+    ...(raw.b2bLeadGen || {}),
+  };
+  b2bLeadGen.status = (b2bLeadGen.apolloApiKey || (b2bLeadGen.linkedinClientId && b2bLeadGen.linkedinClientSecret) || b2bLeadGen.linkedinAccessToken)
+    ? (b2bLeadGen.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  const stripeAtlas: StripeAtlasConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.stripeAtlas,
+    ...(raw.stripeAtlas || {}),
+  };
+  stripeAtlas.status = stripeAtlas.publishableKey && stripeAtlas.secretKey
+    ? (stripeAtlas.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  const payoneer: PayoneerConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.payoneer,
+    ...(raw.payoneer || {}),
+  };
+  payoneer.status = payoneer.programId && (payoneer.accountNumber || payoneer.clientSecret)
+    ? (payoneer.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  const telemarketing: AiTelemarketingConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.telemarketing,
+    ...(raw.telemarketing || {}),
+  };
+  telemarketing.status = (telemarketing.apiKey || (telemarketing.accountSid && telemarketing.apiSecret))
+    ? (telemarketing.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  return { razorpay, stripeAtlas, payoneer, whatsapp, fssai, mapbox, cleartax, whatsappMarketing, b2bLeadGen, telemarketing };
 }
 
 /** Save Plugin Connectors */
@@ -440,11 +727,15 @@ export async function savePluginConnectorsData(connectorsUpdates: Partial<Plugin
   const current = await loadPluginConnectorsData();
   const next: PluginConnectorsConfig = {
     razorpay: { ...current.razorpay, ...(connectorsUpdates.razorpay || {}) },
+    stripeAtlas: { ...current.stripeAtlas, ...(connectorsUpdates.stripeAtlas || {}) },
+    payoneer: { ...current.payoneer, ...(connectorsUpdates.payoneer || {}) },
     whatsapp: { ...current.whatsapp, ...(connectorsUpdates.whatsapp || {}) },
     fssai: { ...current.fssai, ...(connectorsUpdates.fssai || {}) },
     mapbox: { ...current.mapbox, ...(connectorsUpdates.mapbox || {}) },
     cleartax: { ...current.cleartax, ...(connectorsUpdates.cleartax || {}) },
     whatsappMarketing: { ...current.whatsappMarketing, ...(connectorsUpdates.whatsappMarketing || {}) },
+    b2bLeadGen: { ...current.b2bLeadGen, ...(connectorsUpdates.b2bLeadGen || {}) },
+    telemarketing: { ...current.telemarketing, ...(connectorsUpdates.telemarketing || {}) },
   };
 
   await updatePlatformSettingsBag({ plugin_connectors: next });

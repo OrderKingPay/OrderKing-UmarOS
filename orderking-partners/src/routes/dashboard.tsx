@@ -47,14 +47,48 @@ function DashboardPage() {
 
   if (!vendor.isPending && vendor.memberships.length === 0) {
     return (
-      <VendorShell title={t("dashboard.greeting")}>
-        <Card className="space-y-3 p-6 border-zinc-800 bg-black text-zinc-300">
-          <p>{t("onboarding.title")}</p>
-          <div className="flex flex-wrap gap-2">
-            <Button asChild><Link to="/onboarding">{t("onboarding.realCta")}</Link></Button>
-            <Button variant="secondary" asChild><Link to="/onboarding">{t("onboarding.demoCta")}</Link></Button>
+      <VendorShell title="Merchant Acquisition Launchpad">
+        <div className="mx-auto max-w-2xl space-y-4 py-4">
+          <div className="rounded-2xl border border-emerald-500/30 bg-slate-900/90 p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
+                <span className="inline-block size-2 rounded-full bg-emerald-400 animate-pulse" />
+                Zero-Fee Direct Acquisition
+              </div>
+              <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400">
+                ₹0 SETUP FEE
+              </span>
+            </div>
+            <h2 className="font-display text-2xl font-bold text-slate-100">
+              Zero Setup Fees. Zero Hidden Charges. Live in 60 Seconds.
+            </h2>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              Your partner account is active. Register your restaurant profile now with zero upfront costs, zero payment gateway hurdles, and instant direct integer-paise bank settlements.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800">
+              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
+                <div className="text-[10px] uppercase font-mono text-slate-400">Setup Fee</div>
+                <div className="text-base font-bold text-emerald-400">₹0.00 (Waived)</div>
+              </div>
+              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
+                <div className="text-[10px] uppercase font-mono text-slate-400">Gateway KYC</div>
+                <div className="text-base font-bold text-slate-200">Bypassed / None</div>
+              </div>
+              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
+                <div className="text-[10px] uppercase font-mono text-slate-400">Deployment SLA</div>
+                <div className="text-base font-bold text-amber-400">&lt; 60 Seconds</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-md shadow-emerald-950">
+                <Link to="/onboarding">Deploy Live Restaurant (60s SLA)</Link>
+              </Button>
+              <Button variant="secondary" asChild className="border-slate-800 bg-slate-800 text-slate-300 hover:bg-slate-700">
+                <Link to="/onboarding">Explore Demo Kitchen</Link>
+              </Button>
+            </div>
           </div>
-        </Card>
+        </div>
       </VendorShell>
     );
   }

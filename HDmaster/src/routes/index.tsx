@@ -16,8 +16,6 @@ import { LiveFounderProfitDashboard } from "@/components/dashboard/LiveFounderPr
 import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSettings";
 import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
 import { B2BFranchiseOnboardingEngine } from "@/components/franchise/B2BFranchiseOnboardingEngine";
-import { GlobalSaaSFranchiseEngine } from "@/components/dashboard/GlobalSaaSFranchiseEngine";
-import { PromotedAdRevenueEngine } from "@/components/dashboard/PromotedAdRevenueEngine";
 
 const LazyGlobalGodEyeMap = lazy(() =>
   import("@/components/dashboard/GlobalGodEyeMap").then((m) => ({ default: m.GlobalGodEyeMap }))
@@ -247,10 +245,6 @@ function UmarOSDashboard() {
         {/* Live Founder Profit Dashboard Component */}
         <div className="mt-8 mb-8">
           <LiveFounderProfitDashboard />
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-8">
-            <GlobalSaaSFranchiseEngine />
-            <PromotedAdRevenueEngine />
-          </div>
         </div>
 
         {/* Customer App UI Settings Matrix */}

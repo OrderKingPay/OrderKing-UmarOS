@@ -3,11 +3,14 @@ import {
   DEFAULT_PLUGIN_CONNECTORS,
   type PluginConnectorsConfig,
   type RazorpayConnector,
+  type StripeAtlasConnector,
+  type PayoneerConnector,
   type WhatsAppConnector,
   type FssaiConnector,
   type MapboxConnector,
   type ClearTaxConnector,
   type WhatsAppMarketingConnector,
+  type B2bLeadGenConnector,
   type EcosystemCmsConfig,
   DEFAULT_ECOSYSTEM_CMS,
 } from "@/lib/orderking/cms-connectors";
@@ -43,9 +46,26 @@ import {
   Megaphone,
   Edit3,
   ShieldCheck,
+  Target,
+  Building2,
+  Globe,
+  Users,
+  Landmark,
+  DollarSign,
+  ArrowRightLeft,
 } from "lucide-react";
 
-type ConnectorTab = "all" | "razorpay" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing";
+type ConnectorTab =
+  | "all"
+  | "razorpay"
+  | "stripeAtlas"
+  | "payoneer"
+  | "whatsapp"
+  | "fssai"
+  | "mapbox"
+  | "cleartax"
+  | "whatsappMarketing"
+  | "b2bLeadGen";
 
 export function PluginConnectors() {
   const [config, setConfig] = useState<PluginConnectorsConfig>(DEFAULT_PLUGIN_CONNECTORS);
@@ -230,7 +250,18 @@ export function PluginConnectors() {
     }
   };
 
-  const handleTestConnection = async (service: "razorpay" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing") => {
+  const handleTestConnection = async (
+    service:
+      | "razorpay"
+      | "stripeAtlas"
+      | "payoneer"
+      | "whatsapp"
+      | "fssai"
+      | "mapbox"
+      | "cleartax"
+      | "whatsappMarketing"
+      | "b2bLeadGen"
+  ) => {
     try {
       setTestingService(service);
       const payload = config[service];
@@ -267,17 +298,40 @@ export function PluginConnectors() {
   };
 
   // Live status helpers
-  const getConnectorStatus = (service: "razorpay" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing") => {
+  const getConnectorStatus = (
+    service:
+      | "razorpay"
+      | "stripeAtlas"
+      | "payoneer"
+      | "whatsapp"
+      | "fssai"
+      | "mapbox"
+      | "cleartax"
+      | "whatsappMarketing"
+      | "b2bLeadGen"
+  ) => {
     const item = config[service];
     let isConfigured = false;
     if (service === "razorpay") isConfigured = !!(item as RazorpayConnector).keyId && !!(item as RazorpayConnector).keySecret;
+    if (service === "stripeAtlas") {
+      const s = item as StripeAtlasConnector;
+      isConfigured = !!s.publishableKey && !!s.secretKey;
+    }
+    if (service === "payoneer") {
+      const p = item as PayoneerConnector;
+      isConfigured = !!p.programId && (!!p.accountNumber || !!p.clientSecret);
+    }
     if (service === "whatsapp") isConfigured = !!(item as WhatsAppConnector).phoneNumberId && !!(item as WhatsAppConnector).systemAccessToken;
     if (service === "fssai") isConfigured = !!(item as FssaiConnector).clientId && !!(item as FssaiConnector).authorizationToken;
     if (service === "mapbox") isConfigured = !!(item as MapboxConnector).publicAccessToken;
     if (service === "cleartax") isConfigured = !!(item as ClearTaxConnector).authKey && !!(item as ClearTaxConnector).gstin;
     if (service === "whatsappMarketing") isConfigured = !!(item as WhatsAppMarketingConnector).apiKey && !!(item as WhatsAppMarketingConnector).phoneNumberId;
+    if (service === "b2bLeadGen") {
+      const b = item as B2bLeadGenConnector;
+      isConfigured = !!b.apolloApiKey || !!(b.linkedinClientId && b.linkedinClientSecret) || !!b.linkedinAccessToken;
+    }
 
-    if (!isConfigured) return { status: "NOT_CONFIGURED" as const, label: "Not Configured", tone: "neutral" as const };
+    if (!isConfigured) return { status: "NOT_CONFIGURED" as const, label: "NOT CONFIGURED", tone: "neutral" as const };
     if (!item.enabled) return { status: "STANDBY" as const, label: "Standby / Disabled", tone: "amber" as const };
     return { status: "CONNECTED" as const, label: "Active & Connected", tone: "emerald" as const };
   };
@@ -286,12 +340,22 @@ export function PluginConnectors() {
   const summaryMetrics = useMemo(() => {
     let configuredCount = 0;
     let activeCount = 0;
-    (["razorpay", "whatsapp", "fssai", "mapbox", "cleartax", "whatsappMarketing"] as const).forEach((svc) => {
+    ([
+      "razorpay",
+      "stripeAtlas",
+      "payoneer",
+      "whatsapp",
+      "fssai",
+      "mapbox",
+      "cleartax",
+      "whatsappMarketing",
+      "b2bLeadGen",
+    ] as const).forEach((svc) => {
       const st = getConnectorStatus(svc);
       if (st.status !== "NOT_CONFIGURED") configuredCount++;
       if (st.status === "CONNECTED") activeCount++;
     });
-    return { configuredCount, activeCount, total: 6 };
+    return { configuredCount, activeCount, total: 9 };
   }, [config]);
 
   return (
@@ -313,7 +377,7 @@ export function PluginConnectors() {
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                {cmsConfig.connectorsHubSubtitle || "Institutional integration management. Securely configure Razorpay payment rails, WhatsApp Business API, FSSAI regulatory verification, Mapbox geospatial telemetry, ClearTax automated GST calculation, and automated WhatsApp marketing campaigns."}
+                {cmsConfig.connectorsHubSubtitle || "Institutional integration management. Securely configure Razorpay payment rails, WhatsApp Business API, FSSAI regulatory verification, Mapbox geospatial telemetry, ClearTax automated GST calculation, automated WhatsApp marketing campaigns, and B2B Franchise Lead Generation (Apollo / LinkedIn API)."}
               </p>
             </div>
           </div>
@@ -574,6 +638,199 @@ export function PluginConnectors() {
                 className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
               />
             </div>
+            {/* 8. B2B Franchise Lead Generation (Apollo / LinkedIn API) */}
+            <div className="space-y-1 md:col-span-2 pt-2 border-t border-border">
+              <span className="font-semibold text-primary">B2B Franchise Lead Generation (Apollo / LinkedIn) CMS Labels</span>
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">B2B Lead Gen Card Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorB2bLeadGenTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorB2bLeadGenTitle: e.target.value }))}
+                placeholder="B2B Franchise Lead Generation (Apollo / LinkedIn API)..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">B2B Lead Gen Toggle Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorB2bLeadGenToggleLabel || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorB2bLeadGenToggleLabel: e.target.value }))}
+                placeholder="Lead Gen Engine Active..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">B2B Lead Gen Subtitle</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorB2bLeadGenSubtitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorB2bLeadGenSubtitle: e.target.value }))}
+                placeholder="Enterprise B2B prospecting rail..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">B2B Lead Gen Test Button Text</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorB2bLeadGenTestBtnText || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorB2bLeadGenTestBtnText: e.target.value }))}
+                placeholder="Verify Prospecting Handshake..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">B2B Lead Gen Policy Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorB2bLeadGenPolicyTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorB2bLeadGenPolicyTitle: e.target.value }))}
+                placeholder="High-Ticket Enterprise Outreach & Compliance Guard..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">B2B Lead Gen Policy Notice</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorB2bLeadGenPolicyNotice || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorB2bLeadGenPolicyNotice: e.target.value }))}
+                placeholder="Automated multi-channel persona mapping targeting VP of Franchising..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            {/* 9. Stripe Atlas (USD B2B SaaS) */}
+            <div className="space-y-1 md:col-span-2 pt-2 border-t border-border">
+              <span className="font-semibold text-primary">Stripe Atlas (USD B2B SaaS Delaware C-Corp) CMS Labels</span>
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Stripe Atlas Card Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorStripeAtlasTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorStripeAtlasTitle: e.target.value }))}
+                placeholder="Stripe Atlas (USD B2B SaaS)..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Stripe Atlas Toggle Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorStripeAtlasToggleLabel || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorStripeAtlasToggleLabel: e.target.value }))}
+                placeholder="Stripe Atlas Router Active..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">Stripe Atlas Subtitle</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorStripeAtlasSubtitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorStripeAtlasSubtitle: e.target.value }))}
+                placeholder="Delaware C-Corp global USD merchant rail..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Stripe Atlas Test Button Text</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorStripeAtlasTestBtnText || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorStripeAtlasTestBtnText: e.target.value }))}
+                placeholder="Verify Stripe Atlas Handshake..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Stripe Atlas Policy Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorStripeAtlasPolicyTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorStripeAtlasPolicyTitle: e.target.value }))}
+                placeholder="Delaware C-Corp B2B SaaS Invoicing & US Compliance..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">Stripe Atlas Policy Notice</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorStripeAtlasPolicyNotice || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorStripeAtlasPolicyNotice: e.target.value }))}
+                placeholder="Collects direct USD revenue into US corporate accounts..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+
+            {/* 10. Payoneer Cross-Border Routing */}
+            <div className="space-y-1 md:col-span-2 pt-2 border-t border-border">
+              <span className="font-semibold text-primary">Payoneer Cross-Border Routing CMS Labels</span>
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Payoneer Card Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorPayoneerTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorPayoneerTitle: e.target.value }))}
+                placeholder="Payoneer Cross-Border Routing..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Payoneer Toggle Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorPayoneerToggleLabel || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorPayoneerToggleLabel: e.target.value }))}
+                placeholder="Payoneer Cross-Border Active..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">Payoneer Subtitle</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorPayoneerSubtitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorPayoneerSubtitle: e.target.value }))}
+                placeholder="Institutional cross-border ACH & wire clearing network..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Payoneer Test Button Text</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorPayoneerTestBtnText || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorPayoneerTestBtnText: e.target.value }))}
+                placeholder="Verify Payoneer ACH Rail..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Payoneer Policy Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorPayoneerPolicyTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorPayoneerPolicyTitle: e.target.value }))}
+                placeholder="Global Cross-Border Liquidity & Commercial ACH Routing..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">Payoneer Policy Notice</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorPayoneerPolicyNotice || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorPayoneerPolicyNotice: e.target.value }))}
+                placeholder="Enables direct collection of international franchise royalty fees..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -583,11 +840,14 @@ export function PluginConnectors() {
         {[
           { id: "all" as const, label: "All Integrations", icon: Layers },
           { id: "razorpay" as const, label: "Razorpay Payments", icon: CreditCard },
+          { id: "stripeAtlas" as const, label: "Stripe Atlas (USD B2B SaaS)", icon: Globe },
+          { id: "payoneer" as const, label: "Payoneer Cross-Border", icon: Landmark },
           { id: "whatsapp" as const, label: "WhatsApp Business API", icon: MessageSquare },
           { id: "fssai" as const, label: "FSSAI Regulatory Gateway", icon: ShieldAlert },
           { id: "mapbox" as const, label: "Mapbox Geospatial Matrix", icon: Navigation },
           { id: "cleartax" as const, label: "Automated Tax (ClearTax)", icon: Calculator },
           { id: "whatsappMarketing" as const, label: "Automated WhatsApp Marketing", icon: Megaphone },
+          { id: "b2bLeadGen" as const, label: "B2B Franchise Leads (Apollo/LinkedIn)", icon: Target },
         ].map((tab) => {
           const Icon = tab.icon;
           const isSelected = activeTab === tab.id;
@@ -2119,6 +2379,443 @@ export function PluginConnectors() {
                       title="Copy Webhook Endpoint"
                     >
                       {copiedKey === "wam_wh" ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 7. B2B FRANCHISE LEAD GENERATION (APOLLO / LINKEDIN API) */}
+          {(activeTab === "all" || activeTab === "b2bLeadGen") && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-500">
+                    <Target className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="text-base font-semibold text-foreground">
+                        {cmsConfig.connectorB2bLeadGenTitle || "B2B Franchise Lead Generation (Apollo / LinkedIn API)"}
+                      </h3>
+                      {(() => {
+                        const st = getConnectorStatus("b2bLeadGen");
+                        return (
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide border ${
+                              st.tone === "emerald"
+                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                : st.tone === "amber"
+                                ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                : "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                            }`}
+                          >
+                            {st.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {cmsConfig.connectorB2bLeadGenSubtitle || "Enterprise B2B prospecting rail. Automatically query Apollo.io and LinkedIn Sales Navigator to identify multi-unit restaurant operators and franchise owners across Saudi Arabia and the United States to sell the SaaS engine directly."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
+                    <span>{cmsConfig.connectorB2bLeadGenToggleLabel || "Lead Gen Engine Active"}</span>
+                    <input
+                      type="checkbox"
+                      checked={config.b2bLeadGen.enabled}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          b2bLeadGen: { ...prev.b2bLeadGen, enabled: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTestConnection("b2bLeadGen")}
+                    disabled={testingService === "b2bLeadGen"}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+                  >
+                    <Zap className="h-3.5 w-3.5 text-indigo-500" />
+                    {testingService === "b2bLeadGen" ? "Testing Pipeline..." : (cmsConfig.connectorB2bLeadGenTestBtnText || "Verify Prospecting Handshake")}
+                  </button>
+                </div>
+              </div>
+
+              {/* Diagnostic Message */}
+              {testResults.b2bLeadGen && (
+                <div
+                  className={`rounded-lg p-3 text-xs border flex items-center justify-between ${
+                    testResults.b2bLeadGen.ok
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                      : "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {testResults.b2bLeadGen.ok ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
+                    )}
+                    <span>{testResults.b2bLeadGen.message}</span>
+                  </div>
+                  <span className="text-[10px] opacity-75">{testResults.b2bLeadGen.timestamp}</span>
+                </div>
+              )}
+
+              {/* Founder Value Proposition Banner (Direct SaaS Expansion) */}
+              <div className="rounded-lg border border-indigo-500/20 bg-gradient-to-r from-indigo-500/10 via-purple-500/5 to-transparent p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-600 text-white shadow-xs">
+                      <Building2 className="h-3.5 w-3.5" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                      Founder Direct Sales Engine — Multi-Unit Franchise Acquisition
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
+                    <Globe className="h-3.5 w-3.5 text-indigo-500" />
+                    Target Corridors: Saudi Arabia (KSA) & United States (US)
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Empowers the Founder to automatically scrape, enrich, and identify high-LTV Multi-Unit Restaurant Owners and Franchise Groups across Saudi Arabia (Riyadh, Jeddah, Eastern Province) and the United States (Major Metro MSAs). Directly pitch and sell OrderKing's SaaS engine with 0% surge take rate and multi-store white-label portals.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                  <div className="flex items-center gap-2 rounded-md border border-indigo-500/20 bg-background/80 p-2 text-xs">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="font-medium text-foreground">Saudi Arabia (KSA)</span>
+                    <span className="text-[10px] text-muted-foreground ml-auto">Franchise & Cloud Kitchens</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-md border border-indigo-500/20 bg-background/80 p-2 text-xs">
+                    <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                    <span className="font-medium text-foreground">United States (US)</span>
+                    <span className="text-[10px] text-muted-foreground ml-auto">Multi-Unit QSR Groups</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-md border border-indigo-500/20 bg-background/80 p-2 text-xs">
+                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-pulse" />
+                    <span className="font-medium text-foreground">Zero Fake Data</span>
+                    <span className="text-[10px] text-muted-foreground ml-auto">Production API Rail</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 1-Click Prospecting & Enrichment Automation Switches */}
+              <div className="rounded-lg border border-indigo-500/20 bg-indigo-500/5 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-indigo-500" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                      1-Click Franchise Discovery & Telemetry Controls
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground">High-Ticket Executive Scrapers</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.b2bLeadGen.autoEnrichDirectDials}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          b2bLeadGen: { ...prev.b2bLeadGen, autoEnrichDirectDials: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Auto-Enrich Direct Dials</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Scrapes verified mobile numbers & direct dials for instant WhatsApp pitch
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.b2bLeadGen.autoExportToCrm}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          b2bLeadGen: { ...prev.b2bLeadGen, autoExportToCrm: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Auto-Sync to Founder CRM</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Pipes enriched restaurant owners straight into Founder closing outbox
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.b2bLeadGen.targetRegions.includes("saudi_arabia")}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setConfig((prev) => {
+                          const current = new Set(prev.b2bLeadGen.targetRegions);
+                          if (checked) current.add("saudi_arabia");
+                          else current.delete("saudi_arabia");
+                          return {
+                            ...prev,
+                            b2bLeadGen: { ...prev.b2bLeadGen, targetRegions: Array.from(current) },
+                          };
+                        });
+                      }}
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Saudi Arabia (KSA) Focus</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Filters Riyadh, Jeddah & Eastern Province multi-unit restaurant brands
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.b2bLeadGen.targetRegions.includes("united_states")}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setConfig((prev) => {
+                          const current = new Set(prev.b2bLeadGen.targetRegions);
+                          if (checked) current.add("united_states");
+                          else current.delete("united_states");
+                          return {
+                            ...prev,
+                            b2bLeadGen: { ...prev.b2bLeadGen, targetRegions: Array.from(current) },
+                          };
+                        });
+                      }}
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">United States (US) Focus</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Filters US multi-unit franchise operators & regional QSR holding groups
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Form Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Prospecting Provider Engine</label>
+                  <select
+                    value={config.b2bLeadGen.provider}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        b2bLeadGen: { ...prev.b2bLeadGen, provider: e.target.value as any },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="apollo_linkedin">Apollo.io API + LinkedIn Sales Navigator (Ensemble Mode)</option>
+                    <option value="apollo">Apollo.io Dedicated Scraper API</option>
+                    <option value="linkedin">LinkedIn Sales Navigator API Dedicated</option>
+                    <option value="proxycurl">Proxycurl LinkedIn Scraper Bridge</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">Apollo.io Master API Key</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("b2b_apollo")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.b2b_apollo ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.b2b_apollo ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.b2b_apollo ? "text" : "password"}
+                    value={config.b2bLeadGen.apolloApiKey}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        b2bLeadGen: { ...prev.b2bLeadGen, apolloApiKey: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter Apollo API Key (e.g. apollo_live_...)"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">LinkedIn Client ID</label>
+                  <input
+                    type="text"
+                    value={config.b2bLeadGen.linkedinClientId}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        b2bLeadGen: { ...prev.b2bLeadGen, linkedinClientId: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter LinkedIn Client ID (e.g. 78xxxxxxxxxxxx)"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">LinkedIn Client Secret</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("b2b_li_secret")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.b2b_li_secret ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.b2b_li_secret ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.b2b_li_secret ? "text" : "password"}
+                    value={config.b2bLeadGen.linkedinClientSecret}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        b2bLeadGen: { ...prev.b2bLeadGen, linkedinClientSecret: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter LinkedIn Client Secret"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">LinkedIn OAuth 2.0 Access Token</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("b2b_li_token")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.b2b_li_token ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.b2b_li_token ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.b2b_li_token ? "text" : "password"}
+                    value={config.b2bLeadGen.linkedinAccessToken}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        b2bLeadGen: { ...prev.b2bLeadGen, linkedinAccessToken: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter LinkedIn OAuth Bearer Token"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Target Executive Persona Filter</label>
+                  <input
+                    type="text"
+                    value={config.b2bLeadGen.targetPersona}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        b2bLeadGen: { ...prev.b2bLeadGen, targetPersona: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. Multi-Unit Franchisee, Managing Director, VP Franchising"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Minimum Multi-Unit Restaurant Count</label>
+                  <select
+                    value={config.b2bLeadGen.minRestaurantUnits}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        b2bLeadGen: { ...prev.b2bLeadGen, minRestaurantUnits: Number(e.target.value) || 3 },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value={2}>2+ Restaurant Units (Emerging Operators)</option>
+                    <option value={3}>3+ Restaurant Units (Multi-Unit Operators)</option>
+                    <option value={5}>5+ Restaurant Units (Mid-Tier Franchisees)</option>
+                    <option value={10}>10+ Restaurant Units (Regional Groups)</option>
+                    <option value={25}>25+ Restaurant Units (Enterprise Franchise Groups)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">Lead Ingestion Webhook Secret</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("b2b_wh_secret")}
+                      className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.b2b_wh_secret ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      {visibleSecrets.b2b_wh_secret ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.b2b_wh_secret ? "text" : "password"}
+                    value={config.b2bLeadGen.webhookSecret}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        b2bLeadGen: { ...prev.b2bLeadGen, webhookSecret: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter HMAC Webhook Secret"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Policy & Compliance Box */}
+              <div className="rounded-lg border border-indigo-500/20 bg-indigo-500/5 p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-indigo-500" />
+                  <span className="text-xs font-semibold text-foreground">
+                    {cmsConfig.connectorB2bLeadGenPolicyTitle || "High-Ticket Enterprise Outreach & Compliance Guard"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {cmsConfig.connectorB2bLeadGenPolicyNotice || "Automated multi-channel persona mapping targeting VP of Franchising, C-Suite, and Multi-Unit Franchisees. Enforces CAN-SPAM, CITC (Saudi Arabia), and LinkedIn API rate quotas."}
+                </p>
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-indigo-500/10 text-[11px] text-muted-foreground">
+                  <span>{cmsConfig.connectorB2bLeadGenWebhookNotice || "Apollo & LinkedIn Lead Enrichment Ingestion Webhook: Receives verified mobile numbers, direct corporate emails, and multi-unit chain footprint."}</span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="font-mono bg-background px-2 py-0.5 rounded border border-border text-[10px]">
+                      /api/v1/leads/b2b-franchise-webhook
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("https://api.orderking.in/api/v1/leads/b2b-franchise-webhook", "b2b_wh")}
+                      className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                      title="Copy Webhook Endpoint"
+                    >
+                      {copiedKey === "b2b_wh" ? <Check className="h-3 w-3 text-indigo-500" /> : <Copy className="h-3 w-3" />}
                     </button>
                   </div>
                 </div>
