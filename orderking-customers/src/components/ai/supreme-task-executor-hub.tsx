@@ -7,6 +7,7 @@ import {
   Clock,
   Crown,
   Eye,
+  Layers,
   Lock,
   Play,
   RefreshCw,
@@ -90,51 +91,51 @@ export function SupremeTaskExecutorHub() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-5">
+      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs text-slate-800">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <Crown className="h-6 w-6 text-amber-400" />
-              <h2 className="text-xl font-bold text-fg">The Supreme Task Executor (§28)</h2>
-              <Badge tone="primary">14-Stage Full Execution Graph</Badge>
+              <Layers className="h-6 w-6 text-slate-700" />
+              <h2 className="text-xl font-bold text-slate-900">Operations Task Orchestrator</h2>
+              <Badge tone="primary">14-Stage Execution Graph</Badge>
             </div>
-            <p className="mt-1 text-sm text-slate-300">
-              Decomposes high-level goals into end-to-end execution trees. Autonomously builds whatever is possible and pauses strictly at human gates.
+            <p className="mt-1 text-sm text-slate-500">
+              Decomposes high-level objectives into verified execution workflows with mandatory approval gates.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Badge tone={plan.isPaused ? "warn" : "primary"}>
-              {plan.isPaused ? "PAUSED FOR FOUNDER GATE" : "AUTONOMOUS EXECUTION READY"}
+              {plan.isPaused ? "PAUSED FOR APPROVAL" : "READY FOR EXECUTION"}
             </Badge>
           </div>
         </div>
 
         {/* Telemetry Bar */}
-        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-amber-500/20 pt-4">
-          <div className="rounded-lg bg-black/40 p-3 border border-amber-500/20">
-            <span className="text-xs text-slate-400">Total Stages</span>
-            <div className="text-2xl font-bold text-fg">{plan.totalStages} Stages</div>
+        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-slate-100 pt-4">
+          <div className="rounded-lg bg-slate-50 p-3 border border-slate-200">
+            <span className="text-xs text-slate-500">Total Stages</span>
+            <div className="text-2xl font-bold text-slate-900">{plan.totalStages} Stages</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-amber-500/20">
-            <span className="text-xs text-slate-400">Completed Stages</span>
-            <div className="text-2xl font-bold text-emerald-400">
+          <div className="rounded-lg bg-slate-50 p-3 border border-slate-200">
+            <span className="text-xs text-slate-500">Completed Stages</span>
+            <div className="text-2xl font-bold text-emerald-700">
               {plan.completedStages} / {plan.totalStages}
             </div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-amber-500/20">
-            <span className="text-xs text-slate-400">Active Gate</span>
-            <div className="text-2xl font-bold text-amber-400">Stage 8 (Payment)</div>
+          <div className="rounded-lg bg-slate-50 p-3 border border-slate-200">
+            <span className="text-xs text-slate-500">Active Gate</span>
+            <div className="text-2xl font-bold text-amber-700">Stage 8 (Payment)</div>
           </div>
-          <div className="rounded-lg bg-black/40 p-3 border border-amber-500/20">
-            <span className="text-xs text-slate-400">Zero False Action</span>
-            <div className="text-2xl font-bold text-teal-400">100% Enforced</div>
+          <div className="rounded-lg bg-slate-50 p-3 border border-slate-200">
+            <span className="text-xs text-slate-500">Action Verification</span>
+            <div className="text-2xl font-bold text-teal-700">100% Enforced</div>
           </div>
         </div>
       </div>
 
       {/* Goal Input & Blueprints */}
-      <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5 space-y-4">
-        <label className="text-sm font-semibold text-fg">Enter Sovereign Founder Goal:</label>
+      <div className="rounded-xl border border-slate-200 bg-white p-5 space-y-4 shadow-xs">
+        <label className="text-sm font-semibold text-slate-900">Enter Operational Objective:</label>
         <div className="flex gap-2">
           <Input
             value={goalPrompt}

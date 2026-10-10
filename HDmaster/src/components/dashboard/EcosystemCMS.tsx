@@ -887,7 +887,6 @@ export function EcosystemCMS() {
       {selectedCategory === "algorithm" ? (
         <AlgorithmSettings />
       ) : (
-        /* Main Grid: Controls + Forms + Mobile Preview */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left / Center Section: Category Tabs & Form Fields */}
         <div className="lg:col-span-8 space-y-6">
@@ -1198,12 +1197,13 @@ export function EcosystemCMS() {
                 {FIELD_DEFINITIONS.find((f) => f.key === previewFieldKey)?.label}
               </div>
               <p className="text-xs font-mono text-primary bg-background/80 p-2 rounded border border-border/80 break-words">
-                {formData[previewFieldKey] || "<Value is currently blank>"}
+                {formData[previewFieldKey] || "[Value is currently blank]"}
               </p>
             </div>
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }

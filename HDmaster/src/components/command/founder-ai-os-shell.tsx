@@ -211,7 +211,7 @@ export function FounderAiOsShell() {
           </div>
         )}
 
-        {/* VIEW: SOVEREIGN STORAGE & CACHE PURIFIER (100X BETTER THAN BROWSER) */}
+        {/* VIEW: STORAGE & CACHE OPTIMIZER */}
         {currentView === "purifier" && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
             <StoragePurifierView />

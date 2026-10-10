@@ -1,10 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
-import { Save, Server, Sparkles, Languages, Settings2, Percent, Loader2, CheckCircle2, ArrowLeft, FileText, Cpu, Palette } from 'lucide-react';
+import { Save, Server, Sparkles, Languages, Settings2, Percent, Loader2, CheckCircle2, ArrowLeft, FileText, Cpu, Palette, Landmark, SlidersHorizontal } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { EcosystemCMS } from '@/components/dashboard/EcosystemCMS';
 import { PluginConnectors } from '@/components/dashboard/PluginConnectors';
 import { CustomerAppUiSettings } from '@/components/dashboard/CustomerAppUiSettings';
+import { KingPayGlobalSettings } from '@/components/kingpay/KingPayGlobalSettings';
+import { AlgorithmSettings } from '@/components/dashboard/AlgorithmSettings';
 
 export const Route = createFileRoute('/settings')({
   component: SettingsPage,
@@ -84,7 +86,9 @@ function SettingsPage() {
 
         <div className="flex flex-col md:flex-row gap-6">
           <nav className="w-full md:w-64 flex flex-col gap-2 shrink-0">
+            <TabButton id="algorithm" current={activeTab} set={setActiveTab} icon={SlidersHorizontal} label="Algorithmic Matrix" />
             <TabButton id="ui" current={activeTab} set={setActiveTab} icon={Palette} label="Customer App UI" />
+            <TabButton id="kingpay" current={activeTab} set={setActiveTab} icon={Landmark} label="KingPay Global Settings" />
             <TabButton id="cms" current={activeTab} set={setActiveTab} icon={FileText} label="Ecosystem CMS" />
             <TabButton id="connectors" current={activeTab} set={setActiveTab} icon={Cpu} label="Plugin Connectors" />
             <TabButton id="features" current={activeTab} set={setActiveTab} icon={Server} label="Feature Flags" />
@@ -94,7 +98,9 @@ function SettingsPage() {
           </nav>
 
           <main className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-8">
+            {activeTab === 'algorithm' && <AlgorithmSettings />}
             {activeTab === 'ui' && <CustomerAppUiSettings config={config} onSave={handleSave} saving={saving} />}
+            {activeTab === 'kingpay' && <KingPayGlobalSettings />}
             {activeTab === 'cms' && <EcosystemCMS />}
             {activeTab === 'connectors' && <PluginConnectors />}
             {activeTab === 'features' && <FeatureFlagsPanel config={config} onSave={handleSave} saving={saving} />}

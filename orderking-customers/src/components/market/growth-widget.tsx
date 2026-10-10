@@ -22,71 +22,62 @@ export function GrowthWidget() {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border-2 border-emerald-500/20 bg-zinc-950 p-6 my-4 shadow-2xl transition-all hover:border-emerald-500/40 hover:shadow-emerald-900/20 cursor-pointer">
-      {/* Eye-catching premium dynamic background effect */}
-      <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-emerald-600/20 blur-[80px] pointer-events-none"></div>
-      <div className="absolute -right-20 -bottom-20 h-64 w-64 rounded-full bg-cyan-500/20 blur-[80px] pointer-events-none"></div>
-      <div className="absolute top-0 right-0 p-4 opacity-10">
-         <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      </div>
-      
+    <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 my-4 shadow-sm transition-all hover:border-slate-300">
       <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="flex-1 space-y-3">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 border border-emerald-500/20">
-            <Lock className="size-3.5 text-emerald-400" />
-            <span className="text-[11px] font-bold tracking-wide text-emerald-400 uppercase">
-              Locked: 0 Delivery Fees
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 border border-emerald-200">
+            <Lock className="size-3.5 text-emerald-700" />
+            <span className="text-[11px] font-semibold tracking-wide text-emerald-700 uppercase">
+              Free Delivery Reward
             </span>
           </div>
-          <h3 className="text-3xl font-bold text-white tracking-tight leading-tight">
-            Force-Unlock <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 drop-shadow-sm">Lifetime Free Delivery</span>
+          <h3 className="text-2xl font-bold text-slate-900 tracking-tight leading-tight">
+            Unlock Lifetime Free Delivery
           </h3>
-          <p className="text-sm text-zinc-300 max-w-sm leading-relaxed font-medium">
-            Invite exactly 3 friends on WhatsApp. The moment they order, your account gets upgraded to Lifetime Free Delivery + ₹500 Cash.
+          <p className="text-sm text-slate-600 max-w-sm leading-relaxed">
+            Invite 3 colleagues or friends. Once they complete their first order, your account receives Lifetime Free Delivery + ₹500 credits.
           </p>
         </div>
 
         <div className="w-full sm:w-auto flex flex-col gap-3 shrink-0">
           <button 
             onClick={handleWhatsAppShare}
-            className="group flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:shadow-[0_0_40px_rgba(16,185,129,0.5)] border border-green-400"
+            className="group flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-6 py-3 text-sm font-semibold text-white transition-all shadow-xs"
           >
             Share on WhatsApp <ChevronRight className="size-4 group-hover:translate-x-1 transition-transform" />
           </button>
           
           <button
             onClick={handleCopy}
-            className="group flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition hover:bg-white/10 active:scale-95"
+            className="group flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 transition hover:bg-slate-100"
           >
             <div className="flex items-center gap-3">
               <div className="flex flex-col items-start">
-                <span className="text-sm font-bold text-zinc-300 tracking-wide">{inviteLink}</span>
+                <span className="text-sm font-medium text-slate-700 tracking-wide">{inviteLink}</span>
               </div>
             </div>
-            {copied ? <CheckCircle2 className="size-5 text-emerald-400" /> : <Copy className="size-4 text-zinc-400 group-hover:text-white transition-colors" />}
+            {copied ? <CheckCircle2 className="size-5 text-emerald-600" /> : <Copy className="size-4 text-slate-400 group-hover:text-slate-600 transition-colors" />}
           </button>
         </div>
       </div>
       
-      {/* Viral Progress Engine */}
-      <div className="relative z-10 mt-8 border-t border-white/10 pt-5">
+      {/* Referral Progress Indicator */}
+      <div className="relative z-10 mt-6 border-t border-slate-100 pt-5">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
-             <Zap className="size-3.5 text-amber-400 fill-amber-400"/> 
-             Viral Unlock Engine
+          <span className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+             <Zap className="size-3.5 text-amber-500 fill-amber-500"/> 
+             Referral Tier Progress
           </span>
-          <span className="text-xs font-bold text-white tracking-widest uppercase">0 / 3 Friends</span>
+          <span className="text-xs font-semibold text-slate-900 tracking-wider uppercase">0 / 3 Referrals</span>
         </div>
         <div className="flex gap-2">
-           <div className="flex-1 h-3 rounded-full bg-white/5 border border-white/10 overflow-hidden relative">
-              {/* <div className="absolute inset-0 bg-emerald-500 w-full animate-pulse"></div> */}
+           <div className="flex-1 h-2 rounded-full bg-slate-100 border border-slate-200 overflow-hidden relative">
            </div>
-           <div className="flex-1 h-3 rounded-full bg-white/5 border border-white/10"></div>
-           <div className="flex-1 h-3 rounded-full bg-white/5 border border-white/10"></div>
+           <div className="flex-1 h-2 rounded-full bg-slate-100 border border-slate-200"></div>
+           <div className="flex-1 h-2 rounded-full bg-slate-100 border border-slate-200"></div>
         </div>
-        <p className="mt-3 text-[11px] font-bold text-zinc-400 tracking-wide">
-          <span className="text-emerald-400">0%</span> of the way to ruling the empire.
+        <p className="mt-2.5 text-[11px] text-slate-500">
+          <span className="text-emerald-600 font-semibold">0%</span> of referral goal completed.
         </p>
       </div>
     </div>

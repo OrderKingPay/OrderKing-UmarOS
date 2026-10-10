@@ -41,41 +41,7 @@ export function SupremeCreatorEngine() {
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"editor" | "preview" | "files">("preview");
 
-  const [projects, setProjects] = useState<CreatedProject[]>([
-    {
-      id: "proj-01",
-      name: "Luxury Biryani Dark Kitchen Hub",
-      type: "business_system",
-      description: "Direct-to-consumer order engine with zero aggregator commission and WhatsApp auto-dispatch.",
-      liveUrl: "https://biryani.orderking.in",
-      deployedAt: "2 hours ago",
-      status: "LIVE",
-      filesCount: 24,
-      monthlyRevenueEst: "₹2,40,000",
-    },
-    {
-      id: "proj-02",
-      name: "Sovereign Gold Jewelry Boutique",
-      type: "website",
-      description: "High-ticket jewelry showcase with 3D interactive viewer, live gold rate ticker & UPI checkout.",
-      liveUrl: "https://gold.orderking.in",
-      deployedAt: "Yesterday",
-      status: "LIVE",
-      filesCount: 18,
-      monthlyRevenueEst: "₹8,50,000",
-    },
-    {
-      id: "proj-03",
-      name: "Fast-Track Vehicle Insurance & PUC Portal",
-      type: "product_page",
-      description: "0-Paperwork instant motor insurance purchase page with Parivahan Vahan API lookup.",
-      liveUrl: "https://insurance.orderking.in",
-      deployedAt: "3 days ago",
-      status: "LIVE",
-      filesCount: 12,
-      monthlyRevenueEst: "₹1,20,000",
-    },
-  ]);
+  const [projects, setProjects] = useState<CreatedProject[]>([]);
 
   const PRESET_PROMPTS = [
     "Build a complete multi-vendor organic grocery marketplace with 15-min delivery and UPI soundbox",
@@ -98,36 +64,32 @@ export function SupremeCreatorEngine() {
 
   return (
     <div className="space-y-6">
-      {/* SUPREME GENERATOR HEADER */}
-      <div className="rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-[#0D3B2E] via-slate-900 to-black p-5 shadow-2xl relative overflow-hidden">
+      {/* APPLICATION CREATOR HEADER */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs relative overflow-hidden text-slate-900">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="relative flex size-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-emerald-400 text-slate-950 shadow-xl ring-2 ring-amber-300">
-              <Sparkles className="size-7 text-slate-950" />
-              <span className="absolute -top-1 -right-1 flex size-3">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
-                <span className="relative inline-flex size-3 rounded-full bg-amber-500" />
-              </span>
+            <div className="flex size-12 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs">
+              <Sparkles className="size-6 text-white" />
             </div>
 
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-black text-white tracking-tight">
-                  HD Master 1-Command Sovereign Creator
+                <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+                  Application Deployment &amp; Template Engine
                 </h2>
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 font-mono text-[10px] font-bold">
-                  UNLIMITED &amp; FREE FOREVER
+                <Badge className="bg-slate-100 text-slate-700 border-slate-200 font-mono text-[10px] font-semibold">
+                  ENTERPRISE BUILDER
                 </Badge>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
-                Enter one single command to create any complete website, app, business system, or product page and deploy it live instantly.
+              <p className="text-xs text-slate-500 mt-1">
+                Configure application templates, micro-frontends, and automated deployment pipelines.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/30">
-              ⚡ 0ms External AI Latency
+            <span className="text-xs font-mono font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+              PIPELINE READY
             </span>
           </div>
         </div>
@@ -140,22 +102,22 @@ export function SupremeCreatorEngine() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="Describe what you want to create (e.g. 'Build a complete digital product store with UPI payment link, automated licensing, and customer portal')..."
-              className="w-full rounded-xl border border-white/20 bg-black/60 p-3.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400/50 shadow-inner font-sans resize-none"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 shadow-inner font-sans resize-none"
             />
             <Button
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="absolute right-3 bottom-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs px-5 shadow-md flex items-center gap-2"
+              className="absolute right-3 bottom-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 shadow-xs flex items-center gap-2 rounded-lg"
             >
               {isGenerating ? (
                 <>
                   <RefreshCw className="size-4 animate-spin" />
-                  Generating &amp; Deploying Live...
+                  Generating &amp; Deploying...
                 </>
               ) : (
                 <>
                   <Rocket className="size-4" />
-                  Generate &amp; Deploy Live Instantly
+                  Deploy Pipeline
                 </>
               )}
             </Button>
@@ -163,7 +125,7 @@ export function SupremeCreatorEngine() {
 
           {/* Quick Presets */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-            <span className="text-[11px] font-bold text-amber-400/80 uppercase tracking-wider shrink-0 pl-1">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider shrink-0 pl-1">
               Presets:
             </span>
             {PRESET_PROMPTS.map((p, idx) => (
@@ -171,7 +133,7 @@ export function SupremeCreatorEngine() {
                 key={idx}
                 type="button"
                 onClick={() => setPrompt(p)}
-                className="shrink-0 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 px-3 py-1 text-xs text-slate-300 transition"
+                className="shrink-0 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 px-3 py-1 text-xs text-slate-700 transition"
               >
                 {p.slice(0, 40)}...
               </button>
@@ -278,47 +240,54 @@ export function SupremeCreatorEngine() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Globe className="size-5 text-amber-400" />
-            <h3 className="text-base font-bold text-white">Live Deployed Websites &amp; Systems ({projects.length})</h3>
+            <Globe className="size-5 text-slate-600" />
+            <h3 className="text-base font-bold text-slate-900">Active Deployed Environments ({projects.length})</h3>
           </div>
-          <span className="text-xs text-slate-400 font-mono">100% Uptime Guaranteed</span>
+          <span className="text-xs text-slate-500 font-mono">Telemetry Active</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          {projects.map((proj) => (
-            <div
-              key={proj.id}
-              className="rounded-xl border border-white/15 bg-slate-900/90 p-4 shadow-sm hover:border-amber-400/60 transition space-y-3 flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px] font-bold">
-                    ● {proj.status}
-                  </Badge>
-                  <span className="text-[10px] text-slate-400 font-mono">{proj.deployedAt}</span>
-                </div>
-                <h4 className="font-bold text-sm text-white line-clamp-1">{proj.name}</h4>
-                <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">{proj.description}</p>
-              </div>
-
-              <div className="pt-2 border-t border-white/10 flex items-center justify-between">
+        {projects.length === 0 ? (
+          <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-xl text-slate-500 text-xs">
+            <Globe className="size-8 text-slate-400 mx-auto mb-2 opacity-60" />
+            <span>No deployment configurations active. Configure a template above to generate deployment pipelines.</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            {projects.map((proj) => (
+              <div
+                key={proj.id}
+                className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-slate-300 transition space-y-3 flex flex-col justify-between"
+              >
                 <div>
-                  <span className="text-[10px] text-slate-400 block">Est. Revenue</span>
-                  <span className="text-xs font-bold text-amber-400 font-mono">{proj.monthlyRevenueEst}/mo</span>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-bold">
+                      ● {proj.status}
+                    </Badge>
+                    <span className="text-[10px] text-slate-500 font-mono">{proj.deployedAt}</span>
+                  </div>
+                  <h4 className="font-bold text-sm text-slate-900 line-clamp-1">{proj.name}</h4>
+                  <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{proj.description}</p>
                 </div>
-                <a
-                  href={proj.liveUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 hover:underline"
-                >
-                  <span>Open Live</span>
-                  <ExternalLink className="size-3" />
-                </a>
+
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] text-slate-500 block">Est. Revenue</span>
+                    <span className="text-xs font-bold text-slate-800 font-mono">{proj.monthlyRevenueEst}/mo</span>
+                  </div>
+                  <a
+                    href={proj.liveUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:underline"
+                  >
+                    <span>Open Live</span>
+                    <ExternalLink className="size-3" />
+                  </a>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

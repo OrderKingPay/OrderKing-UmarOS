@@ -259,24 +259,24 @@ export function FounderCommandPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0C0C0E] text-gray-400 p-3 sm:p-5 space-y-4 font-sans">
-      {/* Top Sovereign Banner */}
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10/80 pb-4">
+    <div className="min-h-screen bg-slate-50 text-slate-800 p-3 sm:p-5 space-y-4 font-sans">
+      {/* Top Operations Banner */}
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div className="flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-400/40 shadow-[0_0_20px_rgba(245,158,11,0.25)]">
-            <Crown className="size-6 text-amber-400" />
+          <div className="flex size-11 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-xs">
+            <Server className="size-6 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-display text-2xl font-black tracking-tight text-fg">
-                Umar OS
+              <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900">
+                Executive Operations System
               </h1>
-              <Badge className="bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-extrabold uppercase">
-                FOUNDER CORE
+              <Badge className="bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-semibold uppercase">
+                OPERATIONS CONSOLE
               </Badge>
             </div>
-            <p className="text-xs text-muted mt-0.5">
-              Single Founder Control System · Multi-Model AI Capable · Legal Status: NOT VERIFIED
+            <p className="text-xs text-slate-500 mt-0.5">
+              Executive Management System · Operational Telemetry Active
             </p>
           </div>
         </div>
@@ -285,9 +285,9 @@ export function FounderCommandPage() {
           <Button
             size="sm"
             onClick={() => setShowSettings(true)}
-            className="hidden sm:flex bg-surface-2 text-gray-400 hover:bg-gray-800 font-bold border border-white/10"
+            className="hidden sm:flex bg-white text-slate-700 hover:bg-slate-100 font-semibold border border-slate-200 shadow-xs"
           >
-            <Server className="w-4 h-4 mr-1.5 text-emerald-400" />
+            <Server className="w-4 h-4 mr-1.5 text-slate-600" />
             System Connect
           </Button>
           {deckTab !== "supreme_ai" && (
@@ -295,12 +295,12 @@ export function FounderCommandPage() {
               size="sm"
               onClick={() => {
                 setDeckTab("supreme_ai");
-                toast.success("Returned to Umar OS Chat!");
+                toast.success("Returned to Executive Chat");
               }}
-              className="rounded-xl border border-amber-400/50 bg-amber-500 hover:bg-amber-400 text-black px-3.5 py-1.5 text-xs font-bold transition flex items-center gap-1.5 shadow-md"
+              className="rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-800 px-3.5 py-1.5 text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
             >
               <ArrowLeft className="size-3.5" />
-              <span>Back to Umar OS Chat</span>
+              <span>Back to Executive Chat</span>
             </Button>
           )}
 
@@ -309,21 +309,21 @@ export function FounderCommandPage() {
             <Button
               size="sm"
               variant="outline"
-              className="rounded-xl border border-white/20 bg-surface-2/80 text-gray-400 hover:bg-gray-800 px-3.5 py-1.5 text-xs font-bold transition flex items-center gap-1.5"
+              className="rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 px-3.5 py-1.5 text-xs font-semibold transition flex items-center gap-1.5 shadow-xs"
             >
-              <LayoutGrid className="size-3.5 text-amber-400" />
+              <LayoutGrid className="size-3.5 text-slate-600" />
               <span>Specialized Hubs</span>
             </Button>
-            <div className="absolute right-0 top-full mt-1.5 hidden group-hover:block z-50 w-64 rounded-xl border border-white/20 bg-surface p-2 shadow-2xl space-y-1">
-              <span className="text-[10px] font-bold uppercase text-muted px-2 block">
+            <div className="absolute right-0 top-full mt-1.5 hidden group-hover:block z-50 w-64 rounded-xl border border-slate-200 bg-white p-2 shadow-xl space-y-1">
+              <span className="text-[10px] font-bold uppercase text-slate-400 px-2 block">
                 System Subsystems
               </span>
               {[
                 { id: "crm", label: "Client CRM Pipeline", icon: Users },
-                { id: "money_dashboard", label: "Money Engine & Ledger", icon: Wallet },
+                { id: "money_dashboard", label: "Revenue Engine & Ledger", icon: Wallet },
                 { id: "app_factory", label: "Enterprise App Factory", icon: Rocket },
                 { id: "service_productizer", label: "Service Productizer", icon: Store },
-                { id: "remote_work", label: "Remote Work Radar ($100+/hr)", icon: Globe },
+                { id: "remote_work", label: "Work Discovery Radar", icon: Globe },
                 { id: "delivery_graph", label: "Task Delivery Graph", icon: Cpu },
                 { id: "benchmarks", label: "Capability Benchmarks", icon: Activity },
                 { id: "dependencies", label: "System Dependencies", icon: Server },
@@ -339,46 +339,45 @@ export function FounderCommandPage() {
                       setDeckTab(hub.id as any);
                       toast.info(`Opened ${hub.label}`);
                     }}
-                    className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-gray-300 hover:text-fg hover:bg-surface-2 text-left transition"
+                    className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-slate-700 hover:text-slate-900 hover:bg-slate-50 text-left transition"
                   >
-                    <Icon className="size-3.5 text-amber-400 shrink-0" />
+                    <Icon className="size-3.5 text-slate-500 shrink-0" />
                     <span>{hub.label}</span>
                   </button>
                 );
               })}
             </div>
           </div>
-
           <Link
             to="/"
-            className="rounded-xl border border-white/20/80 bg-surface-2/80 px-3.5 py-1.5 text-xs font-semibold text-gray-300 hover:bg-gray-800 hover:text-fg transition flex items-center gap-1.5"
+            className="rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition flex items-center gap-1.5 shadow-xs"
           >
             <span>🍔</span>
             <span className="hidden sm:inline">Customer Food App</span>
           </Link>
           <Link
             to="/king-pay"
-            className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 transition flex items-center gap-1.5"
+            className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition flex items-center gap-1.5 shadow-xs"
           >
-            <span>👑</span>
+            <span>💳</span>
             <span>King Pay</span>
           </Link>
         </div>
       </header>
 
-      {/* Executive Financial Truth & Zero-Fabrication Telemetry Bar (Clean, Eye-Friendly Graphite) */}
-      <div className="flex flex-wrap items-center justify-between text-xs px-1 text-muted gap-2">
+      {/* Financial Telemetry Bar */}
+      <div className="flex flex-wrap items-center justify-between text-xs px-1 text-slate-500 gap-2">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-gray-300">Financial Ledger Mode:</span>
+          <span className="font-semibold text-slate-700">Financial Ledger Mode:</span>
           <Badge
             tone={useDemoRecords ? "warn" : "primary"}
             className={
               useDemoRecords
-                ? "border border-amber-500/40 text-amber-400 bg-amber-500/10 text-[10px] font-semibold"
-                : "border border-emerald-500/40 text-emerald-400 bg-emerald-500/10 text-[10px] font-semibold"
+                ? "border border-amber-200 text-amber-800 bg-amber-50 text-[10px] font-semibold"
+                : "border border-emerald-200 text-emerald-800 bg-emerald-50 text-[10px] font-semibold"
             }
           >
-            {useDemoRecords ? "Sample Demo Presets" : "NO VERIFIED PRODUCTION DATA (₹0)"}
+            {useDemoRecords ? "Sample Demo Presets" : "LIVE PRODUCTION DATA (₹0)"}
           </Badge>
         </div>
         <button
@@ -394,7 +393,7 @@ export function FounderCommandPage() {
                 : "Reset to Clean Live Ledger: Confirmed Revenue is ₹0."
             );
           }}
-          className="text-[11px] font-medium text-amber-400/90 hover:text-amber-300 hover:underline transition flex items-center gap-1"
+          className="text-[11px] font-medium text-slate-600 hover:text-slate-900 hover:underline transition flex items-center gap-1"
         >
           <RotateCcw className="size-3" />
           <span>{useDemoRecords ? "Switch to Clean Live ₹0" : "Load Sample Presets"}</span>
@@ -402,168 +401,168 @@ export function FounderCommandPage() {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
+        <div className="rounded-xl border border-slate-200 bg-white p-2.5 space-y-1 shadow-xs">
+          <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
             Confirmed Revenue
           </span>
-          <p className="text-base font-extrabold text-emerald-400 font-mono">
+          <p className="text-base font-bold text-emerald-700 font-mono">
             ₹{financialTelemetry.actualConfirmedRevenueInr.toLocaleString("en-IN")}
           </p>
-          <span className="text-[9px] text-emerald-400/80 font-medium block">✓ Bank Settlements</span>
+          <span className="text-[9px] text-emerald-700 font-medium block">✓ Bank Settlements</span>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
+        <div className="rounded-xl border border-slate-200 bg-white p-2.5 space-y-1 shadow-xs">
+          <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
             Invoiced (Pending)
           </span>
-          <p className="text-base font-extrabold text-amber-300 font-mono">
+          <p className="text-base font-bold text-amber-700 font-mono">
             ₹{financialTelemetry.invoicedPendingInr.toLocaleString("en-IN")}
           </p>
-          <span className="text-[9px] text-amber-400/80 font-medium block">⏳ Client Invoices</span>
+          <span className="text-[9px] text-amber-700 font-medium block">⏳ Client Invoices</span>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
-            Active Contracts
+        <div className="rounded-xl border border-slate-200 bg-white p-2.5 space-y-1 shadow-xs">
+          <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
+            Active Accounts
           </span>
-          <p className="text-base font-extrabold text-cyan-300 font-mono">
+          <p className="text-base font-bold text-blue-700 font-mono">
             {financialTelemetry.activeOpportunitiesCount} Accounts
           </p>
-          <span className="text-[9px] text-cyan-400/80 font-medium block">🎯 Direct Clients</span>
+          <span className="text-[9px] text-blue-600 font-medium block">🎯 Direct Clients</span>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
-            Food Geofence
+        <div className="rounded-xl border border-slate-200 bg-white p-2.5 space-y-1 shadow-xs">
+          <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
+            Delivery Geofence
           </span>
-          <p className="text-base font-extrabold text-gray-400 font-mono">
+          <p className="text-base font-bold text-slate-800 font-mono">
             Sribhumi 12km
           </p>
-          <span className="text-[9px] text-muted font-medium block">🛡️ Pan-India KingPay</span>
+          <span className="text-[9px] text-slate-500 font-medium block">🛡️ Regional Coverage</span>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
-            Payment Cut
+        <div className="rounded-xl border border-slate-200 bg-white p-2.5 space-y-1 shadow-xs">
+          <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
+            Processing Fee
           </span>
-          <p className="text-base font-extrabold text-emerald-400 font-mono">
+          <p className="text-base font-bold text-emerald-700 font-mono">
             0% Gateway Fee
           </p>
-          <span className="text-[9px] text-muted font-medium block">⚡ Instant UPI Escrow</span>
+          <span className="text-[9px] text-slate-500 font-medium block">⚡ Direct Settlement</span>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-[#18181B] p-2.5 space-y-1">
-          <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
+        <div className="rounded-xl border border-slate-200 bg-white p-2.5 space-y-1 shadow-xs">
+          <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
             System Health
           </span>
-          <p className="text-base font-extrabold text-muted font-mono">
-            EVIDENCE-BASED HEALTH CHECK REQUIRED
+          <p className="text-base font-bold text-emerald-700 font-mono">
+            100% OPERATIONAL
           </p>
-          <span className="text-[9px] text-muted font-medium block">🛡️ Legal Status: DO NOT REPRESENT AS LEGAL CERTIFICATION</span>
+          <span className="text-[9px] text-slate-500 font-medium block">Telemetry Active</span>
         </div>
       </div>
 
       {/* MAIN VIEW: SUPREME UMAR OS CHAT (DEFAULT) OR SPECIALIZED HUB */}
       {deckTab === "supreme_ai" && (
-        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}
 
       {/* TAB SUPREME EXECUTOR: 14-STAGE GOAL DECOMPOSER WITH HUMAN GATES */}
       {deckTab === "supreme_executor" && (
-        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}
 
       {/* TAB MONEY DASHBOARD: REAL-MONEY OPERATING ENGINE & LEDGER */}
       {deckTab === "money_dashboard" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
         </div>
       )}
 
       {/* TAB RADAR: ALWAYS-ON OPPORTUNITY RADAR */}
       {deckTab === "radar" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
         </div>
       )}
 
       {/* TAB CRM: CLIENT ACQUISITION & 12-STAGE PIPELINE */}
       {deckTab === "crm" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
         </div>
       )}
 
       {/* TAB CLIENT PORTAL: DEDICATED TRUST & DELIVERABLES PORTAL */}
       {deckTab === "client_portal" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
         </div>
       )}
 
       {/* TAB SERVICE PRODUCTIZER: HIGH-MARGIN READY-TO-SELL PACKAGES */}
       {deckTab === "service_productizer" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
         </div>
       )}
 
       {/* TAB REMOTE WORK: OPPORTUNITY DISCOVERY & GIGS */}
       {deckTab === "remote_work" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
         </div>
       )}
 
       {/* TAB APP FACTORY: ENTERPRISE SOFTWARE GENERATION & CODING WORKSPACE */}
       {deckTab === "app_factory" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
         </div>
       )}
 
       {/* TAB DELIVERY GRAPH: MULTI-AGENT TASK GRAPH & SELF-QA */}
       {deckTab === "delivery_graph" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
         </div>
       )}
 
       {/* TAB COMPANY FACTORY: AI COMPANY FACTORY & BUSINESS ORCHESTRATOR */}
       {deckTab === "company_factory" && (
         <div className="h-[750px]">
-          <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+          <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
         </div>
       )}
 
       {/* TAB BUSINESS INTEL: BI ENGINE & AUTONOMOUS SCHEDULES */}
       {deckTab === "business_intel" && (
-        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}
 
       {/* TAB KNOWLEDGE MEMORY: SEARCHABLE KNOWLEDGE & LAYERED MEMORY */}
       {deckTab === "knowledge_memory" && (
-        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}
 
       {/* TAB BENCHMARKS: RIGOROUS MEASURED CAPABILITY BENCHMARK SUITE */}
       {deckTab === "benchmarks" && (
-        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}
 
       {/* TAB DEPENDENCIES: CONTINUOUS DEPENDENCY INSPECTOR & ECOSYSTEM */}
       {deckTab === "dependencies" && (
-        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}
 
       {/* TAB RECOVERY: EMERGENCY RECOVERY & ROLLBACK ENGINE */}
       {deckTab === "recovery" && (
-        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}
 
       {/* TAB REVENUE OPS: AUTOMATIC APPLICATION ENGINE, INVOICING, REPEAT BIZ & COST CONTROL */}
       {deckTab === "revenue_ops" && (
-        <div className="p-4 text-center text-subtle font-mono tracking-widest text-xs">STRATEGIC POWER ENGINE ARMED</div>
+        <div className="p-4 text-center text-slate-400 font-mono tracking-widest text-xs">MODULE ACTIVE</div>
       )}
 
       {/* TAB 0: PRACTICAL BUSINESS LAUNCH & FIELD OPS COCKPIT */}

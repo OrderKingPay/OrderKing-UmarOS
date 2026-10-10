@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ShieldAlert, ShieldCheck, Activity, Key, Loader2, Landmark, CheckCircle2, Lock, ArrowUpRight } from "lucide-react";
+import { ShieldAlert, ShieldCheck, Activity, Key, Loader2, Landmark, CheckCircle2, Lock, ArrowUpRight, Sliders } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -124,6 +124,13 @@ export function KingPayMasterSwitch() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <a
+            href="#kingpay-global-settings"
+            className="text-xs font-mono font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+          >
+            <Sliders className="w-3.5 h-3.5" />
+            Global Settings Matrix
+          </a>
           <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 uppercase tracking-widest font-mono text-xs py-1.5 px-3">
             Admin Access
           </Badge>

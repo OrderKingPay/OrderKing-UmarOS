@@ -1313,7 +1313,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ShieldCheck className="size-4 text-emerald-400" />
-            <span className="text-sm font-bold text-fg">1,000x Strict Geofence Status</span>
+            <span className="text-sm font-bold text-fg">Geofence &amp; Dispatch Status</span>
           </div>
           <Badge className="bg-[#D4AF37]/10 text-emerald-300 text-[10px] font-bold">
             Active: {zones?.[0]?.name || "Sribhumi / Karimganj"}
@@ -1350,7 +1350,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
           </Badge>
         </div>
         <p className="text-xs text-gray-300">
-          All state discrepancies, transient errors, and cache invalidations resolved. Clean sovereign baseline restored.
+          All state discrepancies, transient errors, and cache invalidations resolved. Clean system baseline restored.
         </p>
       </div>
     );
@@ -1377,17 +1377,17 @@ function InChatCredentialCard({ onSave }: { onSave?: (keys: FounderCredentials) 
     }
     if (onSave) onSave(keys);
     supremeAudioDsp.playTone("success_chime");
-    toast.success("Credentials securely saved to Sovereign Local Vault!");
+    toast.success("Credentials securely saved to local storage.");
   };
 
   return (
-    <div className="rounded-xl border border-amber-500/40 bg-black/70 p-3.5 space-y-3 shadow-lg">
+    <div className="rounded-xl border border-slate-200 bg-white p-3.5 space-y-3 shadow-sm text-slate-800">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Key className="size-4 text-amber-400" />
-          <span className="text-xs font-bold text-fg">Founder Credential Vault (Local Storage)</span>
+          <Key className="size-4 text-slate-600" />
+          <span className="text-xs font-bold text-slate-900">Credential Vault (Local Storage)</span>
         </div>
-        <Badge className="bg-amber-500/20 text-amber-300 text-[10px]">Client-Side Only</Badge>
+        <Badge className="bg-slate-100 text-slate-600 border border-slate-200 text-[10px]">Client-Side Only</Badge>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
@@ -1435,10 +1435,10 @@ function InChatCredentialCard({ onSave }: { onSave?: (keys: FounderCredentials) 
       <Button
         size="sm"
         onClick={handleSave}
-        className="w-full text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow-md"
+        className="w-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white shadow-xs"
       >
         <Save className="size-3 mr-1.5" />
-        Save Credentials to Sovereign Vault
+        Save Credentials to Secure Vault
       </Button>
     </div>
   );
@@ -1942,66 +1942,66 @@ You can ask me anything across software engineering, architecture, business anal
                   {
                     id: `msg-${Date.now()}`,
                     sender: "ai",
-                    text: `### 👑 Umar OS Active\nHow can I serve you right now, Founder? You have full access to all 6 frontier models, instant live app deployment, 500+ app connectors, and 1,000x strict geofencing.`,
+                    text: `### Executive Operations Assistant\nSystem ready. How can I assist you with operations, revenue tracking, or platform orchestration today?`,
                     timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
                     modelUsed: selectedModel,
                   },
                 ]);
-                toast.success("Started a fresh Umar OS session");
+                toast.success("Started a fresh operations session");
               }}
               className="w-full justify-start h-8 text-xs font-semibold bg-surface-2 hover:bg-gray-800 text-gray-400 border border-white/20/60 rounded-lg transition"
             >
-              <Plus className="size-3.5 mr-2 text-amber-400" />
-              New Founder Chat
+              <Plus className="size-3.5 mr-2 text-slate-400" />
+              New Session
             </Button>
 
-            {/* Pinned Sovereign Commands */}
+            {/* Operations Commands */}
             <div className="space-y-1 pt-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted px-1 block">
-                Frontier Capabilities
+                Standard Directives
               </span>
               {[
                 {
                   label: "Multi-Model Consensus",
                   icon: Cpu,
                   query: "Execute multi-model consensus across OpenAI GPT-4o, Claude 3.7 Sonnet, Grok 2, Gemini 2.0 Flash, Codex, and DeepSeek",
-                  color: "text-cyan-400",
+                  color: "text-blue-500",
                 },
                 {
-                  label: "1-Command Live App Deploy",
+                  label: "Application Deployment",
                   icon: Rocket,
-                  query: "Scaffold and deploy a high-conversion client web portal live to edge in 1 command",
-                  color: "text-emerald-400",
+                  query: "Scaffold and deploy a client web portal live to edge",
+                  color: "text-emerald-500",
                 },
                 {
-                  label: "500+ App Integrations",
+                  label: "Ecosystem Integrations",
                   icon: Globe,
                   query: "Inspect and connect external integrations with WhatsApp, Stripe, GitHub, and Shopify",
-                  color: "text-blue-400",
+                  color: "text-indigo-500",
                 },
                 {
-                  label: "4K Media & Video Studio",
+                  label: "Media Generation Studio",
                   icon: Sparkles,
-                  query: "Generate 4K cinematic product promo video and high-resolution marketing assets",
-                  color: "text-amber-400",
+                  query: "Generate product marketing assets and video",
+                  color: "text-amber-500",
                 },
                 {
-                  label: "Pan-India Geofence Guard",
+                  label: "Geofence & Dispatch Audit",
                   icon: ShieldCheck,
-                  query: "Audit Pan-India geofencing: show food delivery active in Karimganj only, King Pay everywhere",
-                  color: "text-emerald-400",
+                  query: "Audit regional geofencing: show food delivery active in Karimganj only, King Pay everywhere",
+                  color: "text-emerald-500",
                 },
                 {
-                  label: "Check Model Updates",
+                  label: "Model Availability Check",
                   icon: RefreshCw,
-                  query: "Scan AI frontier for next-generation model releases like GPT-6 and Claude 5",
-                  color: "text-purple-400",
+                  query: "Scan AI frontier for model releases and capabilities",
+                  color: "text-purple-500",
                 },
                 {
-                  label: "Auto-Clean & Self-Correct",
+                  label: "Cache & State Optimizer",
                   icon: CheckCircle2,
-                  query: "Run auto-clean and self-correct all system state glitches with zero downtime",
-                  color: "text-rose-400",
+                  query: "Run cache optimization and state verification",
+                  color: "text-teal-500",
                 },
               ].map((item) => {
                 const Icon = item.icon;
@@ -2024,45 +2024,24 @@ You can ask me anything across software engineering, architecture, business anal
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted px-1 block">
                 Recent Chats
               </span>
-              {[
-                { id: "c1", title: "Client Acquisition Pipeline" },
-                { id: "c2", title: "Hospital ERP Scaffolding" },
-                { id: "c3", title: "Direct UPI 0% Settlements" },
-                { id: "c4", title: "Remote Work Radar ($120/hr)" },
-                { id: "c5", title: "Pan-India Geofence Guard" },
-                { id: "c6", title: "Autonomous Hot-Upgrades" },
-              ]
-                .filter((c) =>
-                  searchFilter
-                    ? c.title.toLowerCase().includes(searchFilter.toLowerCase())
-                    : true
-                )
-                .map((session) => (
-                  <button
-                    key={session.id}
-                    type="button"
-                    onClick={() => handleSendQuery(`Review ${session.title}`)}
-                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-muted hover:text-gray-400 hover:bg-surface-2/50 transition text-left truncate"
-                  >
-                    <MessageSquare className="size-3.5 text-subtle shrink-0" />
-                    <span className="truncate">{session.title}</span>
-                  </button>
-                ))}
+              <div className="px-2 py-3 text-center text-[11px] text-slate-500">
+                <span>No previous sessions recorded.</span>
+              </div>
             </div>
           </div>
 
-          {/* Sidebar Footer: Founder Identity Mask & System Health */}
+          {/* Sidebar Footer: Identity & System Health */}
           <div className="p-3 border-t border-white/10/80 bg-black/60 space-y-2">
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-bold text-gray-400">Founder Sovereign</span>
+                <span className="font-bold text-gray-400">Operations Console</span>
               </div>
-              <Badge className="bg-surface-2 text-[10px] text-muted border-white/20">Masked</Badge>
+              <Badge className="bg-surface-2 text-[10px] text-muted border-white/20">Active</Badge>
             </div>
             <div className="flex items-center justify-between text-[11px] text-muted font-mono">
               <span>Edge Status:</span>
-              <span className="text-emerald-400">EVIDENCE CHECK REQ</span>
+              <span className="text-emerald-400">OPERATIONAL</span>
             </div>
           </div>
         </aside>
@@ -2115,19 +2094,19 @@ You can ask me anything across software engineering, architecture, business anal
                 <option value="claude-4-6-opus">⚡ Anthropic Claude 3.7 Sonnet (Hybrid Reasoning)</option>
                 <option value="grok-4-6-super">🚀 xAI Grok 2 (Real-Time Intelligence)</option>
                 <option value="gemini-3-8-ultra">💎 Google Gemini 2.0 Flash (Fast Reasoning)</option>
-                <option value="codex-supreme">💻 Codex Architecture Engine (Local Core)</option>
-                <option value="deepseek-r1-sovereign">🛡️ DeepSeek R1 (Local Reasoning)</option>
-                <option value="sovereign-ultra">👑 Umar Local Sovereign Core</option>
+                <option value="codex-supreme">💻 Codex Architecture Engine</option>
+                <option value="deepseek-r1-sovereign">🛡️ DeepSeek R1 (Reasoning)</option>
+                <option value="sovereign-ultra">⚡ Local Processing Core</option>
               </select>
 
-              {/* Generation Auto-Update Indicator */}
+              {/* Generation Update Indicator */}
               <button
                 type="button"
                 onClick={() => handleSendQuery("Check frontier AI model releases and available generation upgrades")}
                 className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface border border-white/20/80 text-[11px] font-medium text-amber-400 hover:bg-surface-2 transition"
               >
                 <Sparkles className="size-3 text-amber-400" />
-                <span>Auto-Updater Armed</span>
+                <span>Model Updates</span>
               </button>
             </div>
           </div>
@@ -2557,8 +2536,8 @@ You can ask me anything across software engineering, architecture, business anal
             </Button>
           </form>
 
-          <p className="text-[10px] text-center text-subtle">
-            Umar OS · Sovereign Autonomous Founder Core · Free &amp; Unlimited Forever · Section 79 IT Act Protected
+          <p className="text-[10px] text-center text-slate-500">
+            Executive Operations Assistant · Telemetry Active · Section 79 IT Act Compliant
           </p>
         </div>
       </main>

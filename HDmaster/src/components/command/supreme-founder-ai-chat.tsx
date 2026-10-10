@@ -2328,9 +2328,9 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Zap className="size-4 text-emerald-400" />
-            <span className="text-xs font-bold text-emerald-300">Sovereign Storage Purifier (100x Cleaner)</span>
+            <span className="text-xs font-bold text-emerald-300">Storage &amp; Cache Optimizer</span>
           </div>
-          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">100% Core Protected</Badge>
+          <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">100% Protected</Badge>
         </div>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
@@ -2339,7 +2339,7 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
             <span className="font-bold text-amber-400 font-mono text-sm">{inspection.formattedTotalSize}</span>
           </div>
           <div className="rounded bg-surface-2 p-2">
-            <span className="text-muted block text-[10px]">Speed Optimization:</span>
+            <span className="text-muted block text-[10px]">Optimization Score:</span>
             <span className="font-bold text-emerald-400 font-mono text-sm">{inspection.speedOptimizationScore}% Optimal</span>
           </div>
           <div className="rounded bg-surface-2 p-2 col-span-2 sm:col-span-1">
@@ -2350,9 +2350,9 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
 
         <div className="rounded bg-surface-2/80 p-2 text-[10px] text-slate-300 border border-border/60">
            <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
-             <ShieldCheck className="size-3"/> Core Guarantee Active:
+             <ShieldCheck className="size-3"/> System Guarantee:
            </span>
-           <span className="ml-1">Zero danger to verified Client Leads, King Pay Invoices, or Blueprints.</span>
+           <span className="ml-1">Persistent records, authenticated sessions, and system blueprints remain protected.</span>
         </div>
 
         <div className="flex gap-2 pt-1">
@@ -2368,11 +2368,11 @@ function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCa
                 purgeApiCache: true,
               });
               playAudioTone("ping");
-              toast.success(`Purged ${(res.freedBytes / (1024 * 1024)).toFixed(2)} MB of junk! Speed boosted 100x.`);
+              toast.success(`Storage optimization completed. Freed ${(res.freedBytes / (1024 * 1024)).toFixed(2)} MB.`);
             }}
           >
             <Trash2 className="size-3 mr-1.5" />
-            1-Click Deep Purge All Junk
+            1-Click Cache Optimization
           </Button>
         </div>
       </div>
@@ -2528,50 +2528,50 @@ function FounderWorkHub({
     {
       id: "task-5",
       category: "cleaning" as const,
-      badge: "ZERO BLOAT GUARANTEE",
+      badge: "OPTIMIZED ALLOCATION",
       badgeColor: "border-purple-500/40 text-purple-300 bg-purple-500/10",
-      title: "🧹 Task 5: Deep System Cache & Storage Purifier (100x Browser)",
-      objective: "Systematically purge temporary blobs, media renders, and memory leaks without touching core assets.",
+      title: "🧹 Task 5: System Cache & Storage Optimizer",
+      objective: "Systematically purge temporary blobs, media renders, and memory leaks without touching persistent assets.",
       deliverables: [
         "Reclaims storage space from temporary image & video generations.",
         "Frees WebAudio contexts and revokes unneeded object URLs.",
-        "Immutable Core Protection: Keeps client leads, invoices, and blueprints 100% safe.",
+        "Protected Core: Keeps client leads, invoices, and blueprints safe.",
       ],
       strictStatus: "HEALTH: 100% OPTIMAL",
-      actionLabel: "Run Full Storage Purge",
+      actionLabel: "Run Storage Optimization",
       query: "Scan system storage and purge temporary cache bloat",
     },
     {
       id: "task-6",
       category: "platforms" as const,
-      badge: "100,000X APP INTEGRATIONS",
+      badge: "ENTERPRISE INTEGRATIONS",
       badgeColor: "border-cyan-500/40 text-cyan-300 bg-cyan-500/10",
-      title: "🌐 Task 6: Universal App & Platform Enforcer (Force Work Done with Safety)",
-      objective: "Directly integrate with GitHub, Upwork, WhatsApp, Zomato, Shopify, and King Pay to force task execution with zero data leak and automatic rollback.",
+      title: "🌐 Task 6: Universal App & Platform Orchestrator",
+      objective: "Directly integrate with GitHub, Upwork, WhatsApp, Zomato, Shopify, and King Pay to execute tasks with zero data leak and automatic rollback.",
       deliverables: [
-        "Connected 8 sovereign platforms with sub-50ms RPC latency.",
+        "Connected 8 platforms with sub-50ms RPC latency.",
         "Enforces automated task execution within HMAC-SHA256 sandbox.",
         "Guarantees 0% data leak with sub-10ms automatic rollback on error.",
       ],
       strictStatus: "8 PLATFORMS CONNECTED",
-      actionLabel: "Enforce Connected Platforms",
+      actionLabel: "Manage Connected Platforms",
       query: "Connect and integrate external platforms to force task execution with zero data leak",
     },
     {
       id: "task-7",
       category: "video" as const,
-      badge: "WORLD'S #1 FASTEST 4K STUDIO",
+      badge: "MEDIA RENDER ENGINE",
       badgeColor: "border-purple-500/40 text-purple-300 bg-purple-500/10",
-      title: "🎬 Task 7: World-Class Fastest Video & Image Creation Studio (9:16 & 16:9)",
-      objective: "Generate and edit hyper-realistic commercial videos, reels, and long-form presentations with young female voiceover and dynamic subtitles.",
+      title: "🎬 Task 7: Video & Image Render Studio (9:16 & 16:9)",
+      objective: "Generate and edit commercial videos, reels, and presentations with professional voiceover and dynamic subtitles.",
       deliverables: [
-        "100,000x Turbo WebCodecs rendering at 60 FPS in 9:16, 16:9, 1:1, and 21:9.",
-        "Ultra-realistic young female voiceover with animated karaoke subtitles.",
-        "100% commercial rights certified with instant Sovereign Media Vault backup.",
+        "Optimized WebCodecs rendering at 60 FPS in 9:16, 16:9, 1:1, and 21:9.",
+        "Professional voiceover synthesis with animated subtitles.",
+        "Commercial rights certified with instant Media Vault backup.",
       ],
-      strictStatus: "100,000X TURBO VERIFIED",
-      actionLabel: "Launch 4K Video Studio",
-      query: "Create and edit fastest 4K video commercial with realistic voiceover and auto subtitles",
+      strictStatus: "VERIFIED PIPELINE",
+      actionLabel: "Launch Video Studio",
+      query: "Create and edit video commercial with realistic voiceover and auto subtitles",
     },
   ];
 
@@ -2589,14 +2589,14 @@ function FounderWorkHub({
             <div className="flex items-center gap-2">
               <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
               <h2 className="text-lg font-bold text-white tracking-tight">
-                Command Center & Work Deck
+                Command Center &amp; Work Deck
               </h2>
-              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px] uppercase font-bold">
-                10,000X BEYOND CHATGPT
+              <Badge className="bg-slate-800 text-slate-300 border-slate-700 text-[10px] uppercase font-semibold">
+                EXECUTIVE CONTROLS
               </Badge>
             </div>
             <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-              100% truthful, non-negotiable strict task management with real client acquisition, direct King Pay UPI settlement, and custom system purifiers.
+              Strict task management with real client acquisition, direct King Pay UPI settlement, and system storage optimization.
             </p>
           </div>
 
@@ -2608,7 +2608,7 @@ function FounderWorkHub({
               className="h-9 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-lg flex items-center gap-2"
             >
               <Zap className="size-3.5" />
-              <span>{isCleaning ? "Purging 100x..." : "1-Click Speed Boost"}</span>
+              <span>{isCleaning ? "Optimizing..." : "1-Click Optimization"}</span>
             </Button>
             <Button
               size="sm"
@@ -2631,7 +2631,7 @@ function FounderWorkHub({
               <span className="text-xl font-bold text-emerald-400">7 / 7</span>
               <span className="text-[10px] text-slate-400">Ready</span>
             </div>
-            <span className="text-[10px] text-emerald-300/80 block mt-1">Zero-Fabrication Verified</span>
+            <span className="text-[10px] text-emerald-300/80 block mt-1">Operational State</span>
           </div>
 
           <div className="rounded-xl bg-[#212121] p-3 border border-white/5">
@@ -2643,12 +2643,12 @@ function FounderWorkHub({
           </div>
 
           <div className="rounded-xl bg-[#212121] p-3 border border-white/5">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Engine Speed Index</span>
+            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Storage Allocation Index</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
               <span className="text-xl font-bold text-cyan-400">{inspection.speedOptimizationScore}%</span>
               <span className="text-[10px] text-cyan-300">Peak</span>
             </div>
-            <span className="text-[10px] text-cyan-300/80 block mt-1">High-Performance Faster than Browser</span>
+            <span className="text-[10px] text-cyan-300/80 block mt-1">High-Efficiency Allocation</span>
           </div>
 
           <div className="rounded-xl bg-[#212121] p-3 border border-white/5">
@@ -2656,7 +2656,7 @@ function FounderWorkHub({
             <div className="flex items-baseline gap-1.5 mt-0.5">
               <span className="text-xl font-bold text-teal-400">₹3,85,000+</span>
             </div>
-            <span className="text-[10px] text-teal-300/80 block mt-1">0% Gateway Cuts</span>
+            <span className="text-[10px] text-teal-300/80 block mt-1">Direct Settlement</span>
           </div>
         </div>
       </div>
@@ -2670,9 +2670,9 @@ function FounderWorkHub({
             </div>
             <div>
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <span>Customized Real Cleaning &amp; System Optimization Suite</span>
+                <span>Customized Cleaning &amp; System Optimization Suite</span>
                 <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[9px] font-mono">
-                  100X PURIFIER
+                  OPTIMIZER
                 </Badge>
               </h3>
               <p className="text-[11px] text-slate-400">
@@ -2688,7 +2688,7 @@ function FounderWorkHub({
               onClick={onOpenPurifier}
               className="h-8 px-3 rounded-lg border-white/10 text-xs text-slate-300 hover:text-white"
             >
-              Open Full Purifier Modal
+              Open Storage Optimizer
             </Button>
             <Button
               size="sm"
@@ -3891,7 +3891,7 @@ export function SupremeFounderAiChat({
               onClick={handleQuickPurge}
               className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-slate-300 h-9 font-medium"
             >
-              <Zap className="size-4 mr-3 text-rose-400" /> Purifier
+              <Zap className="size-4 mr-3 text-emerald-400" /> Storage Optimizer
             </Button>
             <Button
               variant="ghost"
@@ -4172,10 +4172,10 @@ export function SupremeFounderAiChat({
               variant="ghost"
               onClick={() => setIsStoragePurifierOpen(true)}
               className="h-8 px-3 rounded-full text-[12px] font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors hidden sm:flex items-center gap-1.5"
-              title="Clean Cache & Purge Bloat (100x Better than Browser)"
+              title="System Cache & Storage Optimizer"
             >
               <Zap className="size-3.5" />
-              <span>Purifier</span>
+              <span>Optimizer</span>
             </Button>
 
             <Button

@@ -153,7 +153,7 @@ function SettingsPage() {
             <h2 className="text-xs font-bold text-fg uppercase tracking-wider">Privacy &amp; Data Shield</h2>
           </div>
           <p className="text-xs text-muted leading-relaxed">
-            OrderKing &amp; KingPay operate under strict Section 79 IT Act privacy protocols. Zero user contact book data, zero unencrypted storage, and complete end-to-end fintech sovereignty.
+            OrderKing &amp; KingPay operate under strict Section 79 IT Act privacy protocols. Zero user contact book data, zero unencrypted storage, and complete end-to-end data security and compliance.
           </p>
         </section>
       </div>

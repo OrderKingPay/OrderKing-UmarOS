@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ArrowUp, Camera, Check, Copy, Crown, FileText, Mic, MicOff, Paperclip, PhoneCall, PhoneOff, Send, ShieldCheck, Sparkles, Video, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowUp, Bot, Camera, Check, Copy, Crown, FileText, Mic, MicOff, Paperclip, PhoneCall, PhoneOff, Send, ShieldCheck, Sparkles, Video, Volume2, VolumeX, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/providers";
 import { detectLanguage, isUnreadableOrUnsupported } from "@/lib/ai-lang-detect";
@@ -24,9 +24,9 @@ export const SUPPORTED_LANGUAGES: IndianLanguage[] = [
     voiceLang: "en-IN",
     honorific: "Respected Patron",
     welcomeMessage:
-      "Greetings, Respected Patron! I am your KingPay Royal AI Concierge. How may I assist you today? You can ask me how to scan, pay bills, check bank balance, or book lowest price flights. Your security and satisfaction are my highest priority.",
+      "Greetings! I am your KingPay AI Assistant. How may I assist you today? You can ask me how to scan, pay bills, check bank balance, or book tickets. Your security is our highest priority.",
     voiceIntro:
-      "Greetings, Respected Patron! I am your KingPay Royal Concierge. How may I assist you today?",
+      "Greetings! I am your KingPay AI Assistant. How may I assist you today?",
   },
   {
     code: "hi",
@@ -172,10 +172,10 @@ export const ROYAL_VOICE_PERSONAS: VoicePersona[] = [
   {
     id: "rani",
     name: "Rani",
-    label: "👑 Rani (Royal Sovereign & Elegant)",
+    label: "🌸 Rani (Formal & Courteous)",
     pitch: 1.08,
     rate: 0.88,
-    encouragement: "It is our utmost privilege to safeguard your sovereign wealth.",
+    encouragement: "It is our privilege to safeguard your transactions and data.",
   },
   {
     id: "aanya",
@@ -692,10 +692,10 @@ export function RoyalAiConcierge({
           `आदरणीय अतिथि, कृपया बिल्कुल चिंता न करें! आपका पैसा 100% सुरक्षित है। RBI परिपत्र और NPCI नियमों के अनुसार: जब बैंक से पैसा कटता है और मर्चेंट तक नहीं पहुँचता, तो वह बैंकिंग सेटलमेंट पूल में सुरक्षित रहता है। बैंक T+1 कार्य दिवस में राशि स्वतः वापस करने के लिए बाध्य हैं। यदि T+1 से अधिक देरी होती है, तो बैंक आपको ₹100 प्रति दिन का हर्जाना देने के लिए उत्तरदायी है! मैंने सॉवरेन विवाद संदर्भ #HD-SOV-UPI-9824 हमारे बैंकिंग ऑम्बड्समैन सेल में दर्ज कर दिया है। ${selectedPersona.encouragement}`;
       } else if (lang.code === "bn") {
         replyText =
-          `শ্রদ্ধেয় গ্রাহক, বিন্দুমাত্র চিন্তা করবেন না! আপনার টাকা ১০০% নিরাপদ। আরবিআই ও এনপিসিআই নিয়ম অনুযায়ী: ব্যাঙ্ক থেকে টাকা কেটে গেলে তা ব্যাঙ্কিং সেটেলমেন্ট পুলে সংরক্ষিত থাকে। ব্যাঙ্ক T+1 কার্যদিবসের মধ্যে টাকা ফেরত দিতে বাধ্য। যদি T+1 দিনের বেশি দেরি হয়, তবে ব্যাঙ্ক আপনাকে প্রতিদিন ₹১০০ জরিমানা ক্ষতিপূরণ দিতে আইনত বাধ্য! টিকিট #HD-SOV-UPI-9824 ব্যাঙ্কিং ওম্বুডসম্যান সেলে নথিভুক্ত হয়েছে। ${selectedPersona.encouragement}`;
+          `শ্রদ্ধেয় গ্রাহক, বিন্দুমাত্র চিন্তা করবেন না! আপনার টাকা ১০০% নিরাপদ। আরবিআই ও এনপিসিআই নিয়ম অনুযায়ী: ব্যাঙ্ক থেকে টাকা কেটে গেলে তা ব্যাঙ্কিং সেটেলমেন্ট পুলে সংরক্ষিত থাকে। ব্যাঙ্ক T+1 কার্যদিবসের মধ্যে টাকা ফেরত দিতে বাধ্য। যদি T+1 দিনের বেশি দেরি হয়, তবে ব্যাঙ্ক আপনাকে প্রতিদিন ₹১০০ জরিমানা ক্ষতিপূরণ দিতে আইনত বাধ্য! টিকিট #HD-UPI-9824 ব্যাঙ্কিং ওম্বুডসম্যান সেলে নথিভুক্ত হয়েছে। ${selectedPersona.encouragement}`;
       } else {
         replyText =
-          `Respected Patron, please do not worry at all! Your funds are 100% safe. Under RBI Circular DPSS.CO.PD No.629/02.01.014/2019-20 and NPCI guidelines: 1. If money is debited but the transaction is pending/failed, the amount is held securely in the banking settlement pool. 2. Banks are mandated to auto-reverse within T+1 working days. If delayed beyond T+1, the bank owes you ₹100 per day penalty compensation! 3. Sovereign Dispute Reference #HD-SOV-UPI-9824 has been lodged with our direct banking ombudsman cell for instant priority tracking. ${selectedPersona.encouragement}`;
+          `Respected Patron, please do not worry at all! Your funds are 100% safe. Under RBI Circular DPSS.CO.PD No.629/02.01.014/2019-20 and NPCI guidelines: 1. If money is debited but the transaction is pending/failed, the amount is held securely in the banking settlement pool. 2. Banks are mandated to auto-reverse within T+1 working days. If delayed beyond T+1, the bank owes you ₹100 per day penalty compensation! 3. Banking Dispute Reference #HD-UPI-9824 has been lodged with our direct banking ombudsman cell for instant priority tracking. ${selectedPersona.encouragement}`;
       }
       return {
         text: replyText,
@@ -912,7 +912,7 @@ export function RoyalAiConcierge({
       q.includes("লোন")
     ) {
       return {
-        text: `Respected Patron, KingPay Sovereign Credit provides pre-approved instant micro-loans from ₹1,000 up to ₹50,000 with 0% interest for 90 days for verified patrons. Zero physical paperwork, instant Aadhaar/PAN e-KYC, and money is disbursed directly into your bank account in 60 seconds! ${selectedPersona.encouragement}`,
+        text: `Respected Patron, KingPay Instant Credit provides pre-approved instant micro-loans from ₹1,000 up to ₹50,000 with 0% interest for 90 days for verified patrons. Zero physical paperwork, instant Aadhaar/PAN e-KYC, and money is disbursed directly into your bank account in 60 seconds! ${selectedPersona.encouragement}`,
         action: { type: "SUBMIT_FINANCIAL_DISPUTE", label: "💎 Check Credit Line Eligibility" },
       };
     }
@@ -930,7 +930,7 @@ export function RoyalAiConcierge({
       q.includes("secure")
     ) {
       return {
-        text: `Respected Patron, your security is our sacred sovereign trust. KingPay utilizes 256-bit bank-grade encryption certified under RBI and NPCI frameworks. Golden Security Rules: 1. NEVER share your 4-digit UPI PIN or SMS OTP with anyone. 2. Receiving money NEVER requires entering your UPI PIN. 3. KingPay executives will NEVER call asking for PIN, OTP, or remote screen sharing apps (AnyDesk, TeamViewer). If you suspect fraud, your account can be locked in 1 tap under reference #HD-SOV-SECURITY! ${selectedPersona.encouragement}`,
+        text: `Respected Patron, your security is our highest priority. KingPay utilizes 256-bit bank-grade encryption certified under RBI and NPCI frameworks. Golden Security Rules: 1. NEVER share your 4-digit UPI PIN or SMS OTP with anyone. 2. Receiving money NEVER requires entering your UPI PIN. 3. KingPay executives will NEVER call asking for PIN, OTP, or remote screen sharing apps (AnyDesk, TeamViewer). If you suspect fraud, your account can be locked immediately under reference #HD-SEC-REPORT! ${selectedPersona.encouragement}`,
         action: { type: "SUBMIT_FINANCIAL_DISPUTE", label: "🛡️ Lock Account / Report Fraud" },
       };
     }
@@ -1061,13 +1061,13 @@ export function RoyalAiConcierge({
   const handleActionClick = (action: NonNullable<ChatMessage["actionPayload"]>) => {
     if (action.type === "SUBMIT_FINANCIAL_DISPUTE") {
       setConsentGiven(true);
-      toast.success("Payment dispute and evidence authorized for Founder Sovereign Review!");
+      toast.success("Payment dispute and evidence submitted for priority banking review.");
       setMessages((prev) => [
         ...prev,
         {
           id: `ai-${Date.now()}`,
           sender: "ai",
-          text: "✅ Consent received. Your dispute has been submitted to Founder Review & partner bank under RBI Master Direction & NPCI dispute guidelines.",
+          text: "✅ Consent received. Your dispute has been submitted to Operations Review & partner bank under RBI Master Direction & NPCI dispute guidelines.",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -1096,29 +1096,24 @@ export function RoyalAiConcierge({
 
   return (
     <>
-      {/* FLOATING ROYAL AI CONCIERGE BUTTON (BOTTOM RIGHT - HIDDEN BY DEFAULT) */}
+      {/* FLOATING AI ASSISTANT BUTTON (BOTTOM RIGHT - HIDDEN BY DEFAULT) */}
       {!hideFloatingTrigger && (
         <div className="fixed bottom-20 right-4 z-40 sm:bottom-6 sm:right-6">
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="group relative flex items-center gap-2 rounded-full border-2 border-amber-400/90 bg-gradient-to-tr from-[#0D3B2E] via-emerald-700 to-[#07241C] px-3.5 py-2.5 shadow-[0_6px_25px_rgba(13,59,46,0.5)] transition-all hover:scale-105 active:scale-95 text-fg"
-            aria-label="Open KingPay Multilingual Royal AI Assistant"
+            className="group relative flex items-center gap-2 rounded-full border border-slate-300 bg-slate-900 px-3.5 py-2.5 shadow-lg transition-all hover:scale-105 active:scale-95 text-white"
+            aria-label="Open KingPay Multilingual AI Assistant"
           >
-            {/* Animated Glowing Crown */}
-            <div className="relative flex size-8 items-center justify-center rounded-full bg-amber-400 text-slate-950 font-black shadow-md">
-              <Crown className="size-4.5 text-amber-950 animate-bounce" />
-              <span className="absolute -top-0.5 -right-0.5 flex size-2.5">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-300 opacity-75" />
-                <span className="relative inline-flex size-2.5 rounded-full bg-amber-500" />
-              </span>
+            <div className="relative flex size-8 items-center justify-center rounded-full bg-slate-800 text-white font-bold shadow-xs">
+              <Bot className="size-4.5 text-white" />
             </div>
 
             <div className="text-left pr-1">
-              <span className="block text-[11px] font-black uppercase tracking-wider text-amber-300">
-                Royal AI Voice
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-white">
+                AI Voice Support
               </span>
-              <span className="block text-[10px] text-emerald-200 font-medium">
+              <span className="block text-[10px] text-slate-300 font-medium">
                 12 Indian Languages
               </span>
             </div>
@@ -1126,27 +1121,27 @@ export function RoyalAiConcierge({
         </div>
       )}
 
-      {/* FULL ROYAL AI VOICE & TEXT CHAT MODAL */}
+      {/* FULL AI VOICE & TEXT CHAT MODAL */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md">
-          <div className="w-full max-w-lg h-[90vh] max-h-[680px] rounded-3xl border-2 border-amber-500/50 bg-surface shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-3 sm:p-4 backdrop-blur-xs">
+          <div className="w-full max-w-lg h-[90vh] max-h-[680px] rounded-3xl border border-slate-200 bg-white shadow-2xl flex flex-col overflow-hidden text-slate-900">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-[#0D3B2E] via-emerald-900 to-[#07241C] p-3 sm:p-4 text-fg">
+            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 p-3 sm:p-4 text-slate-900">
               <div className="flex items-center gap-3">
-                <div className="relative flex size-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-200 text-black shadow-md">
-                  <Crown className="size-6 text-amber-950" />
+                <div className="relative flex size-10 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-xs">
+                  <Bot className="size-6 text-white" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-display font-black text-sm sm:text-base text-amber-300">
-                      KingPay Royal AI Concierge
+                    <h3 className="font-display font-bold text-sm sm:text-base text-slate-900">
+                      KingPay Customer Assistant
                     </h3>
-                    <span className="rounded-full bg-emerald-400/20 px-2 py-0.2 text-[9px] font-bold text-emerald-300">
+                    <span className="rounded-full bg-emerald-100 text-emerald-800 px-2 py-0.5 text-[9px] font-bold">
                       LIVE VOICE
                     </span>
                   </div>
-                  <p className="text-[11px] text-emerald-100">
-                    Treating you like a King · Safe &amp; 100% Private
+                  <p className="text-[11px] text-slate-500">
+                    Enterprise Grade · Safe &amp; 100% Private
                   </p>
                 </div>
               </div>

@@ -2660,25 +2660,25 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("autonomous_legal_income_discovery_engine: Screen and model 12-stream legal revenue architecture, autonomous income discovery, and mutual participant financial advantage", "finance")}
                 >
                   <span className="font-semibold">⚡ 1-Click Autonomous Legal Income Discovery &amp; Profit Maximizer</span>
-                  <p className="text-[11px] text-muted">Confidential: Audit 12-stream revenue engine, EV swapping, APMC spice procurement, and 85x competitor free cash flow multiplier.</p>
+                  <p className="text-[11px] text-muted">Confidential: Audit 12-stream revenue engine, EV swapping, APMC spice procurement, and free cash flow models.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-emerald-500/15 via-primary/15 to-amber-500/15 hover:opacity-90 border-2 border-primary/30 text-foreground transition-all"
-                  onClick={() => runPreset("autonomous_maximum_force_profit_orchestrator: Execute maximum force 10x-100x legal profit generation, 14 revenue streams synchronization, 2G resilience verification, and mutual participant advantage auditing", "finance")}
+                  onClick={() => runPreset("autonomous_revenue_and_resilience_orchestrator: Execute legal profit generation, 14 revenue streams synchronization, 2G resilience verification, and mutual participant advantage auditing", "finance")}
                 >
-                  <span className="font-semibold text-primary">🚀 1-Click Maximum Force 10x Profit &amp; 2G Resilience Orchestrator</span>
-                  <p className="text-[11px] text-muted">Confidential: 14 synchronized revenue streams, High-Performance higher free cash flow than Zomato, 0ms 2G cache, and zero legal liability.</p>
+                  <span className="font-semibold text-primary">🚀 1-Click Revenue Optimization &amp; 2G Network Resilience Orchestrator</span>
+                  <p className="text-[11px] text-muted">Confidential: 14 synchronized revenue streams, high-efficiency free cash flow, 2G cache resilience, and zero legal liability.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-primary/20 to-purple-500/20 hover:opacity-90 border-2 border-amber-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_100x_profit_and_addiction_director: Master director orchestrating High-Performance legal profit generation across 18 revenue streams, viral bill-splits, Soundbox SaaS, 2G resilience, and user addiction loops", "finance")}
+                  onClick={() => runPreset("autonomous_revenue_and_retention_director: Master director orchestrating legal profit generation across 18 revenue streams, viral bill-splits, Soundbox SaaS, 2G resilience, and user engagement loops", "finance")}
                 >
                   <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                    <span>👑</span> 1-Click Autonomous High-Performance Profit &amp; Addiction Director
+                    <span>👑</span> 1-Click Autonomous Revenue &amp; Customer Retention Director
                   </span>
-                  <p className="text-[11px] text-muted">Confidential: 18 synchronized revenue streams, viral UPI bill splits, Soundbox SaaS, and High-Performance free cash flow moat.</p>
+                  <p className="text-[11px] text-muted">Confidential: 18 synchronized revenue streams, bill-split integration, Soundbox SaaS, and operating free cash flow moat.</p>
                 </button>
                 <button
                   type="button"
@@ -2703,22 +2703,22 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-rose-500/20 via-pink-500/20 to-primary/20 hover:opacity-90 border-2 border-rose-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_prestige_subsidies_and_viral_growth_director: Master director orchestrating Assam/Govt of India startup subsidies, cloud grants ($350K), national founder awards, and High-Performance location-forced viral social loops", "promotions")}
+                  onClick={() => runPreset("autonomous_prestige_subsidies_and_viral_growth_director: Master director orchestrating Assam/Govt of India startup subsidies, cloud grants ($350K), national founder awards, and high-performance referral loops", "promotions")}
                 >
                   <span className="font-bold text-rose-900 dark:text-rose-200 flex items-center gap-1.5">
-                    <span>🏆</span> 1-Click Autonomous Prestige, Subsidies &amp; Viral Growth Director
+                    <span>🏆</span> 1-Click Autonomous Prestige, Subsidies &amp; Referral Growth Director
                   </span>
-                  <p className="text-[11px] text-muted">Claim ₹3.74 Cr in cloud/Govt subsidies, apply for National/Assam awards, and trigger High-Performance location-forced social media virality.</p>
+                  <p className="text-[11px] text-muted">Claim ₹3.74 Cr in cloud/Govt subsidies, apply for National/Assam awards, and trigger high-efficiency location referral programs.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-rose-500/20 to-purple-500/20 hover:opacity-90 border-2 border-amber-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_omni_prestige_grant_and_hyper_growth_director: Master director orchestrating ₹3.74 Cr+ government grants, university keynote invitations (IIT/NIT), national awards, and 100,000x Meta/Google local geofence domination", "promotions")}
+                  onClick={() => runPreset("autonomous_grant_and_growth_director: Master director orchestrating ₹3.74 Cr+ government grants, university keynote invitations (IIT/NIT), national awards, and local geofenced reach", "promotions")}
                 >
                   <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                    <span>👑</span> 1-Click Omni-Prestige, ₹3.74 Cr Grants &amp; 100,000x Hyper-Growth Director
+                    <span>👑</span> 1-Click Government Grants &amp; Enterprise Growth Director
                   </span>
-                  <p className="text-[11px] text-muted">Claim ₹3.74 Cr+ in non-dilutive government &amp; cloud cash, university keynote invitations (IIT Guwahati, NIT Silchar), and 100,000x Meta/Google ad domination.</p>
+                  <p className="text-[11px] text-muted">Claim ₹3.74 Cr+ in non-dilutive government &amp; cloud cash, university keynote invitations (IIT Guwahati, NIT Silchar), and targeted local advertising.</p>
                 </button>
                 <button
                   type="button"
@@ -2733,12 +2733,12 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 hover:opacity-90 border-2 border-blue-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_meta_and_google_ad_domination_orchestrator: Master AI Ad Domination Engine orchestrating Meta Marketing API v21.0 campaigns, Google Local PMax, WhatsApp 24K Gold status loops, and hyper-local geofenced reach", "promotions")}
+                  onClick={() => runPreset("autonomous_meta_and_google_ad_orchestrator: Master AI Ad Engine orchestrating Meta Marketing API v21.0 campaigns, Google Local PMax, WhatsApp status loops, and hyper-local geofenced reach", "promotions")}
                 >
                   <span className="font-bold text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
-                    <span>🚀</span> 1-Click Meta &amp; Google 100,000x Ad Domination Orchestrator
+                    <span>🚀</span> 1-Click Meta &amp; Google Ad Campaign Orchestrator
                   </span>
-                  <p className="text-[11px] text-muted">Direct Meta v21.0 &amp; Google PMax API payloads, 5 km geofencing @ ₹150/day, 3 viral reels scripts, and 50,000 daily WhatsApp status views.</p>
+                  <p className="text-[11px] text-muted">Direct Meta v21.0 &amp; Google PMax API payloads, 5 km geofencing @ ₹150/day, video creative scripts, and local WhatsApp communications.</p>
                 </button>
                 <button
                   type="button"

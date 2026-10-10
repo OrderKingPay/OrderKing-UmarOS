@@ -113,7 +113,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
       const init = {
         primaryColor: config.brand.primaryColor || "#E23744",
         radiusPx: config.brand.radiusPx !== undefined ? Number(config.brand.radiusPx) : 16,
-        themeMode: config.brand.themeMode === "dark" ? "dark" : "light",
+        themeMode: (config.brand.themeMode === "dark" ? "dark" : "light") as "light" | "dark",
       };
       setSettings(init);
       setInitialSettings(init);

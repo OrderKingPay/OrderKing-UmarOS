@@ -3,7 +3,7 @@ import { useState, lazy, Suspense } from "react";
 import { 
   Database, Server, GitBranch, CheckCircle2, AlertCircle, Users, 
   ShieldCheck, Store, Bike, Activity, Settings, RefreshCw, 
-  ArrowUpRight, Clock, FileCheck2, Cpu, Lock, FileText, Palette, Landmark
+  ArrowUpRight, Clock, FileCheck2, Cpu, Lock, FileText, Palette, Landmark, SlidersHorizontal, Receipt
 } from "lucide-react";
 import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
@@ -14,6 +14,10 @@ import { EcosystemCMS } from "@/components/dashboard/EcosystemCMS";
 import { PluginConnectors } from "@/components/dashboard/PluginConnectors";
 import { LiveFounderProfitDashboard } from "@/components/dashboard/LiveFounderProfitDashboard";
 import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSettings";
+import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
+import { B2BFranchiseOnboardingEngine } from "@/components/franchise/B2BFranchiseOnboardingEngine";
+import { GlobalSaaSFranchiseEngine } from "@/components/dashboard/GlobalSaaSFranchiseEngine";
+import { PromotedAdRevenueEngine } from "@/components/dashboard/PromotedAdRevenueEngine";
 
 const LazyGlobalGodEyeMap = lazy(() =>
   import("@/components/dashboard/GlobalGodEyeMap").then((m) => ({ default: m.GlobalGodEyeMap }))
@@ -142,6 +146,12 @@ function UmarOSDashboard() {
                 <Settings className="h-4 w-4 text-slate-600"/> Platform Settings
               </Link>
               <a 
+                href="#algorithmic-matrix" 
+                className="inline-flex items-center gap-2 text-slate-800 font-semibold bg-white border border-slate-300 px-4 py-2 rounded-xl hover:bg-slate-100 transition-all text-xs shadow-sm"
+              >
+                <SlidersHorizontal className="h-4 w-4 text-emerald-600"/> Algorithmic Matrix
+              </a>
+              <a 
                 href="#customer-ui-settings" 
                 className="inline-flex items-center gap-2 text-slate-800 font-semibold bg-white border border-slate-300 px-4 py-2 rounded-xl hover:bg-slate-100 transition-all text-xs shadow-sm"
               >
@@ -164,6 +174,12 @@ function UmarOSDashboard() {
                 className="inline-flex items-center gap-2 text-slate-800 font-semibold bg-white border border-slate-300 px-4 py-2 rounded-xl hover:bg-slate-100 transition-all text-xs shadow-sm"
               >
                 <Cpu className="h-4 w-4 text-primary"/> Plugin Switchboard
+              </a>
+              <a 
+                href="#b2b-franchise-onboarding" 
+                className="inline-flex items-center gap-2 text-slate-900 font-bold bg-emerald-50 border border-emerald-300 px-4 py-2 rounded-xl hover:bg-emerald-100 transition-all text-xs shadow-sm"
+              >
+                <Receipt className="h-4 w-4 text-emerald-700"/> B2B Franchise Onboarding
               </a>
               <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-300 px-3 py-2 rounded-xl text-xs text-slate-700 font-mono">
                 <Lock className="h-3.5 w-3.5 text-slate-500" />
@@ -231,6 +247,10 @@ function UmarOSDashboard() {
         {/* Live Founder Profit Dashboard Component */}
         <div className="mt-8 mb-8">
           <LiveFounderProfitDashboard />
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-8">
+            <GlobalSaaSFranchiseEngine />
+            <PromotedAdRevenueEngine />
+          </div>
         </div>
 
         {/* Customer App UI Settings Matrix */}
@@ -251,6 +271,11 @@ function UmarOSDashboard() {
         {/* Central Pricing Switch Section */}
         <div className="mt-8 mb-8">
           <CentralPricingSwitch />
+        </div>
+
+        {/* Algorithmic Settings Matrix Section (Exact Engine Sliders) */}
+        <div id="algorithmic-matrix" className="mt-8 mb-8 scroll-mt-6">
+          <AlgorithmSettings />
         </div>
 
         {/* Global Ecosystem CMS Section */}
