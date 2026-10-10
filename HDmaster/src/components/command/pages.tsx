@@ -97,6 +97,7 @@ import { GrowthVaultView } from "./growth-vault";
 import { FounderSovereignDeck } from "./founder-sovereign-deck";
 import { FounderEconomics } from "../dashboard/FounderEconomics";
 import { UmarOS_Supreme_AI } from "../dashboard/UmarOS_Supreme_AI";
+import { LiveFounderProfitDashboard } from "../dashboard/LiveFounderProfitDashboard";
 
 
 function useInvalidate() {
@@ -280,6 +281,7 @@ function CeoPage() {
     <div className="space-y-4">
       {/* UMAR OS: SOVEREIGN FOUNDER CONTROL DECK */}
       <UmarOS_Supreme_AI />
+      <LiveFounderProfitDashboard />
       <FounderEconomics />
       <FounderSovereignDeck />
     </div>

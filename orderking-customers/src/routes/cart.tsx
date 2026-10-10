@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { QuoteLines } from "@/components/market/quote-lines";
+import { CheckoutUpsellEngine } from "@/components/market/checkout-upsell-engine";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -137,6 +138,17 @@ function CartPage() {
             {coupon && quote.data && !quote.data.promoName ? (
               <p className="mt-2 text-sm text-danger">{t("cart.invalidCoupon")}</p>
             ) : null}
+
+            {restaurantId && items.length > 0 && (
+              <CheckoutUpsellEngine
+                restaurantId={restaurantId}
+                restaurantName={restaurantName}
+                locale={locale}
+                deliveryFeePaise={quote.data?.quote.deliveryFeePaise}
+                currentSubtotalPaise={quote.data?.quote.foodSubtotalPaise}
+              />
+            )}
+
             <div className="mt-6 rounded-[var(--radius-xl)] bg-surface p-4">
               {quote.isPending ? (
                 <p className="text-sm text-muted">{t("common.loading")}</p>

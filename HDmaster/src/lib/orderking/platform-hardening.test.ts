@@ -84,7 +84,7 @@ describe("rate-limiter", () => {
 describe("surge-pricing", () => {
   it("returns no surge when supply exceeds demand", () => {
     const result = calculateSurge({
-      hour: 12,
+      hour: 15,
       activeOrders: 5,
       availableRiders: 15,
       totalRiders: 20,

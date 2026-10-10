@@ -11,6 +11,7 @@ import { KingPayMasterSwitch } from "@/components/kingpay/KingPayMasterSwitch";
 import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
 import { EcosystemCMS } from "@/components/dashboard/EcosystemCMS";
 import { PluginConnectors } from "@/components/dashboard/PluginConnectors";
+import { LiveFounderProfitDashboard } from "@/components/dashboard/LiveFounderProfitDashboard";
 
 const LazyGlobalGodEyeMap = lazy(() =>
   import("@/components/dashboard/GlobalGodEyeMap").then((m) => ({ default: m.GlobalGodEyeMap }))
@@ -211,6 +212,11 @@ function UmarOSDashboard() {
           <Suspense fallback={<GodEyeMapSkeleton />}>
             <LazyGlobalGodEyeMap />
           </Suspense>
+        </div>
+
+        {/* Live Founder Profit Dashboard Component */}
+        <div className="mt-8 mb-8">
+          <LiveFounderProfitDashboard />
         </div>
 
         {/* KingPay Switch Section */}

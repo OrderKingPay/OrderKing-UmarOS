@@ -44,6 +44,8 @@ type State = {
   replaceCart: (restaurantId: string, restaurantName: string, lines: CartLineInput[]) => void;
   updateQty: (key: string, quantity: number) => void;
   remove: (key: string) => void;
+  addAddonToItem: (itemKey: string, addonId: string) => void;
+  removeAddonFromItem: (itemKey: string, addonId: string) => void;
   setCoupon: (code: string) => void;
   clear: () => void;
 };
@@ -84,7 +86,31 @@ export const useCartStore = create<State>()(
         }
         set({ items: get().items.map((i) => (i.key === key ? { ...i, quantity } : i)) });
       },
-      remove: (key) => set({ items: get().items.filter((i) => i.key !== key) }),
+      remove: (key: string) => set({ items: get().items.filter((i) => i.key !== key) }),
+      addAddonToItem: (itemKey: string, addonId: string) => {
+        const cur = get();
+        const target = cur.items.find((i) => i.key === itemKey);
+        if (!target || target.addonIds.includes(addonId)) return;
+        const newAddonIds = [...target.addonIds, addonId].sort();
+        const newKey = cartKey({ ...target, addonIds: newAddonIds });
+        set({
+          items: cur.items.map((i) =>
+            i.key === itemKey ? { ...i, addonIds: newAddonIds, key: newKey } : i,
+          ),
+        });
+      },
+      removeAddonFromItem: (itemKey: string, addonId: string) => {
+        const cur = get();
+        const target = cur.items.find((i) => i.key === itemKey);
+        if (!target || !target.addonIds.includes(addonId)) return;
+        const newAddonIds = target.addonIds.filter((id) => id !== addonId);
+        const newKey = cartKey({ ...target, addonIds: newAddonIds });
+        set({
+          items: cur.items.map((i) =>
+            i.key === itemKey ? { ...i, addonIds: newAddonIds, key: newKey } : i,
+          ),
+        });
+      },
       setCoupon: (code) => set({ coupon: code }),
       clear: () => set({ restaurantId: null, restaurantName: "", items: [], coupon: "" }),
     }),

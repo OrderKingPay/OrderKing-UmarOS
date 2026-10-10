@@ -3,9 +3,11 @@ import type {
   UmarOsTelemetryData,
   UmarOsEngineSettings,
   FounderCommandResponse,
+  AutonomousRefundResult
 } from "./umaros-supreme.server";
+import type { RefundClaimPayload } from "../security/military-anti-fraud-shield.ts";
 
-export type { UmarOsTelemetryData, UmarOsEngineSettings, FounderCommandResponse };
+export type { UmarOsTelemetryData, UmarOsEngineSettings, FounderCommandResponse, AutonomousRefundResult };
 
 export const getUmarOsTelemetry = createServerFn({ method: "GET" }).handler(
   async (): Promise<UmarOsTelemetryData> => {
@@ -41,3 +43,11 @@ export const executeFounderConsoleCommand = createServerFn({ method: "POST" })
     const { runFounderConsoleCommandCore } = await import("./umaros-supreme.server");
     return runFounderConsoleCommandCore(data);
   });
+
+export const executeAutonomousRefund = createServerFn({ method: "POST" })
+  .validator((params: { claim: RefundClaimPayload; signature: string; clientIp?: string; merchantIp?: string }) => params)
+  .handler(async ({ data }): Promise<AutonomousRefundResult> => {
+    const { executeAutonomousRefundCore } = await import("./umaros-supreme.server");
+    return executeAutonomousRefundCore(data);
+  });
+

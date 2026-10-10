@@ -50,6 +50,34 @@ export interface EcosystemCmsConfig {
   referralShareBodyTemplate: string;
   goldPassMembershipTitle: string;
   dailySpecialsSectionTitle: string;
+
+  // 7. Connectors Hub & Global Integrations Copy
+  connectorsHubTitle: string;
+  connectorsHubSubtitle: string;
+  connectorRazorpayTitle: string;
+  connectorRazorpaySubtitle: string;
+  connectorWhatsappTitle: string;
+  connectorWhatsappSubtitle: string;
+  connectorFssaiTitle: string;
+  connectorFssaiSubtitle: string;
+  connectorFssaiPolicyTitle: string;
+  connectorFssaiPolicyNotice: string;
+  connectorMapboxTitle: string;
+  connectorMapboxSubtitle: string;
+  connectorClearTaxTitle: string;
+  connectorClearTaxSubtitle: string;
+  connectorClearTaxToggleLabel: string;
+  connectorClearTaxTestBtnText: string;
+  connectorClearTaxPolicyTitle: string;
+  connectorClearTaxPolicyNotice: string;
+  connectorClearTaxWebhookNotice: string;
+  connectorWhatsappMarketingTitle: string;
+  connectorWhatsappMarketingSubtitle: string;
+  connectorWhatsappMarketingToggleLabel: string;
+  connectorWhatsappMarketingTestBtnText: string;
+  connectorWhatsappMarketingPolicyTitle: string;
+  connectorWhatsappMarketingPolicyNotice: string;
+  connectorWhatsappMarketingOptInNotice: string;
 }
 
 export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {

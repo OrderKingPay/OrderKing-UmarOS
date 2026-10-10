@@ -1,4 +1,5 @@
-import { getSql, type Sql } from "@/lib/db";
+import { getSql, type Sql } from "../../db.ts";
+import { militaryAntiFraudShield } from "../security/military-anti-fraud-shield.ts";
 
 export interface AutoDispatchResult {
   assignedOrders: number;
@@ -30,7 +31,18 @@ function calculateHaversineDistance(lat1: number, lon1: number, lat2: number, lo
 }
 
 export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> {
-  const sql = await getSql();
+  // 0. Military-Grade Dispatch Velocity Throttling
+  const throttleCheck = militaryAntiFraudShield.checkDispatchThrottle(2);
+  if (!throttleCheck.valid) {
+    return { assignedOrders: 0, matchedPairs: [], unassignedOrders: 0 };
+  }
+
+  let sql: Sql | null = null;
+  try {
+    sql = await getSql();
+  } catch (_e) {
+    return { assignedOrders: 0, matchedPairs: [], unassignedOrders: 0 };
+  }
 
   try {
     const matchedPairs: Array<{ orderId: string; riderId: string; distanceKm: number; etaMinutes: number }> = [];
@@ -75,6 +87,17 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
 
         for (const rider of orgRiders) {
           if (!rider.lat || !rider.lng) continue; // Skip riders with no GPS signal
+
+          // Military-Grade GPS Telemetry & Spoofing Shield
+          const telemetryCheck = militaryAntiFraudShield.validateRiderTelemetry({
+            riderId: rider.id,
+            lat: rider.lat,
+            lng: rider.lng,
+            timestamp: Date.now()
+          });
+          if (!telemetryCheck.valid) {
+            continue; // Skip spoofed or out-of-bounds rider
+          }
 
           const distanceKm = calculateHaversineDistance(rstLat, rstLng, rider.lat, rider.lng);
           

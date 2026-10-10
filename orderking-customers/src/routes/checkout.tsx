@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { QuoteLines } from "@/components/market/quote-lines";
+import { CheckoutUpsellEngine } from "@/components/market/checkout-upsell-engine";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,7 +29,7 @@ function CheckoutPage() {
   const { t, lang } = useT();
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
   const { user, isPending } = useCurrentUserState();
-  const { restaurantId, items, coupon, clear } = useCartStore();
+  const { restaurantId, restaurantName, items, coupon, clear } = useCartStore();
   const location = useLocationStore((s) => s.location);
   const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY">("KING_PAY");
   const [notes, setNotes] = useState("");
@@ -306,6 +307,16 @@ function CheckoutPage() {
               </p>
             )}
           </section>
+
+          {restaurantId && items.length > 0 && (
+            <CheckoutUpsellEngine
+              restaurantId={restaurantId}
+              restaurantName={restaurantName}
+              locale={locale}
+              deliveryFeePaise={quote.data?.quote.deliveryFeePaise}
+              currentSubtotalPaise={quote.data?.quote.foodSubtotalPaise}
+            />
+          )}
 
           {/* Spare Change 24K Gold Roundup (Jar/Cred style) */}
           <section className="mt-4 rounded-[var(--radius-xl)] border border-amber-500/20 bg-amber-500/5 p-4">
