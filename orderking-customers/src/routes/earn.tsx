@@ -234,7 +234,7 @@ function EarnPage() {
       toast.error("Enter valid UPI ID");
       return;
     }
-    toast.success(\`₹\${balance} sent to \${withdrawUpi} instantly!\`);
+    toast.success("₹" + balance + " sent to " + withdrawUpi + " instantly!");
     setBalance(0);
     setShowWithdraw(false);
   };
