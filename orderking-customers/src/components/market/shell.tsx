@@ -174,16 +174,16 @@ export function CustomerShell({
               <Link
                 to="/king-pay"
                 className={cn(
-                  "group relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-4 border-zinc-950 text-xs no-underline shadow-lg transition-all active:scale-95",
+                  "group relative flex h-14 w-14 flex-col items-center justify-center rounded-full border-4 border-gray-700 text-xs no-underline shadow-lg transition-all active:scale-95",
                   path.startsWith("/king-pay")
                     ? "bg-white text-black"
-                    : "bg-surface-2 text-fg hover:bg-zinc-700"
+                    : "bg-surface-2 text-fg hover:bg-gray-800"
                 )}
               >
                 <Wallet className="h-5 w-5" />
                 <span className="text-[10px] font-medium mt-1">Pay</span>
                 {!path.startsWith("/king-pay") && (
-                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border border-zinc-950 text-[10px] font-bold text-fg shadow-sm">
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 border border-gray-700 text-[10px] font-bold text-fg shadow-sm">
                     1
                   </span>
                 )}

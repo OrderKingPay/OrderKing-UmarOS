@@ -259,7 +259,7 @@ export function FounderCommandPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0C0C0E] text-zinc-100 p-3 sm:p-5 space-y-4 font-sans">
+    <div className="min-h-screen bg-[#0C0C0E] text-gray-400 p-3 sm:p-5 space-y-4 font-sans">
       {/* Top Sovereign Banner */}
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10/80 pb-4">
         <div className="flex items-center gap-3">
@@ -285,7 +285,7 @@ export function FounderCommandPage() {
           <Button
             size="sm"
             onClick={() => setShowSettings(true)}
-            className="hidden sm:flex bg-surface-2 text-zinc-100 hover:bg-zinc-700 font-bold border border-white/10"
+            className="hidden sm:flex bg-surface-2 text-gray-400 hover:bg-gray-800 font-bold border border-white/10"
           >
             <Server className="w-4 h-4 mr-1.5 text-emerald-400" />
             System Connect
@@ -309,7 +309,7 @@ export function FounderCommandPage() {
             <Button
               size="sm"
               variant="outline"
-              className="rounded-xl border border-white/20 bg-surface-2/80 text-zinc-200 hover:bg-zinc-700 px-3.5 py-1.5 text-xs font-bold transition flex items-center gap-1.5"
+              className="rounded-xl border border-white/20 bg-surface-2/80 text-gray-400 hover:bg-gray-800 px-3.5 py-1.5 text-xs font-bold transition flex items-center gap-1.5"
             >
               <LayoutGrid className="size-3.5 text-amber-400" />
               <span>Specialized Hubs</span>
@@ -351,7 +351,7 @@ export function FounderCommandPage() {
 
           <Link
             to="/"
-            className="rounded-xl border border-white/20/80 bg-surface-2/80 px-3.5 py-1.5 text-xs font-semibold text-gray-300 hover:bg-zinc-700 hover:text-fg transition flex items-center gap-1.5"
+            className="rounded-xl border border-white/20/80 bg-surface-2/80 px-3.5 py-1.5 text-xs font-semibold text-gray-300 hover:bg-gray-800 hover:text-fg transition flex items-center gap-1.5"
           >
             <span>🍔</span>
             <span className="hidden sm:inline">Customer Food App</span>
@@ -436,7 +436,7 @@ export function FounderCommandPage() {
           <span className="text-[10px] font-bold uppercase text-muted tracking-wider">
             Food Geofence
           </span>
-          <p className="text-base font-extrabold text-zinc-200 font-mono">
+          <p className="text-base font-extrabold text-gray-400 font-mono">
             Sribhumi 12km
           </p>
           <span className="text-[9px] text-muted font-medium block">🛡️ Pan-India KingPay</span>

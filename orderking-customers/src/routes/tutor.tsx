@@ -111,7 +111,7 @@ function IntelligencePage() {
         <motion.div layout className="flex flex-col h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-fg selection:bg-surface-2">
         
         {/* Core Control Panel */}
-        <div className="bg-black border-b border-zinc-900 px-4 py-4 z-10 flex flex-col gap-4 shadow-sm relative overflow-hidden">
+        <div className="bg-black border-b border-gray-700 px-4 py-4 z-10 flex flex-col gap-4 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-surface-2/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
           
           <div className="flex items-center justify-between relative z-10">
@@ -131,7 +131,7 @@ function IntelligencePage() {
              <select 
                 value={board} 
                 onChange={(e) => setBoard(e.target.value)}
-                className="bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
+                className="bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-gray-400 outline-none focus:border-gray-700 transition-colors"
               >
                 <option value="CBSE">CBSE</option>
                 <option value="ICSE">ICSE</option>
@@ -151,7 +151,7 @@ function IntelligencePage() {
              <select 
                 value={stdClass} 
                 onChange={(e) => setStdClass(e.target.value)}
-                className="bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
+                className="bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-gray-400 outline-none focus:border-gray-700 transition-colors"
               >
                 {[...Array(12)].map((_, i) => (
                   <option key={i+1} value={`Class ${i+1}`}>Class {i+1}</option>
@@ -161,20 +161,20 @@ function IntelligencePage() {
              </select>
              
              {/* Dynamic Text Input for Subject to cover "ALL Subjects" perfectly */}
-             <div className="col-span-1 bg-surface/80 border border-white/10 rounded-lg flex items-center px-2.5 focus-within:border-zinc-500 transition-colors">
+             <div className="col-span-1 bg-surface/80 border border-white/10 rounded-lg flex items-center px-2.5 focus-within:border-gray-700 transition-colors">
                 <input 
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="Subject (e.g. Mathematics)"
-                  className="bg-transparent text-xs font-medium text-zinc-200 outline-none w-full py-2.5 placeholder:text-subtle"
+                  className="bg-transparent text-xs font-medium text-gray-400 outline-none w-full py-2.5 placeholder:text-subtle"
                 />
              </div>
              
              <select 
                 value={language} 
                 onChange={(e) => setLanguage(e.target.value)}
-                className="bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
+                className="bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-gray-400 outline-none focus:border-gray-700 transition-colors"
               >
                 <option value="English">English</option>
                 <option value="Hindi">Hindi</option>
@@ -193,7 +193,7 @@ function IntelligencePage() {
              <select 
                 value={goal} 
                 onChange={(e) => setGoal(e.target.value)}
-                className={`bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+                className={`bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-gray-400 outline-none focus:border-gray-700 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
               >
                 <option value="Concept Mastery">Goal: Concept Mastery</option>
                 <option value="Exam Prep">Goal: Exam Prep</option>
@@ -204,7 +204,7 @@ function IntelligencePage() {
              <select 
                 value={difficulty} 
                 onChange={(e) => setDifficulty(e.target.value)}
-                className={`bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+                className={`bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-gray-400 outline-none focus:border-gray-700 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
               >
                 <option value="Fundamental">Level: Fundamental</option>
                 <option value="Intermediate">Level: Intermediate</option>
@@ -214,7 +214,7 @@ function IntelligencePage() {
              <select 
                 value={tone} 
                 onChange={(e) => setTone(e.target.value)}
-                className={`col-span-2 bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+                className={`col-span-2 bg-surface/80 border border-white/10 text-xs rounded-lg p-2.5 font-medium text-gray-400 outline-none focus:border-gray-700 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
               >
                 <option value="Socratic (Ask Questions)">Tone: Socratic (Guides via questioning)</option>
                 <option value="Encouraging & Patient">Tone: Encouraging & Patient</option>
@@ -234,7 +234,7 @@ function IntelligencePage() {
                   <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed whitespace-pre-wrap shadow-sm ${
                     msg.role === 'user' 
                       ? 'bg-white text-black rounded-br-sm font-medium' 
-                      : 'bg-surface border border-white/10 text-zinc-200 rounded-bl-sm'
+                      : 'bg-surface border border-white/10 text-gray-400 rounded-bl-sm'
                   }`}>
                     {msg.content}
                   </div>
@@ -251,8 +251,8 @@ function IntelligencePage() {
               <div ref={bottomRef} />
             </div>
             
-            <div className="p-3 bg-black border-t border-zinc-900 pb-24">
-               <div className="flex items-end gap-2 bg-surface border border-white/10 rounded-2xl p-1.5 focus-within:border-zinc-600 transition-colors shadow-inner">
+            <div className="p-3 bg-black border-t border-gray-700 pb-24">
+               <div className="flex items-end gap-2 bg-surface border border-white/10 rounded-2xl p-1.5 focus-within:border-gray-700 transition-colors shadow-inner">
                   <textarea 
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}

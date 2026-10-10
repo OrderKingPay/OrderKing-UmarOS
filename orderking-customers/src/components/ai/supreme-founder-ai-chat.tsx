@@ -1163,7 +1163,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === "ensemble_consensus") {
     const res = card.data as EnsembleConsensusResult;
     return (
-      <div className="rounded-xl border border-cyan-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-cyan-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-gray-400">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Cpu className="size-4 text-cyan-400" />
@@ -1186,7 +1186,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
             {res.modelsBreakdown?.map((m: any) => (
               <div key={m.modelId} className="p-2.5 rounded bg-surface-2/60 border border-white/20/50 text-xs space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-zinc-200">{m.modelName}</span>
+                  <span className="font-bold text-gray-400">{m.modelName}</span>
                   <span className="text-emerald-400 font-mono text-[11px]">{m.confidenceScore}%</span>
                 </div>
                 <p className="text-[11px] text-muted line-clamp-1">{m.suggestedAction}</p>
@@ -1202,7 +1202,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === "instant_deploy") {
     const deploy = card.data as DeployTarget;
     return (
-      <div className="rounded-xl border border-emerald-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-emerald-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-gray-400">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Rocket className="size-4 text-emerald-400" />
@@ -1216,7 +1216,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
         <div className="p-3 rounded-lg bg-surface-2/80 border border-white/20/60 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted">Project Name:</span>
-            <span className="text-sm font-bold text-zinc-100">{deploy.projectName}</span>
+            <span className="text-sm font-bold text-gray-400">{deploy.projectName}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted">Target Domain:</span>
@@ -1224,7 +1224,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted">Runtime:</span>
-            <span className="text-zinc-200">🔒 {deploy.sslCertificate} ({deploy.edgeLatencyMs}ms sandbox)</span>
+            <span className="text-gray-400">🔒 {deploy.sslCertificate} ({deploy.edgeLatencyMs}ms sandbox)</span>
           </div>
         </div>
 
@@ -1242,7 +1242,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
           <Button
             size="sm"
             variant="outline"
-            className="text-xs font-bold border-white/20 text-zinc-200 hover:bg-surface-2"
+            className="text-xs font-bold border-white/20 text-gray-400 hover:bg-surface-2"
             onClick={() => {
               void navigator.clipboard?.writeText(deploy.deployScriptVercel);
               toast.success("Vercel production deploy command copied to clipboard!");
@@ -1260,7 +1260,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === "model_updates") {
     const report = card.data;
     return (
-      <div className="rounded-xl border border-amber-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-amber-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-gray-400">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 text-amber-400" />
@@ -1276,8 +1276,8 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
             <div key={u.id} className="p-3 rounded-lg bg-surface-2/80 border border-white/20/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm text-zinc-100">{u.name}</span>
-                  <Badge tone="neutral" className="text-[10px] text-muted border border-zinc-600">{u.provider} · {u.generation}</Badge>
+                  <span className="font-bold text-sm text-gray-400">{u.name}</span>
+                  <Badge tone="neutral" className="text-[10px] text-muted border border-gray-700">{u.provider} · {u.generation}</Badge>
                 </div>
                 <p className="text-xs text-muted mt-0.5">{u.improvements?.join(" · ")}</p>
                 <div className="flex items-center gap-2 mt-1 text-[11px] text-emerald-400 font-medium">
@@ -1309,7 +1309,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   if (card.type === "geofence_status") {
     const { zones } = card.data || {};
     return (
-      <div className="rounded-xl border border-emerald-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-emerald-500/40 bg-surface/95 p-4 space-y-3.5 shadow-xl text-gray-400">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ShieldCheck className="size-4 text-emerald-400" />
@@ -1339,7 +1339,7 @@ function ActionCardView({ card, onSaveKeys }: { card: NonNullable<SupremeAiMessa
   // Card: Auto-Clean & Self-Correction
   if (card.type === "auto_clean") {
     return (
-      <div className="rounded-xl border border-emerald-500/40 bg-surface/95 p-4 space-y-2.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-emerald-500/40 bg-surface/95 p-4 space-y-2.5 shadow-xl text-gray-400">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="size-4 text-emerald-400" />
@@ -1897,7 +1897,7 @@ You can ask me anything across software engineering, architecture, business anal
   const currentPersonaObj = VOICE_PERSONAS[selectedPersona];
 
   return (
-    <div className="relative flex h-[720px] max-h-[85vh] w-full rounded-2xl border border-white/10 bg-[#121214] text-zinc-100 shadow-2xl overflow-hidden font-sans">
+    <div className="relative flex h-[720px] max-h-[85vh] w-full rounded-2xl border border-white/10 bg-[#121214] text-gray-400 shadow-2xl overflow-hidden font-sans">
       {/* 1. LEFT COLLAPSIBLE CHATGPT SIDEBAR */}
       {sidebarOpen && (
         <aside className="w-72 shrink-0 border-r border-white/10/80 bg-[#18181B] flex flex-col justify-between transition-all duration-300 z-20">
@@ -1916,7 +1916,7 @@ You can ask me anything across software engineering, architecture, business anal
               <button
                 type="button"
                 onClick={() => setSidebarOpen(false)}
-                className="p-1 rounded-lg text-muted hover:text-zinc-200 hover:bg-surface-2 transition"
+                className="p-1 rounded-lg text-muted hover:text-gray-400 hover:bg-surface-2 transition"
                 title="Collapse sidebar"
               >
                 <PanelLeftClose className="size-4" />
@@ -1930,7 +1930,7 @@ You can ask me anything across software engineering, architecture, business anal
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 placeholder="Search chats & commands..."
-                className="h-8 pl-8 text-xs bg-surface border-white/20/70 text-zinc-200 placeholder:text-subtle rounded-lg focus-visible:ring-amber-500/50"
+                className="h-8 pl-8 text-xs bg-surface border-white/20/70 text-gray-400 placeholder:text-subtle rounded-lg focus-visible:ring-amber-500/50"
               />
             </div>
 
@@ -1949,7 +1949,7 @@ You can ask me anything across software engineering, architecture, business anal
                 ]);
                 toast.success("Started a fresh Umar OS session");
               }}
-              className="w-full justify-start h-8 text-xs font-semibold bg-surface-2 hover:bg-zinc-700 text-zinc-100 border border-white/20/60 rounded-lg transition"
+              className="w-full justify-start h-8 text-xs font-semibold bg-surface-2 hover:bg-gray-800 text-gray-400 border border-white/20/60 rounded-lg transition"
             >
               <Plus className="size-3.5 mr-2 text-amber-400" />
               New Founder Chat
@@ -2042,7 +2042,7 @@ You can ask me anything across software engineering, architecture, business anal
                     key={session.id}
                     type="button"
                     onClick={() => handleSendQuery(`Review ${session.title}`)}
-                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-muted hover:text-zinc-200 hover:bg-surface-2/50 transition text-left truncate"
+                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-muted hover:text-gray-400 hover:bg-surface-2/50 transition text-left truncate"
                   >
                     <MessageSquare className="size-3.5 text-subtle shrink-0" />
                     <span className="truncate">{session.title}</span>
@@ -2056,7 +2056,7 @@ You can ask me anything across software engineering, architecture, business anal
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-bold text-zinc-200">Founder Sovereign</span>
+                <span className="font-bold text-gray-400">Founder Sovereign</span>
               </div>
               <Badge className="bg-surface-2 text-[10px] text-muted border-white/20">Masked</Badge>
             </div>
@@ -2077,7 +2077,7 @@ You can ask me anything across software engineering, architecture, business anal
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                className="p-1.5 rounded-lg text-muted hover:text-zinc-200 hover:bg-surface-2 transition mr-1"
+                className="p-1.5 rounded-lg text-muted hover:text-gray-400 hover:bg-surface-2 transition mr-1"
                 title="Open sidebar"
               >
                 <PanelLeftOpen className="size-4" />
@@ -2092,7 +2092,7 @@ You can ask me anything across software engineering, architecture, business anal
                 className={`hidden md:flex items-center px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
                   doubleEngineEnabled 
                     ? "bg-amber-500/20 text-amber-500 border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                    : "bg-surface text-muted border-white/20 hover:text-zinc-200"
+                    : "bg-surface text-muted border-white/20 hover:text-gray-400"
                 }`}
                 title="Double Engine Consensus Validator (100x Realism)"
               >
@@ -2107,7 +2107,7 @@ You can ask me anything across software engineering, architecture, business anal
                   supremeAudioDsp.playTone("interruption_ping");
                   toast.success(`Active Model: ${m.toUpperCase()}`);
                 }}
-                className="h-8 rounded-lg bg-surface border border-white/20 px-3 text-xs font-bold text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="h-8 rounded-lg bg-surface border border-white/20 px-3 text-xs font-bold text-gray-400 focus:outline-none focus:ring-1 focus:ring-amber-500"
               >
                 <option value="auto-supreme-orchestrator">⚡ Auto Supreme Orchestrator (Autonomous Best)</option>
                 <option value="ensemble-consensus">🧠 Multi-Model Consensus (Real Verification)</option>
@@ -2314,7 +2314,7 @@ You can ask me anything across software engineering, architecture, business anal
                 personaColor={currentPersonaObj.vocalAuraColor}
               />
               <div className="max-w-xl text-center px-4">
-                <p className="text-sm font-medium text-zinc-200 leading-relaxed min-h-[44px]">
+                <p className="text-sm font-medium text-gray-400 leading-relaxed min-h-[44px]">
                   {liveTranscript ? (
                     <span className="text-cyan-300">&quot;{liveTranscript}&quot;</span>
                   ) : isSpeaking ? (
@@ -2381,11 +2381,11 @@ You can ask me anything across software engineering, architecture, business anal
               <div
                 className={`rounded-2xl p-4 max-w-[95%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed ${
                   m.sender === "founder"
-                    ? "bg-surface-2 text-zinc-100 font-medium shadow-md border border-white/20/60 rounded-br-none"
-                    : "bg-surface/90 border border-white/10 text-zinc-200 shadow-md rounded-bl-none"
+                    ? "bg-surface-2 text-gray-400 font-medium shadow-md border border-white/20/60 rounded-br-none"
+                    : "bg-surface/90 border border-white/10 text-gray-400 shadow-md rounded-bl-none"
                 }`}
               >
-                <div className="whitespace-pre-line prose prose-invert prose-zinc max-w-none text-zinc-200">
+                <div className="whitespace-pre-line prose prose-invert prose-zinc max-w-none text-gray-400">
                   {m.text}
                 </div>
 
@@ -2453,7 +2453,7 @@ You can ask me anything across software engineering, architecture, business anal
                 key={chip.label}
                 type="button"
                 onClick={() => handleSendQuery(chip.query)}
-                className="rounded-full border border-white/20 bg-surface-2/80 px-2.5 py-1 text-gray-300 hover:text-fg hover:border-zinc-500 hover:bg-zinc-700 transition shrink-0 font-medium text-[11px]"
+                className="rounded-full border border-white/20 bg-surface-2/80 px-2.5 py-1 text-gray-300 hover:text-fg hover:border-gray-700 hover:bg-gray-800 transition shrink-0 font-medium text-[11px]"
               >
                 {chip.label}
               </button>
@@ -2490,13 +2490,13 @@ You can ask me anything across software engineering, architecture, business anal
               e.preventDefault();
               handleSendQuery(inputQuery);
             }}
-            className="relative flex items-center rounded-3xl bg-[#212121] border border-zinc-600/50 px-3 py-2 shadow-2xl focus-within:border-zinc-400 transition"
+            className="relative flex items-center rounded-3xl bg-[#212121] border border-gray-700/50 px-3 py-2 shadow-2xl focus-within:border-gray-700 transition"
           >
             <Button
               type="button"
               size="sm"
               variant="ghost"
-              className="text-muted hover:text-zinc-200 p-2 h-auto mr-1 hover:bg-zinc-700/50 rounded-full"
+              className="text-muted hover:text-gray-400 p-2 h-auto mr-1 hover:bg-gray-800/50 rounded-full"
               title="Attach files or datasets"
               onClick={() => {
                 const input = document.createElement("input");
@@ -2520,7 +2520,7 @@ You can ask me anything across software engineering, architecture, business anal
               type="button"
               size="sm"
               variant="ghost"
-              className={`p-2 h-auto mr-1 rounded-full transition ${webSearchEnabled ? 'text-blue-400 bg-blue-500/10' : 'text-muted hover:text-zinc-200 hover:bg-zinc-700/50'}`}
+              className={`p-2 h-auto mr-1 rounded-full transition ${webSearchEnabled ? 'text-blue-400 bg-blue-500/10' : 'text-muted hover:text-gray-400 hover:bg-gray-800/50'}`}
               title="Toggle Web Search"
               onClick={() => setWebSearchEnabled(!webSearchEnabled)}
             >
@@ -2531,7 +2531,7 @@ You can ask me anything across software engineering, architecture, business anal
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               placeholder="Message Umar OS... Ask anything, deploy apps, or give an executive order"
-              className="flex-1 bg-transparent border-0 text-xs sm:text-sm text-zinc-100 placeholder:text-subtle focus-visible:ring-0 shadow-none px-2"
+              className="flex-1 bg-transparent border-0 text-xs sm:text-sm text-gray-400 placeholder:text-subtle focus-visible:ring-0 shadow-none px-2"
             />
 
             <Button
@@ -2540,7 +2540,7 @@ You can ask me anything across software engineering, architecture, business anal
               variant="ghost"
               onClick={isListening ? stopListening : startListening}
               className={`p-1.5 h-auto rounded-full mr-1.5 transition ${
-                isListening ? "text-cyan-400 bg-cyan-500/20 animate-pulse" : "text-muted hover:text-zinc-200"
+                isListening ? "text-cyan-400 bg-cyan-500/20 animate-pulse" : "text-muted hover:text-gray-400"
               }`}
               title="Voice dictation"
             >

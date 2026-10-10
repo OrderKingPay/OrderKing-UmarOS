@@ -68,7 +68,7 @@ export function LiveDeliveryMap({
       {/* Vector Live Route Simulation */}
       <div className="relative h-44 w-full bg-surface/95 p-4 text-fg">
         {/* Road Track Line */}
-        <div className="absolute left-8 right-8 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-zinc-700">
+        <div className="absolute left-8 right-8 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-gray-800">
           <div
             className="h-full rounded-full bg-gradient-to-r from-primary to-success transition-all duration-1000 ease-out"
             style={{ width: `${isDelivered ? 100 : currentProgress * 100}%` }}
@@ -102,7 +102,7 @@ export function LiveDeliveryMap({
 
         {/* Destination Customer Pin */}
         <div className="absolute right-6 top-1/2 -translate-y-1/2 text-center">
-          <div className={`flex h-8 w-8 items-center justify-center rounded-full text-fg shadow-md ${isDelivered ? "bg-success" : "bg-zinc-600"}`}>
+          <div className={`flex h-8 w-8 items-center justify-center rounded-full text-fg shadow-md ${isDelivered ? "bg-success" : "bg-gray-800"}`}>
             📍
           </div>
           <span className="mt-1 block max-w-[70px] truncate text-[10px] text-gray-300 font-medium">

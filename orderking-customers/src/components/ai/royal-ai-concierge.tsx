@@ -1262,7 +1262,7 @@ export function RoyalAiConcierge({
                   }}
                   className="shrink-0 rounded-xl bg-gradient-to-r from-sky-500/15 to-blue-500/5 border border-sky-500/30 px-3 py-1.5 text-xs font-bold text-sky-800 dark:text-sky-300 hover:scale-105 active:scale-95 transition flex items-center gap-1.5 shadow-2xs"
                 >
-                  <span>✈️</span> Cheapest Flights (₹0 Fee)
+                  <span>✈️</span> Exclusive Flight Pricing (₹0 Fee)
                 </button>
                 <button
                   type="button"

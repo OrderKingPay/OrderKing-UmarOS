@@ -196,7 +196,7 @@ export function HomeFeed({
             <button
               type="button"
               onClick={() => handleReorder(pastOrders.data.orders[0].id)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-white hover:bg-zinc-200 px-4 py-2.5 text-xs font-medium text-black transition"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-white hover:bg-gray-200 px-4 py-2.5 text-xs font-medium text-black transition"
             >
               <span>Reorder</span>
             </button>
@@ -210,8 +210,8 @@ export function HomeFeed({
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black p-5">
             <div className="flex items-center gap-3">
               <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-zinc-300"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-300"></span>
               </span>
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-muted">Active Order</p>
@@ -222,7 +222,7 @@ export function HomeFeed({
             <Link
               to="/orders/$id"
               params={{ id: activeOrder.id }}
-              className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-xs font-medium text-black transition hover:bg-zinc-200"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-xs font-medium text-black transition hover:bg-gray-200"
             >
               Track Order
             </Link>
@@ -246,7 +246,7 @@ export function HomeFeed({
             {pastOrders.data.orders.slice(0, 5).map((o) => (
               <div
                 key={o.id}
-                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-white/10 bg-black p-4 transition hover:border-zinc-600"
+                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-white/10 bg-black p-4 transition hover:border-gray-600"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
@@ -343,7 +343,7 @@ export function HomeFeed({
             type="button"
             onClick={requestLiveGps}
             disabled={isRequestingGeo}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-6 py-2.5 text-xs font-medium text-black transition active:scale-95"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-gray-200 px-6 py-2.5 text-xs font-medium text-black transition active:scale-95"
           >
             <span>📍</span>
             <span>{isRequestingGeo ? "Acquiring Location..." : "Enable Location"}</span>

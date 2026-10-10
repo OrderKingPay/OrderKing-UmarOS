@@ -50,7 +50,7 @@ export function GrowthWidget() {
             {copied ? <CheckCircle2 className="size-5 text-emerald-400" /> : <Copy className="size-5 text-muted group-hover:text-fg transition-colors" />}
           </button>
           
-          <button className="flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3.5 text-sm font-bold text-black transition hover:bg-zinc-200 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+          <button className="flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3.5 text-sm font-bold text-black transition hover:bg-gray-800 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
             Share on WhatsApp <ChevronRight className="size-4" />
           </button>
         </div>

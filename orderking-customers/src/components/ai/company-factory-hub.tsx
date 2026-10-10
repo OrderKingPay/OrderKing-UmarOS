@@ -61,7 +61,7 @@ export const FACTORY_STAGES: CompanyStage[] = [
     icon: "🎨",
     artifactTitle: "Brand Identity, Voice & Design Tokens",
     artifactSummary: "Sovereign Gold & Emerald palette, premium typography, trustworthy voice.",
-    artifactContent: `# Brand Design System\n\n- **Primary Brand Color:** Emerald Green (#059669) - Trust, freshness, prosperity.\n- **Accent Color:** Sovereign Gold (#F59E0B) - Royalty, quality, distinction.\n- **Background:** Deep Obsidian (#07130F) - Modern, luxury, battery-friendly.\n- **Brand Slogan:** "Order King: Dine Like Royalty, Pay Real Dine-In Prices."`,
+    artifactContent: `# Brand Design System\n\n- **Primary Brand Color:** Emerald Green (#059669) - Trust, freshness, prosperity.\n- **Accent Color:** Sovereign Gold (#F59E0B) - Royalty, quality, distinction.\n- **Background:** Deep Obsidian (#07130F) - Modern, luxury, battery-friendly.\n- **Brand Slogan:** "Order King: Uncompromising Standards. Absolute Transparency."`,
   },
   {
     step: 4,
