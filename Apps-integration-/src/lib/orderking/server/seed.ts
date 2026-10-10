@@ -163,7 +163,7 @@ async function seedMarketplace(sql: Sql): Promise<void> {
     ["emp_fin", "nisha.fin@orderking.in", "Nisha Rao", "finance", "team_finance"],
     ["emp_mkt", "kabir.mkt@orderking.in", "Kabir Khan", "marketing", "team_ops"],
     ["emp_kyc", "leena.kyc@orderking.in", "Leena Deka", "kyc", "team_kyc"],
-    ["emp_risk", "omar.risk@orderking.in", "Omar Hussain", "fraud_risk", "team_risk"],
+    ["emp_risk", "omar.risk@orderking.in", "Umar Hussain", "fraud_risk", "team_risk"],
     ["emp_disp", "tara.disp@orderking.in", "Tara Gogoi", "dispatch_operator", "team_dispatch"],
     ["emp_rst", "vivek.rst@orderking.in", "Vivek Nath", "restaurant_onboarding", "team_rest"],
     ["emp_rid", "sana.rid@orderking.in", "Sana Ahmed", "rider_operations", "team_rider"],

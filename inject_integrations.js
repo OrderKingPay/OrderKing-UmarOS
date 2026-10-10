@@ -1,7 +1,7 @@
 const fs = require('fs');
 let c = fs.readFileSync('HDmaster/src/routes/index.tsx', 'utf8');
 
-const replacementFn = const getOmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
+const replacementFn = const getUmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
   const sql = await getSql();
   const [{ count: userCount }] = await sql<{ count: number }>\SELECT COUNT(*) FROM "user"\ || [{ count: 0 }];
   const [{ count: restCount }] = await sql<{ count: number }>\SELECT COUNT(*) FROM restaurants\ || [{ count: 0 }];
@@ -26,7 +26,7 @@ const replacementFn = const getOmarOSStats = createServerFn({ method: "GET" }).h
   };
 });;
 
-c = c.replace(/const getOmarOSStats = createServerFn[^]+?return \{[^]+?\};\n\}\);/m, replacementFn);
+c = c.replace(/const getUmarOSStats = createServerFn[^]+?return \{[^]+?\};\n\}\);/m, replacementFn);
 
 const integrationPanel = unction IntegrationsPanel({ integrations }: { integrations: any[] }) {
   return (

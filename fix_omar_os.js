@@ -6,7 +6,7 @@ import { Store, Users, Bike, Settings, Activity, ShieldCheck, MapPin } from "luc
 import { createServerFn } from "@tanstack/start";
 import { getSql } from "@/lib/db";
 
-const getOmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
+const getUmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
   const sql = await getSql();
   
   // Real ecosystem metrics
@@ -28,11 +28,11 @@ const getOmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 export const Route = createFileRoute("/")({
-  component: OmarOSDashboard,
-  loader: async () => await getOmarOSStats(),
+  component: UmarOSDashboard,
+  loader: async () => await getUmarOSStats(),
 });
 
-function OmarOSDashboard() {
+function UmarOSDashboard() {
   const stats = Route.useLoaderData();
 
   return (
@@ -42,7 +42,7 @@ function OmarOSDashboard() {
           <div>
             <h1 className="text-3xl md:text-4xl font-black text-white flex items-center gap-3">
               <ShieldCheck className="h-10 w-10 text-emerald-400" />
-              Omar OS Control Center
+              Umar OS Control Center
             </h1>
             <Link to="/settings" className="inline-flex items-center gap-2 mt-4 text-emerald-400 font-bold bg-emerald-900/30 px-4 py-2 rounded-lg hover:bg-emerald-800/40"><Settings className="h-4 w-4"/> Platform Settings</Link>
             <p className="mt-2 text-slate-400 text-base">Real-time administrative control, onboarding approvals, and ecosystem metrics.</p>
@@ -136,4 +136,4 @@ function ToggleRow({ label, description, active }: { label: string, description:
 `;
 
 fs.writeFileSync(path, content, "utf8");
-console.log("Fixed OmarOS Dashboard with realistic data fetching");
+console.log("Fixed UmarOS Dashboard with realistic data fetching");
