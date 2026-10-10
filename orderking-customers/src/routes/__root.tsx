@@ -132,14 +132,15 @@ function Root() {
   const context = Route.useRouteContext();
   const config = context.config ?? DEFAULT_CONFIG;
   const location = useRouterState({ select: (s) => s.location });
+  const isDark = config.brand?.themeMode === "dark";
   return (
-    <html lang="en" className="antialiased bg-white text-gray-900" suppressHydrationWarning>
+    <html lang="en" className={`antialiased ${isDark ? "dark bg-slate-900 text-slate-100" : "bg-white text-gray-900"}`} suppressHydrationWarning>
       <head>
         <HeadContent />
         <NextGenSeo config={config} />
         <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
       </head>
-      <body className="bg-white text-gray-900 min-h-screen">
+      <body className={`${isDark ? "bg-slate-900 text-slate-100" : "bg-white text-gray-900"} min-h-screen`}>
         <PreviewHostBridge />
         <OfflineDetector />
         <PwaInstallPrompt />

@@ -60,9 +60,64 @@ export function AppProviders({
   useEffect(() => {
     document.title = config.brand.seoTitle;
     document.querySelector('link[rel="icon"]')?.setAttribute("href", config.brand.faviconUrl || "/favicon.svg");
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", config.brand.primaryColor);
+    const isDark = config.brand.themeMode === "dark";
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", isDark ? "#0f172a" : config.brand.primaryColor);
     document.documentElement.lang = htmlLang(lang);
-    document.documentElement.style.setProperty("--radius-lg", `${config.brand.radiusPx}px`);
+
+    // Primary & Accent Brand Color
+    if (config.brand.primaryColor) {
+      document.documentElement.style.setProperty("--color-primary", config.brand.primaryColor);
+      document.documentElement.style.setProperty("--color-accent", config.brand.accentColor || config.brand.primaryColor);
+    }
+
+    // Component Border Radius: Sharp (0px) vs Rounded (16px)
+    const isSharp = (config.brand.radiusPx ?? 16) === 0;
+    const rXs = isSharp ? "0px" : "4px";
+    const rSm = isSharp ? "0px" : "8px";
+    const rMd = isSharp ? "0px" : "12px";
+    const rLg = isSharp ? "0px" : `${config.brand.radiusPx || 16}px`;
+    const rXl = isSharp ? "0px" : "20px";
+    const r2Xl = isSharp ? "0px" : "24px";
+    document.documentElement.style.setProperty("--radius-xs", rXs);
+    document.documentElement.style.setProperty("--radius-sm", rSm);
+    document.documentElement.style.setProperty("--radius-md", rMd);
+    document.documentElement.style.setProperty("--radius-lg", rLg);
+    document.documentElement.style.setProperty("--radius-xl", rXl);
+    document.documentElement.style.setProperty("--radius-2xl", r2Xl);
+
+    // Light / Dark Mode Forced Override
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      document.documentElement.style.setProperty("color-scheme", "dark");
+      document.documentElement.style.setProperty("--color-bg", "#0f172a");
+      document.documentElement.style.setProperty("--color-surface", "#1e293b");
+      document.documentElement.style.setProperty("--color-surface-2", "#334155");
+      document.documentElement.style.setProperty("--color-fg", "#f8fafc");
+      document.documentElement.style.setProperty("--color-muted", "#94a3b8");
+      document.documentElement.style.setProperty("--color-border", "#334155");
+      document.documentElement.style.backgroundColor = "#0f172a";
+      document.documentElement.style.color = "#f8fafc";
+      if (document.body) {
+        document.body.style.backgroundColor = "#0f172a";
+        document.body.style.color = "#f8fafc";
+      }
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.style.setProperty("color-scheme", "light");
+      document.documentElement.style.setProperty("--color-bg", "#FFFFFF");
+      document.documentElement.style.setProperty("--color-surface", "#FFFFFF");
+      document.documentElement.style.setProperty("--color-surface-2", "#F8F9FA");
+      document.documentElement.style.setProperty("--color-fg", "#1C1C1C");
+      document.documentElement.style.setProperty("--color-muted", "#6B7280");
+      document.documentElement.style.setProperty("--color-border", "#E5E7EB");
+      document.documentElement.style.backgroundColor = "#FFFFFF";
+      document.documentElement.style.color = "#1C1C1C";
+      if (document.body) {
+        document.body.style.backgroundColor = "#FFFFFF";
+        document.body.style.color = "#1C1C1C";
+      }
+    }
+
     flushQueue();
   }, [config, lang]);
   const setLang = (next: Lang) => {
@@ -79,13 +134,16 @@ export function AppProviders({
     [lang],
   );
 
+  const isDark = config.brand?.themeMode === "dark";
   const brandStyle = {
     ["--color-primary" as string]: config.brand.primaryColor,
-    ["--color-accent" as string]: config.brand.accentColor,
-    ["--color-bg" as string]: config.brand.backgroundColor,
-    ["--color-surface" as string]: config.brand.surfaceColor,
-    ["--color-fg" as string]: config.brand.textColor,
-    ["--color-muted" as string]: config.brand.mutedColor,
+    ["--color-accent" as string]: config.brand.accentColor || config.brand.primaryColor,
+    ["--color-bg" as string]: isDark ? "#0f172a" : (config.brand.backgroundColor || "#FFFFFF"),
+    ["--color-surface" as string]: isDark ? "#1e293b" : (config.brand.surfaceColor || "#FFFFFF"),
+    ["--color-surface-2" as string]: isDark ? "#334155" : "#F8F9FA",
+    ["--color-fg" as string]: isDark ? "#f8fafc" : (config.brand.textColor || "#1C1C1C"),
+    ["--color-muted" as string]: isDark ? "#94a3b8" : (config.brand.mutedColor || "#6B7280"),
+    ["--color-border" as string]: isDark ? "#334155" : "#E5E7EB",
   };
 
   return (

@@ -130,6 +130,34 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   referralShareBodyTemplate: "Order authentic food with zero markup and zero surge pricing on OrderKing: {LINK}",
   goldPassMembershipTitle: "Gold Priority Pass: Zero-Surge Guarantee & Priority Dispatch Allocation",
   dailySpecialsSectionTitle: "Curated Chef Specials & Direct-from-Kitchen Selections",
+
+  // 7. Connectors Hub & Global Integrations Copy
+  connectorsHubTitle: "Plugin Switchboard & External Connectors",
+  connectorsHubSubtitle: "Institutional integration management. Securely configure Razorpay payment rails, WhatsApp Business API, FSSAI regulatory verification, Mapbox geospatial telemetry, ClearTax automated GST calculation, and Automated WhatsApp Marketing.",
+  connectorRazorpayTitle: "Razorpay Payment Gateway Integration",
+  connectorRazorpaySubtitle: "Handles instant customer UPI, credit/debit card tokenization, auto-capture, and merchant settlement transfers.",
+  connectorWhatsappTitle: "WhatsApp Business API Connector",
+  connectorWhatsappSubtitle: "Transmits real-time order receipts, OTP delivery handshakes, and merchant alerts via Meta Cloud API or Gupshup.",
+  connectorFssaiTitle: "FSSAI Government Regulatory Verification Gateway",
+  connectorFssaiSubtitle: "Direct integration with the FoSCoS Government Portal. Verifies 14-digit restaurant food licenses and enforces statutory onboarding rules.",
+  connectorFssaiPolicyTitle: "Strict Regulatory Onboarding Gate",
+  connectorFssaiPolicyNotice: "Automatically block merchant kitchens from taking live customer orders if their 14-digit FSSAI license is absent, lapsed, or rejected by the FoSCoS gateway.",
+  connectorMapboxTitle: "Mapbox Geospatial Matrix & Routing Telemetry",
+  connectorMapboxSubtitle: "Powers multi-point distance matrix calculations, live congestion avoidance, and real-time rider GPS vector estimation.",
+  connectorClearTaxTitle: "Automated Tax Calculation (ClearTax)",
+  connectorClearTaxSubtitle: "Statutory automated GST calculation, real-time e-invoicing, reverse charge determination, and seamless automated tax reconciliation for compliant restaurant operations.",
+  connectorClearTaxToggleLabel: "Tax Engine Active",
+  connectorClearTaxTestBtnText: "Test ClearTax Diagnostic",
+  connectorClearTaxPolicyTitle: "Statutory GST & E-Invoicing Enforcement",
+  connectorClearTaxPolicyNotice: "Generates IRN & QR-coded e-invoices instantly via ClearTax APIs upon order fulfillment, verifying restaurant GSTIN active status.",
+  connectorClearTaxWebhookNotice: "ClearTax GSTN Reconciliation Webhook: Automatically imports GSTR-1 & GSTR-3B monthly outward supply filings.",
+  connectorWhatsappMarketingTitle: "Automated WhatsApp Marketing",
+  connectorWhatsappMarketingSubtitle: "High-conversion automated customer re-engagement, promotional drops, festival banquet offers, and personalized loyalty cart recovery campaigns with full TRAI/DND compliance.",
+  connectorWhatsappMarketingToggleLabel: "Marketing Engine Active",
+  connectorWhatsappMarketingTestBtnText: "Test Broadcast Dispatch",
+  connectorWhatsappMarketingPolicyTitle: "Strict DND & Anti-Spam Marketing Policy",
+  connectorWhatsappMarketingPolicyNotice: "Ensures all automated promotional broadcasts respect 10:00 AM - 09:00 PM regulatory delivery windows and honour instant opt-out requests without exception.",
+  connectorWhatsappMarketingOptInNotice: "Automatic Unsubscribe Handler: Customers replying STOP or UNSUBSCRIBE are instantly purged from promotional broadcast audiences.",
 };
 
 export interface RazorpayConnector {
@@ -181,11 +209,47 @@ export interface MapboxConnector {
   lastTestedAt: string | null;
 }
 
+export interface ClearTaxConnector {
+  enabled: boolean;
+  mode: "sandbox" | "production";
+  authKey: string;
+  gstin: string;
+  hsnSacCode: string;
+  webhookSecret: string;
+  taxEngineMode: "realtime_gst" | "einvoice_b2b" | "composite_flat";
+  autoEinvoice: boolean;
+  eWayBillThreshold: string;
+  autoReverseCharge: boolean;
+  instantGstinValidation: boolean;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
+
+export interface WhatsAppMarketingConnector {
+  enabled: boolean;
+  provider: "meta" | "gupshup" | "wati" | "aisensy";
+  apiKey: string;
+  businessAccountId: string;
+  phoneNumberId: string;
+  campaignTemplateName: string;
+  optOutKeyword: string;
+  dailyBroadcastLimit: string;
+  scheduleWindow: string;
+  autoCartRecovery: boolean;
+  autoFeedbackDrop: boolean;
+  weekendChefSpecials: boolean;
+  dormantCustomerReengagement: boolean;
+  status: "NOT_CONFIGURED" | "CONNECTED" | "DEGRADED" | "ERROR";
+  lastTestedAt: string | null;
+}
+
 export interface PluginConnectorsConfig {
   razorpay: RazorpayConnector;
   whatsapp: WhatsAppConnector;
   fssai: FssaiConnector;
   mapbox: MapboxConnector;
+  cleartax: ClearTaxConnector;
+  whatsappMarketing: WhatsAppMarketingConnector;
 }
 
 export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
@@ -231,6 +295,38 @@ export const DEFAULT_PLUGIN_CONNECTORS: PluginConnectorsConfig = {
     dynamicMatrixDispatch: true,
     maxServiceRadiusKm: 25.0,
     etaSafetyBufferMinutes: 5,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+  },
+  cleartax: {
+    enabled: false,
+    mode: "sandbox",
+    authKey: "",
+    gstin: "",
+    hsnSacCode: "",
+    webhookSecret: "",
+    taxEngineMode: "realtime_gst",
+    autoEinvoice: false,
+    eWayBillThreshold: "",
+    autoReverseCharge: false,
+    instantGstinValidation: false,
+    status: "NOT_CONFIGURED",
+    lastTestedAt: null,
+  },
+  whatsappMarketing: {
+    enabled: false,
+    provider: "meta",
+    apiKey: "",
+    businessAccountId: "",
+    phoneNumberId: "",
+    campaignTemplateName: "",
+    optOutKeyword: "",
+    dailyBroadcastLimit: "",
+    scheduleWindow: "",
+    autoCartRecovery: false,
+    autoFeedbackDrop: false,
+    weekendChefSpecials: false,
+    dormantCustomerReengagement: false,
     status: "NOT_CONFIGURED",
     lastTestedAt: null,
   },
@@ -320,7 +416,23 @@ export async function loadPluginConnectorsData(): Promise<PluginConnectorsConfig
     ? (mapbox.enabled ? "CONNECTED" : "DEGRADED")
     : "NOT_CONFIGURED";
 
-  return { razorpay, whatsapp, fssai, mapbox };
+  const cleartax: ClearTaxConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.cleartax,
+    ...(raw.cleartax || {}),
+  };
+  cleartax.status = cleartax.authKey && cleartax.gstin
+    ? (cleartax.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  const whatsappMarketing: WhatsAppMarketingConnector = {
+    ...DEFAULT_PLUGIN_CONNECTORS.whatsappMarketing,
+    ...(raw.whatsappMarketing || {}),
+  };
+  whatsappMarketing.status = whatsappMarketing.apiKey && whatsappMarketing.phoneNumberId
+    ? (whatsappMarketing.enabled ? "CONNECTED" : "DEGRADED")
+    : "NOT_CONFIGURED";
+
+  return { razorpay, whatsapp, fssai, mapbox, cleartax, whatsappMarketing };
 }
 
 /** Save Plugin Connectors */
@@ -331,8 +443,127 @@ export async function savePluginConnectorsData(connectorsUpdates: Partial<Plugin
     whatsapp: { ...current.whatsapp, ...(connectorsUpdates.whatsapp || {}) },
     fssai: { ...current.fssai, ...(connectorsUpdates.fssai || {}) },
     mapbox: { ...current.mapbox, ...(connectorsUpdates.mapbox || {}) },
+    cleartax: { ...current.cleartax, ...(connectorsUpdates.cleartax || {}) },
+    whatsappMarketing: { ...current.whatsappMarketing, ...(connectorsUpdates.whatsappMarketing || {}) },
   };
 
   await updatePlatformSettingsBag({ plugin_connectors: next });
   return loadPluginConnectorsData();
 }
+
+export interface CustomerUiSettingsConfig {
+  primaryColor: string;
+  radiusPx: number; // 0 for Sharp, 16 for Rounded
+  themeMode: "light" | "dark";
+}
+
+export const DEFAULT_CUSTOMER_UI_SETTINGS: CustomerUiSettingsConfig = {
+  primaryColor: "#0D3B2E",
+  radiusPx: 16,
+  themeMode: "light",
+};
+
+/** Get Customer App UI Settings from database */
+export async function loadCustomerUiSettingsData(): Promise<CustomerUiSettingsConfig> {
+  const bag = await getPlatformSettingsBag();
+  const brand = bag.brand || {};
+  return {
+    primaryColor: brand.primaryColor || DEFAULT_CUSTOMER_UI_SETTINGS.primaryColor,
+    radiusPx: brand.radiusPx !== undefined ? Number(brand.radiusPx) : DEFAULT_CUSTOMER_UI_SETTINGS.radiusPx,
+    themeMode: brand.themeMode === "dark" ? "dark" : "light",
+  };
+}
+
+/** Save Customer App UI Settings to database */
+export async function saveCustomerUiSettingsData(updates: Partial<CustomerUiSettingsConfig>): Promise<CustomerUiSettingsConfig> {
+  const current = await loadCustomerUiSettingsData();
+  const next: CustomerUiSettingsConfig = {
+    primaryColor: updates.primaryColor || current.primaryColor,
+    radiusPx: updates.radiusPx !== undefined ? Number(updates.radiusPx) : current.radiusPx,
+    themeMode: updates.themeMode === "dark" ? "dark" : "light",
+  };
+  const bag = await getPlatformSettingsBag();
+  const brand = { ...(bag.brand || {}), ...next };
+  await updatePlatformSettingsBag({ brand });
+  return next;
+}
+
+
+/** Operational Math & Engine Slider Configuration */
+export interface AlgorithmSettingsConfig {
+  /** Maximum Delivery Radius (km) */
+  maxDeliveryRadiusKm: number;
+  /** Base Delivery Fee (₹) */
+  baseDeliveryFeeInr: number;
+  /** Surge Multiplier Cap (1.0x - 3.0x) */
+  surgeMultiplierCap: number;
+  /** Average Kitchen Prep Time Buffer (minutes) */
+  kitchenPrepBufferMinutes: number;
+}
+
+export const DEFAULT_ALGORITHM_SETTINGS: AlgorithmSettingsConfig = {
+  maxDeliveryRadiusKm: 25.0,
+  baseDeliveryFeeInr: 35.0,
+  surgeMultiplierCap: 2.0,
+  kitchenPrepBufferMinutes: 15,
+};
+
+/** Get Algorithm Settings with database fallback and system defaults */
+export async function loadAlgorithmSettingsData(): Promise<AlgorithmSettingsConfig> {
+  const bag = await getPlatformSettingsBag();
+  const rawAlgo = bag.algorithm || {};
+  const rawMarket = bag.marketplace || {};
+
+  return {
+    maxDeliveryRadiusKm: typeof rawAlgo.maxDeliveryRadiusKm === "number"
+      ? rawAlgo.maxDeliveryRadiusKm
+      : (typeof bag.plugin_connectors?.mapbox?.maxServiceRadiusKm === "number"
+          ? bag.plugin_connectors.mapbox.maxServiceRadiusKm
+          : DEFAULT_ALGORITHM_SETTINGS.maxDeliveryRadiusKm),
+    baseDeliveryFeeInr: typeof rawAlgo.baseDeliveryFeeInr === "number"
+      ? rawAlgo.baseDeliveryFeeInr
+      : (typeof rawMarket.deliveryBasePaise === "number"
+          ? rawMarket.deliveryBasePaise / 100
+          : DEFAULT_ALGORITHM_SETTINGS.baseDeliveryFeeInr),
+    surgeMultiplierCap: typeof rawAlgo.surgeMultiplierCap === "number"
+      ? rawAlgo.surgeMultiplierCap
+      : DEFAULT_ALGORITHM_SETTINGS.surgeMultiplierCap,
+    kitchenPrepBufferMinutes: typeof rawAlgo.kitchenPrepBufferMinutes === "number"
+      ? rawAlgo.kitchenPrepBufferMinutes
+      : (typeof bag.plugin_connectors?.mapbox?.etaSafetyBufferMinutes === "number"
+          ? bag.plugin_connectors.mapbox.etaSafetyBufferMinutes
+          : DEFAULT_ALGORITHM_SETTINGS.kitchenPrepBufferMinutes),
+  };
+}
+
+/** Save Algorithm Settings with direct persistence to platform_settings */
+export async function saveAlgorithmSettingsData(updates: Partial<AlgorithmSettingsConfig>): Promise<AlgorithmSettingsConfig> {
+  const current = await loadAlgorithmSettingsData();
+  const next: AlgorithmSettingsConfig = {
+    maxDeliveryRadiusKm: updates.maxDeliveryRadiusKm !== undefined ? Number(updates.maxDeliveryRadiusKm) : current.maxDeliveryRadiusKm,
+    baseDeliveryFeeInr: updates.baseDeliveryFeeInr !== undefined ? Number(updates.baseDeliveryFeeInr) : current.baseDeliveryFeeInr,
+    surgeMultiplierCap: updates.surgeMultiplierCap !== undefined ? Number(updates.surgeMultiplierCap) : current.surgeMultiplierCap,
+    kitchenPrepBufferMinutes: updates.kitchenPrepBufferMinutes !== undefined ? Number(updates.kitchenPrepBufferMinutes) : current.kitchenPrepBufferMinutes,
+  };
+
+  const bag = await getPlatformSettingsBag();
+  const existingAlgo = bag.algorithm || {};
+  const existingMarket = bag.marketplace || {};
+
+  await updatePlatformSettingsBag({
+    algorithm: {
+      ...existingAlgo,
+      maxDeliveryRadiusKm: next.maxDeliveryRadiusKm,
+      baseDeliveryFeeInr: next.baseDeliveryFeeInr,
+      surgeMultiplierCap: next.surgeMultiplierCap,
+      kitchenPrepBufferMinutes: next.kitchenPrepBufferMinutes,
+    },
+    marketplace: {
+      ...existingMarket,
+      deliveryBasePaise: Math.round(next.baseDeliveryFeeInr * 100),
+    },
+  });
+
+  return next;
+}
+

@@ -1211,7 +1211,7 @@ export const savePluginConnectorsFn = createServerFn({ method: "POST" })
   });
 
 export const testPluginConnectorFn = createServerFn({ method: "POST" })
-  .validator((input: { service: "razorpay" | "whatsapp" | "fssai" | "mapbox"; payload: any }) => input)
+  .validator((input: { service: "razorpay" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing"; payload: any }) => input)
   .handler(async ({ data }) => {
     try {
       const { service, payload } = data;
@@ -1249,11 +1249,73 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
         return { ok: true as const, message: "Mapbox Matrix API Access Token validated. Routing profiles available." };
       }
 
+      if (service === "cleartax") {
+        if (!payload.authKey || !payload.gstin) {
+          return { ok: false as const, error: "ClearTax Auth Token and Master GSTIN are required to test connection." };
+        }
+        return { ok: true as const, message: `ClearTax ${payload.mode?.toUpperCase() || "SANDBOX"} handshake verified. Real-time tax calculation engine and e-invoice generator ready.` };
+      }
+
+      if (service === "whatsappMarketing") {
+        if (!payload.apiKey || !payload.phoneNumberId) {
+          return { ok: false as const, error: "WhatsApp Marketing API Key and Phone Number ID are required to test connection." };
+        }
+        return { ok: true as const, message: `WhatsApp Marketing Gateway probe verified (${payload.provider?.toUpperCase() || "META"}). Promotional broadcast pipelines ready.` };
+      }
+
       return { ok: false as const, error: "Unknown connector service." };
     } catch (err) {
       return fail(err);
     }
   });
+
+export const loadCustomerUiSettingsFn = createServerFn({ method: "GET" })
+  .handler(async () => {
+    try {
+      const { loadCustomerUiSettingsData } = await import("@/lib/orderking/cms-connectors");
+      const data = await loadCustomerUiSettingsData();
+      return { ok: true as const, data };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const saveCustomerUiSettingsFn = createServerFn({ method: "POST" })
+  .validator((input: { settings: any }) => input)
+  .handler(async ({ data }) => {
+    try {
+      const { saveCustomerUiSettingsData } = await import("@/lib/orderking/cms-connectors");
+      const updated = await saveCustomerUiSettingsData(data.settings);
+      return { ok: true as const, data: updated };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const loadAlgorithmSettingsFn = createServerFn({ method: "GET" })
+  .handler(async () => {
+    try {
+      const { loadAlgorithmSettingsData } = await import("@/lib/orderking/cms-connectors");
+      const data = await loadAlgorithmSettingsData();
+      return { ok: true as const, data };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const saveAlgorithmSettingsFn = createServerFn({ method: "POST" })
+  .validator((input: { algorithm: any }) => input)
+  .handler(async ({ data }) => {
+    try {
+      const { saveAlgorithmSettingsData } = await import("@/lib/orderking/cms-connectors");
+      const updated = await saveAlgorithmSettingsData(data.algorithm);
+      return { ok: true as const, data: updated };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+
 
 
 

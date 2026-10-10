@@ -6,11 +6,17 @@ import {
   type WhatsAppConnector,
   type FssaiConnector,
   type MapboxConnector,
+  type ClearTaxConnector,
+  type WhatsAppMarketingConnector,
+  type EcosystemCmsConfig,
+  DEFAULT_ECOSYSTEM_CMS,
 } from "@/lib/orderking/cms-connectors";
 import {
   loadPluginConnectorsFn,
   savePluginConnectorsFn,
   testPluginConnectorFn,
+  loadEcosystemCmsFn,
+  saveEcosystemCmsFn,
 } from "@/lib/orderking/actions";
 import {
   Cpu,
@@ -33,13 +39,21 @@ import {
   Layers,
   ExternalLink,
   Lock,
+  Calculator,
+  Megaphone,
+  Edit3,
+  ShieldCheck,
 } from "lucide-react";
 
-type ConnectorTab = "all" | "razorpay" | "whatsapp" | "fssai" | "mapbox";
+type ConnectorTab = "all" | "razorpay" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing";
 
 export function PluginConnectors() {
   const [config, setConfig] = useState<PluginConnectorsConfig>(DEFAULT_PLUGIN_CONNECTORS);
   const [initialConfig, setInitialConfig] = useState<PluginConnectorsConfig>(DEFAULT_PLUGIN_CONNECTORS);
+  const [cmsConfig, setCmsConfig] = useState<EcosystemCmsConfig>(DEFAULT_ECOSYSTEM_CMS);
+  const [initialCmsConfig, setInitialCmsConfig] = useState<EcosystemCmsConfig>(DEFAULT_ECOSYSTEM_CMS);
+  const [showCmsEditor, setShowCmsEditor] = useState(false);
+  const [cmsSaving, setCmsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<ConnectorTab>("all");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -55,21 +69,44 @@ export function PluginConnectors() {
     async function loadData() {
       try {
         setLoading(true);
-        let data: PluginConnectorsConfig | null = null;
+        let connectorData: PluginConnectorsConfig | null = null;
+        let cmsData: EcosystemCmsConfig | null = null;
+
         try {
           const res = await loadPluginConnectorsFn();
-          if (res && res.ok && res.data) data = res.data;
+          if (res && res.ok && res.data) connectorData = res.data;
         } catch {
-          const resp = await fetch("/api/v1/admin/settings");
-          if (resp.ok) {
-            const json = await resp.json();
-            if (json.plugin_connectors) data = json.plugin_connectors;
-          }
+          // fallback
         }
 
-        if (mounted && data) {
-          setConfig(data);
-          setInitialConfig(data);
+        try {
+          const resCms = await loadEcosystemCmsFn();
+          if (resCms && resCms.ok && resCms.data) cmsData = resCms.data;
+        } catch {
+          // fallback
+        }
+
+        if (!connectorData || !cmsData) {
+          try {
+            const resp = await fetch("/api/v1/admin/settings");
+            if (resp.ok) {
+              const json = await resp.json();
+              if (json.plugin_connectors && !connectorData) connectorData = json.plugin_connectors;
+              if (json.cms && !cmsData) cmsData = json.cms;
+            }
+          } catch {}
+        }
+
+        if (mounted) {
+          if (connectorData) {
+            setConfig(connectorData);
+            setInitialConfig(connectorData);
+          }
+          if (cmsData) {
+            const mergedCms = { ...DEFAULT_ECOSYSTEM_CMS, ...cmsData };
+            setCmsConfig(mergedCms);
+            setInitialCmsConfig(mergedCms);
+          }
         }
       } catch (err) {
         console.error("Error loading Plugin Connectors:", err);
@@ -84,6 +121,10 @@ export function PluginConnectors() {
   const hasChanges = useMemo(() => {
     return JSON.stringify(config) !== JSON.stringify(initialConfig);
   }, [config, initialConfig]);
+
+  const hasCmsChanges = useMemo(() => {
+    return JSON.stringify(cmsConfig) !== JSON.stringify(initialCmsConfig);
+  }, [cmsConfig, initialCmsConfig]);
 
   const toggleSecretVisibility = (fieldId: string) => {
     setVisibleSecrets((prev) => ({ ...prev, [fieldId]: !prev[fieldId] }));
@@ -142,7 +183,54 @@ export function PluginConnectors() {
     }
   };
 
-  const handleTestConnection = async (service: "razorpay" | "whatsapp" | "fssai" | "mapbox") => {
+  const handleSaveCmsCopy = async () => {
+    try {
+      setCmsSaving(true);
+      setStatusBanner(null);
+
+      let success = false;
+      try {
+        const res = await saveEcosystemCmsFn({ data: { cms: cmsConfig } });
+        if (res && res.ok && res.data) {
+          setCmsConfig(res.data);
+          setInitialCmsConfig(res.data);
+          success = true;
+        }
+      } catch {
+        const resp = await fetch("/api/v1/admin/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cms: cmsConfig }),
+        });
+        if (resp.ok) {
+          setInitialCmsConfig(cmsConfig);
+          success = true;
+        }
+      }
+
+      if (success) {
+        setStatusBanner({
+          type: "success",
+          text: "CMS content copy successfully updated and synchronized across all connector surfaces.",
+        });
+        setTimeout(() => setStatusBanner(null), 6000);
+      } else {
+        setStatusBanner({
+          type: "error",
+          text: "Failed to save CMS copy. Please check network logs.",
+        });
+      }
+    } catch (err: any) {
+      setStatusBanner({
+        type: "error",
+        text: err?.message || "Unexpected error saving CMS copy.",
+      });
+    } finally {
+      setCmsSaving(false);
+    }
+  };
+
+  const handleTestConnection = async (service: "razorpay" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing") => {
     try {
       setTestingService(service);
       const payload = config[service];
@@ -179,13 +267,15 @@ export function PluginConnectors() {
   };
 
   // Live status helpers
-  const getConnectorStatus = (service: "razorpay" | "whatsapp" | "fssai" | "mapbox") => {
+  const getConnectorStatus = (service: "razorpay" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing") => {
     const item = config[service];
     let isConfigured = false;
     if (service === "razorpay") isConfigured = !!(item as RazorpayConnector).keyId && !!(item as RazorpayConnector).keySecret;
     if (service === "whatsapp") isConfigured = !!(item as WhatsAppConnector).phoneNumberId && !!(item as WhatsAppConnector).systemAccessToken;
     if (service === "fssai") isConfigured = !!(item as FssaiConnector).clientId && !!(item as FssaiConnector).authorizationToken;
     if (service === "mapbox") isConfigured = !!(item as MapboxConnector).publicAccessToken;
+    if (service === "cleartax") isConfigured = !!(item as ClearTaxConnector).authKey && !!(item as ClearTaxConnector).gstin;
+    if (service === "whatsappMarketing") isConfigured = !!(item as WhatsAppMarketingConnector).apiKey && !!(item as WhatsAppMarketingConnector).phoneNumberId;
 
     if (!isConfigured) return { status: "NOT_CONFIGURED" as const, label: "Not Configured", tone: "neutral" as const };
     if (!item.enabled) return { status: "STANDBY" as const, label: "Standby / Disabled", tone: "amber" as const };
@@ -196,12 +286,12 @@ export function PluginConnectors() {
   const summaryMetrics = useMemo(() => {
     let configuredCount = 0;
     let activeCount = 0;
-    (["razorpay", "whatsapp", "fssai", "mapbox"] as const).forEach((svc) => {
+    (["razorpay", "whatsapp", "fssai", "mapbox", "cleartax", "whatsappMarketing"] as const).forEach((svc) => {
       const st = getConnectorStatus(svc);
       if (st.status !== "NOT_CONFIGURED") configuredCount++;
       if (st.status === "CONNECTED") activeCount++;
     });
-    return { configuredCount, activeCount, total: 4 };
+    return { configuredCount, activeCount, total: 6 };
   }, [config]);
 
   return (
@@ -216,20 +306,33 @@ export function PluginConnectors() {
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                  Plugin Switchboard & External Connectors
+                  {cmsConfig.connectorsHubTitle || "Plugin Switchboard & External Connectors"}
                 </h2>
                 <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary border border-primary/20">
                   {summaryMetrics.activeCount} / {summaryMetrics.total} Active
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Institutional integration management. Securely configure Razorpay payment rails, WhatsApp Business API, FSSAI regulatory verification, and Mapbox geospatial telemetry.
+                {cmsConfig.connectorsHubSubtitle || "Institutional integration management. Securely configure Razorpay payment rails, WhatsApp Business API, FSSAI regulatory verification, Mapbox geospatial telemetry, ClearTax automated GST calculation, and automated WhatsApp marketing campaigns."}
               </p>
             </div>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => setShowCmsEditor((prev) => !prev)}
+            className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+              showCmsEditor
+                ? "bg-primary text-primary-foreground border-primary"
+                : "border-border bg-secondary/50 text-foreground hover:bg-secondary"
+            }`}
+          >
+            <Edit3 className="h-3.5 w-3.5" />
+            <span>{showCmsEditor ? "Close Copy Editor" : "Edit Copy in CMS"}</span>
+          </button>
+
           {hasChanges && (
             <button
               type="button"
@@ -286,6 +389,195 @@ export function PluginConnectors() {
         </div>
       )}
 
+      {/* Inline CMS Copy Customizer Panel */}
+      {showCmsEditor && (
+        <div className="rounded-xl border border-primary/30 bg-card p-6 shadow-md space-y-5 animate-in fade-in duration-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Edit3 className="h-4 w-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">
+                  Connector Words & Copy Live CMS Controller
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Every title, subtitle, toggle label, button text, and compliance notice across all 6 connectors is fully controllable via CMS.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {hasCmsChanges && (
+                <button
+                  type="button"
+                  onClick={() => setCmsConfig(initialCmsConfig)}
+                  className="rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  Reset Copy
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleSaveCmsCopy}
+                disabled={cmsSaving || !hasCmsChanges}
+                className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-semibold shadow-xs ${
+                  hasCmsChanges
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-muted text-muted-foreground cursor-not-allowed"
+                }`}
+              >
+                <Save className="h-3.5 w-3.5" />
+                {cmsSaving ? "Saving Copy..." : "Save Copy to CMS"}
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">Hub Header Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorsHubTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorsHubTitle: e.target.value }))}
+                placeholder="Plugin Switchboard & External Connectors"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">ClearTax Connector Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorClearTaxTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorClearTaxTitle: e.target.value }))}
+                placeholder="Automated Tax Calculation (ClearTax)"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">ClearTax Subtitle</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorClearTaxSubtitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorClearTaxSubtitle: e.target.value }))}
+                placeholder="Statutory automated GST calculation..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">ClearTax Toggle Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorClearTaxToggleLabel || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorClearTaxToggleLabel: e.target.value }))}
+                placeholder="Tax Engine Active"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">ClearTax Diagnostic Test Button</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorClearTaxTestBtnText || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorClearTaxTestBtnText: e.target.value }))}
+                placeholder="Test ClearTax Diagnostic"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">ClearTax Policy Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorClearTaxPolicyTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorClearTaxPolicyTitle: e.target.value }))}
+                placeholder="Statutory GST & E-Invoicing Enforcement"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">ClearTax Policy Disclaimer</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorClearTaxPolicyNotice || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorClearTaxPolicyNotice: e.target.value }))}
+                placeholder="Generates IRN & QR-coded e-invoices instantly..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">WhatsApp Marketing Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorWhatsappMarketingTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorWhatsappMarketingTitle: e.target.value }))}
+                placeholder="Automated WhatsApp Marketing"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">WhatsApp Marketing Subtitle</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorWhatsappMarketingSubtitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorWhatsappMarketingSubtitle: e.target.value }))}
+                placeholder="High-conversion automated customer re-engagement..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">WhatsApp Marketing Toggle Label</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorWhatsappMarketingToggleLabel || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorWhatsappMarketingToggleLabel: e.target.value }))}
+                placeholder="Marketing Engine Active"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">WhatsApp Marketing Test Button</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorWhatsappMarketingTestBtnText || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorWhatsappMarketingTestBtnText: e.target.value }))}
+                placeholder="Test Broadcast Dispatch"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">WhatsApp Marketing Policy Title</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorWhatsappMarketingPolicyTitle || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorWhatsappMarketingPolicyTitle: e.target.value }))}
+                placeholder="Strict DND & Anti-Spam Marketing Policy"
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="font-medium text-foreground">WhatsApp Marketing Opt-Out Notice</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorWhatsappMarketingOptInNotice || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorWhatsappMarketingOptInNotice: e.target.value }))}
+                placeholder="Automatic Unsubscribe Handler..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="font-medium text-foreground">WhatsApp Marketing Policy Notice</label>
+              <input
+                type="text"
+                value={cmsConfig.connectorWhatsappMarketingPolicyNotice || ""}
+                onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorWhatsappMarketingPolicyNotice: e.target.value }))}
+                placeholder="Ensures all automated promotional broadcasts respect 10:00 AM - 09:00 PM..."
+                className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Navigation Filter Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-border pb-3">
         {[
@@ -294,6 +586,8 @@ export function PluginConnectors() {
           { id: "whatsapp" as const, label: "WhatsApp Business API", icon: MessageSquare },
           { id: "fssai" as const, label: "FSSAI Regulatory Gateway", icon: ShieldAlert },
           { id: "mapbox" as const, label: "Mapbox Geospatial Matrix", icon: Navigation },
+          { id: "cleartax" as const, label: "Automated Tax (ClearTax)", icon: Calculator },
+          { id: "whatsappMarketing" as const, label: "Automated WhatsApp Marketing", icon: Megaphone },
         ].map((tab) => {
           const Icon = tab.icon;
           const isSelected = activeTab === tab.id;
@@ -335,7 +629,7 @@ export function PluginConnectors() {
                   <div>
                     <div className="flex items-center gap-2.5">
                       <h3 className="text-base font-semibold text-foreground">
-                        Razorpay Payment Gateway Integration
+                        {cmsConfig.connectorRazorpayTitle || "Razorpay Payment Gateway Integration"}
                       </h3>
                       {(() => {
                         const st = getConnectorStatus("razorpay");
@@ -355,7 +649,7 @@ export function PluginConnectors() {
                       })()}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Handles instant customer UPI, credit/debit card tokenization, auto-capture, and merchant settlement transfers.
+                      {cmsConfig.connectorRazorpaySubtitle || "Handles instant customer UPI, credit/debit card tokenization, auto-capture, and merchant settlement transfers."}
                     </p>
                   </div>
                 </div>
@@ -581,7 +875,7 @@ export function PluginConnectors() {
                   <div>
                     <div className="flex items-center gap-2.5">
                       <h3 className="text-base font-semibold text-foreground">
-                        WhatsApp Business API Connector
+                        {cmsConfig.connectorWhatsappTitle || "WhatsApp Business API Connector"}
                       </h3>
                       {(() => {
                         const st = getConnectorStatus("whatsapp");
@@ -601,7 +895,7 @@ export function PluginConnectors() {
                       })()}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Transmits real-time order receipts, OTP delivery handshakes, and merchant alerts via Meta Cloud API or Gupshup.
+                      {cmsConfig.connectorWhatsappSubtitle || "Transmits real-time order receipts, OTP delivery handshakes, and merchant alerts via Meta Cloud API or Gupshup."}
                     </p>
                   </div>
                 </div>
@@ -792,7 +1086,7 @@ export function PluginConnectors() {
                   <div>
                     <div className="flex items-center gap-2.5">
                       <h3 className="text-base font-semibold text-foreground">
-                        FSSAI Government Regulatory Verification Gateway
+                        {cmsConfig.connectorFssaiTitle || "FSSAI Government Regulatory Verification Gateway"}
                       </h3>
                       {(() => {
                         const st = getConnectorStatus("fssai");
@@ -812,7 +1106,7 @@ export function PluginConnectors() {
                       })()}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Direct integration with the FoSCoS Government Portal. Verifies 14-digit restaurant food licenses and enforces statutory onboarding rules.
+                      {cmsConfig.connectorFssaiSubtitle || "Direct integration with the FoSCoS Government Portal. Verifies 14-digit restaurant food licenses and enforces statutory onboarding rules."}
                     </p>
                   </div>
                 </div>
@@ -967,10 +1261,10 @@ export function PluginConnectors() {
                 />
                 <label htmlFor="enforceBlock" className="space-y-1 cursor-pointer">
                   <span className="text-xs font-semibold text-foreground block">
-                    Strict Regulatory Onboarding Gate
+                    {cmsConfig.connectorFssaiPolicyTitle || "Strict Regulatory Onboarding Gate"}
                   </span>
                   <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    Automatically block merchant kitchens from taking live customer orders if their 14-digit FSSAI license is absent, lapsed, or rejected by the FoSCoS gateway.
+                    {cmsConfig.connectorFssaiPolicyNotice || "Automatically block merchant kitchens from taking live customer orders if their 14-digit FSSAI license is absent, lapsed, or rejected by the FoSCoS gateway."}
                   </p>
                 </label>
               </div>
@@ -988,7 +1282,7 @@ export function PluginConnectors() {
                   <div>
                     <div className="flex items-center gap-2.5">
                       <h3 className="text-base font-semibold text-foreground">
-                        Mapbox Geospatial Matrix & Routing Telemetry
+                        {cmsConfig.connectorMapboxTitle || "Mapbox Geospatial Matrix & Routing Telemetry"}
                       </h3>
                       {(() => {
                         const st = getConnectorStatus("mapbox");
@@ -1008,7 +1302,7 @@ export function PluginConnectors() {
                       })()}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Powers multi-point distance matrix calculations, live congestion avoidance, and real-time rider GPS vector estimation.
+                      {cmsConfig.connectorMapboxSubtitle || "Powers multi-point distance matrix calculations, live congestion avoidance, and real-time rider GPS vector estimation."}
                     </p>
                   </div>
                 </div>
@@ -1147,6 +1441,686 @@ export function PluginConnectors() {
                     }
                     className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                   />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 5. CLEARTAX AUTOMATED GST & TAX CALCULATION */}
+          {(activeTab === "all" || activeTab === "cleartax") && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-500">
+                    <Calculator className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="text-base font-semibold text-foreground">
+                        {cmsConfig.connectorClearTaxTitle || "Automated Tax Calculation (ClearTax)"}
+                      </h3>
+                      {(() => {
+                        const st = getConnectorStatus("cleartax");
+                        return (
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-xs font-medium border ${
+                              st.tone === "emerald"
+                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                : st.tone === "amber"
+                                ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                : "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                            }`}
+                          >
+                            {st.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {cmsConfig.connectorClearTaxSubtitle || "Statutory automated GST calculation, real-time e-invoicing, reverse charge determination, and seamless automated tax reconciliation for compliant restaurant operations."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
+                    <span>{cmsConfig.connectorClearTaxToggleLabel || "Tax Engine Active"}</span>
+                    <input
+                      type="checkbox"
+                      checked={config.cleartax.enabled}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          cleartax: { ...prev.cleartax, enabled: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTestConnection("cleartax")}
+                    disabled={testingService === "cleartax"}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+                  >
+                    <Zap className="h-3.5 w-3.5 text-indigo-500" />
+                    {testingService === "cleartax" ? "Testing..." : (cmsConfig.connectorClearTaxTestBtnText || "Test ClearTax Diagnostic")}
+                  </button>
+                </div>
+              </div>
+
+              {/* Diagnostic Message */}
+              {testResults.cleartax && (
+                <div
+                  className={`rounded-lg p-3 text-xs border flex items-center justify-between ${
+                    testResults.cleartax.ok
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                      : "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {testResults.cleartax.ok ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
+                    )}
+                    <span>{testResults.cleartax.message}</span>
+                  </div>
+                  <span className="text-[10px] opacity-75">{testResults.cleartax.timestamp}</span>
+                </div>
+              )}
+
+              {/* 1-Click Quick Settings Switchboard */}
+              <div className="rounded-lg border border-indigo-500/20 bg-indigo-500/5 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-indigo-500" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                      1-Click ClearTax Engine Presets & Automation
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground">Instant Live Execution</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.cleartax.autoEinvoice}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          cleartax: { ...prev.cleartax, autoEinvoice: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Auto E-Invoice & IRN Generation</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Generates IRN & signed QR code on customer invoice dispatch
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.cleartax.autoReverseCharge}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          cleartax: { ...prev.cleartax, autoReverseCharge: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Auto Reverse Charge (RCM)</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Detects unregistered vendors and flags Section 9(4) reverse charge
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.cleartax.instantGstinValidation}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          cleartax: { ...prev.cleartax, instantGstinValidation: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Instant GSTIN Live Validation</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Verifies restaurant partner GSTIN against GSTN master ledger
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Form Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">ClearTax API Mode</label>
+                  <select
+                    value={config.cleartax.mode}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        cleartax: { ...prev.cleartax, mode: e.target.value as any },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="sandbox">Sandbox / Staging Mode (ClearTax Test Server)</option>
+                    <option value="production">Production Mode (ClearTax Live GSTN Gateway)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Master Business GSTIN</label>
+                  <input
+                    type="text"
+                    value={config.cleartax.gstin}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        cleartax: { ...prev.cleartax, gstin: e.target.value.toUpperCase() },
+                      }))
+                    }
+                    placeholder="e.g. 27AAAAA0000A1Z5"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">ClearTax Auth Bearer Token</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("cleartax_authKey")}
+                      className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.cleartax_authKey ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      <span>{visibleSecrets.cleartax_authKey ? "Hide" : "Show"}</span>
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.cleartax_authKey ? "text" : "password"}
+                    value={config.cleartax.authKey}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        cleartax: { ...prev.cleartax, authKey: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter ClearTax Auth Key"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Primary HSN / SAC Code</label>
+                  <input
+                    type="text"
+                    value={config.cleartax.hsnSacCode}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        cleartax: { ...prev.cleartax, hsnSacCode: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. 996331 (Restaurant Food Services)"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Tax Engine Calculation Profile</label>
+                  <select
+                    value={config.cleartax.taxEngineMode}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        cleartax: { ...prev.cleartax, taxEngineMode: e.target.value as any },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="realtime_gst">Real-Time Multi-Tier GST (5% / 12% / 18% Automated Split)</option>
+                    <option value="einvoice_b2b">Mandatory B2B E-Invoicing & IRN Mode</option>
+                    <option value="composite_flat">Composite Scheme (Flat 5% Without Input Tax Credit)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">Webhook & Reconciliation Secret</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("cleartax_webhook")}
+                      className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.cleartax_webhook ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      <span>{visibleSecrets.cleartax_webhook ? "Hide" : "Show"}</span>
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.cleartax_webhook ? "text" : "password"}
+                    value={config.cleartax.webhookSecret}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        cleartax: { ...prev.cleartax, webhookSecret: e.target.value },
+                      }))
+                    }
+                    placeholder="ClearTax Webhook Secret"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-xs font-semibold text-foreground">E-Way Bill Auto-Generation Threshold (INR)</label>
+                  <input
+                    type="text"
+                    value={config.cleartax.eWayBillThreshold}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        cleartax: { ...prev.cleartax, eWayBillThreshold: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. 50000"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Policy & Compliance Box */}
+              <div className="rounded-lg border border-indigo-500/20 bg-indigo-500/5 p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-indigo-500" />
+                  <span className="text-xs font-semibold text-foreground">
+                    {cmsConfig.connectorClearTaxPolicyTitle || "Statutory GST & E-Invoicing Enforcement"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {cmsConfig.connectorClearTaxPolicyNotice || "Generates IRN & QR-coded e-invoices instantly via ClearTax APIs upon order fulfillment, verifying restaurant GSTIN active status."}
+                </p>
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-indigo-500/10 text-[11px] text-muted-foreground">
+                  <span>{cmsConfig.connectorClearTaxWebhookNotice || "ClearTax GSTN Reconciliation Webhook: Automatically imports GSTR-1 & GSTR-3B monthly outward supply filings."}</span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="font-mono bg-background px-2 py-0.5 rounded border border-border text-[10px]">
+                      /api/v1/tax/cleartax-gst-webhook
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("https://api.orderking.in/api/v1/tax/cleartax-gst-webhook", "cleartax_wh")}
+                      className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                      title="Copy Webhook Endpoint"
+                    >
+                      {copiedKey === "cleartax_wh" ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 6. AUTOMATED WHATSAPP MARKETING */}
+          {(activeTab === "all" || activeTab === "whatsappMarketing") && (
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500">
+                    <Megaphone className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="text-base font-semibold text-foreground">
+                        {cmsConfig.connectorWhatsappMarketingTitle || "Automated WhatsApp Marketing"}
+                      </h3>
+                      {(() => {
+                        const st = getConnectorStatus("whatsappMarketing");
+                        return (
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-xs font-medium border ${
+                              st.tone === "emerald"
+                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                : st.tone === "amber"
+                                ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                : "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                            }`}
+                          >
+                            {st.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {cmsConfig.connectorWhatsappMarketingSubtitle || "High-conversion automated customer re-engagement, promotional drops, festival banquet offers, and personalized loyalty cart recovery campaigns with full TRAI/DND compliance."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
+                    <span>{cmsConfig.connectorWhatsappMarketingToggleLabel || "Marketing Engine Active"}</span>
+                    <input
+                      type="checkbox"
+                      checked={config.whatsappMarketing.enabled}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          whatsappMarketing: { ...prev.whatsappMarketing, enabled: e.target.checked },
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTestConnection("whatsappMarketing")}
+                    disabled={testingService === "whatsappMarketing"}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+                  >
+                    <Zap className="h-3.5 w-3.5 text-emerald-500" />
+                    {testingService === "whatsappMarketing" ? "Testing..." : (cmsConfig.connectorWhatsappMarketingTestBtnText || "Test Broadcast Dispatch")}
+                  </button>
+                </div>
+              </div>
+
+              {/* Diagnostic Message */}
+              {testResults.whatsappMarketing && (
+                <div
+                  className={`rounded-lg p-3 text-xs border flex items-center justify-between ${
+                    testResults.whatsappMarketing.ok
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                      : "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {testResults.whatsappMarketing.ok ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
+                    )}
+                    <span>{testResults.whatsappMarketing.message}</span>
+                  </div>
+                  <span className="text-[10px] opacity-75">{testResults.whatsappMarketing.timestamp}</span>
+                </div>
+              )}
+
+              {/* 1-Click Quick Settings Switchboard */}
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-emerald-500" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                      1-Click Promotional Campaigns & Auto-Triggers
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground">Automated Drip Pipelines</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.whatsappMarketing.autoCartRecovery}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          whatsappMarketing: { ...prev.whatsappMarketing, autoCartRecovery: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Abandoned Cart Auto-Recovery</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Dispatches incentive reminder within 15 min of checkout exit
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.whatsappMarketing.autoFeedbackDrop}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          whatsappMarketing: { ...prev.whatsappMarketing, autoFeedbackDrop: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Post-Meal Review & Re-Order</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Triggers 60 mins post-delivery to capture ratings & repeat order
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.whatsappMarketing.weekendChefSpecials}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          whatsappMarketing: { ...prev.whatsappMarketing, weekendChefSpecials: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Weekend Feast Broadcast</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Friday 06:00 PM automated chef specials & banquet drop
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-2.5 p-2.5 rounded-md border border-border bg-card/60 hover:bg-card cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={config.whatsappMarketing.dormantCustomerReengagement}
+                      onChange={(e) =>
+                        setConfig((prev) => ({
+                          ...prev,
+                          whatsappMarketing: { ...prev.whatsappMarketing, dormantCustomerReengagement: e.target.checked },
+                        }))
+                      }
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Dormant Customer Win-Back</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Automated loyalty coupon after 14 days of diner inactivity
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Form Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Marketing Integration Provider</label>
+                  <select
+                    value={config.whatsappMarketing.provider}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        whatsappMarketing: { ...prev.whatsappMarketing, provider: e.target.value as any },
+                      }))
+                    }
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="meta">Meta Cloud Marketing API (Direct WABA Graph v20)</option>
+                    <option value="gupshup">Gupshup Enterprise Marketing Suite</option>
+                    <option value="wati">Wati High-Volume Broadcast API</option>
+                    <option value="aisensy">AiSensy Automated Retention Engine</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">Marketing API Secret / Bearer Key</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleSecretVisibility("wam_apiKey")}
+                      className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      {visibleSecrets.wam_apiKey ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                      <span>{visibleSecrets.wam_apiKey ? "Hide" : "Show"}</span>
+                    </button>
+                  </div>
+                  <input
+                    type={visibleSecrets.wam_apiKey ? "text" : "password"}
+                    value={config.whatsappMarketing.apiKey}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        whatsappMarketing: { ...prev.whatsappMarketing, apiKey: e.target.value },
+                      }))
+                    }
+                    placeholder="Enter Marketing API Key"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">WhatsApp Business Account ID (WABA ID)</label>
+                  <input
+                    type="text"
+                    value={config.whatsappMarketing.businessAccountId}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        whatsappMarketing: { ...prev.whatsappMarketing, businessAccountId: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. 938472910482910"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Marketing Phone Number ID</label>
+                  <input
+                    type="text"
+                    value={config.whatsappMarketing.phoneNumberId}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        whatsappMarketing: { ...prev.whatsappMarketing, phoneNumberId: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. 104829104829104"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Approved Campaign Template Name</label>
+                  <input
+                    type="text"
+                    value={config.whatsappMarketing.campaignTemplateName}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        whatsappMarketing: { ...prev.whatsappMarketing, campaignTemplateName: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. weekend_feast_curry_drop_v1"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Opt-Out / Unsubscribe Keyword</label>
+                  <input
+                    type="text"
+                    value={config.whatsappMarketing.optOutKeyword}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        whatsappMarketing: { ...prev.whatsappMarketing, optOutKeyword: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. STOP or UNSUBSCRIBE"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Daily Broadcast Rate Limit Ceiling</label>
+                  <input
+                    type="text"
+                    value={config.whatsappMarketing.dailyBroadcastLimit}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        whatsappMarketing: { ...prev.whatsappMarketing, dailyBroadcastLimit: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. 5000 messages / day"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">Compliant Marketing Schedule Window</label>
+                  <input
+                    type="text"
+                    value={config.whatsappMarketing.scheduleWindow}
+                    onChange={(e) =>
+                      setConfig((prev) => ({
+                        ...prev,
+                        whatsappMarketing: { ...prev.whatsappMarketing, scheduleWindow: e.target.value },
+                      }))
+                    }
+                    placeholder="e.g. 10:00 AM - 09:00 PM (TRAI Compliant)"
+                    className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Policy & Compliance Box */}
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                  <span className="text-xs font-semibold text-foreground">
+                    {cmsConfig.connectorWhatsappMarketingPolicyTitle || "Strict DND & Anti-Spam Marketing Policy"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {cmsConfig.connectorWhatsappMarketingPolicyNotice || "Ensures all automated promotional broadcasts respect 10:00 AM - 09:00 PM regulatory delivery windows and honour instant opt-out requests without exception."}
+                </p>
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-emerald-500/10 text-[11px] text-muted-foreground">
+                  <span>{cmsConfig.connectorWhatsappMarketingOptInNotice || "Automatic Unsubscribe Handler: Customers replying STOP or UNSUBSCRIBE are instantly purged from promotional broadcast audiences."}</span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="font-mono bg-background px-2 py-0.5 rounded border border-border text-[10px]">
+                      /api/v1/marketing/whatsapp-optout-webhook
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("https://api.orderking.in/api/v1/marketing/whatsapp-optout-webhook", "wam_wh")}
+                      className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                      title="Copy Webhook Endpoint"
+                    >
+                      {copiedKey === "wam_wh" ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

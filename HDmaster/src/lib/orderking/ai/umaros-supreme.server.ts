@@ -238,6 +238,22 @@ export async function applyUmarOsSettings(data: Partial<UmarOsEngineSettings>): 
   if (typeof data.dailyLossLimitInr === "number") {
     militaryAntiFraudShield.setDailyLossCeilingInr(data.dailyLossLimitInr);
   }
+  if (typeof data.maxRefundLimitInr === "number") {
+    try {
+      const sql = await getSql();
+      const rows = await sql`SELECT settings_json FROM platform_settings LIMIT 1`;
+      if (rows.length > 0 && rows[0].settings_json) {
+        const bag = JSON.parse(rows[0].settings_json as string);
+        bag.refundLimitPaise = Math.round(data.maxRefundLimitInr * 100);
+        bag.maxRefundLimitInr = data.maxRefundLimitInr;
+        if (!bag.kingpay) bag.kingpay = {};
+        bag.kingpay.auto_refund_ai_threshold_inr = data.maxRefundLimitInr;
+        await sql`UPDATE platform_settings SET settings_json = ${JSON.stringify(bag)}, updated_at = NOW() WHERE org_id = 'org_orderking'`;
+      }
+    } catch (e) {
+      console.warn("Failed to sync maxRefundLimitInr to platform_settings:", e);
+    }
+  }
   return { ok: true, settings: engineSettings };
 }
 

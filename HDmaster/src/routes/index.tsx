@@ -3,15 +3,17 @@ import { useState, lazy, Suspense } from "react";
 import { 
   Database, Server, GitBranch, CheckCircle2, AlertCircle, Users, 
   ShieldCheck, Store, Bike, Activity, Settings, RefreshCw, 
-  ArrowUpRight, Clock, FileCheck2, Cpu, Lock, FileText
+  ArrowUpRight, Clock, FileCheck2, Cpu, Lock, FileText, Palette, Landmark
 } from "lucide-react";
 import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
+import { KingPayGlobalSettings } from "@/components/kingpay/KingPayGlobalSettings";
 import { KingPayMasterSwitch } from "@/components/kingpay/KingPayMasterSwitch";
 import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
 import { EcosystemCMS } from "@/components/dashboard/EcosystemCMS";
 import { PluginConnectors } from "@/components/dashboard/PluginConnectors";
 import { LiveFounderProfitDashboard } from "@/components/dashboard/LiveFounderProfitDashboard";
+import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSettings";
 
 const LazyGlobalGodEyeMap = lazy(() =>
   import("@/components/dashboard/GlobalGodEyeMap").then((m) => ({ default: m.GlobalGodEyeMap }))
@@ -140,6 +142,18 @@ function UmarOSDashboard() {
                 <Settings className="h-4 w-4 text-slate-600"/> Platform Settings
               </Link>
               <a 
+                href="#customer-ui-settings" 
+                className="inline-flex items-center gap-2 text-slate-800 font-semibold bg-white border border-slate-300 px-4 py-2 rounded-xl hover:bg-slate-100 transition-all text-xs shadow-sm"
+              >
+                <Palette className="h-4 w-4 text-emerald-600"/> Customer App UI
+              </a>
+              <a 
+                href="#kingpay-global-settings" 
+                className="inline-flex items-center gap-2 text-slate-800 font-semibold bg-white border border-slate-300 px-4 py-2 rounded-xl hover:bg-slate-100 transition-all text-xs shadow-sm"
+              >
+                <Landmark className="h-4 w-4 text-emerald-600"/> KingPay Matrix
+              </a>
+              <a 
                 href="#ecosystem-cms" 
                 className="inline-flex items-center gap-2 text-slate-800 font-semibold bg-white border border-slate-300 px-4 py-2 rounded-xl hover:bg-slate-100 transition-all text-xs shadow-sm"
               >
@@ -217,6 +231,16 @@ function UmarOSDashboard() {
         {/* Live Founder Profit Dashboard Component */}
         <div className="mt-8 mb-8">
           <LiveFounderProfitDashboard />
+        </div>
+
+        {/* Customer App UI Settings Matrix */}
+        <div id="customer-ui-settings" className="mt-8 mb-8 scroll-mt-6">
+          <CustomerAppUiSettings />
+        </div>
+
+        {/* KingPay Global Settings Control Panel (Fintech Settings Matrix) */}
+        <div id="kingpay-global-settings" className="mt-8 mb-8 scroll-mt-6">
+          <KingPayGlobalSettings />
         </div>
 
         {/* KingPay Switch Section */}

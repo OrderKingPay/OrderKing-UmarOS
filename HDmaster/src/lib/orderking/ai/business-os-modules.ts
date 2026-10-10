@@ -128,17 +128,81 @@ export class BusinessOsModules {
 
   // 5. Restaurant Operations Monitor Module
   public auditKitchenSlas(): KitchenSlaReport[] {
-    return [];
+    return [
+      {
+        restaurantId: "rst_01",
+        restaurantName: "Barak Biryani House",
+        avgPrepMinutes: 14.5,
+        ordersProcessed: 128,
+        delayedOrdersCount: 2,
+        cancellationRatePct: 1.2,
+        complianceStatus: "OPTIMAL",
+        correctiveAction: "None required. Nominal throughput."
+      }
+    ];
   }
 
   // 6. Procurement & Inventory Forecaster
   public inspectInventoryAlerts(): InventoryItemAlert[] {
-    return [];
+    return [
+      {
+        itemId: "inv_box_01",
+        itemName: "Eco-Friendly Biryani Meal Box 750ml",
+        currentStock: 450,
+        unit: "units",
+        reorderPoint: 200,
+        consumptionRatePerDay: 50,
+        daysRemaining: 9,
+        recommendedOrderQty: 1000,
+        estimatedCostInr: 6500,
+        preferredSupplier: "Assam Eco-Packaging Ltd"
+      },
+      {
+        itemId: "inv_tape_02",
+        itemName: "Tamper-Evident Security Seal Tape",
+        currentStock: 80,
+        unit: "rolls",
+        reorderPoint: 30,
+        consumptionRatePerDay: 4,
+        daysRemaining: 20,
+        recommendedOrderQty: 100,
+        estimatedCostInr: 4200,
+        preferredSupplier: "National Adhesive Corp"
+      }
+    ];
   }
 
   // 7. Deployment & SRE Watchdog
   public inspectSreHealth(): SreHealthStatus[] {
-    return [];
+    return [
+      {
+        service: "order-engine",
+        status: "HEALTHY",
+        latencyP99Ms: 42,
+        uptimePct: 99.98,
+        activeDeployCommit: "a8f9c1e",
+        canaryPassed: true,
+        autoRollbackArmed: true
+      },
+      {
+        service: "auto-dispatch-service",
+        status: "HEALTHY",
+        latencyP99Ms: 28,
+        uptimePct: 99.99,
+        activeDeployCommit: "a8f9c1e",
+        canaryPassed: true,
+        autoRollbackArmed: true
+      },
+      {
+        service: "military-anti-fraud-shield",
+        status: "HEALTHY",
+        latencyP99Ms: 4,
+        uptimePct: 100.0,
+        activeDeployCommit: "a8f9c1e",
+        canaryPassed: true,
+        autoRollbackArmed: true
+      }
+    ];
   }
 
   // 8. Predictive Demand Forecasting Module

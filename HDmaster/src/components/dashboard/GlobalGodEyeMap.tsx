@@ -67,32 +67,32 @@ const CLUSTER_CONFIG: Record<MetroCluster, {
   boundsLabel: string;
 }> = {
   BLR_CENTRAL: {
-    name: "Bengaluru Hyper-Cluster",
+    name: "Bengaluru Central Hub",
     centerLat: 12.9716,
     centerLng: 77.5946,
     zones: ["Koramangala 4th Block", "Indiranagar 100ft Rd", "HSR Layout Sector 1", "MG Road Central", "Whitefield ITPL"],
     boundsLabel: "BBMP Zone 04 // 12.9716° N, 77.5946° E",
   },
   DEL_NCR: {
-    name: "Delhi NCR Command Hub",
+    name: "Delhi NCR Hub",
     centerLat: 28.6139,
     centerLng: 77.2090,
     zones: ["Connaught Place", "Cyber City Gurugram", "Hauz Khas Village", "Noida Sector 18", "Aerocity"],
     boundsLabel: "NCR Unified Corridor // 28.6139° N, 77.2090° E",
   },
   BOM_METRO: {
-    name: "Mumbai Coastal Matrix",
+    name: "Mumbai Metro Hub",
     centerLat: 19.0760,
     centerLng: 72.8777,
     zones: ["Bandra Kurla Complex", "Bandra West Linking Rd", "Lower Parel Phoenix", "Andheri West Lokhandwala", "Powai Hiranandani"],
     boundsLabel: "MCGM Operational Grid // 19.0760° N, 72.8777° E",
   },
   HYD_CYBER: {
-    name: "Hyderabad Cyber Corridor",
+    name: "Hyderabad Tech Hub",
     centerLat: 17.3850,
     centerLng: 78.4867,
     zones: ["Hitec City Phase 2", "Madhapur Cyber Towers", "Gachibowli Financial Dist", "Jubilee Hills Rd 36"],
-    boundsLabel: "GHMC Tech Geofence // 17.3850° N, 78.4867° E",
+    boundsLabel: "GHMC Operational Area // 17.3850° N, 78.4867° E",
   },
 };
 
@@ -661,12 +661,12 @@ export function GlobalGodEyeMap() {
 
   return (
     <div 
-      className={`relative bg-slate-950 border border-emerald-500/30 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 font-sans ${
+      className={`relative bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden transition-all duration-300 font-sans ${
         isFullscreen ? "fixed inset-2 z-50 rounded-xl" : "w-full"
       }`}
     >
-      {/* High-Tech Tactical Header */}
-      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-emerald-500/20 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      {/* Fleet Operations Dispatch Header */}
+      <div className="bg-slate-50 border-b border-slate-200 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
         {/* Title & Live Status */}
         <div className="flex items-center gap-3">
           <div className="relative flex items-center justify-center">
@@ -677,31 +677,31 @@ export function GlobalGodEyeMap() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold tracking-wider uppercase text-white flex items-center gap-2">
-                <Crosshair className="w-4 h-4 text-emerald-400" />
-                GLOBAL FLEET RADAR // LIVE GEOSPATIAL DISPATCH
+              <h2 className="text-sm font-bold tracking-wider uppercase text-slate-900 flex items-center gap-2">
+                <Crosshair className="w-4 h-4 text-emerald-600" />
+                FLEET DISPATCH MAP &amp; LIVE TELEMETRY
               </h2>
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 tracking-widest animate-pulse">
-                SUB-SECOND TELEMETRY
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 tracking-wider">
+                REAL-TIME DISPATCH
               </span>
             </div>
-            <p className="text-[11px] font-mono text-slate-400">
-              {CLUSTER_CONFIG[currentCluster].boundsLabel} • PING: <span className="text-emerald-400 font-bold">{fleetStats.avgLatency}ms</span> • SYNC: {lastHeartbeat}
+            <p className="text-[11px] font-mono text-slate-500">
+              {CLUSTER_CONFIG[currentCluster].boundsLabel} • PING: <span className="text-emerald-600 font-bold">{fleetStats.avgLatency}ms</span> • SYNC: {lastHeartbeat}
             </p>
           </div>
         </div>
 
         {/* Cluster / Metro Selector */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center bg-slate-900/90 border border-slate-800 rounded-lg p-0.5">
+          <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 shadow-2xs">
             {(Object.keys(CLUSTER_CONFIG) as MetroCluster[]).map((cKey) => (
               <button
                 key={cKey}
                 onClick={() => setCurrentCluster(cKey)}
                 className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-md transition-all ${
                   currentCluster === cKey
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 {cKey.replace("_", " ")}
@@ -710,11 +710,11 @@ export function GlobalGodEyeMap() {
           </div>
 
           {/* Layer Quick Toggles */}
-          <div className="hidden lg:flex items-center gap-1 bg-slate-900/80 border border-slate-800/80 rounded-lg p-1 text-xs font-mono">
+          <div className="hidden lg:flex items-center gap-1 bg-white border border-slate-200 rounded-lg p-1 text-xs font-mono shadow-2xs">
             <button
               onClick={() => setShowRiders(!showRiders)}
               className={`px-2 py-0.5 rounded flex items-center gap-1 transition-all ${
-                showRiders ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "text-slate-500 line-through"
+                showRiders ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "text-slate-400 line-through"
               }`}
               title="Toggle Rider Telemetry Markers"
             >
@@ -723,7 +723,7 @@ export function GlobalGodEyeMap() {
             <button
               onClick={() => setShowHeatmap(!showHeatmap)}
               className={`px-2 py-0.5 rounded flex items-center gap-1 transition-all ${
-                showHeatmap ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" : "text-slate-500 line-through"
+                showHeatmap ? "bg-amber-50 text-amber-700 border border-amber-200" : "text-slate-400 line-through"
               }`}
               title="Toggle Order Density Heatmap Contours"
             >
@@ -732,16 +732,16 @@ export function GlobalGodEyeMap() {
             <button
               onClick={() => setShowHexGrid(!showHexGrid)}
               className={`px-2 py-0.5 rounded flex items-center gap-1 transition-all ${
-                showHexGrid ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" : "text-slate-500 line-through"
+                showHexGrid ? "bg-cyan-50 text-cyan-700 border border-cyan-200" : "text-slate-400 line-through"
               }`}
-              title="Toggle H3 Geospatial Hexagonal Partitioning"
+              title="Toggle Geospatial Hexagonal Partitioning"
             >
-              <Layers className="w-3 h-3" /> H3 Hex
+              <Layers className="w-3 h-3" /> Grid
             </button>
             <button
               onClick={() => setShowCorridors(!showCorridors)}
               className={`px-2 py-0.5 rounded flex items-center gap-1 transition-all ${
-                showCorridors ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" : "text-slate-500 line-through"
+                showCorridors ? "bg-indigo-50 text-indigo-700 border border-indigo-200" : "text-slate-400 line-through"
               }`}
               title="Toggle In-Transit Dispatch Vector Corridors"
             >
@@ -753,14 +753,14 @@ export function GlobalGodEyeMap() {
           <div className="flex items-center gap-1">
             <button
               onClick={() => setZoomLevel((z) => (z >= 1.5 ? 1 : +(z + 0.25).toFixed(2)))}
-              className="px-2 py-1 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 rounded text-xs font-mono"
+              className="px-2 py-1 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded text-xs font-mono"
               title="Zoom Level"
             >
               {zoomLevel}x
             </button>
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded"
+              className="p-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded"
               title="Toggle Fullscreen Canvas"
             >
               {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -770,47 +770,47 @@ export function GlobalGodEyeMap() {
       </div>
 
       {/* Real-time Metric Ribbon */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 border-b border-white/5 bg-slate-950/80 text-xs font-mono divide-x divide-white/5">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 border-b border-slate-200 bg-white text-xs font-mono divide-x divide-slate-200">
         <div className="px-4 py-2.5 flex flex-col">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">ACTIVE FLEET</span>
           <div className="flex items-baseline gap-1.5 mt-0.5">
-            <span className="text-base font-bold text-emerald-400">{fleetStats.total}</span>
-            <span className="text-[10px] text-slate-400">ONLINE</span>
+            <span className="text-base font-bold text-emerald-600">{fleetStats.total}</span>
+            <span className="text-[10px] text-slate-500">ONLINE</span>
           </div>
         </div>
         <div className="px-4 py-2.5 flex flex-col">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">IN TRANSIT</span>
           <div className="flex items-baseline gap-1.5 mt-0.5">
-            <span className="text-base font-bold text-cyan-400">{fleetStats.inTransit}</span>
-            <span className="text-[10px] text-cyan-500/80">DISPATCHED</span>
+            <span className="text-base font-bold text-cyan-700">{fleetStats.inTransit}</span>
+            <span className="text-[10px] text-cyan-600">DISPATCHED</span>
           </div>
         </div>
         <div className="px-4 py-2.5 flex flex-col">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">AT RESTAURANT</span>
           <div className="flex items-baseline gap-1.5 mt-0.5">
-            <span className="text-base font-bold text-amber-400">{fleetStats.atMerchant}</span>
-            <span className="text-[10px] text-amber-500/80">PICKING UP</span>
+            <span className="text-base font-bold text-amber-700">{fleetStats.atMerchant}</span>
+            <span className="text-[10px] text-amber-600">PICKING UP</span>
           </div>
         </div>
         <div className="px-4 py-2.5 flex flex-col">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">AVG VELOCITY</span>
           <div className="flex items-baseline gap-1.5 mt-0.5">
-            <span className="text-base font-bold text-slate-200">{fleetStats.avgSpeed}</span>
-            <span className="text-[10px] text-slate-400">KM/H</span>
+            <span className="text-base font-bold text-slate-800">{fleetStats.avgSpeed}</span>
+            <span className="text-[10px] text-slate-500">KM/H</span>
           </div>
         </div>
         <div className="px-4 py-2.5 flex flex-col">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">DEMAND INTENSITY</span>
           <div className="flex items-baseline gap-1.5 mt-0.5">
-            <span className="text-base font-bold text-indigo-400">{fleetStats.totalOrders}</span>
-            <span className="text-[10px] text-indigo-400/80">ORDERS/HR</span>
+            <span className="text-base font-bold text-indigo-700">{fleetStats.totalOrders}</span>
+            <span className="text-[10px] text-indigo-600">ORDERS/HR</span>
           </div>
         </div>
         <div className="px-4 py-2.5 flex flex-col">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">PEAK SURGE</span>
           <div className="flex items-baseline gap-1.5 mt-0.5">
-            <span className="text-base font-bold text-rose-400">{fleetStats.maxSurge}x</span>
-            <span className="text-[10px] text-rose-400/80">SURGE CAP</span>
+            <span className="text-base font-bold text-rose-600">{fleetStats.maxSurge}x</span>
+            <span className="text-[10px] text-rose-500">SURGE CAP</span>
           </div>
         </div>
       </div>
@@ -1025,19 +1025,19 @@ export function GlobalGodEyeMap() {
                 {r.id} • {r.speedKmh > 0 ? `${r.speedKmh}k` : "IDLE"}
               </div>
 
-              {/* Hover Tactical Tooltip */}
-              <div className="absolute bottom-9 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-slate-900 border border-emerald-500/60 p-2 rounded-lg text-xs font-mono text-white shadow-2xl z-40 w-48 pointer-events-none">
-                <div className="flex justify-between items-center border-b border-slate-800 pb-1 mb-1">
-                  <span className="font-bold text-emerald-400">{r.id}</span>
-                  <span className="text-[10px] text-slate-400">{r.vehicle.split(" ")[0]}</span>
+              {/* Hover Details Tooltip */}
+              <div className="absolute bottom-9 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-white border border-slate-200 p-2 rounded-lg text-xs font-mono text-slate-800 shadow-xl z-40 w-48 pointer-events-none">
+                <div className="flex justify-between items-center border-b border-slate-100 pb-1 mb-1">
+                  <span className="font-bold text-emerald-700">{r.id}</span>
+                  <span className="text-[10px] text-slate-500">{r.vehicle.split(" ")[0]}</span>
                 </div>
-                <div className="text-[11px] text-slate-200 font-semibold">{r.name}</div>
-                <div className="text-[10px] text-slate-400 flex justify-between mt-1">
+                <div className="text-[11px] text-slate-800 font-semibold">{r.name}</div>
+                <div className="text-[10px] text-slate-500 flex justify-between mt-1">
                   <span>Speed: {r.speedKmh} km/h</span>
                   <span>Bat: {r.batteryPct}%</span>
                 </div>
                 {r.activeOrderId && (
-                  <div className="text-[10px] text-cyan-300 mt-1 border-t border-slate-800 pt-1">
+                  <div className="text-[10px] text-indigo-700 mt-1 border-t border-slate-100 pt-1">
                     Order: {r.activeOrderId} ({r.etaMins}m ETA)
                   </div>
                 )}
@@ -1046,80 +1046,80 @@ export function GlobalGodEyeMap() {
           );
         })}
 
-        {/* Selected Rider Tactical HUD Side-Card */}
+        {/* Selected Rider Telemetry Card */}
         {selectedRider && (
-          <div className="absolute top-4 right-4 z-40 w-80 bg-slate-900/95 border border-emerald-500/60 rounded-xl p-4 shadow-2xl backdrop-blur-xl font-mono text-xs text-white animate-in fade-in slide-in-from-right duration-200">
-            <div className="flex justify-between items-start border-b border-white/10 pb-2.5 mb-3">
+          <div className="absolute top-4 right-4 z-40 w-80 bg-white/95 border border-slate-300 rounded-xl p-4 shadow-xl backdrop-blur-md font-mono text-xs text-slate-800 animate-in fade-in slide-in-from-right duration-200">
+            <div className="flex justify-between items-start border-b border-slate-200 pb-2.5 mb-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-base font-bold text-emerald-400">{selectedRider.id}</span>
+                  <span className="text-base font-bold text-emerald-700">{selectedRider.id}</span>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                     selectedRider.status === "IN_TRANSIT" 
-                      ? "bg-emerald-950 text-emerald-300 border border-emerald-800" 
+                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200" 
                       : selectedRider.status === "AT_MERCHANT"
-                      ? "bg-amber-950 text-amber-300 border border-amber-800"
-                      : "bg-cyan-950 text-cyan-300 border border-cyan-800"
+                      ? "bg-amber-50 text-amber-700 border border-amber-200" 
+                      : "bg-cyan-50 text-cyan-700 border border-cyan-200"
                   }`}>
                     {selectedRider.status}
                   </span>
                 </div>
-                <div className="text-sm font-semibold text-slate-200 mt-0.5">{selectedRider.name}</div>
-                <div className="text-[11px] text-slate-400">{selectedRider.phoneMasked}</div>
+                <div className="text-sm font-semibold text-slate-900 mt-0.5">{selectedRider.name}</div>
+                <div className="text-[11px] text-slate-500">{selectedRider.phoneMasked}</div>
               </div>
               <button 
                 onClick={() => setSelectedRider(null)}
-                className="text-slate-400 hover:text-white p-1"
+                className="text-slate-400 hover:text-slate-700 p-1"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-2 text-[11px]">
-              <div className="flex justify-between p-1.5 rounded bg-slate-950/60 border border-white/5">
-                <span className="text-slate-400 flex items-center gap-1"><Compass className="w-3 h-3 text-cyan-400" /> Vehicle:</span>
-                <span className="font-semibold text-cyan-300">{selectedRider.vehicle}</span>
+              <div className="flex justify-between p-1.5 rounded bg-slate-50 border border-slate-100">
+                <span className="text-slate-500 flex items-center gap-1"><Compass className="w-3 h-3 text-cyan-600" /> Vehicle:</span>
+                <span className="font-semibold text-slate-800">{selectedRider.vehicle}</span>
               </div>
-              <div className="flex justify-between p-1.5 rounded bg-slate-950/60 border border-white/5">
-                <span className="text-slate-400 flex items-center gap-1"><Activity className="w-3 h-3 text-emerald-400" /> Live Velocity:</span>
-                <span className="font-semibold text-emerald-300">{selectedRider.speedKmh} km/h (Heading {selectedRider.headingDeg}°)</span>
+              <div className="flex justify-between p-1.5 rounded bg-slate-50 border border-slate-100">
+                <span className="text-slate-500 flex items-center gap-1"><Activity className="w-3 h-3 text-emerald-600" /> Live Velocity:</span>
+                <span className="font-semibold text-slate-800">{selectedRider.speedKmh} km/h (Heading {selectedRider.headingDeg}°)</span>
               </div>
-              <div className="flex justify-between p-1.5 rounded bg-slate-950/60 border border-white/5">
-                <span className="text-slate-400 flex items-center gap-1"><BatteryCharging className="w-3 h-3 text-amber-400" /> Battery / Fuel:</span>
-                <span className="font-semibold text-amber-300">{selectedRider.batteryPct}% (Telemetry Latency: {selectedRider.gpsLatencyMs}ms)</span>
+              <div className="flex justify-between p-1.5 rounded bg-slate-50 border border-slate-100">
+                <span className="text-slate-500 flex items-center gap-1"><BatteryCharging className="w-3 h-3 text-amber-600" /> Battery / Fuel:</span>
+                <span className="font-semibold text-slate-800">{selectedRider.batteryPct}% (Latency: {selectedRider.gpsLatencyMs}ms)</span>
               </div>
-              <div className="flex justify-between p-1.5 rounded bg-slate-950/60 border border-white/5">
-                <span className="text-slate-400 flex items-center gap-1"><Layers className="w-3 h-3 text-indigo-400" /> H3 Hex Cell:</span>
-                <span className="font-semibold text-indigo-300">#{selectedRider.h3HexId.slice(0, 10)}...</span>
+              <div className="flex justify-between p-1.5 rounded bg-slate-50 border border-slate-100">
+                <span className="text-slate-500 flex items-center gap-1"><Layers className="w-3 h-3 text-indigo-600" /> H3 Cell:</span>
+                <span className="font-semibold text-slate-800">#{selectedRider.h3HexId.slice(0, 10)}...</span>
               </div>
 
               {selectedRider.activeOrderId ? (
-                <div className="mt-3 p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/30 space-y-1">
-                  <div className="flex justify-between text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+                <div className="mt-3 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 space-y-1">
+                  <div className="flex justify-between text-[10px] text-emerald-800 font-bold uppercase tracking-wider">
                     <span>ACTIVE ASSIGNMENT</span>
                     <span>ETA: {selectedRider.etaMins} MINS</span>
                   </div>
-                  <div className="text-xs font-bold text-white">Order #{selectedRider.activeOrderId}</div>
-                  <div className="text-[11px] text-slate-300">From: {selectedRider.activeOrderRestName}</div>
-                  <div className="text-[11px] text-slate-400">To: {selectedRider.activeOrderCustomerLoc}</div>
+                  <div className="text-xs font-bold text-slate-900">Order #{selectedRider.activeOrderId}</div>
+                  <div className="text-[11px] text-slate-700">From: {selectedRider.activeOrderRestName}</div>
+                  <div className="text-[11px] text-slate-500">To: {selectedRider.activeOrderCustomerLoc}</div>
                 </div>
               ) : (
-                <div className="mt-3 p-2.5 rounded-lg bg-slate-950/60 border border-white/10 text-center text-slate-400">
-                  Fleet unit is standing by in hot-zone. Available for automated batch dispatch.
+                <div className="mt-3 p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-center text-slate-500">
+                  Fleet unit is standing by in active sector. Ready for dispatch.
                 </div>
               )}
             </div>
 
-            {/* Tactical Override Actions */}
-            <div className="mt-3 pt-3 border-t border-white/10 grid grid-cols-2 gap-2">
+            {/* Operations Override Actions */}
+            <div className="mt-3 pt-3 border-t border-slate-200 grid grid-cols-2 gap-2">
               <button 
                 onClick={() => alert(`[DISPATCH TELEMETRY] High-frequency GPS ping sent to ${selectedRider.id}. Telemetry refresh synchronized.`)}
-                className="px-2.5 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] tracking-wider uppercase transition shadow"
+                className="px-2.5 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[10px] tracking-wider uppercase transition shadow-xs"
               >
                 Ping Telemetry
               </button>
               <button 
                 onClick={() => alert(`[DISPATCH AUDIT] Routing trajectory logs for ${selectedRider.id} exported to institutional ledger.`)}
-                className="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[10px] tracking-wider uppercase transition"
+                className="px-2.5 py-1.5 rounded bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-[10px] tracking-wider uppercase transition shadow-2xs"
               >
                 Inspect Logs
               </button>
@@ -1127,37 +1127,37 @@ export function GlobalGodEyeMap() {
           </div>
         )}
 
-        {/* Selected Zone Heatmap HUD Card */}
+        {/* Selected Zone Heatmap Card */}
         {selectedZone && !selectedRider && (
-          <div className="absolute top-4 right-4 z-40 w-72 bg-slate-900/95 border border-amber-500/60 rounded-xl p-4 shadow-2xl backdrop-blur-xl font-mono text-xs text-white animate-in fade-in slide-in-from-right duration-200">
-            <div className="flex justify-between items-start border-b border-white/10 pb-2 mb-2">
+          <div className="absolute top-4 right-4 z-40 w-72 bg-white/95 border border-slate-300 rounded-xl p-4 shadow-xl backdrop-blur-md font-mono text-xs text-slate-800 animate-in fade-in slide-in-from-right duration-200">
+            <div className="flex justify-between items-start border-b border-slate-200 pb-2 mb-2">
               <div>
-                <span className="text-[10px] text-amber-400 font-bold tracking-wider uppercase">DEMAND HOTSPOT CLUSTER</span>
-                <div className="text-sm font-bold text-white mt-0.5">{selectedZone.name}</div>
+                <span className="text-[10px] text-slate-500 font-bold tracking-wider uppercase">DEMAND HOTSPOT CLUSTER</span>
+                <div className="text-sm font-bold text-slate-900 mt-0.5">{selectedZone.name}</div>
               </div>
-              <button onClick={() => setSelectedZone(null)} className="text-slate-400 hover:text-white">✕</button>
+              <button onClick={() => setSelectedZone(null)} className="text-slate-400 hover:text-slate-700">✕</button>
             </div>
             <div className="space-y-2 text-[11px]">
-              <div className="flex justify-between p-1.5 rounded bg-slate-950/60">
-                <span className="text-slate-400">Surge Multiplier:</span>
-                <span className="font-bold text-rose-400">{selectedZone.surgeMultiplier}x Surge</span>
+              <div className="flex justify-between p-1.5 rounded bg-slate-50 border border-slate-100">
+                <span className="text-slate-500">Surge Multiplier:</span>
+                <span className="font-bold text-rose-600">{selectedZone.surgeMultiplier}x Surge</span>
               </div>
-              <div className="flex justify-between p-1.5 rounded bg-slate-950/60">
-                <span className="text-slate-400">Order Velocity:</span>
-                <span className="font-bold text-amber-300">{selectedZone.ordersPerHour} orders / hour</span>
+              <div className="flex justify-between p-1.5 rounded bg-slate-50 border border-slate-100">
+                <span className="text-slate-500">Order Velocity:</span>
+                <span className="font-bold text-amber-700">{selectedZone.ordersPerHour} orders / hour</span>
               </div>
-              <div className="flex justify-between p-1.5 rounded bg-slate-950/60">
-                <span className="text-slate-400">Thermal Intensity:</span>
-                <span className="font-bold text-emerald-300">{(selectedZone.intensity * 100).toFixed(0)}% Saturated</span>
+              <div className="flex justify-between p-1.5 rounded bg-slate-50 border border-slate-100">
+                <span className="text-slate-500">Thermal Intensity:</span>
+                <span className="font-bold text-emerald-700">{(selectedZone.intensity * 100).toFixed(0)}% Saturated</span>
               </div>
-              <div className="flex justify-between p-1.5 rounded bg-slate-950/60">
-                <span className="text-slate-400">H3 Partition Cell:</span>
-                <span className="font-mono text-cyan-300">#{selectedZone.h3HexId}</span>
+              <div className="flex justify-between p-1.5 rounded bg-slate-50 border border-slate-100">
+                <span className="text-slate-500">H3 Cell:</span>
+                <span className="font-mono text-slate-700">#{selectedZone.h3HexId}</span>
               </div>
             </div>
             <button 
               onClick={() => alert(`[ALGORITHMIC DISPATCH] Fleet rebalancing dispatch triggered for ${selectedZone.name}. Idle riders routed.`)}
-              className="mt-3 w-full py-1.5 rounded bg-amber-600 hover:bg-amber-500 text-white font-bold text-[10px] uppercase tracking-wider transition"
+              className="mt-3 w-full py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[10px] uppercase tracking-wider transition shadow-xs"
             >
               Rebalance Fleet Supply
             </button>
@@ -1165,7 +1165,7 @@ export function GlobalGodEyeMap() {
         )}
 
         {/* Search & Filter Toolbar Float in Bottom-Left */}
-        <div className="absolute bottom-4 left-4 z-30 flex items-center gap-2 bg-slate-950/90 border border-slate-800 rounded-lg p-1.5 backdrop-blur-md">
+        <div className="absolute bottom-4 left-4 z-30 flex items-center gap-2 bg-white/95 border border-slate-300 rounded-lg p-1.5 shadow-md backdrop-blur-md">
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input 
@@ -1173,7 +1173,7 @@ export function GlobalGodEyeMap() {
               placeholder="Search rider ID, name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1 bg-slate-900 border border-slate-800 rounded text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 w-44"
+              className="pl-8 pr-3 py-1 bg-slate-50 border border-slate-200 rounded text-xs font-mono text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-600 w-44"
             />
           </div>
           <div className="flex items-center gap-1 text-[11px] font-mono">
@@ -1183,8 +1183,8 @@ export function GlobalGodEyeMap() {
                 onClick={() => setRiderFilter(filter)}
                 className={`px-2 py-1 rounded transition-all ${
                   riderFilter === filter
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold shadow-2xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 {filter === "ALL" ? "All" : filter.replace("_", " ")}
@@ -1196,18 +1196,18 @@ export function GlobalGodEyeMap() {
       </div>
 
       {/* Real-time Sub-Second Telemetry Audit Stream Footer */}
-      <div className="bg-slate-950 border-t border-white/10 px-5 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-xs">
+      <div className="bg-slate-50 border-t border-slate-200 px-5 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-xs">
         <div className="flex items-center gap-3 overflow-x-auto w-full sm:w-auto">
-          <div className="flex items-center gap-1.5 text-emerald-400 font-bold shrink-0">
+          <div className="flex items-center gap-1.5 text-emerald-700 font-bold shrink-0">
             <Radio className="w-3.5 h-3.5 animate-pulse" />
             <span>LIVE PING FEED:</span>
           </div>
           {pingLogs.length > 0 ? (
-            <div className="text-slate-300 truncate text-[11px]">
+            <div className="text-slate-700 truncate text-[11px]">
               <span className="text-slate-500">[{pingLogs[0].timestamp}]</span>{" "}
-              <span className="text-emerald-400 font-bold">{pingLogs[0].riderId}</span>{" "}
-              <span className="text-slate-400">({pingLogs[0].lat}, {pingLogs[0].lng})</span>{" "}
-              <span className="text-cyan-300">{pingLogs[0].speed} km/h</span>{" "}
+              <span className="text-emerald-700 font-bold">{pingLogs[0].riderId}</span>{" "}
+              <span className="text-slate-500">({pingLogs[0].lat}, {pingLogs[0].lng})</span>{" "}
+              <span className="text-cyan-700">{pingLogs[0].speed} km/h</span>{" "}
               <span className="text-slate-500">
                 {pingLogs[0].activeOrder ? `// Order #${pingLogs[0].activeOrder}` : "// Fleet Patrol"}
               </span>
@@ -1219,7 +1219,7 @@ export function GlobalGodEyeMap() {
 
         <div className="flex items-center gap-4 text-[10px] text-slate-500 shrink-0">
           <span className="flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> GEOFENCE INTEGRITY: 100%
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> GEOFENCE INTEGRITY: 100%
           </span>
           <span>CLUSTER: {CLUSTER_CONFIG[currentCluster].name.split(" ")[0]}</span>
         </div>

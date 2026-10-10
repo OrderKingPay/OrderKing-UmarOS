@@ -155,7 +155,7 @@ export const getLiveFounderProfit = createServerFn({ method: "GET" }).handler(
 
         const totalPaise = Number(r.total_paise ?? (foodSubtotal + deliveryFee));
 
-        // EXACT GODFATHER FORMULA:
+        // EXACT REVENUE FORMULA:
         // (Restaurant Commission % + Delivery Fee) - (Rider Payout + Payment Gateway Fee)
         const inflowPaise = commissionPaise + deliveryFee;
         const outflowPaise = riderPayout + paymentFee;
@@ -249,7 +249,7 @@ export function LiveFounderProfitDashboard() {
     refetchInterval: 10_000,
   });
 
-  // GOD-LEVEL MICROSCOPIC SIMULATOR STATE
+  // INTERACTIVE SIMULATOR TELEMETRY STATE
   // Allows the Founder to model and enforce micro-margins on demand
   const [commissionRatePct, setCommissionRatePct] = useState<number>(22); // e.g. 22%
   const [avgFoodSubtotalInr, setAvgFoodSubtotalInr] = useState<number>(400); // ₹400
@@ -324,7 +324,7 @@ export function LiveFounderProfitDashboard() {
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Microscopic, god-level control over exact real founder income per order
+                Precision operating control over net revenue realization per order
               </p>
             </div>
           </div>
@@ -355,68 +355,68 @@ export function LiveFounderProfitDashboard() {
         </div>
       </div>
 
-      {/* 2. GODFATHER FINANCIAL TELEMETRY EQUATION BANNER */}
-      <div className="mt-6 p-4 md:p-5 rounded-xl bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 text-white shadow-md border border-slate-800">
-        <div className="flex items-center justify-between mb-3 text-[11px] font-mono tracking-wider uppercase text-slate-400">
-          <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
+      {/* 2. REVENUE TELEMETRY EQUATION BANNER */}
+      <div className="mt-6 p-4 md:p-5 rounded-xl bg-slate-50 text-slate-900 shadow-xs border border-slate-200">
+        <div className="flex items-center justify-between mb-3 text-[11px] font-mono tracking-wider uppercase text-slate-500">
+          <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
             <Sparkles className="h-3.5 w-3.5" />
-            The Exact Real Money Formula
+            Net Settlement Formula
           </span>
-          <span className="text-slate-400">Zero Fake Data Policy Active</span>
+          <span className="text-slate-500">Production Ledger Active</span>
         </div>
 
         {/* Visual Mathematical Formula */}
         <div className="grid grid-cols-1 md:grid-cols-11 items-center gap-2 md:gap-3 text-center md:text-left py-2 font-mono">
           {/* INFLOW */}
-          <div className="md:col-span-4 bg-white/5 border border-white/10 rounded-lg p-3">
-            <div className="flex items-center justify-between text-xs text-emerald-300 font-bold mb-1">
+          <div className="md:col-span-4 bg-white border border-slate-200 rounded-lg p-3">
+            <div className="flex items-center justify-between text-xs text-emerald-700 font-bold mb-1">
               <span className="flex items-center gap-1">
-                <ArrowUpRight className="h-3.5 w-3.5 text-emerald-400" />
+                <ArrowUpRight className="h-3.5 w-3.5 text-emerald-600" />
                 Gross Platform Inflow
               </span>
-              <span className="text-[10px] text-slate-400">(INCOMING)</span>
+              <span className="text-[10px] text-slate-500">(INCOMING)</span>
             </div>
-            <div className="text-sm md:text-base font-bold text-white tracking-tight">
-              Restaurant Commission % <span className="text-emerald-400 font-normal">+</span> Delivery Fee
+            <div className="text-sm md:text-base font-bold text-slate-900 tracking-tight">
+              Restaurant Commission % <span className="text-emerald-600 font-normal">+</span> Delivery Fee
             </div>
-            <p className="text-[10px] text-slate-400 mt-1">Merchant take-rate plus customer delivery tariff</p>
+            <p className="text-[10px] text-slate-500 mt-1">Merchant take-rate plus customer delivery tariff</p>
           </div>
 
           {/* MINUS SIGN */}
           <div className="md:col-span-1 flex items-center justify-center">
-            <div className="h-7 w-7 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-400 font-black text-base flex items-center justify-center">
+            <div className="h-7 w-7 rounded-full bg-rose-50 border border-rose-200 text-rose-600 font-black text-base flex items-center justify-center">
               −
             </div>
           </div>
 
           {/* OUTFLOW */}
-          <div className="md:col-span-4 bg-white/5 border border-white/10 rounded-lg p-3">
-            <div className="flex items-center justify-between text-xs text-rose-300 font-bold mb-1">
+          <div className="md:col-span-4 bg-white border border-slate-200 rounded-lg p-3">
+            <div className="flex items-center justify-between text-xs text-rose-700 font-bold mb-1">
               <span className="flex items-center gap-1">
-                <ArrowDownRight className="h-3.5 w-3.5 text-rose-400" />
+                <ArrowDownRight className="h-3.5 w-3.5 text-rose-600" />
                 Operational Deductions
               </span>
-              <span className="text-[10px] text-slate-400">(OUTGOING)</span>
+              <span className="text-[10px] text-slate-500">(OUTGOING)</span>
             </div>
-            <div className="text-sm md:text-base font-bold text-white tracking-tight">
-              Rider Payout <span className="text-rose-400 font-normal">+</span> Gateway Fee (PG)
+            <div className="text-sm md:text-base font-bold text-slate-900 tracking-tight">
+              Rider Payout <span className="text-rose-600 font-normal">+</span> Gateway Fee (PG)
             </div>
-            <p className="text-[10px] text-slate-400 mt-1">Fleet delivery compensation plus payment gateway MDR</p>
+            <p className="text-[10px] text-slate-500 mt-1">Fleet delivery compensation plus payment gateway MDR</p>
           </div>
 
           {/* EQUALS SIGN */}
           <div className="md:col-span-1 flex items-center justify-center">
-            <div className="h-7 w-7 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-black text-base flex items-center justify-center">
+            <div className="h-7 w-7 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-black text-base flex items-center justify-center">
               =
             </div>
           </div>
 
           {/* FOUNDER PROFIT */}
-          <div className="md:col-span-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 text-center">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-400 block mb-0.5">
+          <div className="md:col-span-1 bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center">
+            <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-700 block mb-0.5">
               Exact Net
             </span>
-            <span className="text-xs font-black text-white block">REAL PROFIT</span>
+            <span className="text-xs font-black text-emerald-900 block">REAL PROFIT</span>
           </div>
         </div>
       </div>
@@ -511,7 +511,7 @@ export function LiveFounderProfitDashboard() {
         </div>
       </div>
 
-      {/* 4. GOD-LEVEL INTERACTIVE PROFIT MARGIN TELEMETRY & SIMULATOR */}
+      {/* 4. INTERACTIVE PROFIT MARGIN TELEMETRY & SIMULATOR */}
       <div className="mt-8 border border-slate-200 rounded-xl overflow-hidden bg-white shadow-xs">
         <div className="p-5 bg-slate-50/80 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -520,9 +520,9 @@ export function LiveFounderProfitDashboard() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
-                Founder Microscopic Profit Controller & Live Simulator
+                Operational Margin Controller & Live Simulator
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">
-                  GOD-MODE CONTROLS
+                  EXECUTIVE CONTROLS
                 </span>
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">

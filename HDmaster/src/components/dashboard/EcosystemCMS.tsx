@@ -24,12 +24,17 @@ import {
   ArrowRight,
   Eye,
   Smartphone,
+  Cpu,
+  Calculator,
+  Megaphone,
+  SlidersHorizontal,
 } from "lucide-react";
+import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
 
 interface FieldDefinition {
   key: keyof EcosystemCmsConfig;
   label: string;
-  category: "branding" | "pricing" | "fintech" | "orders" | "compliance" | "growth";
+  category: "branding" | "pricing" | "fintech" | "orders" | "compliance" | "growth" | "connectors";
   description: string;
   placeholder: string;
   customerSurface: string;
@@ -362,9 +367,231 @@ const FIELD_DEFINITIONS: FieldDefinition[] = [
     placeholder: "Curated Chef Specials & Direct-from-Kitchen Selections",
     customerSurface: "Home Screen Featured Horizontal Carousel",
   },
+
+  // 7. Connectors Hub & Global Integrations Copy
+  {
+    key: "connectorsHubTitle",
+    label: "Connectors Hub Main Title",
+    category: "connectors",
+    description: "Main header headline for the Plugin Switchboard & External Connectors matrix.",
+    placeholder: "Plugin Switchboard & External Connectors",
+    customerSurface: "Plugin Connectors Hub Header",
+  },
+  {
+    key: "connectorsHubSubtitle",
+    label: "Connectors Hub Subtitle",
+    category: "connectors",
+    description: "Descriptive overview of integrated external gateways and institutional telemetry.",
+    placeholder: "Institutional integration management. Securely configure Razorpay payment rails, WhatsApp Business API, FSSAI regulatory verification, Mapbox geospatial telemetry, ClearTax automated GST calculation, and Automated WhatsApp Marketing.",
+    customerSurface: "Plugin Connectors Hub Subtitle",
+    multiline: true,
+  },
+  {
+    key: "connectorClearTaxTitle",
+    label: "ClearTax Connector Headline",
+    category: "connectors",
+    description: "Display name for the Automated Tax Calculation (ClearTax) gateway integration.",
+    placeholder: "Automated Tax Calculation (ClearTax)",
+    customerSurface: "Plugin Connectors Matrix / ClearTax Card Title",
+  },
+  {
+    key: "connectorClearTaxSubtitle",
+    label: "ClearTax Connector Description",
+    category: "connectors",
+    description: "Descriptive copy highlighting automated GST computation, e-invoicing, and compliance.",
+    placeholder: "Statutory automated GST calculation, real-time e-invoicing, reverse charge determination, and seamless automated tax reconciliation for compliant restaurant operations.",
+    customerSurface: "Plugin Connectors Matrix / ClearTax Card Deck",
+    multiline: true,
+  },
+  {
+    key: "connectorClearTaxToggleLabel",
+    label: "ClearTax Active Switch Label",
+    category: "connectors",
+    description: "1-Click toggle switch label to enable or disable the ClearTax tax calculation engine.",
+    placeholder: "Tax Engine Active",
+    customerSurface: "Plugin Connectors Matrix / ClearTax Switch",
+  },
+  {
+    key: "connectorClearTaxTestBtnText",
+    label: "ClearTax Diagnostic Action Label",
+    category: "connectors",
+    description: "Action button label to run connection diagnostics with ClearTax GSTN servers.",
+    placeholder: "Test ClearTax Diagnostic",
+    customerSurface: "Plugin Connectors Matrix / ClearTax Action Button",
+  },
+  {
+    key: "connectorClearTaxPolicyTitle",
+    label: "ClearTax Statutory Policy Header",
+    category: "connectors",
+    description: "Compliance header for GST & e-invoicing enforcement rules.",
+    placeholder: "Statutory GST & E-Invoicing Enforcement",
+    customerSurface: "Plugin Connectors Matrix / ClearTax Policy Box Title",
+  },
+  {
+    key: "connectorClearTaxPolicyNotice",
+    label: "ClearTax Statutory Policy Notice",
+    category: "connectors",
+    description: "Detailed compliance policy text for IRN generation and GSTIN validation upon order fulfillment.",
+    placeholder: "Generates IRN & QR-coded e-invoices instantly via ClearTax APIs upon order fulfillment, verifying restaurant GSTIN active status.",
+    customerSurface: "Plugin Connectors Matrix / ClearTax Policy Box Body",
+    multiline: true,
+  },
+  {
+    key: "connectorClearTaxWebhookNotice",
+    label: "ClearTax Webhook Instructions",
+    category: "connectors",
+    description: "Information notice explaining GSTN reconciliation callback listener events.",
+    placeholder: "ClearTax GSTN Reconciliation Webhook: Automatically imports GSTR-1 & GSTR-3B monthly outward supply filings.",
+    customerSurface: "Plugin Connectors Matrix / ClearTax Webhook Info",
+    multiline: true,
+  },
+  {
+    key: "connectorWhatsappMarketingTitle",
+    label: "WhatsApp Marketing Connector Headline",
+    category: "connectors",
+    description: "Display name for the Automated WhatsApp Marketing engine integration.",
+    placeholder: "Automated WhatsApp Marketing",
+    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Card Title",
+  },
+  {
+    key: "connectorWhatsappMarketingSubtitle",
+    label: "WhatsApp Marketing Connector Description",
+    category: "connectors",
+    description: "Descriptive copy highlighting automated customer re-engagement, promotional drops, and cart recovery.",
+    placeholder: "High-conversion automated customer re-engagement, promotional drops, festival banquet offers, and personalized loyalty cart recovery campaigns with full TRAI/DND compliance.",
+    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Card Deck",
+    multiline: true,
+  },
+  {
+    key: "connectorWhatsappMarketingToggleLabel",
+    label: "WhatsApp Marketing Active Switch Label",
+    category: "connectors",
+    description: "1-Click toggle switch label to enable or disable automated promotional marketing campaigns.",
+    placeholder: "Marketing Engine Active",
+    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Switch",
+  },
+  {
+    key: "connectorWhatsappMarketingTestBtnText",
+    label: "WhatsApp Marketing Diagnostic Action Label",
+    category: "connectors",
+    description: "Action button label to run connection diagnostics with WhatsApp marketing dispatch gateway.",
+    placeholder: "Test Broadcast Dispatch",
+    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Action Button",
+  },
+  {
+    key: "connectorWhatsappMarketingPolicyTitle",
+    label: "WhatsApp Marketing Policy Header",
+    category: "connectors",
+    description: "Compliance header for anti-spam and TRAI marketing delivery hours.",
+    placeholder: "Strict DND & Anti-Spam Marketing Policy",
+    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Policy Box Title",
+  },
+  {
+    key: "connectorWhatsappMarketingPolicyNotice",
+    label: "WhatsApp Marketing Policy Notice",
+    category: "connectors",
+    description: "Detailed compliance policy text explaining 10 AM - 9 PM regulatory windows and opt-out processing.",
+    placeholder: "Ensures all automated promotional broadcasts respect 10:00 AM - 09:00 PM regulatory delivery windows and honour instant opt-out requests without exception.",
+    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Policy Box Body",
+    multiline: true,
+  },
+  {
+    key: "connectorWhatsappMarketingOptInNotice",
+    label: "WhatsApp Marketing Opt-Out Instructions",
+    category: "connectors",
+    description: "Information notice explaining automatic opt-out handling upon receiving STOP/UNSUBSCRIBE.",
+    placeholder: "Automatic Unsubscribe Handler: Customers replying STOP or UNSUBSCRIBE are instantly purged from promotional broadcast audiences.",
+    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Opt-Out Info",
+    multiline: true,
+  },
+  {
+    key: "connectorRazorpayTitle",
+    label: "Razorpay Gateway Title",
+    category: "connectors",
+    description: "Display name for the Razorpay Payment Gateway integration.",
+    placeholder: "Razorpay Payment Gateway Integration",
+    customerSurface: "Plugin Connectors Matrix / Razorpay Card Title",
+  },
+  {
+    key: "connectorRazorpaySubtitle",
+    label: "Razorpay Gateway Description",
+    category: "connectors",
+    description: "Descriptive copy for customer UPI, card tokenization, and settlements.",
+    placeholder: "Handles instant customer UPI, credit/debit card tokenization, auto-capture, and merchant settlement transfers.",
+    customerSurface: "Plugin Connectors Matrix / Razorpay Card Deck",
+    multiline: true,
+  },
+  {
+    key: "connectorWhatsappTitle",
+    label: "WhatsApp Operational API Title",
+    category: "connectors",
+    description: "Display name for WhatsApp Business transactional messaging.",
+    placeholder: "WhatsApp Business API Connector",
+    customerSurface: "Plugin Connectors Matrix / WhatsApp Card Title",
+  },
+  {
+    key: "connectorWhatsappSubtitle",
+    label: "WhatsApp Operational API Description",
+    category: "connectors",
+    description: "Descriptive copy for order receipts, OTP delivery, and merchant alerts.",
+    placeholder: "Transmits real-time order receipts, OTP delivery handshakes, and merchant alerts via Meta Cloud API or Gupshup.",
+    customerSurface: "Plugin Connectors Matrix / WhatsApp Card Deck",
+    multiline: true,
+  },
+  {
+    key: "connectorFssaiTitle",
+    label: "FSSAI Gateway Title",
+    category: "connectors",
+    description: "Display name for the FSSAI Regulatory Verification Gateway.",
+    placeholder: "FSSAI Government Regulatory Verification Gateway",
+    customerSurface: "Plugin Connectors Matrix / FSSAI Card Title",
+  },
+  {
+    key: "connectorFssaiSubtitle",
+    label: "FSSAI Gateway Description",
+    category: "connectors",
+    description: "Descriptive copy for FoSCoS portal verification of restaurant licenses.",
+    placeholder: "Direct integration with the FoSCoS Government Portal. Verifies 14-digit restaurant food licenses and enforces statutory onboarding rules.",
+    customerSurface: "Plugin Connectors Matrix / FSSAI Card Deck",
+    multiline: true,
+  },
+  {
+    key: "connectorFssaiPolicyTitle",
+    label: "FSSAI Regulatory Policy Title",
+    category: "connectors",
+    description: "Header for strict regulatory onboarding gating rules.",
+    placeholder: "Strict Regulatory Onboarding Gate",
+    customerSurface: "Plugin Connectors Matrix / FSSAI Policy Box Title",
+  },
+  {
+    key: "connectorFssaiPolicyNotice",
+    label: "FSSAI Regulatory Policy Notice",
+    category: "connectors",
+    description: "Detailed compliance notice explaining automatic order blocking for unverified food licenses.",
+    placeholder: "Automatically block merchant kitchens from taking live customer orders if their 14-digit FSSAI license is absent, lapsed, or rejected by the FoSCoS gateway.",
+    customerSurface: "Plugin Connectors Matrix / FSSAI Policy Box Body",
+    multiline: true,
+  },
+  {
+    key: "connectorMapboxTitle",
+    label: "Mapbox Matrix Title",
+    category: "connectors",
+    description: "Display name for Mapbox Geospatial Matrix & Routing Telemetry.",
+    placeholder: "Mapbox Geospatial Matrix & Routing Telemetry",
+    customerSurface: "Plugin Connectors Matrix / Mapbox Card Title",
+  },
+  {
+    key: "connectorMapboxSubtitle",
+    label: "Mapbox Matrix Description",
+    category: "connectors",
+    description: "Descriptive copy for distance matrix, congestion avoidance, and rider GPS estimation.",
+    placeholder: "Powers multi-point distance matrix calculations, live congestion avoidance, and real-time rider GPS vector estimation.",
+    customerSurface: "Plugin Connectors Matrix / Mapbox Card Deck",
+    multiline: true,
+  },
 ];
 
-type CategoryId = "all" | "branding" | "pricing" | "fintech" | "orders" | "compliance" | "growth";
+type CategoryId = "all" | "algorithm" | "branding" | "pricing" | "fintech" | "orders" | "compliance" | "growth" | "connectors";
 
 export function EcosystemCMS() {
   const [formData, setFormData] = useState<EcosystemCmsConfig>(DEFAULT_ECOSYSTEM_CMS);
@@ -512,6 +739,8 @@ export function EcosystemCMS() {
 
   const categories = [
     { id: "all" as const, label: "All Copy", count: FIELD_DEFINITIONS.length, icon: Layers },
+    { id: "algorithm" as const, label: "Algorithmic Matrix", count: 4, icon: SlidersHorizontal },
+    { id: "connectors" as const, label: "Plugin & Connectors", count: FIELD_DEFINITIONS.filter(f => f.category === "connectors").length, icon: Cpu },
     { id: "branding" as const, label: "Hero & Brand Positioning", count: 7, icon: Sparkles },
     { id: "pricing" as const, label: "Surge & Pricing Notices", count: 6, icon: ShieldCheck },
     { id: "fintech" as const, label: "KingPay & Fintech Rails", count: 7, icon: CreditCard },
@@ -609,8 +838,57 @@ export function EcosystemCMS() {
         </div>
       )}
 
-      {/* Main Grid: Controls + Forms + Mobile Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Operational Mode Switcher: Content CMS vs Algorithmic Matrix */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-border bg-card p-2.5 shadow-sm">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setSelectedCategory("all")}
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition ${
+              selectedCategory !== "algorithm"
+                ? "bg-secondary text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+            }`}
+          >
+            <Layers className="h-4 w-4" />
+            <span>Content & Messaging CMS</span>
+            <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground font-mono">
+              {FIELD_DEFINITIONS.length} Strings
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSelectedCategory("algorithm")}
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition ${
+              selectedCategory === "algorithm"
+                ? "bg-emerald-500 text-slate-950 shadow-md font-bold"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+            }`}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            <span>Algorithmic Settings Matrix</span>
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-mono font-bold ${
+              selectedCategory === "algorithm" ? "bg-slate-950/20 text-slate-950" : "bg-emerald-500/10 text-emerald-500"
+            }`}>
+              4 Engine Sliders
+            </span>
+          </button>
+        </div>
+
+        <div className="hidden sm:flex items-center gap-2 font-mono text-[11px] text-muted-foreground pr-2">
+          <span>Active Layer:</span>
+          <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-emerald-500 font-semibold">
+            {selectedCategory === "algorithm" ? "OPERATIONAL DISPATCH MATH" : "CUSTOMER SURFACES"}
+          </span>
+        </div>
+      </div>
+
+      {selectedCategory === "algorithm" ? (
+        <AlgorithmSettings />
+      ) : (
+        /* Main Grid: Controls + Forms + Mobile Preview */
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left / Center Section: Category Tabs & Form Fields */}
         <div className="lg:col-span-8 space-y-6">
           {/* Search & Category Filter Toolbar */}

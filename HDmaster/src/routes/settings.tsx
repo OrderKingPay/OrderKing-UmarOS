@@ -1,16 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
-import { Save, Server, Sparkles, Languages, Settings2, Percent, Loader2, CheckCircle2, ShieldCheck, ArrowLeft, FileText, Cpu } from 'lucide-react';
+import { Save, Server, Sparkles, Languages, Settings2, Percent, Loader2, CheckCircle2, ArrowLeft, FileText, Cpu, Palette } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { EcosystemCMS } from '@/components/dashboard/EcosystemCMS';
 import { PluginConnectors } from '@/components/dashboard/PluginConnectors';
+import { CustomerAppUiSettings } from '@/components/dashboard/CustomerAppUiSettings';
 
 export const Route = createFileRoute('/settings')({
   component: SettingsPage,
 });
 
 function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('cms');
+  const [activeTab, setActiveTab] = useState('ui');
   const [config, setConfig] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -49,40 +50,41 @@ function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="p-6 flex flex-col items-center justify-center min-h-screen bg-slate-950 text-slate-400">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-400 mb-2" />
-        <span className="font-mono text-xs uppercase tracking-widest">Loading Platform Settings...</span>
+      <div className="p-6 flex flex-col items-center justify-center min-h-screen bg-slate-50 text-slate-600">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-2" />
+        <span className="font-mono text-xs uppercase tracking-widest text-slate-500">Loading Platform Settings...</span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-slate-100 p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-8">
-        <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <header className="border-b border-slate-200 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-400 hover:text-emerald-400 transition-colors">
+              <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-slate-500 hover:text-emerald-700 transition-colors">
                 <ArrowLeft className="h-3.5 w-3.5" /> Back to Dashboard
               </Link>
             </div>
-            <h1 className="text-3xl md:text-4xl font-black text-white flex items-center gap-3">
-              <Settings2 className="h-9 w-9 text-emerald-400" />
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 flex items-center gap-3">
+              <Settings2 className="h-9 w-9 text-emerald-600" />
               Platform Settings
             </h1>
-            <p className="text-slate-400 mt-2 text-sm">
-              Global Platform Governance: Ecosystem CMS copy, integration switchboards, core applications, and fee structures.
+            <p className="text-slate-500 mt-2 text-sm">
+              Global Platform Governance: Customer App UI styling matrix, Ecosystem CMS copy, integration switchboards, core features, and fee structures.
             </p>
           </div>
           {savedStatus && (
-            <div className="flex items-center gap-2 bg-emerald-950/80 text-emerald-400 border border-emerald-800 px-4 py-2 rounded-xl font-bold font-mono text-xs">
-              <CheckCircle2 className="h-4 w-4" /> Saved Successfully
+            <div className="flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-2 rounded-xl font-bold font-mono text-xs shadow-sm">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600" /> Saved Successfully
             </div>
           )}
         </header>
 
         <div className="flex flex-col md:flex-row gap-6">
           <nav className="w-full md:w-64 flex flex-col gap-2 shrink-0">
+            <TabButton id="ui" current={activeTab} set={setActiveTab} icon={Palette} label="Customer App UI" />
             <TabButton id="cms" current={activeTab} set={setActiveTab} icon={FileText} label="Ecosystem CMS" />
             <TabButton id="connectors" current={activeTab} set={setActiveTab} icon={Cpu} label="Plugin Connectors" />
             <TabButton id="features" current={activeTab} set={setActiveTab} icon={Server} label="Feature Flags" />
@@ -91,7 +93,8 @@ function SettingsPage() {
             <TabButton id="localization" current={activeTab} set={setActiveTab} icon={Languages} label="Localization" />
           </nav>
 
-          <main className="flex-1 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl p-6 md:p-8">
+          <main className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-8">
+            {activeTab === 'ui' && <CustomerAppUiSettings config={config} onSave={handleSave} saving={saving} />}
             {activeTab === 'cms' && <EcosystemCMS />}
             {activeTab === 'connectors' && <PluginConnectors />}
             {activeTab === 'features' && <FeatureFlagsPanel config={config} onSave={handleSave} saving={saving} />}
@@ -112,11 +115,11 @@ function TabButton({ id, current, set, icon: Icon, label }: any) {
       onClick={() => set(id)}
       className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-semibold transition-all ${
         isActive 
-          ? 'bg-emerald-950/70 text-emerald-400 border border-emerald-500/30 shadow-md' 
-          : 'text-slate-400 hover:text-white hover:bg-slate-900/50 border border-transparent'
+          ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-sm' 
+          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
       }`}
     >
-      <Icon className="h-5 w-5" />
+      <Icon className={`h-5 w-5 ${isActive ? 'text-emerald-600' : 'text-slate-500'}`} />
       <span>{label}</span>
     </button>
   );
@@ -132,9 +135,9 @@ function FeatureFlagsPanel({ config, onSave, saving }: any) {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-white/10 pb-4">
-        <h2 className="text-xl font-bold text-white">Global Feature Flags</h2>
-        <p className="text-xs text-slate-400 mt-1">Manage system-wide capability activation across all client applications.</p>
+      <div className="border-b border-slate-100 pb-4">
+        <h2 className="text-xl font-bold text-slate-900">Global Feature Flags</h2>
+        <p className="text-xs text-slate-500 mt-1">Manage system-wide capability activation across all client applications.</p>
       </div>
       <ToggleRow 
         title="Viral WhatsApp Referrals" 
@@ -165,9 +168,9 @@ function FeesPanel({ config, onSave, saving }: any) {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-white/10 pb-4">
-        <h2 className="text-xl font-bold text-white">Commission & Fee Engine</h2>
-        <p className="text-xs text-slate-400 mt-1">Configure real-time financial tariffs, take rates, and delivery logistics compensation.</p>
+      <div className="border-b border-slate-100 pb-4">
+        <h2 className="text-xl font-bold text-slate-900">Commission & Fee Engine</h2>
+        <p className="text-xs text-slate-500 mt-1">Configure real-time financial tariffs, take rates, and delivery logistics compensation.</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <InputRow title="Restaurant Commission (%)" value={fees.restaurant_commission_pct} onChange={(v: string) => update('restaurant_commission_pct', v)} />
@@ -191,12 +194,12 @@ function AIPanel({ config, onSave, saving }: any) {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-white/10 pb-4">
-        <h2 className="text-xl font-bold text-white">AI Model Routing</h2>
-        <p className="text-xs text-slate-400 mt-1">Multi-provider model routing for automated customer care and cognitive features.</p>
+      <div className="border-b border-slate-100 pb-4">
+        <h2 className="text-xl font-bold text-slate-900">AI Model Routing</h2>
+        <p className="text-xs text-slate-500 mt-1">Multi-provider model routing for automated customer care and cognitive features.</p>
       </div>
       <p className="text-xs text-slate-500">
-        Note: API Keys must be configured securely on the server via Cloudflare Secrets. If a key is missing, the provider will be automatically skipped.
+        Note: API Keys must be configured securely on the server via environment variables. If a key is missing, the provider will be automatically skipped.
       </p>
       
       <div className="space-y-4">
@@ -221,9 +224,9 @@ function LocalizationPanel({ config, onSave, saving }: any) {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-white/10 pb-4">
-        <h2 className="text-xl font-bold text-white">Localization & Regional Settings</h2>
-        <p className="text-xs text-slate-400 mt-1">Regional language support and multi-lingual prompt translation preferences.</p>
+      <div className="border-b border-slate-100 pb-4">
+        <h2 className="text-xl font-bold text-slate-900">Localization & Regional Settings</h2>
+        <p className="text-xs text-slate-500 mt-1">Regional language support and multi-lingual prompt translation preferences.</p>
       </div>
       <div className="space-y-4">
         <SelectRow 
@@ -246,19 +249,20 @@ function LocalizationPanel({ config, onSave, saving }: any) {
 
 function ToggleRow({ title, description, isOn, onToggle }: any) {
   return (
-    <div className="flex items-center justify-between py-4 border-b border-white/5">
+    <div className="flex items-center justify-between py-4 border-b border-slate-100">
       <div>
-        <h3 className="font-semibold text-white text-sm">{title}</h3>
-        <p className="text-xs text-slate-400 mt-0.5">{description}</p>
+        <h3 className="font-semibold text-slate-900 text-sm">{title}</h3>
+        <p className="text-xs text-slate-500 mt-0.5">{description}</p>
       </div>
       <button 
+        type="button"
         onClick={onToggle} 
         className={`w-14 h-7 rounded-full transition-colors relative p-1 ${
-          isOn ? 'bg-emerald-500' : 'bg-slate-800 border border-white/10'
+          isOn ? 'bg-emerald-600' : 'bg-slate-200'
         }`}
         aria-label={`Toggle ${title}`}
       >
-        <div className={`w-5 h-5 bg-slate-950 rounded-full transition-transform ${
+        <div className={`w-5 h-5 bg-white rounded-full transition-transform shadow-sm ${
           isOn ? 'translate-x-7' : 'translate-x-0'
         }`} />
       </button>
@@ -269,12 +273,12 @@ function ToggleRow({ title, description, isOn, onToggle }: any) {
 function InputRow({ title, value, onChange }: any) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-xs font-mono uppercase tracking-wider text-slate-400">{title}</label>
+      <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">{title}</label>
       <input 
         type="number" 
         value={value} 
         onChange={e => onChange(e.target.value)} 
-        className="w-full bg-slate-950/80 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-500 font-mono transition-colors" 
+        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 text-sm focus:outline-none focus:border-emerald-600 font-mono transition-colors" 
       />
     </div>
   );
@@ -282,12 +286,12 @@ function InputRow({ title, value, onChange }: any) {
 
 function SelectRow({ title, options, value, onChange }: any) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 border-b border-white/5">
-      <h3 className="font-semibold text-white text-sm">{title}</h3>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 border-b border-slate-100">
+      <h3 className="font-semibold text-slate-900 text-sm">{title}</h3>
       <select 
         value={value} 
         onChange={e => onChange(e.target.value)} 
-        className="border border-white/10 rounded-xl px-3.5 py-2 bg-slate-950 text-white text-xs font-mono focus:outline-none focus:border-emerald-500"
+        className="border border-slate-300 rounded-xl px-3.5 py-2 bg-slate-50 text-slate-900 text-xs font-mono focus:outline-none focus:border-emerald-600"
       >
         {options.map((o: string) => <option key={o} value={o}>{o}</option>)}
       </select>
@@ -298,9 +302,10 @@ function SelectRow({ title, options, value, onChange }: any) {
 function SaveButton({ onClick, saving }: any) {
   return (
     <button 
+      type="button"
       onClick={onClick} 
       disabled={saving} 
-      className="mt-6 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 transition-all shadow-md shadow-emerald-950/40"
+      className="mt-6 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 transition-all shadow-sm"
     >
       {saving ? <Loader2 className="h-4 w-4 animate-spin"/> : <Save className="h-4 w-4"/>} 
       {saving ? 'Saving...' : 'Save Configuration'}
