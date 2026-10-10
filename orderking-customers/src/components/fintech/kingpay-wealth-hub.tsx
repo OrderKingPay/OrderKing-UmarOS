@@ -161,6 +161,55 @@ export function KingPayWealthHub() {
         </div>
       </div>
 
+      {/* 4. Institutional Investment & Protection */}
+      <div className="rounded-3xl border border-blue-500/30 bg-gradient-to-br from-blue-500/10 to-transparent p-6 sm:p-8 shadow-xl">
+        <div className="flex items-center gap-2 mb-2">
+          <ShieldCheck className="size-5 text-blue-400" />
+          <h3 className="text-xl font-black text-fg">Institutional Investment &amp; Protection</h3>
+        </div>
+        <p className="text-sm text-muted mb-6">
+          Access curated mutual funds and premium term insurance. Build a secure portfolio seamlessly through KingPay.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Mutual Funds */}
+          <div className="rounded-2xl border border-blue-500/20 bg-surface-2 p-5 flex flex-col justify-between hover:border-blue-500/50 transition-all">
+            <div>
+              <div className="flex justify-between items-start mb-4">
+                <span className="text-lg font-black text-blue-400 tracking-wider">MUTUAL FUNDS</span>
+                <span className="text-[10px] font-bold bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full">HIGH YIELD</span>
+              </div>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-blue-500" /> Top Performing Index Funds</li>
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-blue-500" /> Automated SIPs via KingPay</li>
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-blue-500" /> Zero Commission Direct Plans</li>
+              </ul>
+            </div>
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md font-bold">
+              Explore Funds <ChevronRight className="size-4 ml-2" />
+            </Button>
+          </div>
+
+          {/* Term Insurance */}
+          <div className="rounded-2xl border border-sky-500/20 bg-surface-2 p-5 flex flex-col justify-between hover:border-sky-500/50 transition-all">
+            <div>
+              <div className="flex justify-between items-start mb-4">
+                <span className="text-lg font-black text-sky-400 tracking-wider">TERM INSURANCE</span>
+                <span className="text-[10px] font-bold bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded-full">PROTECTION</span>
+              </div>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-sky-500" /> Coverage up to ₹5 Crores</li>
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-sky-500" /> Tax Benefits under 80C</li>
+                <li className="flex items-center gap-2 text-xs text-muted"><CheckCircle2 className="size-3.5 text-sky-500" /> Top-Tier Industry Providers</li>
+              </ul>
+            </div>
+            <Button className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-md font-bold">
+              Get Quote <ChevronRight className="size-4 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

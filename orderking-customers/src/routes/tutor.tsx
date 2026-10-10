@@ -112,7 +112,7 @@ function IntelligencePage() {
         <motion.div layout className="flex flex-col h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-white selection:bg-zinc-800">
         
         {/* Core Control Panel */}
-        <div className="bg-zinc-950 border-b border-zinc-900 px-4 py-4 z-10 flex flex-col gap-4 shadow-sm relative overflow-hidden">
+         <div className="bg-zinc-950 border-b border-zinc-900 px-4 py-4 z-10 flex flex-col gap-4 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
           
           <div className="flex items-center justify-between relative z-10">
@@ -134,6 +134,7 @@ function IntelligencePage() {
                 onChange={(e) => setBoard(e.target.value)}
                 className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
               >
+                <option value="NCERT">NCERT</option>
                 <option value="CBSE">CBSE</option>
                 <option value="ICSE">ICSE</option>
                 <option value="State (Andhra Pradesh)">State (Andhra Pradesh)</option>
@@ -167,12 +168,12 @@ function IntelligencePage() {
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Subject (e.g. Mathematics, Spoken English)"
+                  placeholder="Subject (e.g. Mathematics, English Learning Fast)"
                   className="bg-transparent text-xs font-medium text-zinc-200 outline-none w-full px-2.5 py-2.5 placeholder:text-zinc-500"
                 />
                 {showConfig && (
                   <div className="flex flex-wrap gap-1 px-2 pb-2">
-                    {["Spoken English", "Higher Math", "Science", "Projects & Assignments", "Interview Prep"].map(s => (
+                    {["English Learning Fast", "Mathematics", "Science", "Projects & Assignments", "Interview Prep"].map(s => (
                       <button 
                         key={s} 
                         onClick={() => setSubject(s)}
@@ -224,7 +225,7 @@ function IntelligencePage() {
                 <option value="Fundamental">Level: Fundamental</option>
                 <option value="Intermediate">Level: Intermediate</option>
                 <option value="Advanced">Level: Advanced</option>
-                <option value="Expert (Olympiad)">Level: Expert (Olympiad)</option>
+                <option value="Expert">Level: Expert</option>
              </select>
              <select 
                 value={tone} 
