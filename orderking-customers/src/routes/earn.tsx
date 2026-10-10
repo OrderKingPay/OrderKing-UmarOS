@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useLocationStore } from "@/lib/stores/location";
 import { toast } from "sonner";
+import { ReferralGamifiedLoop } from "@/components/market/referral-gamified-loop";
 
 export const Route = createFileRoute('/earn')({
   component: EarnPage,
@@ -484,6 +485,9 @@ function EarnPage() {
             </div>
 
           </div>
+
+          {/* 'Refer a Friend, Get ₹500' Gamified Viral Loop */}
+          <ReferralGamifiedLoop source="rewards" className="mt-8" />
           
           <div className="mt-8 flex items-center justify-center gap-2 text-zinc-500">
             <Banknote className="size-4" />

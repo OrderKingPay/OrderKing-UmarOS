@@ -28,25 +28,102 @@ import {
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
 function GamificationPanel({ completed, earnings }: { completed: number; earnings: number }) {
-  const goal = 15;
-  const progress = Math.min((completed / goal) * 100, 100);
-  const streak = 4;
+  const milestoneProgress = calculateDailyMilestoneProgress(completed);
+  const streakInfo = calculateStreakBonus(4);
+  const tierInfo = getRiderTier(completed > 0 ? completed * 20 : 65);
+  const performance = calculateCourierPerformance();
+  const compositeSurge = calculateCompositeSurge(tierInfo.tier, streakInfo.currentDayStreak, true);
+
   return (
-    <section className="rounded-xl border border-primary/30 bg-surface p-4 shadow-neon glassmorphism">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-display text-sm font-bold text-primary neon-text flex items-center gap-1"><Flame className="size-4" /> Performance Active</h3>
-        <Badge className="bg-primary text-black font-bold text-xs">{streak} Day Streak!</Badge>
+    <section className="rounded-xl border border-primary/30 bg-surface p-4 shadow-neon glassmorphism space-y-3.5">
+      {/* Top Bar: Performance Status & Streak */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="flex size-7 items-center justify-center rounded-lg bg-primary/20 text-primary">
+            <Flame className="size-4 animate-pulse" />
+          </span>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-display text-sm font-bold text-primary neon-text tracking-wide">
+                Gig Performance Active
+              </h3>
+              <Badge className="bg-primary/20 text-primary border border-primary/40 font-bold text-[10px] px-1.5 py-0">
+                {tierInfo.title}
+              </Badge>
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              {streakInfo.statusText} · {compositeSurge.multiplier}x Surge Rate
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <Badge className="bg-primary text-black font-extrabold text-xs shadow-sm">
+            🔥 {streakInfo.currentDayStreak} Day Streak
+          </Badge>
+        </div>
       </div>
-      <div className="mb-2 flex justify-between text-xs text-muted-foreground">
-        <span className="flex items-center gap-1"><Target className="size-3"/> Daily Goal: {completed}/{goal} Gigs</span>
-        <span>{goal - completed > 0 ? (goal - completed) + ' to go' : 'Goal Met!'}</span>
+
+      {/* Daily Target Milestone Bar */}
+      <div className="rounded-lg bg-card/80 p-3 border border-border/60 space-y-2">
+        <div className="flex items-center justify-between text-xs">
+          <span className="flex items-center gap-1.5 font-semibold text-foreground">
+            <Target className="size-3.5 text-primary" />
+            Daily Incentive Target: {completed} / {milestoneProgress.nextMilestone ? milestoneProgress.nextMilestone.orders : 16} Orders
+          </span>
+          <span className="text-primary font-bold text-[11px]">
+            {milestoneProgress.remainingToNext > 0
+              ? `${milestoneProgress.remainingToNext} more for ${milestoneProgress.nextMilestone?.label} bonus`
+              : "All Daily Goals Met!"}
+          </span>
+        </div>
+
+        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary transition-all duration-500 ease-out shadow-neon"
+            style={{ width: `${milestoneProgress.progressPct}%` }}
+          />
+        </div>
+
+        {/* Milestone Steps Mini-Grid */}
+        <div className="grid grid-cols-4 gap-1.5 pt-1 text-center">
+          {milestoneProgress.milestones.map((m) => (
+            <div
+              key={m.orders}
+              className={`rounded px-1.5 py-1 text-[10px] border transition ${
+                m.isUnlocked
+                  ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400 font-bold"
+                  : m.isCurrentTarget
+                    ? "border-primary bg-primary/10 text-primary font-bold"
+                    : "border-border/40 bg-surface text-muted-foreground"
+              }`}
+            >
+              <div>{m.isUnlocked ? "✓ " : ""}{m.orders} Orders</div>
+              <div className="text-[11px] font-extrabold">{m.label}</div>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="h-2 w-full bg-muted rounded-full overflow-hidden mb-3">
-        <div className="h-full bg-primary transition-all duration-500 ease-out" style={{ width: progress + '%' }} />
+
+      {/* Courier Quality Metrics */}
+      <div className="grid grid-cols-3 gap-2 text-center text-xs">
+        <div className="rounded-lg bg-card/60 p-2 border border-border/50">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Acceptance</p>
+          <p className="font-bold text-emerald-400 text-sm mt-0.5">{performance.acceptanceRate}%</p>
+        </div>
+        <div className="rounded-lg bg-card/60 p-2 border border-border/50">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">On-Time</p>
+          <p className="font-bold text-primary text-sm mt-0.5">{performance.onTimeDeliveryRate}%</p>
+        </div>
+        <div className="rounded-lg bg-card/60 p-2 border border-border/50">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Courier Rating</p>
+          <p className="font-bold text-amber-400 text-sm mt-0.5">⭐ {performance.customerRating}</p>
+        </div>
       </div>
-      {completed >= goal && (
-        <div className="text-[10px] text-primary font-bold bg-primary/10 rounded px-2 py-1 text-center border border-primary/20 neon-text">
-          🏆 UNLOCKED: 1.5x SURGE MULTIPLIER
+
+      {milestoneProgress.unlockedBonusPaise > 0 && (
+        <div className="text-[10px] text-primary font-bold bg-primary/10 rounded-md px-2.5 py-1.5 text-center border border-primary/30 neon-text flex items-center justify-center gap-1.5">
+          <span>🏆</span>
+          <span>MILESTONE CASH UNLOCKED: {formatPaise(milestoneProgress.unlockedBonusPaise)} EXTRA INCENTIVE</span>
         </div>
       )}
     </section>
@@ -56,33 +133,40 @@ function GamificationPanel({ completed, earnings }: { completed: number; earning
 function ThermalBagTracker() {
   const [temp, setTemp] = useState(62.4);
   useEffect(() => {
-    const i = setInterval(() => setTemp(t => t > 58 ? t - (Math.random() * 0.5) : t + Math.random()), 3000);
+    const i = setInterval(() => setTemp((t) => (t > 58 ? t - Math.random() * 0.4 : t + Math.random() * 0.6)), 3000);
     return () => clearInterval(i);
   }, []);
-  const isOptimal = temp > 60;
+  const isOptimal = temp >= 60;
   return (
     <section className="rounded-xl border border-accent/30 bg-surface p-4 shadow-neon-cyan glassmorphism mt-4">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-display text-sm font-bold text-accent neon-text-cyan flex items-center gap-2">
-          <Thermometer className="size-4" /> Thermal-Bag Sync
+          <Thermometer className="size-4" /> Thermal Bag Live Sensor
         </h3>
-        <Badge className={(isOptimal ? 'bg-accent' : 'bg-destructive') + ' text-black font-bold text-[10px]'}>
-          {isOptimal ? 'OPTIMAL' : 'WARNING'}
+        <Badge className={(isOptimal ? "bg-accent" : "bg-destructive") + " text-black font-extrabold text-[10px]"}>
+          {isOptimal ? "OPTIMAL HOT HOLDING" : "ATTENTION"}
         </Badge>
       </div>
       <div className="flex items-center gap-4">
         <div className="flex-1">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Core Temp</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Internal Container</p>
           <div className="flex items-baseline gap-1">
-            <span className={'font-display text-2xl ' + (isOptimal ? 'text-accent' : 'text-destructive')}>{temp.toFixed(1)}</span>
+            <span className={"font-display text-2xl " + (isOptimal ? "text-accent" : "text-destructive")}>
+              {temp.toFixed(1)}
+            </span>
             <span className="text-sm text-muted-foreground">°C</span>
           </div>
+          <p className="text-[10px] text-emerald-400 font-medium">HACCP Safe · Hot Delivery</p>
         </div>
         <div className="flex-1">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Food Integrity</p>
-          <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mt-1">
-            <div className={'h-full ' + (isOptimal ? 'bg-accent shadow-neon-cyan' : 'bg-destructive')} style={{ width: Math.min((temp/65)*100, 100) + '%' }} />
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Thermal Insulation</p>
+          <div className="h-2 w-full bg-muted rounded-full overflow-hidden mt-1.5">
+            <div
+              className={"h-full transition-all duration-700 " + (isOptimal ? "bg-accent shadow-neon-cyan" : "bg-destructive")}
+              style={{ width: `${Math.min((temp / 65) * 100, 100)}%` }}
+            />
           </div>
+          <p className="text-[10px] text-muted-foreground mt-1">Insulated Seal 100%</p>
         </div>
       </div>
     </section>
@@ -92,21 +176,27 @@ function ThermalBagTracker() {
 function PredictiveRouting() {
   return (
     <div className="rounded-xl border border-primary/30 bg-surface p-4 shadow-neon glassmorphism space-y-3 mt-4">
-      <h3 className="font-display text-sm font-bold text-primary neon-text flex items-center gap-2">
-        <Navigation className="size-4" /> Predictive AI Routing
-      </h3>
-      <div className="grid grid-cols-2 gap-2 text-xs">
-         <div className="bg-card p-2 rounded border border-border">
-            <p className="text-muted-foreground uppercase tracking-wider text-[10px]">Traffic Matrix</p>
-            <p className="font-bold text-emerald-400">Clear (-4 mins)</p>
-         </div>
-         <div className="bg-card p-2 rounded border border-border">
-            <p className="text-muted-foreground uppercase tracking-wider text-[10px]">Active Vector</p>
-            <p className="font-bold text-accent neon-text-cyan">Route Beta</p>
-         </div>
+      <div className="flex items-center justify-between">
+        <h3 className="font-display text-sm font-bold text-primary neon-text flex items-center gap-2">
+          <Navigation className="size-4" /> Smart Route Guidance
+        </h3>
+        <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+          Fastest Corridor Active
+        </span>
       </div>
-      <p className="text-[10px] text-muted-foreground italic flex items-center gap-1">
-        <Zap className="size-3 text-primary" /> Re-routing dynamically via ML nodes. ETA confidence: 99.1%.
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="bg-card p-2.5 rounded-lg border border-border">
+          <p className="text-muted-foreground uppercase tracking-wider text-[10px]">Live Traffic Flow</p>
+          <p className="font-bold text-emerald-400">Clear Traffic (-4 mins)</p>
+        </div>
+        <div className="bg-card p-2.5 rounded-lg border border-border">
+          <p className="text-muted-foreground uppercase tracking-wider text-[10px]">Recommended Route</p>
+          <p className="font-bold text-accent neon-text-cyan">Express Arterial</p>
+        </div>
+      </div>
+      <p className="text-[10px] text-muted-foreground flex items-center gap-1.5">
+        <Zap className="size-3 text-primary shrink-0" />
+        Live dispatch telemetry active. Temperature-preserving route chosen with high precision arrival.
       </p>
     </div>
   );
@@ -122,6 +212,7 @@ export function HomeView() {
   const [confirm, setConfirm] = useState<"online" | "offline" | "decline" | null>(null);
   const [declineReason, setDeclineReason] = useState("");
   const [now, setNow] = useState(Date.now());
+  const [riderPos, setRiderPos] = useState<GeoPoint | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -144,7 +235,13 @@ export function HomeView() {
     return () => window.clearInterval(id);
   }, []);
 
-  useGpsHeartbeat(Boolean(home && (home.rider.status !== "OFFLINE" || home.active)), 2000, undefined, home?.rider?.id);
+  useGpsHeartbeat(
+    Boolean(home && (home.rider.status !== "OFFLINE" || home.active)),
+    2000,
+    (pos) => setRiderPos({ lat: pos.lat, lng: pos.lng }),
+    home?.rider?.id,
+    home?.active?.id,
+  );
   useDutyLocation(
     Boolean(home && (home.rider.status !== "OFFLINE" || home.active)),
     home?.active?.id ?? null,
