@@ -13,7 +13,7 @@ The primary engine has established total operational control and expanded the Fo
 
 ### 🟢 2. True Multi-Model Orchestration
 The Founder AI tools have been successfully injected into the `executeFounderAiChat` streaming core across both the **Customer App (`orderking-customers`)** and the **CEO Command Center (`HDmaster`)**. 
-- The system evaluates user queries and dynamically switches across the Multi-Model Ensemble (Codex Supreme, Sovereign Ultra, Claude, Grok).
+- The system evaluates user queries and dynamically switches across the Multi-Model Ensemble (Codex Premium, Sovereign Ultra, Claude, Grok).
 - Tools are executed deterministically natively within the unified streaming loops without hallucinated arithmetic.
 
 ### 🟢 3. End-to-End Canonical Verification

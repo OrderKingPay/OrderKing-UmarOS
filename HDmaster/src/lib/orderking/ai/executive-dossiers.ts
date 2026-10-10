@@ -286,7 +286,7 @@ Website: https://orderking.in`,
     eventForum: "State Tech Conclave & Industry-Academia MoU",
     keynoteTitle: "Zero-Loss Economics: 2G Resilient FinTech & Hyperlocal Order Infrastructure",
     honorariumAndPerks: "University Citation, Felicitation Plaque & Official Honorarium",
-    subjectLine: "Guest Lecture & Industry MoU: OrderKing Hyperlocal Super-App Founder Hasan",
+    subjectLine: "Guest Lecture & Industry MoU: OrderKing Hyperlocal Advanced-App Founder Hasan",
     emailBody: `Respected Dean, School of Technology,
 Assam University, Silchar,
 
@@ -344,7 +344,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
       instagram_positions: ["stream", "story", "reels"],
     },
     ad_creative: {
-      title: "OrderKing — Karimganj's Food Super-App 👑",
+      title: "OrderKing — Karimganj's Food Advanced-App 👑",
       body: "🔥 Zero Markup on Food! Enjoy delicious Mutton Biryani, Fish Thali & Momos at exact restaurant prices + Win Real 24K Digital Gold on every order! Tap to Order Now.",
       call_to_action_type: "ORDER_NOW",
       link: "https://orderking.in",
@@ -358,7 +358,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
     headlines: [
       "OrderKing Food Delivery",
       "0% Markup on Food",
-      "Karimganj Local Super-App",
+      "Karimganj Local Advanced-App",
       "Hot Biryani in 20 Mins",
       "Win 24K Gold Every Order",
     ],

@@ -77,7 +77,7 @@ export interface AttachedMedia {
 
 export interface RichMediaOutput {
   id: string;
-  type: "chart" | "image_grid" | "video_summary";
+  type: "chart" | "image_grid" | "video_summary" | "settings_widget";
   title: string;
   subtitle?: string;
   timestamp?: string;
@@ -549,11 +549,47 @@ function VideoOutputCard({ item }: { item: RichMediaOutput }) {
   );
 }
 
+/**
+ * Action-Intent Engine Widget
+ * Renders interactive settings UI inline in the chat
+ */
+function SettingsWidgetCard({ item, onToggleSetting }: { item: RichMediaOutput, onToggleSetting: (key: string) => void }) {
+  const [localState, setLocalState] = useState(item.data.settingValue);
+  
+  const handleToggle = () => {
+    const newState = !localState;
+    setLocalState(newState);
+    onToggleSetting(item.data.settingKey);
+    toast.success(`Action Executed: ${item.data.settingName} is now ${newState ? "ENABLED" : "DISABLED"}`);
+  };
+
+  return (
+    <div className="mt-3 p-4 bg-slate-50 border border-slate-300 rounded-xl shadow-xs font-sans">
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-lg bg-blue-100 text-blue-800">
+          <Sliders className="h-5 w-5" />
+        </div>
+        <div className="flex-1">
+          <h4 className="text-sm font-bold text-slate-900">{item.title}</h4>
+          <p className="text-xs text-slate-600">{item.subtitle}</p>
+        </div>
+        <div>
+          <button
+            onClick={handleToggle}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-hidden ${localState ? 'bg-emerald-500' : 'bg-slate-300'}`}
+          >
+            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${localState ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 // =========================================================================
 // MAIN COMPONENT: UMAROS MULTIMODAL AI TERMINAL
 // =========================================================================
 
-export function UmarOS_Supreme_AI() {
+export function UmarOS_AI_Terminal() {
   const [activeTab, setActiveTab] = useState<"terminal" | "orchestrator" | "telemetry">("terminal");
   const [selectedModel, setSelectedModel] = useState<string>("gemini-2.5-pro");
   const [inputCommand, setInputCommand] = useState<string>("");
@@ -886,6 +922,25 @@ export function UmarOS_Supreme_AI() {
             codec: "H.264/AAC",
             motionTrackingStatus: "NOMINAL",
             handoffSla: "3.2m"
+          }
+        }
+      ];
+    } else if (
+      normalized.includes("setting") ||
+      normalized.includes("toggle") ||
+      normalized.includes("change")
+    ) {
+      richMediaToAttach = [
+        {
+          id: `rm-${Date.now()}-settings`,
+          type: "settings_widget",
+          title: "Action-Intent Engine: Configuration Detected",
+          subtitle: "Confirm execution of operation parameters.",
+          timestamp: new Date().toLocaleTimeString(),
+          data: {
+            settingKey: "aiRiderDispatch",
+            settingName: "AI Autonomous Rider Dispatch",
+            settingValue: engineSettings.aiRiderDispatch
           }
         }
       ];
@@ -1303,6 +1358,7 @@ export function UmarOS_Supreme_AI() {
                             {rm.type === "chart" && <DataChartCard item={rm} />}
                             {rm.type === "image_grid" && <ImageGridCard item={rm} />}
                             {rm.type === "video_summary" && <VideoOutputCard item={rm} />}
+                            {rm.type === "settings_widget" && <SettingsWidgetCard item={rm} onToggleSetting={handleToggleSetting} />}
                           </div>
                         ))}
                       </div>
@@ -1954,4 +2010,5 @@ export function UmarOS_Supreme_AI() {
   );
 }
 
-export default UmarOS_Supreme_AI;
+export default UmarOS_AI_Terminal;
+

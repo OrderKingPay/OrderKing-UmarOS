@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-describe("Lifetime Royalty Affiliate Engine — The Godfather of Viral Mathematics", () => {
+describe("Lifetime Royalty Affiliate Engine — The Executive of Viral Mathematics", () => {
   it("should calculate 1% cash royalty mathematically with 100% precision", () => {
     // 1% of ₹450 order (45,000 paise) is ₹4.50 (450 paise)
     const orderGmvPaise = 45000;

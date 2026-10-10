@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { getSql } from '@/lib/db';
-import { UmarOS_Supreme_AI } from '@/components/dashboard/UmarOS_Supreme_AI';
+import { UmarOS_AI_Terminal } from '@/components/dashboard/UmarOS_AI_Terminal';
 
 async function getDashboardData() {
   const sql = await getSql();
@@ -25,7 +25,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-8 font-sans space-y-6 bg-slate-50 min-h-screen text-slate-900">
-      <UmarOS_Supreme_AI />
+      <UmarOS_AI_Terminal />
       <h1 className="text-3xl font-bold mb-6 text-slate-900">OrderKing Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -53,3 +53,4 @@ export default async function DashboardPage() {
     </div>
   );
 }
+

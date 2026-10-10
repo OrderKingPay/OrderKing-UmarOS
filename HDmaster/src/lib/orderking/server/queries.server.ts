@@ -1154,7 +1154,7 @@ export async function inviteEmployee(
 ) {
   requirePermission(ws.ctx, "manage_users");
   if (input.roleKey === "SUPER_ADMIN" && ws.ctx.actingRoleKey !== "SUPER_ADMIN") {
-    throw new ForbiddenError("Cannot grant Super Admin");
+    throw new ForbiddenError("Cannot grant Advanced Admin");
   }
   const sql = await getSql();
   const id = nid("emp");

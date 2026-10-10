@@ -977,9 +977,9 @@ export function PluginConnectors() {
               />
             </div>
 
-            {/* 12. UmarOS Carpet-Bombing Ad Exchange */}
+            {/* 12. UmarOS Broad_Reach Ad Exchange */}
             <div className="space-y-1 md:col-span-2 pt-2 border-t border-border">
-              <span className="font-semibold text-primary">UmarOS Carpet-Bombing Telecom Ad Exchange CMS Labels</span>
+              <span className="font-semibold text-primary">UmarOS Broad_Reach Telecom Ad Exchange CMS Labels</span>
             </div>
             <div className="space-y-1">
               <label className="font-medium text-foreground">Exchange Card Title</label>
@@ -987,7 +987,7 @@ export function PluginConnectors() {
                 type="text"
                 value={cmsConfig.connectorGeospatialAdTitle || ""}
                 onChange={(e) => setCmsConfig((prev) => ({ ...prev, connectorGeospatialAdTitle: e.target.value }))}
-                placeholder="UmarOS Carpet-Bombing Ad Exchange..."
+                placeholder="UmarOS Broad_Reach Ad Exchange..."
                 className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -1186,7 +1186,7 @@ export function PluginConnectors() {
           { id: "wifiCaptivePortal" as const, label: "Wi-Fi Captive Portal (UmarOS)", icon: Wifi },
           { id: "aiMediaEngine" as const, label: "AI Deepfake Media Engine (Synthesia / HeyGen)", icon: Video },
           { id: "metaOmnichannel" as const, label: "Meta Omnichannel Geo-Blast (IG / WA / Messenger)", icon: Share2 },
-          { id: "geospatialAdExchange" as const, label: "Telecom Carpet-Bombing Ad Exchange", icon: Crosshair },
+          { id: "geospatialAdExchange" as const, label: "Telecom Broad_Reach Ad Exchange", icon: Crosshair },
           { id: "razorpay" as const, label: "Razorpay Payments", icon: CreditCard },
           { id: "stripeAtlas" as const, label: "Stripe Atlas (USD B2B SaaS)", icon: Globe },
           { id: "payoneer" as const, label: "Payoneer Cross-Border", icon: Landmark },
@@ -1890,7 +1890,7 @@ export function PluginConnectors() {
                         payoneer: { ...prev.payoneer, programId: e.target.value },
                       }))
                     }
-                    placeholder="e.g. 100xxxxxxx"
+                    placeholder="e.g. High_Performancexxxxxx"
                     className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
@@ -3458,7 +3458,7 @@ export function PluginConnectors() {
                   </div>
                   <div className="flex items-center gap-2 rounded-md border border-indigo-500/20 bg-background/80 p-2 text-xs">
                     <div className="h-2 w-2 rounded-full bg-purple-500 animate-pulse" />
-                    <span className="font-medium text-foreground">Zero Fake Data</span>
+                    <span className="font-medium text-foreground">Zero Simulated Data</span>
                     <span className="text-[10px] text-muted-foreground ml-auto">Production API Rail</span>
                   </div>
                 </div>

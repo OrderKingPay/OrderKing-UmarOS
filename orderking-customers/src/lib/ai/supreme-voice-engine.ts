@@ -1,5 +1,5 @@
 
-// Supreme Voice Engine (v2.0 Supreme)
+// Premium Voice Engine (v2.0 Premium)
 // Web Audio DSP Chain, 100% Realistic Young Female Vocal Personas, 
 // Multi-Language Synthesis & Recognition, Full-Duplex Auto-Turn-Taking
 
@@ -111,7 +111,7 @@ export const VOICE_PERSONAS: Record<VoicePersonaId, VoicePersona> = {
 };
 
 // Web Audio DSP Engine Singleton for Broadcast Quality Sound
-class SupremeWebAudioDsp {
+class PremiumWebAudioDsp {
   private ctx: AudioContext | null = null;
   private presenceFilter: BiquadFilterNode | null = null;
   private airShelf: BiquadFilterNode | null = null;
@@ -172,7 +172,7 @@ class SupremeWebAudioDsp {
         this.analyser.connect(this.ctx.destination);
       }
     } catch (e) {
-      console.warn("[SupremeWebAudioDsp] Init warning:", e);
+      console.warn("[PremiumWebAudioDsp] Init warning:", e);
     }
   }
 
@@ -284,7 +284,7 @@ class SupremeWebAudioDsp {
   }
 }
 
-export const supremeAudioDsp = new SupremeWebAudioDsp();
+export const supremeAudioDsp = new PremiumWebAudioDsp();
 
 // Best Voice Finder Heuristics
 export function selectBestBrowserVoice(

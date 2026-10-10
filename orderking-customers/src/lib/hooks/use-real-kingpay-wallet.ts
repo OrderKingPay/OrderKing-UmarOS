@@ -51,7 +51,7 @@ export function useRealKingPayWallet() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
   });
 
-  // Mock setWalletBalance to emulate the useState tuple structure for easy patching
+  // Simulated setWalletBalance to emulate the useState tuple structure for easy patching
   const setWalletBalance = (action: any) => {
     let amount = 0;
     if (typeof action === 'function') {

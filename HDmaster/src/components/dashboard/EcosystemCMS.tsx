@@ -1111,7 +1111,7 @@ export function EcosystemCMS() {
               Real-time rendering of active copy across customer interaction viewports. Select any field to inspect its appearance.
             </p>
 
-            {/* Mock Phone Frame */}
+            {/* Simulated Phone Frame */}
             <div className="mx-auto max-w-[280px] rounded-2xl border-4 border-zinc-800 bg-zinc-950 p-3 shadow-xl text-zinc-100 font-sans">
               {/* Phone Status Bar */}
               <div className="flex items-center justify-between text-[10px] text-zinc-400 mb-2 px-1">
@@ -1150,7 +1150,7 @@ export function EcosystemCMS() {
                   </div>
                 </div>
 
-                {/* Zomato Surge Warning Mock Card */}
+                {/* Zomato Surge Warning Simulated Card */}
                 <div className="rounded-lg bg-emerald-950/60 border border-emerald-800/50 p-2.5 space-y-1">
                   <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-400">
                     <ShieldCheck className="h-3 w-3 shrink-0" />

@@ -96,7 +96,7 @@ import { useEmployee } from "./shell";
 import { GrowthVaultView } from "./growth-vault";
 import { FounderSovereignDeck } from "./founder-sovereign-deck";
 import { FounderEconomics } from "../dashboard/FounderEconomics";
-import { UmarOS_Supreme_AI } from "../dashboard/UmarOS_Supreme_AI";
+import { UmarOS_AI_Terminal } from "../dashboard/UmarOS_AI_Terminal";
 import { LiveFounderProfitDashboard } from "../dashboard/LiveFounderProfitDashboard";
 
 
@@ -176,7 +176,7 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* UMAR OS SUPREME AI COMMAND CENTER */}
-      <UmarOS_Supreme_AI />
+      <UmarOS_AI_Terminal />
 
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -280,7 +280,7 @@ function CeoPage() {
   return (
     <div className="space-y-4">
       {/* UMAR OS: SOVEREIGN FOUNDER CONTROL DECK */}
-      <UmarOS_Supreme_AI />
+      <UmarOS_AI_Terminal />
       <LiveFounderProfitDashboard />
       <FounderEconomics />
       <FounderSovereignDeck />
@@ -1292,7 +1292,7 @@ function MarketingPage() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl">Strategic Marketing & Growth Command</h1>
-          <p className="mt-1 text-sm text-muted">High-Performance Growth Engine with zero-loss unit economics and viral customer loops.</p>
+          <p className="mt-1 text-sm text-muted">High_Performance Growth Engine with zero-loss unit economics and viral customer loops.</p>
         </div>
       </header>
 
@@ -2497,7 +2497,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("launch_viral_referral_engine: Launch High-Performance viral referral booster with ₹100 friend discount (min ₹299 cart) and ₹50 referrer wallet reward with zero platform loss", "growth")}
+                  onClick={() => runPreset("launch_viral_referral_engine: Launch High_Performance viral referral booster with ₹100 friend discount (min ₹299 cart) and ₹50 referrer wallet reward with zero platform loss", "growth")}
                 >
                   <span className="font-semibold">🎁 1-Click Viral Referral Engine</span>
                   <p className="text-[11px] text-muted">Zero-loss customer acquisition loop with ₹299 cart guardrail.</p>
@@ -4702,4 +4702,5 @@ function Denied({ error }: { error: string }) {
     </div>
   );
 }
+
 

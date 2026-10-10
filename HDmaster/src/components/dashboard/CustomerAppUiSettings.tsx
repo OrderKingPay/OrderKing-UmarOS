@@ -715,7 +715,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                   }}
                 >
                   <div className="flex gap-2">
-                    {/* Item Image Mockup */}
+                    {/* Item Image Simulatedup */}
                     <div
                       className="h-16 w-16 bg-slate-300 shrink-0 flex items-center justify-center text-xs font-bold text-slate-600"
                       style={{

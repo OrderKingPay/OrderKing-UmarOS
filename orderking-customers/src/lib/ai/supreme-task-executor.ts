@@ -1,6 +1,6 @@
 
 /**
- * HDmaster Founder AI — The Supreme Task Executor (§28)
+ * HDmaster Founder AI — The Premium Task Executor (§28)
  *
  * Decomposes high-level founder commands (e.g. "Build me a legitimate online business around this opportunity")
  * into the comprehensive 14-stage execution graph:
@@ -25,7 +25,7 @@
  * and request it. Never pretend the missing human action occurred.
  */
 
-export type SupremeTaskStage =
+export type PremiumTaskStage =
   | "RESEARCH"
   | "BUSINESS_MODEL"
   | "MARKET_VALIDATION"
@@ -65,9 +65,9 @@ export interface HumanGate {
   satisfiedAt?: string;
 }
 
-export interface SupremeStageNode {
+export interface PremiumStageNode {
   id: string;
-  stage: SupremeTaskStage;
+  stage: PremiumTaskStage;
   title: string;
   description: string;
   status: StageExecutionStatus;
@@ -78,22 +78,22 @@ export interface SupremeStageNode {
   completedAt?: string;
 }
 
-export interface SupremeExecutionPlan {
+export interface PremiumExecutionPlan {
   id: string;
   goal: string;
   createdAt: string;
   totalStages: number;
   completedStages: number;
   activeStageIndex: number;
-  stages: SupremeStageNode[];
+  stages: PremiumStageNode[];
   isPaused: boolean;
   pauseReason?: string;
 }
 
-export function decomposeFounderGoal(goal: string): SupremeExecutionPlan {
+export function decomposeFounderGoal(goal: string): PremiumExecutionPlan {
   const planId = `PLAN-${Date.now().toString(36)}`;
 
-  const stages: SupremeStageNode[] = [
+  const stages: PremiumStageNode[] = [
     {
       id: "STAGE-01-RESEARCH",
       stage: "RESEARCH",

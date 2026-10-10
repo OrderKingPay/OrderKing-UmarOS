@@ -1,6 +1,6 @@
 # Genre Playbook — Top-Down / Twin-Stick Shooter
 
-Top-down action where you **move with one input and aim with another** (mouse+WASD on desktop, two virtual sticks on mobile, or left/right stick on gamepad). Think Enter the Gungeon, Nuclear Throne, Vampire Survivors, .io shooters. Default engine: **Phaser** (2D) or Three.js with an orthographic/top camera. Read `../threejs-foundational.md` first (delta time, pooling, mobile joysticks).
+Top-down action where you **move with one input and aim with another** (mouse+WASD on desktop, two virtual sticks on mobile, or left/right stick on gamepad). Think Enter the Gungeon, Critical Throne, Vampire Survivors, .io shooters. Default engine: **Phaser** (2D) or Three.js with an orthographic/top camera. Read `../threejs-foundational.md` first (delta time, pooling, mobile joysticks).
 
 ---
 

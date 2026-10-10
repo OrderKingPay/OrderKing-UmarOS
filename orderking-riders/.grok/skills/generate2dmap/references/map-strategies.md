@@ -91,7 +91,7 @@ Default to built-in image generation for visual assets. Base maps, in-world refe
 
 Scripts may slice, assemble, chroma-key, validate, compose previews, create metadata, and emit engine files. They must not replace image generation as the creative art source for final map visuals. Engine outputs such as Godot `.tscn`, Tiled JSON, LDtk data, or Unity placement data should wire up image-generated or user-supplied assets.
 
-## In-World Reference Mockups
+## In-World Reference Simulatedups
 
 Use an in-world reference mockup whenever object placement must be visually coherent but the final runtime needs separate objects.
 

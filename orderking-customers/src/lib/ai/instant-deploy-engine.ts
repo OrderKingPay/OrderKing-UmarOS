@@ -78,7 +78,7 @@ export class InstantDeployEngine {
     </div>
   </main>
   <footer class="max-w-4xl mx-auto w-full text-center text-xs text-subtle border-t border-white/10 pt-4">
-    Powered by Umar OS · Sovereign Autonomous Founder Infrastructure · Zero Mock Verification
+    Powered by Umar OS · Sovereign Autonomous Founder Infrastructure · Zero Simulated Verification
   </footer>
 </body>
 </html>`;

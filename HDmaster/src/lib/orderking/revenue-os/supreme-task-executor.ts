@@ -1,4 +1,4 @@
-// The Supreme Task Executor (Directive 28)
+// The Premium Task Executor (Directive 28)
 // Decomposes high-level founder commands ("Build me a legitimate online business around this opportunity") into 14 business creation pillars:
 // 1. RESEARCH  2. BUSINESS MODEL  3. MARKET VALIDATION  4. OFFER  5. BRAND  6. WEBSITE  7. PRODUCT
 // 8. PAYMENT SYSTEM  9. ANALYTICS  10. LEAD GENERATION  11. SALES  12. DELIVERY  13. SUPPORT  14. REVENUE TRACKING.
@@ -43,7 +43,7 @@ export interface BusinessBlueprintExecution {
   createdAt: string;
 }
 
-export class SupremeTaskExecutor {
+export class PremiumTaskExecutor {
   private executions: Map<string, BusinessBlueprintExecution> = new Map();
 
   decomposeGoal(goal: string): BusinessBlueprintExecution {
@@ -191,4 +191,4 @@ export class SupremeTaskExecutor {
   }
 }
 
-export const supremeTaskExecutor = new SupremeTaskExecutor();
+export const supremeTaskExecutor = new PremiumTaskExecutor();

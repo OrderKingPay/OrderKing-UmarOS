@@ -229,7 +229,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
       if (res && res.ok) {
         setTestResult({
           ok: true,
-          message: res.message || "UmarOS Carpet-Bombing Ad Exchange handshake verified.",
+          message: res.message || "UmarOS Broad_Reach Ad Exchange handshake verified.",
           timestamp: now,
         });
         updateConfig({ lastTestedAt: now });
@@ -251,7 +251,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
     }
   };
 
-  // Dispatch Carpet-Bombing Run
+  // Dispatch Broad_Reach Run
   const handleDispatchCampaign = async () => {
     try {
       setIsDispatching(true);
@@ -312,7 +312,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
               <div>
                 <div className="flex items-center gap-2.5">
                   <h2 className="text-xl font-bold tracking-tight text-foreground">
-                    UmarOS Carpet-Bombing Ad Exchange
+                    UmarOS Broad_Reach Ad Exchange
                   </h2>
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                     <Radio className="h-3 w-3 animate-ping" />
@@ -446,7 +446,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                   <Play className="h-4 w-4 fill-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-foreground">Carpet-Bombing Campaign Trigger</h3>
+                  <h3 className="text-sm font-semibold text-foreground">Broad_Reach Campaign Trigger</h3>
                   <p className="text-xs text-muted-foreground">
                     Set target coordinates, radius perimeter, and forceful first-order gift incentive.
                   </p>

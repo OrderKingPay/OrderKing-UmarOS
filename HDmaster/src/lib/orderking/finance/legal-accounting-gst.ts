@@ -1,7 +1,7 @@
 /**
  * 👑 HD MASTER AUTOMATED LEGAL ACCOUNTING, PAYOUTS & GST ENGINE
  * 
- * Final Supreme Work Order Specification:
+ * Final Premium Work Order Specification:
  * - Full automatic legal accounting, payouts, GST and income tracking.
  * - Zero founder personal data visible to any customer, restaurant or rider.
  * - 100% compliant with Indian Tax Laws (GST Act, IT Act Section 194-O, Section 79 IT Act).

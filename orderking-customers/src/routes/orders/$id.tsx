@@ -35,7 +35,7 @@ function OrderDetailPage() {
   const [restaurantRating, setRestaurantRating] = useState(5);
   const [riderRating, setRiderRating] = useState(5);
   const [appRating, setAppRating] = useState(5);
-  const [selectedTags, setSelectedTags] = useState<string[]>(["Fresh & hot", "Super fast delivery"]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(["Fresh & hot", "Advanced fast delivery"]);
   const [reviewComment, setReviewComment] = useState("");
   const [splitCount, setSplitCount] = useState(2);
 
@@ -397,7 +397,7 @@ function OrderDetailPage() {
                   <div className="flex flex-wrap gap-1.5">
                     {[
                       "Fresh & piping hot ♨️",
-                      "Super fast delivery ⚡",
+                      "Advanced fast delivery ⚡",
                       "Polite & helpful rider 🛵",
                       "Leak-proof packaging 📦",
                       "Authentic royal taste 🍗",

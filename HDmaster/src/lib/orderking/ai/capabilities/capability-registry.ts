@@ -170,7 +170,7 @@ export class UniversalCapabilityRegistry {
       name: "Fullstack App & Website Factory",
       category: "app_creation",
       description: "Generates complete production React 19 web applications, PostgreSQL schemas, and REST APIs.",
-      provider: "Supreme Architectural Synthesis Engine",
+      provider: "Premium Architectural Synthesis Engine",
       permissions: ["manage_settings"],
       inputSchema: { type: "object", properties: { appType: { type: "string" }, clientName: { type: "string" } } },
       outputSchema: { type: "object", properties: { files: { type: "array" }, testResults: { type: "object" } } },

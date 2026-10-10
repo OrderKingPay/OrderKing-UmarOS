@@ -7,7 +7,7 @@ import {
   ENTERPRISE_BLUEPRINTS 
 } from './seed-data.ts';
 
-let sql = '-- Migration to move Supreme Founder AI static data to DB\n\n';
+let sql = '-- Migration to move Premium Founder AI static data to DB\n\n';
 
 sql += 'CREATE TABLE IF NOT EXISTS founder_client_leads (\n';
 sql += '  id VARCHAR(64) PRIMARY KEY,\n';

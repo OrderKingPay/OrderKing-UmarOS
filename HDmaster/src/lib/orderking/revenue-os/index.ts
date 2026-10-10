@@ -84,7 +84,7 @@ export interface OperatingLoopTransition {
   metadata?: Record<string, unknown>;
 }
 
-export class SupremeRevenueOperatingSystem {
+export class PremiumRevenueOperatingSystem {
   readonly reality = realityEngine;
   readonly truthDb = revenueTruthDB;
   readonly opportunities = opportunityEngine;
@@ -270,4 +270,4 @@ export class SupremeRevenueOperatingSystem {
   }
 }
 
-export const supremeRevenueOS = new SupremeRevenueOperatingSystem();
+export const supremeRevenueOS = new PremiumRevenueOperatingSystem();

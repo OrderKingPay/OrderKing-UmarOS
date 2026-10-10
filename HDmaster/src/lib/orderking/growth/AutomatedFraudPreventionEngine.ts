@@ -28,7 +28,7 @@ export class AutomatedFraudPreventionEngine {
   private readonly MIN_SPEND_BEFORE_PAYOUT_INR = 200; // Must be higher than the ₹150 referral bonus
   private readonly SUSPICIOUS_IP_VELOCITY_LIMIT = 3; // Max 3 signups per IP per 24h
 
-  // Mock databases for velocity checks (in prod: Redis)
+  // Simulated databases for velocity checks (in prod: Redis)
   private ipVelocityLedger: Map<string, number> = new Map();
   private deviceFingerprintLedger: Set<string> = new Set();
   private upiPayoutLedger: Set<string> = new Set();

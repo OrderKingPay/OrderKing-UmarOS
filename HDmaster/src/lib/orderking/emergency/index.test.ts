@@ -3,21 +3,21 @@ import { freezeSystem, killAgent, revokeTokens } from './index';
 import * as dbModule from '../../db';
 
 vi.mock('../../db', () => {
-    const queryMock = vi.fn();
-    const sqlMock = vi.fn().mockImplementation(() => Promise.resolve([]));
-    (sqlMock as any).query = queryMock;
+    const querySimulated = vi.fn();
+    const sqlSimulated = vi.fn().mockImplementation(() => Promise.resolve([]));
+    (sqlSimulated as any).query = querySimulated;
     
     return {
-        getSql: vi.fn().mockResolvedValue(sqlMock),
+        getSql: vi.fn().mockResolvedValue(sqlSimulated),
     };
 });
 
 describe('Emergency Control Plane', () => {
-    let sqlMock: any;
+    let sqlSimulated: any;
 
     beforeEach(async () => {
-        vi.clearAllMocks();
-        sqlMock = await dbModule.getSql();
+        vi.clearAllSimulateds();
+        sqlSimulated = await dbModule.getSql();
     });
 
     it('should freeze system', async () => {
@@ -26,13 +26,13 @@ describe('Emergency Control Plane', () => {
         // Assert we called sql at least twice:
         // 1. CREATE TABLE
         // 2. INSERT ... ON CONFLICT DO UPDATE
-        expect(sqlMock).toHaveBeenCalledTimes(2);
+        expect(sqlSimulated).toHaveBeenCalledTimes(2);
         
         // Basic check for the query text
-        const createQuery = sqlMock.mock.calls[0][0][0];
+        const createQuery = sqlSimulated.mock.calls[0][0][0];
         expect(createQuery).toContain('CREATE TABLE IF NOT EXISTS system_locks');
         
-        const insertQuery = sqlMock.mock.calls[1][0][0];
+        const insertQuery = sqlSimulated.mock.calls[1][0][0];
         expect(insertQuery).toContain('INSERT INTO system_locks');
     });
 
@@ -41,12 +41,12 @@ describe('Emergency Control Plane', () => {
 
         // 1 for autonomous_tasks
         // 1 for ai_work_items
-        expect(sqlMock).toHaveBeenCalledTimes(2);
+        expect(sqlSimulated).toHaveBeenCalledTimes(2);
         
-        const taskQuery = sqlMock.mock.calls[0][0][0];
+        const taskQuery = sqlSimulated.mock.calls[0][0][0];
         expect(taskQuery).toContain('UPDATE autonomous_tasks');
         
-        const workItemQuery = sqlMock.mock.calls[1][0][0];
+        const workItemQuery = sqlSimulated.mock.calls[1][0][0];
         expect(workItemQuery).toContain('UPDATE ai_work_items');
     });
 
@@ -54,12 +54,12 @@ describe('Emergency Control Plane', () => {
         await revokeTokens();
 
         // revokeTokens uses sql.query
-        expect(sqlMock.query).toHaveBeenCalledTimes(2);
+        expect(sqlSimulated.query).toHaveBeenCalledTimes(2);
         
-        const deleteSessionQuery = sqlMock.query.mock.calls[0][0];
+        const deleteSessionQuery = sqlSimulated.query.mock.calls[0][0];
         expect(deleteSessionQuery).toContain('DELETE FROM "session"');
 
-        const updateAccountQuery = sqlMock.query.mock.calls[1][0];
+        const updateAccountQuery = sqlSimulated.query.mock.calls[1][0];
         expect(updateAccountQuery).toContain('UPDATE "account"');
     });
 });

@@ -1,5 +1,5 @@
 /**
- * OrderKing Planetary SuperPower Revenue Harvester & Direct Money Generator Core
+ * OrderKing Planetary AdvancedPower Revenue Harvester & Direct Money Generator Core
  * Confidential & Proprietary - Restricted Solely to Platform Owner / CEO
  * 
  * Non-Negotiable Invariants:
@@ -201,7 +201,7 @@ Founder & Chief Executive, OrderKing Technologies Pvt Ltd`,
   {
     id: "corp_civil_hospital_karimganj",
     institutionName: "Karimganj Civil Hospital & District Medical Staff",
-    contactDepartment: "Hospital Superintendent & Resident Medical Officers (RMO) Association",
+    contactDepartment: "Hospital Advancedintendent & Resident Medical Officers (RMO) Association",
     institutionLocation: "Civil Hospital Road, Karimganj, Assam - 788710",
     monthlyPlatesEstimated: 1400,
     averagePlatePricePaise: 15000, // ₹150.00/plate
@@ -215,7 +215,7 @@ Founder & Chief Executive, OrderKing Technologies Pvt Ltd`,
       "Fresh Fruit & Salad Detox Bowls",
     ],
     rfpProposalLetter: `To,
-The Superintendent & Resident Doctors Welfare Committee,
+The Advancedintendent & Resident Doctors Welfare Committee,
 Karimganj Civil Hospital, Assam - 788710.
 
 Subject: 24/7 Hygienic Nutritional Catering for Medical Officers, Nursing Staff & Attendants

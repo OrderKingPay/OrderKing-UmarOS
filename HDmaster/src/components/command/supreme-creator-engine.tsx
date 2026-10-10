@@ -35,7 +35,7 @@ export type CreatedProject = {
   monthlyRevenueEst: string;
 };
 
-export function SupremeCreatorEngine() {
+export function PremiumCreatorEngine() {
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);

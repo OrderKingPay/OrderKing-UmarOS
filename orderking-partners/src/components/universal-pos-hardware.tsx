@@ -703,7 +703,7 @@ export function UniversalPosHardwareManager({
 
               <div className="text-center text-[9px] text-gray-500 border-t border-dashed border-gray-400 pt-2">
                 *** ESC/POS TEST PRINT VERIFIED ***<br />
-                OrderKing Super-App Hardware Gateway
+                OrderKing Advanced-App Hardware Gateway
               </div>
             </div>
 

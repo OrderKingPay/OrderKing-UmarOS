@@ -151,7 +151,7 @@ export class LiveOrchestrationEngine {
       },
     });
 
-    // 4. xAI Grok 4.6 SuperGrok Adapter
+    // 4. xAI Grok 4.6 AdvancedGrok Adapter
     this.registerProviderAdapter({
       id: "xai",
       name: "xAI Grok",

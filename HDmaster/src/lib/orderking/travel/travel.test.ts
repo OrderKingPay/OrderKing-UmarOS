@@ -81,7 +81,7 @@ test('AffiliateCommissionEngine - selects best offer balancing customer price an
 test('TravelOrchestrator - aggregates providers and correctly maps inventory competition', async () => {
   const orchestrator = new TravelOrchestrator();
 
-  class MockExpedia implements TravelProvider {
+  class SimulatedExpedia implements TravelProvider {
     id = 'expedia';
     async search(query: TravelSearchQuery): Promise<AffiliateOffer[]> {
       return [
@@ -103,7 +103,7 @@ test('TravelOrchestrator - aggregates providers and correctly maps inventory com
     }
   }
 
-  class MockSkyscanner implements TravelProvider {
+  class SimulatedSkyscanner implements TravelProvider {
     id = 'skyscanner';
     async search(query: TravelSearchQuery): Promise<AffiliateOffer[]> {
       return [
@@ -118,8 +118,8 @@ test('TravelOrchestrator - aggregates providers and correctly maps inventory com
     }
   }
 
-  orchestrator.registerProvider('flight', new MockExpedia());
-  orchestrator.registerProvider('flight', new MockSkyscanner());
+  orchestrator.registerProvider('flight', new SimulatedExpedia());
+  orchestrator.registerProvider('flight', new SimulatedSkyscanner());
 
   const results = await orchestrator.search({
     type: 'flight',

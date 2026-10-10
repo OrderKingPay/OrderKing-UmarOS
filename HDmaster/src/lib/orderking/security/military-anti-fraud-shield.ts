@@ -49,7 +49,7 @@ export interface RiderGpsTelemetry {
   lastLng?: number;
   lastTimestamp?: number;
   timestamp: number;
-  isMockGps?: boolean;
+  isSimulatedGps?: boolean;
 }
 
 export interface SecurityShieldAuditReport {
@@ -413,11 +413,11 @@ export class MilitaryAntiFraudShield {
   // ==========================================================================
 
   public validateRiderTelemetry(data: RiderGpsTelemetry): ValidationResult {
-    // 1. Mock GPS / Emulator Check
-    if (data.isMockGps) {
+    // 1. Simulated GPS / Emulator Check
+    if (data.isSimulatedGps) {
       this.gpsSpoofingIntercepted++;
       this.totalExploitsBlocked++;
-      this.quarantineEntity(data.riderId, "Mock location emulator detected", 24 * 60 * 60 * 1000);
+      this.quarantineEntity(data.riderId, "Simulated location emulator detected", 24 * 60 * 60 * 1000);
       return {
         valid: false,
         code: "MOCK_GPS_DETECTED",

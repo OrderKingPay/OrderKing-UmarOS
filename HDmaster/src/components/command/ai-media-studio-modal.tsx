@@ -389,7 +389,7 @@ export function AiMediaStudioModal({
                     onChange={(e) => setUpscale8K(e.target.checked)}
                     className="rounded border-amber-500 text-amber-500 focus:ring-amber-400"
                   />
-                  <span className="font-bold text-amber-300">8K Super-Resolution Upscaling</span>
+                  <span className="font-bold text-amber-300">8K Advanced-Resolution Upscaling</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input

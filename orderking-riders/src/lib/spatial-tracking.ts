@@ -159,7 +159,7 @@ export class SpatialTrackingService {
         const battery: any = await (navigator as any).getBattery();
         return battery.level * 100;
       }
-      return 100; // Mock if unsupported
+      return 100; // Simulated if unsupported
     } catch {
       return 100;
     }

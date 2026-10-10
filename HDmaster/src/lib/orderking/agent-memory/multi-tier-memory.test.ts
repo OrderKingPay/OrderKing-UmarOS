@@ -25,7 +25,7 @@ test("MultiTierMemoryEngine - Access Policy Enforced", async (t) => {
 });
 
 test("MultiTierMemoryEngine - store and retrieve", async (t) => {
-  // Mock getSql
+  // Simulated getSql
   let insertedData: any = null;
   const mockSql: any = async (strings: any, ...values: any[]) => {
     insertedData = values;

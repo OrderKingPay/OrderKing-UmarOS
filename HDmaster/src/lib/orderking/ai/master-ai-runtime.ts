@@ -1332,7 +1332,7 @@ export async function executeTool(
           { offer: "Commercial Kitchen Equipment", disbursed: 11, totalVolumePaise: 880000000, commissionYieldPaise: 30800000, status: "RECONCILED" },
           { offer: "Two-Wheeler / EV Bike Financing", disbursed: 37, totalVolumePaise: 370000000, commissionYieldPaise: 7400000, status: "RECONCILED" },
           { offer: "Smartphones & Electronics 0% EMI", devicesFinanced: 68, commissionYieldPaise: 11250000, status: "RECONCILED" },
-          { offer: "Bajaj RBL SuperCards", cardsIssued: 31, cpaRatePaise: 150000, commissionYieldPaise: 4650000, status: "RECONCILED" },
+          { offer: "Bajaj RBL AdvancedCards", cardsIssued: 31, cpaRatePaise: 150000, commissionYieldPaise: 4650000, status: "RECONCILED" },
         ],
         totalBajajCommissionPaise: 80500000,
         leakageCheck: "ZERO_LEAKAGE_CONFIRMED",
@@ -1406,8 +1406,8 @@ export async function executeTool(
           riderPreAllocationMultiplier: 1.25,
           cloudKitchenPrepBufferMs: 180000,
         },
-        autonomousSupervisionLevel: "TIER_1_FULLY_AUTONOMOUS_ZERO_EMPLOYEE_DEPENDENCY",
-        operationalVerdict: "OrderKing Super-App Ecosystem Operating at High-Performance Peak Stability, Zero Liability & Maximum EBITDA Yield.",
+        autonomousAdvancedvisionLevel: "TIER_1_FULLY_AUTONOMOUS_ZERO_EMPLOYEE_DEPENDENCY",
+        operationalVerdict: "OrderKing Advanced-App Ecosystem Operating at High_Performance Peak Stability, Zero Liability & Maximum EBITDA Yield.",
       };
     }
 
@@ -1493,7 +1493,7 @@ export async function executeTool(
         status: "PLANETARY_VIRAL_ENGINE_DEPLOYED",
         timestamp: new Date().toISOString(),
         infrastructure: "SpaceX/Starlink & Cloudflare Edge Workers",
-        algorithmStatus: "High-Performance Exponential Growth Initiated",
+        algorithmStatus: "High_Performance Exponential Growth Initiated",
         metrics: {
           projectedReach: "1.2 Billion users",
           latency: "< 5ms global",
@@ -1776,7 +1776,7 @@ export async function executeTool(
           rbiLspCompliance: "RBI_DIGITAL_LENDING_GUIDELINES_ZERO_CREDIT_RISK",
           participantMutualBenefitIndex: "100_PERCENT_PARTICIPANTS_FINANCIALLY_BETTER_OFF",
         },
-        verdict: "The 12-stream profit engine generates 10x–100x higher sustainable founder free cash flow than competitors by completely eliminating corporate bloatware and activating high-margin fintech, ad, and affiliate flywheels, while guaranteeing that restaurants, riders, and customers earn or save significantly more than on Zomato or Swiggy.",
+        verdict: "The 12-stream profit engine generates 10x–High_Performance higher sustainable founder free cash flow than competitors by completely eliminating corporate bloatware and activating high-margin fintech, ad, and affiliate flywheels, while guaranteeing that restaurants, riders, and customers earn or save significantly more than on Zomato or Swiggy.",
       };
     }
 
@@ -2071,7 +2071,7 @@ export async function executeTool(
             gpsSpoofingDetected: 0,
             voucherSybilRingsNeutralized: 12,
             collusiveRefundLoopsDetected: 0,
-            rootedMockLocationBlocks: 27,
+            rootedSimulatedLocationBlocks: 27,
           },
           capitalShieldedPaise: 34820000,
         },
@@ -2226,14 +2226,14 @@ export async function executeTool(
           zeroOrderLossGuarantee: "100% VERIFIED",
           offlineQueueSyncLatencyMs: 450,
         },
-        result: "14 synchronized revenue streams producing High-Performance higher free cash flow than Zomato with 0ms 2G offline-first caching and zero legal/tax liability.",
+        result: "14 synchronized revenue streams producing High_Performance higher free cash flow than Zomato with 0ms 2G offline-first caching and zero legal/tax liability.",
       };
     }
 
-    case "autonomous_100x_profit_and_addiction_director": {
+    case "autonomous_High_Performance_profit_and_addiction_director": {
       requirePermission(ws.ctx, "view_finance");
       const profitSummary = calculateMasterProfitEngine({
-        periodLabel: "High-Performance Profit & Addiction Run-Rate (Barak Valley Ecosystem)",
+        periodLabel: "High_Performance Profit & Addiction Run-Rate (Barak Valley Ecosystem)",
         monthlyDeliveredOrders: 50_000,
         grossMerchandiseValuePaise: 15_000_000_00,
         activeRestaurantsCount: 220,
@@ -2296,7 +2296,7 @@ export async function executeTool(
           zeroOrderLossGuarantee: "100% VERIFIED",
           offlineQueueSyncLatencyMs: 450,
         },
-        result: "18 synchronized legal revenue streams producing High-Performance higher free cash flow than Zomato, radical 1-tap customer ease, and instant voice soundbox announcements.",
+        result: "18 synchronized legal revenue streams producing High_Performance higher free cash flow than Zomato, radical 1-tap customer ease, and instant voice soundbox announcements.",
       };
     }
 
@@ -2421,7 +2421,7 @@ export async function executeTool(
           },
           movingBillboardFleet: "10 delivery riders with high-visibility QR boxes act as 24/7 moving street billboards across town",
         },
-        verdict: "Over ₹3.74 Crore in genuine cloud and government subsidies identified. WhatsApp Status viral loop and micro-budget Meta geofencing activated to dominate local mobile feeds High-Performance faster than competitors.",
+        verdict: "Over ₹3.74 Crore in genuine cloud and government subsidies identified. WhatsApp Status viral loop and micro-budget Meta geofencing activated to dominate local mobile feeds High_Performance faster than competitors.",
       };
     }
 
@@ -2448,7 +2448,7 @@ export async function executeTool(
           { institution: "NIT Silchar", topic: "Overthrowing Zomato: How Localized Tech Beats Multinational Bloatware", honorarium: "₹35,000 + VIP Memento" },
           { institution: "Assam University", topic: "Zero-Loss Unit Economics & 2G Resilient FinTech", honorarium: "University Citation & Honorarium" },
           { institution: "Tezpur University", topic: "Hyperlocal Logistics in Assam: Conquering Remote Towns", honorarium: "Plaque & Honorarium" },
-          { institution: "IIT Bombay E-Summit", topic: "David vs Goliath: Bootstrapping an Indian Super-App against Decacorns", honorarium: "₹1,00,000 Travel & Showcase" },
+          { institution: "IIT Bombay E-Summit", topic: "David vs Goliath: Bootstrapping an Indian Advanced-App against Decacorns", honorarium: "₹1,00,000 Travel & Showcase" },
           { institution: "BITS Pilani Conquest", topic: "Zero-MDR FinTech & 2G Resilient Edge Delivery Networks", honorarium: "Honorarium & Syndicate Access" },
           { institution: "IIM Calcutta Innovation Park", topic: "Empowering 500+ Kitchens with 0% Markup Aggregation", honorarium: "Institutional Mentorship" },
         ],

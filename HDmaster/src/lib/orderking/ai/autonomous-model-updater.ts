@@ -62,7 +62,7 @@ export const INITIAL_MODEL_REGISTRY: UpgradableModelInfo[] = [
   },
   {
     id: "codex-supreme",
-    name: "Codex Supreme Architect",
+    name: "Codex Premium Architect",
     generation: "codex-local-v1",
     provider: "Codex Sovereign",
     releaseDate: "Always Active",

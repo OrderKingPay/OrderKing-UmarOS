@@ -38,7 +38,7 @@ const PRIZES: RoulettePrize[] = [
   { id: "p3", label: "₹35", sub: "Instant Cash", color: "#3B82F6", textColor: "#FFFFFF", amount: 35, type: "CASH", code: "KING35", description: "₹35 Instant Cashback credited directly" },
   { id: "p4", label: "20% OFF", sub: "Next Order", color: "#EC4899", textColor: "#FFFFFF", amount: 0, type: "DISCOUNT", code: "STREAK20", description: "Flat 20% discount coupon up to ₹100 on next meal" },
   { id: "p5", label: "Free Dish", sub: "Dessert Box", color: "#06B6D4", textColor: "#FFFFFF", amount: 0, type: "VOUCHER", code: "SWEETKING", description: "Free dessert item on your next local restaurant order" },
-  { id: "p6", label: "₹75", sub: "Super Cash", color: "#8B5CF6", textColor: "#FFFFFF", amount: 75, type: "CASH", code: "KING75", description: "Super ₹75 KingPay Wallet Cash top-up!" },
+  { id: "p6", label: "₹75", sub: "Advanced Cash", color: "#8B5CF6", textColor: "#FFFFFF", amount: 75, type: "CASH", code: "KING75", description: "Advanced ₹75 KingPay Wallet Cash top-up!" },
   { id: "p7", label: "2X Coins", sub: "500 Coins", color: "#F97316", textColor: "#FFFFFF", amount: 0, type: "COINS", code: "COINS500", description: "500 King Coins redeemable for fuel & brand vouchers" },
 ];
 

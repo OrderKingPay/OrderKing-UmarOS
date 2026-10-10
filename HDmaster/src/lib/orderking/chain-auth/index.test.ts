@@ -4,7 +4,7 @@ import { CallChainContext, IdentityType, type ChainIdentity } from "./index.ts";
 import { type AccessContext } from "../rbac.ts";
 import { type Permission } from "../permissions.ts";
 
-function createMockContext(roleKey: string, permissions: readonly Permission[]): AccessContext {
+function createSimulatedContext(roleKey: string, permissions: readonly Permission[]): AccessContext {
   return {
     userId: "user-123",
     employeeId: "emp-123",
@@ -22,11 +22,11 @@ describe("CallChainContext", () => {
   test("should allow when all identities have permission", () => {
     const human: ChainIdentity = {
       type: IdentityType.HUMAN,
-      context: createMockContext("ADMIN", ["view_orders"]),
+      context: createSimulatedContext("ADMIN", ["view_orders"]),
     };
     const agent: ChainIdentity = {
       type: IdentityType.AGENT,
-      context: createMockContext("AI_AGENT", ["view_orders", "access_AI"]),
+      context: createSimulatedContext("AI_AGENT", ["view_orders", "access_AI"]),
     };
 
     const chain = new CallChainContext().pushIdentity(human).pushIdentity(agent);
@@ -37,11 +37,11 @@ describe("CallChainContext", () => {
   test("should deny when one identity lacks permission", () => {
     const human: ChainIdentity = {
       type: IdentityType.HUMAN,
-      context: createMockContext("ADMIN", ["view_orders"]),
+      context: createSimulatedContext("ADMIN", ["view_orders"]),
     };
     const agent: ChainIdentity = {
       type: IdentityType.AGENT,
-      context: createMockContext("AI_AGENT", ["access_AI"]), // Missing view_orders
+      context: createSimulatedContext("AI_AGENT", ["access_AI"]), // Missing view_orders
     };
 
     const chain = new CallChainContext().pushIdentity(human).pushIdentity(agent);
@@ -52,11 +52,11 @@ describe("CallChainContext", () => {
   test("should throw ForbiddenError on requirePermission if missing", () => {
     const human: ChainIdentity = {
       type: IdentityType.HUMAN,
-      context: createMockContext("ADMIN", ["view_orders"]),
+      context: createSimulatedContext("ADMIN", ["view_orders"]),
     };
     const agent: ChainIdentity = {
       type: IdentityType.AGENT,
-      context: createMockContext("AI_AGENT", ["access_AI"]),
+      context: createSimulatedContext("AI_AGENT", ["access_AI"]),
     };
 
     const chain = new CallChainContext().pushIdentity(human).pushIdentity(agent);
@@ -69,19 +69,19 @@ describe("CallChainContext", () => {
   test("should track full identity chain correctly", () => {
     const human: ChainIdentity = {
       type: IdentityType.HUMAN,
-      context: createMockContext("ADMIN", ["manage_users"]),
+      context: createSimulatedContext("ADMIN", ["manage_users"]),
     };
     const orchestrator: ChainIdentity = {
       type: IdentityType.ORCHESTRATOR,
-      context: createMockContext("SYSTEM", ["manage_users"]),
+      context: createSimulatedContext("SYSTEM", ["manage_users"]),
     };
     const agent: ChainIdentity = {
       type: IdentityType.AGENT,
-      context: createMockContext("AI_AGENT", ["manage_users"]),
+      context: createSimulatedContext("AI_AGENT", ["manage_users"]),
     };
     const tool: ChainIdentity = {
       type: IdentityType.TOOL,
-      context: createMockContext("SYSTEM_TOOL", ["manage_users"]),
+      context: createSimulatedContext("SYSTEM_TOOL", ["manage_users"]),
     };
 
     let chain = new CallChainContext();

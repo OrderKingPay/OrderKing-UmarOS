@@ -70,7 +70,7 @@ export class UniversalConnectorFabric {
 
     const token = authHeader.replace('Bearer ', '').trim();
 
-    // Mock secure token decoding bridging
+    // Simulated secure token decoding bridging
     if (token === 'FOUNDER_MASTER_TOKEN_xyz') {
       return { userId: 'founder_001', role: 'FOUNDER', requestId };
     }

@@ -91,7 +91,7 @@ export class SystemMasterController {
     this.restartCount++;
 
     const components = [
-      "Supreme Model Router (8 Models Verified)",
+      "Premium Model Router (8 Models Verified)",
       "Local Deterministic Fallback Engine",
       "Universal Platform Integrator",
       "Voice Synthesis Acoustic DSP",

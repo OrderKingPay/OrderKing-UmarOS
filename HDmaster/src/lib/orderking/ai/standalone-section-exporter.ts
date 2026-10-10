@@ -64,7 +64,7 @@ export class StandaloneSectionExporter {
     },
     {
       id: "media_studio",
-      title: "Supreme AI Image & Kinetic Video Studio",
+      title: "Premium AI Image & Kinetic Video Studio",
       category: "Creative Media & AI Studio",
       description: "Standalone production studio for photorealistic 8K imagery, cinematic motion videos, and long commercial stitching.",
       icon: "Sparkles",
@@ -82,7 +82,7 @@ export class StandaloneSectionExporter {
     },
     {
       id: "chat",
-      title: "Supreme Founder AI Executive Chat & Voice Partner",
+      title: "Premium Founder AI Executive Chat & Voice Partner",
       category: "AI Executive Assistant",
       description: "Extract the ChatGPT-styled dark mode chat interface with young female voice synthesis and multi-model switching.",
       icon: "Crown",
@@ -105,7 +105,7 @@ export class StandaloneSectionExporter {
       description: "Standalone storage purifier, duplicate remover, memory leak cleaner, and self-healing system optimizer.",
       icon: "Zap",
       suggestedDomain: "purifier.orderking.in",
-      features: ["High-Performance Browser Cleaner", "Zero Data Loss Guarantee", "Granular Cache Purge", "Auto-Clean Engine"],
+      features: ["High_Performance Browser Cleaner", "Zero Data Loss Guarantee", "Granular Cache Purge", "Auto-Clean Engine"],
     },
     {
       id: "hospital",

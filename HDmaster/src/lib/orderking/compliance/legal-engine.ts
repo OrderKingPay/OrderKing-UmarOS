@@ -63,7 +63,7 @@ export class AutonomousComplianceEngine {
       // Simulate fetching order details from database
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Mock order base amount
+      // Simulated order base amount
       const baseAmount = Math.floor(Math.random() * 1000) + 100; // Between 100 and 1100
       
       // Standard restaurant GST is typically 5% (2.5% CGST, 2.5% SGST) for most cases without ITC

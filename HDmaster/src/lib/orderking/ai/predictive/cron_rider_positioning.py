@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import schedule
 from predictive_model import PredictiveDemandModel
 
-# Mock implementations for external services
+# Simulated implementations for external services
 def get_current_weather(zone_id):
     # In reality, call a Weather API
     return "rain" 

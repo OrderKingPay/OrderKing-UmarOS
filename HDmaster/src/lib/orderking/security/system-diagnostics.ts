@@ -251,7 +251,7 @@ export class SystemDiagnosticsEngine {
     if (waitingApproval > 10) {
       status = 'DEGRADED';
       message = `${waitingApproval} tasks waiting in Founder Approval Gate. Operational bottleneck risk.`;
-      recommendation = 'Founder review required in Supreme AI Chat.';
+      recommendation = 'Founder review required in Premium AI Chat.';
     } else if (failedTasks > 5) {
       status = 'DEGRADED';
       message = `${failedTasks} AI tasks failed. Review error logs for agent retries.`;
@@ -260,7 +260,7 @@ export class SystemDiagnosticsEngine {
 
     return {
       componentId: 'ai_workforce',
-      name: 'Autonomous AI Workforce Supergraph',
+      name: 'Autonomous AI Workforce Advancedgraph',
       category: 'AI_WORKFORCE',
       status,
       latencyMs: Math.max(1, latencyMs),

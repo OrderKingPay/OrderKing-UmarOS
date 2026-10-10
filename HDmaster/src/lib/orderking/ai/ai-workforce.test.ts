@@ -2,7 +2,7 @@ import test, { describe } from "node:test";
 import assert from "node:assert/strict";
 import { aiWorkforceOrchestrator } from "./ai-workforce-orchestrator.ts";
 
-describe("Autonomous AI Workforce Supergraph Orchestrator", () => {
+describe("Autonomous AI Workforce Advancedgraph Orchestrator", () => {
   test("initializes specialized autonomous agents with distinct permissions", () => {
     const agents = aiWorkforceOrchestrator.listAgents();
     assert.equal(agents.length, 9);

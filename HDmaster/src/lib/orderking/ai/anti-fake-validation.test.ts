@@ -194,7 +194,7 @@ test("Military Anti-Fraud Shield - Autonomous Refund Claim Validation & Sybil Ph
   assert.equal(untrustedRes.code, "TRUST_SCORE_INSUFFICIENT");
 });
 
-test("Military Anti-Fraud Shield - Rider GPS Teleportation & Mock Spoofing", () => {
+test("Military Anti-Fraud Shield - Rider GPS Teleportation & Simulated Spoofing", () => {
   const riderId = "rdr_silchar_01";
 
   // 1. Valid coordinates in Silchar, Assam (Lat ~24.8, Lng ~92.8)
@@ -207,13 +207,13 @@ test("Military Anti-Fraud Shield - Rider GPS Teleportation & Mock Spoofing", () 
   const validRes = militaryAntiFraudShield.validateRiderTelemetry(validTelemetry);
   assert.equal(validRes.valid, true);
 
-  // 2. Mock GPS / Emulator flag
+  // 2. Simulated GPS / Emulator flag
   const mockTelemetry: RiderGpsTelemetry = {
     riderId: "rdr_emulator_02",
     lat: 24.8333,
     lng: 92.7789,
     timestamp: Date.now(),
-    isMockGps: true
+    isSimulatedGps: true
   };
   const mockRes = militaryAntiFraudShield.validateRiderTelemetry(mockTelemetry);
   assert.equal(mockRes.valid, false);
@@ -275,7 +275,7 @@ test("Military Anti-Fraud Shield - Financial Circuit Breaker", () => {
   militaryAntiFraudShield.setDailyLossCeilingInr(5000);
 });
 
-test("UmarOS Supreme - Founder Console Security Commands & Telemetry Integration", async () => {
+test("UmarOS Premium - Founder Console Security Commands & Telemetry Integration", async () => {
   // 1. /shield command
   const shieldCmdRes = await runFounderConsoleCommandCore({ command: "/shield" });
   assert.equal(shieldCmdRes.status, "SUCCESS");

@@ -231,7 +231,7 @@ export const ROLE_PRESETS: Record<string, Permission[]> = {
 };
 
 export const ROLE_LABELS: Record<string, string> = {
-  SUPER_ADMIN: "Super Admin",
+  SUPER_ADMIN: "Advanced Admin",
   CEO: "CEO / Founder",
   COO: "COO / Operations",
   AREA_MANAGER: "Area / City Manager",

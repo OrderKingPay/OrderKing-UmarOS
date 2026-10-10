@@ -1,13 +1,13 @@
 import { SecureContainment } from './index';
 import { EventEmitter } from 'events';
 
-class MockStream extends EventEmitter {
+class SimulatedStream extends EventEmitter {
     constructor() {
         super();
     }
 }
 
-class MockDocker {
+class SimulatedDocker {
     modem = {
         demuxStream: (stream: any, stdout: any, stderr: any) => {
             stdout.write(Buffer.from("Hello from inside Docker!\n"));
@@ -19,7 +19,7 @@ class MockDocker {
         return {
             start: async () => {},
             logs: async () => {
-                const stream = new MockStream();
+                const stream = new SimulatedStream();
                 setTimeout(() => stream.emit('end'), 50);
                 return stream;
             },
@@ -33,7 +33,7 @@ class MockDocker {
     }
 }
 
-class MockDockerTimeout {
+class SimulatedDockerTimeout {
     modem = {
         demuxStream: (stream: any, stdout: any, stderr: any) => {}
     };
@@ -42,7 +42,7 @@ class MockDockerTimeout {
         return {
             start: async () => {},
             logs: async () => {
-                const stream = new MockStream();
+                const stream = new SimulatedStream();
                 return stream; // never ends
             },
             wait: async () => {
@@ -57,7 +57,7 @@ class MockDockerTimeout {
 
 async function runTest() {
     console.log('Testing normal execution (mocked Docker)...');
-    let containment = new SecureContainment(new MockDocker());
+    let containment = new SecureContainment(new SimulatedDocker());
     const result = await containment.runInContainer({
         code: `console.log("Hello from inside Docker!"); console.error("Error stream test");`,
         timeoutMs: 10000
@@ -65,7 +65,7 @@ async function runTest() {
     console.log('Normal Execution Result:', result);
 
     console.log('\\nTesting timeout (mocked Docker)...');
-    let timeoutContainment = new SecureContainment(new MockDockerTimeout());
+    let timeoutContainment = new SecureContainment(new SimulatedDockerTimeout());
     try {
         await timeoutContainment.runInContainer({
             code: `setTimeout(() => console.log('This should not print'), 10000);`,

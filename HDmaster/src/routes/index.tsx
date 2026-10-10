@@ -289,7 +289,7 @@ function UmarOSDashboard() {
           <PluginConnectors />
         </div>
 
-        {/* B2B SaaS Sales Deck Generator (Godfather of B2B Sales) */}
+        {/* B2B SaaS Sales Deck Generator (Executive of B2B Sales) */}
         <div id="b2b-sales-deck-generator" className="mt-8 mb-8 scroll-mt-6">
           <B2BSaaSSalesDeckGenerator />
         </div>

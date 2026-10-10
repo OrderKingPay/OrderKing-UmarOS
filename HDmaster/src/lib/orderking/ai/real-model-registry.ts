@@ -105,7 +105,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     },
     {
       id: "auto-supreme-orchestrator",
-      displayName: "⚡ Auto-Select Best Model (Supreme Orchestrator)",
+      displayName: "⚡ Auto-Select Best Model (Premium Orchestrator)",
       provider: "Orchestrator",
       realApiId: "dynamic-router-v1",
       connectionStatus: (openaiKey || geminiKey || anthropicKey || xaiKey) ? "CONNECTED" : "CONFIGURATION_REQUIRED",
@@ -247,7 +247,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     },
     {
       id: "codex-supreme",
-      displayName: "Codex Supreme Architect (Local Core)",
+      displayName: "Codex Premium Architect (Local Core)",
       provider: "Local Sovereign",
       realApiId: "codex-local-v1",
       connectionStatus: "UNAVAILABLE",

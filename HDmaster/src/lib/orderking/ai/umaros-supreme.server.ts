@@ -596,7 +596,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
     return {
       status: "SUCCESS",
       title: "Military-Grade Anti-Fraud Cryptographic Shield",
-      response: `Military Shield Status: ${report.status}. Exploits Blocked: ${report.totalExploitsBlocked} (Fake Orders: ${report.fakeOrdersIntercepted}, Fake Refunds: ${report.fakeRefundsBlocked}, Tampered Signatures: ${report.tamperedSignaturesDetected}, Replay Attacks: ${report.replayAttacksPrevented}, GPS Spoofs: ${report.gpsSpoofingIntercepted}). Rate Violations: ${report.rateLimitViolations}. Quarantined Entities: ${report.quarantinedEntitiesCount}. Circuit Breaker: ${report.circuitBreakerTripped ? "TRIPPED" : "NOMINAL"}.`,
+      response: `Military Shield Status: ${report.status}. Exploits Blocked: ${report.totalExploitsBlocked} (Simulated Orders: ${report.fakeOrdersIntercepted}, Simulated Refunds: ${report.fakeRefundsBlocked}, Tampered Signatures: ${report.tamperedSignaturesDetected}, Replay Attacks: ${report.replayAttacksPrevented}, GPS Spoofs: ${report.gpsSpoofingIntercepted}). Rate Violations: ${report.rateLimitViolations}. Quarantined Entities: ${report.quarantinedEntitiesCount}. Circuit Breaker: ${report.circuitBreakerTripped ? "TRIPPED" : "NOMINAL"}.`,
       toolExecuted: "audit_military_anti_fraud_shield",
       executionMs,
       data: report
@@ -663,7 +663,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
   const executionMs = Date.now() - startTime;
   return {
     status: "SUCCESS",
-    title: "UmarOS Supreme Cognitive Kernel Response",
+    title: "UmarOS Premium Cognitive Kernel Response",
     response: `Command "${cmd}" analyzed against Order King's canonical operations state. All subsystems (Refunds, Haversine Dispatch, Customer Support, Ledger Audit) are operating autonomously under sovereign control. Zero human intervention required.`,
     toolExecuted: "autonomous_operations_kernel",
     executionMs,

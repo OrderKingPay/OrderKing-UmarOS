@@ -93,7 +93,7 @@ import {
   EnterpriseProjectBlueprint,
   ProjectFileArtifact,
   RemoteContractGig,
-  SupremeAiMessage,
+  PremiumAiMessage,
   VideoAspectRatio,
   VideoColorGrade,
   VideoDurationPreset,
@@ -119,13 +119,13 @@ import { universalPlatformManager } from "@/lib/orderking/ai/universal-platform-
 import { standaloneSectionExporter } from "@/lib/orderking/ai/standalone-section-exporter";
 import { getVerifiedModelRegistry, type VerifiedModelRecord } from "@/lib/orderking/ai/real-model-registry";
 
-interface SupremeFounderAiChatProps {
+interface PremiumFounderAiChatProps {
   founderUpiVpa?: string;
   onSelectAction?: (action: string, payload: any) => void;
   defaultCallMode?: boolean;
 }
 
-// 10 Pinned Conversations matching exact ChatGPT dark mode screenshot + Supreme Founder prompts
+// 10 Pinned Conversations matching exact ChatGPT dark mode screenshot + Premium Founder prompts
 const PINNED_CONVERSATIONS = [
   {
     id: "pin-1",
@@ -1861,7 +1861,7 @@ function ModuleSeparatorCard({ data }: { data: { modules?: SeparableModule[] } }
 }
 
 // Action Card Renderer
-function ActionCardView({ card }: { card: NonNullable<SupremeAiMessage["actionCard"]> }) {
+function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCard"]> }) {
   if (card.type === "platform_connector") {
     return <PlatformConnectorCard data={card.data} />;
   }
@@ -3225,11 +3225,11 @@ function FounderWorkHub({
   );
 }
 
-export function SupremeFounderAiChat({
+export function PremiumFounderAiChat({
   founderUpiVpa = "orderking@okhdfcbank",
   onSelectAction,
   defaultCallMode = false,
-}: SupremeFounderAiChatProps) {
+}: PremiumFounderAiChatProps) {
   const [selectedModel, setSelectedModel] = useState<AiModelId>("sovereign-ultra");
   const [inputQuery, setInputQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -3302,7 +3302,7 @@ export function SupremeFounderAiChat({
   };
 
   // Chat history with initial professional greeting
-  const [messages, setMessages] = useState<SupremeAiMessage[]>([
+  const [messages, setMessages] = useState<PremiumAiMessage[]>([
     {
       id: "msg-init",
       sender: "ai",
@@ -3533,7 +3533,7 @@ export function SupremeFounderAiChat({
     const currentAttachments = [...attachedFiles];
 
     // Add user message with attached files
-    const userMsg: SupremeAiMessage = {
+    const userMsg: PremiumAiMessage = {
       id: `msg-${Date.now()}`,
       sender: "founder",
       text: text || `[Attached ${currentAttachments.length} file(s)]`,
@@ -3551,7 +3551,7 @@ export function SupremeFounderAiChat({
     stopSpeaking();
 
     const aiMsgId = `msg-ai-${Date.now()}`;
-    const initialAiMsg: SupremeAiMessage = {
+    const initialAiMsg: PremiumAiMessage = {
       id: aiMsgId,
       sender: "ai",
       text: "",
@@ -3745,7 +3745,7 @@ export function SupremeFounderAiChat({
       setSystemHealth(100);
       playAudioTone("chime");
       const mb = (result.freedBytes / (1024 * 1024)).toFixed(1);
-      toast.success(`🧹 High-Performance Clean Completed! Freed ${mb} MB of temporary bloat. System health 100% optimal.`);
+      toast.success(`🧹 High_Performance Clean Completed! Freed ${mb} MB of temporary bloat. System health 100% optimal.`);
     }, 700);
   };
 
@@ -4992,7 +4992,7 @@ export function SupremeFounderAiChat({
         isOpen={isMediaStudioOpen}
         onClose={() => setIsMediaStudioOpen(false)}
         onInsertIntoChat={(item) => {
-          const itemMsg: SupremeAiMessage = {
+          const itemMsg: PremiumAiMessage = {
             id: `msg-media-${Date.now()}`,
             sender: "ai",
             text: `### 🎨 AI Generated Media Attached from Vault\n**Prompt:** "${item.prompt}"\n*Asset ready for deployment, client branding, or download.*`,

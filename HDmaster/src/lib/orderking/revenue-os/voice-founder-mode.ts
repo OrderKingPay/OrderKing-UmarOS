@@ -90,7 +90,7 @@ export class VoiceFounderMode {
     return {
       command: rawTranscript,
       matchedIntent: "UNKNOWN_INTENT_SYSTEM_SUMMARY",
-      spokenSummary: `HDmaster Supreme AI OS is online. Verified revenue: ₹${defaultVerifiedInr.toLocaleString()}. Active projects: ${deliveryFactory.getProjects().length}.`,
+      spokenSummary: `HDmaster Premium AI OS is online. Verified revenue: ₹${defaultVerifiedInr.toLocaleString()}. Active projects: ${deliveryFactory.getProjects().length}.`,
       liveSystemData: {
         timestamp: new Date().toISOString(),
       },

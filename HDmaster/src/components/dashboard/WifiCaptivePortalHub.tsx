@@ -705,7 +705,7 @@ export function WifiCaptivePortalHub({
               Live Phone Portal Preview
             </span>
             <span className="text-[10px] font-mono text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-semibold">
-              Live Mockup
+              Live Simulatedup
             </span>
           </div>
 

@@ -206,7 +206,7 @@ export function B2BSaaSSalesDeckGenerator() {
     {
       id: "antifraud",
       title: "Military-Grade Anti-Fraud & Loss Prevention Shield",
-      subtitle: "Zero Fake Refunds, HMAC-SHA256 Cryptographic Sealing & Anti-Teleportation",
+      subtitle: "Zero Simulated Refunds, HMAC-SHA256 Cryptographic Sealing & Anti-Teleportation",
       badge: "Zero-Fraud Defense",
     },
     {
@@ -584,7 +584,7 @@ export function B2BSaaSSalesDeckGenerator() {
                       <p className="text-[11px] text-slate-400">
                         {telemetry?.hasLiveOrders
                           ? `Calculated from ${telemetry.realOrdersCount} live production orders`
-                          : "Strict Zero-Mock Data: System Ready for Live Benchmark"}
+                          : "Strict Zero-Simulated Data: System Ready for Live Benchmark"}
                       </p>
                     </div>
 
@@ -757,7 +757,7 @@ export function B2BSaaSSalesDeckGenerator() {
                       <p className="text-[11px] text-slate-400">
                         {telemetry?.hasLiveOrders
                           ? "Real exploits thwarted in live traffic"
-                          : "Strict Zero-Mock Data: Ready for Live Benchmark"}
+                          : "Strict Zero-Simulated Data: Ready for Live Benchmark"}
                       </p>
                     </div>
 
@@ -1044,7 +1044,7 @@ export function B2BSaaSSalesDeckGenerator() {
                 </div>
               </div>
               <div className="text-xs text-slate-500 italic">
-                * Note on Institutional Data Integrity: If order count is zero in current database, metrics explicitly display "System Ready for Live Benchmark" per our strict Zero-Mock Data policy.
+                * Note on Institutional Data Integrity: If order count is zero in current database, metrics explicitly display "System Ready for Live Benchmark" per our strict Zero-Simulated Data policy.
               </div>
             </div>
 

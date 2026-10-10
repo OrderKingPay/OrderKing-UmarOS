@@ -16,7 +16,7 @@ content = content.replaceAll('text-[9px] font-black px-1.5 py-0.5 rounded upperc
 content = content.replace('bg-slate-900/50 backdrop-blur-xl border-y border-white/10 px-4 py-3 shadow-2xl z-10 flex flex-col gap-3', 'bg-zinc-950 border-b border-zinc-800 px-4 py-4 z-10 flex flex-col gap-4');
 
 content = content.replace('<h1 className=\	ext-xl font-black text-amber-400 flex items-center gap-2\>', '<h1 className=\	ext-xl font-medium text-white flex items-center gap-2\>');
-content = content.replace('AI Super-Tutor', 'Academic Intelligence');
+content = content.replace('AI Advanced-Tutor', 'Academic Intelligence');
 content = content.replace('bg-emerald-100 text-emerald-700', 'bg-white text-black');
 content = content.replace('100% Free', 'Unrestricted Access');
 content = content.replace('text-indigo-600 size-6', 'text-white size-5');
@@ -35,7 +35,7 @@ content = content.replace('WFH Jobs', 'Placements');
 content = content.replace('Govt Schemes', 'State Programs');
 content = content.replace('Premium', 'Elite Status');
 
-content = content.replace('Hello! I am your Free Super-Tutor. Select your Board and Class above, and ask me any syllabus question!', 'Academic Intelligence initialized. Please specify your curriculum parameters and submit your query.');
+content = content.replace('Hello! I am your Free Advanced-Tutor. Select your Board and Class above, and ask me any syllabus question!', 'Academic Intelligence initialized. Please specify your curriculum parameters and submit your query.');
 content = content.replace('Type your textbook question here...', 'Initialize academic query...');
 content = content.replace('Step 1: Ask Question • Step 2: Learn Formula • Step 3: Score Max Marks', 'Secure Encrypted Connection • Verified Academic Data');
 content = content.replace('text-slate-400 mt-2', 'text-zinc-500 mt-2');

@@ -115,7 +115,7 @@ export interface EcosystemCmsConfig {
   connectorTelemarketingPolicyNotice: string;
   connectorTelemarketingWebhookNotice: string;
 
-  // 12. UmarOS Carpet-Bombing Ad Exchange & Telecom DSP (JioAds / Airtel / InMobi)
+  // 12. UmarOS Broad_Reach Ad Exchange & Telecom DSP (JioAds / Airtel / InMobi)
   connectorGeospatialAdTitle: string;
   connectorGeospatialAdSubtitle: string;
   connectorGeospatialAdToggleLabel: string;
@@ -258,8 +258,8 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   connectorTelemarketingPolicyNotice: "Commercial communications strictly scrubbed against the National Do-Not-Call (NDNC) registry. Calling windows enforced between 10:30 AM and 05:00 PM to avoid kitchen rush periods.",
   connectorTelemarketingWebhookNotice: "Autonomous Call Webhook: Streams real-time call transcripts, audio recordings, owner sentiment scores, and auto-dispatches WhatsApp onboarding links upon hangup.",
 
-  // 12. UmarOS Carpet-Bombing Ad Exchange & Telecom DSP (JioAds / Airtel / InMobi)
-  connectorGeospatialAdTitle: "UmarOS Carpet-Bombing Ad Exchange (Telecom & DSP)",
+  // 12. UmarOS Broad_Reach Ad Exchange & Telecom DSP (JioAds / Airtel / InMobi)
+  connectorGeospatialAdTitle: "UmarOS Broad_Reach Ad Exchange (Telecom & DSP)",
   connectorGeospatialAdSubtitle: "Geospatial programmatic ad network. Forcefully reaches every smartphone in an exact geographic polygon through JioAds cell-tower triangulation, Airtel Xstream geofences, and InMobi OpenRTB 2.5 DSP rails. Enables the Founder to operate an autonomous ad network and monetize third-party placement.",
   connectorGeospatialAdToggleLabel: "Geospatial Ad Exchange Active",
   connectorGeospatialAdTestBtnText: "Verify Telecom & DSP Handshake",
@@ -809,7 +809,7 @@ export interface WifiCaptivePortalConnector {
   minAdBookingBudgetInr: number;
   mandatoryAdDurationSeconds: number; // e.g. 5 seconds countdown before unlocking internet
 
-  // Zero Fake Data: Registrations and Campaigns start empty
+  // Zero Simulated Data: Registrations and Campaigns start empty
   routers: WifiCaptiveRouter[];
   brandCampaigns: WifiBrandAdCampaign[];
 

@@ -131,7 +131,7 @@ This backlog is an engineering source-of-truth for the Master AI. Existing worki
 - [x] Financial action confirmation and owner approval controls. (`ceo.tsx`, `master-ai-runtime.ts`)
 - [x] Audit record for every AI tool call and action. (`workspace.server.ts`)
 - [x] Structured response protocol: STATUS → CAUSE → ACTION → RESULT → RISK → OWNER REQUIRED. (`master-ai-runtime.ts`)
-- [x] Multi-model tier routing: Antigravity Elite, Claude 4.6 Sonnet, GPT-5.6 Luna, SuperGrok 4.6, Gemini 3.0 Pro with local fallback. (`model-router.server.ts`)
+- [x] Multi-model tier routing: Antigravity Elite, Claude 4.6 Sonnet, GPT-5.6 Luna, AdvancedGrok 4.6, Gemini 3.0 Pro with local fallback. (`model-router.server.ts`)
 - [x] 1-Command Restaurant & Menu Onboarding with realistic dish photography. (`master-ai-runtime.ts`, `ceo.tsx`)
 - [x] 1-Command Rider Onboarding with KYC verification. (`master-ai-runtime.ts`, `ceo.tsx`)
 - [x] Autonomous Self-Healing & Escalation Center with turn on/off toggle. (`autonomous-ops.ts`, `ceo.tsx`)

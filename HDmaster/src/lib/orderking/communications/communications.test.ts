@@ -36,7 +36,7 @@ test('OmniChannelGateway - routes high priority to all allowed channels', async 
   
   const sentMessages: { channel: string, payload: any }[] = [];
   
-  const createMockProvider = (type: any): IChannelProvider => ({
+  const createSimulatedProvider = (type: any): IChannelProvider => ({
     type,
     send: async (payload) => {
       sentMessages.push({ channel: type, payload });
@@ -44,10 +44,10 @@ test('OmniChannelGateway - routes high priority to all allowed channels', async 
     }
   });
 
-  gateway.registerProvider(createMockProvider('email'));
-  gateway.registerProvider(createMockProvider('sms'));
-  gateway.registerProvider(createMockProvider('push'));
-  gateway.registerProvider(createMockProvider('voice'));
+  gateway.registerProvider(createSimulatedProvider('email'));
+  gateway.registerProvider(createSimulatedProvider('sms'));
+  gateway.registerProvider(createSimulatedProvider('push'));
+  gateway.registerProvider(createSimulatedProvider('voice'));
 
   const results = await gateway.route(
     { to: 'user1', body: 'Emergency!', priority: 'high' },
@@ -64,15 +64,15 @@ test('OmniChannelGateway - routes high priority to all allowed channels', async 
 
 test('OmniChannelGateway - routes normal priority to preferred channels', async () => {
   const gateway = new OmniChannelGateway();
-  const createMockProvider = (type: any): IChannelProvider => ({
+  const createSimulatedProvider = (type: any): IChannelProvider => ({
     type,
     send: async (payload) => {
       return { channel: type, success: true, timestamp: new Date() };
     }
   });
 
-  gateway.registerProvider(createMockProvider('email'));
-  gateway.registerProvider(createMockProvider('push'));
+  gateway.registerProvider(createSimulatedProvider('email'));
+  gateway.registerProvider(createSimulatedProvider('push'));
 
   const results = await gateway.route(
     { to: 'user2', body: 'Update', priority: 'normal' },

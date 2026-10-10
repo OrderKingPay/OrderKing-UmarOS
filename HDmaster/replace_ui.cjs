@@ -2,12 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 const replacements = [
-  { regex: /Supreme Female Studio Voice/g, replacement: "Premium Female Studio Voice" },
-  { regex: /Supreme AI Video &amp; Image Creation Studio/g, replacement: "Advanced AI Video & Image Creation Studio" },
-  { regex: /Supreme Founder Governance/g, replacement: "Platform Governance & Controls" },
-  { regex: /Supreme Dispatch Coordinator/g, replacement: "Intelligent Dispatch Coordinator" },
-  { regex: /Supreme AI Studio/g, replacement: "Enterprise AI Studio" },
-  { regex: /Supreme Founder Execution &amp; Work Deck/g, replacement: "Command Center & Work Deck" },
+  { regex: /Premium Female Studio Voice/g, replacement: "Premium Female Studio Voice" },
+  { regex: /Premium AI Video &amp; Image Creation Studio/g, replacement: "Advanced AI Video & Image Creation Studio" },
+  { regex: /Premium Founder Governance/g, replacement: "Platform Governance & Controls" },
+  { regex: /Premium Dispatch Coordinator/g, replacement: "Intelligent Dispatch Coordinator" },
+  { regex: /Premium AI Studio/g, replacement: "Enterprise AI Studio" },
+  { regex: /Premium Founder Execution &amp; Work Deck/g, replacement: "Command Center & Work Deck" },
   { regex: /SUPREME DUPLEX/g, replacement: "ENTERPRISE DUPLEX" },
   { regex: /Synthesizing supreme output/g, replacement: "Synthesizing optimized output" },
   { regex: /1000x Money &amp; Cash Harvester/g, replacement: "Revenue & Cashflow Optimizer" },

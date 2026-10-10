@@ -6,7 +6,7 @@ import {
   runFounderConsoleCommandCore
 } from "./umaros-supreme.server.ts";
 
-describe("UmarOS Supreme AI - Sovereign Founder Command Center & Orchestration Engine", () => {
+describe("UmarOS Premium AI - Sovereign Founder Command Center & Orchestration Engine", () => {
   test("1. Telemetry returns canonical real database structure with zero fabricated data", async () => {
     const telemetry = await fetchUmarOsTelemetry();
     assert.ok(telemetry, "Telemetry payload must exist");

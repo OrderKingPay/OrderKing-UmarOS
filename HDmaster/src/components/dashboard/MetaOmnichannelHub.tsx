@@ -1404,7 +1404,7 @@ export function MetaOmnichannelHub({
                 </div>
               </div>
 
-              {/* Smartphone Mock Frame */}
+              {/* Smartphone Simulated Frame */}
               <div className="rounded-2xl border-4 border-slate-800 bg-slate-950 p-2 shadow-xl max-w-sm mx-auto">
                 {/* Screen */}
                 <div className="rounded-xl bg-slate-50 overflow-hidden flex flex-col h-[460px]">

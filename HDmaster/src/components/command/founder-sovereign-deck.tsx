@@ -45,18 +45,18 @@ import { Input } from "@/components/ui/input";
 import { cn, formatInrExact, formatNumber } from "@/lib/utils";
 import { MetricCard, Panel, money } from "./widgets";
 import { tickSim } from "@/lib/orderking/actions";
-import { SupremeCreatorEngine } from "./supreme-creator-engine";
+import { PremiumCreatorEngine } from "./supreme-creator-engine";
 import { FounderIncomeProducts } from "./founder-income-products";
 import { selfUpgrader, type SelfUpgradeMetric } from "@/lib/orderking/ai/autonomous-self-upgrader";
 import { legalAccounting, type GstReport, type LegalPayoutEntry } from "@/lib/orderking/finance/legal-accounting-gst";
-import { SupremeFounderAiChat } from "./supreme-founder-ai-chat";
+import { PremiumFounderAiChat } from "./supreme-founder-ai-chat";
 import { UniversalFabricTab } from "./universal-fabric-tab";
 import { FounderAiOsShell } from "./founder-ai-os-shell";
 
 export function FounderSovereignDeck() {
   const qc = useQueryClient();
 
-  // Navigation Tabs for Supreme Capabilities
+  // Navigation Tabs for Premium Capabilities
   const [deckTab, setDeckTab] = useState<"supreme_ai" | "telemetry" | "creator" | "monetization" | "upgrader" | "accounting" | "fabric">("supreme_ai");
 
   // Founder State Controls
@@ -302,13 +302,13 @@ export function FounderSovereignDeck() {
 
       {/* MAIN VIEW: SUPREME UMAR OS CHAT (DEFAULT) */}
       {deckTab === "supreme_ai" && (
-        <SupremeFounderAiChat />
+        <PremiumFounderAiChat />
       )}
 
       {/* TAB 1: 1-COMMAND APP & WEB CREATOR */}
       {deckTab === "fabric" && <UniversalFabricTab />}
 
-        {deckTab === "creator" && <SupremeCreatorEngine />}
+        {deckTab === "creator" && <PremiumCreatorEngine />}
 
       {/* TAB 2: FOUNDER INCOME & PAID PRODUCTS */}
       {deckTab === "monetization" && <FounderIncomeProducts />}
@@ -559,7 +559,7 @@ export function FounderSovereignDeck() {
                   }}
                 >
                   <Cpu className="size-3.5 mr-1.5" />
-                  Switch to {dispatchMode === "AI_AUTO" ? "Manual Supervised" : "AI Autonomous"}
+                  Switch to {dispatchMode === "AI_AUTO" ? "Manual Advancedvised" : "AI Autonomous"}
                 </Button>
               </div>
             </div>

@@ -70,7 +70,7 @@ const ALLIANCE_REWARDS: AllianceReward[] = [
     code: "MEESHOKING",
     coinsRequired: 150,
     valueLabel: "15% Extra OFF",
-    badge: "🔥 Super Saver",
+    badge: "🔥 Advanced Saver",
     icon: "🛒",
     terms: "Direct factory prices with free cash on delivery on Meesho.",
     affiliateUrl: "https://meesho.com?ref=orderking",

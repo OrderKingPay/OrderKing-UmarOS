@@ -472,7 +472,7 @@ export function B2BFranchiseOnboardingEngine() {
               </div>
             </div>
 
-            {/* Zero Fake Data Honest Ledger */}
+            {/* Zero Simulated Data Honest Ledger */}
             {contracts.length === 0 ? (
               <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-2xl mx-auto shadow-xs space-y-4">
                 <div className="h-16 w-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
@@ -1060,7 +1060,7 @@ export function B2BFranchiseOnboardingEngine() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-slate-900">
-                    The Godfather of Capital Acquisition: Founder Pre-Launch Playbook
+                    The Executive of Capital Acquisition: Founder Pre-Launch Playbook
                   </h2>
                   <p className="text-xs text-slate-600">
                     How the Founder monetizes OrderKing via B2B restaurant setup fees before spending ₹1 on consumer ads.

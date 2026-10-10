@@ -13,7 +13,7 @@ export interface TipRecord {
 
 export function RiderTipsTracker() {
   const [tips, setTips] = useState<TipRecord[]>([
-    { id: "t-1", orderCode: "OK-94281", amountPaise: 5000, timeAgo: "15m ago", customerNote: "Super fast in the rain! ⭐" },
+    { id: "t-1", orderCode: "OK-94281", amountPaise: 5000, timeAgo: "15m ago", customerNote: "Advanced fast in the rain! ⭐" },
     { id: "t-2", orderCode: "OK-94274", amountPaise: 3000, timeAgo: "1h ago" },
     { id: "t-3", orderCode: "OK-94269", amountPaise: 5000, timeAgo: "3h ago", customerNote: "Followed instructions perfectly." },
     { id: "t-4", orderCode: "OK-94260", amountPaise: 2000, timeAgo: "5h ago" },

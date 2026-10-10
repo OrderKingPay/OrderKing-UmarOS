@@ -28,9 +28,9 @@ CREATE INDEX IF NOT EXISTS idx_kingpay_transactions_user_id ON kingpay_transacti
 CREATE INDEX IF NOT EXISTS idx_kingpay_transactions_created_at ON kingpay_transactions (created_at);
 
 -- Geospatial Telemetry
-CREATE INDEX IF NOT EXISTS idx_geospatial_org_id ON geospatial_telemetry_100x (org_id);
-CREATE INDEX IF NOT EXISTS idx_geospatial_entity ON geospatial_telemetry_100x (entity_type, entity_id);
-CREATE INDEX IF NOT EXISTS idx_geospatial_h3_index ON geospatial_telemetry_100x (h3_index);
+CREATE INDEX IF NOT EXISTS idx_geospatial_org_id ON geospatial_telemetry_High-Performance (org_id);
+CREATE INDEX IF NOT EXISTS idx_geospatial_entity ON geospatial_telemetry_High-Performance (entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_geospatial_h3_index ON geospatial_telemetry_High-Performance (h3_index);
 
 -- Payment Webhook Events (if exists)
 CREATE INDEX IF NOT EXISTS idx_payment_webhook_events_type ON payment_webhook_events (event_type);

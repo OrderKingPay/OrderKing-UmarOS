@@ -12,7 +12,7 @@ const geminiClient = geminiApiKey ? new GoogleGenAI({ apiKey: geminiApiKey }) : 
 const anthropicClient = anthropicApiKey ? new Anthropic({ apiKey: anthropicApiKey }) : null;
 const openaiClient = openaiApiKey ? new OpenAI({ apiKey: openaiApiKey }) : null;
 
-export interface SupremeAnswerResult {
+export interface PremiumAnswerResult {
   synthesizedAnswer: string;
   analytics: {
     totalLatencyMs: number;
@@ -21,13 +21,13 @@ export interface SupremeAnswerResult {
   };
 }
 
-export async function getSupremeAnswer(prompt: string): Promise<SupremeAnswerResult> {
+export async function getPremiumAnswer(prompt: string): Promise<PremiumAnswerResult> {
   const startTime = Date.now();
   const modelsUsed: string[] = [];
 
   // Fallback check: Gemini is required for synthesis
   if (!geminiClient) {
-    throw new Error("Gemini API key is required for the Supreme Consensus Engine.");
+    throw new Error("Gemini API key is required for the Premium Consensus Engine.");
   }
 
   const promises: Promise<{ source: string, answer: string | null }>[] = [];
@@ -91,7 +91,7 @@ export async function getSupremeAnswer(prompt: string): Promise<SupremeAnswerRes
   }
 
   // Format the answers for the synthesis prompt
-  let synthesisPrompt = `You are the Supreme AI. Evaluate these 3 expert responses and synthesize the ultimate, flawless master answer.\n\nOriginal Prompt: ${prompt}\n\n`;
+  let synthesisPrompt = `You are the Premium AI. Evaluate these 3 expert responses and synthesize the ultimate, flawless master answer.\n\nOriginal Prompt: ${prompt}\n\n`;
   successfulAnswers.forEach((result, index) => {
     synthesisPrompt += `--- Expert ${index + 1} (${result.source}) ---\n${result.answer}\n\n`;
   });

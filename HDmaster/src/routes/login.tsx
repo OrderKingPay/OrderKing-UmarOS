@@ -56,7 +56,7 @@ function Login() {
           <OrderKingMark className="size-10" />
           <div>
             <h1 className="font-display text-2xl">OrderKing Command</h1>
-            <p className="text-sm text-muted">Employee sign-in. First account becomes Super Admin.</p>
+            <p className="text-sm text-muted">Employee sign-in. First account becomes Advanced Admin.</p>
           </div>
         </div>
         {authEnabled ? (

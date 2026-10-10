@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { UniversalPluginEngine, OpenAPISpec } from '@/lib/orderking/ai/plugins/UniversalPluginEngine';
 import { GoogleGeminiProvider } from '@/lib/orderking/ai/providers/gemini-provider';
 
-// Mock OpenAPI spec for the "live infrastructure" plugins
+// Simulated OpenAPI spec for the "live infrastructure" plugins
 const infrastructureSpec: OpenAPISpec = {
   openapi: '3.0.0',
   info: { title: 'OrderKing Infrastructure API', version: '1.0.0' },

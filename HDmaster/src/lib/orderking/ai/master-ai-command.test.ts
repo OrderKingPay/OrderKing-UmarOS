@@ -142,7 +142,7 @@ test("Order King Master AI - Tool Registry Coverage & Safety", () => {
   assert.ok(getMasterAiToolSpec("founder_profit_maximizer_and_tax_arbitrage"));
   assert.ok(getMasterAiToolSpec("autonomous_legal_income_discovery_engine"));
   assert.ok(getMasterAiToolSpec("autonomous_maximum_force_profit_orchestrator"));
-  assert.ok(getMasterAiToolSpec("autonomous_100x_profit_and_addiction_director"));
+  assert.ok(getMasterAiToolSpec("autonomous_High_Performance_profit_and_addiction_director"));
   assert.ok(getMasterAiToolSpec("autonomous_go_live_production_director"));
   assert.ok(getMasterAiToolSpec("autonomous_night_safety_and_long_distance_director"));
   assert.ok(getMasterAiToolSpec("autonomous_prestige_subsidies_and_viral_growth_director"));

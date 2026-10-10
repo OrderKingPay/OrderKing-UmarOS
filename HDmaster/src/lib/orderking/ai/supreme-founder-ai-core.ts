@@ -1,8 +1,8 @@
-// Umar Supreme Founder AI Executive Intelligence & Core Dispatcher (Umar OS)
+// Umar Premium Founder AI Executive Intelligence & Core Dispatcher (Umar OS)
 // Governs Multi-Model Ensemble Consensus, 1-Command Live Deploy, 500+ Platforms & Zero Identity Leakage
 
 import { mediaStorageVault } from "./media-storage-vault.ts";
-import { UniversalSuperintelligenceEngine } from "./universal-superintelligence-engine.server.ts";
+import { UniversalAdvancedintelligenceEngine } from "./universal-superintelligence-engine.server.ts";
 import { ensembleConsensusEngine } from "./ensemble-consensus-engine.ts";
 import { instantDeployEngine } from "./instant-deploy-engine.ts";
 import { founderPrivacyShield } from "./founder-privacy-shield.ts";
@@ -34,10 +34,10 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
     return { model: "ensemble-consensus", reason: "Auto-routed to Ensemble Multi-Model Consensus: Running all strongest models simultaneously." };
   }
   if (q.includes("code") || q.includes("schema") || q.includes("api") || q.includes("scaffold") || q.includes("react") || q.includes("sql") || q.includes("git")) {
-    return { model: "codex-supreme", reason: "Auto-routed to Codex Supreme Architect for maximum precision code synthesis." };
+    return { model: "codex-supreme", reason: "Auto-routed to Codex Premium Architect for maximum precision code synthesis." };
   }
   if (q.includes("live") || q.includes("score") || q.includes("news") || q.includes("trending") || q.includes("cricket") || q.includes("match")) {
-    return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 SuperGrok Ultra for real-time live telemetric intelligence." };
+    return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 AdvancedGrok Ultra for real-time live telemetric intelligence." };
   }
   if (q.includes("video") || q.includes("image") || q.includes("render") || q.includes("4k") || q.includes("reel")) {
     return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra for photorealistic multimodal & 4K video generation." };
@@ -133,7 +133,7 @@ export type AgentExecutionStep = {
   detail: string;
 };
 
-export type SupremeAiMessage = {
+export type PremiumAiMessage = {
   id: string;
   sender: "founder" | "ai";
   text: string;
@@ -406,11 +406,11 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Scanning Disk & Memory Quotas", status: "COMPLETED", detail: `Scanned ${inspection.formattedTotalSize} across temporary files` },
       { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Guarantee", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
-      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "High-Performance cleaner than browser cache tools active" },
+      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "High_Performance cleaner than browser cache tools active" },
       { stepNumber: 4, totalSteps: 4, label: "Performance Optimizer Ready", status: "COMPLETED", detail: `Current Speed Score: ${inspection.speedOptimizationScore}%` },
     ];
 
-    const responseMarkdown = `### 🧹 Sovereign Cache & Storage Purifier Armed (100x Cleaner)
+    const responseMarkdown = `### 🧹 Sovereign Cache & Storage Purifier Armed (High_Performance Cleaner)
 - **Total Temporary Storage**: **${inspection.formattedTotalSize}** (${inspection.itemCount} cached items)
 - **Generated Media Footprint**: ${(inspection.breakdown.generatedImagesBytes / (1024 * 1024)).toFixed(1)} MB Images · ${(inspection.breakdown.generatedVideosBytes / (1024 * 1024)).toFixed(1)} MB Videos
 - **Current Performance Score**: **${inspection.speedOptimizationScore}%**
@@ -418,7 +418,7 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
 > [!IMPORTANT]
 > **🛡️ 100% Core Protection Shield**: Zero danger to critical assets. Your verified Client Leads, King Pay UPI Invoices, MSA Contracts, and Founder Vault Keys are **permanently locked & protected**.
 
-Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and boost engine performance by 100x!`;
+Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and boost engine performance by High_Performance!`;
 
     const voiceSpokenText = isHindi
       ? `Sovereign Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
@@ -477,7 +477,7 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent cloud & local storage indexed" },
     ];
 
-    const responseMarkdown = `### 🎨 Supreme AI Image Generated (100% Free & Unlimited)
+    const responseMarkdown = `### 🎨 Premium AI Image Generated (100% Free & Unlimited)
 - **Prompt**: *"${rawPrompt}"*
 - **Resolution**: **1024 × 1024 (Ultra HD)** | **Cost**: **$0.00 (Unlimited Forever)**
 - **Vault Status**: Indexed in **HD Master Media Vault** (ready to download, enlarge, or embed in client pitch decks).
@@ -549,7 +549,7 @@ You can download this image, copy its direct CDN link, or command further edits 
       { stepNumber: 4, totalSteps: 4, label: "Registering in HD Master Media Vault", status: "COMPLETED", detail: "Playback ready with instant download option" },
     ];
 
-    const responseMarkdown = `### 🎬 Supreme AI Video Generated (100% Free & Unlimited)
+    const responseMarkdown = `### 🎬 Premium AI Video Generated (100% Free & Unlimited)
 - **Prompt**: *"${rawPrompt}"*
 - **Format**: **MP4 60FPS** | **Cost**: **$0.00 (Unlimited Forever)**
 - **Vault Status**: Indexed in **HD Master Media Vault** (ready to play, download, and showcase to enterprise clients).
@@ -986,7 +986,7 @@ Your studio controls, aspect ratio switcher, timeline duration, and instant 4K p
     const promptText = query.replace(/generate image of/i, "").replace(/generate video of/i, "").replace(/create image of/i, "").trim() || "A hyper-realistic futuristic cyberpunk cityscape with neon lights and flying cars";
     const imageUrl = "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop";
 
-    const responseMarkdown = `### 🎨 Supreme AI ${isVideo ? "Video" : "Image"} Studio Execution
+    const responseMarkdown = `### 🎨 Premium AI ${isVideo ? "Video" : "Image"} Studio Execution
 - **Asset Type**: ${isVideo ? "Video Generation" : "Image Synthesis"}
 - **Prompt Extracted**: "${promptText}"
 - **Billing**: **Unlimited Free (Founder Tier)**
@@ -998,7 +998,7 @@ You can preview and save the generated ${isVideo ? "video" : "image"} directly u
       ? `Aapke command ke anusar, maine AI Studio me ${isVideo ? "video" : "image"} generate kar diya hai. Yeh unlimited free hai aur Media Vault me save karne ke liye ready hai.`
       : isBengali
       ? `Apnar command onujayi, ami AI Studio te ${isVideo ? "video" : "image"} generate korechi. Eta unlimited free ebong Media Vault e save korar jonno ready ache.`
-      : `I have generated your requested ${isVideo ? "video" : "image"} using the Supreme AI Studio. It is rendered with unlimited free execution and is ready to be saved to the Media Vault.`;
+      : `I have generated your requested ${isVideo ? "video" : "image"} using the Premium AI Studio. It is rendered with unlimited free execution and is ready to be saved to the Media Vault.`;
 
     return {
       intent: "media_generation",

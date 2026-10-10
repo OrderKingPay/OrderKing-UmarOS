@@ -112,7 +112,7 @@ export class AutonomousFleetEngine {
     }
 
     private getAvailableRiders(): Rider[] {
-        // Mocking available riders. In reality, fetch from database.
+        // Simulateding available riders. In reality, fetch from database.
         const mockRiders: Rider[] = [];
         for (let i = 1; i <= 50; i++) {
             mockRiders.push({

@@ -92,7 +92,7 @@ export const PRODUCTIZED_SERVICES: ProductizedService[] = [
     id: "SRV-004",
     name: "Turnkey FinTech Double-Entry Ledger & POS Suite",
     category: "fintech_pos",
-    targetCustomer: "Retailers, Supermarkets, Distributors & Micro-Finance Institutions",
+    targetCustomer: "Retailers, Advancedmarkets, Distributors & Micro-Finance Institutions",
     problemSolved: "Provides verifiable bank-grade ledger accounting and instant T+0 UPI merchant settlements.",
     deliverables: [
       "Immutable Double-Entry Financial Ledger Engine",

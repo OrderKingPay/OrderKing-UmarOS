@@ -1358,7 +1358,7 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
 
         return {
           ok: true as const,
-          message: `UmarOS Carpet-Bombing Ad Exchange handshake verified. Active Programmatic Rails: ${activeProviders.join(" | ")}. ${dltStatus}. ${monetizationStatus}. Geofenced cellular broadcast pipes operational.`,
+          message: `UmarOS Broad_Reach Ad Exchange handshake verified. Active Programmatic Rails: ${activeProviders.join(" | ")}. ${dltStatus}. ${monetizationStatus}. Geofenced cellular broadcast pipes operational.`,
         };
       }
 
@@ -1673,7 +1673,7 @@ export const dispatchCarpetBombingCampaignFn = createServerFn({ method: "POST" }
           dndRegistryScrubbed: true,
           status: "DISPATCHED_TO_CARRIER_RAILS",
         },
-        message: `Carpet-Bombing Run successfully launched! ${deliverableImpressions.toLocaleString("en-IN")} smartphones targeted across ${cellTowersEngaged} cell-tower sectors within ${radiusKm} km radius.`,
+        message: `Broad_Reach Run successfully launched! ${deliverableImpressions.toLocaleString("en-IN")} smartphones targeted across ${cellTowersEngaged} cell-tower sectors within ${radiusKm} km radius.`,
       };
     } catch (err) {
       return fail(err);

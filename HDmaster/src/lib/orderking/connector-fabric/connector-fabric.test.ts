@@ -124,7 +124,7 @@ test('HealthMonitor', async (t) => {
 test('generateConnectorFromOpenAPI', async (t) => {
   const mockSpec = {
     openapi: '3.0.0',
-    info: { title: 'Mock API', version: '2.1.0' },
+    info: { title: 'Simulated API', version: '2.1.0' },
     servers: [{ url: 'https://api.mock.com/v1' }],
     paths: {
       '/users': {
@@ -155,7 +155,7 @@ test('generateConnectorFromOpenAPI', async (t) => {
     const config = await generateConnectorFromOpenAPI(specUrl, 'mock-connector');
     
     assert.strictEqual(config.id, 'mock-connector');
-    assert.strictEqual(config.name, 'Mock API');
+    assert.strictEqual(config.name, 'Simulated API');
     assert.strictEqual(config.version, '2.1.0');
     assert.strictEqual(config.type, 'OPENAPI');
     assert.strictEqual(config.endpoint, 'https://api.mock.com/v1');

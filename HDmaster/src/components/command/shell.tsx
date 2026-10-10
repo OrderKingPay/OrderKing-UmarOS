@@ -163,7 +163,7 @@ export function CommandShell() {
           <OrderKingMark className="size-10" />
           <h1 className="mt-4 font-display text-2xl">Access pending</h1>
           <p className="mt-2 text-sm text-muted">
-            Your account is waiting for an administrator invite. The first person to sign in becomes Super Admin;
+            Your account is waiting for an administrator invite. The first person to sign in becomes Advanced Admin;
             later employees must be invited.
           </p>
           <div className="mt-6">

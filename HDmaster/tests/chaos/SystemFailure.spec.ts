@@ -7,7 +7,7 @@ import { NetworkError } from '../../src/errors/NetworkError';
 describe('Chaos & Failure Proofing', () => {
   describe('Payment Gateway - Circuit Breaker', () => {
     it('should trip the circuit breaker after consecutive 500 errors', async () => {
-      // Mock gateway returning 500 errors
+      // Simulated gateway returning 500 errors
       const mockPaymentGateway = {
         processPayment: jest.fn().mockRejectedValue({ status: 500, message: 'Internal Server Error' })
       };
@@ -34,7 +34,7 @@ describe('Chaos & Failure Proofing', () => {
 
   describe('Rider Network Drop - Offline Sync Queue', () => {
     it('should catch and queue payloads when network drops', async () => {
-      // Mock network drop
+      // Simulated network drop
       const mockNetworkClient = {
         post: jest.fn().mockRejectedValue(new NetworkError('Network unreachable'))
       };

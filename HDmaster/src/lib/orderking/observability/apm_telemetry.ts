@@ -28,7 +28,7 @@ export class APMTelemetryEngine {
         };
 
         try {
-            // Mocking the PagerDuty API call
+            // Simulateding the PagerDuty API call
             console.log(`[ALERT ROUTED] High-severity alert sent to on-call engineer for error: ${error.message}`);
             // In a real scenario, this would use fetch or an HTTP client to POST the payload
             // await fetch('https://events.pagerduty.com/v2/enqueue', {

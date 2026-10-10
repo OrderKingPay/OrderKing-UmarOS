@@ -271,7 +271,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
 
           // 2. MULTI-SCALE CANVAS PASS (jsQR with Far-Distance Center Crop)
           if (!foundQrText && ctx) {
-            // PASS A: Center-Region 2.2x Super-Resolution Crop (Reads distant / far-away QRs!)
+            // PASS A: Center-Region 2.2x Advanced-Resolution Crop (Reads distant / far-away QRs!)
             const cropFraction = isFarZoomActive ? 0.35 : 0.5; // 35% - 50% central region
             const cropW = Math.floor(vWidth * cropFraction);
             const cropH = Math.floor(vHeight * cropFraction);
@@ -540,7 +540,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
                       ? "bg-amber-400 text-black border border-amber-500 font-extrabold"
                       : "bg-white/60 text-fg/90 border border-white/20"
                   }`}
-                  title="Toggle Far Distance Super-Resolution"
+                  title="Toggle Far Distance Advanced-Resolution"
                 >
                   <Sparkles className="size-3" />
                   <span>{isFarZoomActive ? "Far Mode ON" : "Far Mode"}</span>

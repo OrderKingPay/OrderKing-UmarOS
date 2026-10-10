@@ -96,7 +96,7 @@ function deriveReferralCode(userId: string): string {
 }
 
 /**
- * Fetches the live Lifetime Royalty Dashboard data with Zero Fake Data.
+ * Fetches the live Lifetime Royalty Dashboard data with Zero Simulated Data.
  */
 export const getLifetimeRoyaltyDashboard = createServerFn({ method: "GET" }).handler(
   async (): Promise<LifetimeRoyaltyDashboardData> => {

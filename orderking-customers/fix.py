@@ -10,9 +10,9 @@ def fix_founder_command():
     
     # Remove AI JSX tags (even multiline)
     components = [
-        "SupremeFounderAIChat", "FounderCRMHub", "RemoteWorkBoard", "AppFactoryWorkspace",
+        "PremiumFounderAIChat", "FounderCRMHub", "RemoteWorkBoard", "AppFactoryWorkspace",
         "OpportunityRadarHub", "ClientPortalHub", "CompanyFactoryHub", "MoneyEngineDashboard",
-        "ServiceProductizerHub", "DeliveryTaskGraphHub", "SupremeTaskExecutorHub",
+        "ServiceProductizerHub", "DeliveryTaskGraphHub", "PremiumTaskExecutorHub",
         "BusinessIntelligenceHub", "KnowledgeMemoryHub", "CapabilityBenchmarkHub",
         "DependencyInspectorHub", "EmergencyRecoveryHub", "RevenueGrowthCostHub"
     ]

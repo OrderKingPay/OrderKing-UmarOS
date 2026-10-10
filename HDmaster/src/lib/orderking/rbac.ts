@@ -12,7 +12,7 @@ export type AccessContext = {
   employeeId: string;
   orgId: string;
   roleKey: string;
-  /** Acting role after Super Admin "view as". */
+  /** Acting role after Advanced Admin "view as". */
   actingRoleKey: string;
   permissions: readonly string[];
   cityId: string | null;

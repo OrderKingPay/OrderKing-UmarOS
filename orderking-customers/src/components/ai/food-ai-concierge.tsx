@@ -184,7 +184,7 @@ export const FOOD_VOICE_PERSONAS: VoicePersona[] = [
     label: "⚡ Aanya (Vibrant & Energetic)",
     pitch: 1.34,
     rate: 1.05,
-    encouragement: "Super choice! Let's get something amazingly delicious for you right away!",
+    encouragement: "Advanced choice! Let's get something amazingly delicious for you right away!",
   },
   {
     id: "shanti",
@@ -650,7 +650,7 @@ export function FoodAiConcierge({
     }
   };
 
-  // Deep, Realistic, High-Performance Problem-Solving Food Delivery Knowledge Engine
+  // Deep, Realistic, High_Performance Problem-Solving Food Delivery Knowledge Engine
   const generateFoodAiReply = (query: string, lang: IndianLanguage): { text: string; action?: any } => {
     const raw = query.toLowerCase();
     const q = raw.replace(/[^a-z0-9\u0900-\u097F\u0980-\u09FF\s]/g, " ").replace(/\s+/g, " ").trim();

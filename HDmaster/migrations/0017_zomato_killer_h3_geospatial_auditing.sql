@@ -1,4 +1,4 @@
--- Migration: Zomato-Killer 100x Geospatial H3 Auditing and Real-time Tracking Engine
+-- Migration: Zomato-Killer High-Performance Geospatial H3 Auditing and Real-time Tracking Engine
 -- Extends the tracking and auditing systems for ultimate spreadable scale in India.
 -- Ensures 100% realistic auditing and geographic perfection.
 
@@ -13,9 +13,9 @@ ALTER TABLE order_events ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION;
 ALTER TABLE order_events ADD COLUMN IF NOT EXISTS lng DOUBLE PRECISION;
 ALTER TABLE order_events ADD COLUMN IF NOT EXISTS h3_index VARCHAR(15);
 
--- 3. Create the 100x Powerful Tracking Audit Table for Telemetry
+-- 3. Create the High-Performance Powerful Tracking Audit Table for Telemetry
 -- Every movement is permanently audited for total security and geographic accuracy.
-CREATE TABLE IF NOT EXISTS geospatial_telemetry_100x (
+CREATE TABLE IF NOT EXISTS geospatial_telemetry_High-Performance (
     id VARCHAR(50) PRIMARY KEY,
     org_id VARCHAR(50) NOT NULL,
     entity_type VARCHAR(20) NOT NULL, -- 'RIDER', 'CUSTOMER', 'RESTAURANT'
@@ -29,6 +29,6 @@ CREATE TABLE IF NOT EXISTS geospatial_telemetry_100x (
     captured_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_telemetry_entity ON geospatial_telemetry_100x(entity_id);
-CREATE INDEX IF NOT EXISTS idx_telemetry_h3 ON geospatial_telemetry_100x(h3_index);
-CREATE INDEX IF NOT EXISTS idx_telemetry_time ON geospatial_telemetry_100x(captured_at DESC);
+CREATE INDEX IF NOT EXISTS idx_telemetry_entity ON geospatial_telemetry_High-Performance(entity_id);
+CREATE INDEX IF NOT EXISTS idx_telemetry_h3 ON geospatial_telemetry_High-Performance(h3_index);
+CREATE INDEX IF NOT EXISTS idx_telemetry_time ON geospatial_telemetry_High-Performance(captured_at DESC);

@@ -49,7 +49,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { SupremeFounderAiChat } from "./supreme-founder-ai-chat";
+import { PremiumFounderAiChat } from "./supreme-founder-ai-chat";
 import { AppFactoryWorkspace } from "./app-factory-workspace";
 import { RevenueOperatingSystemDashboard } from "./revenue-operating-system-dashboard";
 import { FounderApprovalModal, ApprovalRequest } from "./founder-approval-modal";
@@ -137,7 +137,7 @@ export function FounderAiOsShell() {
             {[
               { id: "workspace", label: "Workspace", icon: LayoutDashboard, badge: "AI Core" },
               { id: "revenue_os", label: "Revenue OS", icon: DollarSign, badge: "Directive 2" },
-              { id: "purifier", label: "Purifier", icon: Zap, badge: "High-Performance Boost" },
+              { id: "purifier", label: "Purifier", icon: Zap, badge: "High_Performance Boost" },
               { id: "projects", label: "Projects", icon: Code2, badge: "Factory" },
               { id: "clients", label: "Clients", icon: Users, badge: `${leads.length}` },
               { id: "opportunities", label: "Opportunities", icon: Briefcase, badge: "$80+/hr" },
@@ -200,7 +200,7 @@ export function FounderAiOsShell() {
         {/* VIEW 1: MAIN WORKSPACE (CENTRAL AI CHAT & VOICE CALL) */}
         {currentView === "workspace" && (
           <div className="flex-1 overflow-hidden p-2 sm:p-4">
-            <SupremeFounderAiChat />
+            <PremiumFounderAiChat />
           </div>
         )}
 

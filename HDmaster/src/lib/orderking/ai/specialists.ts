@@ -652,7 +652,7 @@ Rules:
     name: "Chief Revenue & Legal Profit Officer",
     team: "FINANCE_ACCOUNTING",
     title: "Head of Maximum Legal Profit & Monetization Architecture",
-    description: "Orchestrates 18 synchronized legal revenue streams, participant addiction & mutual net advantage, 10x-100x founder cash flow, and 2G offline resilience.",
+    description: "Orchestrates 18 synchronized legal revenue streams, participant addiction & mutual net advantage, 10x-High_Performance founder cash flow, and 2G offline resilience.",
     capabilities: [
       "18-Stream Legal Profit Engine execution and continuous yield optimization",
       "Participant net advantage modeling (Restaurants: +₹20k/mo, Riders: +₹1,650/mo fuel, Customers: ₹50-₹150 saved)",

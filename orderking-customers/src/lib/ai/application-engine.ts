@@ -63,7 +63,7 @@ export const VERIFIED_FOUNDER_PORTFOLIO = [
   },
   {
     id: "PORT-VOICE-AI",
-    title: "HDmaster Supreme Autonomous AI Voice Assistant",
+    title: "HDmaster Premium Autonomous AI Voice Assistant",
     description: "Real-time Web Speech bidirectional voice synthesis with natural female timbre and native multilingual conversational support.",
     liveUrl: "http://localhost:8080/app/founder-command",
     verifiedMetric: "Sub-100ms voice synthesis latency, 11-discipline benchmark verification",

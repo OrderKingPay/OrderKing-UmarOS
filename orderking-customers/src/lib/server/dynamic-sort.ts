@@ -122,7 +122,7 @@ export function getRealTimeMarketContext(
       headline:
         weather === "Rainy"
           ? "Rainy Day Comfort Bites Under ₹99"
-          : "Budget Super Deals: Popular Meals Under ₹129",
+          : "Budget Advanced Deals: Popular Meals Under ₹129",
       subheadline:
         "Slow-hour value unlock: Bestselling dishes sorted low-to-high at 0% menu markup.",
       badge: "⚡ Low-Price Value Boost",

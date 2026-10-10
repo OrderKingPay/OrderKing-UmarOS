@@ -47,7 +47,7 @@ interface ExecutionPlan {
 
 // ─── Engine ──────────────────────────────────────────────────────────────────
 
-export class UniversalSuperintelligenceEngine {
+export class UniversalAdvancedintelligenceEngine {
 
   /**
    * Resolve a real configured provider or return null.
@@ -165,7 +165,7 @@ export class UniversalSuperintelligenceEngine {
         log(`CRITICAL: Model ${primaryProvider.id} attempted to generate non-realistic content. Intercepting.`);
         finalResponse = `[REALISM ENFORCER BLOCKED] 
 The underlying model (${primaryProvider.id}) attempted to generate simulated or placeholder data. 
-HDMaster Universal Superintelligence Engine explicitly blocks all non-genuine output. 
+HDMaster Universal Advancedintelligence Engine explicitly blocks all non-genuine output. 
 Please provide real Database Access or real API keys to fulfill this request.`;
       }
 

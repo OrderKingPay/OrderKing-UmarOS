@@ -386,7 +386,7 @@ export function GlobalAdSyndicateHub({
 
         <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>Zero-Fake Ledger Status</span>
+            <span>Zero-Simulated Ledger Status</span>
             <ShieldCheck className="h-4 w-4 text-slate-700" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">

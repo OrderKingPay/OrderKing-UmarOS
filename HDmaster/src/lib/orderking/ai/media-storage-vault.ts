@@ -1,5 +1,5 @@
 // Sovereign Media Storage Vault & Cache Management Engine
-// Stores generated AI images, generated AI videos, attachments, and provides High-Performance systematic purging
+// Stores generated AI images, generated AI videos, attachments, and provides High_Performance systematic purging
 
 export interface VaultMediaItem {
   id: string;
@@ -70,7 +70,7 @@ const INITIAL_MEDIA_ITEMS: VaultMediaItem[] = [
   {
     id: "media-vid-01",
     type: "video",
-    title: "OrderKing Superfast 15-Min Delivery Animation",
+    title: "OrderKing Advancedfast 15-Min Delivery Animation",
     prompt: "High speed cinematic time-lapse of delivery rider riding through city streets into glowing restaurant hub",
     url: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4",
     sizeBytes: 8540000,

@@ -2,7 +2,7 @@ import { getSql } from '@/lib/db';
 import { ethers } from 'ethers';
 
 // SUPREME WEALTH ENGINE - Authorized Founder Asset Routing
-export class SupremeWealthEngine {
+export class PremiumWealthEngine {
   
   /**
    * Inject high-converting affiliate URLs into the Customer Tutor Dashboard dynamically.

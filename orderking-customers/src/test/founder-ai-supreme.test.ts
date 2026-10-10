@@ -58,7 +58,7 @@ import {
   ENTERPRISE_BLUEPRINTS,
 } from "../lib/ai/supreme-founder-ai-core.ts";
 
-describe("HDmaster Founder AI — Supreme Capabilities Suite", () => {
+describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
   describe("1. Capability Benchmarking Suite (§26)", () => {
     it("should define test cases across all 11 core disciplines", () => {
       assert.strictEqual(BENCHMARK_TEST_SUITE.length, 11);
@@ -155,7 +155,7 @@ describe("HDmaster Founder AI — Supreme Capabilities Suite", () => {
     });
   });
 
-  describe("6. The Supreme Task Executor (§28)", () => {
+  describe("6. The Premium Task Executor (§28)", () => {
     it("should decompose founder goal into 14 sequential stages", () => {
       const plan = decomposeFounderGoal("Build me an online business");
       assert.strictEqual(plan.totalStages, 14);
@@ -248,7 +248,7 @@ describe("HDmaster Founder AI — Supreme Capabilities Suite", () => {
     });
   });
 
-  describe("11. Supreme Voice Engine & Multilingual Audio Synthesis (§25)", () => {
+  describe("11. Premium Voice Engine & Multilingual Audio Synthesis (§25)", () => {
     it("should configure all 4 young female natural acoustic personas with warm DSP parameters", () => {
       const personas = Object.values(VOICE_PERSONAS);
       assert.strictEqual(personas.length, 4);
@@ -302,7 +302,7 @@ describe("HDmaster Founder AI — Supreme Capabilities Suite", () => {
     });
   });
 
-  describe("12. Supreme Founder AI Chat Core & Async Query Engine", () => {
+  describe("12. Premium Founder AI Chat Core & Async Query Engine", () => {
     it("should resolve client sales intent and return qualified lead pitch card", async () => {
       const res = await parseFounderQuery("find clients to sell our food delivery software", "orderking@okhdfcbank");
       assert.strictEqual(res!.intent, "client_sales");

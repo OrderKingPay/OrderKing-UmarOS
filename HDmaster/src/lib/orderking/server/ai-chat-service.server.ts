@@ -34,7 +34,7 @@ import { FOUNDER_TOOLS, executeFounderTool } from "../ai/founder-tools.server";
 import { ensureWorkspace, appendAudit } from "./workspace.server.ts";
 import { requirePermission } from "../rbac.ts";
 import { z } from "zod";
-import { UniversalSuperintelligenceEngine } from "../ai/universal-superintelligence-engine.server.ts";
+import { UniversalAdvancedintelligenceEngine } from "../ai/universal-superintelligence-engine.server.ts";
 
 export interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -595,7 +595,7 @@ export async function executeFounderAiChat(
     try {
       onStreamEvent?.({ type: "step", data: { stepNumber: 1, totalSteps: 4, label: "Universal Engine: Understanding", status: "RUNNING", detail: "Parsing directive..." } });
 
-      const result = await UniversalSuperintelligenceEngine.execute({
+      const result = await UniversalAdvancedintelligenceEngine.execute({
         orgId: "system",
         owner: request.userId || request.userContext?.userId || "founder",
         instruction: currentQuery,
@@ -792,7 +792,7 @@ export async function executeFounderAiChat(
           return { role: m.role, content: m.content };
         });
 
-        const systemPrompt = "You are Supreme HDmaster AI, an autonomous operator. You have access to specialized workforce task types ('approval_center', 'restaurant_growth', 'finance_engine', 'dispatch_routing', 'fraud_analysis', 'customer_support', 'financial_audit'). NEVER hallucinate database queries. Execute only mapped specialized tasks. For high-impact or money-sensitive operations, request founder approvals. Answer naturally, authoritatively, and concisely. DO NOT use markdown headers for greetings.";
+        const systemPrompt = "You are Premium HDmaster AI, an autonomous operator. You have access to specialized workforce task types ('approval_center', 'restaurant_growth', 'finance_engine', 'dispatch_routing', 'fraud_analysis', 'customer_support', 'financial_audit'). NEVER hallucinate database queries. Execute only mapped specialized tasks. For high-impact or money-sensitive operations, request founder approvals. Answer naturally, authoritatively, and concisely. DO NOT use markdown headers for greetings.";
 
         let finalFullText = "";
         
