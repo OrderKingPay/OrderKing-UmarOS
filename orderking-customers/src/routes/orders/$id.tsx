@@ -501,7 +501,33 @@ function OrderDetailPage() {
           </div>
         )}
 
-        {/* ZOMATO-STYLE VERIFIED CUSTOMER COMPLAINT ROOM (STRICTLY DELIVERED ORDERS ONLY) */}
+        
+          {order.status === "DELIVERED" && (
+            <div className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-[#D4AF37]/30 bg-black p-5 shadow-[0_0_30px_rgba(212,175,55,0.15)] relative">
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#D4AF37]/10 blur-[50px] pointer-events-none"></div>
+              <div className="flex items-start gap-4 relative z-10">
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#F59E0B] shadow-lg">
+                  <span className="text-2xl">👑</span>
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-fg text-lg leading-tight">Gift a VIP Invite</h3>
+                  <p className="text-xs text-muted mt-1 leading-relaxed">
+                    You have 1 exclusive invite remaining. Send it to a peer now. When they place their first order, your next meal (up to ₹500) is on us.
+                  </p>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText("https://orderking.app/black/invite/KING500");
+                      toast.success("VIP Invite Link Copied!");
+                    }}
+                    className="mt-3 inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-xs font-bold text-black transition hover:bg-gray-200 active:scale-95"
+                  >
+                    Share Invite <span className="text-lg">🎁</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {/* ZOMATO-STYLE VERIFIED CUSTOMER COMPLAINT ROOM (STRICTLY DELIVERED ORDERS ONLY) */}
         {order.status === "DELIVERED" && (
           <div className="mt-4 rounded-[var(--radius-xl)] border-2 border-rose-500/30 bg-gradient-to-br from-rose-500/10 via-surface to-rose-500/5 p-4 shadow-sm">
             <div className="flex items-center justify-between">
