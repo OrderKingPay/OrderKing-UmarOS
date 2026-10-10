@@ -137,7 +137,7 @@ export function FounderAiOsShell() {
             {[
               { id: "workspace", label: "Workspace", icon: LayoutDashboard, badge: "AI Core" },
               { id: "revenue_os", label: "Revenue OS", icon: DollarSign, badge: "Directive 2" },
-              { id: "purifier", label: "Purifier", icon: Zap, badge: "100x Boost" },
+              { id: "purifier", label: "Purifier", icon: Zap, badge: "High-Performance Boost" },
               { id: "projects", label: "Projects", icon: Code2, badge: "Factory" },
               { id: "clients", label: "Clients", icon: Users, badge: `${leads.length}` },
               { id: "opportunities", label: "Opportunities", icon: Briefcase, badge: "$80+/hr" },

@@ -107,7 +107,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
       const freedMb = (result.freedBytes / (1024 * 1024)).toFixed(2);
       setLastFreedMb(freedMb);
       refreshInspection();
-      toast.success(`🧹 100x Purge Completed! Freed ${freedMb} MB of junk. HD Master speed boosted!`);
+      toast.success(`🧹 High-Performance Purge Completed! Freed ${freedMb} MB of junk. HD Master speed boosted!`);
       if (onPurgeCompleted) onPurgeCompleted();
   };
 
@@ -134,7 +134,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
           <span className="text-2xl font-black text-emerald-400 font-mono">
             {inspection.speedOptimizationScore}% OPTIMAL
           </span>
-          <span className="text-[10px] text-emerald-300/80 block mt-0.5">100x Faster than browser cache</span>
+          <span className="text-[10px] text-emerald-300/80 block mt-0.5">High-Performance Faster than browser cache</span>
         </div>
 
         <div className="rounded-xl bg-surface-2/80 p-3.5 border border-border">
@@ -265,12 +265,12 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
             {isPurging ? (
               <>
                 <RefreshCw className="size-4 mr-2 animate-spin" />
-                <span>Executing 100x Deep Purge &amp; Performance Sweep...</span>
+                <span>Executing High-Performance Deep Purge &amp; Performance Sweep...</span>
               </>
             ) : (
               <>
                 <Trash2 className="size-4 mr-2" />
-                <span>1-Click Deep Purge &amp; Boost Speed 100x</span>
+                <span>1-Click Deep Purge &amp; Boost Speed High-Performance</span>
               </>
             )}
           </Button>
@@ -292,7 +292,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
               <CheckCircle2 className="size-4 text-emerald-400" />
               <span className="font-bold">Purge Succeeded: Successfully freed {lastFreedMb} MB of unnecessary caches!</span>
             </div>
-            <span className="font-mono text-[10px] text-emerald-200">100x Speed Restored</span>
+            <span className="font-mono text-[10px] text-emerald-200">High-Performance Speed Restored</span>
           </div>
         )}
       </div>

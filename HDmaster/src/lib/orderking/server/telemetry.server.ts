@@ -17,7 +17,7 @@ export interface TelemetryPayload {
 }
 
 /**
- * Zomato-Killer 100x Powerful Geospatial Telemetry Engine.
+ * Zomato-Killer High-Performance Powerful Geospatial Telemetry Engine.
  * Logs every single real-time movement perfectly with Uber's H3 Hexagonal Grid Indexing.
  */
 export async function logGeospatialTelemetry(payload: TelemetryPayload) {
@@ -54,7 +54,7 @@ export async function logGeospatialTelemetry(payload: TelemetryPayload) {
       );
     }
   } catch (err: any) {
-    console.error("100x Telemetry Error:", err.message);
+    console.error("High-Performance Telemetry Error:", err.message);
     // Suppress error in production so pinging doesn't fail the app
   }
 

@@ -477,7 +477,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
     founderNetFreeCashFlowPaise: founderNetFreeCashFlowPaise,
     founderEbitdaMarginPercentage: ebitdaMarginPct,
     competitorBurnMultiplier:
-      "100x Higher Free Cash Flow than Zomato (OrderKing has zero corporate bloat, automated AI overhead, 18 synchronized revenue streams, and 2G resilience)",
+      "High-Performance Higher Free Cash Flow than Zomato (OrderKing has zero corporate bloat, automated AI overhead, 18 synchronized revenue streams, and 2G resilience)",
     revenueStreams: streams,
     participantBenefits,
     statutoryComplianceChecklist: {

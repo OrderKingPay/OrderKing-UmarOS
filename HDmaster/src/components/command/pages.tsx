@@ -1283,7 +1283,7 @@ function MarketingPage() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl">Strategic Marketing & Growth Command</h1>
-          <p className="mt-1 text-sm text-muted">100x Growth Engine with zero-loss unit economics and viral customer loops.</p>
+          <p className="mt-1 text-sm text-muted">High-Performance Growth Engine with zero-loss unit economics and viral customer loops.</p>
         </div>
       </header>
 
@@ -2425,7 +2425,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("launch_viral_referral_engine: Launch 100x viral referral booster with ₹100 friend discount (min ₹299 cart) and ₹50 referrer wallet reward with zero platform loss", "growth")}
+                  onClick={() => runPreset("launch_viral_referral_engine: Launch High-Performance viral referral booster with ₹100 friend discount (min ₹299 cart) and ₹50 referrer wallet reward with zero platform loss", "growth")}
                 >
                   <span className="font-semibold">🎁 1-Click Viral Referral Engine</span>
                   <p className="text-[11px] text-muted">Zero-loss customer acquisition loop with ₹299 cart guardrail.</p>
@@ -2596,17 +2596,17 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                   onClick={() => runPreset("autonomous_maximum_force_profit_orchestrator: Execute maximum force 10x-100x legal profit generation, 14 revenue streams synchronization, 2G resilience verification, and mutual participant advantage auditing", "finance")}
                 >
                   <span className="font-semibold text-primary">🚀 1-Click Maximum Force 10x Profit &amp; 2G Resilience Orchestrator</span>
-                  <p className="text-[11px] text-muted">Confidential: 14 synchronized revenue streams, 100x higher free cash flow than Zomato, 0ms 2G cache, and zero legal liability.</p>
+                  <p className="text-[11px] text-muted">Confidential: 14 synchronized revenue streams, High-Performance higher free cash flow than Zomato, 0ms 2G cache, and zero legal liability.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-amber-500/20 via-primary/20 to-purple-500/20 hover:opacity-90 border-2 border-amber-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_100x_profit_and_addiction_director: Master director orchestrating 100x legal profit generation across 18 revenue streams, viral bill-splits, Soundbox SaaS, 2G resilience, and user addiction loops", "finance")}
+                  onClick={() => runPreset("autonomous_100x_profit_and_addiction_director: Master director orchestrating High-Performance legal profit generation across 18 revenue streams, viral bill-splits, Soundbox SaaS, 2G resilience, and user addiction loops", "finance")}
                 >
                   <span className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                    <span>👑</span> 1-Click Autonomous 100x Profit &amp; Addiction Director
+                    <span>👑</span> 1-Click Autonomous High-Performance Profit &amp; Addiction Director
                   </span>
-                  <p className="text-[11px] text-muted">Confidential: 18 synchronized revenue streams, viral UPI bill splits, Soundbox SaaS, and 100x free cash flow moat.</p>
+                  <p className="text-[11px] text-muted">Confidential: 18 synchronized revenue streams, viral UPI bill splits, Soundbox SaaS, and High-Performance free cash flow moat.</p>
                 </button>
                 <button
                   type="button"
@@ -2631,12 +2631,12 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-rose-500/20 via-pink-500/20 to-primary/20 hover:opacity-90 border-2 border-rose-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_prestige_subsidies_and_viral_growth_director: Master director orchestrating Assam/Govt of India startup subsidies, cloud grants ($350K), national founder awards, and 100x location-forced viral social loops", "promotions")}
+                  onClick={() => runPreset("autonomous_prestige_subsidies_and_viral_growth_director: Master director orchestrating Assam/Govt of India startup subsidies, cloud grants ($350K), national founder awards, and High-Performance location-forced viral social loops", "promotions")}
                 >
                   <span className="font-bold text-rose-900 dark:text-rose-200 flex items-center gap-1.5">
                     <span>🏆</span> 1-Click Autonomous Prestige, Subsidies &amp; Viral Growth Director
                   </span>
-                  <p className="text-[11px] text-muted">Claim ₹3.74 Cr in cloud/Govt subsidies, apply for National/Assam awards, and trigger 100x location-forced social media virality.</p>
+                  <p className="text-[11px] text-muted">Claim ₹3.74 Cr in cloud/Govt subsidies, apply for National/Assam awards, and trigger High-Performance location-forced social media virality.</p>
                 </button>
                 <button
                   type="button"

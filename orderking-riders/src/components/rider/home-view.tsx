@@ -461,7 +461,7 @@ function OfferCard({
         
       </div>
       
-      {/* 1000x Realism: Deep Learning Dispatch Metrics */}
+      {/* High-Fidelity: Deep Learning Dispatch Metrics */}
       {(offer as any).aiMetrics ? (
         <div className="mt-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs space-y-2">
            <div className="flex items-center justify-between font-bold">

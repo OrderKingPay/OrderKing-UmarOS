@@ -678,7 +678,7 @@ enforcerRouter.post("/enforce", async (req, res) => {
   {
     id: "mod-purifier",
     name: "Sovereign Cache & Storage Purifier Cockpit",
-    tagline: "100x cleaner than browser tools with Protected Core guarantee",
+    tagline: "High-Performance cleaner than browser tools with Protected Core guarantee",
     description: "Standalone disk scanner, duplicate remover, memory leak cleaner, and self-healing system optimizer.",
     category: "system",
     standaloneRoute: "/purifier",
@@ -1541,7 +1541,7 @@ Double-entry idempotency ensures funds are never lost or double-spent, beating P
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Scanning Disk & Memory Quotas", status: "COMPLETED", detail: `Scanned ${inspection.formattedTotalSize} across temporary files` },
       { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Guarantee", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
-      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "100x cleaner than browser cache tools active" },
+      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "High-Performance cleaner than browser cache tools active" },
       { stepNumber: 4, totalSteps: 4, label: "Performance Optimizer Ready", status: "COMPLETED", detail: `Current Speed Score: ${inspection.speedOptimizationScore}%` },
     ];
 

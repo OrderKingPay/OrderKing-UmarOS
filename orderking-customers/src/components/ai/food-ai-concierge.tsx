@@ -650,7 +650,7 @@ export function FoodAiConcierge({
     }
   };
 
-  // Deep, Realistic, 100x Problem-Solving Food Delivery Knowledge Engine
+  // Deep, Realistic, High-Performance Problem-Solving Food Delivery Knowledge Engine
   const generateFoodAiReply = (query: string, lang: IndianLanguage): { text: string; action?: any } => {
     const raw = query.toLowerCase();
     const q = raw.replace(/[^a-z0-9\u0900-\u097F\u0980-\u09FF\s]/g, " ").replace(/\s+/g, " ").trim();

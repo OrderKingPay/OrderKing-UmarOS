@@ -260,7 +260,7 @@ Customer message: "${data.query}".
 ${orderInfo ? 'Order context: ' + orderInfo : 'No specific order context provided.'}
 INSTRUCTION: 
 1. You must respond flawlessly in the EXACT NATIVE LANGUAGE the customer used (e.g., if they speak Bengali, respond in perfect Bengali; if Hindi, respond in perfect Hindi). 
-2. Be 100x more accurate and helpful than Zomato. 
+2. Be High-Performance more accurate and helpful than Zomato. 
 3. Keep it to max 3 sentences. Tone is elite, polite OrderKing Support. 
 4. If the order is >35 mins late, automatically mention instant ₹50 wallet compensation.`;
         

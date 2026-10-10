@@ -890,7 +890,7 @@ export function parseFounderQuery(query: string, founderUpiVpa: string = "orderk
 - **Dispute Auto-Resolution**: ${disputeResolution!.action} (Penalty: ₹${disputeResolution!.compensationAmountInr})
 
 > [!IMPORTANT]
-> **🤖 Supreme AI Operator Executed**: Your autonomous AI support fleet has audited this merchant's metrics and processed dispute logic with 100% human replacement accuracy. Founder liability remains 0%.
+> **🤖 Autonomous AI Operator Executed**: Your autonomous AI support fleet has audited this merchant's metrics and processed dispute logic with high-precision accuracy. Founder liability remains 0%.
 
 Use this engine for real-time compliance checks without needing human operations staff.`;
 
@@ -985,11 +985,11 @@ Double-entry idempotency ensures funds are never lost or double-spent, beating P
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Scanning Disk & Memory Quotas", status: "COMPLETED", detail: `Scanned ${inspection.formattedTotalSize} across temporary files` },
       { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Guarantee", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
-      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "100x cleaner than browser cache tools active" },
+      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "Deep cleaning protocol initialized" },
       { stepNumber: 4, totalSteps: 4, label: "Performance Optimizer Ready", status: "COMPLETED", detail: `Current Speed Score: ${inspection.speedOptimizationScore}%` },
     ];
 
-    const responseMarkdown = `### 🧹 Sovereign Cache & Storage Purifier Armed (100x Cleaner)
+    const responseMarkdown = `### 🧹 Cache & Storage Purifier Armed
 - **Total Temporary Storage**: **${inspection.formattedTotalSize}** (${inspection.itemCount} cached items)
 - **Generated Media Footprint**: ${(inspection.breakdown.generatedImagesBytes / (1024 * 1024)).toFixed(1)} MB Images · ${(inspection.breakdown.generatedVideosBytes / (1024 * 1024)).toFixed(1)} MB Videos
 - **Current Performance Score**: **${inspection.speedOptimizationScore}%**
@@ -997,7 +997,7 @@ Double-entry idempotency ensures funds are never lost or double-spent, beating P
 > [!IMPORTANT]
 > **🛡️ 100% Core Protection Shield**: Zero danger to critical assets. Your verified Client Leads, King Pay UPI Invoices, MSA Contracts, and Founder Vault Keys are **permanently locked & protected**.
 
-Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and boost engine performance by 100x!`;
+Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and optimize engine performance.`;
 
     const voiceSpokenText = isHindi
       ? `Sovereign Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
@@ -1056,7 +1056,7 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent cloud & local storage indexed" },
     ];
 
-    const responseMarkdown = `### 🎨 Supreme AI Image Generated (100% Free & Unlimited)
+    const responseMarkdown = `### 🎨 AI Image Generated Successfully
 - **Prompt**: *"${rawPrompt}"*
 - **Resolution**: **1024 × 1024 (Ultra HD)** | **Cost**: **$0.00 (Unlimited Forever)**
 - **Vault Status**: Indexed in **HD Master Media Vault** (ready to download, enlarge, or embed in client pitch decks).
@@ -1128,7 +1128,7 @@ You can download this image, copy its direct CDN link, or command further edits 
       { stepNumber: 4, totalSteps: 4, label: "Registering in HD Master Media Vault", status: "COMPLETED", detail: "Playback ready with instant download option" },
     ];
 
-    const responseMarkdown = `### 🎬 Supreme AI Video Generated (100% Free & Unlimited)
+    const responseMarkdown = `### 🎬 AI Video Generated Successfully
 - **Prompt**: *"${rawPrompt}"*
 - **Format**: **MP4 60FPS** | **Cost**: **$0.00 (Unlimited Forever)**
 - **Vault Status**: Indexed in **HD Master Media Vault** (ready to play, download, and showcase to enterprise clients).
@@ -1556,7 +1556,7 @@ Your studio controls, aspect ratio switcher, timeline duration, and instant 4K p
   if ( q.startsWith("/media") ) {
     const isVideo = q.includes("video");
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Booting AI Media Studio", status: "COMPLETED", detail: "Allocated supreme GPU rendering cluster" },
+      { stepNumber: 1, totalSteps: 4, label: "Booting AI Media Studio", status: "COMPLETED", detail: "Allocated dedicated GPU rendering cluster" },
       { stepNumber: 2, totalSteps: 4, label: "Processing Prompt Parameters", status: "COMPLETED", detail: `Synthesizing ${isVideo ? "high-fidelity video stream" : "hyper-realistic image array"}` },
       { stepNumber: 3, totalSteps: 4, label: "Applying Unlimited Free Tier", status: "COMPLETED", detail: "Bypassed standard token limits for founder" },
       { stepNumber: 4, totalSteps: 4, label: "Saving to Media Vault", status: "COMPLETED", detail: "Artifacts securely cached in Sovereign Memory" },
@@ -1577,7 +1577,7 @@ You can preview and save the generated ${isVideo ? "video" : "image"} directly u
       ? `Aapke command ke anusar, maine AI Studio me ${isVideo ? "video" : "image"} generate kar diya hai. Yeh unlimited free hai aur Media Vault me save karne ke liye ready hai.`
       : isBengali
       ? `Apnar command onujayi, ami AI Studio te ${isVideo ? "video" : "image"} generate korechi. Eta unlimited free ebong Media Vault e save korar jonno ready ache.`
-      : `I have generated your requested ${isVideo ? "video" : "image"} using the Supreme AI Studio. It is rendered with unlimited free execution and is ready to be saved to the Media Vault.`;
+      : `I have generated your requested ${isVideo ? "video" : "image"} using the AI Media Studio. It is rendered with unlimited free execution and is ready to be saved to the Media Vault.`;
 
     return {
       intent: "media_generation",

@@ -1863,7 +1863,7 @@ You can ask me anything across software engineering, architecture, business anal
       const aiMsg: SupremeAiMessage = {
         id: aiMsgId,
         sender: "ai",
-        text: `⚠️ **Critical System Fault**\n\nThe Supreme Founder AI engine could not be reached. The system strictly operates in Fail-Closed mode to guarantee security and prevent the emission of unauthorized simulated offline responses.\n\n**Error Details:** ${err instanceof Error ? err.message : String(err)}`,
+        text: `⚠️ **Critical System Fault**\n\nThe Founder AI engine could not be reached. The system strictly operates in Fail-Closed mode to guarantee security and prevent the emission of unauthorized simulated offline responses.\n\n**Error Details:** ${err instanceof Error ? err.message : String(err)}`,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         language: "en-US",
         modelUsed: selectedModel
@@ -2094,7 +2094,7 @@ You can ask me anything across software engineering, architecture, business anal
                     ? "bg-amber-500/20 text-amber-500 border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
                     : "bg-surface text-muted border-white/20 hover:text-gray-400"
                 }`}
-                title="Double Engine Consensus Validator (100x Realism)"
+                title="Double Engine Consensus Validator"
               >
                 <Layers className="size-3.5 mr-1.5" />
                 Double Engine: {doubleEngineEnabled ? "ON" : "OFF"}
@@ -2109,7 +2109,7 @@ You can ask me anything across software engineering, architecture, business anal
                 }}
                 className="h-8 rounded-lg bg-surface border border-white/20 px-3 text-xs font-bold text-gray-400 focus:outline-none focus:ring-1 focus:ring-amber-500"
               >
-                <option value="auto-supreme-orchestrator">⚡ Auto Supreme Orchestrator (Autonomous Best)</option>
+                <option value="auto-supreme-orchestrator">⚡ Auto Core Orchestrator (Autonomous Best)</option>
                 <option value="ensemble-consensus">🧠 Multi-Model Consensus (Real Verification)</option>
                 <option value="gpt-5-6-sol">🔮 OpenAI GPT-5.6 Sol</option>
                 <option value="claude-4-6-opus">⚡ Anthropic Claude 3.7 Sonnet (Hybrid Reasoning)</option>

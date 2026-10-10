@@ -2648,7 +2648,7 @@ function FounderWorkHub({
               <span className="text-xl font-bold text-cyan-400">{inspection.speedOptimizationScore}%</span>
               <span className="text-[10px] text-cyan-300">Peak</span>
             </div>
-            <span className="text-[10px] text-cyan-300/80 block mt-1">100x Faster than Browser</span>
+            <span className="text-[10px] text-cyan-300/80 block mt-1">High-Performance Faster than Browser</span>
           </div>
 
           <div className="rounded-xl bg-[#212121] p-3 border border-white/5">
@@ -3745,7 +3745,7 @@ export function SupremeFounderAiChat({
       setSystemHealth(100);
       playAudioTone("chime");
       const mb = (result.freedBytes / (1024 * 1024)).toFixed(1);
-      toast.success(`🧹 100x Clean Completed! Freed ${mb} MB of temporary bloat. System health 100% optimal.`);
+      toast.success(`🧹 High-Performance Clean Completed! Freed ${mb} MB of temporary bloat. System health 100% optimal.`);
     }, 700);
   };
 

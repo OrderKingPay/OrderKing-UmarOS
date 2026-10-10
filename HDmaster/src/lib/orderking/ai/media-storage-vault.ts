@@ -1,5 +1,5 @@
 // Sovereign Media Storage Vault & Cache Management Engine
-// Stores generated AI images, generated AI videos, attachments, and provides 100x systematic purging
+// Stores generated AI images, generated AI videos, attachments, and provides High-Performance systematic purging
 
 export interface VaultMediaItem {
   id: string;

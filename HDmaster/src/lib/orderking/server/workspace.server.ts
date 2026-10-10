@@ -55,7 +55,7 @@ export async function appendAudit(input: {
   reason?: string;
   ip?: string | null;
   userAgent?: string | null;
-  // 100x Zomato-Killer Geospatial Tracking Additions
+  // High-Performance Zomato-Killer Geospatial Tracking Additions
   lat?: number | null;
   lng?: number | null;
   h3Index?: string | null;

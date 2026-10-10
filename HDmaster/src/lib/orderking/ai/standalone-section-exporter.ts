@@ -105,7 +105,7 @@ export class StandaloneSectionExporter {
       description: "Standalone storage purifier, duplicate remover, memory leak cleaner, and self-healing system optimizer.",
       icon: "Zap",
       suggestedDomain: "purifier.orderking.in",
-      features: ["100x Browser Cleaner", "Zero Data Loss Guarantee", "Granular Cache Purge", "Auto-Clean Engine"],
+      features: ["High-Performance Browser Cleaner", "Zero Data Loss Guarantee", "Granular Cache Purge", "Auto-Clean Engine"],
     },
     {
       id: "hospital",
