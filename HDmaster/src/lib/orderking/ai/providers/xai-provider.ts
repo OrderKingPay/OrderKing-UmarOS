@@ -185,7 +185,7 @@ export class XAIProvider implements AIProvider {
 
   async generateCode(input: CodeRequest): Promise<CodeResponse> {
     const res = await this.chat({
-      messages: [{ role: "user", content: `Write high-performance ${input.language} code for: ${input.specification}` }],
+      messages: [{ role: "user", content: `Write High_Performance ${input.language} code for: ${input.specification}` }],
       systemPrompt: "You are Grok, writing concise, high-throughput software. Return strictly valid JSON with keys: 'code' (string), 'explanation' (string), 'unitTests' (optional string), 'dependencies' (optional array of strings).",
       responseFormat: "json_object",
     });
@@ -202,7 +202,7 @@ export class XAIProvider implements AIProvider {
       provider: this.id,
       model: res.model,
       code: parsed.code || res.text,
-      explanation: parsed.explanation || "Generated high-performance code via Grok engine.",
+      explanation: parsed.explanation || "Generated High_Performance code via Grok engine.",
       unitTests: parsed.unitTests,
       dependencies: parsed.dependencies,
     };
@@ -219,3 +219,4 @@ export class XAIProvider implements AIProvider {
     return JSON.parse(clean) as T;
   }
 }
+

@@ -40,8 +40,8 @@ for (const file of files) {
       [/Supreme type fastest/ig, 'Ultra-Fast'],
       [/Forceful realism/ig, 'High-Fidelity'],
       [/Supreme level/ig, 'Enterprise Grade'],
-      [/missile type/ig, 'high-performance'],
-      [/missile category/ig, 'high-performance'],
+      [/missile type/ig, 'High_Performance'],
+      [/missile category/ig, 'High_Performance'],
       [/supreme/ig, 'core'],
     ];
 
@@ -52,9 +52,9 @@ for (const file of files) {
       [/100x more perfections/ig, 'Enterprise Quality'],
       [/forceful realism/ig, 'High-Fidelity'],
       [/supreme level/ig, 'Enterprise level'],
-      [/missile type/ig, 'high-performance'],
-      [/missile category/ig, 'high-performance'],
-      [/(?<=[>\s"'])100x(?=[\s<"'])/g, 'High-Performance'] // only standalone 100x
+      [/missile type/ig, 'High_Performance'],
+      [/missile category/ig, 'High_Performance'],
+      [/(?<=[>\s"'])100x(?=[\s<"'])/g, 'High_Performance'] // only standalone 100x
     ];
 
     for (let [pattern, replacement] of preciseReplacements) {
@@ -71,3 +71,4 @@ for (const file of files) {
   }
 }
 console.log(`Cleaned up ${count} files.`);
+

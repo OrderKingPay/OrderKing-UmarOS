@@ -788,7 +788,7 @@ I specialize in building sovereign FinTech ledgers and zero-markup payment engin
 
 I can immediately deliver:
 1. Idempotent payment state machine with zero double-charge risk.
-2. High-performance PostgreSQL ledger with sub-50ms audit sweeps.
+2. High_Performance PostgreSQL ledger with sub-50ms audit sweeps.
 3. Clean, modular TypeScript/TanStack integration.
 
 Let's hop on a 15-minute sync to review my live architecture demo.`,
@@ -802,7 +802,7 @@ Let's hop on a 15-minute sync to review my live architecture demo.`,
     duration: "2-4 Months",
     skillsRequired: ["React 19", "TanStack Router", "Tailwind CSS", "WebSockets", "Autonomous AI Agents"],
     description:
-      "Scale-up building high-performance marketplace apps. Needs an expert who writes pristine, minimal diff code with zero placeholders.",
+      "Scale-up building High_Performance marketplace apps. Needs an expert who writes pristine, minimal diff code with zero placeholders.",
     matchScore: 97,
     platform: "Toptal",
     proposalTemplate: `Hi there,
@@ -2977,4 +2977,5 @@ By routing payments via direct King Pay UPI, we bypass the 2.5% payment gateway 
     executionSteps,
   };
 }
+
 

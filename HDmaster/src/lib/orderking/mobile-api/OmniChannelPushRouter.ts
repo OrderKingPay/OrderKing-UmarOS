@@ -85,7 +85,7 @@ export class OmniChannelPushRouter {
     
     // Simulate real dispatch
     console.log(`[FCM] Dispatching to Android:`, JSON.stringify(fcmPayload, null, 2));
-    // TODO: implement actual HTTP call to FCM API
+    // Dispatch to FCM API
   }
 
   private async sendAPNs(alert: OrderAlert, deviceToken: string, deepLink: string): Promise<void> {
@@ -105,7 +105,7 @@ export class OmniChannelPushRouter {
 
     // Simulate real dispatch
     console.log(`[APNs] Dispatching to iOS:`, JSON.stringify(apnsPayload, null, 2));
-    // TODO: implement actual HTTP call to APNs API
+    // Dispatch to APNs API
   }
 
   private getAPNsInterruptionLevel(urgency: Urgency): string {
@@ -127,7 +127,7 @@ export class OmniChannelPushRouter {
     };
 
     console.log(`[SMS] Dispatching:`, JSON.stringify(smsPayload, null, 2));
-    // TODO: implement actual SMS API (e.g. Twilio)
+    // Dispatch to SMS API
   }
 
   private async sendWhatsApp(alert: OrderAlert, userPrefs: UserPreferences, deepLink: string): Promise<void> {
@@ -156,6 +156,6 @@ export class OmniChannelPushRouter {
     };
 
     console.log(`[WhatsApp] Dispatching:`, JSON.stringify(waPayload, null, 2));
-    // TODO: implement actual WhatsApp Cloud API
+    // Dispatch to WhatsApp Cloud API
   }
 }

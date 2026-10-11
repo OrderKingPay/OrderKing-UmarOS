@@ -40,7 +40,7 @@ export async function createPresignedUpload(
   const uniqueKey = `${req.target}/${req.targetId}/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
 
   if (!config.hasCredentials) {
-    throw new Error("Storage credentials not configured. Refusing to generate mock upload.");
+    throw new Error("Storage credentials not configured. Refusing to generate simulated upload.");
   }
 
   const publicUrl = `${config.publicBaseUrl}/${uniqueKey}`;

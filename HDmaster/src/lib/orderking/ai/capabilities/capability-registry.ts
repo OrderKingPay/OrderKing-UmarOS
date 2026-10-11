@@ -200,7 +200,7 @@ export class UniversalCapabilityRegistry {
       id: "database_engineering_ddl",
       name: "Database Engineering & SQL Schema Synthesis",
       category: "database_engineering",
-      description: "Generates high-performance relational schemas, migration scripts, and indexing strategies.",
+      description: "Generates High_Performance relational schemas, migration scripts, and indexing strategies.",
       provider: "PostgreSQL & Kysely Query Engine",
       permissions: ["manage_settings"],
       inputSchema: { type: "object", properties: { domain: { type: "string" } } },
@@ -382,3 +382,4 @@ export class UniversalCapabilityRegistry {
 }
 
 export const capabilityRegistry = new UniversalCapabilityRegistry();
+

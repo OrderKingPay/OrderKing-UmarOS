@@ -224,7 +224,7 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
     }
   };
 
-  // High-performance scanning loop with Multi-Resolution & Far-Distance Crop
+  // High_Performance scanning loop with Multi-Resolution & Far-Distance Crop
   const startScanningLoop = () => {
     let detector: any = null;
     if (typeof window !== "undefined" && "BarcodeDetector" in window) {
@@ -666,3 +666,4 @@ export function CameraScannerModal({ isOpen, onClose, onScanSuccess, initialMode
     </div>
   );
 }
+

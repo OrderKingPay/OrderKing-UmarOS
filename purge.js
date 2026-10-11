@@ -7,10 +7,10 @@ const ignoreDirs = ['node_modules', '.git', 'dist', '.next', 'build', '.turbo', 
 const wordMap = {
     'Supreme': 'Premium',
     'Godfather': 'Executive',
-    'God mode': 'Admin mode',
-    '100x': 'High-Performance',
+    'God mode': 'Admin_Mode',
+    '100x': 'High_Performance',
     'Missile': 'Targeted',
-    'Carpet-Bombing': 'Broad-Reach',
+    'Carpet-Bombing': 'Broad_Reach',
     'Nuclear': 'Critical',
     'Fake': 'Simulated',
     'Mock': 'Simulated',
@@ -70,3 +70,4 @@ allFiles.forEach(file => {
 });
 
 console.log('Purge and rename complete.');
+

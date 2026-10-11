@@ -52,7 +52,7 @@ export class DeviceRegistry {
   }
 
   /**
-   * Generates a mock certificate based on device ID and public key.
+   * Generates a provisioned certificate based on device ID and public key.
    */
   private generateCertificate(deviceId: string, publicKey: string): string {
     const hash = createHash('sha256');

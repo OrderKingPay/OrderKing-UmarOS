@@ -35,7 +35,6 @@ export class AutonomousFleetEngine {
      * @param stationId The ID of the station to predict and assign shifts for.
      */
     public predictiveShiftAssignment(stationId: string): Shift[] {
-        // 1. Fetch historical demand (mocked here as a prediction)
         const forecast = this.getDemandForecast(stationId);
 
         // 2. Determine required shifts based on the forecast
@@ -50,10 +49,8 @@ export class AutonomousFleetEngine {
     }
 
     private getDemandForecast(stationId: string): DemandForecast {
-        // In a real system, this would run a complex ML model on historical order data,
-        // weather, events, and traffic. Here we mock a prediction.
         console.log(`[AutonomousFleetEngine] Analyzing historical data for station: ${stationId}`);
-        const predictedVolume = Math.floor(Math.random() * 500) + 100; // 100 to 600 orders
+        const predictedVolume = 0; // Awaiting live forecast API data
         
         // Assume 1 rider can handle 20 orders in a shift
         const recommendedRiders = Math.ceil(predictedVolume / 20);
@@ -66,7 +63,6 @@ export class AutonomousFleetEngine {
     }
 
     private generateUpcomingShifts(stationId: string, requiredRiders: number): Shift[] {
-        // Generate a mock shift for the next day
         const now = new Date();
         const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0); // 8 AM tomorrow
         const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 16, 0, 0); // 4 PM tomorrow
@@ -112,16 +108,7 @@ export class AutonomousFleetEngine {
     }
 
     private getAvailableRiders(): Rider[] {
-        // Simulateding available riders. In reality, fetch from database.
-        const mockRiders: Rider[] = [];
-        for (let i = 1; i <= 50; i++) {
-            mockRiders.push({
-                id: `rider_${i}`,
-                name: `Autonomous Rider ${i}`,
-                status: 'AVAILABLE',
-                reliabilityScore: Math.random() * 100
-            });
-        }
-        return mockRiders;
+        // Fetch from state
+        return Array.from(this.riders.values()).filter(r => r.status === 'AVAILABLE');
     }
 }

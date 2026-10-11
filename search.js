@@ -30,4 +30,4 @@ function searchDir(dirPath) {
 }
 
 dirs.forEach(searchDir);
-fs.writeFileSync('search_results.txt', results.join('\n'), 'utf8');
+fs.writeFileSync('search_results2.txt', results.join('\n'), 'utf8');

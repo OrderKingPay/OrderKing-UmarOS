@@ -1,0 +1,114 @@
+HDmaster\.wrangler\tmp\dev-dwLS3K\vqr2ia0i6ol.js:157652:* @todo class group will be renamed to `inset-s` in next major release
+HDmaster\.wrangler\tmp\dev-dwLS3K\vqr2ia0i6ol.js:157665:* @todo class group will be renamed to `inset-e` in next major release
+HDmaster\.wrangler\tmp\dev-dwLS3K\vqr2ia0i6ol.js:163518:* TODO: Update options in an effect. This could be tricky as it'll be too late
+HDmaster\.wrangler\tmp\dev-dwLS3K\vqr2ia0i6ol.js:182620:children: "Zero mock data. Live database aggregation ready."
+HDmaster\.wrangler\tmp\dev-dwLS3K\vqr2ia0i6ol.js:214426:"mock data",
+HDmaster\.wrangler\tmp\dev-G4qz3Z\4qeclyhx3x.js:157652:* @todo class group will be renamed to `inset-s` in next major release
+HDmaster\.wrangler\tmp\dev-G4qz3Z\4qeclyhx3x.js:157665:* @todo class group will be renamed to `inset-e` in next major release
+HDmaster\.wrangler\tmp\dev-G4qz3Z\4qeclyhx3x.js:163518:* TODO: Update options in an effect. This could be tricky as it'll be too late
+HDmaster\.wrangler\tmp\dev-G4qz3Z\4qeclyhx3x.js:182620:children: "Zero mock data. Live database aggregation ready."
+HDmaster\.wrangler\tmp\dev-G4qz3Z\4qeclyhx3x.js:214426:"mock data",
+HDmaster\.wrangler\tmp\dev-xSNIDR\3scei2bi4bx.js:158327:* @todo class group will be renamed to `inset-s` in next major release
+HDmaster\.wrangler\tmp\dev-xSNIDR\3scei2bi4bx.js:158340:* @todo class group will be renamed to `inset-e` in next major release
+HDmaster\.wrangler\tmp\dev-xSNIDR\3scei2bi4bx.js:164193:* TODO: Update options in an effect. This could be tricky as it'll be too late
+HDmaster\.wrangler\tmp\dev-xSNIDR\3scei2bi4bx.js:183295:children: "Zero mock data. Live database aggregation ready."
+HDmaster\.wrangler\tmp\dev-xSNIDR\3scei2bi4bx.js:215101:"mock data",
+HDmaster\src\components\admin\FounderTerminal\omni-action.ts:60:// Normally we would engine.executeTool, but since api.orderking.internal is a mock for this exercise,
+HDmaster\src\components\dashboard\FounderEconomics.tsx:52:<p className="text-sm text-muted mt-2">Zero mock data. Live database aggregation ready.</p>
+HDmaster\src\components\dashboard\GlobalAdSyndicateHub.tsx:399:No mock seeds. All metrics increment only via booked actions
+HDmaster\src\components\dashboard\UmarOS_AI_Terminal.tsx:1962:Direct database queries against orders, couriers, restaurants, refunds, and double-entry ledger. Zero mock data.
+HDmaster\src\lib\app-data\app-data.test.ts:1:import { describe, it, mock } from "node:test";
+HDmaster\src\lib\app-data\app-data.test.ts:105:mock.timers.enable({ apis: ["Date"], now: 1_000_000 });
+HDmaster\src\lib\app-data\app-data.test.ts:116:mock.timers.setTime(1_000_000 + 5_001);
+HDmaster\src\lib\app-data\app-data.test.ts:124:mock.timers.reset();
+HDmaster\src\lib\auth\middleware.ts:14:*   export const listTodos = createServerFn({ method: "GET" })
+HDmaster\src\lib\auth\middleware.ts:18:*       return sql`select * from todos where user_id = ${context.userId}`;
+HDmaster\src\lib\db.ts:23:*   const rows = await sql`select * from todos where id = ${id}`; // parameterized
+HDmaster\src\lib\db.ts:24:*   const rows2 = await sql.query("select * from todos where id = $1", [id]);
+HDmaster\src\lib\orderking\agent-memory\multi-tier-memory.test.ts:30:const mockSql: any = async (strings: any, ...values: any[]) => {
+HDmaster\src\lib\orderking\agent-memory\multi-tier-memory.test.ts:33:mockSql.query = async (text: string, params: any[]) => {
+HDmaster\src\lib\orderking\agent-memory\multi-tier-memory.test.ts:46:const engine = new MultiTierMemoryEngine(async () => mockSql);
+HDmaster\src\lib\orderking\ai\anti-fake-validation.test.ts:211:const mockTelemetry: RiderGpsTelemetry = {
+HDmaster\src\lib\orderking\ai\anti-fake-validation.test.ts:218:const mockRes = militaryAntiFraudShield.validateRiderTelemetry(mockTelemetry);
+HDmaster\src\lib\orderking\ai\anti-fake-validation.test.ts:219:assert.equal(mockRes.valid, false);
+HDmaster\src\lib\orderking\ai\anti-fake-validation.test.ts:220:assert.equal(mockRes.code, "MOCK_GPS_DETECTED");
+HDmaster\src\lib\orderking\ai\master-ai-runtime.ts:177:// Non-blocking fallback for audit logging in mock/preview modes
+HDmaster\src\lib\orderking\ai\plugins\UniversalPluginEngine.ts:58:* ZERO MOCK PLUGINS.
+HDmaster\src\lib\orderking\ai\universal-superintelligence-engine.server.ts:160:"mock data", "simulated", "placeholder", "dummy data",
+HDmaster\src\lib\orderking\chaos\chaos.test.ts:53:const mockBreaker: CircuitBreakerLike = {
+HDmaster\src\lib\orderking\chaos\chaos.test.ts:72:const result = await testCircuitBreakerResilience(mockBreaker, faultyFn, 10);
+HDmaster\src\lib\orderking\chaos\chaos.test.ts:83:const mockBulkhead: BulkheadLike = {
+HDmaster\src\lib\orderking\chaos\chaos.test.ts:97:const result = await testBulkheadResilience(mockBulkhead, 5);
+HDmaster\src\lib\orderking\chaos\chaos.test.ts:104:const mockController: ContainmentControllerLike = {
+HDmaster\src\lib\orderking\chaos\chaos.test.ts:110:const time = await measureContainmentTime(mockController);
+HDmaster\src\lib\orderking\connector-fabric\connector-fabric.test.ts:125:const mockSpec = {
+HDmaster\src\lib\orderking\connector-fabric\connector-fabric.test.ts:128:servers: [{ url: 'https://api.mock.com/v1' }],
+HDmaster\src\lib\orderking\connector-fabric\connector-fabric.test.ts:140:res.end(JSON.stringify(mockSpec));
+HDmaster\src\lib\orderking\connector-fabric\connector-fabric.test.ts:155:const config = await generateConnectorFromOpenAPI(specUrl, 'mock-connector');
+HDmaster\src\lib\orderking\connector-fabric\connector-fabric.test.ts:157:assert.strictEqual(config.id, 'mock-connector');
+HDmaster\src\lib\orderking\connector-fabric\connector-fabric.test.ts:161:assert.strictEqual(config.endpoint, 'https://api.mock.com/v1');
+HDmaster\src\lib\orderking\emergency\index.test.ts:5:vi.mock('../../db', () => {
+HDmaster\src\lib\orderking\emergency\index.test.ts:7:const sqlSimulated = vi.fn().mockImplementation(() => Promise.resolve([]));
+HDmaster\src\lib\orderking\emergency\index.test.ts:11:getSql: vi.fn().mockResolvedValue(sqlSimulated),
+HDmaster\src\lib\orderking\emergency\index.test.ts:32:const createQuery = sqlSimulated.mock.calls[0][0][0];
+HDmaster\src\lib\orderking\emergency\index.test.ts:35:const insertQuery = sqlSimulated.mock.calls[1][0][0];
+HDmaster\src\lib\orderking\emergency\index.test.ts:46:const taskQuery = sqlSimulated.mock.calls[0][0][0];
+HDmaster\src\lib\orderking\emergency\index.test.ts:49:const workItemQuery = sqlSimulated.mock.calls[1][0][0];
+HDmaster\src\lib\orderking\emergency\index.test.ts:59:const deleteSessionQuery = sqlSimulated.query.mock.calls[0][0];
+HDmaster\src\lib\orderking\emergency\index.test.ts:62:const updateAccountQuery = sqlSimulated.query.mock.calls[1][0];
+HDmaster\src\lib\orderking\infrastructure\infrastructure.test.ts:55:return 'mock-container-id';
+HDmaster\src\lib\orderking\infrastructure\infrastructure.test.ts:67:assert.strictEqual(id, 'mock-container-id');
+HDmaster\src\lib\orderking\iot\iot.test.ts:11:const pubKey = 'mock-public-key-123';
+HDmaster\src\lib\orderking\logistics\h3-hexgrid.ts:7:// Zero mock code. Real axial coordinate mathematics mapped to the Indian subcontinent.
+HDmaster\src\lib\orderking\policy-kernel\tests\policy-engine.test.ts:104:// Note: this test will rely on mock or db. If db is not mocked, it might fail.
+HDmaster\src\lib\orderking\policy-kernel\tests\policy-engine.test.ts:120:// If getSql() throws due to missing db connection, we handle or mock it.
+HDmaster\src\lib\orderking\secure-containment\test.ts:59:console.log('Testing normal execution (mocked Docker)...');
+HDmaster\src\lib\orderking\secure-containment\test.ts:67:console.log('\\nTesting timeout (mocked Docker)...');
+HDmaster\src\lib\orderking\secure-enclave\test-shamir.ts:7:// 1. Generate a mock Founder Master Key (256-bit) as a Buffer
+HDmaster\src\lib\orderking\security\military-anti-fraud-shield.ts:16:* 5. GPS teleportation & mock-location spoofing detection
+HDmaster\src\lib\orderking\security\military-anti-fraud-shield.ts:423:code: "MOCK_GPS_DETECTED",
+HDmaster\src\lib\orderking\security\military-anti-fraud-shield.ts:424:reason: "Rider device reported mock/emulated location provider. Discarded."
+HDmaster\src\lib\orderking\security\zero-trust\secrets-scanner.ts:9:/sbp_[a-zA-Z0-9]+/, // Supabase (mock pattern)
+HDmaster\src\lib\orderking\self-improvement\lifecycle.test.ts:117:throw new Error('Deploy failed mock');
+HDmaster\src\lib\orderking\self-improvement\lifecycle.test.ts:130:assert.strictEqual(proposal.error, 'Deploy failed mock');
+HDmaster\tests\ai\AIAccuracy.spec.ts:11:const mockOpenAI = {
+HDmaster\tests\ai\AIAccuracy.spec.ts:39:const parser = new VoiceOrderParser(mockOpenAI as any);
+HDmaster\tests\ai\AIAccuracy.spec.ts:78:const mockOpenAI = {
+HDmaster\tests\ai\AIAccuracy.spec.ts:106:const parser = new RegionalVoiceParser(mockOpenAI as any);
+HDmaster\tests\chaos\SystemFailure.spec.ts:11:const mockPaymentGateway = {
+HDmaster\tests\chaos\SystemFailure.spec.ts:12:processPayment: jest.fn().mockRejectedValue({ status: 500, message: 'Internal Server Error' })
+HDmaster\tests\chaos\SystemFailure.spec.ts:17:const paymentService = new PaymentService(mockPaymentGateway, circuitBreaker);
+HDmaster\tests\chaos\SystemFailure.spec.ts:31:expect(mockPaymentGateway.processPayment).toHaveBeenCalledTimes(3);
+HDmaster\tests\chaos\SystemFailure.spec.ts:38:const mockNetworkClient = {
+HDmaster\tests\chaos\SystemFailure.spec.ts:39:post: jest.fn().mockRejectedValue(new NetworkError('Network unreachable'))
+HDmaster\tests\chaos\SystemFailure.spec.ts:43:const riderService = new RiderService(mockNetworkClient, syncQueue);
+HDmaster\tests\chaos\SystemFailure.spec.ts:51:expect(mockNetworkClient.post).toHaveBeenCalledTimes(1);
+orderking-customers\src\lib\app-data\app-data.test.ts:2:import { describe, it, mock } from "node:test";
+orderking-customers\src\lib\app-data\app-data.test.ts:106:mock.timers.enable({ apis: ["Date"], now: 1_000_000 });
+orderking-customers\src\lib\app-data\app-data.test.ts:117:mock.timers.setTime(1_000_000 + 5_001);
+orderking-customers\src\lib\app-data\app-data.test.ts:125:mock.timers.reset();
+orderking-customers\src\lib\auth\middleware.ts:15:*   export const listTodos = createServerFn({ method: "GET" })
+orderking-customers\src\lib\auth\middleware.ts:19:*       return sql`select * from todos where user_id = ${context.userId}`;
+orderking-customers\src\lib\auth\preview.ts:10:* the live preview do REAL sign-in — no demo/mock users — with no platform
+orderking-customers\src\lib\db.ts:23:*   const rows = await sql`select * from todos where id = ${id}`; // parameterized
+orderking-customers\src\lib\db.ts:24:*   const rows2 = await sql.query("select * from todos where id = $1", [id]);
+orderking-partners\src\lib\app-data\app-data.test.ts:1:import { describe, it, mock } from "node:test";
+orderking-partners\src\lib\app-data\app-data.test.ts:105:mock.timers.enable({ apis: ["Date"], now: 1_000_000 });
+orderking-partners\src\lib\app-data\app-data.test.ts:116:mock.timers.setTime(1_000_000 + 5_001);
+orderking-partners\src\lib\app-data\app-data.test.ts:124:mock.timers.reset();
+orderking-partners\src\lib\auth\middleware.ts:14:*   export const listTodos = createServerFn({ method: "GET" })
+orderking-partners\src\lib\auth\middleware.ts:18:*       return sql`select * from todos where user_id = ${context.userId}`;
+orderking-partners\src\lib\auth\preview.ts:9:* the live preview do REAL sign-in — no demo/mock users — with no platform
+orderking-partners\src\lib\db.ts:22:*   const rows = await sql`select * from todos where id = ${id}`; // parameterized
+orderking-partners\src\lib\db.ts:23:*   const rows2 = await sql.query("select * from todos where id = $1", [id]);
+orderking-partners\src\lib\server\storage.server.ts:43:throw new Error("Storage credentials not configured. Refusing to generate mock upload.");
+orderking-riders\src\lib\app-data\app-data.test.ts:1:import { describe, it, mock } from "node:test";
+orderking-riders\src\lib\app-data\app-data.test.ts:105:mock.timers.enable({ apis: ["Date"], now: 1_000_000 });
+orderking-riders\src\lib\app-data\app-data.test.ts:116:mock.timers.setTime(1_000_000 + 5_001);
+orderking-riders\src\lib\app-data\app-data.test.ts:124:mock.timers.reset();
+orderking-riders\src\lib\auth\middleware.ts:14:*   export const listTodos = createServerFn({ method: "GET" })
+orderking-riders\src\lib\auth\middleware.ts:18:*       return sql`select * from todos where user_id = ${context.userId}`;
+orderking-riders\src\lib\auth\preview.ts:9:* the live preview do REAL sign-in — no demo/mock users — with no platform
+orderking-riders\src\lib\auth\verify.server.ts:90:"Auth is not configured. DEV_USER_ID mock has been eliminated.",
+orderking-riders\src\lib\db.ts:22:*   const rows = await sql`select * from todos where id = ${id}`; // parameterized
+orderking-riders\src\lib\db.ts:23:*   const rows2 = await sql.query("select * from todos where id = $1", [id]);

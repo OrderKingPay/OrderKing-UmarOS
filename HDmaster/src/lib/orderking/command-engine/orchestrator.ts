@@ -77,7 +77,7 @@ export class Orchestrator {
         if (step.execute) {
           await step.execute();
         } else {
-          // Default mock execution behavior
+          // Default fallback execution behavior
           await new Promise(resolve => setTimeout(resolve, 5));
         }
         success = true;

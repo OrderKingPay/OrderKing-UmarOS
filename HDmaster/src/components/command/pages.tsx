@@ -2703,7 +2703,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-gradient-to-r from-rose-500/20 via-pink-500/20 to-primary/20 hover:opacity-90 border-2 border-rose-500/40 text-foreground transition-all shadow-xs"
-                  onClick={() => runPreset("autonomous_prestige_subsidies_and_viral_growth_director: Master director orchestrating Assam/Govt of India startup subsidies, cloud grants ($350K), national founder awards, and high-performance referral loops", "promotions")}
+                  onClick={() => runPreset("autonomous_prestige_subsidies_and_viral_growth_director: Master director orchestrating Assam/Govt of India startup subsidies, cloud grants ($350K), national founder awards, and High_Performance referral loops", "promotions")}
                 >
                   <span className="font-bold text-rose-900 dark:text-rose-200 flex items-center gap-1.5">
                     <span>🏆</span> 1-Click Autonomous Prestige, Subsidies &amp; Referral Growth Director
@@ -4702,5 +4702,6 @@ function Denied({ error }: { error: string }) {
     </div>
   );
 }
+
 
 

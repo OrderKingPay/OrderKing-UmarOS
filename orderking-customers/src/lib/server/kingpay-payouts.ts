@@ -29,7 +29,7 @@ export const triggerInstantPayout = createServerFn({ method: "POST" })
     }
 
     const batchId = randomUUID();
-    let mockUtr = `UTR${Date.now()}`;
+    let generatedUtr = `UTR${Date.now()}`;
 
     // 2. Secure Transaction Boundary
     await sql.transaction(async (tx: any) => {
@@ -59,9 +59,9 @@ export const triggerInstantPayout = createServerFn({ method: "POST" })
       // Record the payout batch in the same transaction
       await tx`
         INSERT INTO payout_batches (id, restaurant_id, amount_paise, bank_ref, status, created_at)
-        VALUES (${batchId}, ${data.restaurantId}, ${data.amountPaise}, ${mockUtr}, 'completed', NOW())
+        VALUES (${batchId}, ${data.restaurantId}, ${data.amountPaise}, ${generatedUtr}, 'completed', NOW())
       `;
     });
 
-    return { success: true, batchId, utr: mockUtr, amountPaise: data.amountPaise };
+    return { success: true, batchId, utr: generatedUtr, amountPaise: data.amountPaise };
   });

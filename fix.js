@@ -28,20 +28,20 @@ allFiles.forEach(file => {
     let content = fs.readFileSync(file, 'utf8');
     let changed = false;
 
-    if (content.includes('High-Performance')) {
-        content = content.replace(/High-Performance/g, 'High_Performance');
+    if (content.includes('High_Performance')) {
+        content = content.replace(/High_Performance/g, 'High_Performance');
         changed = true;
     }
-    if (content.includes('Broad-Reach')) {
-        content = content.replace(/Broad-Reach/g, 'Broad_Reach');
+    if (content.includes('Broad_Reach')) {
+        content = content.replace(/Broad_Reach/g, 'Broad_Reach');
         changed = true;
     }
-    if (content.includes('Admin mode')) {
-        content = content.replace(/Admin mode/g, 'Admin_mode');
+    if (content.includes('Admin_Mode')) {
+        content = content.replace(/Admin_Mode/g, 'Admin_mode');
         changed = true;
     }
-    if (content.includes('Admin Mode')) {
-        content = content.replace(/Admin Mode/g, 'Admin_Mode');
+    if (content.includes('Admin_Mode')) {
+        content = content.replace(/Admin_Mode/g, 'Admin_Mode');
         changed = true;
     }
 
@@ -50,3 +50,4 @@ allFiles.forEach(file => {
         console.log('Fixed:', file);
     }
 });
+

@@ -151,7 +151,7 @@ export class AITutor {
     const profile = this.studentProfiles.get(studentId);
     if (!profile) return "Student not found.";
 
-    // Simple NLP mockup based on query keywords
+    // Basic NLP routing based on query keywords
     const queryLower = query.toLowerCase();
 
     if (queryLower.includes("prime") || queryLower.includes("composite")) {

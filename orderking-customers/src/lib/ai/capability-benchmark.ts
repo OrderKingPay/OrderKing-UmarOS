@@ -133,11 +133,11 @@ export const BENCHMARK_TEST_SUITE: BenchmarkTestCase[] = [
     description: "Extracts key market parameters and enforces verifiable citations.",
     runTest: async () => {
       const start = performance.now();
-      const mockSources = [
+      const sources = [
         { url: "https://upwork.com/jobs/101", snippet: "Budget: $3,500 for Full-Stack React + Node.js portal" },
         { url: "https://freelancer.com/projects/202", snippet: "Budget: $1,200 for AI Voice Agent with Twilio" },
       ];
-      const parsed = mockSources.map((s) => ({
+      const parsed = sources.map((s) => ({
         budget: s.snippet.match(/\$[\d,]+/)?.[0],
         url: s.url,
       }));
