@@ -294,6 +294,15 @@ export function GlobalAdSyndicateHub({
             {isTesting ? "Auditing Rails..." : "Run Syndicate Audit"}
           </button>
 
+          <button
+            type="button"
+            onClick={() => alert("Client Invoice Generated for Ad Spend!")}
+            className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs"
+          >
+            <FileSpreadsheet className="h-3.5 w-3.5" />
+            Generate Client Invoice for Ad Spend
+          </button>
+
           {onSave && (
             <button
               type="button"
@@ -506,7 +515,7 @@ export function GlobalAdSyndicateHub({
               className="w-full flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50 transition-colors shadow-2xs"
             >
               <Plus className="h-3.5 w-3.5 text-slate-600" />
-              Book Restaurant Top Placement
+              Upload External Client Ad Campaign
             </button>
           </div>
 
@@ -651,7 +660,7 @@ export function GlobalAdSyndicateHub({
               {/* Pricing Slider */}
               <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50/70 p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-700">Retail Markup CPM (₹/1k imps)</span>
+                  <span className="font-semibold text-slate-700">Set CPM (Cost Per Mille) Pricing Markup</span>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-slate-500">
                       Wholesale: ₹{gStream.wholesaleCpmInr}
@@ -754,7 +763,7 @@ export function GlobalAdSyndicateHub({
               {/* Pricing Slider */}
               <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50/70 p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-700">Retail Markup CPM (₹/1k imps)</span>
+                  <span className="font-semibold text-slate-700">Set CPM (Cost Per Mille) Pricing Markup</span>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-slate-500">
                       Wholesale: ₹{oStream.wholesaleCpmInr}
@@ -870,6 +879,29 @@ export function GlobalAdSyndicateHub({
                     <option value="ANDHRA_PRADESH">Hyderabad</option>
                     <option value="KOLKATA">Kolkata</option>
                   </select>
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">
+                    Set Target Radius & Network *
+                  </label>
+                  <div className="flex gap-1">
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="Rad (km)"
+                      defaultValue={10}
+                      className="w-1/2 h-9 rounded-lg border border-slate-300 px-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                    />
+                    <select
+                      className="w-1/2 h-9 rounded-lg border border-slate-300 px-2 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                    >
+                      <option value="telecom">Geospatial Telecom</option>
+                      <option value="oem">OEM Lock-Screen</option>
+                      <option value="wifi">Wi-Fi Captive</option>
+                      <option value="omnichannel">All (Omnichannel)</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div>

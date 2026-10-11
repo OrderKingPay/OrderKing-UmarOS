@@ -503,7 +503,7 @@ export function OemLockScreenHub({
             className="flex items-center gap-1.5 rounded-lg bg-purple-700 px-3.5 py-2 text-xs font-semibold text-white hover:bg-purple-800 transition-colors shadow-xs"
           >
             <Plus className="h-3.5 w-3.5" />
-            Book Local Business Ad
+            Upload External Client Ad Campaign
           </button>
         </div>
 
@@ -512,7 +512,7 @@ export function OemLockScreenHub({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <span className="text-xs font-bold text-slate-800">
-                Retail CPM Charged to Local Businesses
+                Set CPM (Cost Per Mille) Pricing Markup
               </span>
               <p className="text-[11px] text-slate-500">
                 The price you quote and bill to local dining and retail clients per 1,000 lock-screen impressions.
@@ -667,13 +667,20 @@ export function OemLockScreenHub({
                           {c.status}
                         </span>
                       </td>
-                      <td className="p-3 text-right">
+                      <td className="p-3 text-right space-x-2">
                         <button
                           type="button"
                           onClick={() => handleToggleStatus(c.id, c.status)}
                           className="rounded border border-slate-300 bg-white px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-100"
                         >
                           {c.status === "ACTIVE" ? "Pause" : "Resume"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => alert(`Client Invoice Generated for Ad Spend: ${c.advertiserName}`)}
+                          className="rounded border border-slate-300 bg-white px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-100 mt-1"
+                        >
+                          Generate Client Invoice for Ad Spend
                         </button>
                       </td>
                     </tr>
@@ -774,6 +781,29 @@ export function OemLockScreenHub({
                   placeholder="Order direct for genuine restaurant rates and ₹0 platform fee."
                   className="w-full h-9 rounded-lg border border-slate-300 px-3 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Set Target Radius & Network *
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="Radius (km)"
+                    defaultValue={10}
+                    className="w-1/2 h-9 rounded-lg border border-slate-300 px-3 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  />
+                  <select
+                    className="w-1/2 h-9 rounded-lg border border-slate-300 px-3 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  >
+                    <option value="oem">OEM Lock-Screen</option>
+                    <option value="wifi">Wi-Fi Captive Network</option>
+                    <option value="telecom">Geospatial Telecom</option>
+                    <option value="omnichannel">All (Omnichannel)</option>
+                  </select>
+                </div>
               </div>
 
               <div>

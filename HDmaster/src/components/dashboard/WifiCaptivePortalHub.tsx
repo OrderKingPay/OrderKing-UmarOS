@@ -566,7 +566,7 @@ export function WifiCaptivePortalHub({
               className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors shadow-xs"
             >
               <UploadCloud className="h-3.5 w-3.5" />
-              Upload External Brand Ad
+              Upload External Client Ad Campaign
             </button>
           </div>
 
@@ -575,7 +575,7 @@ export function WifiCaptivePortalHub({
             <div className="flex items-center justify-between text-xs">
               <div>
                 <span className="font-bold text-slate-900">
-                  Cost Per Unlock Screen Impression (₹)
+                  Set CPM (Cost Per Mille) Pricing Markup
                 </span>
                 <p className="text-[11px] text-slate-500">
                   Rate billed to sponsors per verified Wi-Fi captive splash screen load.
@@ -670,6 +670,7 @@ export function WifiCaptivePortalHub({
                       <th className="p-2.5">Budget</th>
                       <th className="p-2.5">Impressions</th>
                       <th className="p-2.5">Status</th>
+                      <th className="p-2.5 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -687,6 +688,15 @@ export function WifiCaptivePortalHub({
                           <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800">
                             {c.status}
                           </span>
+                        </td>
+                        <td className="p-2.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => alert(`Client Invoice Generated for Ad Spend: ${c.brandName}`)}
+                            className="rounded border border-slate-300 bg-white px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-100"
+                          >
+                            Generate Client Invoice for Ad Spend
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -846,6 +856,29 @@ export function WifiCaptivePortalHub({
                   onChange={(e) => setCreativeUrl(e.target.value)}
                   className="w-full h-9 rounded-lg border border-slate-300 px-3 text-slate-900 font-mono text-[11px] focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Set Target Radius & Network *
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="Radius (km)"
+                    defaultValue={5}
+                    className="w-1/2 h-9 rounded-lg border border-slate-300 px-3 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  />
+                  <select
+                    className="w-1/2 h-9 rounded-lg border border-slate-300 px-3 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  >
+                    <option value="wifi">Wi-Fi Captive Network</option>
+                    <option value="oem">OEM Lock-Screen</option>
+                    <option value="telecom">Geospatial Telecom</option>
+                    <option value="omnichannel">All (Omnichannel)</option>
+                  </select>
+                </div>
               </div>
 
               <div>
