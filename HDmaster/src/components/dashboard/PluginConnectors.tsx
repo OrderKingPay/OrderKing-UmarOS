@@ -98,14 +98,14 @@ type ConnectorTab =
   | "metaOmnichannel"
   | "aiMediaEngine";
 
-export function PluginConnectors() {
+export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
   const [config, setConfig] = useState<PluginConnectorsConfig>(DEFAULT_PLUGIN_CONNECTORS);
   const [initialConfig, setInitialConfig] = useState<PluginConnectorsConfig>(DEFAULT_PLUGIN_CONNECTORS);
   const [cmsConfig, setCmsConfig] = useState<EcosystemCmsConfig>(DEFAULT_ECOSYSTEM_CMS);
   const [initialCmsConfig, setInitialCmsConfig] = useState<EcosystemCmsConfig>(DEFAULT_ECOSYSTEM_CMS);
   const [showCmsEditor, setShowCmsEditor] = useState(false);
   const [cmsSaving, setCmsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<ConnectorTab>("all");
+  const [activeTab, setActiveTab] = useState<ConnectorTab>(forcedTab || "all");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testingService, setTestingService] = useState<string | null>(null);
@@ -1178,7 +1178,7 @@ export function PluginConnectors() {
       )}
 
       {/* Navigation Filter Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-border pb-3">
+      {!forcedTab && (<div className="flex flex-wrap gap-2 border-b border-border pb-3">
         {[
           { id: "all" as const, label: "All Integrations", icon: Layers },
           { id: "globalAdSyndicate" as const, label: "Global Ad Syndicate Hub (4 Streams)", icon: Landmark },
@@ -4605,3 +4605,6 @@ export function PluginConnectors() {
     </div>
   );
 }
+
+
+

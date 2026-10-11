@@ -273,15 +273,27 @@ export function CommandShell() {
             <button type="button" className="grid size-11 place-items-center md:hidden" onClick={() => setNavOpen(true)} aria-label="Open menu">
               <Menu className="size-5" />
             </button>
-            <button
-              type="button"
-              onClick={() => setCmdOpen(true)}
-              className="flex min-h-11 flex-1 items-center gap-2 rounded-[12px] border border-border bg-elevated px-3 text-left text-sm text-muted"
-            >
-              <CommandIcon className="size-4" />
-              <span className="hidden sm:inline">Search Command</span>
-              <span className="ml-auto hidden text-xs text-subtle sm:inline">⌘K</span>
-            </button>
+                        <div className="flex-1 max-w-3xl px-4">
+              <div 
+                className="relative group cursor-text"
+                onClick={() => setCmdOpen(true)}
+              >
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <CommandIcon className="h-5 w-5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
+                </div>
+                <input
+                  type="text"
+                  readOnly
+                  placeholder="Global Search... (Press ⌘K)"
+                  className="block w-full pl-10 pr-12 py-3 border-2 border-slate-200 rounded-xl leading-5 bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 sm:text-sm transition-all cursor-text shadow-sm hover:border-slate-300 hover:bg-white"
+                />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <span className="inline-flex items-center px-2 py-1 border border-slate-200 rounded text-xs font-sans font-medium text-slate-400">
+                    ⌘K
+                  </span>
+                </div>
+              </div>
+            </div>
             <select
               aria-label="Language"
               className="h-10 rounded-[10px] border border-border bg-elevated px-2 text-xs"
@@ -374,3 +386,4 @@ function CommandContentSkeleton() {
     </div>
   );
 }
+

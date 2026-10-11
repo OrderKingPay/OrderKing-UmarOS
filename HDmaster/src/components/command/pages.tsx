@@ -156,6 +156,10 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "health") return <HealthPage />;
   if (module === "travel") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><TravelPage /></Suspense>;
   if (module === "education") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><EducationDashboard /></Suspense>;
+    if (module === "jio-airtel") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><PluginConnectors forcedTab="globalAdSyndicate" /></Suspense>;
+  if (module === "meta-dm") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><PluginConnectors forcedTab="metaOmnichannel" /></Suspense>;
+  if (module === "wifi-interception") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><PluginConnectors forcedTab="wifiCaptivePortal" /></Suspense>;
+  if (module === "oem-lockscreen") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><PluginConnectors forcedTab="oemLockScreen" /></Suspense>;
   if (module === "jobs") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><WorkMarketplaceControlCenter jobs={[]} workers={[]} /></Suspense>;
   return <DashboardPage />;
 }
@@ -4702,6 +4706,7 @@ function Denied({ error }: { error: string }) {
     </div>
   );
 }
+
 
 
 

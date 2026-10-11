@@ -117,6 +117,16 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
+    id: "advertising",
+    i18n: "Advertising",
+    items: [
+      { id: "jio-airtel", path: "/app/jio-airtel", i18n: "Jio/Airtel Ad Network", permission: "manage_cms", icon: "radio" },
+      { id: "meta-dm", path: "/app/meta-dm", i18n: "Meta DM Blasts", permission: "manage_cms", icon: "megaphone" },
+      { id: "wifi-interception", path: "/app/wifi-interception", i18n: "Wi-Fi Interception", permission: "manage_cms", icon: "shield" },
+      { id: "oem-lockscreen", path: "/app/oem-lockscreen", i18n: "OEM Lock Screen", permission: "manage_cms", icon: "panels" }
+    ],
+  },
+  {
     id: "system",
     i18n: "groups.system",
     items: [
@@ -137,3 +147,4 @@ export function itemAllowed(item: NavItem, perms: readonly string[]): boolean {
   if (perms.includes("view_analytics") && item.id === "dashboard") return true;
   return need.some((p) => perms.includes(p));
 }
+
