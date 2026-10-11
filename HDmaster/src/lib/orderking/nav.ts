@@ -128,7 +128,7 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
-    id: "system",
+    id: 'banking', i18n: 'Banking Infrastructure', items: [{ id: 'fintech-connectors', path: '/app/fintech-connectors', i18n: 'API Gateways', permission: 'manage_platform_settings', icon: 'wallet' }]}, { id: "system",
     i18n: "groups.system",
     items: [
       { id: "employees", path: "/app/employees", i18n: "nav.employees", permission: "manage_users", icon: "id" },
