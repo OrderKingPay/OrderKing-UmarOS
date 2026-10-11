@@ -120,6 +120,7 @@ export const NAV: NavGroup[] = [
     id: "advertising",
     i18n: "Advertising",
     items: [
+      { id: "telecom-arbitrage", path: "/app/telecom-arbitrage", i18n: "Telecom Arbitrage", permission: "manage_cms", icon: "radio" },
       { id: "jio-airtel", path: "/app/jio-airtel", i18n: "Jio/Airtel Ad Network", permission: "manage_cms", icon: "radio" },
       { id: "meta-dm", path: "/app/meta-dm", i18n: "Meta DM Blasts", permission: "manage_cms", icon: "megaphone" },
       { id: "wifi-interception", path: "/app/wifi-interception", i18n: "Wi-Fi Interception", permission: "manage_cms", icon: "shield" },
