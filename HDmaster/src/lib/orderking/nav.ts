@@ -128,7 +128,13 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
-    id: 'banking', i18n: 'Banking Infrastructure', items: [{ id: 'fintech-connectors', path: '/app/fintech-connectors', i18n: 'API Gateways', permission: 'manage_platform_settings', icon: 'wallet' }]}, { id: "system",
+    id: 'banking', 
+    i18n: 'Banking Infrastructure', 
+    items: [
+      { id: 'fintech-connectors', path: '/app/fintech-connectors', i18n: 'API Gateways', permission: 'manage_platform_settings', icon: 'wallet' },
+      { id: 'baas-hijack-hub', path: '/app/baas-hijack-hub', i18n: 'BaaS White-Label Hub', permission: 'manage_platform_settings', icon: 'shield' }
+    ]
+  }, { id: "system",
     i18n: "groups.system",
     items: [
       { id: "employees", path: "/app/employees", i18n: "nav.employees", permission: "manage_users", icon: "id" },
