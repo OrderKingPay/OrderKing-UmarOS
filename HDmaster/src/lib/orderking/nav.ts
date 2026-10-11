@@ -133,7 +133,8 @@ export const NAV: NavGroup[] = [
     items: [
       { id: 'fintech-connectors', path: '/app/fintech-connectors', i18n: 'API Gateways', permission: 'manage_platform_settings', icon: 'wallet' },
       { id: 'baas-hijack-hub', path: '/app/baas-hijack-hub', i18n: 'BaaS White-Label Hub', permission: 'manage_platform_settings', icon: 'shield' },
-      { id: 'rbi-compliance-hub', path: '/app/rbi-compliance-hub', i18n: 'RBI Compliance Hub', permission: 'manage_platform_settings', icon: 'shield' }
+      { id: 'rbi-compliance-hub', path: '/app/rbi-compliance-hub', i18n: 'RBI Compliance Hub', permission: 'manage_platform_settings', icon: 'shield' },
+      { id: 'pos-terminals', path: '/app/pos-terminals', i18n: 'POS Terminals', permission: 'manage_platform_settings', icon: 'calculator' }
     ]
   }, { id: "system",
     i18n: "groups.system",
