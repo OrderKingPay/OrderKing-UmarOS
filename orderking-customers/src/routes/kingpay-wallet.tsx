@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { 
   ScanLine, 
@@ -114,9 +114,14 @@ function KingPayWallet() {
 
       {/* Bill Payments Section */}
       <div className="px-6 mt-8">
-        <h2 className="text-lg font-bold text-gray-100 mb-4 flex items-center gap-2">
-          Pay Utility Bills & Rent
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold text-gray-100 flex items-center gap-2">
+            Pay Utility Bills & Rent
+          </h2>
+          <Link to="/kingpay-bbps" className="text-xs text-yellow-500 font-semibold flex items-center">
+            View All <ChevronRight className="w-3 h-3" />
+          </Link>
+        </div>
         
         <div className="bg-[#151515] rounded-[32px] p-2 border border-white/5 shadow-lg">
           <div className="grid grid-cols-4 gap-2">
@@ -126,16 +131,16 @@ function KingPayWallet() {
               { icon: Wifi, label: "Broadband" },
               { icon: CreditCard, label: "Credit Card" },
             ].map((item, i) => (
-              <motion.button 
+              <Link 
                 key={i}
-                whileTap={{ scale: 0.9 }}
+                to="/kingpay-bbps"
                 className="flex flex-col items-center gap-2 py-4 rounded-2xl hover:bg-[#222] transition-colors"
               >
                 <div className="w-12 h-12 rounded-full bg-[#1A1A1A] flex items-center justify-center border border-white/5 shadow-inner">
                   <item.icon className="w-5 h-5 text-gray-300" />
                 </div>
                 <span className="text-[10px] font-medium text-gray-400">{item.label}</span>
-              </motion.button>
+              </Link>
             ))}
           </div>
         </div>
