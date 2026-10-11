@@ -172,7 +172,7 @@ function Root() {
              <Utensils className="w-6 h-6" aria-hidden="true" />
              <span className="text-[10px] mt-1 font-medium">Dining</span>
            </Link>
-           <Link to="/king-pay" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to KingPay">
+           <Link to="/kingpay-wallet" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to KingPay">
              <Wallet className="w-6 h-6" aria-hidden="true" />
              <span className="text-[10px] mt-1 font-medium">KingPay</span>
            </Link>
