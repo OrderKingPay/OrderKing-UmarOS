@@ -42,7 +42,8 @@ export type LegalAffiliateCategory =
   | "micro_loans"
   | "investments"
   | "franchise"
-  | "merchant_capital";
+  | "merchant_capital"
+  | "referral";
 
 export interface LegalAffiliateCategoryOption {
   id: LegalAffiliateCategory;
@@ -99,6 +100,7 @@ export const LEGAL_AFFILIATE_CATEGORIES: LegalAffiliateCategoryOption[] = [
   { id: "investments", label: "Mutual Funds & Protection", icon: "🛡️" },
   { id: "franchise", label: "Territory Franchise", icon: "📍", badge: "1% Royalty" },
   { id: "merchant_capital", label: "Merchant Capital", icon: "🏪", badge: "14% APY" },
+  { id: "referral", label: "Referral Wealth", icon: "🎁", badge: "₹500 / Friend" },
 ];
 
 export const DIGITAL_GOLD_PRODUCTS: DigitalGoldOption[] = [
@@ -317,26 +319,26 @@ export function KingPayWealthHub() {
   };
 
   const shouldShowSection = (sectionCategory: LegalAffiliateCategory) => {
-    return selectedCategory === "all" || selectedCategory === sectionCategory;
+    return selectedCategory === sectionCategory;
   };
 
   return (
     <div className="space-y-6 text-fg p-4 md:p-6 animate-in fade-in zoom-in-95 duration-300">
       
       {/* Header Section */}
-      <div className="flex flex-col items-center justify-center text-center space-y-2 mb-8">
+      <div className="flex flex-col items-center justify-center text-center space-y-2 mb-6">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-500 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-          <Gem className="size-3.5" /> Premium Financial Services
+          <Gem className="size-3.5" /> Premium Financial Facilities
         </div>
         <h2 className="font-display text-3xl sm:text-4xl font-black text-fg tracking-tight">
           Wealth &amp; <span className="text-amber-500">Privilege</span>
         </h2>
-        <p className="text-muted text-sm sm:text-base font-medium max-w-md">
-          Unlock exclusive financial products designed for OrderKing royalty. Build wealth, access credit, and earn passive income.
+        <p className="text-muted text-xs sm:text-sm font-medium max-w-lg">
+          Government-regulated financial facilities, high-yield bank deposits, 24K digital gold, pre-approved cards, and passive royalties for OrderKing KingPay members.
         </p>
 
         {/* Category Navigation Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-4 max-w-2xl">
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-3 max-w-2xl">
           {LEGAL_AFFILIATE_CATEGORIES.map((cat) => {
             const isActive = selectedCategory === cat.id;
             return (
@@ -366,6 +368,141 @@ export function KingPayWealthHub() {
           })}
         </div>
       </div>
+
+      {/* Back to All Facilities Bar (When inside a specific world) */}
+      {selectedCategory !== "all" && (
+        <div className="flex items-center justify-between bg-surface-2 border border-amber-500/30 rounded-2xl p-3 mb-6 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setSelectedCategory("all")}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-surface border border-border text-fg text-xs font-black hover:border-amber-500 hover:text-amber-500 transition shadow-xs active:scale-95"
+          >
+            <span>←</span>
+            <span>Back to All Facilities</span>
+          </button>
+
+          <span className="text-xs font-bold text-amber-500 hidden sm:inline">
+            Active World: {LEGAL_AFFILIATE_CATEGORIES.find((c) => c.id === selectedCategory)?.label}
+          </span>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* FATHER SWITCHES MASTER HUB (WHEN selectedCategory === "all") */}
+      {/* ========================================================= */}
+      {selectedCategory === "all" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b border-border/80 pb-3">
+            <div>
+              <h3 className="text-xl font-black text-fg tracking-tight flex items-center gap-2">
+                <span>🏛️</span> Master Financial Facilities
+              </h3>
+              <p className="text-xs text-muted font-medium mt-0.5">
+                Tap any facility switch below to enter that financial world. 100% verified &amp; government-regulated.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* 1. 24K Digital Gold */}
+            <FatherSwitchCard
+              icon="🪙"
+              title="24K BIS Digital Gold"
+              partner="SafeGold & Augmont"
+              badge="BIS 99.9% Pure"
+              description="Accumulate certified pure 24K gold starting from just ₹10. Stored in institutional Brink's and Sequel high-security vaults, protected by IDBI Trusteeship."
+              statLabel="Live Spot Rate"
+              statValue={`₹${currentGoldProduct.liveRatePerGram.toLocaleString("en-IN")}/gm`}
+              onClick={() => setSelectedCategory("digital_gold")}
+            />
+
+            {/* 2. High-Yield Fixed Deposits */}
+            <FatherSwitchCard
+              icon="🏛️"
+              title="High-Yield Bank Deposits"
+              partner="Unity SFB · Suryoday · Shriram · Bajaj"
+              badge="Up to 9.50% p.a."
+              description="Lock in high yields with RBI-regulated Scheduled Commercial Banks. Deposits insured up to ₹5 Lakhs by DICGC (RBI Subsidiary)."
+              statLabel="Max Guaranteed APY"
+              statValue="9.50% p.a."
+              onClick={() => setSelectedCategory("fixed_deposits")}
+            />
+
+            {/* 3. Pre-Approved Credit Cards */}
+            <FatherSwitchCard
+              icon="💳"
+              title="Pre-Approved Credit Cards"
+              partner="HDFC Bank · SBI Card"
+              badge="Lifetime Free"
+              description="Pre-approved credit limits up to ₹10 Lakhs. 5% cashback on food delivery, zero forex markup, and complimentary airport lounge access."
+              statLabel="Instant Limit"
+              statValue="Up to ₹10 Lakhs"
+              onClick={() => setSelectedCategory("credit_cards")}
+            />
+
+            {/* 4. Zero-Interest Micro Loans */}
+            <FatherSwitchCard
+              icon="⚡"
+              title="Instant Emergency Micro-Loans"
+              partner="RBI-Registered NBFC Partners"
+              badge="0% Interest 30 Days"
+              description="Instant emergency cash disbursal up to ₹50,000 credited directly to your KingPay wallet. 60-second paperless approval with zero hidden charges."
+              statLabel="Available Credit"
+              statValue="₹50,000"
+              onClick={() => setSelectedCategory("micro_loans")}
+            />
+
+            {/* 5. Mutual Funds & Protection */}
+            <FatherSwitchCard
+              icon="🛡️"
+              title="Mutual Funds & Protection"
+              partner="Top Index AMCs & IRDAI Insurers"
+              badge="0% Commission Direct"
+              description="Direct index fund SIPs with zero distributor commissions, plus comprehensive term life coverage up to ₹5 Crores with 80C tax benefits."
+              statLabel="Protection Cover"
+              statValue="Up to ₹5 Crores"
+              onClick={() => setSelectedCategory("investments")}
+            />
+
+            {/* 6. Territory Franchise */}
+            <FatherSwitchCard
+              icon="📍"
+              title="PIN Code Territory Franchise"
+              partner="OrderKing Zone Allocation"
+              badge="1% Lifetime Royalty"
+              description="Claim an exclusive localized postal PIN code zone and earn 1% recurring royalties on every OrderKing food and KingPay transaction inside your area."
+              statLabel="Zone Royalty"
+              statValue="1% Zone GMV"
+              onClick={() => setSelectedCategory("franchise")}
+            />
+
+            {/* 7. Merchant Capital */}
+            <FatherSwitchCard
+              icon="🏪"
+              title="Verified Merchant Capital"
+              partner="Verified Local Kitchens & Cafes"
+              badge="12% - 14% APY"
+              description="Fund verified restaurant kitchen equipment and expansion outlets in your city. Earn guaranteed fixed monthly APY cash distributions."
+              statLabel="Annual Yield"
+              statValue="14% APY Fixed"
+              onClick={() => setSelectedCategory("merchant_capital")}
+            />
+
+            {/* 8. Referral Network */}
+            <FatherSwitchCard
+              icon="🎁"
+              title="Referral Wealth Network"
+              partner="Direct KingPay Cash Payouts"
+              badge="₹500 / Friend + 1% Back"
+              description="Share your unique VIP invite link. Get ₹500 instant cash upon their first order plus 1% lifetime cashback on every future purchase they make."
+              statLabel="Direct Reward"
+              statValue="₹500 + 1% Royalty"
+              onClick={() => setSelectedCategory("referral")}
+              buttonText="Open Referral System ➔"
+            />
+          </div>
+        </div>
+      )}
 
       {/* ========================================================= */}
       {/* 1. DIGITAL GOLD BULLION & SAVINGS VAULT (ENHANCEMENT)    */}
@@ -927,7 +1064,7 @@ export function KingPayWealthHub() {
       {/* ========================================================= */}
       {/* 5. REFERRAL WEALTH NETWORK (PRESERVED & ENHANCED)         */}
       {/* ========================================================= */}
-      {shouldShowSection("all") && (
+      {shouldShowSection("referral") && (
         <div className="rounded-3xl border border-primary/30 bg-gradient-to-b from-primary/10 to-transparent p-6 sm:p-8 shadow-lg">
           <div className="flex flex-col items-center text-center space-y-4 mb-8">
             <div className="size-16 rounded-2xl bg-primary/20 flex items-center justify-center border border-primary/30 shadow-[0_0_20px_rgba(var(--primary),0.3)]">
@@ -1044,7 +1181,7 @@ export function KingPayWealthHub() {
               </div>
               <h3 className="text-2xl font-black text-violet-400">Digital Territory Franchise</h3>
               <p className="text-sm text-muted">
-                Claim a localized PIN Code and earn <strong className="text-fg">1% royalty</strong> on every OrderKing transaction within that zone. Become a digital landlord in the KingPay ecosystem.
+                Claim a localized PIN Code and earn <strong className="text-fg">1% royalty</strong> on every OrderKing transaction within that zone. Become an Authorized District Partner in the OrderKing ecosystem.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
                 <span className="flex items-center gap-1.5 text-xs font-medium text-violet-500/80">
@@ -1143,6 +1280,93 @@ export function KingPayWealthHub() {
         </div>
       )}
 
+    </div>
+  );
+}
+
+interface FatherSwitchCardProps {
+  icon: string;
+  title: string;
+  partner: string;
+  badge: string;
+  description: string;
+  statLabel: string;
+  statValue: string;
+  onClick: () => void;
+  buttonText?: string;
+}
+
+function FatherSwitchCard({
+  icon,
+  title,
+  partner,
+  badge,
+  description,
+  statLabel,
+  statValue,
+  onClick,
+  buttonText,
+}: FatherSwitchCardProps) {
+  return (
+    <div
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className="bg-surface border border-amber-500/20 hover:border-amber-500/60 rounded-3xl p-5 sm:p-6 shadow-md hover:shadow-[0_0_25px_rgba(245,158,11,0.25)] flex flex-col justify-between transition-all duration-300 group cursor-pointer hover:scale-[1.01]"
+    >
+      <div>
+        {/* Top Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="size-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+            {icon}
+          </div>
+          <span className="rounded-full px-2.5 py-1 text-[10px] font-black tracking-wide uppercase bg-amber-500/15 text-amber-400 border border-amber-500/30">
+            {badge}
+          </span>
+        </div>
+
+        {/* Title & Partner */}
+        <div className="mb-2">
+          <h4 className="text-lg font-black text-fg tracking-tight group-hover:text-amber-400 transition-colors">
+            {title}
+          </h4>
+          <p className="text-[11px] font-bold text-amber-500/80 uppercase tracking-wider mt-0.5">
+            {partner}
+          </p>
+        </div>
+
+        {/* Description */}
+        <p className="text-xs text-muted leading-relaxed line-clamp-3 mb-4">
+          {description}
+        </p>
+      </div>
+
+      <div>
+        {/* Stat Box */}
+        <div className="bg-surface-2 border border-border/80 rounded-xl p-2.5 flex items-center justify-between mb-4">
+          <span className="text-[10px] uppercase font-bold text-muted">{statLabel}</span>
+          <span className="text-sm font-black text-amber-400 font-mono">{statValue}</span>
+        </div>
+
+        {/* Action Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
+          className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black text-xs py-2.5 rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all group-hover:shadow-[0_0_15px_rgba(245,158,11,0.4)] active:scale-95"
+        >
+          <span>{buttonText || "Open Facility World"}</span>
+          <span>➔</span>
+        </button>
+      </div>
     </div>
   );
 }

@@ -190,11 +190,23 @@ export function CustomerShell({
         <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent pointer-events-none" />
 
         <ul className="mx-auto grid max-w-lg grid-cols-5 items-end justify-items-center relative px-2 pt-2">
-          <NavItem to="/" icon={House} label="Delivery" active={path === "/"} />
+          {/* 1. Tutor & Jobs */}
           <NavItem to="/tutor" icon={GraduationCap} label="Tutor & Jobs" active={path.startsWith("/tutor")} />
-          <KingPayCenterItem active={path.startsWith("/king-pay")} isKingPayPage={path.startsWith("/king-pay")} />
-          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
+
+          {/* 2. Travel & Bookings (Second Middle) */}
           <NavItem to="/travel" icon={Plane} label="Travel" active={path.startsWith("/travel")} />
+
+          {/* 3. Centerpiece Jewel (King Pay or Return to Food) */}
+          <KingPayCenterItem
+            active={path.startsWith("/king-pay")}
+            isKingPayPage={path.startsWith("/king-pay") || path.startsWith("/travel") || path.startsWith("/tutor")}
+          />
+
+          {/* 4. Delivery (Placed to right side) */}
+          <NavItem to="/" icon={House} label="Delivery" active={path === "/"} />
+
+          {/* 5. Orders (Right side ending) */}
+          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
         </ul>
       </nav>
 

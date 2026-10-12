@@ -74,7 +74,7 @@ export function OrderKingMark({ className }: { className?: string }) {
 
 export function BrandMark({ className }: { className?: string }) {
   const { brand } = useBrand();
-  if (brand.logoUrl) {
+  if (brand.logoUrl && brand.logoUrl !== "/logo.jpg" && !brand.logoUrl.endsWith("logo.jpg")) {
     return <img loading="lazy" src={brand.logoUrl} alt="" className={cn("h-8 w-8 object-contain", className)} />;
   }
   return <OrderKingMark className={className} />;

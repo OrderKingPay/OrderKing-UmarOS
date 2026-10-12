@@ -135,11 +135,11 @@ export function KingPayShell({
         <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent pointer-events-none" />
 
         <ul className="mx-auto grid max-w-lg grid-cols-5 items-end justify-items-center relative px-2 pt-2">
-          {/* 1. Delivery / Food */}
-          <NavItem to="/" icon={House} label="Delivery" active={false} />
-
-          {/* 2. Tutor & Jobs */}
+          {/* 1. Tutor & Jobs */}
           <NavItem to="/tutor" icon={GraduationCap} label="Tutor & Jobs" active={false} />
+
+          {/* 2. Travel & Bookings (Second Middle) */}
+          <NavItem to="/travel" icon={Plane} label="Travel" active={activeSection === "travel"} />
 
           {/* 3. CENTER ELEVATED JEWEL: ← Back to Order King Food */}
           <li className="w-full flex justify-center">
@@ -164,11 +164,11 @@ export function KingPayShell({
             </Link>
           </li>
 
-          {/* 4. Orders */}
-          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={false} />
+          {/* 4. Delivery / Food (Placed to right side) */}
+          <NavItem to="/" icon={House} label="Delivery" active={false} />
 
-          {/* 5. Travel & Bookings */}
-          <NavItem to="/travel" icon={Plane} label="Travel" active={activeSection === "travel"} />
+          {/* 5. Orders (Right side ending) */}
+          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={false} />
         </ul>
       </nav>
     </motion.div>
