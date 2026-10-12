@@ -143,7 +143,7 @@ export function CustomerShell({
             >
               <Search className="size-4 shrink-0 text-[#E23744]" aria-hidden />
               <span className="text-xs sm:text-sm text-gray-500 font-medium truncate">
-                {isDeliveryActive ? "Restaurant name, cuisine, or a dish..." : "Search payments..."}
+                Restaurant name, cuisine, or a dish...
               </span>
             </button>
           </div>
@@ -185,7 +185,7 @@ export function CustomerShell({
       >
         <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           <NavItem to="/" icon={House} label="Delivery" active={path === "/"} />
-          <NavItem to="/search" icon={Compass} label="Dining" active={path.startsWith("/search")} />
+          <NavItem to="/search" icon={Search} label="Search" active={path.startsWith("/search")} />
           <NavItem to="/king-pay" icon={Wallet} label="King Pay" active={path.startsWith("/king-pay")} badge="👑" />
           <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
           <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} />

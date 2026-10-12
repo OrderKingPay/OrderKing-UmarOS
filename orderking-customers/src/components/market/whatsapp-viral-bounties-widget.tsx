@@ -1,35 +1,30 @@
 import { useState, useEffect } from "react";
 import { 
-  Share2, 
+  Gift, 
   Copy, 
   Check, 
-  Coins, 
-  ArrowRight, 
   Sparkles, 
-  MessageCircle, 
-  ShieldCheck, 
-  Wallet,
-  TrendingUp,
-  ExternalLink
+  MessageCircle,
+  Share2
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { getReferralStats, type ReferralStats } from "@/lib/server/referrals";
+import { getReferralStats } from "@/lib/server/referrals";
 
-interface WhatsAppViralBountiesWidgetProps {
+interface WhatsAppGiftCardProps {
   className?: string;
   source?: string;
 }
 
-export function WhatsAppViralBountiesWidget({ className = "", source = "general" }: WhatsAppViralBountiesWidgetProps) {
+/**
+ * Compact, attractive Gift-style Referral Widget
+ * Designed to feel like sending a treat/gift voucher to friends on WhatsApp.
+ */
+export function WhatsAppViralBountiesWidget({ className = "", source = "general" }: WhatsAppGiftCardProps) {
   const { user } = useCurrentUserState();
-  const [stats, setStats] = useState<ReferralStats | null>(null);
   const [referralCode, setReferralCode] = useState<string>("KING50");
   const [copied, setCopied] = useState(false);
-  const [totalShares, setTotalShares] = useState(0);
-  const [bountyClaimed, setBountyClaimed] = useState(0);
 
-  // Fetch authentic referral stats or derive from user session
   useEffect(() => {
     let isMounted = true;
     if (user?.id) {
@@ -38,24 +33,13 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
       
       void getReferralStats()
         .then((s) => {
-          if (isMounted && s) {
-            setStats(s);
-            if (s.referralCode) setReferralCode(s.referralCode);
+          if (isMounted && s?.referralCode) {
+            setReferralCode(s.referralCode);
           }
         })
         .catch(() => {
-          // Fallback to deterministic code
+          // Keep deterministic fallback
         });
-    }
-
-    // Load persisted real session shares
-    try {
-      const storedShares = localStorage.getItem("orderking_viral_shares_count");
-      if (storedShares) setTotalShares(parseInt(storedShares, 10));
-      const storedClaimed = localStorage.getItem("orderking_bounty_claimed_paise");
-      if (storedClaimed) setBountyClaimed(parseInt(storedClaimed, 10) / 100);
-    } catch {
-      // Storage not available
     }
 
     return () => {
@@ -63,163 +47,92 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
     };
   }, [user?.id]);
 
-  const originUrl = typeof window !== "undefined" ? window.location.origin : "https://orderking.in";
-  const shareUrl = `${originUrl}/?ref=${referralCode}&src=whatsapp_bounty`;
+  const originUrl = typeof window !== "undefined" ? window.location.origin : "https://www.orderkingpay.com";
+  const shareUrl = `${originUrl}/?ref=${referralCode}&src=gift`;
 
-  // EXACT SPECIFIED 1-CLICK FORWARD TEMPLATE
-  const forwardTemplate = `I am using OrderKing for better food. Use my link for ₹50 KingPay Cash. ${shareUrl}`;
+  // Attractive, natural gift message for WhatsApp
+  const giftMessage = `Hey! Here is a ₹50 gift voucher for OrderKing. Order delicious food using my link and get ₹50 off: ${shareUrl} 🍔🍕`;
 
-  const handleWhatsAppForward = () => {
-    // 1-Click WhatsApp deep link
-    const waUrl = `https://wa.me/?text=${encodeURIComponent(forwardTemplate)}`;
+  const handleWhatsAppShare = () => {
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(giftMessage)}`;
     window.open(waUrl, "_blank");
-
-    // Track real share count
-    const nextShares = totalShares + 1;
-    setTotalShares(nextShares);
-    try {
-      localStorage.setItem("orderking_viral_shares_count", nextShares.toString());
-    } catch {
-      // Ignore
-    }
-
-    toast.success("WhatsApp opened! Forward to your friends to earn ₹50 KingPay Cash.");
+    toast.success("Opening WhatsApp to share your gift!");
   };
 
-  const handleCopyTemplate = async () => {
+  const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(forwardTemplate);
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      toast.success("1-Click template copied to clipboard!");
-      setTimeout(() => setCopied(false), 2500);
+      toast.success("Gift link copied to clipboard!");
+      setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy template.");
+      toast.error("Failed to copy link.");
     }
   };
 
   return (
-    <div className={`w-full rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 shadow-sm font-sans ${className}`}>
-      {/* 1. CORPORATE HEADER & BOUNTY BADGE */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-100">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-800">
-              <span className="size-2 rounded-full bg-emerald-600 animate-pulse" />
-              WhatsApp Viral Bounties
-            </span>
-            <span className="rounded-full bg-slate-100 border border-slate-200 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
-              Direct Customer Acquisition Engine
-            </span>
+    <div
+      className={`relative overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-white p-4 sm:p-5 shadow-xs transition-all hover:shadow-md ${className}`}
+    >
+      {/* Decorative subtle background sparkle */}
+      <div className="pointer-events-none absolute -right-6 -top-6 size-24 rounded-full bg-amber-200/30 blur-2xl" />
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Left: Gift Graphic + Text */}
+        <div className="flex items-start gap-3.5 min-w-0">
+          <div className="flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white shadow-md shadow-orange-500/20">
+            <Gift className="size-6 text-white" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight pt-1">
-            Earn ₹50 KingPay Cash Per Referral
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-xl">
-            Forward your verified invite link on WhatsApp. When your friends place their first food order, ₹50 KingPay Cash is immediately credited to your account.
-          </p>
-        </div>
 
-        {/* Real Live Bounty Metric */}
-        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 shrink-0">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            Viral Bounty Rate
-          </span>
-          <div className="text-xl sm:text-2xl font-black text-emerald-700 flex items-center gap-1">
-            ₹50 <span className="text-xs font-bold text-slate-700">/ friend</span>
+          <div className="min-w-0 space-y-0.5">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100/90 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-800">
+                <Sparkles className="size-2.5 text-amber-600" />
+                Friend Gift
+              </span>
+              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+                ₹50 each
+              </span>
+            </div>
+
+            <h3 className="text-base sm:text-lg font-black text-gray-900 tracking-tight leading-snug">
+              Gift ₹50 to your friends
+            </h3>
+            <p className="text-xs text-gray-600 line-clamp-2 max-w-md">
+              Send them ₹50 off their first meal. You also earn ₹50 KingPay Cash as soon as they order.
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* 2. LIVE 1-CLICK FORWARD TEMPLATE PREVIEW BOX */}
-      <div className="mt-5 space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-            <MessageCircle className="size-3.5 text-emerald-600" />
-            1-Click WhatsApp Forward Template
-          </label>
-          <span className="text-[11px] font-medium text-slate-500">Exact message dispatched</span>
-        </div>
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2 shrink-0 sm:self-center">
+          <button
+            type="button"
+            onClick={handleWhatsAppShare}
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] hover:bg-[#20be5b] active:scale-98 text-white px-4 py-2.5 text-xs sm:text-sm font-extrabold shadow-sm shadow-[#25D366]/25 transition cursor-pointer"
+          >
+            <MessageCircle className="size-4 fill-white" />
+            <span>Send Gift on WhatsApp</span>
+          </button>
 
-        <div className="relative rounded-xl border border-slate-200 bg-slate-50 p-4 font-mono text-xs text-slate-800 leading-relaxed break-all select-all shadow-2xs">
-          <p className="font-sans font-medium text-slate-900">
-            &ldquo;<span className="font-semibold text-slate-900">I am using OrderKing for better food. Use my link for ₹50 KingPay Cash.</span>{" "}
-            <span className="text-emerald-700 underline font-semibold">{shareUrl}</span>&rdquo;
-          </p>
-        </div>
-      </div>
-
-      {/* 3. PRIMARY ACTION ENGINE: 1-CLICK FORWARD & CLIPBOARD BUTTONS */}
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {/* PRIMARY: 1-CLICK WHATSAPP FORWARD */}
-        <button
-          type="button"
-          onClick={handleWhatsAppForward}
-          className="w-full flex items-center justify-center gap-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white py-3.5 px-5 text-sm font-extrabold shadow-sm hover:shadow transition-all active:scale-[0.99] cursor-pointer"
-        >
-          <MessageCircle className="size-5 fill-current" />
-          <span>1-Click WhatsApp Forward</span>
-        </button>
-
-        {/* SECONDARY: COPY TEMPLATE */}
-        <button
-          type="button"
-          onClick={handleCopyTemplate}
-          className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 py-3.5 px-5 text-sm font-bold shadow-2xs transition active:scale-[0.99] cursor-pointer"
-        >
-          {copied ? (
-            <>
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            aria-label="Copy gift link"
+            title="Copy gift link"
+            className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white hover:bg-gray-50 active:scale-98 text-gray-700 transition shadow-2xs cursor-pointer"
+          >
+            {copied ? (
               <Check className="size-4 text-emerald-600" />
-              <span className="text-emerald-700">Template Copied!</span>
-            </>
-          ) : (
-            <>
-              <Copy className="size-4 text-slate-600" />
-              <span>Copy Template &amp; Link</span>
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* 4. REAL ACQUISITION STATS & TRANSPARENT AUDIT */}
-      <div className="mt-6 pt-5 border-t border-slate-100 grid grid-cols-3 gap-2 text-center">
-        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-          <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
-            Referral Code
-          </span>
-          <span className="text-xs sm:text-sm font-extrabold text-slate-900 mt-0.5 block truncate">
-            {referralCode}
-          </span>
+            ) : (
+              <Copy className="size-4 text-gray-600" />
+            )}
+          </button>
         </div>
-
-        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-          <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
-            Shares Initiated
-          </span>
-          <span className="text-xs sm:text-sm font-extrabold text-slate-900 mt-0.5 block">
-            {totalShares}
-          </span>
-        </div>
-
-        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-          <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
-            KingPay Cash Credit
-          </span>
-          <span className="text-xs sm:text-sm font-extrabold text-emerald-700 mt-0.5 block">
-            ₹50 / conversion
-          </span>
-        </div>
-      </div>
-
-      {/* 5. CORPORATE COMPLIANCE GUARANTEE */}
-      <div className="mt-4 flex items-center justify-between text-[11px] text-slate-500 font-medium">
-        <span className="flex items-center gap-1">
-          <ShieldCheck className="size-3.5 text-emerald-600" />
-          No cap on invitations • Instant KingPay wallet credits
-        </span>
-        <a href="/rewards" className="text-slate-700 hover:text-black font-semibold underline flex items-center gap-0.5">
-          View Bounty Terms <ArrowRight className="size-3" />
-        </a>
       </div>
     </div>
   );
 }
+
+// Named alias for cleaner readability in new screens
+export const WhatsAppGiftCard = WhatsAppViralBountiesWidget;

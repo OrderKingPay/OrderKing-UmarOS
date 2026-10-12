@@ -410,6 +410,13 @@ export function HomeFeed({
         </section>
       )}
 
+      {/* 2.5. ELEGANT GIFT TREAT TO FRIENDS (Compact WhatsApp Share) */}
+      {!q && (
+        <section aria-label="Gift Treat to Friends" className="pt-1">
+          <WhatsAppViralBountiesWidget source="home_feed" />
+        </section>
+      )}
+
       {/* 3. ACTIVE ORDER BANNER (Real Data Only) */}
       {activeOrder && !q && (
         <section aria-label="Active Order">
@@ -487,14 +494,7 @@ export function HomeFeed({
         </section>
       )}
 
-      {/* 5. WHATSAPP VIRAL BOUNTIES: REAL-WORLD CUSTOMER ACQUISITION ENGINE */}
-      {!q && (
-        <section aria-label="WhatsApp Viral Bounties" className="pt-2">
-          <WhatsAppViralBountiesWidget source="home_feed" />
-        </section>
-      )}
-
-      {/* 6. RESTAURANTS GRID: MASSIVE EDGE-TO-EDGE CARDS */}
+      {/* 5. RESTAURANTS GRID: MASSIVE EDGE-TO-EDGE CARDS */}
       <section aria-label="Restaurants Grid" className="pt-2">
         <div className="flex items-center justify-between mb-3.5">
           <div>
