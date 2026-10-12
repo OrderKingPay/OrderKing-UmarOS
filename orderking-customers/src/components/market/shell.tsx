@@ -178,15 +178,18 @@ export function CustomerShell({
         </div>
       ) : null}
 
-      {/* STRICTLY FIXED BOTTOM NAVIGATION BAR */}
+      {/* ULTRA-LUXURIOUS STICKY BOTTOM NAVIGATION BAR */}
       <nav
         aria-label={brand.appName}
-        className="fixed bottom-0 left-0 right-0 w-full z-50 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
+        className="fixed bottom-0 left-0 right-0 w-full z-50 bg-white/95 backdrop-blur-2xl border-t border-slate-200/80 shadow-[0_-12px_40px_rgba(0,0,0,0.08)] pb-[max(0.5rem,env(safe-area-inset-bottom))]"
       >
-        <ul className="mx-auto grid max-w-lg grid-cols-5 items-center justify-items-center relative px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        {/* Subtle Luxury Top Accent Beam */}
+        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent pointer-events-none" />
+
+        <ul className="mx-auto grid max-w-lg grid-cols-5 items-end justify-items-center relative px-2 pt-2">
           <NavItem to="/" icon={House} label="Delivery" active={path === "/"} />
           <NavItem to="/search" icon={Search} label="Search" active={path.startsWith("/search")} />
-          <NavItem to="/king-pay" icon={Wallet} label="King Pay" active={path.startsWith("/king-pay")} badge="👑" />
+          <KingPayCenterItem active={path.startsWith("/king-pay")} />
           <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
           <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} />
         </ul>
@@ -213,6 +216,43 @@ export function CustomerShell({
   );
 }
 
+function KingPayCenterItem({ active }: { active: boolean }) {
+  return (
+    <li className="w-full flex justify-center">
+      <Link
+        to="/king-pay"
+        className="flex flex-col items-center justify-center no-underline relative transition-all -mt-4 sm:-mt-5 group"
+      >
+        <div
+          className={cn(
+            "relative p-[2.5px] rounded-2xl transition-all duration-300 shadow-md",
+            active
+              ? "bg-gradient-to-tr from-amber-500 via-amber-300 to-yellow-200 shadow-amber-500/40 scale-105"
+              : "bg-gradient-to-tr from-amber-400/90 via-amber-200/90 to-yellow-100 shadow-amber-500/20 group-hover:scale-105 group-hover:shadow-amber-500/35"
+          )}
+        >
+          <div className="flex size-11 sm:size-12 items-center justify-center rounded-[13px] bg-gradient-to-b from-gray-950 via-slate-900 to-black text-amber-300 shadow-inner">
+            <span className="text-xl sm:text-2xl filter drop-shadow-[0_2px_6px_rgba(245,158,11,0.6)]">
+              👑
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-col items-center mt-1">
+          <span
+            className={cn(
+              "text-[10px] sm:text-[11px] font-black tracking-tight transition-colors",
+              active ? "text-amber-800" : "text-amber-900/80 group-hover:text-amber-700"
+            )}
+          >
+            King Pay
+          </span>
+          {active && <span className="size-1 rounded-full bg-amber-500 mt-0.5 shadow-xs" />}
+        </div>
+      </Link>
+    </li>
+  );
+}
+
 function NavItem({
   to,
   icon: Icon,
@@ -231,24 +271,39 @@ function NavItem({
       <Link
         to={to}
         className={cn(
-          "flex flex-col items-center justify-center gap-0.5 text-[11px] no-underline relative transition-all py-1 w-full",
+          "flex flex-col items-center justify-center gap-0.5 text-[10px] sm:text-[11px] no-underline relative transition-all py-1 w-full group",
           active
-            ? "text-[#E23744] font-extrabold scale-105"
-            : "text-gray-500 hover:text-gray-900 font-medium"
+            ? "text-[#E23744] font-black"
+            : "text-slate-500 hover:text-slate-900 font-semibold"
         )}
       >
-        <div className="relative flex items-center justify-center h-6 w-6">
+        <div
+          className={cn(
+            "relative flex items-center justify-center size-8 sm:size-8.5 rounded-xl transition-all duration-200",
+            active
+              ? "bg-red-50 text-[#E23744] shadow-xs"
+              : "text-slate-500 group-hover:text-slate-800 group-hover:bg-slate-50"
+          )}
+        >
           <Icon
-            className={cn("size-5 transition-transform", active ? "scale-110 stroke-[2.4]" : "stroke-[1.8]")}
+            className={cn(
+              "size-5 transition-transform duration-200",
+              active ? "scale-110 stroke-[2.4]" : "stroke-[1.8] group-hover:scale-105"
+            )}
             aria-hidden
           />
           {badge !== undefined && (
-            <span className="absolute -right-2.5 -top-1.5 flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-amber-400 px-1 text-[8px] font-bold text-black shadow-xs">
+            <span className="absolute -right-1 -top-1 flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-amber-400 px-1 text-[8px] font-extrabold text-black shadow-xs">
               {badge}
             </span>
           )}
         </div>
-        <span className="text-center truncate w-full px-0.5 tracking-tight">{label}</span>
+        <div className="flex flex-col items-center">
+          <span className="text-center truncate w-full px-0.5 tracking-tight leading-none mt-0.5">
+            {label}
+          </span>
+          {active && <span className="size-1 rounded-full bg-[#E23744] mt-1 shadow-xs" />}
+        </div>
       </Link>
     </li>
   );
