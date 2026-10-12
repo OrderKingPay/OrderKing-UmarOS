@@ -4,6 +4,7 @@ import { useState } from "react";
 import { KingPayShell, type KingPaySection } from "@/components/fintech/kingpay-shell";
 import { KingPayWealthHub } from "@/components/fintech/kingpay-wealth-hub";
 import { KingPayAccountHub } from "@/components/fintech/kingpay-account-hub";
+import { FlightBookingEngine } from "@/components/fintech/flight-booking-engine";
 
 export const Route = createFileRoute("/king-pay")({ component: OrderKingPayPage });
 
@@ -21,9 +22,10 @@ function OrderKingPayPage() {
     >
       {activeSection === "wealth" && <KingPayWealthHub />}
       {activeSection === "account" && <KingPayAccountHub walletBalance={84200} onOpenScanner={() => {}} />}
-      {activeSection !== "wealth" && activeSection !== "account" && (
+      {activeSection === "travel" && <FlightBookingEngine />}
+      {activeSection !== "wealth" && activeSection !== "account" && activeSection !== "travel" && (
         <div className="flex items-center justify-center min-h-[50vh] text-muted">
-          <p>Please select the Wealth or Account tab.</p>
+          <p>Please select a tab from the top bar.</p>
         </div>
       )}
     </KingPayShell>

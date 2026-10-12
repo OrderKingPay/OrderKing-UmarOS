@@ -2,8 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
 import { motion, LayoutGroup } from "framer-motion";
-import { Send, BrainCircuit, Loader2, SlidersHorizontal } from "lucide-react";
+import {
+  Send,
+  BrainCircuit,
+  Loader2,
+  SlidersHorizontal,
+  Briefcase,
+  GraduationCap,
+  Sparkles,
+  CheckCircle,
+  Clock,
+  ArrowRight,
+  ExternalLink,
+  ShieldCheck,
+} from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
+import { toast } from "sonner";
 
 const askIntelligenceFn = createServerFn({ method: "POST" })
   .validator((data: { 
@@ -226,6 +240,16 @@ function IntelligencePage() {
   const [tone, setTone] = useState("Direct Easy Exam Answers");
   const [goal, setGoal] = useState("Concept Mastery");
   const [showConfig, setShowConfig] = useState(false);
+  const [mode, setMode] = useState<"tutor" | "jobs">("tutor");
+  const [claimedEarnings, setClaimedEarnings] = useState(84200);
+  const [completedTasks, setCompletedTasks] = useState<string[]>([]);
+  const [activeTask, setActiveTask] = useState<{
+    id: string;
+    title: string;
+    reward: number;
+    description: string;
+    instructions: string[];
+  } | null>(null);
   
   const [history, setHistory] = useState<{role: 'user' | 'assistant', content: string}[]>([
     { role: 'assistant', content: "Indian Exams AI Tutor (100% Native) initialized. Please specify your curriculum parameters and submit your query." }
@@ -257,154 +281,212 @@ function IntelligencePage() {
     }
   };
 
+  const handleCompleteTask = (task: { id: string; title: string; reward: number }) => {
+    if (completedTasks.includes(task.id)) {
+      toast.info("Task already completed and rewarded!");
+      return;
+    }
+    setCompletedTasks([...completedTasks, task.id]);
+    setClaimedEarnings((prev) => prev + task.reward);
+    setActiveTask(null);
+    toast.success(`🎉 Task approved! ₹${task.reward} credited directly to your KingPay Wallet.`);
+  };
+
   return (
     <CustomerShell>
       <LayoutGroup>
-        <motion.div layout className="flex flex-col h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-white selection:bg-zinc-800">
+        <motion.div layout className="flex flex-col min-h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-white selection:bg-zinc-800">
         
         {/* Core Control Panel */}
-         <div className="bg-zinc-950 border-b border-zinc-900 px-4 py-4 z-10 flex flex-col gap-4 shadow-sm relative overflow-hidden">
+         <div className="bg-zinc-950 border-b border-zinc-900 px-4 py-3.5 z-10 flex flex-col gap-3 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
           
-          <div className="flex items-center justify-between relative z-10">
-            <h1 className="text-xl font-medium text-white flex items-center gap-2 tracking-tight">
-              <BrainCircuit className="text-zinc-400 size-5" />
-              Indian Exams AI Tutor (100% Native)
-            </h1>
-            <button 
-              onClick={() => setShowConfig(!showConfig)}
-              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 transition-colors text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md uppercase tracking-widest border border-white/20"
-            >
-              <SlidersHorizontal className="size-3" /> Config
-            </button>
+          <div className="flex items-center justify-between relative z-10 gap-2">
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-amber-400/10 text-amber-400 border border-amber-400/20">
+                {mode === "tutor" ? <GraduationCap className="size-5" /> : <Briefcase className="size-5 text-emerald-400" />}
+              </div>
+              <div>
+                <h1 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-1.5 leading-none">
+                  Tutor &amp; Jobs
+                </h1>
+                <p className="text-[10px] text-zinc-400 font-medium mt-1 leading-none">
+                  {mode === "tutor" ? "AI Academic Tutor (CBSE / State Boards)" : "Remote Tasks & Instant KingPay Cash"}
+                </p>
+              </div>
+            </div>
+
+            {/* Mode Selector */}
+            <div className="flex items-center bg-zinc-900 border border-zinc-800 p-0.5 rounded-xl shrink-0">
+              <button
+                type="button"
+                onClick={() => setMode("tutor")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  mode === "tutor"
+                    ? "bg-amber-500 text-black font-black shadow-xs"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                <GraduationCap className="size-3.5" />
+                <span>AI Tutor</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("jobs")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  mode === "jobs"
+                    ? "bg-emerald-500 text-black font-black shadow-xs"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                <Briefcase className="size-3.5" />
+                <span>Jobs</span>
+                <span className="rounded-full bg-emerald-400/20 text-emerald-300 text-[9px] px-1 font-extrabold">
+                  Earn
+                </span>
+              </button>
+            </div>
           </div>
           
-          <div className={`grid grid-cols-2 gap-2.5 relative z-10 transition-all duration-300 ${showConfig ? 'max-h-[500px] overflow-y-auto opacity-100' : 'max-h-24 overflow-hidden'}`}>
-             <select 
-                value={board} 
-                onChange={(e) => setBoard(e.target.value)}
-                className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
-              >
-                {STATE_BOARDS.map((b) => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-             </select>
-             <select 
-                value={stdClass} 
-                onChange={(e) => setStdClass(e.target.value)}
-                className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
-              >
-                {[...Array(12)].map((_, i) => (
-                  <option key={i+1} value={`Class ${i+1}`}>Class {i+1}</option>
-                ))}
-                <option value="Undergraduate">Undergraduate</option>
-                <option value="Postgraduate">Postgraduate</option>
-             </select>
-             
-             {/* Dynamic Text Input for Subject to cover "ALL Subjects" perfectly */}
-             <div className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-lg flex flex-col focus-within:border-zinc-500 transition-colors">
-                <input 
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Subject (e.g. Mathematics, English Learning Fast)"
-                  className="bg-transparent text-xs font-medium text-zinc-200 outline-none w-full px-2.5 py-2.5 placeholder:text-zinc-500"
-                />
-                {showConfig && (
-                  <div className="flex flex-col gap-1.5 px-2 pb-2">
-                    <div className="flex flex-wrap gap-1">
-                      {["English Learning Fast", "Mathematics", "Science", "Projects & Assignments", "Interview Prep"].map(s => (
-                        <button 
-                          key={s} 
-                          type="button"
-                          onClick={() => setSubject(s)}
-                          className="text-[9px] bg-zinc-800 text-zinc-300 px-1.5 py-0.5 rounded hover:bg-white hover:text-black transition-colors"
-                        >
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="pt-1.5 border-t border-zinc-800/80">
-                      <div className="text-[9px] font-medium text-zinc-500 uppercase tracking-wider mb-1">
-                        Advanced Mathematics Modules
+          {mode === "tutor" && (
+            <>
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-[11px] font-semibold text-zinc-300">Curriculum &amp; Exam Parameters</span>
+                <button 
+                  onClick={() => setShowConfig(!showConfig)}
+                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 transition-colors text-white text-[10px] font-medium px-2.5 py-1 rounded-md uppercase tracking-widest border border-white/20"
+                >
+                  <SlidersHorizontal className="size-3" /> {showConfig ? "Hide Config" : "Config"}
+                </button>
+              </div>
+
+              <div className={`grid grid-cols-2 gap-2.5 relative z-10 transition-all duration-300 ${showConfig ? 'max-h-[500px] overflow-y-auto opacity-100' : 'max-h-24 overflow-hidden'}`}>
+                 <select 
+                    value={board} 
+                    onChange={(e) => setBoard(e.target.value)}
+                    className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
+                  >
+                    {STATE_BOARDS.map((b) => (
+                      <option key={b} value={b}>{b}</option>
+                    ))}
+                 </select>
+                 <select 
+                    value={stdClass} 
+                    onChange={(e) => setStdClass(e.target.value)}
+                    className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
+                  >
+                    {[...Array(12)].map((_, i) => (
+                      <option key={i+1} value={`Class ${i+1}`}>Class {i+1}</option>
+                    ))}
+                    <option value="Undergraduate">Undergraduate</option>
+                    <option value="Postgraduate">Postgraduate</option>
+                 </select>
+                 
+                 {/* Dynamic Text Input for Subject */}
+                 <div className="col-span-1 bg-zinc-900/80 border border-zinc-800 rounded-lg flex flex-col focus-within:border-zinc-500 transition-colors">
+                    <input 
+                      type="text"
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      placeholder="Subject (e.g. Mathematics, English)"
+                      className="bg-transparent text-xs font-medium text-zinc-200 outline-none w-full px-2.5 py-2.5 placeholder:text-zinc-500"
+                    />
+                    {showConfig && (
+                      <div className="flex flex-col gap-1.5 px-2 pb-2">
+                        <div className="flex flex-wrap gap-1">
+                          {["English Learning Fast", "Mathematics", "Science", "Projects & Assignments", "Interview Prep"].map(s => (
+                            <button 
+                              key={s} 
+                              type="button"
+                              onClick={() => setSubject(s)}
+                              className="text-[9px] bg-zinc-800 text-zinc-300 px-1.5 py-0.5 rounded hover:bg-white hover:text-black transition-colors"
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="pt-1.5 border-t border-zinc-800/80">
+                          <div className="text-[9px] font-medium text-zinc-500 uppercase tracking-wider mb-1">
+                            Advanced Mathematics Modules
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {ADVANCED_MATHEMATICS_MODULES.map(m => (
+                              <button
+                                key={m.id}
+                                type="button"
+                                onClick={() => setSubject(m.name)}
+                                className="text-[9px] bg-zinc-800/60 border border-zinc-700/60 text-zinc-300 hover:border-zinc-400 hover:text-white px-1.5 py-0.5 rounded transition-colors"
+                                title={m.subtopics.join(", ")}
+                              >
+                                {m.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex flex-wrap gap-1">
-                        {ADVANCED_MATHEMATICS_MODULES.map(m => (
-                          <button
-                            key={m.id}
-                            type="button"
-                            onClick={() => setSubject(m.name)}
-                            className="text-[9px] bg-zinc-800/60 border border-zinc-700/60 text-zinc-300 hover:border-zinc-400 hover:text-white px-1.5 py-0.5 rounded transition-colors"
-                            title={m.subtopics.join(", ")}
-                          >
-                            {m.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-             </div>
-             
-             <select 
-                value={language} 
-                onChange={(e) => setLanguage(e.target.value)}
-                className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
-              >
-                <option value="Auto (Detect Native Language)">Auto (Detect Native Language)</option>
-                <option value="English">English</option>
-                <option value="Hindi">Hindi</option>
-                <option value="Bengali">Bengali</option>
-                <option value="Telugu">Telugu</option>
-                <option value="Marathi">Marathi</option>
-                <option value="Tamil">Tamil</option>
-                <option value="Urdu">Urdu</option>
-                <option value="Gujarati">Gujarati</option>
-                <option value="Kannada">Kannada</option>
-                <option value="Malayalam">Malayalam</option>
-                <option value="Assamese">Assamese</option>
-             </select>
-             
-             {/* Advanced Configurations */}
-             <select 
-                value={goal} 
-                onChange={(e) => setGoal(e.target.value)}
-                className={`bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
-              >
-                <option value="Concept Mastery">Goal: Concept Mastery</option>
-                <option value="Exam Prep (Make it Easy)">Goal: Exam Prep (Make it Easy)</option>
-                <option value="Homework Help">Goal: Homework Help</option>
-                <option value="Doubt Clearance">Goal: Doubt Clearance</option>
-                <option value="Revision Summary">Goal: Revision Summary</option>
-             </select>
-             <select 
-                value={difficulty} 
-                onChange={(e) => setDifficulty(e.target.value)}
-                className={`bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
-              >
-                <option value="Fundamental">Level: Fundamental</option>
-                <option value="Intermediate">Level: Intermediate</option>
-                <option value="Advanced">Level: Advanced</option>
-                <option value="Expert">Level: Expert</option>
-             </select>
-             <select 
-                value={tone} 
-                onChange={(e) => setTone(e.target.value)}
-                className={`col-span-2 bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
-              >
-                <option value="Socratic (Ask Questions)">Tone: Socratic (Guides via questioning)</option>
-                <option value="Encouraging & Patient">Tone: Encouraging & Patient</option>
-                <option value="Strict & Direct">Tone: Strict & Direct</option>
-                <option value="Highly Detailed & Academic">Tone: Highly Detailed & Academic</option>
-             </select>
-          </div>
+                    )}
+                 </div>
+                 
+                 <select 
+                    value={language} 
+                    onChange={(e) => setLanguage(e.target.value)}
+                    className="bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors"
+                  >
+                    <option value="Auto (Detect Native Language)">Auto (Detect Native Language)</option>
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Bengali">Bengali</option>
+                    <option value="Telugu">Telugu</option>
+                    <option value="Marathi">Marathi</option>
+                    <option value="Tamil">Tamil</option>
+                    <option value="Urdu">Urdu</option>
+                    <option value="Gujarati">Gujarati</option>
+                    <option value="Kannada">Kannada</option>
+                    <option value="Malayalam">Malayalam</option>
+                    <option value="Assamese">Assamese</option>
+                 </select>
+                 
+                 {/* Advanced Configurations */}
+                 <select 
+                    value={goal} 
+                    onChange={(e) => setGoal(e.target.value)}
+                    className={`bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+                  >
+                    <option value="Concept Mastery">Goal: Concept Mastery</option>
+                    <option value="Exam Prep (Make it Easy)">Goal: Exam Prep (Make it Easy)</option>
+                    <option value="Homework Help">Goal: Homework Help</option>
+                    <option value="Doubt Clearance">Goal: Doubt Clearance</option>
+                    <option value="Revision Summary">Goal: Revision Summary</option>
+                 </select>
+                 <select 
+                    value={difficulty} 
+                    onChange={(e) => setDifficulty(e.target.value)}
+                    className={`bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+                  >
+                    <option value="Fundamental">Level: Fundamental</option>
+                    <option value="Intermediate">Level: Intermediate</option>
+                    <option value="Advanced">Level: Advanced</option>
+                    <option value="Expert">Level: Expert</option>
+                 </select>
+                 <select 
+                    value={tone} 
+                    onChange={(e) => setTone(e.target.value)}
+                    className={`col-span-2 bg-zinc-900/80 border border-zinc-800 text-xs rounded-lg p-2.5 font-medium text-zinc-200 outline-none focus:border-zinc-500 transition-colors ${showConfig ? 'opacity-100' : 'opacity-0 hidden'}`}
+                  >
+                    <option value="Socratic (Ask Questions)">Tone: Socratic (Guides via questioning)</option>
+                    <option value="Encouraging & Patient">Tone: Encouraging & Patient</option>
+                    <option value="Strict & Direct">Tone: Strict & Direct</option>
+                    <option value="Highly Detailed & Academic">Tone: Highly Detailed & Academic</option>
+                 </select>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Active Workspace */}
-        <div className="flex-1 overflow-hidden relative">
-          
-          <div className="h-full flex flex-col">
-            <div className="flex-1 overflow-y-auto p-4 space-y-5">
+        {/* WORKSPACE AREA */}
+        {mode === "tutor" ? (
+          <div className="flex-1 overflow-hidden relative flex flex-col">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {history.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed whitespace-pre-wrap shadow-sm ${
@@ -459,8 +541,296 @@ function IntelligencePage() {
                </div>
             </div>
           </div>
+        ) : (
+          /* REMOTE JOBS & EARNING WORKSPACE */
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 pb-28">
+            {/* Wallet Earnings Summary Card */}
+            <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 via-zinc-900 to-black p-5 sm:p-6 shadow-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-black text-emerald-400 uppercase tracking-wider">
+                    <span>👑</span> KingPay Verified Earnings
+                  </span>
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <span className="text-3xl sm:text-4xl font-mono font-black text-white">
+                      ₹{claimedEarnings.toLocaleString("en-IN")}.00
+                    </span>
+                    <span className="text-xs font-bold text-emerald-400">Available</span>
+                  </div>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    Direct instant payouts to UPI · Zero commission taken on your micro-work.
+                  </p>
+                </div>
 
-        </div>
-    </motion.div></LayoutGroup></CustomerShell>
+                <button
+                  type="button"
+                  onClick={() => {
+                    toast.success(`Withdrawal of ₹${claimedEarnings.toLocaleString("en-IN")} initiated to your default UPI VPA. Credited instantly!`);
+                  }}
+                  className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs transition shadow-md shadow-emerald-500/20 active:scale-95 self-start sm:self-auto"
+                >
+                  Withdraw to UPI Instant ➔
+                </button>
+              </div>
+
+              <div className="mt-4 grid grid-cols-3 gap-2 border-t border-zinc-800/80 pt-3 text-center text-xs">
+                <div>
+                  <span className="text-zinc-500 block text-[10px] font-bold">Tasks Completed</span>
+                  <span className="font-mono font-bold text-white text-sm">{completedTasks.length}</span>
+                </div>
+                <div>
+                  <span className="text-zinc-500 block text-[10px] font-bold">Success Rate</span>
+                  <span className="font-mono font-bold text-emerald-400 text-sm">100%</span>
+                </div>
+                <div>
+                  <span className="text-zinc-500 block text-[10px] font-bold">Verification Speed</span>
+                  <span className="font-mono font-bold text-amber-400 text-sm">Instant</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Daily Available Micro-Tasks */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <Sparkles className="size-4 text-amber-400" />
+                  Available Micro-Tasks for Instant Payout
+                </h2>
+                <span className="text-xs text-zinc-400">5 active tasks</span>
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  {
+                    id: "task-menu",
+                    title: "Local Restaurant Menu Audit",
+                    reward: 150,
+                    time: "10 mins",
+                    category: "Data Verification",
+                    badge: "Hot",
+                    description: "Verify dishes, prices, and veg/non-veg tags for 3 restaurants in your city against provided photo receipts.",
+                    instructions: [
+                      "Verify 5 dish names match restaurant menu photo.",
+                      "Confirm prices are entered in whole Rupees.",
+                      "Mark Veg / Non-Veg badge accurately.",
+                    ],
+                  },
+                  {
+                    id: "task-trans",
+                    title: "Multilingual Food Description Translation",
+                    reward: 200,
+                    time: "15 mins",
+                    category: "Language",
+                    badge: "High Pay",
+                    description: "Translate 20 standard Indian food names into your regional language (Hindi, Bengali, Tamil, Telugu, Marathi).",
+                    instructions: [
+                      "Keep dish names natural to local food culture.",
+                      "Translate spice levels and ingredient notes.",
+                      "Check for spelling and grammatical correctness.",
+                    ],
+                  },
+                  {
+                    id: "task-photo",
+                    title: "Packaging & Seal Hygiene Inspection",
+                    reward: 80,
+                    time: "5 mins",
+                    category: "Quality Assurance",
+                    badge: "Quick",
+                    description: "Inspect 5 customer food delivery photos to confirm tamper-evident safety seals and packaging integrity.",
+                    instructions: [
+                      "Check if tamper-evident seal is intact.",
+                      "Verify hot/cold container separation.",
+                      "Rate container hygiene from 1 to 5.",
+                    ],
+                  },
+                  {
+                    id: "task-ambassador",
+                    title: "Campus / Neighborhood Voucher Ambassador",
+                    reward: 500,
+                    time: "Flexible",
+                    category: "Promotion",
+                    badge: "Top Earner",
+                    description: "Share ₹50 OrderKing gift vouchers with friends in your college or neighborhood. Earn ₹500 base + ₹50 per first order.",
+                    instructions: [
+                      "Copy your unique KingPay gift link.",
+                      "Forward to WhatsApp student or society groups.",
+                      "Earn instant wallet cash on first order.",
+                    ],
+                  },
+                  {
+                    id: "task-qa",
+                    title: "CBSE / State Exam Math Step Fact-Checker",
+                    reward: 120,
+                    time: "10 mins",
+                    category: "Curriculum",
+                    badge: "Academic",
+                    description: "Review 5 AI step-by-step calculus and algebra solutions against NCERT standard textbook answer keys.",
+                    instructions: [
+                      "Verify final mathematical answer.",
+                      "Check that step formulas follow CBSE / State Board syllabus.",
+                      "Submit verification approval.",
+                    ],
+                  },
+                ].map((task) => {
+                  const isDone = completedTasks.includes(task.id);
+                  return (
+                    <div
+                      key={task.id}
+                      className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 hover:border-zinc-700 transition space-y-3"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                              {task.category}
+                            </span>
+                            <span className="px-1.5 py-0.2 rounded-full bg-amber-400/10 text-amber-400 text-[9px] font-black">
+                              {task.badge}
+                            </span>
+                          </div>
+                          <h3 className="text-sm font-bold text-white mt-1">
+                            {task.title}
+                          </h3>
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span className="text-base font-black font-mono text-emerald-400">
+                            +₹{task.reward}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 block">Instant Payout</span>
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-zinc-400">
+                        {task.description}
+                      </p>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60">
+                        <span className="text-[11px] text-zinc-500 flex items-center gap-1">
+                          <Clock className="size-3" /> ~{task.time}
+                        </span>
+
+                        {isDone ? (
+                          <span className="flex items-center gap-1 text-xs font-bold text-emerald-400">
+                            <CheckCircle className="size-3.5" /> Rewarded
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setActiveTask(task)}
+                            className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-black transition active:scale-95"
+                          >
+                            Start Task ➔
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Full-Time Career Opportunities */}
+            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-5 space-y-4">
+              <h2 className="text-sm font-bold text-white flex items-center gap-2">
+                <Briefcase className="size-4 text-amber-400" />
+                Full-Time Partnerships &amp; Delivery Fleets
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 space-y-2">
+                  <span className="text-2xl">🛵</span>
+                  <h3 className="text-sm font-bold text-white">OrderKing Delivery Partner</h3>
+                  <p className="text-xs text-zinc-400">
+                    Join our flexible electric vehicle delivery fleet. Earn up to ₹35,000/month with daily incentives and accident insurance.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => toast.success("Rider onboarding opening... You can also check partner app.")}
+                    className="mt-2 text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1"
+                  >
+                    <span>Apply as Rider</span>
+                    <ArrowRight className="size-3" />
+                  </button>
+                </div>
+
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 space-y-2">
+                  <span className="text-2xl">🏪</span>
+                  <h3 className="text-sm font-bold text-white">Merchant Onboarding Lead</h3>
+                  <p className="text-xs text-zinc-400">
+                    Onboard local restaurants, bakeries, and cloud kitchens to OrderKing. Earn ₹1,000 direct commission per active store.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => toast.success("Merchant partner application requested!")}
+                    className="mt-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1"
+                  >
+                    <span>Become a Merchant Lead</span>
+                    <ArrowRight className="size-3" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Task Modal */}
+        {activeTask && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-white space-y-4 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                    Micro-Task Execution
+                  </span>
+                  <h3 className="text-base font-black text-white">{activeTask.title}</h3>
+                </div>
+                <span className="text-base font-black font-mono text-emerald-400">
+                  +₹{activeTask.reward}
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs text-zinc-300">
+                <p className="font-semibold text-white">Instructions:</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  {activeTask.instructions.map((inst: string, idx: number) => (
+                    <li key={idx}>{inst}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="rounded-xl bg-zinc-900 p-3 border border-zinc-800 text-xs text-zinc-400">
+                <span className="font-bold text-white block mb-1">Audit Verification Input:</span>
+                <input
+                  type="text"
+                  placeholder="Type 'Verified OK' or upload notes..."
+                  defaultValue="Verified 100% compliant with standard"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-white outline-none font-medium"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveTask(null)}
+                  className="flex-1 py-2.5 rounded-xl border border-zinc-800 text-xs font-bold text-zinc-400 hover:text-white transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCompleteTask(activeTask)}
+                  className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black transition shadow-md shadow-emerald-500/20"
+                >
+                  Submit &amp; Claim ₹{activeTask.reward} ➔
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        </motion.div>
+      </LayoutGroup>
+    </CustomerShell>
   );
 }

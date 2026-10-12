@@ -15,6 +15,8 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as EarnRouteImport } from './routes/earn'
 import { Route as KingPayRouteImport } from './routes/king-pay'
+import { Route as KingpayBbpsRouteImport } from './routes/kingpay-bbps'
+import { Route as KingpayWalletRouteImport } from './routes/kingpay-wallet'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as OffersRouteImport } from './routes/offers'
@@ -22,6 +24,7 @@ import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as TravelRouteImport } from './routes/travel'
 import { Route as TutorRouteImport } from './routes/tutor'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as ApiCrmRouteImport } from './routes/api/crm'
@@ -75,6 +78,16 @@ const KingPayRoute = KingPayRouteImport.update({
   path: '/king-pay',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KingpayBbpsRoute = KingpayBbpsRouteImport.update({
+  id: '/kingpay-bbps',
+  path: '/kingpay-bbps',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KingpayWalletRoute = KingpayWalletRouteImport.update({
+  id: '/kingpay-wallet',
+  path: '/kingpay-wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -108,6 +121,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TravelRoute = TravelRouteImport.update({
+  id: '/travel',
+  path: '/travel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TutorRoute = TutorRouteImport.update({
@@ -228,6 +246,8 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/earn': typeof EarnRoute
   '/king-pay': typeof KingPayRoute
+  '/kingpay-bbps': typeof KingpayBbpsRoute
+  '/kingpay-wallet': typeof KingpayWalletRoute
   '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
@@ -235,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/travel': typeof TravelRoute
   '/tutor': typeof TutorRoute
   '/api/crm': typeof ApiCrmRoute
   '/api/restaurant': typeof ApiRestaurantRoute
@@ -265,6 +286,8 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/earn': typeof EarnRoute
   '/king-pay': typeof KingPayRoute
+  '/kingpay-bbps': typeof KingpayBbpsRoute
+  '/kingpay-wallet': typeof KingpayWalletRoute
   '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
@@ -272,6 +295,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/travel': typeof TravelRoute
   '/tutor': typeof TutorRoute
   '/api/crm': typeof ApiCrmRoute
   '/api/restaurant': typeof ApiRestaurantRoute
@@ -303,6 +327,8 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/earn': typeof EarnRoute
   '/king-pay': typeof KingPayRoute
+  '/kingpay-bbps': typeof KingpayBbpsRoute
+  '/kingpay-wallet': typeof KingpayWalletRoute
   '/login': typeof LoginRoute
   '/news': typeof NewsRoute
   '/offers': typeof OffersRoute
@@ -310,6 +336,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/support': typeof SupportRoute
+  '/travel': typeof TravelRoute
   '/tutor': typeof TutorRoute
   '/api/crm': typeof ApiCrmRoute
   '/api/restaurant': typeof ApiRestaurantRoute
@@ -342,6 +369,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/earn'
     | '/king-pay'
+    | '/kingpay-bbps'
+    | '/kingpay-wallet'
     | '/login'
     | '/news'
     | '/offers'
@@ -349,6 +378,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
+    | '/travel'
     | '/tutor'
     | '/api/crm'
     | '/api/restaurant'
@@ -379,6 +409,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/earn'
     | '/king-pay'
+    | '/kingpay-bbps'
+    | '/kingpay-wallet'
     | '/login'
     | '/news'
     | '/offers'
@@ -386,6 +418,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
+    | '/travel'
     | '/tutor'
     | '/api/crm'
     | '/api/restaurant'
@@ -416,6 +449,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/earn'
     | '/king-pay'
+    | '/kingpay-bbps'
+    | '/kingpay-wallet'
     | '/login'
     | '/news'
     | '/offers'
@@ -423,6 +458,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/support'
+    | '/travel'
     | '/tutor'
     | '/api/crm'
     | '/api/restaurant'
@@ -454,6 +490,8 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   EarnRoute: typeof EarnRoute
   KingPayRoute: typeof KingPayRoute
+  KingpayBbpsRoute: typeof KingpayBbpsRoute
+  KingpayWalletRoute: typeof KingpayWalletRoute
   LoginRoute: typeof LoginRoute
   NewsRoute: typeof NewsRoute
   OffersRoute: typeof OffersRoute
@@ -461,6 +499,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
   SupportRoute: typeof SupportRoute
+  TravelRoute: typeof TravelRoute
   TutorRoute: typeof TutorRoute
   ApiCrmRoute: typeof ApiCrmRoute
   ApiRestaurantRoute: typeof ApiRestaurantRoute
@@ -529,6 +568,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KingPayRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kingpay-bbps': {
+      id: '/kingpay-bbps'
+      path: '/kingpay-bbps'
+      fullPath: '/kingpay-bbps'
+      preLoaderRoute: typeof KingpayBbpsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kingpay-wallet': {
+      id: '/kingpay-wallet'
+      path: '/kingpay-wallet'
+      fullPath: '/kingpay-wallet'
+      preLoaderRoute: typeof KingpayWalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -576,6 +629,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/travel': {
+      id: '/travel'
+      path: '/travel'
+      fullPath: '/travel'
+      preLoaderRoute: typeof TravelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tutor': {
@@ -742,6 +802,8 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   EarnRoute: EarnRoute,
   KingPayRoute: KingPayRoute,
+  KingpayBbpsRoute: KingpayBbpsRoute,
+  KingpayWalletRoute: KingpayWalletRoute,
   LoginRoute: LoginRoute,
   NewsRoute: NewsRoute,
   OffersRoute: OffersRoute,
@@ -749,6 +811,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
   SupportRoute: SupportRoute,
+  TravelRoute: TravelRoute,
   TutorRoute: TutorRoute,
   ApiCrmRoute: ApiCrmRoute,
   ApiRestaurantRoute: ApiRestaurantRoute,

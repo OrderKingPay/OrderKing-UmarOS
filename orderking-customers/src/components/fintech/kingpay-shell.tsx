@@ -126,37 +126,49 @@ export function KingPayShell({
       {/* MAIN FINTECH CONTENT AREA */}
       <main className="flex-1 pb-24">{children}</main>
 
-      {/* Massive distinct Back button */}
-      <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-4 pointer-events-none">
-        <Link
-          to="/"
-          className="pointer-events-auto group flex w-full max-w-sm items-center justify-center gap-2 rounded-full border-2 border-amber-400/50 bg-amber-500 text-black px-6 py-4 text-base font-black shadow-[0_8px_32px_rgba(245,158,11,0.4)] backdrop-blur-md transition-all hover:scale-105 active:scale-95 no-underline"
-        >
-          <span className="text-xl leading-none">←</span>
-          <span>Back to Order King Food</span>
-        </Link>
-      </div>
-
-      {/* LUXURY BOTTOM NAVIGATION BAR */}
+      {/* ULTRA-LUXURIOUS STICKY BOTTOM NAVIGATION BAR */}
       <nav
         aria-label="App Navigation"
-        className="fixed bottom-4 left-4 right-4 z-40 rounded-3xl border border-white/10 bg-slate-950/80 pb-0 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden"
+        className="fixed bottom-0 left-0 right-0 w-full z-50 bg-slate-950/95 backdrop-blur-2xl border-t border-amber-500/30 shadow-[0_-12px_40px_rgba(0,0,0,0.6)] pb-[max(0.5rem,env(safe-area-inset-bottom))]"
       >
-        <ul className="mx-auto grid grid-cols-5 items-center justify-items-center relative px-2">
-          <NavItem to="/" icon={House} label="Home" active={false} />
-          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={false} />
-          
-          <li className="relative -top-2 flex w-full justify-center">
+        {/* Subtle Gold Ambient Sheen Beam */}
+        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent pointer-events-none" />
+
+        <ul className="mx-auto grid max-w-lg grid-cols-5 items-end justify-items-center relative px-2 pt-2">
+          {/* 1. Delivery / Food */}
+          <NavItem to="/" icon={House} label="Delivery" active={false} />
+
+          {/* 2. Tutor & Jobs */}
+          <NavItem to="/tutor" icon={GraduationCap} label="Tutor & Jobs" active={false} />
+
+          {/* 3. CENTER ELEVATED JEWEL: ← Back to Order King Food */}
+          <li className="w-full flex justify-center">
             <Link
-              to="/king-pay"
-              className="group relative flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-full border-2 border-amber-400 bg-gradient-to-br from-amber-400 to-yellow-600 text-fg shadow-[0_0_15px_rgba(251,191,36,0.4)] text-xs no-underline transition-all active:scale-95"
+              to="/"
+              className="flex flex-col items-center justify-center no-underline relative transition-all -mt-4 sm:-mt-5 group"
+              title="Back to Order King Food"
             >
-              <span className="text-lg leading-none">👑</span>
-              <span className="text-[8px] font-black tracking-tight leading-none">KingPay</span>
+              <div className="relative p-[2.5px] rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-300 to-yellow-200 shadow-[0_6px_20px_rgba(245,158,11,0.45)] transition-all duration-300 group-hover:scale-105 group-active:scale-95">
+                <div className="flex size-11 sm:size-12 items-center justify-center rounded-[13px] bg-gradient-to-b from-gray-950 via-slate-900 to-black text-amber-300 shadow-inner">
+                  <span className="text-xl sm:text-2xl filter drop-shadow-[0_2px_6px_rgba(245,158,11,0.6)]">
+                    🍔
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col items-center mt-1">
+                <span className="text-[10px] sm:text-[11px] font-black tracking-tight text-amber-400 group-hover:text-amber-200 flex items-center gap-0.5">
+                  <span>←</span>
+                  <span>Food</span>
+                </span>
+              </div>
             </Link>
           </li>
-          <NavItem to="/tutor" icon={GraduationCap} label="AI Tutor" active={false} />
-          <NavItem to="/account" icon={UserRound} label="Profile" active={false} />
+
+          {/* 4. Orders */}
+          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={false} />
+
+          {/* 5. Travel & Bookings */}
+          <NavItem to="/travel" icon={Plane} label="Travel" active={activeSection === "travel"} />
         </ul>
       </nav>
     </motion.div>

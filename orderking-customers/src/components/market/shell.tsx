@@ -10,6 +10,8 @@ import {
   MapPin,
   ChevronDown,
   Compass,
+  GraduationCap,
+  Plane,
 } from "lucide-react";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { Wordmark } from "@/components/brand/wordmark";
@@ -94,39 +96,40 @@ export function CustomerShell({
             </div>
           </button>
 
-          {/* Right Header Utilities: Language, Pay & Profile */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Right Header Utilities: KingPay Crown Wallet Badge & Profile/Sign-in strictly at far right */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Ultra-luxurious KingPay Crown Wallet Badge */}
             <Link
               to="/king-pay"
-              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shadow-xs hover:bg-amber-100 transition active:scale-95 no-underline"
-              title="King Pay"
+              className="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full bg-gradient-to-r from-amber-500/10 via-amber-400/20 to-yellow-500/10 border border-amber-400/70 text-amber-950 text-xs font-black shadow-xs hover:border-amber-500 hover:shadow-amber-500/20 transition active:scale-95 no-underline group"
+              title="KingPay Sovereign Wallet"
             >
-              <span>👑</span>
-              <span className="hidden sm:inline text-[11px]">Pay</span>
+              <span className="text-sm filter drop-shadow-xs group-hover:scale-110 transition-transform">👑</span>
+              <span className="text-[11px] font-black tracking-tight text-amber-950">Pay</span>
+              <span className="text-[10px] font-bold text-amber-800/90 hidden xs:inline">· ₹84,200</span>
             </Link>
 
-            <button
-              type="button"
-              onClick={() => setLangOpen(true)}
-              className="flex size-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200 transition"
-              aria-label="Change Language"
-            >
-              <Globe className="h-4 w-4" />
-            </button>
-
+            {/* Profile & Sign-In strictly at far right */}
             {isPending ? (
               <div className="h-8 w-8 animate-pulse rounded-full bg-gray-200" />
             ) : user ? (
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
+              <Link
+                to="/account"
+                className="flex items-center gap-1.5 p-0.5 rounded-full hover:ring-2 hover:ring-amber-400 transition no-underline text-gray-900"
+                title="Your Profile & Settings"
+              >
+                <div className="flex size-8 items-center justify-center rounded-full bg-slate-950 text-amber-300 text-xs font-black shadow-xs ring-1 ring-amber-400/30">
+                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : <UserRound className="size-4" />}
+                </div>
+              </Link>
             ) : (
               <SignedOut>
                 <Link
                   to="/login"
-                  className="rounded-full bg-[#E23744] hover:bg-[#c92f3b] text-white px-3 py-1 text-xs font-bold transition shadow-xs no-underline"
+                  className="rounded-full bg-[#E23744] hover:bg-[#c92f3b] text-white px-3.5 py-1.5 text-xs font-bold transition shadow-xs no-underline flex items-center gap-1"
                 >
-                  {t("common.signIn")}
+                  <UserRound className="size-3.5" />
+                  <span>{t("common.signIn")}</span>
                 </Link>
               </SignedOut>
             )}
@@ -188,10 +191,10 @@ export function CustomerShell({
 
         <ul className="mx-auto grid max-w-lg grid-cols-5 items-end justify-items-center relative px-2 pt-2">
           <NavItem to="/" icon={House} label="Delivery" active={path === "/"} />
-          <NavItem to="/search" icon={Search} label="Search" active={path.startsWith("/search")} />
-          <KingPayCenterItem active={path.startsWith("/king-pay")} />
+          <NavItem to="/tutor" icon={GraduationCap} label="Tutor & Jobs" active={path.startsWith("/tutor")} />
+          <KingPayCenterItem active={path.startsWith("/king-pay")} isKingPayPage={path.startsWith("/king-pay")} />
           <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
-          <NavItem to="/account" icon={UserRound} label="Profile" active={path.startsWith("/account")} />
+          <NavItem to="/travel" icon={Plane} label="Travel" active={path.startsWith("/travel")} />
         </ul>
       </nav>
 
@@ -216,12 +219,39 @@ export function CustomerShell({
   );
 }
 
-function KingPayCenterItem({ active }: { active: boolean }) {
+function KingPayCenterItem({ active, isKingPayPage }: { active: boolean; isKingPayPage: boolean }) {
+  if (isKingPayPage) {
+    return (
+      <li className="w-full flex justify-center">
+        <Link
+          to="/"
+          className="flex flex-col items-center justify-center no-underline relative transition-all -mt-4 sm:-mt-5 group"
+          title="Back to Food Delivery"
+        >
+          <div className="relative p-[2.5px] rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-300 to-yellow-200 shadow-[0_6px_20px_rgba(245,158,11,0.45)] transition-all duration-300 group-hover:scale-105 group-active:scale-95">
+            <div className="flex size-11 sm:size-12 items-center justify-center rounded-[13px] bg-gradient-to-b from-gray-950 via-slate-900 to-black text-amber-300 shadow-inner">
+              <span className="text-xl sm:text-2xl filter drop-shadow-[0_2px_6px_rgba(245,158,11,0.6)]">
+                🍔
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col items-center mt-1">
+            <span className="text-[10px] sm:text-[11px] font-black tracking-tight text-amber-900 flex items-center gap-0.5 group-hover:text-amber-700">
+              <span>←</span>
+              <span>Food</span>
+            </span>
+          </div>
+        </Link>
+      </li>
+    );
+  }
+
   return (
     <li className="w-full flex justify-center">
       <Link
         to="/king-pay"
         className="flex flex-col items-center justify-center no-underline relative transition-all -mt-4 sm:-mt-5 group"
+        title="Open KingPay"
       >
         <div
           className={cn(
