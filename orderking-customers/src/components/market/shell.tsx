@@ -12,15 +12,22 @@ import {
   Compass,
   GraduationCap,
   Plane,
+  Briefcase,
+  Building2,
+  Luggage,
+  Sparkles,
 } from "lucide-react";
 import { useState, useEffect, lazy, Suspense } from "react";
-import { Wordmark } from "@/components/brand/wordmark";
+import { Wordmark, OrderKingMark } from "@/components/brand/wordmark";
 
 const LazyLocationDialog = lazy(() =>
   import("@/components/market/location-dialog").then((m) => ({ default: m.LocationDialog }))
 );
 const LazyLanguageSelectorModal = lazy(() =>
   import("@/components/common/language-selector-modal").then((m) => ({ default: m.LanguageSelectorModal }))
+);
+const LazyCustomerConciergeDrawer = lazy(() =>
+  import("@/components/ai/customer-concierge-drawer").then((m) => ({ default: m.CustomerConciergeDrawer }))
 );
 import { useBrand, useT } from "@/components/providers";
 import { cartCount, useCartStore } from "@/lib/stores/cart";
@@ -48,10 +55,12 @@ export function CustomerShell({
     s.items.reduce((acc, it) => acc + (it.variantId ? 0 : 0) + it.quantity * 100, 0)
   );
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const currentHash = useRouterState({ select: (s) => s.location.hash });
   const { user, isPending } = useCurrentUserState();
   const navigate = useNavigate();
   const [locOpen, setLocOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [conciergeOpen, setConciergeOpen] = useState(false);
 
   useEffect(() => {
     // Strictly enforce light mode in DOM
@@ -96,17 +105,16 @@ export function CustomerShell({
             </div>
           </button>
 
-          {/* Right Header Utilities: KingPay Crown Wallet Badge & Profile/Sign-in strictly at far right */}
+          {/* Right Header Utilities: Crown Wallet immediately left of Profile/Sign-in at far right */}
           <div className="flex items-center gap-2 shrink-0">
-            {/* Ultra-luxurious KingPay Crown Wallet Badge */}
+            {/* Crown Wallet Entry (opens separated Verified vs Promotional Credits view) */}
             <Link
-              to="/king-pay"
+              to="/earn"
               className="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full bg-gradient-to-r from-amber-500/10 via-amber-400/20 to-yellow-500/10 border border-amber-400/70 text-amber-950 text-xs font-black shadow-xs hover:border-amber-500 hover:shadow-amber-500/20 transition active:scale-95 no-underline group"
-              title="KingPay Sovereign Wallet"
+              title="Crown Wallet & Promotional Credits"
             >
               <span className="text-sm filter drop-shadow-xs group-hover:scale-110 transition-transform">👑</span>
-              <span className="text-[11px] font-black tracking-tight text-amber-950">Pay</span>
-              <span className="text-[10px] font-bold text-amber-800/90 hidden xs:inline">· ₹84,200</span>
+              <span className="text-[11px] font-black tracking-tight text-amber-950">Crown Wallet</span>
             </Link>
 
             {/* Profile & Sign-In strictly at far right */}
@@ -115,12 +123,13 @@ export function CustomerShell({
             ) : user ? (
               <Link
                 to="/account"
-                className="flex items-center gap-1.5 p-0.5 rounded-full hover:ring-2 hover:ring-amber-400 transition no-underline text-gray-900"
-                title="Your Profile & Settings"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 hover:ring-2 hover:ring-amber-400 transition no-underline text-gray-900"
+                title="Your Profile & Account"
               >
-                <div className="flex size-8 items-center justify-center rounded-full bg-slate-950 text-amber-300 text-xs font-black shadow-xs ring-1 ring-amber-400/30">
-                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : <UserRound className="size-4" />}
+                <div className="flex size-7 items-center justify-center rounded-full bg-slate-950 text-amber-300 text-xs font-black shadow-xs ring-1 ring-amber-400/30">
+                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : <UserRound className="size-3.5" />}
                 </div>
+                <span className="text-xs font-bold text-gray-800 hidden sm:inline">Profile</span>
               </Link>
             ) : (
               <SignedOut>
@@ -136,8 +145,21 @@ export function CustomerShell({
           </div>
         </div>
 
-        {/* Clean Zomato Search Bar */}
-        {path !== "/search" && (
+        {path === "/" && (
+          <button type="button" onClick={() => setConciergeOpen(true)}
+            aria-label="Open OrderKing AI Concierge"
+            className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-amber-200 bg-gradient-to-r from-emerald-950 via-emerald-900 to-slate-950 px-3 py-2.5 text-left text-white shadow-sm transition hover:border-amber-400 hover:shadow-md">
+            <OrderKingMark className="size-10" />
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-extrabold tracking-tight text-amber-200">OrderKing</span>
+              <span className="block truncate text-[11px] text-emerald-100">Tap for AI concierge &amp; delivery support</span>
+            </span>
+            <Sparkles className="size-5 text-amber-300" aria-hidden />
+          </button>
+        )}
+
+        {/* Food search is shown only in Delivery; each other service has its own search. */}
+        {path !== "/search" && !["/tutor", "/travel", "/orders", "/support", "/earn"].some((prefix) => path.startsWith(prefix)) && (
           <div className="mt-2.5">
             <button
               type="button"
@@ -199,17 +221,30 @@ export function CustomerShell({
           {/* 3. King Pay / OrderKing */}
           <KingPayCenterItem
             active={path.startsWith("/king-pay")}
-            isKingPayPage={path.startsWith("/king-pay") || path.startsWith("/travel") || path.startsWith("/tutor")}
+            isKingPayPage={false}
           />
 
           {/* 4. Travel */}
           <NavItem to="/travel" icon={Plane} label="Travel" active={path.startsWith("/travel")} />
 
-          {/* 5. Orders */}
-          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
+          {/* 5. Contextual action: show food orders in Delivery, Jobs in Tutor, Hotels in Travel, AI Support in Support */}
+          {path.startsWith("/tutor") ? (
+            <NavItem to="/tutor" hash="jobs" icon={Briefcase} label="Jobs" active={currentHash.replace(/^#/, "") === "jobs"} />
+          ) : path.startsWith("/travel") ? (
+            <NavItem to="/travel/trips" icon={Luggage} label="My Trips" active={path.startsWith("/travel/trips")} />
+          ) : path.startsWith("/support") ? (
+            <NavItem to="/support" icon={ClipboardList} label="AI Support" active={path.startsWith("/support")} />
+          ) : (
+            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
+          )}
         </ul>
       </nav>
 
+      {conciergeOpen && (
+        <Suspense fallback={null}>
+          <LazyCustomerConciergeDrawer open={conciergeOpen} onClose={() => setConciergeOpen(false)} area="food" />
+        </Suspense>
+      )}
       {locOpen ? (
         <Suspense fallback={null}>
           <LazyLocationDialog open={locOpen} onOpenChange={setLocOpen} />
@@ -296,12 +331,14 @@ function KingPayCenterItem({ active, isKingPayPage }: { active: boolean; isKingP
 
 function NavItem({
   to,
+  hash,
   icon: Icon,
   label,
   active,
   badge,
 }: {
   to: string;
+  hash?: string;
   icon: typeof House;
   label: string;
   active: boolean;
@@ -311,6 +348,7 @@ function NavItem({
     <li className="w-full flex justify-center">
       <Link
         to={to}
+        hash={hash}
         className={cn(
           "flex flex-col items-center justify-center gap-0.5 text-[10px] sm:text-[11px] no-underline relative transition-all py-1 w-full group",
           active

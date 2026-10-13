@@ -2,7 +2,7 @@
 import { type ReactNode, useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion, LayoutGroup } from "framer-motion";
-import { Bell, Car, CreditCard, History, Plane, QrCode, ShieldCheck, Sparkles, User, UtilityPole, Wallet, Zap, House, ClipboardList, GraduationCap, UserRound } from "lucide-react";
+import { Bell, Car, CreditCard, History, Plane, QrCode, ShieldCheck, Search, Sparkles, User, UtilityPole, Wallet, Zap, House, ClipboardList, GraduationCap, UserRound } from "lucide-react";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -11,7 +11,7 @@ export type KingPaySection = "pay" | "garage" | "loan" | "travel" | "bills" | "p
 
 type Props = {
   children: ReactNode;
-  walletBalance: number;
+  walletBalance?: number;
   onAddMoneyClick: () => void;
   onOpenScannerClick: () => void;
   activeSection: KingPaySection;
@@ -28,6 +28,22 @@ export function KingPayShell({
   onSelectSection,
   alertsCount = 0,
 }: Props) {
+  const [serviceQuery, setServiceQuery] = useState("");
+  const searchableFeatures: { label: string; keywords: string; section: KingPaySection }[] = [
+    { label: "Pay & Transfer (UPI / QR)", keywords: "pay send money transfer upi qr scan", section: "pay" },
+    { label: "Bills & Utility Recharges", keywords: "electricity water dth broadband mobile gas lpg bill", section: "bills" },
+    { label: "Garage & FASTag", keywords: "car bike vehicle fastag toll insurance challan", section: "garage" },
+    { label: "Credit & Pay Later", keywords: "loan credit bnpl emi limit", section: "loan" },
+    { label: "Passbook & Statement", keywords: "history passbook ledger entries statement", section: "passbook" },
+    { label: "Wealth & Rewards", keywords: "wealth features products crown rewards", section: "wealth" },
+    { label: "Account & Security", keywords: "profile details kyc bank settings", section: "account" },
+    { label: "Travel & Bookings", keywords: "flights trains hotels travel booking", section: "travel" },
+  ];
+  const matchedFeatures = searchableFeatures.filter((feature) =>
+    (feature.label + " " + feature.keywords)
+      .toLocaleLowerCase()
+      .includes(serviceQuery.trim().toLocaleLowerCase())
+  );
   return (
     <LayoutGroup>
     <motion.div layout className="min-h-screen bg-gradient-to-tr from-slate-950 via-[#0a0a0f] to-indigo-950 text-slate-50 flex flex-col antialiased selection:bg-amber-400 selection:text-black">
@@ -93,15 +109,9 @@ export function KingPayShell({
             <div className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-500/10 px-2.5 py-1 text-xs shadow-xs">
               <Wallet className="size-3.5 text-amber-600 dark:text-amber-400" />
               <span className="font-mono font-bold text-fg">
-                ₹{walletBalance.toLocaleString("en-IN")}.00
+                Cash: not verified · Crown: inactive
               </span>
-              <button
-                type="button"
-                onClick={onAddMoneyClick}
-                className="rounded-full bg-primary px-1.5 py-0.2 text-[9px] font-bold text-fg hover:bg-primary/90 transition"
-              >
-                + Add
-              </button>
+
             </div>
 
             {/* Notification Bell with Badge */}
@@ -123,6 +133,43 @@ export function KingPayShell({
         </div>
       </header>
 
+      {/* Search only the existing King Pay screens, without suggesting transactions are searchable. */}
+      <section aria-label="King Pay service search" className="mx-auto w-full max-w-lg px-4 pt-4 md:max-w-5xl">
+        <label htmlFor="kingpay-service-search" className="mb-2 block text-xs font-semibold text-slate-300">
+          Find a King Pay service
+        </label>
+        <div className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3">
+          <Search className="size-4 text-amber-300" aria-hidden />
+          <input
+            id="kingpay-service-search"
+            type="search"
+            value={serviceQuery}
+            autoComplete="off"
+            onChange={(e) => setServiceQuery(e.target.value)}
+            placeholder="Search UPI, bills, FASTag, passbook, wealth, travel..."
+            className="h-11 min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-slate-400 focus:outline-none"
+          />
+        </div>
+        {serviceQuery.trim() && (
+          <div className="mt-2 space-y-1 rounded-xl border border-white/20 bg-slate-900 p-1">
+            {matchedFeatures.length > 0 ? (
+              matchedFeatures.map((feature) => (
+                <button
+                  key={feature.section}
+                  type="button"
+                  onClick={() => { onSelectSection(feature.section); setServiceQuery(""); }}
+                  className="block w-full rounded-lg px-3 py-2 text-left text-sm text-white hover:bg-slate-800"
+                >
+                  {feature.label}
+                </button>
+              ))
+            ) : (
+              <p className="px-3 py-2 text-xs text-slate-400">No matching King Pay service found.</p>
+            )}
+          </div>
+        )}
+      </section>
+
       {/* MAIN FINTECH CONTENT AREA */}
       <main className="flex-1 pb-24">{children}</main>
 
@@ -141,23 +188,23 @@ export function KingPayShell({
           {/* 2. Tutor & Jobs */}
           <NavItem to="/tutor" icon={GraduationCap} label="Tutor & Jobs" active={false} />
 
-          {/* 3. Center: OrderKing returns to food delivery */}
+          {/* 3. King Pay is the active product destination */}
           <li className="w-full flex justify-center">
             <Link
-              to="/"
+              to="/king-pay"
               className="flex flex-col items-center justify-center no-underline relative transition-all -mt-4 sm:-mt-5 group"
-              title="Back to Order King Food"
+              title="King Pay Home"
             >
               <div className="relative p-[2.5px] rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-300 to-yellow-200 shadow-[0_6px_20px_rgba(245,158,11,0.45)] transition-all duration-300 group-hover:scale-105 group-active:scale-95">
                 <div className="flex size-11 sm:size-12 items-center justify-center rounded-[13px] bg-gradient-to-b from-gray-950 via-slate-900 to-black text-amber-300 shadow-inner">
                   <span className="text-xl sm:text-2xl filter drop-shadow-[0_2px_6px_rgba(245,158,11,0.6)]">
-                    🍔
+                    👑
                   </span>
                 </div>
               </div>
               <div className="flex flex-col items-center mt-1">
                 <span className="text-[10px] sm:text-[11px] font-black tracking-tight text-amber-400 group-hover:text-amber-200 flex items-center gap-0.5">
-                  OrderKing
+                  King Pay
                 </span>
               </div>
             </Link>
@@ -166,8 +213,8 @@ export function KingPayShell({
           {/* 4. Travel */}
           <NavItem to="/travel" icon={Plane} label="Travel" active={activeSection === "travel"} />
 
-          {/* 5. Orders (Right side ending) */}
-          <NavItem to="/orders" icon={ClipboardList} label="Orders" active={false} />
+          {/* 5. Payment support rather than unrelated food orders. */}
+          <NavItem to="/king-pay/assist" icon={Sparkles} label="King Assist" active={false} />
         </ul>
       </nav>
     </motion.div>

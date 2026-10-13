@@ -90,6 +90,13 @@ export interface PremiumExecutionPlan {
   pauseReason?: string;
 }
 
+export type SupremeStageNode = PremiumStageNode;
+export type EnterpriseStageNode = PremiumStageNode;
+export type SupremeExecutionPlan = PremiumExecutionPlan;
+export type EnterpriseExecutionPlan = PremiumExecutionPlan;
+export type SupremeTaskStage = PremiumTaskStage;
+export type EnterpriseTaskStage = PremiumTaskStage;
+
 export function decomposeFounderGoal(goal: string): PremiumExecutionPlan {
   const planId = `PLAN-${Date.now().toString(36)}`;
 

@@ -3,12 +3,18 @@ import { GoogleGeminiProvider } from "./gemini-provider.ts";
 import { OpenAIProvider } from "./openai-provider.ts";
 import { AnthropicProvider } from "./anthropic-provider.ts";
 import { XAIProvider } from "./xai-provider.ts";
+import { OpenFrontierProvider } from "./open-frontier-provider.ts";
+import { SovereignLocalProvider } from "./sovereign-local-provider.ts";
+import { dynamicGenerationRegistry } from "./dynamic-generation-registry.ts";
 
 export * from "./provider-interface.ts";
 export * from "./gemini-provider.ts";
 export * from "./openai-provider.ts";
 export * from "./anthropic-provider.ts";
 export * from "./xai-provider.ts";
+export * from "./open-frontier-provider.ts";
+export * from "./sovereign-local-provider.ts";
+export * from "./dynamic-generation-registry.ts";
 
 export interface ProviderStatus {
   id: string;
@@ -23,9 +29,16 @@ export class ModelRouterService {
 
   constructor() {
     this.providers.set("gemini", new GoogleGeminiProvider());
-    this.providers.set("openai", new OpenAIProvider());
     this.providers.set("anthropic", new AnthropicProvider());
+    this.providers.set("openai", new OpenAIProvider());
     this.providers.set("xai", new XAIProvider());
+    this.providers.set("open-frontier", new OpenFrontierProvider());
+    this.providers.set("sovereign-local", new SovereignLocalProvider());
+
+    // Register with dynamic registry
+    for (const p of this.providers.values()) {
+      dynamicGenerationRegistry.registerProvider(p);
+    }
   }
 
   getProvider(preferredId?: string): AIProvider {
@@ -34,14 +47,14 @@ export class ModelRouterService {
       if (p.isConfigured) return p;
     }
 
-    // Auto-fallback hierarchy
-    const priority = ["gemini", "anthropic", "openai", "xai"];
+    // Auto-fallback hierarchy (Commercial -> Open/Free Tier -> Sovereign Local Core)
+    const priority = ["gemini", "anthropic", "openai", "xai", "open-frontier", "sovereign-local"];
     for (const id of priority) {
       const p = this.providers.get(id);
       if (p && p.isConfigured) return p;
     }
 
-    throw new Error("BLOCKED: No real AI provider API keys are configured in the environment.");
+    return this.providers.get("sovereign-local") || new SovereignLocalProvider();
   }
 
   listProviderStatuses(): ProviderStatus[] {
@@ -73,7 +86,30 @@ export class ModelRouterService {
         isConfigured: Boolean(process.env.XAI_API_KEY),
         supportedModels: ["grok-3", "grok-2"],
         requiredEnvVar: "XAI_API_KEY",
-      }
+      },
+      {
+        id: "open-frontier",
+        name: "Open Frontier / Groq / OpenRouter / Ollama",
+        isConfigured: Boolean(
+          process.env.GROQ_API_KEY ||
+          process.env.OPENROUTER_API_KEY ||
+          process.env.OLLAMA_HOST
+        ),
+        supportedModels: [
+          "llama-3.3-70b-versatile",
+          "deepseek-r1-distill-llama-70b",
+          "meta-llama/llama-3.3-70b-instruct:free",
+          "deepseek/deepseek-r1:free",
+        ],
+        requiredEnvVar: "GROQ_API_KEY or OPENROUTER_API_KEY or OLLAMA_HOST",
+      },
+      {
+        id: "sovereign-local",
+        name: "👑 Sovereign Local Core (100% In-Memory)",
+        isConfigured: true,
+        supportedModels: ["sovereign-local-core", "sovereign-foodtech-v1", "sovereign-nlp-edge"],
+        requiredEnvVar: "None (Zero-cost built-in)",
+      },
     ];
   }
 

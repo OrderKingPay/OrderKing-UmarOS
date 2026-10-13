@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { Button } from "@/components/ui/button";
-import { Card, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { errorMessage } from "@/lib/client/errors";
@@ -9,32 +8,272 @@ import { useI18n } from "@/lib/rider/i18n-context";
 import { ZONES } from "@/lib/rider/catalog";
 import { bootstrapRiderFn, saveProfileFn, submitKycFn } from "@/lib/server/rider-fns";
 import type { RiderProfile, VehicleType } from "@/lib/rider/types";
-import { useEffect, useState, type ComponentProps } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ZomatoSwiggySwitchFlow } from "@/components/rider/zomato-swiggy-switch-flow";
-import { ArrowRight, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertCircle,
+  ArrowRight,
+  Bike,
+  Building2,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Edit3,
+  FileCheck,
+  MapPin,
+  Save,
+  ShieldCheck,
+  Trash2,
+  Upload,
+} from "lucide-react";
 
 export const Route = createFileRoute("/onboarding")({ component: Page });
+
+type VehicleCategory = "BIKE" | "SCOOTER" | "EV" | "CYCLE";
+
+type DocAttachment = {
+  name: string;
+  sizeBytes: number;
+  previewUrl: string | null;
+};
+
+type KycDocsState = {
+  dlFrontBack: DocAttachment | null;
+  rcCopy: DocAttachment | null;
+  panCopy: DocAttachment | null;
+  aadhaarMasked: DocAttachment | null;
+};
+
+type LegalAgreementsState = {
+  serviceAgreement: boolean;
+  roadSafety: boolean;
+  foodHygiene: boolean;
+  privacyGps: boolean;
+};
+
+const DRAFT_STORAGE_KEY = "orderking_onboarding_draft_v2";
+
+const BANK_CODES: Record<string, string> = {
+  SBIN: "State Bank of India",
+  HDFC: "HDFC Bank",
+  ICIC: "ICICI Bank",
+  UTIB: "Axis Bank",
+  PUNB: "Punjab National Bank",
+  BARB: "Bank of Baroda",
+  CNRB: "Canara Bank",
+  UBIN: "Union Bank of India",
+  BKID: "Bank of India",
+  IDIB: "Indian Bank",
+  KKBK: "Kotak Mahindra Bank",
+  YESB: "Yes Bank",
+  FDRL: "Federal Bank",
+  UCBA: "UCO Bank",
+  CBIN: "Central Bank of India",
+  IOBA: "Indian Overseas Bank",
+  MAHB: "Bank of Maharashtra",
+  BAND: "Bandhan Bank",
+  IDFB: "IDFC FIRST Bank",
+  INDB: "IndusInd Bank",
+  AIRP: "Airtel Payments Bank",
+  PYTM: "Paytm Payments Bank",
+};
+
+function detectIfscBank(ifsc: string): string | null {
+  const clean = ifsc.trim().toUpperCase();
+  if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(clean)) return null;
+  const prefix = clean.slice(0, 4);
+  return BANK_CODES[prefix]
+    ? `${BANK_CODES[prefix]} (Branch Code: ${clean.slice(5)})`
+    : `Verified IFSC Format (${prefix} · Branch ${clean.slice(5)})`;
+}
+
+function detectPinRegion(pin: string): string | null {
+  const clean = pin.trim();
+  if (!/^[1-9]\d{5}$/.test(clean)) return null;
+  if (clean.startsWith("788")) return "Assam — Barak Valley (Sribhumi / Karimganj / Silchar)";
+  if (clean.startsWith("781") || clean.startsWith("782") || clean.startsWith("783"))
+    return "Assam — Brahmaputra Valley (Guwahati / Kamrup)";
+  if (clean.startsWith("79")) return "North-East India Postal Circle";
+  if (clean.startsWith("700")) return "West Bengal — Kolkata Metropolitan Region";
+  if (clean.startsWith("560")) return "Karnataka — Bengaluru Urban";
+  if (clean.startsWith("400")) return "Maharashtra — Mumbai Metropolitan Region";
+  if (clean.startsWith("110")) return "Delhi NCR Postal Circle";
+  if (clean.startsWith("500")) return "Telangana — Hyderabad Metropolitan Region";
+  if (clean.startsWith("600")) return "Tamil Nadu — Chennai Metropolitan Region";
+  if (clean.startsWith("411")) return "Maharashtra — Pune Region";
+  return `Valid Indian Postal PIN (${clean.slice(0, 2)}xxxx Circle)`;
+}
+
+function calculateAgeYears(dobIso: string | null | undefined): number | null {
+  if (!dobIso) return null;
+  const dob = new Date(dobIso);
+  if (Number.isNaN(dob.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - dob.getFullYear();
+  const m = now.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age;
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(1)} KB`;
+  return `${(kb / 1024).toFixed(2)} MB`;
+}
+
+function mapCategoryToVehicleType(cat: VehicleCategory): VehicleType {
+  if (cat === "CYCLE") return "BICYCLE";
+  if (cat === "SCOOTER" || cat === "EV") return "SCOOTER";
+  return "MOTORCYCLE";
+}
 
 function Page() {
   const { t } = useI18n();
   const [rider, setRider] = useState<RiderProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [step, setStep] = useState(1);
-  const [flowMode, setFlowMode] = useState<"switch" | "standard">("switch");
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [flowMode, setFlowMode] = useState<"standard" | "switch">("standard");
+  const [isEditingSubmitted, setIsEditingSubmitted] = useState(false);
+
+  // Extended Onboarding Form State
+  const [cityZone, setCityZone] = useState("Sribhumi / Karimganj");
+  const [pincode, setPincode] = useState("");
+  const [serviceAddress, setServiceAddress] = useState("");
+  const [vehicleCategory, setVehicleCategory] = useState<VehicleCategory>("BIKE");
+  const [dlNumber, setDlNumber] = useState("");
+  const [rcNumber, setRcNumber] = useState("");
+  const [panNumber, setPanNumber] = useState("");
+  const [aadhaarLast4, setAadhaarLast4] = useState("");
+  const [bankAccountHolder, setBankAccountHolder] = useState("");
+  const [bankAccountNumber, setBankAccountNumber] = useState("");
+  const [ifsc, setIfsc] = useState("");
+  const [upiId, setUpiId] = useState("");
+  const [docs, setDocs] = useState<KycDocsState>({
+    dlFrontBack: null,
+    rcCopy: null,
+    panCopy: null,
+    aadhaarMasked: null,
+  });
+  const [agreements, setAgreements] = useState<LegalAgreementsState>({
+    serviceAgreement: false,
+    roadSafety: false,
+    foodHygiene: false,
+    privacyGps: false,
+  });
+  const [expandedAgreement, setExpandedAgreement] = useState<string | null>(null);
 
   useEffect(() => {
     void bootstrapRiderFn()
-      .then(setRider)
+      .then((profile) => {
+        setRider(profile);
+        if (profile.address) {
+          setServiceAddress(profile.address);
+          const pinMatch = profile.address.match(/PIN\s*(\d{6})/i);
+          if (pinMatch?.[1]) setPincode(pinMatch[1]);
+        }
+        if (profile.licenceNumber) setDlNumber(profile.licenceNumber);
+        if (profile.vehicleRegistration) setRcNumber(profile.vehicleRegistration);
+        if (profile.governmentIdLast4) setAadhaarLast4(profile.governmentIdLast4);
+        if (profile.governmentIdType?.startsWith("AADHAAR_PAN:")) {
+          setPanNumber(profile.governmentIdType.replace("AADHAAR_PAN:", ""));
+        }
+        if (profile.payoutUpi) setUpiId(profile.payoutUpi);
+        if (profile.fullName) setBankAccountHolder(profile.fullName);
+        if (profile.vehicleType === "BICYCLE") setVehicleCategory("CYCLE");
+        else if (profile.vehicleType === "SCOOTER") setVehicleCategory("SCOOTER");
+        else setVehicleCategory("BIKE");
+
+        try {
+          const savedDraftRaw = localStorage.getItem(DRAFT_STORAGE_KEY);
+          if (savedDraftRaw) {
+            const draft = JSON.parse(savedDraftRaw) as Record<string, string>;
+            if (draft.cityZone) setCityZone(draft.cityZone);
+            if (draft.pincode) setPincode(draft.pincode);
+            if (draft.serviceAddress && !profile.address) setServiceAddress(draft.serviceAddress);
+            if (draft.panNumber && !panNumber) setPanNumber(draft.panNumber);
+            if (draft.bankAccountHolder) setBankAccountHolder(draft.bankAccountHolder);
+            if (draft.bankAccountNumber) setBankAccountNumber(draft.bankAccountNumber);
+            if (draft.ifsc) setIfsc(draft.ifsc);
+          }
+
+          const prefillRaw = localStorage.getItem("orderking_rider_prefill");
+          if (prefillRaw) {
+            const prefill = JSON.parse(prefillRaw) as {
+              fullName?: string;
+              phone?: string;
+              cityZone?: string;
+              vehicleCategory?: VehicleCategory;
+            };
+            if (prefill.cityZone) setCityZone(prefill.cityZone);
+            if (prefill.vehicleCategory) setVehicleCategory(prefill.vehicleCategory);
+            setRider((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    fullName: prev.fullName || prefill.fullName || "",
+                    phone: prev.phone || prefill.phone || "",
+                  }
+                : prev,
+            );
+          }
+        } catch {
+          /* ignore storage read errors */
+        }
+      })
       .catch((e) => setError(errorMessage(e, t("connectionLostBody"))));
   }, [t]);
 
-  async function save(patch: Partial<RiderProfile>) {
+  // Persist local draft automatically so rider never loses progress
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        DRAFT_STORAGE_KEY,
+        JSON.stringify({
+          cityZone,
+          pincode,
+          serviceAddress,
+          panNumber,
+          bankAccountHolder,
+          bankAccountNumber,
+          ifsc,
+        }),
+      );
+    } catch {
+      /* ignore quota */
+    }
+  }, [
+    cityZone,
+    pincode,
+    serviceAddress,
+    panNumber,
+    bankAccountHolder,
+    bankAccountNumber,
+    ifsc,
+  ]);
+
+  const isExemptVehicle = vehicleCategory === "CYCLE" || vehicleCategory === "EV";
+  const pinRegionLabel = useMemo(() => detectPinRegion(pincode), [pincode]);
+  const ifscBankLabel = useMemo(() => detectIfscBank(ifsc), [ifsc]);
+  const riderAge = useMemo(() => calculateAgeYears(rider?.dateOfBirth), [rider?.dateOfBirth]);
+
+  const allAgreementsAccepted =
+    agreements.serviceAgreement &&
+    agreements.roadSafety &&
+    agreements.foodHygiene &&
+    agreements.privacyGps;
+
+  async function save(patch: Partial<RiderProfile> & Record<string, unknown>) {
     setPending(true);
     try {
-      const next = await saveProfileFn({ data: patch });
+      const next = await saveProfileFn({ data: patch as Partial<RiderProfile> });
       setRider(next);
       setError(null);
+      return next;
     } catch (e) {
       setError(errorMessage(e, t("actionNotConfirmed")));
       throw e;
@@ -43,10 +282,66 @@ function Page() {
     }
   }
 
-  const serviceableCities = ["mumbai", "delhi", "bengaluru", "bangalore", "hyderabad", "sribhumi", "karimganj"];
-  function isServiceable(addr: string) {
-    const lower = addr.toLowerCase();
-    return serviceableCities.some((city) => lower.includes(city));
+  async function handleSaveDraftNow() {
+    if (!rider) return;
+    try {
+      const cleanPhone = rider.phone.trim().replace(/\D/g, "");
+      await save({
+        fullName: rider.fullName.trim(),
+        phone: cleanPhone,
+        email: rider.email.trim(),
+        address: serviceAddress.trim() || rider.address,
+        dateOfBirth: rider.dateOfBirth,
+        emergencyName: rider.emergencyName.trim(),
+        emergencyPhone: rider.emergencyPhone.trim().replace(/\D/g, ""),
+        vehicleType: mapCategoryToVehicleType(vehicleCategory),
+        licenceNumber: dlNumber.trim() || rider.licenceNumber,
+        vehicleRegistration: rcNumber.trim() || rider.vehicleRegistration,
+        governmentIdLast4: aadhaarLast4.trim() || rider.governmentIdLast4,
+        payoutUpi: upiId.trim() || rider.payoutUpi,
+      });
+      toast.success("Onboarding progress saved to your Partner Profile.");
+    } catch {
+      /* error already displayed */
+    }
+  }
+
+  function handleDocUpload(key: keyof KycDocsState, e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File exceeds 5 MB maximum size. Please select a clearer compressed image or PDF.");
+      return;
+    }
+    setError(null);
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setDocs((prev) => ({
+          ...prev,
+          [key]: {
+            name: file.name,
+            sizeBytes: file.size,
+            previewUrl: typeof reader.result === "string" ? reader.result : null,
+          },
+        }));
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setDocs((prev) => ({
+        ...prev,
+        [key]: {
+          name: file.name,
+          sizeBytes: file.size,
+          previewUrl: null,
+        },
+      }));
+    }
+    toast.info(`${file.name} — Attached for KYC Review`);
+  }
+
+  function removeDoc(key: keyof KycDocsState) {
+    setDocs((prev) => ({ ...prev, [key]: null }));
   }
 
   async function handleNextStep() {
@@ -54,45 +349,186 @@ function Page() {
     if (!rider) return;
 
     if (step === 1) {
-      if (!rider.fullName || !rider.phone || !rider.address || !rider.dateOfBirth) {
-        setError("Please fill all basic details including Full Name, Phone, Address, and DOB.");
+      const cleanPhone = rider.phone.trim().replace(/\D/g, "");
+      if (!rider.fullName.trim() || !cleanPhone || !serviceAddress.trim() || !rider.dateOfBirth) {
+        setError(
+          "Please complete Full Legal Name, 10-Digit Mobile Number, Complete Address, and Date of Birth.",
+        );
         return;
       }
-      if (!isServiceable(rider.address)) {
-        setError("We currently do not onboard riders in your area. Serviceable areas: Mumbai, Delhi, Bengaluru, Hyderabad.");
+      if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+        setError("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
         return;
       }
+      if (riderAge !== null && riderAge < 18) {
+        setError(
+          "Delivery Partners must be at least 18 years of age under Indian labour and motor vehicle laws.",
+        );
+        return;
+      }
+      if (!cityZone.trim()) {
+        setError("Please enter your Operating City / Service Zone.");
+        return;
+      }
+      if (!/^[1-9]\d{5}$/.test(pincode.trim())) {
+        setError("Please enter a valid 6-digit Indian PIN code (e.g., 788710, 781001, 700001).");
+        return;
+      }
+      const cleanEmergencyPhone = rider.emergencyPhone.trim().replace(/\D/g, "");
+      if (!rider.emergencyName.trim() || !/^[6-9]\d{9}$/.test(cleanEmergencyPhone)) {
+        setError(
+          "Emergency Contact Name and a valid 10-digit Emergency Mobile Number are mandatory for on-duty rider safety.",
+        );
+        return;
+      }
+
+      const formattedAddress = serviceAddress.includes("PIN ")
+        ? serviceAddress.trim()
+        : `${serviceAddress.trim()}, ${cityZone.trim()} - PIN ${pincode.trim()}`;
+
       await save({
-        fullName: rider.fullName,
-        phone: rider.phone,
-        address: rider.address,
+        fullName: rider.fullName.trim(),
+        phone: cleanPhone,
+        email: rider.email.trim(),
+        address: formattedAddress,
         dateOfBirth: rider.dateOfBirth,
+        emergencyName: rider.emergencyName.trim(),
+        emergencyPhone: cleanEmergencyPhone,
+        cityZone: cityZone.trim(),
+        serviceAddress: formattedAddress,
+        emergencyContactName: rider.emergencyName.trim(),
+        emergencyContactPhone: cleanEmergencyPhone,
       });
+      if (!bankAccountHolder) setBankAccountHolder(rider.fullName.trim());
       setStep(2);
     } else if (step === 2) {
-      if (!rider.licenceNumber || !rider.vehicleRegistration || !rider.governmentIdLast4) {
-        setError("Driving License, Vehicle RC, and Aadhar details are strictly mandatory for KYC.");
+      if (!isExemptVehicle) {
+        if (!dlNumber.trim() || dlNumber.trim().length < 8) {
+          setError(
+            "Valid Driving Licence Number (minimum 8 characters) is mandatory for Motorcycle and Scooter partners.",
+          );
+          return;
+        }
+        if (!rcNumber.trim() || rcNumber.trim().length < 6) {
+          setError(
+            "Valid Vehicle RC Number (e.g., AS10AB1234) is mandatory for Motorcycle and Scooter partners.",
+          );
+          return;
+        }
+      }
+      if (!/^\d{4}$/.test(aadhaarLast4.trim())) {
+        setError("Please enter the last 4 digits of your Aadhaar Card for statutory KYC verification.");
         return;
       }
+      if (panNumber.trim() && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(panNumber.trim().toUpperCase())) {
+        setError("Please enter a valid 10-character PAN number (e.g., ABCDE1234F).");
+        return;
+      }
+
+      const mappedVehicle = mapCategoryToVehicleType(vehicleCategory);
+      const effectiveDl = isExemptVehicle
+        ? dlNumber.trim() || `${vehicleCategory}_EXEMPT`
+        : dlNumber.trim();
+      const effectiveRc = isExemptVehicle
+        ? rcNumber.trim() || `${vehicleCategory}_EXEMPT`
+        : rcNumber.trim();
+
+      const attachedSummary = [
+        docs.dlFrontBack ? `DL:${docs.dlFrontBack.name}` : null,
+        docs.rcCopy ? `RC:${docs.rcCopy.name}` : null,
+        docs.panCopy ? `PAN:${docs.panCopy.name}` : null,
+        docs.aadhaarMasked ? `AADHAAR:${docs.aadhaarMasked.name}` : null,
+      ]
+        .filter(Boolean)
+        .join("; ");
+
       await save({
-        licenceNumber: rider.licenceNumber,
-        vehicleRegistration: rider.vehicleRegistration,
-        governmentIdLast4: rider.governmentIdLast4,
+        vehicleType: mappedVehicle,
+        licenceNumber: effectiveDl,
+        vehicleRegistration: effectiveRc,
+        governmentIdType: panNumber.trim()
+          ? `AADHAAR_PAN:${panNumber.trim().toUpperCase()}`
+          : "AADHAAR",
+        governmentIdLast4: aadhaarLast4.trim(),
+        insuranceRef: rider.insuranceRef || (attachedSummary ? `DOCS(${attachedSummary})` : null),
+        dlNumber: effectiveDl,
+        rcNumber: effectiveRc,
+        aadhaarLast4: aadhaarLast4.trim(),
       });
       setStep(3);
     }
   }
 
   async function submit() {
-    if (!rider?.payoutUpi) {
-      setError("Bank/UPI details are required before final submission.");
+    setError(null);
+    if (!rider) return;
+
+    if (!upiId.trim() || !/^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(upiId.trim())) {
+      setError(
+        "Please provide a valid UPI ID (e.g., 9876543210@ybl or partner@okaxis) for settlements.",
+      );
       return;
     }
+    if (ifsc.trim() && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc.trim().toUpperCase())) {
+      setError("Please enter a valid 11-character Bank IFSC code (e.g., SBIN0001234).");
+      return;
+    }
+    if (!allAgreementsAccepted) {
+      setError(
+        "You must review and accept all 4 mandatory Delivery Partner Legal & Safety Agreements before submitting.",
+      );
+      return;
+    }
+
     setPending(true);
-    setError(null);
     try {
-      await save({ payoutUpi: rider.payoutUpi });
-      setRider(await submitKycFn());
+      const cleanAcc = bankAccountNumber.trim().replace(/\D/g, "");
+      const bankLast4 = cleanAcc.length >= 4 ? cleanAcc.slice(-4) : rider.payoutBankLast4;
+      const baseAddr = serviceAddress.trim() || rider.address;
+      const formattedAddress = baseAddr.includes("PIN ")
+        ? baseAddr
+        : `${baseAddr}, ${cityZone.trim()}${pincode.trim() ? ` - PIN ${pincode.trim()}` : ""}`;
+
+      const savedProfile = await save({
+        fullName: rider.fullName.trim(),
+        phone: rider.phone.trim().replace(/\D/g, ""),
+        address: formattedAddress,
+        payoutUpi: upiId.trim(),
+        payoutBankLast4: bankLast4 || null,
+        preferredZones:
+          rider.preferredZones && rider.preferredZones.length > 0
+            ? rider.preferredZones
+            : [ZONES[0]],
+        availabilityNotes: [
+          `CityZone:${cityZone.trim()}`,
+          `Vehicle:${vehicleCategory}`,
+          ifsc.trim() ? `IFSC:${ifsc.trim().toUpperCase()}` : null,
+          `AgreementsAccepted:CSS2020,MVAct1988,FSSAI,ITAct2000`,
+        ]
+          .filter(Boolean)
+          .join(" | "),
+        // Expected structured onboarding keys
+        cityZone: cityZone.trim(),
+        serviceAddress: formattedAddress,
+        dlNumber: rider.licenceNumber || dlNumber.trim(),
+        rcNumber: rider.vehicleRegistration || rcNumber.trim(),
+        aadhaarLast4: rider.governmentIdLast4 || aadhaarLast4.trim(),
+        bankAccountHolder: bankAccountHolder.trim() || rider.fullName.trim(),
+        bankAccountNumber: cleanAcc,
+        ifsc: ifsc.trim().toUpperCase(),
+        upiId: upiId.trim(),
+        emergencyContactName: rider.emergencyName,
+        emergencyContactPhone: rider.emergencyPhone,
+        safetyRulesAccepted: true,
+      });
+
+      if (savedProfile.kycStatus === "VERIFIED") {
+        setRider(savedProfile);
+      } else {
+        setRider(await submitKycFn());
+      }
+      setIsEditingSubmitted(false);
+      toast.success("KYC & Settlement Application submitted successfully.");
     } catch (e) {
       setError(errorMessage(e, t("actionNotConfirmed")));
     } finally {
@@ -104,43 +540,126 @@ function Page() {
   const isWaiting =
     (rider?.kycStatus as string) === "PENDING_APPROVAL" ||
     rider?.kycStatus === "SUBMITTED" ||
+    rider?.kycStatus === "UNDER_REVIEW" ||
     (rider?.kycStatus as string) === "VERIFYING";
 
-  if (isVerified || isWaiting) {
+  if ((isVerified || isWaiting) && !isEditingSubmitted) {
     return (
       <AppShell>
-        <div className="max-w-3xl mx-auto space-y-6 pt-2 font-sans">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-800">
-                <CheckCircle2 className="size-7" />
+        <div className="max-w-4xl mx-auto space-y-6 pt-2 font-sans">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs space-y-6 text-slate-900">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
+              <div className="flex items-center gap-3.5">
+                <div className="flex size-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-800">
+                  <CheckCircle2 className="size-7" />
+                </div>
+                <div>
+                  <span className="inline-block text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+                    {isVerified ? "Verified Delivery Partner" : "KYC Verification Under Review"}
+                  </span>
+                  <h1 className="text-2xl font-extrabold text-slate-900 mt-1">
+                    {isVerified
+                      ? "Partner Account Active & Verified"
+                      : "Onboarding Dossier Submitted"}
+                  </h1>
+                </div>
               </div>
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  {isVerified ? "Approved Partner" : "Priority Application In Review"}
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditingSubmitted(true);
+                  setStep(1);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-800 hover:bg-slate-50 transition shadow-2xs"
+              >
+                <Edit3 className="size-3.5" />
+                <span>Edit KYC / Bank &amp; UPI Details</span>
+              </button>
+            </div>
+
+            {/* Complete Self-Service Partner KYC Dossier */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 text-xs">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                  1. Partner Identity
                 </span>
-                <h1 className="text-2xl font-extrabold text-slate-900 mt-1">
-                  {isVerified ? "Ready to Ride & Earn" : "Application Submitted"}
-                </h1>
+                <p className="font-bold text-slate-900 text-sm">{rider?.fullName}</p>
+                <p className="text-slate-600">Mobile: +91-{rider?.phone}</p>
+                <p className="text-slate-600">DOB: {rider?.dateOfBirth || "Recorded"}</p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                  2. Vehicle &amp; Statutory KYC
+                </span>
+                <p className="font-bold text-slate-900 text-sm">
+                  {rider?.vehicleType} ({vehicleCategory})
+                </p>
+                <p className="text-slate-600">DL: {rider?.licenceNumber || "Exempt"}</p>
+                <p className="text-slate-600">
+                  RC: {rider?.vehicleRegistration || "Exempt"} · Aadhaar: XXXX-
+                  {rider?.governmentIdLast4}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                  3. Bank &amp; UPI Settlement
+                </span>
+                <p className="font-bold text-emerald-800 text-sm">
+                  UPI: {rider?.payoutUpi || "Not set"}
+                </p>
+                <p className="text-slate-600">
+                  Bank A/C: {rider?.payoutBankLast4 ? `XXXX-${rider.payoutBankLast4}` : "Linked via UPI"}
+                </p>
+                <p className="text-slate-600">
+                  Emergency: {rider?.emergencyName} ({rider?.emergencyPhone})
+                </p>
+              </div>
+
+              <div className="sm:col-span-2 lg:col-span-3 rounded-xl border border-slate-200 bg-slate-50 p-4 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                    Registered Service Address &amp; Preferred Delivery Zones
+                  </span>
+                  <p className="text-xs font-semibold text-slate-800 mt-0.5">{rider?.address}</p>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {(rider?.preferredZones ?? []).map((z) => (
+                    <span
+                      key={z}
+                      className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[11px] font-bold text-white"
+                    >
+                      {z}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
-              <div className="flex items-center justify-between">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
+              <div className="flex items-center justify-between gap-2">
                 <div>
-                  <span className="text-xs font-bold text-emerald-900">Guaranteed Tier Locked:</span>
-                  <p className="text-lg font-extrabold text-slate-900">Minimum ₹35 Base Payout per Drop</p>
+                  <span className="text-xs font-bold text-emerald-900">
+                    Statutory Partner Payout Structure
+                  </span>
+                  <p className="text-base sm:text-lg font-extrabold text-slate-900">
+                    ₹35 Minimum Base Fare + ₹10/km Distance Pay + Wait-Time Compensation
+                  </p>
                 </div>
-                <span className="rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-bold text-white">
-                  Active
+                <span className="rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-bold text-white shrink-0">
+                  {isVerified ? "Verified" : "Submitted"}
                 </span>
               </div>
-              <p className="mt-2 text-xs text-emerald-950 font-medium">
-                You are registered on the high-payout OrderKing partner network. 100% of customer tips and instant daily UPI settlements apply.
+              <p className="mt-2 text-xs text-emerald-950 leading-relaxed">
+                {isVerified
+                  ? "Your statutory KYC and vehicle credentials are approved. You can go online from the Duty Dashboard to accept live delivery offers."
+                  : "Your Driving Licence, Vehicle RC, Aadhaar Last 4, and Bank/UPI settlement details have been logged. You can edit any detail above at any time using the 'Edit KYC / Bank & UPI Details' button."}
               </p>
             </div>
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <a
                 href="/"
                 className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white hover:bg-slate-800 transition"
@@ -151,7 +670,7 @@ function Page() {
                 href="/earnings"
                 className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-800 hover:bg-slate-50 transition"
               >
-                View Earnings &amp; Incentives
+                View Earnings &amp; Settlement Ledger
               </a>
             </div>
           </div>
@@ -160,178 +679,656 @@ function Page() {
     );
   }
 
-  const field = (
-    key: keyof RiderProfile,
-    label: string,
-    extra: Partial<ComponentProps<typeof Input>> = {}
-  ) => (
-    <div>
-      <Label className="text-xs font-semibold text-slate-700">{label}</Label>
-      <Input
-        className="mt-1 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:bg-white"
-        value={String(rider?.[key] ?? "")}
-        onChange={(e) => rider && setRider({ ...rider, [key]: e.target.value })}
-        {...extra}
-      />
-    </div>
-  );
+  const LEGAL_CLAUSES = [
+    {
+      id: "serviceAgreement" as const,
+      title: "1. Independent Delivery Partner Service Agreement (Code on Social Security, 2020)",
+      summary:
+        "Establishes principal-to-principal gig/platform worker engagement, transparent payout computation, and statutory social security registration.",
+      fullText:
+        "You engage with OrderKing Foods Private Limited as an independent platform delivery partner under the Code on Social Security, 2020. Relationship is non-exclusive and principal-to-principal. Per-order payouts comprise Base Fare (₹35 minimum floor), Distance Pay beyond base kilometres, Restaurant Wait-Time Compensation (>5 mins after verified arrival), and 100% pass-through of customer tips.",
+    },
+    {
+      id: "roadSafety" as const,
+      title: "2. Road Safety, BIS Helmet & Zero-Intoxication Undertaking (Motor Vehicles Act, 1988)",
+      summary:
+        "Mandatory ISI/BIS-certified helmet usage, speed adherence, no mobile usage while riding, and zero tolerance for alcohol/narcotics.",
+      fullText:
+        "While logged into active duty, you undertake to wear a BIS/ISI-certified protective helmet at all times (including pillion if any), carry valid Driving Licence, RC, Fitness, and Third-Party Insurance (unless operating a pedal bicycle or exempted low-speed EV <25 km/h), obey traffic signals, and strictly refrain from operating a vehicle under the influence of alcohol or prohibited substances.",
+    },
+    {
+      id: "foodHygiene" as const,
+      title: "3. Food Hygiene & Tamper-Proof Thermal Bag SOP (FSSAI Guidelines)",
+      summary:
+        "Strict adherence to FSSAI food safety handling, clean insulated delivery bag maintenance, and tamper-evident seal verification at pickup.",
+      fullText:
+        "In compliance with Food Safety and Standards Authority of India (FSSAI) norms for food delivery personnel, you agree to maintain a clean, sanitized thermal delivery bag, separate hot and cold packages, verify restaurant tamper-evident seals before departing the pickup counter, and never open or tamper with customer food packages.",
+    },
+    {
+      id: "privacyGps" as const,
+      title: "4. Rider Privacy Policy & Live GPS Dispatch Consent (Information Technology Act, 2000)",
+      summary:
+        "Consent for foreground location telemetry strictly during online duty and active deliveries for dispatch routing, ETA calculation, and SOS safety.",
+      fullText:
+        "Under the Information Technology Act, 2000 and applicable Indian data protection rules, you consent to OrderKing collecting real-time GPS coordinates solely when your status is ONLINE or BUSY on an active order, and retaining KYC records for statutory audit, tax compliance (Income Tax Act), and incident resolution.",
+    },
+  ];
 
   return (
     <AppShell>
       <div className="max-w-4xl mx-auto space-y-6 pt-2 font-sans">
-        {/* TOP TAB CONTROLLER: ZOMATO/SWIGGY 1-CLICK SWITCH VS STANDARD */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-amber-100 text-amber-900 font-bold">
-              ⚡
+        {/* TOP MODE SELECTOR: STANDARD KYC PORTAL VS EXPERIENCED PARTNER FAST-TRACK */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+              <ShieldCheck className="size-5" />
             </span>
             <div>
-              <p className="text-xs font-bold text-slate-900">Delivery Partner Fast-Track Onboarding</p>
-              <p className="text-[11px] text-slate-500">Switch from competitors or register as a fresh partner</p>
+              <p className="text-sm font-bold text-slate-900">
+                Delivery Partner Onboarding &amp; Statutory KYC Portal
+              </p>
+              <p className="text-xs text-slate-500">
+                Self-service digital KYC verification, vehicle onboarding &amp; bank settlement setup
+              </p>
             </div>
           </div>
 
           <div className="flex w-full sm:w-auto rounded-xl bg-slate-100 p-1 border border-slate-200">
             <button
               type="button"
-              onClick={() => setFlowMode("switch")}
-              className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
-                flowMode === "switch"
-                  ? "bg-slate-900 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <Zap className="size-3.5 text-amber-400" />
-              <span>Zomato/Swiggy 1-Click Switch</span>
-              <span className="rounded bg-emerald-500 text-[10px] text-white px-1.5 py-0.2">
-                Min ₹35
-              </span>
-            </button>
-
-            <button
-              type="button"
               onClick={() => setFlowMode("standard")}
-              className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition ${
+              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs font-bold transition ${
                 flowMode === "standard"
-                  ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+                  ? "bg-slate-900 text-white shadow-2xs"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
               Standard KYC Application
             </button>
+
+            <button
+              type="button"
+              onClick={() => setFlowMode("switch")}
+              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs font-bold transition ${
+                flowMode === "switch"
+                  ? "bg-slate-900 text-white shadow-2xs"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Experienced Partner Fast-Track
+            </button>
           </div>
         </div>
 
-        {/* MODE A: ZOMATO/SWIGGY 1-CLICK SWITCH (DEFAULT & FEATURED) */}
         {flowMode === "switch" ? (
           <ZomatoSwiggySwitchFlow rider={rider} onSuccess={(updated) => setRider(updated)} />
         ) : (
-          /* MODE B: STANDARD STEP-BY-STEP FLOW */
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs space-y-6 text-slate-900">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
-                <h1 className="text-xl font-extrabold text-slate-900">Standard Fresh Onboarding</h1>
-                <p className="text-xs text-slate-500 mt-0.5">Complete all 3 verification steps to activate your rider ID</p>
+                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                  Delivery Partner KYC &amp; Fleet Registration
+                </h1>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Complete all 3 verification steps to activate your OrderKing Delivery Partner ID
+                </p>
               </div>
-              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md">
-                Step {step} of 3
-              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={() => void handleSaveDraftNow()}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
+                >
+                  <Save className="size-3.5" />
+                  <span>Save Draft</span>
+                </button>
+                {isEditingSubmitted && (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingSubmitted(false)}
+                    className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                  >
+                    View Dossier
+                  </button>
+                )}
+                <span className="text-xs font-bold text-slate-800 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
+                  Step {step} of 3
+                </span>
+              </div>
             </div>
 
-            <div className="flex gap-2">
-              {[1, 2, 3].map((s) => (
-                <div
-                  key={s}
-                  className={`h-2 flex-1 rounded-full ${
-                    step >= s ? "bg-slate-900" : "bg-slate-100"
-                  }`}
-                />
+            {/* Interactive Step Indicator */}
+            <div className="grid grid-cols-3 gap-2">
+              {(
+                [
+                  { num: 1 as const, label: "1. Personal & Zone" },
+                  { num: 2 as const, label: "2. Vehicle & KYC Docs" },
+                  { num: 3 as const, label: "3. Bank & Agreements" },
+                ] as const
+              ).map((item) => (
+                <button
+                  key={item.num}
+                  type="button"
+                  onClick={() => setStep(item.num)}
+                  className="text-left space-y-1.5 group cursor-pointer"
+                >
+                  <div
+                    className={`h-2 rounded-full transition ${
+                      step >= item.num
+                        ? "bg-slate-900"
+                        : "bg-slate-100 group-hover:bg-slate-200"
+                    }`}
+                  />
+                  <p
+                    className={`text-[11px] font-bold ${
+                      step === item.num ? "text-slate-900" : "text-slate-400"
+                    }`}
+                  >
+                    {item.label}
+                  </p>
+                </button>
               ))}
             </div>
 
             {error && (
-              <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-800">
-                {error}
+              <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3.5 text-xs font-semibold text-rose-800">
+                <AlertCircle className="size-4 shrink-0" />
+                <span>{error}</span>
               </div>
             )}
 
+            {/* STEP 1: PERSONAL, CITY/ZONE & EMERGENCY DETAILS */}
             {step === 1 && (
-              <div className="space-y-4">
-                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                  Step 1: Personal Details
-                </h2>
-                {field("fullName", t("name"))}
-                {field("phone", t("phone"), { inputMode: "tel" })}
-                {field("email", t("email"), { type: "email" })}
-                {field("address", "Full Address (must include City: Mumbai, Delhi, Bengaluru, Hyderabad) *")}
-                {field("dateOfBirth", t("dob"), { type: "date" })}
-                {field("emergencyName", t("emergencyContact"))}
-                {field("emergencyPhone", "Emergency Phone", { inputMode: "tel" })}
+              <div className="space-y-5">
+                <div>
+                  <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                    Step 1: Personal Identity, Service Zone &amp; Emergency Contact
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    All Indian cities and service zones with a valid 6-digit PIN code are supported.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Full Legal Name (as per Aadhaar / PAN) *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      placeholder="e.g. Rajesh Kumar Sharma"
+                      value={rider?.fullName ?? ""}
+                      onChange={(e) => rider && setRider({ ...rider, fullName: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      10-Digit Mobile Number *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      inputMode="tel"
+                      maxLength={10}
+                      placeholder="e.g. 9876543210"
+                      value={rider?.phone ?? ""}
+                      onChange={(e) =>
+                        rider && setRider({ ...rider, phone: e.target.value.replace(/\D/g, "") })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Email Address
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      type="email"
+                      placeholder="partner@email.com"
+                      value={rider?.email ?? ""}
+                      onChange={(e) => rider && setRider({ ...rider, email: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Date of Birth (Must be 18+ years) *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      type="date"
+                      value={rider?.dateOfBirth ?? ""}
+                      onChange={(e) => rider && setRider({ ...rider, dateOfBirth: e.target.value })}
+                    />
+                    {riderAge !== null && (
+                      <span
+                        className={`mt-1 block text-[11px] font-semibold ${
+                          riderAge >= 18 ? "text-emerald-800" : "text-rose-700"
+                        }`}
+                      >
+                        {riderAge >= 18
+                          ? `Verified Age: ${riderAge} years (Eligible)`
+                          : `Age: ${riderAge} years (Minimum 18 years required)`}
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Operating City / Service Zone *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      placeholder="e.g. Sribhumi, Guwahati, Silchar, Kolkata, Bengaluru"
+                      value={cityZone}
+                      onChange={(e) => setCityZone(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      6-Digit Indian PIN Code *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      inputMode="numeric"
+                      maxLength={6}
+                      placeholder="e.g. 788710"
+                      value={pincode}
+                      onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+                    />
+                    {pinRegionLabel && (
+                      <span className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-800">
+                        <MapPin className="size-3 text-emerald-700" />
+                        <span>{pinRegionLabel}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Complete Residential / Service Address *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      placeholder="House/Flat No., Street, Ward/Locality, Landmark"
+                      value={serviceAddress}
+                      onChange={(e) => setServiceAddress(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Emergency Contact Name (Family / Next of Kin) *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      placeholder="Emergency contact full name"
+                      value={rider?.emergencyName ?? ""}
+                      onChange={(e) =>
+                        rider && setRider({ ...rider, emergencyName: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Emergency Contact Phone Number *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      inputMode="tel"
+                      maxLength={10}
+                      placeholder="10-digit emergency number"
+                      value={rider?.emergencyPhone ?? ""}
+                      onChange={(e) =>
+                        rider &&
+                        setRider({ ...rider, emergencyPhone: e.target.value.replace(/\D/g, "") })
+                      }
+                    />
+                  </div>
+                </div>
+
                 <Button
                   className="w-full mt-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl py-3 font-bold"
                   disabled={pending}
                   onClick={() => void handleNextStep()}
                 >
-                  Next: Vehicle &amp; KYC
+                  {pending ? "Saving Personal Details..." : "Save & Continue to Vehicle & KYC →"}
                 </Button>
               </div>
             )}
 
+            {/* STEP 2: VEHICLE CATEGORY & STATUTORY DOCUMENTS */}
             {step === 2 && (
-              <div className="space-y-4">
-                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                  Step 2: Legal KYC &amp; Vehicle
-                </h2>
+              <div className="space-y-5">
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">{t("vehicleType")}</Label>
-                  <select
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm text-slate-900 font-medium focus:bg-white"
-                    value={rider?.vehicleType || "MOTORCYCLE"}
-                    onChange={(e) => {
-                      const vehicleType = e.target.value as VehicleType;
-                      if (rider) setRider({ ...rider, vehicleType });
-                    }}
-                  >
-                    <option value="MOTORCYCLE">Motorcycle</option>
-                    <option value="SCOOTER">Scooter</option>
-                    <option value="BICYCLE">Bicycle</option>
-                  </select>
+                  <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                    Step 2: Vehicle Category &amp; Statutory KYC Documents
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Select your delivery vehicle category and attach clear copies of your KYC documents.
+                  </p>
                 </div>
-                {field("licenceNumber", "Driving License Number *")}
-                {field("vehicleRegistration", "Vehicle RC Number *")}
-                {field("governmentIdLast4", "Aadhar Card Number (Last 4) *", {
-                  maxLength: 4,
-                  inputMode: "numeric",
-                })}
-                {field("insuranceRef", t("insurance"))}
 
-                <div className="flex gap-2 mt-4">
+                {/* Vehicle Category Selector */}
+                <div>
+                  <Label className="text-xs font-semibold text-slate-700">
+                    Select Delivery Vehicle Category *
+                  </Label>
+                  <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {(
+                      [
+                        {
+                          id: "BIKE",
+                          title: "Motorcycle (BIKE)",
+                          sub: "DL & RC Mandatory",
+                        },
+                        {
+                          id: "SCOOTER",
+                          title: "Scooter (SCOOTER)",
+                          sub: "DL & RC Mandatory",
+                        },
+                        {
+                          id: "EV",
+                          title: "Low-Speed EV",
+                          sub: "<25 km/h · DL/RC Exempt",
+                        },
+                        {
+                          id: "CYCLE",
+                          title: "Bicycle (CYCLE)",
+                          sub: "Short-Range · DL/RC Exempt",
+                        },
+                      ] as const
+                    ).map((v) => (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => setVehicleCategory(v.id)}
+                        className={`rounded-xl border p-3 text-left transition ${
+                          vehicleCategory === v.id
+                            ? "border-slate-900 bg-slate-900 text-white"
+                            : "border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 font-bold text-xs">
+                          <Bike className="size-3.5 shrink-0" />
+                          <span>{v.title}</span>
+                        </div>
+                        <p
+                          className={`mt-1 text-[11px] ${
+                            vehicleCategory === v.id ? "text-slate-300" : "text-slate-500"
+                          }`}
+                        >
+                          {v.sub}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {isExemptVehicle && (
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-3.5 text-xs text-emerald-950">
+                    <p className="font-bold text-emerald-900">
+                      Statutory DL / RC Exemption Notice (
+                      {vehicleCategory === "CYCLE"
+                        ? "Pedal Bicycle"
+                        : "Low-Speed Electric Vehicle < 250W / < 25 km/h"}
+                      )
+                    </p>
+                    <p className="mt-0.5 leading-relaxed">
+                      Under Central Motor Vehicles Rules (CMVR Rule 2(u)), commercial Driving Licence and RTO Registration Certificate (RC) are not required for pedal bicycles and sub-250W low-speed electric two-wheelers. Aadhaar Last 4 and PAN verification remain mandatory.
+                    </p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Driving Licence Number {isExemptVehicle ? "(Optional / Exempt)" : "*"}
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      placeholder={
+                        isExemptVehicle ? "Exempt for Cycle / Low-Speed EV" : "e.g. AS1020180012345"
+                      }
+                      value={dlNumber}
+                      onChange={(e) => setDlNumber(e.target.value.toUpperCase())}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Vehicle Registration (RC) Number {isExemptVehicle ? "(Optional / Exempt)" : "*"}
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      placeholder={
+                        isExemptVehicle ? "Exempt for Cycle / Low-Speed EV" : "e.g. AS10AB1234"
+                      }
+                      value={rcNumber}
+                      onChange={(e) => setRcNumber(e.target.value.toUpperCase())}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      PAN Card Number (for Tax &amp; TDS Compliance)
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      maxLength={10}
+                      placeholder="e.g. ABCDE1234F"
+                      value={panNumber}
+                      onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Aadhaar Card Number (Last 4 Digits Only) *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      maxLength={4}
+                      inputMode="numeric"
+                      placeholder="Last 4 digits (e.g. 4821)"
+                      value={aadhaarLast4}
+                      onChange={(e) => setAadhaarLast4(e.target.value.replace(/\D/g, ""))}
+                    />
+                  </div>
+                </div>
+
+                {/* Document Upload Verification Section with Real Image Thumbnail Preview */}
+                <div className="space-y-3 pt-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Document Upload Verification (Recorded for KYC Compliance Review)
+                  </Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {(
+                      [
+                        {
+                          key: "dlFrontBack" as const,
+                          label: isExemptVehicle
+                            ? "Driving Licence (Exempt for Cycle/EV)"
+                            : "Driving Licence (Front & Back)",
+                        },
+                        {
+                          key: "rcCopy" as const,
+                          label: isExemptVehicle
+                            ? "Vehicle RC / Cycle Ownership Note"
+                            : "Vehicle Registration Certificate (RC)",
+                        },
+                        {
+                          key: "panCopy" as const,
+                          label: "PAN Card Copy",
+                        },
+                        {
+                          key: "aadhaarMasked" as const,
+                          label: "Masked Aadhaar Card (Front & Back)",
+                        },
+                      ] as const
+                    ).map((docItem) => {
+                      const attached = docs[docItem.key];
+                      return (
+                        <div
+                          key={docItem.key}
+                          className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 flex flex-col justify-between gap-2"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="text-xs font-bold text-slate-800">
+                              {docItem.label}
+                            </span>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-800 hover:bg-slate-100 transition">
+                                <Upload className="size-3 text-slate-600" />
+                                <span>{attached ? "Replace" : "Attach File"}</span>
+                                <input
+                                  type="file"
+                                  accept="image/*,.pdf"
+                                  className="hidden"
+                                  onChange={(e) => handleDocUpload(docItem.key, e)}
+                                />
+                              </label>
+                              {attached && (
+                                <button
+                                  type="button"
+                                  onClick={() => removeDoc(docItem.key)}
+                                  className="rounded-lg border border-rose-200 bg-rose-50 p-1 text-rose-700 hover:bg-rose-100"
+                                  title="Remove attached file"
+                                >
+                                  <Trash2 className="size-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+
+                          {attached ? (
+                            <div className="space-y-2 rounded-lg bg-emerald-50 border border-emerald-200 p-2 text-[11px] text-emerald-900">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="truncate font-medium">
+                                  {attached.name} ({formatBytes(attached.sizeBytes)})
+                                </span>
+                                <span className="shrink-0 font-bold text-emerald-800 flex items-center gap-1">
+                                  <FileCheck className="size-3" />
+                                  Attached for KYC Review
+                                </span>
+                              </div>
+                              {attached.previewUrl && (
+                                <img
+                                  src={attached.previewUrl}
+                                  alt={docItem.label}
+                                  className="max-h-24 rounded border border-emerald-200 bg-white object-contain p-0.5"
+                                />
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-[11px] text-slate-500">
+                              Accepted formats: JPG, PNG, PDF (Max 5 MB)
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
-                    className="flex-1 rounded-xl border-slate-300"
+                    className="flex-1 rounded-xl border-slate-300 text-slate-800"
                     onClick={() => setStep(1)}
                   >
-                    Back
+                    ← Back
                   </Button>
                   <Button
                     className="flex-1 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold"
                     disabled={pending}
                     onClick={() => void handleNextStep()}
                   >
-                    Next: Bank Details
+                    {pending ? "Saving KYC Details..." : "Next: Bank & Legal Agreements →"}
                   </Button>
                 </div>
               </div>
             )}
 
+            {/* STEP 3: BANK PAYOUT, ZONES & MANDATORY LEGAL AGREEMENTS */}
             {step === 3 && (
-              <div className="space-y-4">
-                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                  Step 3: Bank &amp; Operational Zones
-                </h2>
-                {field("payoutUpi", "Bank Account / UPI ID *")}
+              <div className="space-y-6">
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">{t("zones")}</Label>
+                  <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                    Step 3: Bank Settlement Account, Zones &amp; Statutory Agreements
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Configure your bank/UPI payout credentials and accept mandatory statutory safety undertakings.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Bank Account Holder Name *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      placeholder="Name as per bank passbook"
+                      value={bankAccountHolder}
+                      onChange={(e) => setBankAccountHolder(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Bank Account Number
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      inputMode="numeric"
+                      placeholder="9 to 18 digit bank account number"
+                      value={bankAccountNumber}
+                      onChange={(e) => setBankAccountNumber(e.target.value.replace(/\D/g, ""))}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Bank IFSC Code
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      maxLength={11}
+                      placeholder="e.g. SBIN0001234"
+                      value={ifsc}
+                      onChange={(e) => setIfsc(e.target.value.toUpperCase())}
+                    />
+                    {ifscBankLabel && (
+                      <span className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-800">
+                        <Building2 className="size-3 text-emerald-700" />
+                        <span>{ifscBankLabel}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Verified UPI ID for Payouts *
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      placeholder="e.g. 9876543210@ybl or name@okaxis"
+                      value={upiId}
+                      onChange={(e) => setUpiId(e.target.value.toLowerCase())}
+                    />
+                  </div>
+                </div>
+
+                {/* Preferred Zones */}
+                <div>
+                  <Label className="text-xs font-semibold text-slate-700">
+                    Preferred Operational Delivery Zones ({t("zones")})
+                  </Label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {ZONES.map((z) => {
                       const on = rider?.preferredZones?.includes(z) ?? false;
@@ -359,20 +1356,109 @@ function Page() {
                   </div>
                 </div>
 
-                <div className="flex gap-2 mt-4">
+                {/* Mandatory Delivery Partner Legal & Safety Agreements */}
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5 space-y-3.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                        Mandatory Delivery Partner Legal &amp; Safety Agreements *
+                      </h3>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Review the statutory summaries below and check all 4 undertakings to submit your KYC application.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setAgreements({
+                          serviceAgreement: true,
+                          roadSafety: true,
+                          foodHygiene: true,
+                          privacyGps: true,
+                        })
+                      }
+                      className="shrink-0 rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-800 hover:bg-slate-100 transition"
+                    >
+                      Accept All 4
+                    </button>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {LEGAL_CLAUSES.map((clause) => {
+                      const checked = agreements[clause.id];
+                      const isExpanded = expandedAgreement === clause.id;
+                      return (
+                        <div
+                          key={clause.id}
+                          className="rounded-xl border border-slate-200 bg-white p-3.5 transition"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <label className="flex items-start gap-2.5 cursor-pointer flex-1">
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={(e) =>
+                                  setAgreements((prev) => ({
+                                    ...prev,
+                                    [clause.id]: e.target.checked,
+                                  }))
+                                }
+                                className="mt-0.5 size-4 rounded border-slate-300 accent-slate-900"
+                              />
+                              <div>
+                                <span className="text-xs font-bold text-slate-900 block">
+                                  {clause.title}
+                                </span>
+                                <span className="text-[11px] text-slate-600 mt-0.5 block">
+                                  {clause.summary}
+                                </span>
+                              </div>
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setExpandedAgreement(isExpanded ? null : clause.id)
+                              }
+                              className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 hover:text-slate-900 shrink-0"
+                            >
+                              <span>{isExpanded ? "Hide Text" : "Read Full Clause"}</span>
+                              {isExpanded ? (
+                                <ChevronUp className="size-3.5" />
+                              ) : (
+                                <ChevronDown className="size-3.5" />
+                              )}
+                            </button>
+                          </div>
+
+                          {isExpanded && (
+                            <div className="mt-2.5 border-t border-slate-100 pt-2.5 text-[11px] text-slate-600 leading-relaxed bg-slate-50 rounded-lg p-2.5">
+                              {clause.fullText}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
-                    className="flex-1 rounded-xl border-slate-300"
+                    className="flex-1 rounded-xl border-slate-300 text-slate-800"
                     onClick={() => setStep(2)}
                   >
-                    Back
+                    ← Back
                   </Button>
                   <Button
                     className="flex-1 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold"
-                    disabled={pending}
+                    disabled={pending || !allAgreementsAccepted}
                     onClick={() => void submit()}
                   >
-                    Submit Application
+                    {pending
+                      ? "Submitting KYC Application..."
+                      : isEditingSubmitted
+                        ? "Save & Update KYC Dossier"
+                        : t("submitKyc")}
                   </Button>
                 </div>
               </div>

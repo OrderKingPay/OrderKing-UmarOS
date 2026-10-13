@@ -1,6 +1,7 @@
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/providers";
@@ -35,6 +36,7 @@ function OrdersPage() {
   const { t, lang } = useT();
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
   const { user, isPending } = useCurrentUserState();
+  const [orderQuery, setOrderQuery] = useState("");
   const orders = useQuery({
     queryKey: ["orders"],
     queryFn: () => listMyOrders(),
@@ -48,16 +50,37 @@ function OrdersPage() {
       </CustomerShell>
     );
   }
-  if (!user) return <RedirectToSignIn />;
 
   const list = orders.data?.orders ?? [];
-  const active = list.filter((o) => !["DELIVERED", "CANCELLED", "REJECTED", "REFUNDED", "FAILED_PAYMENT"].includes(o.status));
-  const past = list.filter((o) => !active.includes(o));
+  const normalizedQuery = orderQuery.trim().toLocaleLowerCase();
+  const matchingOrders = normalizedQuery
+    ? list.filter((o) =>
+        (o.restaurantName + " " + o.itemPreview + " " + o.status)
+          .toLocaleLowerCase()
+          .includes(normalizedQuery)
+      )
+    : list;
+  const active = matchingOrders.filter((o) => !["DELIVERED", "CANCELLED", "REJECTED", "REFUNDED", "FAILED_PAYMENT"].includes(o.status));
+  const past = matchingOrders.filter((o) => !active.includes(o));
 
   return (
     <CustomerShell>
       <div className="px-4 py-5">
         <h1 className="font-display text-3xl">{t("orders.title")}</h1>
+        <div className="mt-4">
+          <label htmlFor="order-history-search" className="mb-1.5 block text-sm font-medium text-muted">
+            Search your orders
+          </label>
+          <input
+            id="order-history-search"
+            type="search"
+            autoComplete="off"
+            value={orderQuery}
+            onChange={(e) => setOrderQuery(e.target.value)}
+            placeholder="Restaurant, dish, or order status"
+            className="h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-fg placeholder:text-muted focus:border-primary focus:outline-none"
+          />
+        </div>
         {orders.isError ? (
           <button type="button" className="mt-4 text-primary" onClick={() => void orders.refetch()}>
             {t("common.retry")}
@@ -70,6 +93,8 @@ function OrdersPage() {
               <Link to="/">{t("cart.browse")}</Link>
             </Button>
           </div>
+        ) : normalizedQuery && matchingOrders.length === 0 ? (
+          <p className="mt-6 text-sm text-muted" role="status">No orders match your search.</p>
         ) : (
           <>
             {active.length ? (

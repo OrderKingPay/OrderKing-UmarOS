@@ -22,15 +22,18 @@ export function toMarketplaceOrderStatus(
 ): MarketplaceOrderStatus | null {
   switch (delivery) {
     case "OFFERED":
+    case "OFFER_PRESENTED":
       return "READY";
     case "ACCEPTED":
     case "ARRIVING_AT_RESTAURANT":
     case "ARRIVED_AT_RESTAURANT":
+    case "ARRIVED_AT_STORE":
     case "RESTAURANT_NOT_READY":
       return "RIDER_ASSIGNED";
     case "PICKED_UP":
       return "PICKED_UP";
     case "ON_THE_WAY":
+    case "OUT_FOR_DELIVERY":
     case "ARRIVED_AT_CUSTOMER":
       return "ON_THE_WAY";
     case "DELIVERED":

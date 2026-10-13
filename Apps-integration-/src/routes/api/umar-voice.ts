@@ -2,6 +2,33 @@ import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 import { GoogleGenAI, Type } from "@google/genai/web";
 import { getSql } from "@/lib/db";
 
+async function verifyRequestAuth(request: Request): Promise<{ authenticated: boolean; user?: any }> {
+  const authHeader = request.headers.get("authorization");
+  const internalSecret = process.env.INTERNAL_API_SECRET || process.env.ORDERKING_API_KEY;
+  if (internalSecret && (authHeader === `Bearer ${internalSecret}` || request.headers.get("x-api-key") === internalSecret)) {
+    return { authenticated: true, user: { id: "system_internal", role: "FOUNDER" } };
+  }
+
+  try {
+    const authPath = "@/lib/auth/server";
+    const { auth, authConfigured } = await import(/* @vite-ignore */ authPath);
+    if (authConfigured) {
+      const session = await auth.api.getSession({ headers: request.headers });
+      if (session?.user) {
+        return { authenticated: true, user: session.user };
+      }
+    }
+  } catch (e) {
+    console.warn("[Auth Verification] Session check failed:", e);
+  }
+
+  if (process.env.NODE_ENV !== "production" && !process.env.DATABASE_URL) {
+    return { authenticated: true, user: { id: "dev-user", role: "DEVELOPER" } };
+  }
+
+  return { authenticated: false };
+}
+
 // Safe wrapper for GenAI initialization
 let ai = null;
 try {
@@ -61,6 +88,14 @@ export const Route = createAPIFileRoute("/api/umar-voice")({
     handlers: {
       POST: async ({ request }: any) => {
         try {
+          const authCheck = await verifyRequestAuth(request);
+          if (!authCheck.authenticated) {
+            return new Response(JSON.stringify({ 
+              error: "Unauthorized", 
+              message: "Valid authentication session or bearer authorization is required to access UMAR OS Voice command authority." 
+            }), { status: 401, headers: { "Content-Type": "application/json" } });
+          }
+
           if (!ai) {
             return new Response(JSON.stringify({ 
               text: "UMAR VOICE OFFLINE: The system requires the secure `GEMINI_API_KEY` to activate conversational control. Please configure the environment variables.", 
@@ -75,6 +110,13 @@ export const Route = createAPIFileRoute("/api/umar-voice")({
 
           // 1. If we are executing an APPROVED pending tool call
           if (pendingToolCall && pendingToolCall.action === 'execute_tool') {
+             const userRole = String(authCheck.user?.role || '').toUpperCase();
+             if (userRole !== 'FOUNDER' && userRole !== 'SUPER_ADMIN') {
+               return new Response(JSON.stringify({
+                 error: "Forbidden",
+                 message: "Founder authorization required to execute state-changing platform commands."
+               }), { status: 403, headers: { "Content-Type": "application/json" } });
+             }
              const { name, args } = pendingToolCall;
              let resultMsg = "";
              

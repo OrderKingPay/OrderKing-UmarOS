@@ -1,42 +1,49 @@
 import React from 'react';
+import { Link } from '@tanstack/react-router';
 
 const KingPayWealth = () => {
   return (
-    <div style={{ backgroundColor: '#0a0a0a', color: '#d4af37', minHeight: '100vh', fontFamily: 'serif', padding: '40px' }}>
-      <header style={{ borderBottom: '1px solid #333', paddingBottom: '20px', marginBottom: '40px' }}>
-        <h1 style={{ fontSize: '3rem', margin: 0, fontWeight: 'lighter' }}>KingPay Wealth</h1>
-        <p style={{ fontSize: '1.2rem', color: '#888', marginTop: '10px' }}>Exquisite Swiss-Grade Digital Investment</p>
-      </header>
-
-      <main style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
-        <section style={{ flex: 1, minWidth: '300px', backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', padding: '30px' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '20px' }}>24K Digital Gold</h2>
-          <p style={{ color: '#aaa', marginBottom: '30px', lineHeight: 1.6 }}>
-            Invest in fractional physical gold, vaulted securely in Geneva. Pure 99.99% gold, instant liquidity.
-          </p>
-          <div style={{ marginBottom: '30px' }}>
-            <span style={{ fontSize: '1.2rem', color: '#888' }}>Current Price:</span>
-            <span style={{ fontSize: '2rem', display: 'block', marginTop: '10px' }}>$74.25 / g</span>
+    <div className="min-h-screen bg-[#0A0A0A] text-white p-6 sm:p-10 font-sans flex items-center justify-center">
+      <div className="max-w-2xl w-full bg-[#141414] border border-white/10 rounded-3xl p-8 shadow-2xl space-y-6">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div>
+            <h1 className="text-2xl font-bold text-white">KingPay Wealth &amp; Treasury</h1>
+            <p className="text-xs text-gray-400 mt-1">
+              SEBI Investment Adviser / Mutual Fund Distributor Regulatory Disclosure
+            </p>
           </div>
-          <button style={{ backgroundColor: '#d4af37', color: '#000', border: 'none', padding: '15px 30px', fontSize: '1.1rem', cursor: 'pointer', borderRadius: '4px', width: '100%', fontWeight: 'bold' }}>
-            Acquire Gold
-          </button>
-        </section>
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
+            Authorization Required
+          </span>
+        </header>
 
-        <section style={{ flex: 1, minWidth: '300px', backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', padding: '30px' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '20px' }}>Elite Mutual Funds</h2>
-          <p style={{ color: '#aaa', marginBottom: '30px', lineHeight: 1.6 }}>
-            Curated portfolios managed by industry veterans. Access private equity-like returns with public liquidity.
+        <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-5 space-y-2">
+          <h2 className="text-sm font-bold text-amber-300 uppercase tracking-wider">
+            Requires Regulated SEBI / Bullion Partner Authorization
+          </h2>
+          <p className="text-xs text-gray-300 leading-relaxed">
+            Distribution of mutual fund schemes and execution of investment products in India require registration with the Securities and Exchange Board of India (SEBI) as a Registered Investment Adviser (INA) or AMFI-registered Mutual Fund Distributor (ARN), alongside a certified bullion Assaying &amp; Hallmarking partner for digital gold.
           </p>
-          <div style={{ marginBottom: '30px' }}>
-            <span style={{ fontSize: '1.2rem', color: '#888' }}>Top Performer:</span>
-            <span style={{ fontSize: '1.5rem', display: 'block', marginTop: '10px' }}>KingPay Alpha Fund (+24.5% YTD)</span>
-          </div>
-          <button style={{ backgroundColor: 'transparent', color: '#d4af37', border: '1px solid #d4af37', padding: '15px 30px', fontSize: '1.1rem', cursor: 'pointer', borderRadius: '4px', width: '100%', fontWeight: 'bold' }}>
-            Explore Funds
-          </button>
-        </section>
-      </main>
+          <p className="text-xs text-gray-400 leading-relaxed">
+            No live bullion pricing, vaulting, or mutual fund NAV execution is active on this workspace. No historical or projected fund returns are represented.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <Link
+            to="/king-pay"
+            className="px-5 py-2.5 rounded-xl bg-yellow-500 text-black font-bold text-xs hover:bg-yellow-400 transition-colors"
+          >
+            Return to Canonical /king-pay
+          </Link>
+          <Link
+            to="/"
+            className="px-5 py-2.5 rounded-xl bg-white/10 text-gray-200 font-semibold text-xs hover:bg-white/15 transition-colors"
+          >
+            Back to OrderKing Food App
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

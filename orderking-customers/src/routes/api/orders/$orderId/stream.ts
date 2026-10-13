@@ -1,12 +1,20 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { getSql } from "@/lib/db";
+import { getSessionUser } from "@/lib/auth/verify.server";
 
 export const Route = createFileRoute("/api/orders/$orderId/stream")({
-  
   server: {
     handlers: {
       GET: async ({ request, params }: any) => {
+        const user = await getSessionUser();
+        if (!user?.id) {
+          return new Response(JSON.stringify({ error: "Unauthorized" }), {
+            status: 401,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
         const { orderId } = params;
         const sql = await getSql();
 
@@ -29,13 +37,14 @@ export const Route = createFileRoute("/api/orders/$orderId/stream")({
             try {
               const rows = await sql<{
                 id: string;
+                user_id: string;
                 status: string;
                 placed_at: string;
                 outlet_id: string;
-              }>`select id, status, placed_at::text as placed_at, outlet_id from orders where id = ${orderId}`;
+              }>`select id, user_id, status, placed_at::text as placed_at, outlet_id from orders where id = ${orderId}`;
               const order = rows[0];
 
-              if (!order) {
+              if (!order || order.user_id !== user.id) {
                 pushEvent({
                   orderId,
                   status: "NOT_FOUND",

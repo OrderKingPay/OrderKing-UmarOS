@@ -81,7 +81,7 @@ export class AgentExecutorEngine {
         LIMIT 1
       )
       UPDATE agent_tasks 
-      SET status = 'RUNNING', updated_at = NOW() 
+      SET status = 'RUNNING', started_at = COALESCE(started_at, NOW()), updated_at = NOW() 
       WHERE id = (SELECT id FROM locked_task) 
       RETURNING id, payload;
     `;
@@ -112,6 +112,7 @@ export class AgentExecutorEngine {
         SET 
           status = 'COMPLETED',
           result = ${JSON.stringify(output.result)},
+          completed_at = NOW(),
           updated_at = NOW()
         WHERE id = ${task.id}
       `;
@@ -127,6 +128,7 @@ export class AgentExecutorEngine {
         SET
           status = 'FAILED',
           error_details = ${error.message || 'Unknown execution failure'},
+          completed_at = NOW(),
           updated_at = NOW()
         WHERE id = ${task.id}
       `;

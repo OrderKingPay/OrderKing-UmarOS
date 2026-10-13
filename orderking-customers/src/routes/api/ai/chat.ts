@@ -1,5 +1,6 @@
 
 import { createFileRoute } from "@tanstack/react-router";
+import { getSessionUser } from "@/lib/auth/verify.server";
 import { executeFounderAiChat, type AiChatRequest, type StreamEvent } from "@/lib/server/ai-chat-service.server";
 
 export const Route = createFileRoute("/api/ai/chat")({
@@ -8,6 +9,14 @@ export const Route = createFileRoute("/api/ai/chat")({
     handlers: {
       POST: async ({ request }: any) => {
         try {
+          const sessionUser = await getSessionUser();
+          if (!sessionUser?.id) {
+            return new Response(
+              JSON.stringify({ error: "Unauthorized" }),
+              { status: 401, headers: { "content-type": "application/json" } }
+            );
+          }
+
           const body = (await request.json()) as AiChatRequest;
           const acceptHeader = request.headers.get("accept") || "";
           const prefersStream = acceptHeader.includes("text/event-stream");
@@ -66,4 +75,5 @@ export const Route = createFileRoute("/api/ai/chat")({
     },
   },
 });
+
 

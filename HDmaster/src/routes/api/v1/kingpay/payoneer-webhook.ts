@@ -25,11 +25,16 @@ export const Route = createFileRoute("/api/v1/kingpay/payoneer-webhook")({
           const connectors = await loadPluginConnectorsData();
           const clientSecret = connectors.payoneer?.clientSecret || process.env.PAYONEER_CLIENT_SECRET;
 
-          if (clientSecret && signature) {
-            const isValid = verifyPayoneerWebhook(rawBody, signature, clientSecret);
-            if (!isValid) {
-              return new Response(JSON.stringify({ error: "Invalid Payoneer cryptographic signature" }), { status: 403 });
-            }
+          if (!signature) {
+            return new Response(JSON.stringify({ error: "Missing x-payoneer-signature header" }), { status: 400 });
+          }
+          if (!clientSecret) {
+            return new Response(JSON.stringify({ error: "Payoneer client secret not configured" }), { status: 500 });
+          }
+
+          const isValid = verifyPayoneerWebhook(rawBody, signature, clientSecret);
+          if (!isValid) {
+            return new Response(JSON.stringify({ error: "Invalid Payoneer cryptographic signature" }), { status: 403 });
           }
 
           const payload = PayoneerWebhookSchema.parse(JSON.parse(rawBody));

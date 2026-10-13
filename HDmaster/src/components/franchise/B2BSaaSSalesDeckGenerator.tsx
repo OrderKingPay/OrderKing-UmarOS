@@ -31,6 +31,11 @@ import {
   Terminal,
   Send,
   Eye,
+  Briefcase,
+  UserPlus,
+  Receipt,
+  CheckSquare,
+  Filter,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -45,22 +50,36 @@ import {
   type RoiSimulationResult,
   type MarketRegion,
 } from "@/lib/orderking/b2b-sales-deck-engine";
+import {
+  crmEngine,
+  CRM_STAGE_ORDER,
+  SELLABLE_ORDERKING_SERVICES,
+  type CrmLead,
+  type CrmStage,
+  type CommercialRevenueBreakdown,
+} from "@/lib/orderking/crm/pipeline-engine";
+import {
+  clientAcquisitionMachine,
+  type ClientProspect,
+} from "@/lib/orderking/revenue-os/client-acquisition-machine";
 
 export function B2BSaaSSalesDeckGenerator() {
   const [loading, setLoading] = useState(true);
   const [telemetry, setTelemetry] = useState<RealDeckTelemetry | null>(null);
-  const [market, setMarket] = useState<MarketRegion>("US");
+  const [market, setMarket] = useState<MarketRegion>("INDIA");
   const [activeSlide, setActiveSlide] = useState(0);
-  const [viewMode, setViewMode] = useState<"slides" | "prospectus" | "roi" | "email">("slides");
+  const [viewMode, setViewMode] = useState<"slides" | "prospectus" | "roi" | "email" | "crm">("slides");
 
   // Multi-Unit ROI Simulator State
   const [roiParams, setRoiParams] = useState<RoiSimulationParams>({
     unitsCount: 15,
     dailyOrdersPerUnit: 90,
-    avgTicketValue: 30, // $30 USD or 70 SAR
-    aggregatorFeePct: 30, // 30% DoorDash or 28% Jahez
-    orderkingCostPct: 8, // 8% OrderKing direct tech cost
-    currency: "USD",
+    avgTicketValue: 450, // ₹450 INR, $30 USD, or 70 SAR
+    aggregatorFeePct: 28, // 28% Swiggy/Zomato/Jahez or 30% DoorDash
+    orderkingCostPct: 5, // 5%-8% direct processing/platform cost
+    currency: "INR",
+    implementationCost: 49999,
+    monthlySaaSFeePerUnit: 4999,
   });
 
   // Email Pitch Generator State
@@ -68,30 +87,93 @@ export function B2BSaaSSalesDeckGenerator() {
   const [franchiseBrand, setFranchiseBrand] = useState("Premier Multi-Unit Franchise Group");
   const [copiedEmail, setCopiedEmail] = useState(false);
 
+  // Live CRM & Revenue Desk State
+  const [crmLeads, setCrmLeads] = useState<CrmLead[]>(() => crmEngine.getLeads());
+  const [revenueBreakdown, setRevenueBreakdown] = useState<CommercialRevenueBreakdown>(() =>
+    crmEngine.getCommercialRevenueBreakdown()
+  );
+  const [showScenarioTemplates, setShowScenarioTemplates] = useState<boolean>(false);
+  const [stageFilter, setStageFilter] = useState<CrmStage | "ALL">("ALL");
+  const [activeOutreachProspect, setActiveOutreachProspect] = useState<ClientProspect | null>(null);
+  const [paymentInputs, setPaymentInputs] = useState<Record<string, { amountInr: string; utr: string }>>({});
+
+  // Lead Intake Form State
+  const [newLeadForm, setNewLeadForm] = useState<{
+    businessName: string;
+    category: CrmLead["category"];
+    contactPerson: string;
+    phone: string;
+    email: string;
+    location: string;
+    monthlyRevenueEst: string;
+    painPoint: string;
+    selectedServiceId: string;
+    dealValueInr: number;
+    directDeliveryCostInr: number;
+    source: "INBOUND" | "REFERRAL" | "MANUAL_ENTRY" | "AI_DISCOVERY";
+    contactPermissionConfirmed: boolean;
+  }>({
+    businessName: "",
+    category: "restaurant",
+    contactPerson: "",
+    phone: "",
+    email: "",
+    location: "",
+    monthlyRevenueEst: "₹15,00,000",
+    painPoint: "High 28% Swiggy/Zomato commission bleed and lack of direct UPI ordering.",
+    selectedServiceId: SELLABLE_ORDERKING_SERVICES[0].id,
+    dealValueInr: SELLABLE_ORDERKING_SERVICES[0].setupFeeInr,
+    directDeliveryCostInr: SELLABLE_ORDERKING_SERVICES[0].estimatedDirectDeliveryCostInr,
+    source: "INBOUND",
+    contactPermissionConfirmed: false,
+  });
+
+  const syncCrmState = () => {
+    setCrmLeads([...crmEngine.getLeads()]);
+    setRevenueBreakdown(crmEngine.getCommercialRevenueBreakdown());
+  };
+
   // Sync ROI currency with chosen market
   useEffect(() => {
-    if (market === "US") {
+    if (market === "INDIA") {
+      setRoiParams((prev) => ({
+        ...prev,
+        currency: "INR",
+        avgTicketValue: prev.currency !== "INR" ? 450 : prev.avgTicketValue,
+        aggregatorFeePct: 28,
+        orderkingCostPct: 5,
+        implementationCost: 49999,
+        monthlySaaSFeePerUnit: 4999,
+      }));
+    } else if (market === "US") {
       setRoiParams((prev) => ({
         ...prev,
         currency: "USD",
-        avgTicketValue: prev.currency === "SAR" ? 30 : prev.avgTicketValue,
+        avgTicketValue: prev.currency !== "USD" ? 30 : prev.avgTicketValue,
         aggregatorFeePct: 30,
         orderkingCostPct: 8,
+        implementationCost: 1500,
+        monthlySaaSFeePerUnit: 149,
       }));
     } else if (market === "SAUDI") {
       setRoiParams((prev) => ({
         ...prev,
         currency: "SAR",
-        avgTicketValue: prev.currency === "USD" ? 70 : prev.avgTicketValue,
+        avgTicketValue: prev.currency !== "SAR" ? 70 : prev.avgTicketValue,
         aggregatorFeePct: 28,
         orderkingCostPct: 7,
+        implementationCost: 4500,
+        monthlySaaSFeePerUnit: 499,
       }));
     } else {
       setRoiParams((prev) => ({
         ...prev,
         currency: "USD",
+        avgTicketValue: prev.currency !== "USD" ? 30 : prev.avgTicketValue,
         aggregatorFeePct: 30,
         orderkingCostPct: 8,
+        implementationCost: 1500,
+        monthlySaaSFeePerUnit: 149,
       }));
     }
   }, [market]);
@@ -158,7 +240,7 @@ export function B2BSaaSSalesDeckGenerator() {
 
   const emailPitch = telemetry
     ? generateExecutiveEmailPitch(
-        market === "SAUDI" ? "SAUDI" : "US",
+        market,
         telemetry,
         roiResult,
         recipientName,
@@ -176,6 +258,161 @@ export function B2BSaaSSalesDeckGenerator() {
 
   const handlePrintPdf = () => {
     window.print();
+  };
+
+  const handleSelectCatalogService = (serviceId: string) => {
+    const svc = SELLABLE_ORDERKING_SERVICES.find((s) => s.id === serviceId);
+    if (!svc) return;
+    setNewLeadForm((prev) => ({
+      ...prev,
+      selectedServiceId: svc.id,
+      category: svc.category,
+      dealValueInr: svc.setupFeeInr,
+      directDeliveryCostInr: svc.estimatedDirectDeliveryCostInr,
+    }));
+    toast.success(`Selected "${svc.name}" (₹${svc.setupFeeInr.toLocaleString("en-IN")} setup)`);
+  };
+
+  const handleCreateVerifiedLead = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newLeadForm.businessName.trim() || !newLeadForm.contactPerson.trim()) {
+      toast.error("Business Name and Contact Person are required.");
+      return;
+    }
+    if (!newLeadForm.phone.trim() && !newLeadForm.email.trim()) {
+      toast.error("Please provide at least a valid phone number or email address.");
+      return;
+    }
+    if (!newLeadForm.contactPermissionConfirmed) {
+      toast.error("Mandatory Compliance Check: You must confirm contact permission before adding a CRM prospect.");
+      return;
+    }
+
+    const svc = SELLABLE_ORDERKING_SERVICES.find((s) => s.id === newLeadForm.selectedServiceId);
+
+    try {
+      const created = crmEngine.addLead({
+        businessName: newLeadForm.businessName.trim(),
+        category: newLeadForm.category,
+        contactPerson: newLeadForm.contactPerson.trim(),
+        phone: newLeadForm.phone.trim(),
+        email: newLeadForm.email.trim(),
+        location: newLeadForm.location.trim() || "India",
+        monthlyRevenueEst: newLeadForm.monthlyRevenueEst.trim() || "₹10,00,000",
+        painPoint: newLeadForm.painPoint.trim() || "Direct ordering & POS modernization",
+        dealValueInr: Math.max(0, Number(newLeadForm.dealValueInr || 0)),
+        advanceLockedInr: Math.round(Math.max(0, Number(newLeadForm.dealValueInr || 0)) * 0.5),
+        currentStage: "LEAD",
+        source: newLeadForm.source,
+        notes: [
+          `Service Matched: ${svc ? svc.name : "Custom Turnkey Suite"}`,
+          `Verified Contact Permission Confirmed by Founder`,
+        ],
+        nextFollowUpDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+        dataProvenance: "VERIFIED_CRM_RECORD",
+        contactPermissionConfirmed: true,
+        verifiedCollectedInr: 0,
+        invoicedInr: 0,
+        refundsInr: 0,
+        directDeliveryCostInr: Math.max(0, Number(newLeadForm.directDeliveryCostInr || 0)),
+        selectedServiceId: svc?.id,
+        selectedServiceName: svc?.name,
+      });
+
+      syncCrmState();
+      setNewLeadForm((prev) => ({
+        ...prev,
+        businessName: "",
+        contactPerson: "",
+        phone: "",
+        email: "",
+        location: "",
+        contactPermissionConfirmed: false,
+      }));
+      toast.success(`Verified CRM Record ${created.id} created for ${created.businessName}!`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to add CRM lead.");
+    }
+  };
+
+  const handleAdvanceStage = (lead: CrmLead, targetStage?: CrmStage) => {
+    const currentIdx = CRM_STAGE_ORDER.indexOf(lead.currentStage);
+    const nextStage =
+      targetStage || CRM_STAGE_ORDER[Math.min(CRM_STAGE_ORDER.length - 1, currentIdx + 1)];
+    if (nextStage === lead.currentStage) return;
+
+    try {
+      crmEngine.updateLeadStage(
+        lead.id,
+        nextStage,
+        `Stage transitioned from ${lead.currentStage} to ${nextStage} via CRM Revenue Desk.`
+      );
+      syncCrmState();
+      toast.success(`${lead.businessName} advanced to ${nextStage}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not update stage");
+    }
+  };
+
+  const handleGenerateProposal = (lead: CrmLead) => {
+    try {
+      crmEngine.generateProposal(lead.id);
+      syncCrmState();
+      toast.success(`Formal commercial proposal generated for ${lead.businessName}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not generate proposal");
+    }
+  };
+
+  const handleDraftOutreach = (lead: CrmLead) => {
+    const svcName =
+      lead.selectedServiceName ||
+      SELLABLE_ORDERKING_SERVICES.find((s) => s.id === lead.selectedServiceId)?.name ||
+      "OrderKing Restaurant Website, POS & Direct UPI Suite";
+
+    const prospect = clientAcquisitionMachine.draftOutreachForCrmLead({
+      leadId: lead.id,
+      businessName: lead.businessName,
+      contactPerson: lead.contactPerson,
+      contactEmail: lead.email,
+      contactPhone: lead.phone,
+      location: lead.location,
+      painPoint: lead.painPoint,
+      matchedService: svcName,
+      dealValueInr: lead.dealValueInr,
+      dataProvenance: lead.dataProvenance,
+      contactPermissionConfirmed: lead.contactPermissionConfirmed,
+    });
+
+    crmEngine.updateLeadStage(
+      lead.id,
+      "PERSONALIZED_OUTREACH",
+      "Compliant outreach letter drafted via ClientAcquisitionMachine with opt-out guardrails."
+    );
+    syncCrmState();
+    setActiveOutreachProspect(prospect);
+    toast.success(`Personalized outreach drafted for ${lead.businessName}`);
+  };
+
+  const handleRecordVerifiedPayment = (lead: CrmLead) => {
+    const input = paymentInputs[lead.id] || {
+      amountInr: String(lead.advanceLockedInr || lead.dealValueInr),
+      utr: "",
+    };
+    const amount = Number(input.amountInr);
+    try {
+      crmEngine.recordVerifiedPayment(lead.id, amount, input.utr, lead.directDeliveryCostInr);
+      syncCrmState();
+      setPaymentInputs((prev) => ({
+        ...prev,
+        [lead.id]: { amountInr: "", utr: "" },
+      }));
+      toast.success(
+        `Verified payment of ₹${amount.toLocaleString("en-IN")} (UTR: ${input.utr.trim()}) recorded in Commercial Ledger!`
+      );
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Payment verification failed");
+    }
   };
 
   const slides = [
@@ -211,8 +448,22 @@ export function B2BSaaSSalesDeckGenerator() {
     },
     {
       id: "market_fit",
-      title: market === "US" ? "US Multi-Unit Ecosystem Integration" : market === "SAUDI" ? "Saudi & GCC Market Architecture" : "Global Enterprise Platform",
-      subtitle: market === "US" ? "Toast, NCR Aloha, Brink POS Native Sync & 1099 Courier Payouts" : market === "SAUDI" ? "ZATCA Phase 2 E-Invoicing, Mada/Apple Pay & High-Temp Routing" : "Unified Multi-Brand, Multi-Currency POS Architecture",
+      title:
+        market === "INDIA"
+          ? "India Direct UPI, GST INV-1 & ONDC-Ready Ecosystem"
+          : market === "US"
+          ? "US Multi-Unit Ecosystem Integration"
+          : market === "SAUDI"
+          ? "Saudi & GCC Market Architecture"
+          : "Global Enterprise Platform",
+      subtitle:
+        market === "INDIA"
+          ? "0% Aggregator Commission Bleed, Direct UPI Intent, GST Sec 9(5)/194-O & Petpooja/Posist Sync"
+          : market === "US"
+          ? "Toast, NCR Aloha, Brink POS Native Sync & 1099 Courier Payouts"
+          : market === "SAUDI"
+          ? "ZATCA Phase 2 E-Invoicing, Mada/Apple Pay & High-Temp Routing"
+          : "Unified Multi-Brand, Multi-Currency POS Architecture",
       badge: "Enterprise Fit",
     },
     {
@@ -234,14 +485,14 @@ export function B2BSaaSSalesDeckGenerator() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-black tracking-tight text-white uppercase">
-                B2B SaaS Sales Deck Generator
+                B2B SaaS Sales Deck & Revenue CRM
               </h2>
               <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px] font-bold">
                 QSR GODFATHER EDITION
               </Badge>
             </div>
             <p className="text-xs text-slate-400">
-              12-Year Burger King Multi-Unit Veteran • Real Live Platform Telemetry • US & Saudi Markets
+              12-Year Burger King Multi-Unit Veteran • Real Live Platform Telemetry • India, US & Saudi Markets
             </p>
           </div>
         </div>
@@ -251,6 +502,16 @@ export function B2BSaaSSalesDeckGenerator() {
           {/* Market Switcher */}
           <div className="flex rounded-lg bg-slate-800/80 p-1 border border-slate-700">
             <button
+              onClick={() => setMarket("INDIA")}
+              className={`px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1.5 ${
+                market === "INDIA"
+                  ? "bg-orange-500 text-slate-950 shadow-sm"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <span>🇮🇳</span> India (INR)
+            </button>
+            <button
               onClick={() => setMarket("US")}
               className={`px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1.5 ${
                 market === "US"
@@ -258,7 +519,7 @@ export function B2BSaaSSalesDeckGenerator() {
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>🇺🇸</span> US Multi-Unit
+              <span>🇺🇸</span> US Market (USD)
             </button>
             <button
               onClick={() => setMarket("SAUDI")}
@@ -268,7 +529,7 @@ export function B2BSaaSSalesDeckGenerator() {
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>🇸🇦</span> Saudi / GCC
+              <span>🇸🇦</span> Saudi/GCC (SAR)
             </button>
             <button
               onClick={() => setMarket("GLOBAL")}
@@ -323,6 +584,16 @@ export function B2BSaaSSalesDeckGenerator() {
               }`}
             >
               Email Pitch
+            </button>
+            <button
+              onClick={() => setViewMode("crm")}
+              className={`px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-1 ${
+                viewMode === "crm"
+                  ? "bg-emerald-500 text-slate-950 shadow-sm"
+                  : "text-emerald-400 hover:text-white"
+              }`}
+            >
+              💼 Live CRM & Revenue Desk
             </button>
           </div>
 
@@ -800,21 +1071,31 @@ export function B2BSaaSSalesDeckGenerator() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/40 px-3 py-1 font-bold">
-                      {market === "US" ? "UNITED STATES ECOSYSTEM" : market === "SAUDI" ? "SAUDI ARABIA & GCC ECOSYSTEM" : "GLOBAL ECOSYSTEM"}
+                      {market === "INDIA"
+                        ? "INDIA DIRECT UPI & GST ECOSYSTEM"
+                        : market === "US"
+                        ? "UNITED STATES ECOSYSTEM"
+                        : market === "SAUDI"
+                        ? "SAUDI ARABIA & GCC ECOSYSTEM"
+                        : "GLOBAL ECOSYSTEM"}
                     </Badge>
                     <span className="text-xs text-slate-400 font-mono">SEAMLESS INTEGRATION</span>
                   </div>
 
                   <div>
                     <h2 className="text-3xl font-black text-white">
-                      {market === "US"
+                      {market === "INDIA"
+                        ? "Engineered for Indian Restaurant & Cloud Kitchen Operators"
+                        : market === "US"
                         ? "Engineered for US Franchise Operators"
                         : market === "SAUDI"
                         ? "مصمم لمجموعات المطاعم في المملكة والخليج"
                         : "Turnkey Multi-Unit POS Infrastructure"}
                     </h2>
                     <p className="text-slate-300 text-sm mt-1">
-                      {market === "US"
+                      {market === "INDIA"
+                        ? "Direct UPI QR & Intent checkout, GST INV-1 invoicing, CGST Sec 9(5) & Income Tax Sec 194-O compliance, and Petpooja/Posist sync."
+                        : market === "US"
                         ? "Seamless bridge with Toast, NCR Aloha, Brink POS, and DoorDash Drive relay courier fulfillment."
                         : market === "SAUDI"
                         ? "توافق كامل مع متطلبات هيئة الزكاة والضريبة والجمارك (ZATCA الفوترة الإلكترونية المرحلة 2) وبوابات مدى وApple Pay."
@@ -823,7 +1104,28 @@ export function B2BSaaSSalesDeckGenerator() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    {market === "US" ? (
+                    {market === "INDIA" ? (
+                      <>
+                        <div className="bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-2">
+                          <h4 className="font-bold text-orange-400 text-sm">Direct UPI Intent & QR Checkout</h4>
+                          <p className="text-xs text-slate-300 leading-relaxed">
+                            1-tap PhonePe, GPay, Paytm, and BHIM UPI checkout with real bank UTR reconciliation and 0% aggregator commission bleed.
+                          </p>
+                        </div>
+                        <div className="bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-2">
+                          <h4 className="font-bold text-emerald-400 text-sm">GST INV-1 & Statutory Compliance</h4>
+                          <p className="text-xs text-slate-300 leading-relaxed">
+                            Automated SAC 996331 tax splits, FSSAI license display, CGST Sec 9(5) e-commerce operator ledgers, and Income Tax Sec 194-O reporting.
+                          </p>
+                        </div>
+                        <div className="bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-2">
+                          <h4 className="font-bold text-blue-400 text-sm">Petpooja, Posist & Fleet Sync</h4>
+                          <p className="text-xs text-slate-300 leading-relaxed">
+                            Fires KOTs directly into existing Indian kitchen terminals while routing own-fleet riders or 3PL hyperlocal spillover in under 8 minutes.
+                          </p>
+                        </div>
+                      </>
+                    ) : market === "US" ? (
                       <>
                         <div className="bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-2">
                           <h4 className="font-bold text-amber-400 text-sm">Toast & Aloha 2-Way Sync</h4>
@@ -902,7 +1204,7 @@ export function B2BSaaSSalesDeckGenerator() {
                       </div>
                       <h4 className="font-bold text-white text-sm mb-1">Direct Margin Proof</h4>
                       <p className="text-xs text-slate-400">
-                        Side-by-side ledger audit at day 14 proving the exact dollars/riyals saved vs aggregator statements.
+                        Side-by-side ledger audit at day 14 proving the exact rupees/dollars/riyals saved vs aggregator statements.
                       </p>
                     </div>
 
@@ -1002,7 +1304,7 @@ export function B2BSaaSSalesDeckGenerator() {
                 1. Founder Authority & Operational Doctrine
               </h3>
               <p className="text-sm text-slate-300 print:text-gray-800 leading-relaxed">
-                OrderKing is architected by an enterprise operator with <strong>12 years of hands-on Burger King multi-unit franchise management</strong>. It is designed to solve the single largest threat to restaurant franchise profitability in the post-pandemic era: the 28%–32% aggregator commission tax imposed by DoorDash, UberEats, Jahez, and HungerStation.
+                OrderKing is architected by an enterprise operator with <strong>12 years of hands-on Burger King multi-unit franchise management</strong>. It is designed to solve the single largest threat to restaurant franchise profitability in the post-pandemic era: the 28%–32% aggregator commission tax imposed by Swiggy, Zomato, DoorDash, UberEats, Jahez, and HungerStation.
               </p>
               <p className="text-sm text-slate-300 print:text-gray-800 leading-relaxed">
                 Unlike generic POS plugins, OrderKing is an end-to-end sovereign dispatch, ordering, and anti-fraud operating system engineered specifically for multi-unit store portfolios.
@@ -1110,7 +1412,7 @@ export function B2BSaaSSalesDeckGenerator() {
           <div className="max-w-4xl mx-auto space-y-8 bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-xl">
             <div>
               <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 px-3 py-1 font-bold">
-                MULTI-UNIT ROI SIMULATOR
+                MULTI-UNIT ROI SIMULATOR ({roiParams.currency})
               </Badge>
               <h2 className="text-2xl md:text-3xl font-black text-white mt-2">
                 Calculate Exact EBITDA Reclaimed
@@ -1172,31 +1474,36 @@ export function B2BSaaSSalesDeckGenerator() {
                 </label>
                 <input
                   type="range"
-                  min="10"
-                  max="150"
-                  step="5"
+                  min={roiParams.currency === "INR" ? "150" : "10"}
+                  max={roiParams.currency === "INR" ? "1500" : "150"}
+                  step={roiParams.currency === "INR" ? "25" : "5"}
                   value={roiParams.avgTicketValue}
                   onChange={(e) => setRoiParams({ ...roiParams, avgTicketValue: Number(e.target.value) })}
                   className="w-full accent-amber-500"
                 />
                 <div className="flex justify-between text-[10px] text-slate-500">
-                  <span>{currencySymbol}10</span>
-                  <span>{currencySymbol}50</span>
-                  <span>{currencySymbol}100</span>
-                  <span>{currencySymbol}150</span>
+                  <span>{currencySymbol}{roiParams.currency === "INR" ? 150 : 10}</span>
+                  <span>{currencySymbol}{roiParams.currency === "INR" ? 500 : 50}</span>
+                  <span>{currencySymbol}{roiParams.currency === "INR" ? 1000 : 100}</span>
+                  <span>{currencySymbol}{roiParams.currency === "INR" ? 1500 : 150}</span>
                 </div>
               </div>
             </div>
 
             {/* Results Grid */}
             <div className="p-6 bg-slate-950 rounded-xl border border-emerald-500/30 space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4 flex-wrap gap-2">
                 <span className="text-xs uppercase font-extrabold text-slate-400">
                   Simulated Annual Outcome ({roiParams.unitsCount} Units)
                 </span>
-                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40 text-xs font-black">
-                  +{roiResult.ebitdaMarginExpansionPct}% MARGIN EXPANSION
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-xs font-black">
+                    PAYBACK PERIOD: {roiResult.paybackPeriodDays} DAYS
+                  </Badge>
+                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40 text-xs font-black">
+                    +{roiResult.ebitdaMarginExpansionPct}% MARGIN EXPANSION
+                  </Badge>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -1226,7 +1533,19 @@ export function B2BSaaSSalesDeckGenerator() {
                 </div>
               </div>
 
-              <div className="p-4 bg-slate-900/60 rounded-lg flex items-center justify-between text-xs text-slate-300">
+              {/* Transparent Mathematical Assumptions Summary */}
+              <div className="p-4 bg-slate-900/90 rounded-lg border border-slate-800 space-y-2">
+                <div className="text-[11px] font-black uppercase tracking-wider text-amber-400">
+                  Mathematical Assumptions & Audit Basis
+                </div>
+                <ul className="space-y-1 text-xs text-slate-300 list-disc pl-4">
+                  {roiResult.assumptionsSummary.map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="p-4 bg-slate-900/60 rounded-lg flex items-center justify-between text-xs text-slate-300 flex-wrap gap-3">
                 <span>
                   Average Annual Profit Reclaimed Per Store:{" "}
                   <strong className="text-emerald-400 font-mono text-sm">
@@ -1251,7 +1570,7 @@ export function B2BSaaSSalesDeckGenerator() {
             <div className="flex items-center justify-between">
               <div>
                 <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 px-3 py-1 font-bold">
-                  EXECUTIVE EMAIL GENERATOR
+                  EXECUTIVE EMAIL GENERATOR ({market})
                 </Badge>
                 <h2 className="text-2xl font-black text-white mt-2">
                   Founder Cold & Warm Email Outreach
@@ -1277,7 +1596,7 @@ export function B2BSaaSSalesDeckGenerator() {
                   value={recipientName}
                   onChange={(e) => setRecipientName(e.target.value)}
                   className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
-                  placeholder="e.g. John Miller (VP Operations)"
+                  placeholder="e.g. Rajesh Sharma (Managing Director)"
                 />
               </div>
               <div className="space-y-1">
@@ -1286,7 +1605,7 @@ export function B2BSaaSSalesDeckGenerator() {
                   value={franchiseBrand}
                   onChange={(e) => setFranchiseBrand(e.target.value)}
                   className="bg-slate-900 border-slate-700 text-slate-100 text-xs h-9"
-                  placeholder="e.g. Apex Multi-Unit Holdings"
+                  placeholder="e.g. Deccan Hospitality & Cloud Kitchens"
                 />
               </div>
             </div>
@@ -1308,7 +1627,16 @@ export function B2BSaaSSalesDeckGenerator() {
             </div>
 
             <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
-              <span>Audience Target: <strong>{market === "US" ? "US Multi-Unit Franchisees" : "Saudi & GCC Franchise Groups"}</strong></span>
+              <span>
+                Audience Target:{" "}
+                <strong>
+                  {market === "INDIA"
+                    ? "India Restaurant Chains & Cloud Kitchens (INR)"
+                    : market === "SAUDI"
+                    ? "Saudi & GCC Franchise Groups (SAR)"
+                    : "US & Global Multi-Unit Franchisees (USD)"}
+                </strong>
+              </span>
               <Button
                 variant="outline"
                 size="sm"
@@ -1317,6 +1645,612 @@ export function B2BSaaSSalesDeckGenerator() {
               >
                 Copy to Clipboard
               </Button>
+            </div>
+          </div>
+        )}
+
+        {/* VIEW MODE 5: LIVE CRM & REVENUE DESK (MANDATE 3) */}
+        {viewMode === "crm" && (
+          <div className="max-w-6xl mx-auto space-y-8">
+            {/* 1. 9-Bucket Commercial Revenue & Profit Ledger Bar */}
+            <div className="bg-slate-900 p-6 rounded-2xl border border-emerald-500/30 shadow-xl space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-xs font-bold">
+                      MANDATE 3 COMMERCIAL LEDGER (9 SEPARATED BUCKETS)
+                    </Badge>
+                    <Badge className="bg-slate-800 text-slate-300 border-slate-700 text-[11px]">
+                      Verified Records: {revenueBreakdown.verifiedLeadsCount} • Scenario Templates Excluded: {revenueBreakdown.scenarioTemplatesCount}
+                    </Badge>
+                  </div>
+                  <h3 className="text-xl font-black text-white mt-1">
+                    Strict Commercial Revenue, Receivables & Net Profit Separation
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Pre-seeded scenario templates (LEAD-201..203, PROS-101..102) are strictly isolated with ₹0 collected revenue. Only verified CRM records with bank/UPI UTR confirmation enter collected cash and profit.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowScenarioTemplates((prev) => !prev)}
+                    className={`text-xs border-slate-700 ${
+                      showScenarioTemplates
+                        ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                        : "bg-slate-800 text-slate-300"
+                    }`}
+                  >
+                    <Filter className="h-3.5 w-3.5 mr-1.5" />
+                    {showScenarioTemplates
+                      ? "Showing Scenario Templates + Verified Records"
+                      : "Hiding Scenario Templates (Verified Only)"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* 9 Financial Buckets Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-3">
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] font-bold uppercase text-slate-400 block">1. Lead Pipeline</span>
+                  <div className="text-sm font-black text-white mt-1">
+                    ₹{revenueBreakdown.leadPipelineValueInr.toLocaleString("en-IN")}
+                  </div>
+                  <span className="text-[10px] text-slate-500">Unclosed opportunities</span>
+                </div>
+
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] font-bold uppercase text-blue-300 block">2. Quoted Value</span>
+                  <div className="text-sm font-black text-blue-400 mt-1">
+                    ₹{revenueBreakdown.quotedValueInr.toLocaleString("en-IN")}
+                  </div>
+                  <span className="text-[10px] text-slate-500">Active proposals</span>
+                </div>
+
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] font-bold uppercase text-purple-300 block">3. Signed Contracts</span>
+                  <div className="text-sm font-black text-purple-400 mt-1">
+                    ₹{revenueBreakdown.signedContractValueInr.toLocaleString("en-IN")}
+                  </div>
+                  <span className="text-[10px] text-slate-500">Executed MSAs</span>
+                </div>
+
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] font-bold uppercase text-amber-300 block">4. Invoiced</span>
+                  <div className="text-sm font-black text-amber-400 mt-1">
+                    ₹{revenueBreakdown.invoicedValueInr.toLocaleString("en-IN")}
+                  </div>
+                  <span className="text-[10px] text-slate-500">GST INV-1 billed</span>
+                </div>
+
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] font-bold uppercase text-orange-300 block">5. Receivables</span>
+                  <div className="text-sm font-black text-orange-400 mt-1">
+                    ₹{revenueBreakdown.outstandingReceivablesInr.toLocaleString("en-IN")}
+                  </div>
+                  <span className="text-[10px] text-slate-500">Unpaid billed dues</span>
+                </div>
+
+                <div className="p-3 bg-emerald-950/30 rounded-xl border border-emerald-500/40">
+                  <span className="text-[10px] font-bold uppercase text-emerald-300 block">6. Verified Collected</span>
+                  <div className="text-sm font-black text-emerald-400 mt-1">
+                    ₹{revenueBreakdown.verifiedMoneyCollectedInr.toLocaleString("en-IN")}
+                  </div>
+                  <span className="text-[10px] text-emerald-300/80">₹0 until UTR paid</span>
+                </div>
+
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] font-bold uppercase text-red-300 block">7. Refunds</span>
+                  <div className="text-sm font-black text-red-400 mt-1">
+                    ₹{revenueBreakdown.refundsInr.toLocaleString("en-IN")}
+                  </div>
+                  <span className="text-[10px] text-slate-500">Reversals & credits</span>
+                </div>
+
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] font-bold uppercase text-slate-400 block">8. Delivery Cost</span>
+                  <div className="text-sm font-black text-slate-200 mt-1">
+                    ₹{revenueBreakdown.directDeliveryCostsInr.toLocaleString("en-IN")}
+                  </div>
+                  <span className="text-[10px] text-slate-500">Infra & setup cost</span>
+                </div>
+
+                <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/40">
+                  <span className="text-[10px] font-bold uppercase text-amber-300 block">9. Net Founder Profit</span>
+                  <div className="text-sm font-black text-amber-400 mt-1">
+                    ₹{revenueBreakdown.netProfitInr.toLocaleString("en-IN")}
+                  </div>
+                  <span className="text-[10px] text-amber-200/80">Collected - Cost</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Sellable OrderKing Service Catalog Selector (10 Mandate 3.3 Services) */}
+            <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-xs font-bold">
+                    MANDATE 3.3 SELLABLE SERVICE CATALOG (10 DELIVERABLE B2B SERVICES)
+                  </Badge>
+                  <h3 className="text-lg font-black text-white mt-1">
+                    Select a Turnkey Service Package to Pre-Fill Lead Pricing & Deliverables
+                  </h3>
+                </div>
+                <span className="text-xs text-slate-400">
+                  Click any package to bind into the Lead Intake Form below
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+                {SELLABLE_ORDERKING_SERVICES.map((svc) => {
+                  const isSelected = newLeadForm.selectedServiceId === svc.id;
+                  return (
+                    <div
+                      key={svc.id}
+                      onClick={() => handleSelectCatalogService(svc.id)}
+                      className={`cursor-pointer p-3.5 rounded-xl border transition flex flex-col justify-between ${
+                        isSelected
+                          ? "bg-amber-500/15 border-amber-400 shadow-md"
+                          : "bg-slate-950 border-slate-800 hover:border-slate-700"
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <span className="text-[10px] font-mono text-amber-400 font-bold">{svc.id}</span>
+                          <span className="text-[10px] text-slate-400">{svc.timelineDays}d SLA</span>
+                        </div>
+                        <h4 className="text-xs font-black text-white leading-snug">{svc.name}</h4>
+                        <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">{svc.summary}</p>
+                      </div>
+                      <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                        <div>
+                          <span className="font-black text-emerald-400">
+                            ₹{svc.setupFeeInr.toLocaleString("en-IN")}
+                          </span>
+                          <span className="text-slate-500 block text-[10px]">
+                            +₹{svc.monthlyRetainerInr.toLocaleString("en-IN")}/mo (${svc.setupFeeUsd})
+                          </span>
+                        </div>
+                        <Badge
+                          className={`text-[9px] ${
+                            isSelected
+                              ? "bg-amber-500 text-slate-950 font-black"
+                              : "bg-slate-800 text-slate-300"
+                          }`}
+                        >
+                          {isSelected ? "SELECTED" : "SELECT"}
+                        </Badge>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 3. Real Lead Intake & Qualification Form */}
+            <form
+              onSubmit={handleCreateVerifiedLead}
+              className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4"
+            >
+              <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
+                <div>
+                  <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/40 text-xs font-bold">
+                    REAL PROSPECT INTAKE & QUALIFICATION DESK
+                  </Badge>
+                  <h3 className="text-lg font-black text-white mt-1 flex items-center gap-2">
+                    <UserPlus className="h-5 w-5 text-amber-400" /> Add Verified Commercial Prospect
+                  </h3>
+                </div>
+                <span className="text-xs text-slate-400 font-mono">
+                  PROVENANCE: VERIFIED_CRM_RECORD • DUPLICATE EMAIL/PHONE GUARD ACTIVE
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase">Business Name *</label>
+                  <Input
+                    value={newLeadForm.businessName}
+                    onChange={(e) => setNewLeadForm({ ...newLeadForm, businessName: e.target.value })}
+                    placeholder="e.g. Barak Valley Biryani House"
+                    className="bg-slate-950 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase">Contact Person *</label>
+                  <Input
+                    value={newLeadForm.contactPerson}
+                    onChange={(e) => setNewLeadForm({ ...newLeadForm, contactPerson: e.target.value })}
+                    placeholder="e.g. Imran Ahmed (Owner)"
+                    className="bg-slate-950 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase">Phone (WhatsApp/Mobile) *</label>
+                  <Input
+                    value={newLeadForm.phone}
+                    onChange={(e) => setNewLeadForm({ ...newLeadForm, phone: e.target.value })}
+                    placeholder="+91 98640 12345"
+                    className="bg-slate-950 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase">Official Email *</label>
+                  <Input
+                    type="email"
+                    value={newLeadForm.email}
+                    onChange={(e) => setNewLeadForm({ ...newLeadForm, email: e.target.value })}
+                    placeholder="owner@biryanihouse.in"
+                    className="bg-slate-950 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase">City / Territory</label>
+                  <Input
+                    value={newLeadForm.location}
+                    onChange={(e) => setNewLeadForm({ ...newLeadForm, location: e.target.value })}
+                    placeholder="e.g. Silchar / Guwahati / Bengaluru"
+                    className="bg-slate-950 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase">Selected OrderKing Service</label>
+                  <select
+                    value={newLeadForm.selectedServiceId}
+                    onChange={(e) => handleSelectCatalogService(e.target.value)}
+                    className="w-full h-9 rounded-md bg-slate-950 border border-slate-700 text-slate-100 text-xs px-2.5"
+                  >
+                    {SELLABLE_ORDERKING_SERVICES.map((svc) => (
+                      <option key={svc.id} value={svc.id}>
+                        {svc.id}: {svc.name} (₹{svc.setupFeeInr.toLocaleString("en-IN")})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase">Deal Value (₹ INR)</label>
+                  <Input
+                    type="number"
+                    value={newLeadForm.dealValueInr}
+                    onChange={(e) => setNewLeadForm({ ...newLeadForm, dealValueInr: Number(e.target.value) })}
+                    className="bg-slate-950 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase">Source Attribution</label>
+                  <select
+                    value={newLeadForm.source}
+                    onChange={(e) =>
+                      setNewLeadForm({
+                        ...newLeadForm,
+                        source: e.target.value as "INBOUND" | "REFERRAL" | "MANUAL_ENTRY" | "AI_DISCOVERY",
+                      })
+                    }
+                    className="w-full h-9 rounded-md bg-slate-950 border border-slate-700 text-slate-100 text-xs px-2.5"
+                  >
+                    <option value="INBOUND">INBOUND (Merchant Inquiry)</option>
+                    <option value="REFERRAL">REFERRAL (Partner / Operator)</option>
+                    <option value="MANUAL_ENTRY">MANUAL_ENTRY (Direct Field Visit)</option>
+                    <option value="AI_DISCOVERY">AI_DISCOVERY (Verified Registry Audit)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div className="md:col-span-2 space-y-1">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase">
+                    Identified Operational Pain Point & Requirement
+                  </label>
+                  <Input
+                    value={newLeadForm.painPoint}
+                    onChange={(e) => setNewLeadForm({ ...newLeadForm, painPoint: e.target.value })}
+                    placeholder="e.g. Paying 28% aggregator commission; needs direct UPI website & KOT POS."
+                    className="bg-slate-950 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase">
+                    Est. Direct Delivery Cost (₹)
+                  </label>
+                  <Input
+                    type="number"
+                    value={newLeadForm.directDeliveryCostInr}
+                    onChange={(e) =>
+                      setNewLeadForm({ ...newLeadForm, directDeliveryCostInr: Number(e.target.value) })
+                    }
+                    className="bg-slate-950 border-slate-700 text-slate-100 text-xs h-9"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-800">
+                <label className="flex items-center gap-2 text-xs text-slate-200 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={newLeadForm.contactPermissionConfirmed}
+                    onChange={(e) =>
+                      setNewLeadForm({ ...newLeadForm, contactPermissionConfirmed: e.target.checked })
+                    }
+                    className="h-4 w-4 accent-emerald-500 rounded"
+                  />
+                  <span>
+                    <strong>Contact Permission Confirmed (Mandatory):</strong> Prospect has provided opt-in inquiry, referral consent, or public B2B commercial contact permission.
+                  </span>
+                </label>
+
+                <Button
+                  type="submit"
+                  className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs gap-1.5"
+                >
+                  <UserPlus className="h-4 w-4" /> Register Verified CRM Lead
+                </Button>
+              </div>
+            </form>
+
+            {/* Drafted Outreach Preview Modal/Card (if active) */}
+            {activeOutreachProspect && (
+              <div className="bg-slate-900 p-6 rounded-2xl border border-amber-500/40 shadow-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-xs font-bold">
+                      PERMITTED OUTREACH DRAFT (CLIENT ACQUISITION MACHINE)
+                    </Badge>
+                    <h4 className="text-base font-black text-white mt-1">
+                      Outreach Letter for {activeOutreachProspect.businessName} ({activeOutreachProspect.contactPerson})
+                    </h4>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(activeOutreachProspect.draftedOutreachMessage);
+                        toast.success("Outreach message copied to clipboard!");
+                      }}
+                      className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs gap-1"
+                    >
+                      <Copy className="h-3.5 w-3.5" /> Copy Outreach
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setActiveOutreachProspect(null)}
+                      className="border-slate-700 text-slate-300 text-xs"
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+                <pre className="p-4 bg-slate-950 rounded-xl border border-slate-800 text-xs font-mono text-slate-200 whitespace-pre-wrap leading-relaxed">
+                  {activeOutreachProspect.draftedOutreachMessage}
+                </pre>
+              </div>
+            )}
+
+            {/* 4. 15-Stage Interactive CRM Pipeline Board */}
+            <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                  <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/40 text-xs font-bold">
+                    15-STAGE COMMERCIAL CRM LIFECYCLE BOARD
+                  </Badge>
+                  <h3 className="text-lg font-black text-white mt-1">
+                    Interactive Pipeline: LEAD → PROPOSAL → CONTRACT → INVOICE → PAYMENT → DELIVERY → REPEAT
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    onClick={() => setStageFilter("ALL")}
+                    className={`px-2.5 py-1 rounded text-[11px] font-bold ${
+                      stageFilter === "ALL"
+                        ? "bg-amber-500 text-slate-950"
+                        : "bg-slate-800 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    ALL STAGES
+                  </button>
+                  {CRM_STAGE_ORDER.map((stg) => (
+                    <button
+                      key={stg}
+                      onClick={() => setStageFilter(stg)}
+                      className={`px-2 py-1 rounded text-[10px] font-mono font-bold ${
+                        stageFilter === stg
+                          ? "bg-amber-500 text-slate-950"
+                          : "bg-slate-950 text-slate-400 border border-slate-800 hover:text-white"
+                      }`}
+                    >
+                      {stg}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filtered Leads List */}
+              <div className="space-y-4">
+                {crmLeads
+                  .filter((l) => (showScenarioTemplates ? true : l.dataProvenance === "VERIFIED_CRM_RECORD"))
+                  .filter((l) => (stageFilter === "ALL" ? true : l.currentStage === stageFilter))
+                  .map((lead) => {
+                    const isScenario = lead.dataProvenance === "SCENARIO_TEMPLATE";
+                    const pInput = paymentInputs[lead.id] || {
+                      amountInr: String(lead.advanceLockedInr || lead.dealValueInr),
+                      utr: "",
+                    };
+
+                    return (
+                      <div
+                        key={lead.id}
+                        className={`p-5 rounded-xl border space-y-4 ${
+                          isScenario
+                            ? "bg-slate-950/60 border-amber-500/20"
+                            : "bg-slate-950 border-emerald-500/30"
+                        }`}
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-mono text-xs font-bold text-amber-400">{lead.id}</span>
+                              <h4 className="text-base font-black text-white">{lead.businessName}</h4>
+                              <Badge
+                                className={
+                                  isScenario
+                                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px]"
+                                    : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px]"
+                                }
+                              >
+                                {isScenario
+                                  ? "SCENARIO_TEMPLATE (EXCLUDED FROM REVENUE)"
+                                  : "VERIFIED_CRM_RECORD"}
+                              </Badge>
+                              <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/40 text-[10px] font-mono">
+                                STAGE: {lead.currentStage}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-slate-300">
+                              <strong>{lead.contactPerson}</strong> • {lead.phone} • {lead.email} • {lead.location} • Source:{" "}
+                              <span className="font-mono text-amber-300">{lead.source}</span>
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              <strong>Need:</strong> {lead.painPoint}
+                            </p>
+                            {lead.selectedServiceName && (
+                              <p className="text-xs text-emerald-400">
+                                <strong>Matched Service:</strong> {lead.selectedServiceName}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="text-right space-y-1">
+                            <div className="text-lg font-black text-white">
+                              Deal: ₹{lead.dealValueInr.toLocaleString("en-IN")}
+                            </div>
+                            <div className="text-xs text-emerald-400 font-bold">
+                              Verified Collected: ₹{(lead.verifiedCollectedInr || 0).toLocaleString("en-IN")}
+                              {lead.paymentUtr ? ` (UTR: ${lead.paymentUtr})` : ""}
+                            </div>
+                            <div className="text-[11px] text-slate-400">
+                              Invoiced: ₹{(lead.invoicedInr || 0).toLocaleString("en-IN")} • Delivery Cost: ₹
+                              {(lead.directDeliveryCostInr || 0).toLocaleString("en-IN")}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Stage Progression & Actions */}
+                        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800/80">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <select
+                              value={lead.currentStage}
+                              onChange={(e) => handleAdvanceStage(lead, e.target.value as CrmStage)}
+                              className="h-8 rounded bg-slate-900 border border-slate-700 text-xs text-slate-200 px-2"
+                            >
+                              {CRM_STAGE_ORDER.map((stg, idx) => (
+                                <option key={stg} value={stg}>
+                                  {idx + 1}. {stg}
+                                </option>
+                              ))}
+                            </select>
+
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleAdvanceStage(lead)}
+                              className="h-8 text-xs border-slate-700 bg-slate-900 text-amber-300 hover:bg-slate-800"
+                            >
+                              Advance Stage <ArrowRight className="h-3 w-3 ml-1" />
+                            </Button>
+
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDraftOutreach(lead)}
+                              className="h-8 text-xs border-slate-700 bg-slate-900 text-blue-300 hover:bg-slate-800"
+                            >
+                              <Send className="h-3 w-3 mr-1" /> Draft Outreach
+                            </Button>
+
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleGenerateProposal(lead)}
+                              className="h-8 text-xs border-slate-700 bg-slate-900 text-purple-300 hover:bg-slate-800"
+                            >
+                              <FileText className="h-3 w-3 mr-1" /> Generate Proposal
+                            </Button>
+                          </div>
+
+                          {/* Verified Payment UTR Recorder (Only enabled for VERIFIED_CRM_RECORD) */}
+                          {!isScenario ? (
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Input
+                                type="number"
+                                value={pInput.amountInr}
+                                onChange={(e) =>
+                                  setPaymentInputs((prev) => ({
+                                    ...prev,
+                                    [lead.id]: { ...pInput, amountInr: e.target.value },
+                                  }))
+                                }
+                                placeholder="Amount ₹"
+                                className="w-28 h-8 bg-slate-900 border-slate-700 text-xs text-white"
+                              />
+                              <Input
+                                value={pInput.utr}
+                                onChange={(e) =>
+                                  setPaymentInputs((prev) => ({
+                                    ...prev,
+                                    [lead.id]: { ...pInput, utr: e.target.value },
+                                  }))
+                                }
+                                placeholder="Bank/UPI UTR Ref"
+                                className="w-40 h-8 bg-slate-900 border-slate-700 text-xs text-white font-mono"
+                              />
+                              <Button
+                                size="sm"
+                                onClick={() => handleRecordVerifiedPayment(lead)}
+                                className="h-8 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs"
+                              >
+                                <Receipt className="h-3.5 w-3.5 mr-1" /> Record Verified UTR
+                              </Button>
+                            </div>
+                          ) : (
+                            <span className="text-[11px] text-amber-400/80 font-mono">
+                              Scenario template — excluded from verified payment collection
+                            </span>
+                          )}
+                        </div>
+
+                        {lead.proposal && (
+                          <div className="p-3 bg-slate-900/90 rounded-lg border border-slate-800 text-xs text-slate-300">
+                            <span className="font-bold text-purple-300">Active Proposal: </span>
+                            {lead.proposal.title} — ₹{lead.proposal.commercialValueInr.toLocaleString("en-IN")} (50% advance: ₹
+                            {lead.proposal.advanceRequiredInr.toLocaleString("en-IN")}, {lead.proposal.timelineDays} days SLA)
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                {crmLeads.filter((l) => (showScenarioTemplates ? true : l.dataProvenance === "VERIFIED_CRM_RECORD"))
+                  .length === 0 && (
+                  <div className="p-8 text-center bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                    <p className="text-sm font-bold text-slate-200">
+                      0 Verified CRM Records in Pipeline (All 9 Financial Buckets = ₹0)
+                    </p>
+                    <p className="text-xs text-slate-400 max-w-xl mx-auto">
+                      Per Mandate 3, pre-seeded examples (LEAD-201..203) are marked as SCENARIO_TEMPLATE and hidden by default so sample records are never counted as real customers or revenue. Use the form above to add a verified prospect or toggle "Showing Scenario Templates" to inspect sample workflows.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

@@ -11,7 +11,12 @@ export type LedgerAccountType =
   | "REFUND_CLEARING"
   | "FOUNDER_VAULT"
   | "CUSTOMER_CASH_IN"
-  | "BANK_CLEARING";
+  | "BANK_CLEARING"
+  | "SUBSCRIPTION_REVENUE"
+  | "MERCHANT_WALLET"
+  | "TCS_PAYABLE_LIABILITY"
+  | "TDS_PAYABLE_LIABILITY"
+  | "FOOD_GST_9_5_LIABILITY";
 
 export interface LedgerEntry {
   entryId?: string;
@@ -195,7 +200,7 @@ export class CanonicalLedger {
       for (const entry of params.entries) {
         const entryId = "ent-" + crypto.randomUUID();
         await tx.query(
-          "INSERT INTO ledger_entries (entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+          "INSERT INTO ledger_entries (id, entry_id, transaction_id, account, direction, amount_paise, entity_id, memo, timestamp) VALUES ($1, $1, $2, $3, $4, $5, $6, $7, $8)",
           [entryId, transactionId, entry.account, entry.direction, entry.amountPaise, entry.entityId, entry.memo, now],
         );
       }

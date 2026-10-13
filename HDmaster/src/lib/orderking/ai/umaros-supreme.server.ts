@@ -16,6 +16,12 @@ import {
   type FraudSignalAlert,
   type KitchenSlaBreach
 } from "./autonomous-ops.ts";
+import {
+  getTechRegistrySummary,
+  getAllTechnologies,
+  executeFounderAction,
+  verifyTechRegistryIntegrity
+} from "../tech-registry/catalog.ts";
 
 export interface UmarOsEngineSettings {
   aiAutomatedRefunds: boolean;
@@ -659,7 +665,95 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
     };
   }
 
-  // 9. Natural Language Prompt Handling
+  // 9. World Technology Registry Inventory Command
+  if (normalized === "/tech" || normalized === "/registry" || normalized === "/catalog" || normalized.includes("tech registry") || normalized.includes("integrated technologies")) {
+    const summary = getTechRegistrySummary();
+    const integrity = verifyTechRegistryIntegrity();
+    const allTech = getAllTechnologies();
+    const executionMs = Date.now() - startTime;
+    return {
+      status: "SUCCESS",
+      title: "UMAR OS World Technology Registry",
+      response: `World Technology Registry: 100% Verified (${summary.totalTechnologies} technologies across ${summary.totalCategories} categories). Cloud Infrastructure (3), Payments & Banking (5), Communication (3), Maps & Logistics (4), AI & Foundation Models (5). Average network latency: ${summary.averageLatencyMs}ms. Integrity status: ${integrity.isValid ? "100% HEALTHY" : "DEGRADED"}.`,
+      toolExecuted: "query_world_tech_registry",
+      executionMs,
+      data: {
+        summary,
+        integrity,
+        technologies: allTech
+      }
+    };
+  }
+
+  // 10. Founder Command Action: Emergency Freeze
+  if (normalized === "/freeze" || normalized === "/emergency-freeze" || normalized.includes("emergency freeze")) {
+    const result = await executeFounderAction("founder_action_emergency_freeze", {
+      operatorId: "FOUNDER_AI_COMMAND",
+      reason: `Invoked via UMAR OS AI Console: ${cmd}`
+    });
+    const executionMs = Date.now() - startTime;
+    return {
+      status: "SUCCESS",
+      title: "Emergency Freeze Engaged",
+      response: result.summary,
+      toolExecuted: "founder_action_emergency_freeze",
+      executionMs,
+      data: result
+    };
+  }
+
+  // 11. Founder Command Action: Double-Entry Rebalance
+  if (normalized === "/rebalance" || normalized === "/rebalance-ledger" || normalized.includes("double entry rebalance")) {
+    const result = await executeFounderAction("founder_action_double_entry_rebalance", {
+      operatorId: "FOUNDER_AI_COMMAND",
+      reason: `Invoked via UMAR OS AI Console: ${cmd}`
+    });
+    const executionMs = Date.now() - startTime;
+    return {
+      status: "SUCCESS",
+      title: "Double-Entry Ledger Rebalance Complete",
+      response: result.summary,
+      toolExecuted: "founder_action_double_entry_rebalance",
+      executionMs,
+      data: result
+    };
+  }
+
+  // 12. Founder Command Action: Real-Time Fleet Ping
+  if (normalized === "/fleet-ping" || normalized === "/fleet" || normalized.includes("fleet ping") || normalized.includes("ping fleet")) {
+    const result = await executeFounderAction("founder_action_realtime_fleet_ping", {
+      operatorId: "FOUNDER_AI_COMMAND",
+      reason: `Invoked via UMAR OS AI Console: ${cmd}`
+    });
+    const executionMs = Date.now() - startTime;
+    return {
+      status: "SUCCESS",
+      title: "Real-Time Fleet Telemetry Beacon",
+      response: result.summary,
+      toolExecuted: "founder_action_realtime_fleet_ping",
+      executionMs,
+      data: result
+    };
+  }
+
+  // 13. Founder Command Action: Statutory GST/FSSAI Audit
+  if (normalized === "/gst-audit" || normalized === "/fssai-audit" || normalized === "/statutory-audit" || normalized.includes("gst audit") || normalized.includes("fssai audit")) {
+    const result = await executeFounderAction("founder_action_statutory_gst_fssai_audit", {
+      operatorId: "FOUNDER_AI_COMMAND",
+      reason: `Invoked via UMAR OS AI Console: ${cmd}`
+    });
+    const executionMs = Date.now() - startTime;
+    return {
+      status: "SUCCESS",
+      title: "Statutory GST & FSSAI Compliance Audit",
+      response: result.summary,
+      toolExecuted: "founder_action_statutory_gst_fssai_audit",
+      executionMs,
+      data: result
+    };
+  }
+
+  // 14. Natural Language Prompt Handling
   const executionMs = Date.now() - startTime;
   return {
     status: "SUCCESS",

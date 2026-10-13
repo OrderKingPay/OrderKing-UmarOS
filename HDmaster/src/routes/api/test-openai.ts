@@ -1,21 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { OpenAIProvider } from "@/lib/orderking/ai/providers/openai-provider";
 import type { ToolDefinition } from "@/lib/orderking/ai/providers/provider-interface";
+import { getSessionUser } from "@/lib/auth/verify.server";
+import { getSql } from "@/lib/db";
 
 export const Route = createFileRoute("/api/test-openai")({
-  
   server: {
     handlers: {
-      GET: async ({ request }: any) => {
+      GET: async () => {
         try {
-          const url = new URL(request.url);
-          const isAuthorized = url.searchParams.get("token") === "UMAR_OS_ADMIN";
-          
-          if (!isAuthorized) {
-            return new Response(JSON.stringify({
-              status: "UNAUTHORIZED",
-              evidence: "Authorization check failed. You must provide ?token=UMAR_OS_ADMIN in the URL to execute this phase 1 operation."
-            }), { status: 401, headers: { "Content-Type": "application/json" } });
+          const session = await getSessionUser();
+          if (!session?.id) {
+            return new Response(
+              JSON.stringify({
+                status: "UNAUTHORIZED",
+                evidence: "Authentication required. Sign in as Founder or Admin to run OpenAI diagnostics.",
+              }),
+              { status: 401, headers: { "Content-Type": "application/json" } }
+            );
+          }
+          const sql = await getSql();
+          const roleRows = await sql`SELECT role FROM users WHERE id = ${session.id} LIMIT 1`;
+          const role = roleRows.length > 0 ? String((roleRows[0] as any).role || "").toUpperCase() : "";
+          if (!["SUPER_ADMIN", "FOUNDER", "ADMIN"].includes(role)) {
+            return new Response(
+              JSON.stringify({
+                status: "FORBIDDEN",
+                evidence: "Founder or Admin role required to run OpenAI diagnostics.",
+              }),
+              { status: 403, headers: { "Content-Type": "application/json" } }
+            );
           }
 
           const apiKey = process.env.OPENAI_API_KEY;

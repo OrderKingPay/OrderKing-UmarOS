@@ -27,22 +27,30 @@ export const addKingpayMoney = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((d: { amount: number; description: string; gatewaySignature?: string }) => d)
   .handler(async ({ context, data }: any) => {
-    const cfg = await loadConfig();
-    
-    if (cfg.marketplace.launchMode === "live") {
-       if (!data.gatewaySignature) {
-           throw new Error("Financial Security: Payment gateway signature missing. Unauthorized minting blocked.");
-       }
-       throw new Error("Financial Security: Live payment gateways are pending legal/provider authorization. Minting blocked.");
+    if (typeof data.amount !== "number" || !Number.isFinite(data.amount) || data.amount <= 0) {
+      throw new Error("Financial Security: Credit amount must be a positive finite number.");
     }
-    
+
+    const cfg = await loadConfig();
+
+    if (!data.gatewaySignature || typeof data.gatewaySignature !== "string" || data.gatewaySignature.trim().length < 16) {
+      throw new Error("Financial Security: Payment gateway signature missing. Unauthorized minting blocked.");
+    }
+
+    if (cfg.marketplace.launchMode === "live") {
+      throw new Error("Financial Security: Live payment gateways are pending legal/provider authorization. Minting blocked.");
+    }
+
     if (data.amount > 10000) {
-        throw new Error("Sandbox Security: Maximum test transaction limit exceeded.");
+      throw new Error("Sandbox Security: Maximum test transaction limit exceeded.");
     }
 
     const sql = await getSql();
     const amountPaise = Math.round(data.amount * 100);
-    
+    if (amountPaise <= 0) {
+      throw new Error("Financial Security: Credit amount in paise must be positive.");
+    }
+
     await sql.transaction(async (tx) => {
       await tx`INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins) VALUES (${context.userId}, 0, 0) ON CONFLICT DO NOTHING`;
       await tx`UPDATE kingpay_wallets SET balance_paise = balance_paise + ${amountPaise}, updated_at = NOW() WHERE user_id = ${context.userId}`;
@@ -55,8 +63,15 @@ export const deductKingpayMoney = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((d: { amount: number; description: string }) => d)
   .handler(async ({ context, data }: any) => {
+    if (typeof data.amount !== "number" || !Number.isFinite(data.amount) || data.amount <= 0) {
+      throw new Error("Financial Security: Deduction amount must be a positive finite number.");
+    }
+
     const sql = await getSql();
     const amountPaise = Math.round(data.amount * 100);
+    if (amountPaise <= 0) {
+      throw new Error("Financial Security: Deduction amount in paise must be positive.");
+    }
 
     return await sql.transaction(async (tx) => {
       const rows = await tx<{ balance_paise: number }>`
@@ -71,3 +86,4 @@ export const deductKingpayMoney = createServerFn({ method: "POST" })
       return { success: true };
     });
   });
+

@@ -22,6 +22,7 @@ export function minimizeCustomer(
   const pickedUp =
     state === "PICKED_UP" ||
     state === "ON_THE_WAY" ||
+    state === "OUT_FOR_DELIVERY" ||
     state === "ARRIVED_AT_CUSTOMER" ||
     state === "CUSTOMER_UNAVAILABLE" ||
     state === "DELIVERED" ||
@@ -29,6 +30,7 @@ export function minimizeCustomer(
 
   const enRoute =
     state === "ON_THE_WAY" ||
+    state === "OUT_FOR_DELIVERY" ||
     state === "ARRIVED_AT_CUSTOMER" ||
     state === "CUSTOMER_UNAVAILABLE" ||
     state === "DELIVERED";

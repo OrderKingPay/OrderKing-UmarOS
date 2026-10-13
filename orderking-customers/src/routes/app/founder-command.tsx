@@ -101,26 +101,26 @@ export function FounderCommandPage() {
   const activeFinancialRecords = useDemoRecords ? INITIAL_FINANCIAL_RECORDS : [];
   const financialTelemetry = calculateFinancialTelemetry(activeFinancialRecords);
 
-  // Practical Business Launch & Field Ops State
+  // Practical Business Launch & Field Ops State (Zero-initialized until live telemetry is connected)
   const [launchTown, setLaunchTown] = useState("Karimganj / Sribhumi");
   const [geofenceRadiusKm, setGeofenceRadiusKm] = useState(6);
   const [merchantUpiVpa, setMerchantUpiVpa] = useState("orderking@okhdfcbank");
   const [launchVoucherCode, setLaunchVoucherCode] = useState("LAUNCH100");
   const [launchVoucherDiscount, setLaunchVoucherDiscount] = useState(100);
-  const [activeRidersCount, setActiveRidersCount] = useState(8);
-  const [activeKitchensCount, setActiveKitchensCount] = useState(14);
+  const [activeRidersCount] = useState(0);
+  const [activeKitchensCount] = useState(0);
 
   // Master Circuit Breakers State
   const [platformFrozen, setPlatformFrozen] = useState(false);
   const [surgeMultiplier, setSurgeMultiplier] = useState<"1.0x" | "1.25x" | "1.5x" | "2.0x">("1.0x");
   const [dispatchMode, setDispatchMode] = useState<"AI_AUTO" | "MANUAL_OVERRIDE">("AI_AUTO");
-  const [productionMode, setProductionMode] = useState<"LIVE_PRODUCTION" | "SIMULATION_TEST">("LIVE_PRODUCTION");
+  const [productionMode] = useState<"LIVE_PRODUCTION">("LIVE_PRODUCTION");
   const [broadcastMessage, setBroadcastMessage] = useState("");
-  const [isBroadcasting, setIsBroadcasting] = useState(false);
+  const [isBroadcasting] = useState(false);
 
   // Creator Engine State
   const [creatorPrompt, setCreatorPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGenerating] = useState(false);
   const [createdProject, setCreatedProject] = useState<{
     name: string;
     description: string;
@@ -129,8 +129,8 @@ export function FounderCommandPage() {
     timestamp: string;
   } | null>(null);
 
-  // Founder Income Products State
-  const [products, setProducts] = useState([
+  // Founder Income Products State (Zero-initialized until verified ledger settlement)
+  const [products] = useState([
     {
       id: "PROD-901",
       name: "Sovereign FinTech & POS Turnkey License",
@@ -144,44 +144,44 @@ export function FounderCommandPage() {
       id: "PROD-902",
       name: "Autonomous Cloud Kitchen Management System",
       priceInr: 29999,
-      salesCount: 28,
-      totalEarned: 839972,
-      payoutAccount: "Founder Direct Private Escrow (**4892)",
+      salesCount: 0,
+      totalEarned: 0,
+      payoutAccount: "Configured payout account required",
       status: "ACTIVE",
     },
     {
       id: "PROD-903",
       name: "Ultra-Fast Hyperlocal Logistics AI Engine",
       priceInr: 79999,
-      salesCount: 8,
-      totalEarned: 639992,
-      payoutAccount: "Founder Direct Private Escrow (**4892)",
+      salesCount: 0,
+      totalEarned: 0,
+      payoutAccount: "Configured payout account required",
       status: "ACTIVE",
     },
   ]);
 
-  // Audit Log State
+  // Audit Log State (Honest workspace initialization records only)
   const [auditLog, setAuditLog] = useState([
     {
       id: "HD-901",
-      action: "FOUNDER_SESSION_INIT",
+      action: "WORKSPACE_SESSION_INIT",
       timestamp: "Just now",
       status: "SUCCESS",
-      detail: "Sovereign Executive Command Deck initialized with full root authorization",
+      detail: "Legacy customer-app route initialized in read-only quarantine mode (₹0 confirmed ledger)",
     },
     {
       id: "HD-900",
-      action: "MERCHANT_SETTLEMENT_SWEEP",
-      timestamp: "12m ago",
-      status: "SUCCESS",
-      detail: "Batch payout of ₹42,500 settled directly to 14 partner restaurant bank accounts",
+      action: "SETTLEMENT_LEDGER_STATUS",
+      timestamp: "Startup",
+      status: "PENDING",
+      detail: "Zero partner bank settlements recorded in local customer workspace; connect canonical UMAR OS ledger",
     },
     {
       id: "HD-899",
-      action: "SURGE_ALGORITHM_CALIBRATION",
-      timestamp: "1h ago",
+      action: "SURGE_POLICY_DEFAULT",
+      timestamp: "Startup",
       status: "SUCCESS",
-      detail: "Karimganj Town zone surge locked at 1.0x (0% extra fee guarantee enforced)",
+      detail: "Default zone multiplier configured at 1.0x",
     },
   ]);
 
@@ -206,25 +206,21 @@ export function FounderCommandPage() {
 
   const handleBroadcast = () => {
     if (!broadcastMessage.trim()) {
-      toast.error("Enter alert message to broadcast");
+      toast.error("Enter alert message to log");
       return;
     }
-    setIsBroadcasting(true);
-    setTimeout(() => {
-      setIsBroadcasting(false);
-      toast.success("Broadcast dispatched to all active riders, restaurants & customers!");
-      setAuditLog((prev) => [
-        {
-          id: `HD-${Date.now()}`,
-          action: "EMERGENCY_PUSH_BROADCAST",
-          timestamp: "Just now",
-          status: "SUCCESS",
-          detail: `Broadcast: "${broadcastMessage}"`,
-        },
-        ...prev,
-      ]);
-      setBroadcastMessage("");
-    }, 600);
+    toast.info("Broadcast logged locally. Live FCM/APNs push gateway configuration required for fleet dispatch.");
+    setAuditLog((prev) => [
+      {
+        id: `HD-${Date.now()}`,
+        action: "BROADCAST_GATEWAY_PENDING",
+        timestamp: "Just now",
+        status: "PENDING",
+        detail: `Queued message (awaiting push provider): "${broadcastMessage}"`,
+      },
+      ...prev,
+    ]);
+    setBroadcastMessage("");
   };
 
   const handleGenerateProject = () => {
@@ -232,34 +228,58 @@ export function FounderCommandPage() {
       toast.error("Please enter app/website specification prompt");
       return;
     }
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-      const deployTarget = InstantDeployEngine.getInstance().deployProject(creatorPrompt);
-      const proj = {
-        name: deployTarget.projectName,
-        description: creatorPrompt,
-        routes: ["/", "/catalog", "/checkout", "/tracking", "/api/orders"],
-        liveUrl: deployTarget.liveUrl,
+    const deployTarget = InstantDeployEngine.getInstance().deployProject(creatorPrompt);
+    const proj = {
+      name: deployTarget.projectName,
+      description: creatorPrompt,
+      routes: ["/", "/catalog", "/checkout", "/tracking", "/api/orders"],
+      liveUrl: deployTarget.liveUrl,
+      timestamp: "Just now",
+    };
+    setCreatedProject(proj);
+    toast.error("DEPLOYMENT BLOCKED: External API Configuration Required");
+    setAuditLog((prev) => [
+      {
+        id: `HD-${Date.now()}`,
+        action: "Enterprise_CREATOR_DEPLOYMENT",
         timestamp: "Just now",
-      };
-      setCreatedProject(proj);
-      toast.error("DEPLOYMENT BLOCKED: External API Configuration Required");
-      setAuditLog((prev) => [
-        {
-          id: `HD-${Date.now()}`,
-          action: "Enterprise_CREATOR_DEPLOYMENT",
-          timestamp: "Just now",
-          status: "BLOCKED",
-          detail: `Deployment blocked for '${deployTarget.projectName}'. Missing provider credentials.`,
-        },
-        ...prev,
-      ]);
-    }, 600);
+        status: "BLOCKED",
+        detail: `Deployment blocked for '${deployTarget.projectName}'. Missing provider credentials.`,
+      },
+      ...prev,
+    ]);
   };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 p-3 sm:p-5 space-y-4 font-sans">
+      {/* Canonical UMAR OS Founder Command Center Redirection Notice */}
+      <div className="rounded-2xl border border-amber-300 bg-amber-50/90 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2">
+            <Badge className="bg-amber-200/80 text-amber-950 border border-amber-400 text-[10px] font-bold uppercase">
+              Legacy Route Quarantine
+            </Badge>
+            <span className="text-xs font-bold text-slate-900">
+              Canonical UMAR OS Founder Command Center Notice
+            </span>
+          </div>
+          <p className="text-xs text-slate-700">
+            This `/app/founder-command` route inside `orderking-customers` is a quarantined legacy view with zero-initialized telemetry. Access the canonical UMAR OS Founder Command Center for verified cross-workspace operations.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <a
+            href="https://admin.orderkingpay.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl bg-slate-900 text-white hover:bg-slate-800 px-3.5 py-2 text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+          >
+            <span>Open Canonical Founder Command</span>
+            <ArrowUpRight className="size-3.5" />
+          </a>
+        </div>
+      </div>
+
       {/* Top Operations Banner */}
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div className="flex items-center gap-3">
@@ -272,11 +292,11 @@ export function FounderCommandPage() {
                 Executive Operations System
               </h1>
               <Badge className="bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-semibold uppercase">
-                OPERATIONS CONSOLE
+                QUARANTINED LEGACY VIEW
               </Badge>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Executive Management System · Operational Telemetry Active
+              Executive Management System · Zero-Initialized Local Workspace Telemetry
             </p>
           </div>
         </div>
@@ -304,7 +324,7 @@ export function FounderCommandPage() {
             </Button>
           )}
 
-          {/* Specialized Hubs Menu (Keeps all existing 22 works accessible without cluttering) */}
+          {/* Specialized Hubs Menu */}
           <div className="relative group">
             <Button
               size="sm"
@@ -348,6 +368,15 @@ export function FounderCommandPage() {
               })}
             </div>
           </div>
+          <a
+            href="https://admin.orderkingpay.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100 transition flex items-center gap-1.5 shadow-xs"
+          >
+            <Crown className="size-3.5 text-amber-700" />
+            <span className="hidden sm:inline">Canonical UMAR OS</span>
+          </a>
           <Link
             to="/"
             className="rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition flex items-center gap-1.5 shadow-xs"
@@ -762,10 +791,10 @@ export function FounderCommandPage() {
                 <div className="rounded-xl border border-border bg-surface-2 p-3 space-y-2">
                   <span className="text-xs font-bold text-fg block">The 0% Commission Merchant Proposition:</span>
                   <ul className="text-xs text-slate-300 space-y-1 list-disc list-inside">
-                    <li><strong>0% Commission</strong> for first 90 days (vs 25–35% Zomato/Swiggy tax).</li>
-                    <li><strong>True Dine-In Price Parity</strong>: Customers pay exact menu prices.</li>
-                    <li><strong>Automated Wednesday Payouts</strong> with GST statement compilation.</li>
-                    <li><strong>Free 24K Gold Table QR Standees</strong> for table ordering.</li>
+                    <li><strong>0% Introductory Commission</strong> for first 90 days on partner onboarding.</li>
+                    <li><strong>True Dine-In Price Parity</strong>: Customers pay standard restaurant menu prices.</li>
+                    <li><strong>Scheduled Settlement Cycles</strong> with Section 194-O &amp; GST statement compilation.</li>
+                    <li><strong>Table QR Standees</strong> for direct dine-in table ordering.</li>
                   </ul>
                 </div>
 
@@ -787,7 +816,7 @@ export function FounderCommandPage() {
                     variant="outline"
                     className="text-xs font-bold"
                     onClick={() => {
-                      toast.success("24K Gold Table QR Standee Kit ready! Print from browser or save as PDF.");
+                      toast.success("Table QR Standee Kit ready! Print from browser or save as PDF.");
                       window.open("/king-pay", "_blank");
                     }}
                   >
@@ -866,20 +895,20 @@ export function FounderCommandPage() {
             </div>
           </div>
 
-          {/* 5. Customer Viral WhatsApp Launch Campaign */}
+          {/* 5. Customer Outreach WhatsApp Launch Template */}
           <div className="rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/10 via-surface to-amber-500/5 p-5 sm:p-6 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <Megaphone className="size-6 text-amber-400" />
                 <div>
-                  <h3 className="font-bold text-base text-fg">5. Customer Viral WhatsApp Launch Campaign</h3>
+                  <h3 className="font-bold text-base text-fg">5. Customer WhatsApp Launch Template</h3>
                   <p className="text-xs text-muted">
-                    Broadcast this high-converting launch offer to local foodie groups and contacts with 1 tap.
+                    Share this launch offer template with local dining groups and customer contacts.
                   </p>
                 </div>
               </div>
               <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px] font-bold">
-                1-Tap Viral Blitz
+                Outreach Template
               </Badge>
             </div>
 
@@ -917,12 +946,11 @@ export function FounderCommandPage() {
                     Message Preview:
                   </span>
                   <p className="font-mono text-[11px] text-slate-200 whitespace-pre-line leading-relaxed bg-white/40 p-2.5 rounded-lg border border-border/50">
-                    {`👑 OrderKing is LIVE in ${launchTown}!
-🍗 Tired of paying 30% extra on Zomato & Swiggy?
-Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKUP (True Dine-In Prices)!
+                    {`👑 OrderKing is available in ${launchTown}!
+🍗 Order local restaurant meals, thalis & delicacies at direct dine-in menu prices!
 
 🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!
-⚡ 25-minute fast delivery to your door.
+⚡ Local neighborhood delivery to your door.
 
 👉 Order now: ${typeof window !== "undefined" ? window.location.origin : "https://orderking.in"}`}
                   </p>
@@ -933,20 +961,20 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                     size="sm"
                     className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-fg shadow-md"
                     onClick={() => {
-                      const msg = `👑 OrderKing is LIVE in ${launchTown}!\n🍗 Tired of paying 30% extra on Zomato & Swiggy?\nOrder authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKUP (True Dine-In Prices)!\n\n🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!\n⚡ 25-minute fast delivery to your door.\n\n👉 Order now: ${window.location.origin}`;
+                      const msg = `👑 OrderKing is available in ${launchTown}!\n🍗 Order local restaurant meals, thalis & delicacies at direct dine-in menu prices!\n\n🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!\n⚡ Local neighborhood delivery to your door.\n\n👉 Order now: ${window.location.origin}`;
                       void navigator.clipboard?.writeText(msg);
-                      toast.success("Viral WhatsApp launch message copied to clipboard!");
+                      toast.success("WhatsApp launch message copied to clipboard!");
                     }}
                   >
                     <Copy className="size-3.5 mr-1.5" />
-                    Copy Viral Message
+                    Copy Launch Message
                   </Button>
 
                   <Button
                     size="sm"
                     className="flex-1 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow-md"
                     onClick={() => {
-                      const msg = `👑 OrderKing is LIVE in ${launchTown}!\n🍗 Tired of paying 30% extra on Zomato & Swiggy?\nOrder authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKUP (True Dine-In Prices)!\n\n🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!\n⚡ 25-minute fast delivery to your door.\n\n👉 Order now: ${window.location.origin}`;
+                      const msg = `👑 OrderKing is available in ${launchTown}!\n🍗 Order local restaurant meals, thalis & delicacies at direct dine-in menu prices!\n\n🎁 Use code "${launchVoucherCode}" for ₹${launchVoucherDiscount} OFF your first order!\n⚡ Local neighborhood delivery to your door.\n\n👉 Order now: ${window.location.origin}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                   >
@@ -972,7 +1000,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                   Master Sovereign Circuit Breakers
                 </h2>
               </div>
-              <span className="text-xs text-emerald-400 font-mono">Direct Memory Bus: NOT VERIFIED</span>
+              <span className="text-xs text-amber-400 font-mono">Cross-App Telemetry Bus: AWAITING CONNECTION</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1038,17 +1066,17 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
               {/* Environment */}
               <div className="rounded-xl border border-border bg-white/40 p-3 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-fg block">Production Sandbox</span>
+                  <span className="text-xs font-bold text-fg block">Workspace Mode</span>
                   <span className="text-[10px] text-muted">{productionMode}</span>
                 </div>
-                <span className="rounded-full bg-[#D4AF37]/10 text-emerald-400 px-2.5 py-0.5 text-xs font-bold">
-                  ● LIVE
+                <span className="rounded-full bg-amber-500/10 text-amber-400 px-2.5 py-0.5 text-xs font-bold">
+                  ● QUARANTINED
                 </span>
               </div>
             </div>
           </div>
 
-          {/* 4-App Live Telemetry Matrix */}
+          {/* 4-App Zero-Initialized Telemetry Matrix */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* 1. Customer App */}
             <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
@@ -1057,24 +1085,24 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                   <Smartphone className="size-4 text-orange-400" />
                   <span className="text-xs font-bold text-fg">1. Customer App</span>
                 </div>
-                <span className="flex size-2 rounded-full bg-emerald-500 animate-ping" />
+                <span className="text-[10px] font-mono text-amber-400">UNVERIFIED</span>
               </div>
               <div>
-                <p className="text-2xl font-black text-fg font-mono">1,842</p>
-                <span className="text-[11px] text-muted">Active diners online</span>
+                <p className="text-2xl font-black text-fg font-mono">0</p>
+                <span className="text-[11px] text-muted">Verified active sessions</span>
               </div>
               <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
                 <div className="flex justify-between">
                   <span>P95 Latency:</span>
-                  <span className="text-emerald-400 font-bold">118ms</span>
+                  <span className="text-slate-400 font-bold">Not Measured</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Cart-to-Order:</span>
-                  <span className="text-amber-400 font-bold">69.2%</span>
+                  <span className="text-slate-400 font-bold">0.0%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Zero-Markup Savings:</span>
-                  <span className="text-emerald-400 font-bold">₹42,890 today</span>
+                  <span>Confirmed Savings:</span>
+                  <span className="text-slate-400 font-bold">₹0 today</span>
                 </div>
               </div>
             </div>
@@ -1086,24 +1114,24 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                   <Store className="size-4 text-emerald-400" />
                   <span className="text-xs font-bold text-fg">2. Kitchen Partner</span>
                 </div>
-                <span className="flex size-2 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-mono text-amber-400">UNVERIFIED</span>
               </div>
               <div>
-                <p className="text-2xl font-black text-fg font-mono">86</p>
-                <span className="text-[11px] text-muted">Active commercial kitchens</span>
+                <p className="text-2xl font-black text-fg font-mono">0</p>
+                <span className="text-[11px] text-muted">Connected commercial kitchens</span>
               </div>
               <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
                 <div className="flex justify-between">
                   <span>Avg Prep Time:</span>
-                  <span className="text-emerald-400 font-bold">13.8 mins</span>
+                  <span className="text-slate-400 font-bold">—</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Accept Rate:</span>
-                  <span className="text-emerald-400 font-bold">99.4%</span>
+                  <span className="text-slate-400 font-bold">—</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Ad Spend Today:</span>
-                  <span className="text-amber-400 font-bold">₹18,500</span>
+                  <span className="text-slate-400 font-bold">₹0</span>
                 </div>
               </div>
             </div>
@@ -1115,24 +1143,24 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                   <Truck className="size-4 text-blue-400" />
                   <span className="text-xs font-bold text-fg">3. Fleet Riders</span>
                 </div>
-                <span className="flex size-2 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-mono text-amber-400">UNVERIFIED</span>
               </div>
               <div>
-                <p className="text-2xl font-black text-fg font-mono">142</p>
-                <span className="text-[11px] text-muted">Riders on road</span>
+                <p className="text-2xl font-black text-fg font-mono">0</p>
+                <span className="text-[11px] text-muted">Verified riders on road</span>
               </div>
               <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
                 <div className="flex justify-between">
                   <span>Currently on Delivery:</span>
-                  <span className="text-blue-400 font-bold">98 orders</span>
+                  <span className="text-slate-400 font-bold">0 orders</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Avg Trip Duration:</span>
-                  <span className="text-emerald-400 font-bold">17.2 mins</span>
+                  <span className="text-slate-400 font-bold">—</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Rider Battery Avg:</span>
-                  <span className="text-emerald-400 font-bold">81%</span>
+                  <span>Rider Telemetry:</span>
+                  <span className="text-slate-400 font-bold">Awaiting GPS</span>
                 </div>
               </div>
             </div>
@@ -1144,16 +1172,16 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                   <Database className="size-4 text-purple-400" />
                   <span className="text-xs font-bold text-fg">4. Sovereign Core</span>
                 </div>
-                <span className="flex size-2 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-mono text-amber-400">LOCAL</span>
               </div>
               <div>
-                <p className="text-2xl font-black text-fg font-mono">0.00%</p>
-                <span className="text-[11px] text-muted">Deadlocks &amp; Failures</span>
+                <p className="text-2xl font-black text-fg font-mono">0</p>
+                <span className="text-[11px] text-muted">Verified DB Pool Connections</span>
               </div>
               <div className="space-y-1 text-xs text-muted border-t border-border/60 pt-2 font-mono">
                 <div className="flex justify-between">
                   <span>PostgreSQL Pool:</span>
-                  <span className="text-emerald-400 font-bold">28 / 100 Active</span>
+                  <span className="text-slate-400 font-bold">Not Connected</span>
                 </div>
                 <div className="flex justify-between">
                   <span>PGLite Memory Cache:</span>
@@ -1171,13 +1199,13 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
           <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
             <div className="flex items-center gap-2 mb-3">
               <Megaphone className="size-4 text-amber-400" />
-              <h3 className="text-sm font-bold text-fg">Fleet &amp; Kitchen Emergency Broadcast</h3>
+              <h3 className="text-sm font-bold text-fg">Fleet &amp; Kitchen Emergency Broadcast (Gateway Pending)</h3>
             </div>
             <div className="flex flex-col sm:flex-row gap-2.5">
               <Input
                 value={broadcastMessage}
                 onChange={(e) => setBroadcastMessage(e.target.value)}
-                placeholder="Type emergency alert to broadcast across all delivery riders and partner kitchens..."
+                placeholder="Log emergency alert message (requires FCM/APNs push provider for live dispatch)..."
                 className="flex-1 bg-surface-2 text-sm"
               />
               <Button
@@ -1186,7 +1214,7 @@ Order authentic Royal Dum Biryani, pure veg thalis & delicacies at 0% MENU MARKU
                 disabled={isBroadcasting}
                 className="bg-amber-500 text-black font-bold hover:bg-amber-400 shrink-0"
               >
-                {isBroadcasting ? "Broadcasting..." : "Dispatch Alert 📢"}
+                Log Broadcast Notice 📢
               </Button>
             </div>
           </div>

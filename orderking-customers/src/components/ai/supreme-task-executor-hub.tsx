@@ -65,8 +65,8 @@ export function EnterpriseTaskExecutorHub() {
 
   const handleApproveHumanGate = (gateId: string) => {
     toast.error("AUTHORIZATION FAILED: Sandbox Mode");
-    setPlan((prev) => {
-      const updatedStages = prev.stages.map((stage) => {
+    setPlan((prev: EnterpriseExecutionPlan) => {
+      const updatedStages = prev.stages.map((stage: EnterpriseStageNode) => {
         if (stage.humanGate && stage.humanGate.id === gateId) {
           return {
             ...stage,
@@ -81,7 +81,7 @@ export function EnterpriseTaskExecutorHub() {
       return {
         ...prev,
         stages: updatedStages,
-        completedStages: updatedStages.filter((s) => s.status === "COMPLETED").length,
+        completedStages: updatedStages.filter((s: EnterpriseStageNode) => s.status === "COMPLETED").length,
         isPaused: false,
         pauseReason: undefined,
       };
@@ -206,7 +206,7 @@ export function EnterpriseTaskExecutorHub() {
           <h3 className="font-bold text-fg text-sm uppercase tracking-wider">
             14-Stage Execution Graph (§28)
           </h3>
-          {plan.stages.map((stg, i) => (
+          {plan.stages.map((stg: EnterpriseStageNode, i: number) => (
             <div
               key={stg.id}
               onClick={() => setSelectedStage(stg)}
@@ -308,7 +308,7 @@ export function EnterpriseTaskExecutorHub() {
               <div>
                 <h4 className="text-xs font-semibold text-slate-300 uppercase">Deliverables:</h4>
                 <ul className="mt-2 space-y-1 text-xs text-slate-300">
-                  {selectedStage.deliverables.map((item, i) => (
+                  {selectedStage.deliverables.map((item: string, i: number) => (
                     <li key={i} className="flex items-center gap-1.5">
                       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
                       {item}

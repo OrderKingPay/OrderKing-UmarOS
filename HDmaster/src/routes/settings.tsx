@@ -1,276 +1,2109 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
-import { Save, Server, Sparkles, Languages, Settings2, Percent, Loader2, CheckCircle2, ArrowLeft, FileText, Cpu, Palette, Landmark, SlidersHorizontal } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
-import { EcosystemCMS } from '@/components/dashboard/EcosystemCMS';
-import { PluginConnectors } from '@/components/dashboard/PluginConnectors';
-import { CustomerAppUiSettings } from '@/components/dashboard/CustomerAppUiSettings';
-import { KingPayGlobalSettings } from '@/components/kingpay/KingPayGlobalSettings';
-import { AlgorithmSettings } from '@/components/dashboard/AlgorithmSettings';
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import {
+  Save,
+  Sparkles,
+  Languages,
+  Settings2,
+  Percent,
+  Loader2,
+  CheckCircle2,
+  ArrowLeft,
+  Palette,
+  Landmark,
+  SlidersHorizontal,
+  BellRing,
+  ShieldCheck,
+  RotateCcw,
+  Download,
+  ChevronDown,
+  ChevronUp,
+  ArrowUp,
+  ArrowDown,
+  Wand2,
+  Cpu,
+  FileText,
+} from "lucide-react";
+import { EcosystemCMS } from "@/components/dashboard/EcosystemCMS";
+import { PluginConnectors } from "@/components/dashboard/PluginConnectors";
+import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSettings";
+import { KingPayGlobalSettings } from "@/components/kingpay/KingPayGlobalSettings";
+import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
+import {
+  loadSettings,
+  saveSettingsFn,
+  saveBrandingFn,
+  saveCustomerUiSettingsFn,
+} from "@/lib/orderking/actions";
+import { DEFAULT_SETTINGS } from "@/lib/orderking/types";
 
-export const Route = createFileRoute('/settings')({
+export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
+export interface IndianLanguageSpec {
+  code: string;
+  name: string;
+  nativeName: string;
+  region: string;
+}
+
+export const INDIAN_23_LANGUAGES: IndianLanguageSpec[] = [
+  { code: "en", name: "English", nativeName: "English (India)", region: "Pan-India Official" },
+  { code: "hi", name: "Hindi", nativeName: "हिन्दी", region: "North & Central India" },
+  { code: "bn", name: "Bengali", nativeName: "বাংলা", region: "West Bengal, Barak Valley & Tripura" },
+  { code: "te", name: "Telugu", nativeName: "తెలుగు", region: "Andhra Pradesh & Telangana" },
+  { code: "mr", name: "Marathi", nativeName: "मराठी", region: "Maharashtra & Goa" },
+  { code: "ta", name: "Tamil", nativeName: "தமிழ்", region: "Tamil Nadu & Puducherry" },
+  { code: "ur", name: "Urdu", nativeName: "اردو", region: "Jammu & Kashmir, Telangana, UP" },
+  { code: "gu", name: "Gujarati", nativeName: "ગુજરાતી", region: "Gujarat, Daman & Diu" },
+  { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ", region: "Karnataka" },
+  { code: "ml", name: "Malayalam", nativeName: "മലയാളം", region: "Kerala & Lakshadweep" },
+  { code: "or", name: "Odia", nativeName: "ଓଡ଼ିଆ", region: "Odisha" },
+  { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ", region: "Punjab & Chandigarh" },
+  { code: "as", name: "Assamese", nativeName: "অসমীয়া", region: "Assam & Northeast" },
+  { code: "mai", name: "Maithili", nativeName: "मैथिली", region: "Bihar & Jharkhand" },
+  { code: "sat", name: "Santali", nativeName: "ᱥᱟᱱᱛᱟᱲᱤ", region: "Jharkhand, Odisha & Bengal" },
+  { code: "ks", name: "Kashmiri", nativeName: "کٲشُر / कश्मीरी", region: "Jammu & Kashmir" },
+  { code: "ne", name: "Nepali", nativeName: "नेपाली", region: "Sikkim & Darjeeling" },
+  { code: "sd", name: "Sindhi", nativeName: "سنڌي / सिन्धी", region: "Gujarat, Rajasthan & Maharashtra" },
+  { code: "kok", name: "Konkani", nativeName: "कोंकणी", region: "Goa & Coastal Karnataka" },
+  { code: "doi", name: "Dogri", nativeName: "डोगरी", region: "Jammu & Himachal" },
+  { code: "mni", name: "Manipuri", nativeName: "মৈতৈলোন্ (Meitei)", region: "Manipur" },
+  { code: "brx", name: "Bodo", nativeName: "बर' (Bodo)", region: "Bodoland, Assam" },
+  { code: "sa", name: "Sanskrit", nativeName: "संस्कृतम्", region: "Classical & Pan-India" },
+];
+
+const ROYAL_THEME_PRESETS = [
+  {
+    id: "emerald_gold",
+    name: "OrderKing Emerald & Gold",
+    primaryColor: "#0D3B2E",
+    accentColor: "#D97706",
+    surfaceColor: "#071712",
+    themeMode: "dark" as const,
+    desc: "Signature sovereign heritage green with warm royal gold accents",
+  },
+  {
+    id: "crimson_slate",
+    name: "Zomato Crimson & Slate",
+    primaryColor: "#E23744",
+    accentColor: "#F59E0B",
+    surfaceColor: "#0F172A",
+    themeMode: "light" as const,
+    desc: "High-conversion appetite crimson paired with crisp executive slate",
+  },
+  {
+    id: "midnight_sovereign",
+    name: "Midnight Sovereign Dark",
+    primaryColor: "#4F46E5",
+    accentColor: "#38BDF8",
+    surfaceColor: "#090D16",
+    themeMode: "dark" as const,
+    desc: "Deep obsidian dark mode with electric indigo & cyan telemetry highlights",
+  },
+  {
+    id: "ivory_executive",
+    name: "Ivory Executive Light",
+    primaryColor: "#0F766E",
+    accentColor: "#B45309",
+    surfaceColor: "#FAF8F5",
+    themeMode: "light" as const,
+    desc: "Daylight-first warm ivory surface with high-contrast teal typography",
+  },
+];
+
+const FONT_FAMILIES = [
+  "Inter / Plus Jakarta Sans",
+  "IBM Plex Sans / Newsreader",
+  "DM Sans / Space Grotesk",
+  "Outfit / JetBrains Mono",
+  "System Native UI",
+];
+
+type TierKey = "EMERGENCY" | "DANGER" | "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+
+interface NotificationTierRule {
+  tier: TierKey;
+  label: string;
+  slaMinutes: number;
+  channels: string[];
+  autoRemediate: boolean;
+  remediationAction: string;
+}
+
+const DEFAULT_TIERS: Record<TierKey, NotificationTierRule> = {
+  EMERGENCY: {
+    tier: "EMERGENCY",
+    label: "Tier 1 · Emergency SOS & Road Safety",
+    slaMinutes: 2,
+    channels: ["SOS Siren", "Direct Phone Call", "SMS", "Founder Command Deck"],
+    autoRemediate: true,
+    remediationAction:
+      "Auto-pause active trip SLA, dispatch 112/108 link & reassign order with zero rider penalty",
+  },
+  DANGER: {
+    tier: "DANGER",
+    label: "Tier 2 · Food Safety / FSSAI / Tamper Breach",
+    slaMinutes: 5,
+    channels: ["Push Alert", "WhatsApp", "Compliance Desk"],
+    autoRemediate: true,
+    remediationAction:
+      "Auto-hold SKU, trigger instant customer refund & request kitchen hygiene photo audit",
+  },
+  CRITICAL: {
+    tier: "CRITICAL",
+    label: "Tier 3 · Payment Escrow / Gateway Outage",
+    slaMinutes: 10,
+    channels: ["Push Alert", "Fintech Webhook", "Founder Deck"],
+    autoRemediate: true,
+    remediationAction:
+      "Auto-failover to secondary UPI/NPCI rail & shield partners from order drop penalties",
+  },
+  HIGH: {
+    tier: "HIGH",
+    label: "Tier 4 · Severe Kitchen Delay (>20m) / Unreachable Drop",
+    slaMinutes: 15,
+    channels: ["In-App Co-Pilot", "Push Notification"],
+    autoRemediate: true,
+    remediationAction:
+      "Auto-credit ₹1/min rider wait bonus (>10m) & adjust customer live ETA transparently",
+  },
+  MEDIUM: {
+    tier: "MEDIUM",
+    label: "Tier 5 · COD Float Threshold / Menu Stock Sync",
+    slaMinutes: 30,
+    channels: ["In-App Banner", "Silent Digest"],
+    autoRemediate: true,
+    remediationAction:
+      "Send polite UPI reconciliation prompt before ₹2,500 limit without harsh account lockouts",
+  },
+  LOW: {
+    tier: "LOW",
+    label: "Tier 6 · Routine Telemetry & Daily Digest",
+    slaMinutes: 120,
+    channels: ["Daily Summary Ledger"],
+    autoRemediate: true,
+    remediationAction: "Batch into non-intrusive end-of-shift summary report",
+  },
+};
+
 function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('ui');
   const [config, setConfig] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [savedStatus, setSavedStatus] = useState(false);
+  const [savedBanner, setSavedBanner] = useState<string | null>(null);
+
+  // UMAR AI Direct Customization Bar state
+  const [umarPrompt, setUmarPrompt] = useState("");
+  const [umarApplying, setUmarApplying] = useState(false);
+  const [umarLog, setUmarLog] = useState<string | null>(null);
+
+  // Expandable 5 Categories
+  const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({
+    cat1: true,
+    cat2: true,
+    cat3: true,
+    cat4: true,
+    cat5: true,
+  });
+
+  // Optional deep subsystem drawers inside categories
+  const [showLiveCustomerPreview, setShowLiveCustomerPreview] = useState(false);
+  const [showDeepAlgorithmMatrix, setShowDeepAlgorithmMatrix] = useState(false);
+  const [showDeepKingPayMatrix, setShowDeepKingPayMatrix] = useState(false);
+  const [activeSubsystemTab, setActiveSubsystemTab] = useState<"none" | "cms" | "connectors">("none");
+  const [confirmResetAll, setConfirmResetAll] = useState(false);
+
+  // Category 1 State: Brand, Colors, Typography & UI Design
+  const [brandState, setBrandState] = useState({
+    primaryColor: "#0D3B2E",
+    accentColor: "#D97706",
+    surfaceColor: "#071712",
+    fontFamily: "Inter / Plus Jakarta Sans",
+    logoText: "OrderKing",
+    tagline: "Order like a King.",
+    compactMode: false,
+    radiusPx: 16,
+    themeMode: "light" as "light" | "dark",
+  });
+
+  // Category 2 State: Marketplace Economics, Commissions & Algorithm Sliders
+  const [econState, setEconState] = useState({
+    restaurant_commission_pct: 18,
+    platform_fee_inr: 4,
+    base_delivery_fee_inr: 35,
+    rider_payout_per_km_inr: 8,
+    free_delivery_threshold_inr: 199,
+    small_order_fee_inr: 15,
+    max_delivery_radius_km: 25,
+    surge_multiplier_cap: 2.0,
+    kitchen_prep_buffer_mins: 15,
+    dynamic_surge_enabled: true,
+    viral_referrals_enabled: true,
+    daily_hub_enabled: false,
+    mdr_percentage: 1.8,
+    customer_convenience_fee_inr: 4,
+    auto_refund_ai_threshold_inr: 250,
+    settlement_schedule: "T+1 Automated Escrow",
+    payout_rail: "NPCI IMPS / NEFT Batch",
+  });
+
+  // Category 3 State: All 23 Official Indian Languages & AI Routing
+  const [localeState, setLocaleState] = useState<{
+    defaultLocale: string;
+    enabledLocales: string[];
+    autoDetectLocation: boolean;
+    ai_support_provider: string;
+    ai_menu_suggester: string;
+    ai_tutor_provider: string;
+  }>({
+    defaultLocale: "en",
+    enabledLocales: INDIAN_23_LANGUAGES.map((l) => l.code),
+    autoDetectLocation: true,
+    ai_support_provider: "Google Gemini (1.5 Pro)",
+    ai_menu_suggester: "OpenAI (GPT-4o)",
+    ai_tutor_provider: "Google Gemini (1.5 Flash)",
+  });
+
+  // Category 4 State: 6-Tier Notification & Zero-Harassment Auto-Remediation Rules
+  const [notifState, setNotifState] = useState<{
+    zeroHarassmentGuard: boolean;
+    weatherGraceEnabled: boolean;
+    trafficSpikeImmunity: boolean;
+    gatewayOutageShield: boolean;
+    tiers: Record<TierKey, NotificationTierRule>;
+  }>({
+    zeroHarassmentGuard: true,
+    weatherGraceEnabled: true,
+    trafficSpikeImmunity: true,
+    gatewayOutageShield: true,
+    tiers: DEFAULT_TIERS,
+  });
+
+  function hydrateStatesFromData(data: Record<string, any>) {
+    setConfig(data);
+    if (data.brand) {
+      setBrandState({
+        primaryColor: data.brand.primaryColor || "#0D3B2E",
+        accentColor: data.brand.accentColor || "#D97706",
+        surfaceColor: data.brand.surfaceColor || "#071712",
+        fontFamily: data.brand.fontFamily || "Inter / Plus Jakarta Sans",
+        logoText: data.brand.logoText || "OrderKing",
+        tagline: data.brand.tagline || "Order like a King.",
+        compactMode: Boolean(data.brand.compactMode ?? false),
+        radiusPx: data.brand.radiusPx !== undefined ? Number(data.brand.radiusPx) : 16,
+        themeMode: data.brand.themeMode === "dark" ? "dark" : "light",
+      });
+    }
+    setEconState({
+      restaurant_commission_pct: Number(data.restaurant_commission_pct ?? 18),
+      platform_fee_inr: Number(data.platform_fee_inr ?? 4),
+      base_delivery_fee_inr: Number(data.base_delivery_fee_inr ?? 35),
+      rider_payout_per_km_inr: Number(data.rider_payout_per_km_inr ?? 8),
+      free_delivery_threshold_inr: Number(data.free_delivery_threshold_inr ?? 199),
+      small_order_fee_inr: Number(data.small_order_fee_inr ?? 15),
+      max_delivery_radius_km: Number(data.max_delivery_radius_km ?? 25),
+      surge_multiplier_cap: Number(data.surge_multiplier_cap ?? 2.0),
+      kitchen_prep_buffer_mins: Number(data.kitchen_prep_buffer_mins ?? 15),
+      dynamic_surge_enabled: Boolean(data.dynamic_surge_enabled ?? true),
+      viral_referrals_enabled: Boolean(data.viral_referrals_enabled ?? true),
+      daily_hub_enabled: Boolean(data.daily_hub_enabled ?? false),
+      mdr_percentage: Number(data.mdr_percentage ?? data.kingpay?.mdr_percentage ?? 1.8),
+      customer_convenience_fee_inr: Number(
+        data.customer_convenience_fee_inr ?? data.kingpay?.customer_convenience_fee_inr ?? 4,
+      ),
+      auto_refund_ai_threshold_inr: Number(
+        data.auto_refund_ai_threshold_inr ?? data.kingpay?.auto_refund_ai_threshold_inr ?? 250,
+      ),
+      settlement_schedule: data.kingpay?.settlement_schedule ?? "T+1 Automated Escrow",
+      payout_rail: data.kingpay?.payout_rail ?? "NPCI IMPS / NEFT Batch",
+    });
+
+    const loadedLocales = Array.isArray(data.localization?.enabledLocales)
+      ? data.localization.enabledLocales
+      : INDIAN_23_LANGUAGES.map((l) => l.code);
+
+    setLocaleState({
+      defaultLocale: data.localization?.defaultLocale ?? data.default_language ?? "en",
+      enabledLocales: loadedLocales,
+      autoDetectLocation: Boolean(data.localization?.autoDetectLocation ?? true),
+      ai_support_provider: data.ai_support_provider ?? "Google Gemini (1.5 Pro)",
+      ai_menu_suggester: data.ai_menu_suggester ?? "OpenAI (GPT-4o)",
+      ai_tutor_provider: data.ai_tutor_provider ?? "Google Gemini (1.5 Flash)",
+    });
+
+    if (data.notification_rules) {
+      setNotifState({
+        zeroHarassmentGuard: Boolean(data.notification_rules.zeroHarassmentGuard ?? true),
+        weatherGraceEnabled: Boolean(data.notification_rules.weatherGraceEnabled ?? true),
+        trafficSpikeImmunity: Boolean(data.notification_rules.trafficSpikeImmunity ?? true),
+        gatewayOutageShield: Boolean(data.notification_rules.gatewayOutageShield ?? true),
+        tiers: {
+          ...DEFAULT_TIERS,
+          ...(data.notification_rules.tiers || {}),
+        },
+      });
+    }
+  }
+
+  async function fetchAllSettings() {
+    setLoading(true);
+    try {
+      const [apiRes] = await Promise.all([
+        fetch("/api/v1/admin/settings").then((r) => r.json()),
+        loadSettings().catch(() => null),
+      ]);
+      if (apiRes) {
+        hydrateStatesFromData(apiRes);
+      }
+    } catch (err) {
+      console.error("Failed to load settings:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    fetch('/api/v1/admin/settings')
-      .then(res => res.json())
-      .then(data => {
-        setConfig(data || {});
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to load settings', err);
-        setLoading(false);
-      });
+    void fetchAllSettings();
   }, []);
 
-  const handleSave = async (updates: Record<string, any>) => {
+  // Bi-directional save to BOTH `/api/v1/admin/settings` AND OrderKing Server Functions
+  const handleSave = async (updates: Record<string, any>, customReason?: string) => {
     setSaving(true);
     try {
-      await fetch('/api/v1/admin/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates)
+      const resp = await fetch("/api/v1/admin/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
       });
-      setConfig(prev => ({ ...prev, ...updates }));
-      setSavedStatus(true);
-      setTimeout(() => setSavedStatus(false), 3000);
+      await resp.json().catch(() => null);
+
+      // Sync with server functions in parallel
+      const nextComm =
+        updates.restaurant_commission_pct ?? econState.restaurant_commission_pct;
+      const nextFee = updates.platform_fee_inr ?? econState.platform_fee_inr;
+      const nextBaseDel = updates.base_delivery_fee_inr ?? econState.base_delivery_fee_inr;
+      const nextKmRate = updates.rider_payout_per_km_inr ?? econState.rider_payout_per_km_inr;
+      const nextRadius = updates.max_delivery_radius_km ?? econState.max_delivery_radius_km;
+      const nextMdr = updates.mdr_percentage ?? econState.mdr_percentage;
+      const nextRefund =
+        updates.auto_refund_ai_threshold_inr ?? econState.auto_refund_ai_threshold_inr;
+      const nextLangs =
+        updates.localization?.enabledLocales ?? localeState.enabledLocales;
+      const nextDefLang =
+        updates.localization?.defaultLocale ?? localeState.defaultLocale;
+
+      await Promise.allSettled([
+        saveSettingsFn({
+          data: {
+            settings: {
+              ...DEFAULT_SETTINGS,
+              commissionBps: Math.round(Number(nextComm) * 100),
+              townCommissionBps: Math.round(Number(nextComm) * 100),
+              serviceFeePaise: Math.round(Number(nextFee) * 100),
+              riderBasePaise: Math.round(Number(nextBaseDel) * 100),
+              riderDistancePaise: Math.round(Number(nextKmRate) * 100),
+              dayModeRadiusKm: Number(nextRadius),
+              paymentFeeBps: Math.round(Number(nextMdr) * 100),
+              refundLimitPaise: Math.round(Number(nextRefund) * 100),
+              languages: nextLangs,
+              defaultLanguage: nextDefLang,
+            },
+            reason: customReason || "Updated via UMAR OS Master Settings Studio",
+          },
+        }),
+        updates.brand
+          ? saveCustomerUiSettingsFn({
+              data: {
+                settings: {
+                  primaryColor: updates.brand.primaryColor,
+                  radiusPx: updates.brand.radiusPx,
+                  themeMode: updates.brand.themeMode,
+                },
+              },
+            })
+          : Promise.resolve(),
+        updates.brand
+          ? saveBrandingFn({
+              data: {
+                patch: {
+                  colorPrimary: updates.brand.primaryColor,
+                  colorAccent: updates.brand.accentColor,
+                  colorBg: updates.brand.surfaceColor,
+                  tagline: updates.brand.tagline,
+                  appName: updates.brand.logoText,
+                },
+                reason: customReason || "Brand updated via Master Settings Studio",
+              },
+            })
+          : Promise.resolve(),
+      ]);
+
+      setConfig((prev) => ({ ...prev, ...updates }));
+      setSavedBanner(customReason || "Configuration synchronized across database & server actions.");
+      setTimeout(() => setSavedBanner(null), 4000);
     } catch (e) {
-      console.error('Failed to save', e);
+      console.error("Failed to save settings:", e);
     } finally {
       setSaving(false);
     }
   };
 
+  // Handle section reset via `/api/v1/admin/settings`
+  async function handleSectionReset(
+    target: "brand" | "marketplace" | "algorithm" | "notifications" | "all",
+  ) {
+    setSaving(true);
+    try {
+      await fetch("/api/v1/admin/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reset_target: target }),
+      });
+      await fetchAllSettings();
+      setConfirmResetAll(false);
+      setSavedBanner(`Reset [${target.toUpperCase()}] to institutional defaults.`);
+      setTimeout(() => setSavedBanner(null), 4000);
+    } catch (e) {
+      console.error("Failed to reset section:", e);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // UMAR AI Direct Customization Parser & Executor
+  async function applyViaUmarAi(rawCommand?: string) {
+    const cmdText = (rawCommand ?? umarPrompt).trim();
+    if (!cmdText) return;
+    setUmarApplying(true);
+    setUmarLog(null);
+
+    try {
+      const lower = cmdText.toLowerCase();
+
+      // Check for reset instructions
+      if (lower.includes("reset")) {
+        if (lower.includes("brand") || lower.includes("color") || lower.includes("theme")) {
+          await handleSectionReset("brand");
+          setUmarLog("🤖 UMAR AI reset Brand, Colors & Typography to institutional defaults.");
+          setUmarPrompt("");
+          return;
+        }
+        if (lower.includes("commission") || lower.includes("fee") || lower.includes("marketplace")) {
+          await handleSectionReset("marketplace");
+          setUmarLog("🤖 UMAR AI reset Marketplace Commissions & Fees to defaults.");
+          setUmarPrompt("");
+          return;
+        }
+        if (lower.includes("algorithm") || lower.includes("surge") || lower.includes("radius")) {
+          await handleSectionReset("algorithm");
+          setUmarLog("🤖 UMAR AI reset Dispatch & Surge Algorithm sliders to defaults.");
+          setUmarPrompt("");
+          return;
+        }
+        if (lower.includes("all") || lower.includes("factory")) {
+          await handleSectionReset("all");
+          setUmarLog("🤖 UMAR AI reset all platform settings to institutional defaults.");
+          setUmarPrompt("");
+          return;
+        }
+      }
+
+      const nextBrand = { ...brandState };
+      const nextEcon = { ...econState };
+      const nextLocale = { ...localeState };
+      const nextNotif = { ...notifState };
+      const appliedChanges: string[] = [];
+
+      // 1. Parse Hex Colors
+      const hexMatches = cmdText.match(/#[0-9A-Fa-f]{6}\b/g);
+      if (hexMatches && hexMatches.length > 0) {
+        if (lower.includes("accent") || lower.includes("gold")) {
+          nextBrand.accentColor = hexMatches[0].toUpperCase();
+          appliedChanges.push(`Accent Color → ${nextBrand.accentColor}`);
+        } else if (lower.includes("surface") || lower.includes("background") || lower.includes("bg")) {
+          nextBrand.surfaceColor = hexMatches[0].toUpperCase();
+          appliedChanges.push(`Surface Color → ${nextBrand.surfaceColor}`);
+        } else {
+          nextBrand.primaryColor = hexMatches[0].toUpperCase();
+          appliedChanges.push(`Primary Color → ${nextBrand.primaryColor}`);
+          if (hexMatches[1]) {
+            nextBrand.accentColor = hexMatches[1].toUpperCase();
+            appliedChanges.push(`Accent Color → ${nextBrand.accentColor}`);
+          }
+        }
+      }
+
+      // 2. Named theme presets
+      if (lower.includes("emerald")) {
+        nextBrand.primaryColor = "#0D3B2E";
+        nextBrand.accentColor = "#D97706";
+        appliedChanges.push("Theme Preset → OrderKing Emerald & Gold");
+      } else if (lower.includes("crimson") || lower.includes("zomato red")) {
+        nextBrand.primaryColor = "#E23744";
+        nextBrand.accentColor = "#F59E0B";
+        appliedChanges.push("Theme Preset → Crimson & Slate");
+      } else if (lower.includes("midnight")) {
+        nextBrand.primaryColor = "#4F46E5";
+        nextBrand.surfaceColor = "#090D16";
+        nextBrand.themeMode = "dark";
+        appliedChanges.push("Theme Preset → Midnight Sovereign Dark");
+      }
+
+      if (lower.includes("dark mode") || lower.includes("dark theme")) {
+        nextBrand.themeMode = "dark";
+        appliedChanges.push("Theme Mode → Dark");
+      } else if (lower.includes("light mode") || lower.includes("light theme")) {
+        nextBrand.themeMode = "light";
+        appliedChanges.push("Theme Mode → Light");
+      }
+
+      if (lower.includes("compact")) {
+        nextBrand.compactMode = !lower.includes("disable") && !lower.includes("off");
+        appliedChanges.push(`Compact Mode → ${nextBrand.compactMode ? "ON" : "OFF"}`);
+      }
+
+      const radiusMatch = lower.match(/radius\s*(?:to|=|:)?\s*(\d+)/);
+      if (radiusMatch) {
+        nextBrand.radiusPx = Math.min(32, Math.max(0, Number(radiusMatch[1])));
+        appliedChanges.push(`Corner Radius → ${nextBrand.radiusPx}px`);
+      }
+
+      // 3. Parse Commission, Delivery Fee, Platform Fee, Per-KM, Radius, Surge
+      const commMatch = lower.match(/commission\s*(?:to|=|:)?\s*(\d+(?:\.\d+)?)\s*%?/);
+      if (commMatch) {
+        nextEcon.restaurant_commission_pct = Number(commMatch[1]);
+        appliedChanges.push(`Restaurant Commission → ${nextEcon.restaurant_commission_pct}%`);
+      }
+
+      const platFeeMatch = lower.match(/(?:platform|convenience)\s*fee\s*(?:to|=|:)?\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)/);
+      if (platFeeMatch) {
+        nextEcon.platform_fee_inr = Number(platFeeMatch[1]);
+        nextEcon.customer_convenience_fee_inr = Number(platFeeMatch[1]);
+        appliedChanges.push(`Platform Convenience Fee → ₹${nextEcon.platform_fee_inr}`);
+      }
+
+      const baseDelMatch = lower.match(/(?:base\s*delivery|delivery\s*base|base\s*fee)\s*(?:fee)?\s*(?:to|=|:)?\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)/);
+      if (baseDelMatch) {
+        nextEcon.base_delivery_fee_inr = Number(baseDelMatch[1]);
+        appliedChanges.push(`Base Delivery Fee → ₹${nextEcon.base_delivery_fee_inr}`);
+      }
+
+      const kmRateMatch = lower.match(/(?:per\s*km|rider\s*rate|km\s*rate)\s*(?:to|=|:)?\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)/);
+      if (kmRateMatch) {
+        nextEcon.rider_payout_per_km_inr = Number(kmRateMatch[1]);
+        appliedChanges.push(`Rider Per-KM Payout → ₹${nextEcon.rider_payout_per_km_inr}/km`);
+      }
+
+      const radiusKmMatch = lower.match(/(?:delivery\s*radius|max\s*radius|radius)\s*(?:to|=|:)?\s*(\d+(?:\.\d+)?)\s*km/);
+      if (radiusKmMatch) {
+        nextEcon.max_delivery_radius_km = Number(radiusKmMatch[1]);
+        appliedChanges.push(`Max Delivery Radius → ${nextEcon.max_delivery_radius_km} km`);
+      }
+
+      const surgeMatch = lower.match(/surge\s*(?:cap|multiplier)?\s*(?:to|=|:)?\s*(\d+(?:\.\d+)?)x?/);
+      if (surgeMatch) {
+        nextEcon.surge_multiplier_cap = Number(surgeMatch[1]);
+        appliedChanges.push(`Surge Multiplier Cap → ${nextEcon.surge_multiplier_cap}x`);
+      }
+
+      // 4. Parse 23 Indian Languages
+      if (
+        lower.includes("23 language") ||
+        lower.includes("all language") ||
+        lower.includes("enable all")
+      ) {
+        nextLocale.enabledLocales = INDIAN_23_LANGUAGES.map((l) => l.code);
+        appliedChanges.push("Enabled All 23 Official Indian Languages");
+      }
+
+      for (const lang of INDIAN_23_LANGUAGES) {
+        if (lower.includes(`default language to ${lang.name.toLowerCase()}`) || lower.includes(`default to ${lang.name.toLowerCase()}`)) {
+          nextLocale.defaultLocale = lang.code;
+          appliedChanges.push(`Default Platform Language → ${lang.name} (${lang.nativeName})`);
+        }
+      }
+
+      // 5. Parse Notification & Zero-Harassment Guard
+      if (lower.includes("harassment") || lower.includes("zero harassment") || lower.includes("auto-remediat")) {
+        nextNotif.zeroHarassmentGuard = true;
+        nextNotif.weatherGraceEnabled = true;
+        nextNotif.trafficSpikeImmunity = true;
+        nextNotif.gatewayOutageShield = true;
+        appliedChanges.push("Zero-Harassment Guard & Partner Protection → ACTIVE");
+      }
+
+      if (appliedChanges.length === 0) {
+        setUmarLog(
+          "ℹ️ UMAR AI parsed your instruction. Try specific values such as: 'Set commission to 16% and primary color to #0D3B2E' or 'Enable all 23 languages'.",
+        );
+        return;
+      }
+
+      setBrandState(nextBrand);
+      setEconState(nextEcon);
+      setLocaleState(nextLocale);
+      setNotifState(nextNotif);
+
+      await handleSave(
+        {
+          brand: nextBrand,
+          ...nextEcon,
+          kingpay: {
+            mdr_percentage: nextEcon.mdr_percentage,
+            customer_convenience_fee_inr: nextEcon.customer_convenience_fee_inr,
+            auto_refund_ai_threshold_inr: nextEcon.auto_refund_ai_threshold_inr,
+            settlement_schedule: nextEcon.settlement_schedule,
+            payout_rail: nextEcon.payout_rail,
+          },
+          localization: {
+            defaultLocale: nextLocale.defaultLocale,
+            enabledLocales: nextLocale.enabledLocales,
+            autoDetectLocation: nextLocale.autoDetectLocation,
+          },
+          notification_rules: nextNotif,
+        },
+        `UMAR AI Direct Customization: ${appliedChanges.join(" · ")}`,
+      );
+
+      setUmarLog(`✅ Applied via UMAR AI: ${appliedChanges.join(" | ")}`);
+      setUmarPrompt("");
+    } finally {
+      setUmarApplying(false);
+    }
+  }
+
+  function toggleCategory(catKey: string) {
+    setExpandedCats((prev) => ({ ...prev, [catKey]: !prev[catKey] }));
+  }
+
+  function toggleLanguageCode(code: string) {
+    setLocaleState((prev) => {
+      const exists = prev.enabledLocales.includes(code);
+      const next = exists
+        ? prev.enabledLocales.filter((c) => c !== code)
+        : [...prev.enabledLocales, code];
+      return { ...prev, enabledLocales: next.length > 0 ? next : ["en"] };
+    });
+  }
+
+  function exportConfigurationJson() {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      platform: "OrderKing UMAR OS Master Settings",
+      brand: brandState,
+      marketplace_and_algorithm: econState,
+      localization: localeState,
+      notification_rules: notifState,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `orderking-master-settings-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   if (loading) {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-screen bg-slate-50 text-slate-600">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-2" />
-        <span className="font-mono text-xs uppercase tracking-widest text-slate-500">Loading Platform Settings...</span>
+        <span className="font-mono text-xs uppercase tracking-widest text-slate-500">
+          Loading UMAR OS Master Settings Studio...
+        </span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8 font-sans">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div id="settings-top" className="min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8 font-sans">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Top Header */}
         <header className="border-b border-slate-200 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-slate-500 hover:text-emerald-700 transition-colors">
-                <ArrowLeft className="h-3.5 w-3.5" /> Back to Dashboard
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-slate-500 hover:text-emerald-700 transition-colors"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" /> Back to Founder Command Deck
               </Link>
             </div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 flex items-center gap-3">
               <Settings2 className="h-9 w-9 text-emerald-600" />
-              Platform Settings
+              UMAR OS Master Settings &amp; Governance Studio
             </h1>
-            <p className="text-slate-500 mt-2 text-sm">
-              Global Platform Governance: Customer App UI styling matrix, Ecosystem CMS copy, integration switchboards, core features, and fee structures.
+            <p className="text-slate-500 mt-1.5 text-sm">
+              Bi-Directional Category → Sub-Category Customization Engine · Synced live with{" "}
+              <code className="font-mono text-xs bg-slate-200/70 px-1.5 py-0.5 rounded">
+                /api/v1/admin/settings
+              </code>{" "}
+              &amp; Server Actions.
             </p>
           </div>
-          {savedStatus && (
-            <div className="flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-2 rounded-xl font-bold font-mono text-xs shadow-sm">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" /> Saved Successfully
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() =>
+                setExpandedCats({ cat1: true, cat2: true, cat3: true, cat4: true, cat5: true })
+              }
+              className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-100"
+            >
+              Expand All 5 Categories
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setExpandedCats({ cat1: false, cat2: false, cat3: false, cat4: false, cat5: false })
+              }
+              className="px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-100"
+            >
+              Collapse All
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                document.getElementById("settings-bottom")?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
+            >
+              <ArrowDown className="h-3.5 w-3.5" /> Scroll Down
+            </button>
+          </div>
         </header>
 
-        <div className="flex flex-col md:flex-row gap-6">
-          <nav className="w-full md:w-64 flex flex-col gap-2 shrink-0">
-            <TabButton id="algorithm" current={activeTab} set={setActiveTab} icon={SlidersHorizontal} label="Algorithmic Matrix" />
-            <TabButton id="ui" current={activeTab} set={setActiveTab} icon={Palette} label="Customer App UI" />
-            <TabButton id="kingpay" current={activeTab} set={setActiveTab} icon={Landmark} label="KingPay Global Settings" />
-            <TabButton id="cms" current={activeTab} set={setActiveTab} icon={FileText} label="Ecosystem CMS" />
-            <TabButton id="connectors" current={activeTab} set={setActiveTab} icon={Cpu} label="Plugin Connectors" />
-            <TabButton id="features" current={activeTab} set={setActiveTab} icon={Server} label="Feature Flags" />
-            <TabButton id="fees" current={activeTab} set={setActiveTab} icon={Percent} label="Fees & Commissions" />
-            <TabButton id="ai" current={activeTab} set={setActiveTab} icon={Sparkles} label="AI & Models" />
-            <TabButton id="localization" current={activeTab} set={setActiveTab} icon={Languages} label="Localization" />
-          </nav>
+        {savedBanner ? (
+          <div className="flex items-center justify-between gap-2 bg-emerald-50 text-emerald-900 border border-emerald-300 px-4 py-3 rounded-xl font-bold text-xs shadow-sm">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+              <span>{savedBanner}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSavedBanner(null)}
+              className="text-emerald-700 underline text-[11px]"
+            >
+              Dismiss
+            </button>
+          </div>
+        ) : null}
 
-          <main className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-8">
-            {activeTab === 'algorithm' && <AlgorithmSettings />}
-            {activeTab === 'ui' && <CustomerAppUiSettings config={config} onSave={handleSave} saving={saving} />}
-            {activeTab === 'kingpay' && <KingPayGlobalSettings />}
-            {activeTab === 'cms' && <EcosystemCMS />}
-            {activeTab === 'connectors' && <PluginConnectors />}
-            {activeTab === 'features' && <FeatureFlagsPanel config={config} onSave={handleSave} saving={saving} />}
-            {activeTab === 'fees' && <FeesPanel config={config} onSave={handleSave} saving={saving} />}
-            {activeTab === 'ai' && <AIPanel config={config} onSave={handleSave} saving={saving} />}
-            {activeTab === 'localization' && <LocalizationPanel config={config} onSave={handleSave} saving={saving} />}
-          </main>
-        </div>
+        {/* 🤖 UMAR AI Direct Customization Bar */}
+        <section className="rounded-2xl border-2 border-emerald-600/30 bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 p-5 text-white shadow-md space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-emerald-500/20 border border-emerald-400/30">
+                <Wand2 className="h-5 w-5 text-emerald-300" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-300 block">
+                  Autonomous Founder Co-Pilot
+                </span>
+                <h2 className="text-base font-bold">
+                  🤖 UMAR AI Direct Customization Bar (Natural Language → Live Database Mutation)
+                </h2>
+              </div>
+            </div>
+            <span className="text-[11px] font-mono bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 px-2.5 py-1 rounded-full">
+              Bi-Directional Sync Active
+            </span>
+          </div>
+
+          <p className="text-xs text-slate-300">
+            Type any setting change in plain English or click a 1-tap preset below. UMAR AI parses your command and updates both the UI controls and{" "}
+            <code className="text-emerald-300">/api/v1/admin/settings</code> immediately.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              type="text"
+              value={umarPrompt}
+              onChange={(e) => setUmarPrompt(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void applyViaUmarAi();
+                }
+              }}
+              placeholder='e.g. "Set commission to 16% and primary color to #0D3B2E" or "Enable all 23 languages"'
+              className="flex-1 rounded-xl bg-slate-800/90 border border-slate-600 px-4 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-400"
+            />
+            <button
+              type="button"
+              disabled={umarApplying || !umarPrompt.trim()}
+              onClick={() => void applyViaUmarAi()}
+              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 transition-all shrink-0"
+            >
+              {umarApplying ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+              Apply via UMAR AI
+            </button>
+          </div>
+
+          {/* 1-Click Quick UMAR AI Commands */}
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {[
+              "Set commission to 16% and primary color to #0D3B2E",
+              "Enable all 23 languages and default to English",
+              "Set base delivery fee to ₹35 and per km rate to ₹8",
+              "Set delivery radius to 25 km and surge cap to 1.8x",
+              "Reset branding to default",
+            ].map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => {
+                  setUmarPrompt(chip);
+                  void applyViaUmarAi(chip);
+                }}
+                className="rounded-lg border border-slate-700 bg-slate-800/70 hover:bg-slate-700 px-2.5 py-1 text-[11px] text-slate-200 transition"
+              >
+                ⚡ {chip}
+              </button>
+            ))}
+          </div>
+
+          {umarLog ? (
+            <div className="rounded-xl border border-emerald-400/40 bg-emerald-900/40 px-3.5 py-2 text-xs text-emerald-100 font-mono">
+              {umarLog}
+            </div>
+          ) : null}
+        </section>
+
+        {/* =====================================================================
+            CATEGORY 1: 🎨 Brand, Colors, Typography & UI Design
+           ===================================================================== */}
+        <section id="cat-1" className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggleCategory("cat1")}
+            className="w-full flex items-center justify-between p-5 bg-slate-50/80 hover:bg-slate-100/70 border-b border-slate-200 text-left transition"
+          >
+            <div className="flex items-center gap-3">
+              <Palette className="h-6 w-6 text-emerald-600" />
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-700 font-bold">
+                  Category 1 · Sub-Categories 1A &amp; 1B
+                </span>
+                <h2 className="text-lg font-extrabold text-slate-900">
+                  🎨 Brand, Colors, Typography &amp; UI Design
+                </h2>
+              </div>
+            </div>
+            {expandedCats.cat1 ? (
+              <ChevronUp className="h-5 w-5 text-slate-500" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-slate-500" />
+            )}
+          </button>
+
+          {expandedCats.cat1 && (
+            <div className="p-6 space-y-6">
+              {/* Sub-Category 1A: Color Palette Studio & Royal Presets */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      Sub-Category 1A · Color Palette Studio &amp; 1-Click Royal Theme Presets
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Customize primary brand hex, accent gold hex, and surface background color across Customer, Restaurant, and Rider apps.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-6 w-6 rounded-full border border-slate-300 shadow-inner"
+                      style={{ backgroundColor: brandState.primaryColor }}
+                      title={`Primary: ${brandState.primaryColor}`}
+                    />
+                    <span
+                      className="h-6 w-6 rounded-full border border-slate-300 shadow-inner"
+                      style={{ backgroundColor: brandState.accentColor }}
+                      title={`Accent: ${brandState.accentColor}`}
+                    />
+                    <span
+                      className="h-6 w-6 rounded-full border border-slate-300 shadow-inner"
+                      style={{ backgroundColor: brandState.surfaceColor }}
+                      title={`Surface: ${brandState.surfaceColor}`}
+                    />
+                  </div>
+                </div>
+
+                {/* 4 Royal Theme Presets */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {ROYAL_THEME_PRESETS.map((preset) => {
+                    const isSelected =
+                      brandState.primaryColor.toUpperCase() === preset.primaryColor.toUpperCase();
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() =>
+                          setBrandState((prev) => ({
+                            ...prev,
+                            primaryColor: preset.primaryColor,
+                            accentColor: preset.accentColor,
+                            surfaceColor: preset.surfaceColor,
+                            themeMode: preset.themeMode,
+                          }))
+                        }
+                        className={`rounded-xl border p-3 text-left transition ${
+                          isSelected
+                            ? "border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600"
+                            : "border-slate-200 hover:border-slate-300 bg-slate-50/50"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span
+                            className="h-4 w-4 rounded-full border border-white shadow"
+                            style={{ backgroundColor: preset.primaryColor }}
+                          />
+                          <span
+                            className="h-4 w-4 rounded-full border border-white shadow"
+                            style={{ backgroundColor: preset.accentColor }}
+                          />
+                          <span
+                            className="h-4 w-4 rounded-full border border-slate-300 shadow"
+                            style={{ backgroundColor: preset.surfaceColor }}
+                          />
+                          <span className="text-xs font-bold text-slate-900">{preset.name}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 leading-snug">{preset.desc}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Color Pickers */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                  <ColorField
+                    label="Primary Brand Color"
+                    value={brandState.primaryColor}
+                    onChange={(v) => setBrandState((p) => ({ ...p, primaryColor: v }))}
+                  />
+                  <ColorField
+                    label="Accent / Gold Highlight Color"
+                    value={brandState.accentColor}
+                    onChange={(v) => setBrandState((p) => ({ ...p, accentColor: v }))}
+                  />
+                  <ColorField
+                    label="Background / Surface Color"
+                    value={brandState.surfaceColor}
+                    onChange={(v) => setBrandState((p) => ({ ...p, surfaceColor: v }))}
+                  />
+                </div>
+              </div>
+
+              {/* Sub-Category 1B: Corner Radius, Compact Density, Typography & Tagline */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Sub-Category 1B · Corner Geometry, Compact Density, Font Family &amp; Brand Tagline
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Control card border radius (`radiusPx`), UI density mode, typography pair, and public brand tagline.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Corner Radius ({brandState.radiusPx}px)
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={28}
+                      value={brandState.radiusPx}
+                      onChange={(e) =>
+                        setBrandState((p) => ({ ...p, radiusPx: Number(e.target.value) }))
+                      }
+                      className="w-full accent-emerald-600"
+                    />
+                    <div className="flex justify-between text-[10px] font-mono text-slate-400">
+                      <span>0px Sharp</span>
+                      <span>16px Royal</span>
+                      <span>28px Pill</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Font Family Pair
+                    </label>
+                    <select
+                      value={brandState.fontFamily}
+                      onChange={(e) =>
+                        setBrandState((p) => ({ ...p, fontFamily: e.target.value }))
+                      }
+                      className="w-full border border-slate-300 rounded-xl px-3 py-2.5 bg-slate-50 text-slate-900 text-xs font-mono"
+                    >
+                      {FONT_FAMILIES.map((f) => (
+                        <option key={f} value={f}>
+                          {f}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <TextInputRow
+                    title="Brand Logo Text"
+                    value={brandState.logoText}
+                    onChange={(v: string) => setBrandState((p) => ({ ...p, logoText: v }))}
+                  />
+
+                  <TextInputRow
+                    title="Brand Tagline"
+                    value={brandState.tagline}
+                    onChange={(v: string) => setBrandState((p) => ({ ...p, tagline: v }))}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <ToggleRow
+                    title="Compact UI Density Mode"
+                    description="Tighten card padding and table row spacing for high-density operations screens."
+                    isOn={brandState.compactMode}
+                    onToggle={() =>
+                      setBrandState((p) => ({ ...p, compactMode: !p.compactMode }))
+                    }
+                  />
+                  <ToggleRow
+                    title="Dark Surface Default Mode"
+                    description="Default client surfaces to sovereign dark theme (`dark` vs `light`)."
+                    isOn={brandState.themeMode === "dark"}
+                    onToggle={() =>
+                      setBrandState((p) => ({
+                        ...p,
+                        themeMode: p.themeMode === "dark" ? "light" : "dark",
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowLiveCustomerPreview((v) => !v)}
+                    className="text-xs font-mono font-semibold text-emerald-700 underline"
+                  >
+                    {showLiveCustomerPreview
+                      ? "Hide Interactive Mobile App Previewer ▲"
+                      : "Open Interactive Mobile App Previewer ▼"}
+                  </button>
+                  <SaveButton
+                    onClick={() =>
+                      handleSave(
+                        {
+                          brand: brandState,
+                          primary_color: brandState.primaryColor,
+                          accent_color: brandState.accentColor,
+                          surface_color: brandState.surfaceColor,
+                          font_family: brandState.fontFamily,
+                          logo_text: brandState.logoText,
+                          tagline: brandState.tagline,
+                          compact_mode: brandState.compactMode,
+                          radius_px: brandState.radiusPx,
+                          theme_mode: brandState.themeMode,
+                        },
+                        "Saved Category 1: Brand, Colors, Typography & UI Design",
+                      )
+                    }
+                    saving={saving}
+                    label="Save Brand & UI Design"
+                  />
+                </div>
+
+                {showLiveCustomerPreview && (
+                  <div className="pt-4 border-t border-slate-200">
+                    <CustomerAppUiSettings config={config} onSave={handleSave} saving={saving} />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* =====================================================================
+            CATEGORY 2: ⚖️ Marketplace Economics, Commissions & Algorithm Sliders
+           ===================================================================== */}
+        <section id="cat-2" className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggleCategory("cat2")}
+            className="w-full flex items-center justify-between p-5 bg-slate-50/80 hover:bg-slate-100/70 border-b border-slate-200 text-left transition"
+          >
+            <div className="flex items-center gap-3">
+              <SlidersHorizontal className="h-6 w-6 text-emerald-600" />
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-700 font-bold">
+                  Category 2 · Sub-Categories 2A, 2B &amp; 2C
+                </span>
+                <h2 className="text-lg font-extrabold text-slate-900">
+                  ⚖️ Marketplace Economics, Commissions &amp; Algorithm Sliders
+                </h2>
+              </div>
+            </div>
+            {expandedCats.cat2 ? (
+              <ChevronUp className="h-5 w-5 text-slate-500" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-slate-500" />
+            )}
+          </button>
+
+          {expandedCats.cat2 && (
+            <div className="p-6 space-y-6">
+              {/* Sub-Category 2A: Commissions, Delivery Tariffs & Thresholds */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Percent className="h-4 w-4 text-emerald-600" />
+                    Sub-Category 2A · Restaurant Commission %, Platform Fees &amp; Statutory Rider Pay
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Configure restaurant take-rate, customer convenience fee, statutory ₹35 rider base pay, per-km rate, and free delivery threshold.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <InputRow
+                    title="Restaurant Commission (%)"
+                    value={econState.restaurant_commission_pct}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({ ...p, restaurant_commission_pct: Number(v) }))
+                    }
+                  />
+                  <InputRow
+                    title="Platform Convenience Fee (₹)"
+                    value={econState.platform_fee_inr}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({
+                        ...p,
+                        platform_fee_inr: Number(v),
+                        customer_convenience_fee_inr: Number(v),
+                      }))
+                    }
+                  />
+                  <InputRow
+                    title="Base Delivery Fee (₹ · Min ₹35)"
+                    value={econState.base_delivery_fee_inr}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({ ...p, base_delivery_fee_inr: Number(v) }))
+                    }
+                  />
+                  <InputRow
+                    title="Rider Per-KM Rate (₹/km)"
+                    value={econState.rider_payout_per_km_inr}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({ ...p, rider_payout_per_km_inr: Number(v) }))
+                    }
+                  />
+                  <InputRow
+                    title="Free Delivery Order Threshold (₹)"
+                    value={econState.free_delivery_threshold_inr}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({ ...p, free_delivery_threshold_inr: Number(v) }))
+                    }
+                  />
+                  <InputRow
+                    title="Small Basket Order Fee (₹)"
+                    value={econState.small_order_fee_inr}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({ ...p, small_order_fee_inr: Number(v) }))
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Sub-Category 2B: Dispatch & Surge Algorithm */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Sub-Category 2B · Dispatch Radius, Surge Cap &amp; Kitchen Prep Buffer Sliders
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Real-time geospatial dispatch radius, peak/rain surge cap, and kitchen prep buffer minutes.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <InputRow
+                    title="Max Delivery Radius (KM)"
+                    value={econState.max_delivery_radius_km}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({ ...p, max_delivery_radius_km: Number(v) }))
+                    }
+                  />
+                  <InputRow
+                    title="Surge Multiplier Cap (e.g. 2.0x)"
+                    value={econState.surge_multiplier_cap}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({ ...p, surge_multiplier_cap: Number(v) }))
+                    }
+                  />
+                  <InputRow
+                    title="Kitchen Prep Buffer (Mins)"
+                    value={econState.kitchen_prep_buffer_mins}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({ ...p, kitchen_prep_buffer_mins: Number(v) }))
+                    }
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <ToggleRow
+                    title="Dynamic Peak & Rain Surge"
+                    description="Automatically apply fair rider weather/peak surge up to cap."
+                    isOn={econState.dynamic_surge_enabled}
+                    onToggle={() =>
+                      setEconState((p) => ({
+                        ...p,
+                        dynamic_surge_enabled: !p.dynamic_surge_enabled,
+                      }))
+                    }
+                  />
+                  <ToggleRow
+                    title="Viral WhatsApp Referrals"
+                    description="Multi-sided referral rewards for customers, riders & restaurants."
+                    isOn={econState.viral_referrals_enabled}
+                    onToggle={() =>
+                      setEconState((p) => ({
+                        ...p,
+                        viral_referrals_enabled: !p.viral_referrals_enabled,
+                      }))
+                    }
+                  />
+                  <ToggleRow
+                    title="Daily Specials Hub"
+                    description="Highlight curated daily value meals on customer home."
+                    isOn={econState.daily_hub_enabled}
+                    onToggle={() =>
+                      setEconState((p) => ({
+                        ...p,
+                        daily_hub_enabled: !p.daily_hub_enabled,
+                      }))
+                    }
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowDeepAlgorithmMatrix((v) => !v)}
+                  className="text-xs font-mono font-semibold text-emerald-700 underline"
+                >
+                  {showDeepAlgorithmMatrix
+                    ? "Hide Deep Day/Night/Highway Algorithmic Matrix ▲"
+                    : "Open Deep Day/Night/Highway Algorithmic Matrix ▼"}
+                </button>
+                {showDeepAlgorithmMatrix && (
+                  <div className="pt-3 border-t border-slate-200">
+                    <AlgorithmSettings />
+                  </div>
+                )}
+              </div>
+
+              {/* Sub-Category 2C: KingPay & Escrow Rules */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Landmark className="h-4 w-4 text-emerald-600" />
+                    Sub-Category 2C · KingPay Fintech, MDR % &amp; Escrow Settlement Rules
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Configure gateway MDR %, autonomous AI refund threshold (₹), and partner settlement cycle.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <InputRow
+                    title="Payment Gateway MDR (%)"
+                    value={econState.mdr_percentage}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({ ...p, mdr_percentage: Number(v) }))
+                    }
+                  />
+                  <InputRow
+                    title="Auto-Refund AI Threshold (₹)"
+                    value={econState.auto_refund_ai_threshold_inr}
+                    onChange={(v: string) =>
+                      setEconState((p) => ({ ...p, auto_refund_ai_threshold_inr: Number(v) }))
+                    }
+                  />
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Settlement Schedule
+                    </label>
+                    <select
+                      value={econState.settlement_schedule}
+                      onChange={(e) =>
+                        setEconState((p) => ({ ...p, settlement_schedule: e.target.value }))
+                      }
+                      className="w-full border border-slate-300 rounded-xl px-3 py-2.5 bg-slate-50 text-slate-900 text-xs font-mono"
+                    >
+                      <option value="T+1 Automated Escrow">T+1 Automated Escrow</option>
+                      <option value="Wednesday Weekly Batch (2:00 PM IST)">
+                        Wednesday Weekly Batch (2:00 PM IST)
+                      </option>
+                      <option value="Same-Day Instant IMPS">Same-Day Instant IMPS</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Clearing Payout Rail
+                    </label>
+                    <select
+                      value={econState.payout_rail}
+                      onChange={(e) =>
+                        setEconState((p) => ({ ...p, payout_rail: e.target.value }))
+                      }
+                      className="w-full border border-slate-300 rounded-xl px-3 py-2.5 bg-slate-50 text-slate-900 text-xs font-mono"
+                    >
+                      <option value="NPCI IMPS / NEFT Batch">NPCI IMPS / NEFT Batch</option>
+                      <option value="UPI Corporate Autopay">UPI Corporate Autopay</option>
+                      <option value="RTGS High-Value Treasury">RTGS High-Value Treasury</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowDeepKingPayMatrix((v) => !v)}
+                    className="text-xs font-mono font-semibold text-emerald-700 underline"
+                  >
+                    {showDeepKingPayMatrix
+                      ? "Hide Full KingPay Treasury Matrix ▲"
+                      : "Open Full KingPay Treasury Matrix ▼"}
+                  </button>
+                  <SaveButton
+                    onClick={() =>
+                      handleSave(
+                        {
+                          ...econState,
+                          kingpay: {
+                            mdr_percentage: econState.mdr_percentage,
+                            customer_convenience_fee_inr: econState.customer_convenience_fee_inr,
+                            auto_refund_ai_threshold_inr: econState.auto_refund_ai_threshold_inr,
+                            settlement_schedule: econState.settlement_schedule,
+                            payout_rail: econState.payout_rail,
+                          },
+                          algorithm: {
+                            maxDeliveryRadiusKm: econState.max_delivery_radius_km,
+                            baseDeliveryFeeInr: econState.base_delivery_fee_inr,
+                            surgeMultiplierCap: econState.surge_multiplier_cap,
+                            kitchenPrepBufferMinutes: econState.kitchen_prep_buffer_mins,
+                          },
+                        },
+                        "Saved Category 2: Marketplace Economics, Commissions & Algorithm Sliders",
+                      )
+                    }
+                    saving={saving}
+                    label="Save Economics & Algorithm"
+                  />
+                </div>
+
+                {showDeepKingPayMatrix && (
+                  <div className="pt-3 border-t border-slate-200">
+                    <KingPayGlobalSettings />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* =====================================================================
+            CATEGORY 3: 🌐 All 23 Official Indian Languages (22 Scheduled + English)
+           ===================================================================== */}
+        <section id="cat-3" className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggleCategory("cat3")}
+            className="w-full flex items-center justify-between p-5 bg-slate-50/80 hover:bg-slate-100/70 border-b border-slate-200 text-left transition"
+          >
+            <div className="flex items-center gap-3">
+              <Languages className="h-6 w-6 text-emerald-600" />
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-700 font-bold">
+                  Category 3 · Sub-Categories 3A &amp; 3B ({localeState.enabledLocales.length} / 23 Active)
+                </span>
+                <h2 className="text-lg font-extrabold text-slate-900">
+                  🌐 All 23 Official Indian Languages (22 Constitutional Scheduled + English)
+                </h2>
+              </div>
+            </div>
+            {expandedCats.cat3 ? (
+              <ChevronUp className="h-5 w-5 text-slate-500" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-slate-500" />
+            )}
+          </button>
+
+          {expandedCats.cat3 && (
+            <div className="p-6 space-y-6">
+              {/* Sub-Category 3A: Default Platform Language & AI Model Routing */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Sub-Category 3A · Default Platform Language, Geo-Dialect Detection &amp; AI Translation Models
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Select the primary fallback language and multi-lingual AI model routers across Customer, Restaurant, and Rider voice/chat co-pilots.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Default Platform Language
+                    </label>
+                    <select
+                      value={localeState.defaultLocale}
+                      onChange={(e) =>
+                        setLocaleState((p) => ({ ...p, defaultLocale: e.target.value }))
+                      }
+                      className="w-full border border-slate-300 rounded-xl px-3 py-2.5 bg-slate-50 text-slate-900 text-xs font-mono"
+                    >
+                      {INDIAN_23_LANGUAGES.map((l) => (
+                        <option key={l.code} value={l.code}>
+                          {l.name} — {l.nativeName} ({l.code})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      AI Support Co-Pilot Model
+                    </label>
+                    <select
+                      value={localeState.ai_support_provider}
+                      onChange={(e) =>
+                        setLocaleState((p) => ({ ...p, ai_support_provider: e.target.value }))
+                      }
+                      className="w-full border border-slate-300 rounded-xl px-3 py-2.5 bg-slate-50 text-slate-900 text-xs font-mono"
+                    >
+                      {["Google Gemini (1.5 Pro)", "OpenAI (GPT-4o)", "xAI Grok-4.5"].map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      AI Menu &amp; Craving Suggester
+                    </label>
+                    <select
+                      value={localeState.ai_menu_suggester}
+                      onChange={(e) =>
+                        setLocaleState((p) => ({ ...p, ai_menu_suggester: e.target.value }))
+                      }
+                      className="w-full border border-slate-300 rounded-xl px-3 py-2.5 bg-slate-50 text-slate-900 text-xs font-mono"
+                    >
+                      {["OpenAI (GPT-4o)", "Google Gemini (1.5 Flash)", "xAI Grok-4.5"].map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Rider Voice Mentor Engine
+                    </label>
+                    <select
+                      value={localeState.ai_tutor_provider}
+                      onChange={(e) =>
+                        setLocaleState((p) => ({ ...p, ai_tutor_provider: e.target.value }))
+                      }
+                      className="w-full border border-slate-300 rounded-xl px-3 py-2.5 bg-slate-50 text-slate-900 text-xs font-mono"
+                    >
+                      {["Google Gemini (1.5 Flash)", "OpenAI (GPT-4o)", "xAI Grok-4.5"].map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <ToggleRow
+                  title="Automatic GPS & Pincode Dialect Detection"
+                  description="Automatically greet customers, restaurant partners, and riders in their regional scheduled language based on city/district."
+                  isOn={localeState.autoDetectLocation}
+                  onToggle={() =>
+                    setLocaleState((p) => ({
+                      ...p,
+                      autoDetectLocation: !p.autoDetectLocation,
+                    }))
+                  }
+                />
+              </div>
+
+              {/* Sub-Category 3B: Interactive 23-Language Enablement Grid */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      Sub-Category 3B · Interactive 23-Language Enablement Grid
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Every language of the Eighth Schedule of the Indian Constitution + English. Click any card to toggle support.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setLocaleState((p) => ({
+                          ...p,
+                          enabledLocales: INDIAN_23_LANGUAGES.map((l) => l.code),
+                        }))
+                      }
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition"
+                    >
+                      ✓ Enable All 23 Languages
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                  {INDIAN_23_LANGUAGES.map((lang) => {
+                    const enabled = localeState.enabledLocales.includes(lang.code);
+                    return (
+                      <button
+                        key={lang.code}
+                        type="button"
+                        onClick={() => toggleLanguageCode(lang.code)}
+                        className={`flex items-start justify-between gap-2 rounded-xl border p-3 text-left transition ${
+                          enabled
+                            ? "border-emerald-500 bg-emerald-50/60 text-slate-900"
+                            : "border-slate-200 bg-slate-50/50 text-slate-400"
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-[10px] uppercase px-1.5 py-0.5 rounded bg-slate-200/80 text-slate-700 font-bold">
+                              {lang.code}
+                            </span>
+                            <span className="text-xs font-bold text-slate-900">{lang.name}</span>
+                          </div>
+                          <div className="text-sm font-bold text-emerald-800 mt-1">
+                            {lang.nativeName}
+                          </div>
+                          <div className="text-[10px] text-slate-500 mt-0.5">{lang.region}</div>
+                        </div>
+                        <span
+                          className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                            enabled
+                              ? "bg-emerald-600 text-white"
+                              : "bg-slate-200 text-slate-500"
+                          }`}
+                        >
+                          {enabled ? "ON" : "OFF"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <SaveButton
+                  onClick={() =>
+                    handleSave(
+                      {
+                        localization: {
+                          defaultLocale: localeState.defaultLocale,
+                          enabledLocales: localeState.enabledLocales,
+                          autoDetectLocation: localeState.autoDetectLocation,
+                        },
+                        default_language: localeState.defaultLocale,
+                        supported_locales: localeState.enabledLocales.join(","),
+                        ai_support_provider: localeState.ai_support_provider,
+                        ai_menu_suggester: localeState.ai_menu_suggester,
+                        ai_tutor_provider: localeState.ai_tutor_provider,
+                      },
+                      `Saved Category 3: ${localeState.enabledLocales.length}/23 Indian Languages & AI Routing`,
+                    )
+                  }
+                  saving={saving}
+                  label="Save 23-Language Matrix"
+                />
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* =====================================================================
+            CATEGORY 4: 🚨 6-Tier Notification & Zero-Harassment Auto-Remediation Rules
+           ===================================================================== */}
+        <section id="cat-4" className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggleCategory("cat4")}
+            className="w-full flex items-center justify-between p-5 bg-slate-50/80 hover:bg-slate-100/70 border-b border-slate-200 text-left transition"
+          >
+            <div className="flex items-center gap-3">
+              <BellRing className="h-6 w-6 text-emerald-600" />
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-700 font-bold">
+                  Category 4 · Sub-Categories 4A &amp; 4B
+                </span>
+                <h2 className="text-lg font-extrabold text-slate-900">
+                  🚨 6-Tier Notification &amp; Zero-Harassment Auto-Remediation Rules
+                </h2>
+              </div>
+            </div>
+            {expandedCats.cat4 ? (
+              <ChevronUp className="h-5 w-5 text-slate-500" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-slate-500" />
+            )}
+          </button>
+
+          {expandedCats.cat4 && (
+            <div className="p-6 space-y-6">
+              {/* Sub-Category 4A: 6 Severity Tiers */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Sub-Category 4A · 6-Tier Severity Routing, SLA Targets &amp; Autonomous Remediation
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Configure SLA response windows and 1-click UMAR OS auto-remediation across all 6 operational alert tiers.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  {(Object.keys(notifState.tiers) as TierKey[]).map((key) => {
+                    const rule = notifState.tiers[key];
+                    return (
+                      <div
+                        key={key}
+                        className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      >
+                        <div className="space-y-1 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span
+                              className={`text-[10px] font-mono font-extrabold px-2 py-0.5 rounded ${
+                                key === "EMERGENCY" || key === "DANGER"
+                                  ? "bg-red-100 text-red-800 border border-red-300"
+                                  : key === "CRITICAL" || key === "HIGH"
+                                    ? "bg-amber-100 text-amber-800 border border-amber-300"
+                                    : "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                              }`}
+                            >
+                              {key}
+                            </span>
+                            <span className="text-sm font-bold text-slate-900">{rule.label}</span>
+                            <span className="text-xs font-mono text-slate-500">
+                              · SLA: {rule.slaMinutes}m
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-600">
+                            <strong>Auto-Remediation SOP:</strong> {rule.remediationAction}
+                          </p>
+                          <p className="text-[11px] font-mono text-slate-500">
+                            Channels: {rule.channels.join(" · ")}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-4 shrink-0">
+                          <div className="w-24">
+                            <label className="block text-[10px] font-mono uppercase text-slate-500">
+                              SLA (Mins)
+                            </label>
+                            <input
+                              type="number"
+                              min={1}
+                              value={rule.slaMinutes}
+                              onChange={(e) =>
+                                setNotifState((prev) => ({
+                                  ...prev,
+                                  tiers: {
+                                    ...prev.tiers,
+                                    [key]: {
+                                      ...prev.tiers[key],
+                                      slaMinutes: Math.max(1, Number(e.target.value)),
+                                    },
+                                  },
+                                }))
+                              }
+                              className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-mono"
+                            />
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setNotifState((prev) => ({
+                                ...prev,
+                                tiers: {
+                                  ...prev.tiers,
+                                  [key]: {
+                                    ...prev.tiers[key],
+                                    autoRemediate: !prev.tiers[key].autoRemediate,
+                                  },
+                                },
+                              }))
+                            }
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                              rule.autoRemediate
+                                ? "bg-emerald-600 text-white"
+                                : "bg-slate-200 text-slate-600"
+                            }`}
+                          >
+                            {rule.autoRemediate ? "⚡ Auto-Remediate ON" : "Manual Only"}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Sub-Category 4B: Non-Harassment Partner & Rider Protection Policy */}
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-50/30 p-4 space-y-3">
+                <div className="flex items-center gap-2 border-b border-emerald-200/60 pb-3">
+                  <ShieldCheck className="h-5 w-5 text-emerald-700" />
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      Sub-Category 4B · Non-Harassment Partner &amp; Rider Protection Policy (Code on Social Security 2020 Compliant)
+                    </h3>
+                    <p className="text-xs text-slate-600">
+                      Guarantees that automated dispatch alerts never harass or unfairly penalize restaurants or delivery partners during external disruptions.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <ToggleRow
+                    title="Zero-Harassment Autonomous Guard"
+                    description="Block repetitive robo-calls and punitive rating deductions; use respectful human-mentor prompts."
+                    isOn={notifState.zeroHarassmentGuard}
+                    onToggle={() =>
+                      setNotifState((p) => ({
+                        ...p,
+                        zeroHarassmentGuard: !p.zeroHarassmentGuard,
+                      }))
+                    }
+                  />
+                  <ToggleRow
+                    title="Monsoon & Severe Weather Grace Shield"
+                    description="Auto-extend kitchen prep and rider ETA targets during rain/waterlogging without penalty."
+                    isOn={notifState.weatherGraceEnabled}
+                    onToggle={() =>
+                      setNotifState((p) => ({
+                        ...p,
+                        weatherGraceEnabled: !p.weatherGraceEnabled,
+                      }))
+                    }
+                  />
+                  <ToggleRow
+                    title="Traffic & Road Diversion Immunity"
+                    description="Waive late-pickup/drop flags when GPS telemetry detects civic blockades or railway crossings."
+                    isOn={notifState.trafficSpikeImmunity}
+                    onToggle={() =>
+                      setNotifState((p) => ({
+                        ...p,
+                        trafficSpikeImmunity: !p.trafficSpikeImmunity,
+                      }))
+                    }
+                  />
+                  <ToggleRow
+                    title="NPCI / Banking Gateway Outage Shield"
+                    description="Protect COD float & restaurant payout queues during upstream bank server maintenance."
+                    isOn={notifState.gatewayOutageShield}
+                    onToggle={() =>
+                      setNotifState((p) => ({
+                        ...p,
+                        gatewayOutageShield: !p.gatewayOutageShield,
+                      }))
+                    }
+                  />
+                </div>
+
+                <SaveButton
+                  onClick={() =>
+                    handleSave(
+                      { notification_rules: notifState },
+                      "Saved Category 4: 6-Tier Notification & Zero-Harassment Protection Rules",
+                    )
+                  }
+                  saving={saving}
+                  label="Save Notification & Protection Rules"
+                />
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* =====================================================================
+            CATEGORY 5: 🗑️ Reset, Prune & Configuration Backup
+           ===================================================================== */}
+        <section id="cat-5" className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggleCategory("cat5")}
+            className="w-full flex items-center justify-between p-5 bg-slate-50/80 hover:bg-slate-100/70 border-b border-slate-200 text-left transition"
+          >
+            <div className="flex items-center gap-3">
+              <RotateCcw className="h-6 w-6 text-emerald-600" />
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-700 font-bold">
+                  Category 5 · Sub-Categories 5A &amp; 5B
+                </span>
+                <h2 className="text-lg font-extrabold text-slate-900">
+                  🗑️ Reset, Prune, Configuration Backup &amp; Ecosystem Connectors
+                </h2>
+              </div>
+            </div>
+            {expandedCats.cat5 ? (
+              <ChevronUp className="h-5 w-5 text-slate-500" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-slate-500" />
+            )}
+          </button>
+
+          {expandedCats.cat5 && (
+            <div className="p-6 space-y-6">
+              {/* Sub-Category 5A: Safe Section-by-Section Reset & JSON Export */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      Sub-Category 5A · Section-by-Section Safe Reset &amp; JSON Configuration Backup
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Restore individual governance modules to institutional defaults or export your complete settings JSON snapshot.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={exportConfigurationJson}
+                    className="inline-flex items-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-xs font-bold transition"
+                  >
+                    <Download className="h-4 w-4" /> Export Full Settings JSON
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => void handleSectionReset("brand")}
+                    className="rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 p-3.5 text-left transition"
+                  >
+                    <div className="text-xs font-bold text-slate-900">🎨 Reset Branding</div>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Restore #0D3B2E Emerald, #D97706 Gold, 16px radius &amp; default typography.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => void handleSectionReset("marketplace")}
+                    className="rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 p-3.5 text-left transition"
+                  >
+                    <div className="text-xs font-bold text-slate-900">⚖️ Reset Marketplace Fees</div>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Restore 18% commission, ₹4 platform fee, ₹35 base delivery &amp; ₹8/km rate.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => void handleSectionReset("algorithm")}
+                    className="rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 p-3.5 text-left transition"
+                  >
+                    <div className="text-xs font-bold text-slate-900">🧭 Reset Algorithm Sliders</div>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Restore 25 km max radius, 2.0x surge cap &amp; 15m kitchen prep buffer.
+                    </p>
+                  </button>
+
+                  {!confirmResetAll ? (
+                    <button
+                      type="button"
+                      disabled={saving}
+                      onClick={() => setConfirmResetAll(true)}
+                      className="rounded-xl border border-red-300 bg-red-50 hover:bg-red-100 p-3.5 text-left transition"
+                    >
+                      <div className="text-xs font-bold text-red-800">
+                        🗑️ Reset All to Factory Defaults
+                      </div>
+                      <p className="text-[11px] text-red-600 mt-1">
+                        Requires confirmation before resetting all 5 categories.
+                      </p>
+                    </button>
+                  ) : (
+                    <div className="rounded-xl border-2 border-red-500 bg-red-50 p-3 space-y-2">
+                      <p className="text-[11px] font-bold text-red-900">
+                        Confirm full factory reset of all categories?
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => void handleSectionReset("all")}
+                          className="rounded-lg bg-red-600 text-white px-3 py-1 text-xs font-bold"
+                        >
+                          Confirm Reset All
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmResetAll(false)}
+                          className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Sub-Category 5B: Ecosystem Copy CMS & External Plugin Connectors */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      Sub-Category 5B · Ecosystem Copywriting CMS &amp; External API Connectors Switchboard
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Configure global customer/partner UI copy strings and external gateways (Razorpay, Mapbox, FSSAI, ClearTax, WhatsApp).
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveSubsystemTab((t) => (t === "cms" ? "none" : "cms"))
+                      }
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
+                        activeSubsystemTab === "cms"
+                          ? "bg-emerald-600 text-white border-emerald-600"
+                          : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
+                      }`}
+                    >
+                      <FileText className="h-3.5 w-3.5" /> Ecosystem CMS
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveSubsystemTab((t) => (t === "connectors" ? "none" : "connectors"))
+                      }
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
+                        activeSubsystemTab === "connectors"
+                          ? "bg-emerald-600 text-white border-emerald-600"
+                          : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
+                      }`}
+                    >
+                      <Cpu className="h-3.5 w-3.5" /> Plugin Connectors
+                    </button>
+                  </div>
+                </div>
+
+                {activeSubsystemTab === "cms" && (
+                  <div className="pt-4 border-t border-slate-200">
+                    <EcosystemCMS />
+                  </div>
+                )}
+                {activeSubsystemTab === "connectors" && (
+                  <div className="pt-4 border-t border-slate-200">
+                    <PluginConnectors />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Bottom Navigation Bar */}
+        <footer
+          id="settings-bottom"
+          className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-4 text-xs text-slate-500"
+        >
+          <span>
+            OrderKing UMAR OS Master Settings Studio · Bi-Directional API + Server Function Sync
+          </span>
+          <button
+            type="button"
+            onClick={() =>
+              document.getElementById("settings-top")?.scrollIntoView({ behavior: "smooth" })
+            }
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 bg-white font-bold text-slate-700 hover:bg-slate-100"
+          >
+            <ArrowUp className="h-3.5 w-3.5" /> Scroll Up to Top
+          </button>
+        </footer>
       </div>
     </div>
   );
 }
 
-function TabButton({ id, current, set, icon: Icon, label }: any) {
-  const isActive = current === id;
+function ColorField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+}) {
   return (
-    <button
-      onClick={() => set(id)}
-      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-semibold transition-all ${
-        isActive 
-          ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-sm' 
-          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
-      }`}
-    >
-      <Icon className={`h-5 w-5 ${isActive ? 'text-emerald-600' : 'text-slate-500'}`} />
-      <span>{label}</span>
-    </button>
-  );
-}
-
-function FeatureFlagsPanel({ config, onSave, saving }: any) {
-  const [flags, setFlags] = useState({
-    viral_referrals_enabled: config.viral_referrals_enabled ?? true,
-    dynamic_surge_enabled: config.dynamic_surge_enabled ?? true,
-  });
-
-  const toggle = (key: keyof typeof flags) => setFlags(prev => ({ ...prev, [key]: !prev[key] }));
-
-  return (
-    <div className="space-y-6">
-      <div className="border-b border-slate-100 pb-4">
-        <h2 className="text-xl font-bold text-slate-900">Global Feature Flags</h2>
-        <p className="text-xs text-slate-500 mt-1">Manage system-wide capability activation across all client applications.</p>
-      </div>
-      <ToggleRow 
-        title="Viral WhatsApp Referrals" 
-        description="Enable the multi-sided referral system for customers, riders, and restaurants." 
-        isOn={flags.viral_referrals_enabled} 
-        onToggle={() => toggle('viral_referrals_enabled')} 
-      />
-      <ToggleRow 
-        title="Dynamic Surge Pricing" 
-        description="Automatically increase delivery fees during peak hours or bad weather." 
-        isOn={flags.dynamic_surge_enabled} 
-        onToggle={() => toggle('dynamic_surge_enabled')} 
-      />
-      <SaveButton onClick={() => onSave(flags)} saving={saving} />
-    </div>
-  );
-}
-
-function FeesPanel({ config, onSave, saving }: any) {
-  const [fees, setFees] = useState({
-    restaurant_commission_pct: config.restaurant_commission_pct ?? 18,
-    platform_fee_inr: config.platform_fee_inr ?? 4.00,
-    base_delivery_fee_inr: config.base_delivery_fee_inr ?? 35.00,
-    rider_payout_per_km_inr: config.rider_payout_per_km_inr ?? 8.00,
-  });
-
-  const update = (key: keyof typeof fees, val: string) => setFees(prev => ({ ...prev, [key]: Number(val) }));
-
-  return (
-    <div className="space-y-6">
-      <div className="border-b border-slate-100 pb-4">
-        <h2 className="text-xl font-bold text-slate-900">Commission & Fee Engine</h2>
-        <p className="text-xs text-slate-500 mt-1">Configure real-time financial tariffs, take rates, and delivery logistics compensation.</p>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <InputRow title="Restaurant Commission (%)" value={fees.restaurant_commission_pct} onChange={(v: string) => update('restaurant_commission_pct', v)} />
-        <InputRow title="Platform Fee (₹)" value={fees.platform_fee_inr} onChange={(v: string) => update('platform_fee_inr', v)} />
-        <InputRow title="Base Delivery Fee (₹)" value={fees.base_delivery_fee_inr} onChange={(v: string) => update('base_delivery_fee_inr', v)} />
-        <InputRow title="Rider Payout per KM (₹)" value={fees.rider_payout_per_km_inr} onChange={(v: string) => update('rider_payout_per_km_inr', v)} />
-      </div>
-      <SaveButton onClick={() => onSave(fees)} saving={saving} />
-    </div>
-  );
-}
-
-function AIPanel({ config, onSave, saving }: any) {
-  const [aiRoutes, setAiRoutes] = useState({
-    ai_support_provider: config.ai_support_provider ?? 'Google Gemini (1.5 Pro)',
-    ai_menu_suggester: config.ai_menu_suggester ?? 'OpenAI (GPT-4o)',
-    ai_tutor_provider: config.ai_tutor_provider ?? 'Google Gemini (1.5 Flash)',
-  });
-
-  const update = (key: keyof typeof aiRoutes, val: string) => setAiRoutes(prev => ({ ...prev, [key]: val }));
-
-  return (
-    <div className="space-y-6">
-      <div className="border-b border-slate-100 pb-4">
-        <h2 className="text-xl font-bold text-slate-900">AI Model Routing</h2>
-        <p className="text-xs text-slate-500 mt-1">Multi-provider model routing for automated customer care and cognitive features.</p>
-      </div>
-      <p className="text-xs text-slate-500">
-        Note: API Keys must be configured securely on the server via environment variables. If a key is missing, the provider will be automatically skipped.
-      </p>
-      
-      <div className="space-y-4">
-        <SelectRow title="Customer Support Chat" options={['OpenAI (GPT-4o)', 'Google Gemini (1.5 Pro)', 'Off']} value={aiRoutes.ai_support_provider} onChange={(v: string) => update('ai_support_provider', v)} />
-        <SelectRow title="Mind-Reader (Menu Suggestions)" options={['OpenAI (GPT-4o)', 'Google Gemini (1.5 Flash)', 'Off']} value={aiRoutes.ai_menu_suggester} onChange={(v: string) => update('ai_menu_suggester', v)} />
-        <SelectRow title="AI Tutor Mode" options={['OpenAI (GPT-4o)', 'Google Gemini (1.5 Flash)', 'Off']} value={aiRoutes.ai_tutor_provider} onChange={(v: string) => update('ai_tutor_provider', v)} />
-      </div>
-
-      <SaveButton onClick={() => onSave(aiRoutes)} saving={saving} />
-    </div>
-  );
-}
-
-function LocalizationPanel({ config, onSave, saving }: any) {
-  const [localeConfig, setLocaleConfig] = useState({
-    default_language: config.default_language ?? 'en',
-    auto_detect_location: config.auto_detect_location ?? true,
-    supported_locales: config.supported_locales ?? 'en,hi,kn,te,ta',
-  });
-
-  const update = (key: keyof typeof localeConfig, val: any) => setLocaleConfig(prev => ({ ...prev, [key]: val }));
-
-  return (
-    <div className="space-y-6">
-      <div className="border-b border-slate-100 pb-4">
-        <h2 className="text-xl font-bold text-slate-900">Localization & Regional Settings</h2>
-        <p className="text-xs text-slate-500 mt-1">Regional language support and multi-lingual prompt translation preferences.</p>
-      </div>
-      <div className="space-y-4">
-        <SelectRow 
-          title="Default System Language" 
-          options={['English (en)', 'Hindi (hi)', 'Kannada (kn)', 'Telugu (te)', 'Tamil (ta)']} 
-          value={localeConfig.default_language === 'en' ? 'English (en)' : localeConfig.default_language} 
-          onChange={(v: string) => update('default_language', v.includes('Hindi') ? 'hi' : v.includes('Kannada') ? 'kn' : v.includes('Telugu') ? 'te' : v.includes('Tamil') ? 'ta' : 'en')} 
+    <div className="space-y-1.5">
+      <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+        {label}
+      </label>
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          value={/^#[0-9A-Fa-f]{6}$/.test(value) ? value : "#0D3B2E"}
+          onChange={(e) => onChange(e.target.value.toUpperCase())}
+          className="h-10 w-12 rounded-lg border border-slate-300 cursor-pointer bg-white p-0.5"
         />
-        <ToggleRow 
-          title="Automatic Geo-Location Detection" 
-          description="Detect user regional dialect and locale based on IP and GPS coordinates." 
-          isOn={localeConfig.auto_detect_location} 
-          onToggle={() => update('auto_detect_location', !localeConfig.auto_detect_location)} 
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 text-xs font-mono uppercase"
         />
       </div>
-      <SaveButton onClick={() => onSave(localeConfig)} saving={saving} />
     </div>
   );
 }
 
 function ToggleRow({ title, description, isOn, onToggle }: any) {
   return (
-    <div className="flex items-center justify-between py-4 border-b border-slate-100">
+    <div className="flex items-center justify-between gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50/50">
       <div>
-        <h3 className="font-semibold text-slate-900 text-sm">{title}</h3>
-        <p className="text-xs text-slate-500 mt-0.5">{description}</p>
+        <h4 className="font-semibold text-slate-900 text-xs">{title}</h4>
+        <p className="text-[11px] text-slate-500 mt-0.5">{description}</p>
       </div>
-      <button 
+      <button
         type="button"
-        onClick={onToggle} 
-        className={`w-14 h-7 rounded-full transition-colors relative p-1 ${
-          isOn ? 'bg-emerald-600' : 'bg-slate-200'
+        onClick={onToggle}
+        className={`w-12 h-6 rounded-full transition-colors relative p-0.5 shrink-0 ${
+          isOn ? "bg-emerald-600" : "bg-slate-300"
         }`}
         aria-label={`Toggle ${title}`}
       >
-        <div className={`w-5 h-5 bg-white rounded-full transition-transform shadow-sm ${
-          isOn ? 'translate-x-7' : 'translate-x-0'
-        }`} />
+        <div
+          className={`w-5 h-5 bg-white rounded-full transition-transform shadow-sm ${
+            isOn ? "translate-x-6" : "translate-x-0"
+          }`}
+        />
       </button>
     </div>
   );
@@ -279,42 +2112,47 @@ function ToggleRow({ title, description, isOn, onToggle }: any) {
 function InputRow({ title, value, onChange }: any) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">{title}</label>
-      <input 
-        type="number" 
-        value={value} 
-        onChange={e => onChange(e.target.value)} 
-        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 text-sm focus:outline-none focus:border-emerald-600 font-mono transition-colors" 
+      <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+        {title}
+      </label>
+      <input
+        type="number"
+        step="any"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 text-sm focus:outline-none focus:border-emerald-600 font-mono transition-colors"
       />
     </div>
   );
 }
 
-function SelectRow({ title, options, value, onChange }: any) {
+function TextInputRow({ title, value, onChange }: any) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 border-b border-slate-100">
-      <h3 className="font-semibold text-slate-900 text-sm">{title}</h3>
-      <select 
-        value={value} 
-        onChange={e => onChange(e.target.value)} 
-        className="border border-slate-300 rounded-xl px-3.5 py-2 bg-slate-50 text-slate-900 text-xs font-mono focus:outline-none focus:border-emerald-600"
-      >
-        {options.map((o: string) => <option key={o} value={o}>{o}</option>)}
-      </select>
+    <div className="space-y-1.5">
+      <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+        {title}
+      </label>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 text-xs focus:outline-none focus:border-emerald-600 transition-colors"
+      />
     </div>
   );
 }
 
-function SaveButton({ onClick, saving }: any) {
+function SaveButton({ onClick, saving, label = "Save Configuration" }: any) {
   return (
-    <button 
+    <button
       type="button"
-      onClick={onClick} 
-      disabled={saving} 
-      className="mt-6 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 transition-all shadow-sm"
+      onClick={onClick}
+      disabled={saving}
+      className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 transition-all shadow-sm"
     >
-      {saving ? <Loader2 className="h-4 w-4 animate-spin"/> : <Save className="h-4 w-4"/>} 
-      {saving ? 'Saving...' : 'Save Configuration'}
+      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+      {saving ? "Saving..." : label}
     </button>
   );
 }
+

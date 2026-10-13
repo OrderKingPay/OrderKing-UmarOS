@@ -6,7 +6,7 @@ export function registerFounderTools() {
   globalToolFabric.register({
     id: 'get_platform_state',
     scope: 'system:read',
-    permissions: ['SUPER_ADMIN'],
+    permissions: ['SUPER_ADMIN', 'FOUNDER'],
     sideEffects: false,
     failureHandling: 'THROW',
     timeoutsMs: 5000,
@@ -15,7 +15,7 @@ export function registerFounderTools() {
     inputSchema: z.object({}),
     outputSchema: z.object({ users: z.number(), orders: z.number() }),
     validate: (input) => ({}),
-    authorize: async (ctx) => ctx.role === 'SUPER_ADMIN',
+    authorize: async (ctx) => ctx.role === 'SUPER_ADMIN' || ctx.role === 'FOUNDER',
     verify: (output: any) => typeof output.users === 'number',
     execute: async () => {
       const sql = await getSql();
@@ -31,7 +31,7 @@ export function registerFounderTools() {
   globalToolFabric.register({
     id: 'get_financial_reconciliation',
     scope: 'finance:read',
-    permissions: ['SUPER_ADMIN'],
+    permissions: ['SUPER_ADMIN', 'FOUNDER'],
     sideEffects: false,
     failureHandling: 'RETRY',
     timeoutsMs: 10000,
@@ -40,7 +40,7 @@ export function registerFounderTools() {
     inputSchema: z.object({ date: z.string().optional() }),
     outputSchema: z.object({ totalVolume: z.number() }),
     validate: (input: any) => ({ date: input?.date }),
-    authorize: async (ctx) => ctx.role === 'SUPER_ADMIN',
+    authorize: async (ctx) => ctx.role === 'SUPER_ADMIN' || ctx.role === 'FOUNDER',
     verify: (output: any) => typeof output.totalVolume === 'number',
     execute: async () => {
       const sql = await getSql();
@@ -52,7 +52,7 @@ export function registerFounderTools() {
   globalToolFabric.register({
     id: 'find_operational_exceptions',
     scope: 'ops:read',
-    permissions: ['SUPER_ADMIN'],
+    permissions: ['SUPER_ADMIN', 'FOUNDER'],
     sideEffects: false,
     failureHandling: 'THROW',
     timeoutsMs: 5000,
@@ -61,7 +61,7 @@ export function registerFounderTools() {
     inputSchema: z.object({}),
     outputSchema: z.object({ exceptions: z.array(z.any()) }),
     validate: (input) => ({}),
-    authorize: async (ctx) => ctx.role === 'SUPER_ADMIN',
+    authorize: async (ctx) => ctx.role === 'SUPER_ADMIN' || ctx.role === 'FOUNDER',
     verify: (output: any) => Array.isArray(output.exceptions),
     execute: async () => {
       const sql = await getSql();
@@ -78,7 +78,7 @@ export function registerFounderTools() {
   globalToolFabric.register({
     id: 'diagnose_cancellations',
     scope: 'ops:read',
-    permissions: ['SUPER_ADMIN'],
+    permissions: ['SUPER_ADMIN', 'FOUNDER'],
     sideEffects: false,
     failureHandling: 'THROW',
     timeoutsMs: 5000,
@@ -87,7 +87,7 @@ export function registerFounderTools() {
     inputSchema: z.object({ timeframe: z.string().optional() }),
     outputSchema: z.object({ count: z.number(), recent: z.array(z.any()) }),
     validate: (input: any) => ({ timeframe: input?.timeframe }),
-    authorize: async (ctx) => ctx.role === 'SUPER_ADMIN',
+    authorize: async (ctx) => ctx.role === 'SUPER_ADMIN' || ctx.role === 'FOUNDER',
     verify: (output: any) => typeof output.count === 'number',
     execute: async () => {
       const sql = await getSql();
@@ -100,7 +100,7 @@ export function registerFounderTools() {
   globalToolFabric.register({
     id: 'prepare_eligible_refunds',
     scope: 'finance:write',
-    permissions: ['SUPER_ADMIN'],
+    permissions: ['SUPER_ADMIN', 'FOUNDER'],
     sideEffects: true,
     failureHandling: 'THROW',
     timeoutsMs: 5000,
@@ -109,7 +109,7 @@ export function registerFounderTools() {
     inputSchema: z.object({ dryRun: z.boolean().default(true) }),
     outputSchema: z.object({ refundsPrepared: z.number(), totalAmount: z.number() }),
     validate: (input: any) => ({ dryRun: input?.dryRun ?? true }),
-    authorize: async (ctx) => ctx.role === 'SUPER_ADMIN',
+    authorize: async (ctx) => ctx.role === 'SUPER_ADMIN' || ctx.role === 'FOUNDER',
     verify: (output: any) => typeof output.refundsPrepared === 'number',
     execute: async (input) => {
       const sql = await getSql();

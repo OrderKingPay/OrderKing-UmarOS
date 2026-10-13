@@ -18,9 +18,9 @@ export class KingPayComplianceMaster {
 
   private auditLogger: RegulatoryAuditLogger;
 
-  constructor(auditLogger?: RegulatoryAuditLogger) {
+  constructor(auditLogger?: RegulatoryAuditLogger, initialFeatures?: Partial<Record<KingPayFeature, boolean>>) {
     this.auditLogger = auditLogger || new RegulatoryAuditLogger();
-    this.features = Object.assign({
+    this.features = {
       upi: false,
       collect: false,
       pay: false,
@@ -29,7 +29,8 @@ export class KingPayComplianceMaster {
       recharge: false,
       autopay: false,
       settlements: false,
-    }, secrets.KINGPAY_FEATURES || {});
+      ...(initialFeatures || {})
+    };
   }
 
   public isFeatureEnabled(feature: KingPayFeature): boolean {
@@ -67,4 +68,4 @@ export class KingPayComplianceMaster {
   }
 }
 
-export const complianceMaster = new KingPayComplianceMaster();
+export const complianceMaster = new KingPayComplianceMaster(undefined, (secrets as any).KINGPAY_FEATURES);

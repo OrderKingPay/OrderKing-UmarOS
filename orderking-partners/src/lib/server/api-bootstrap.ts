@@ -200,6 +200,20 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         deliveryAvailable: "delivery_available",
         weeklyHolidays: "weekly_holidays",
       };
+      const { validateFssai, validatePan, validateIfsc, validateGstin } = await import("@/lib/merchant-kyc");
+      if (data.fssaiNumber && !validateFssai(data.fssaiNumber)) {
+        throw new Error("Invalid 14-digit FSSAI registration number");
+      }
+      if (data.pan && !validatePan(data.pan)) {
+        throw new Error("Invalid PAN card format");
+      }
+      if (data.bankIfsc && !validateIfsc(data.bankIfsc)) {
+        throw new Error("Invalid Bank IFSC code format");
+      }
+      if (data.gstin && !validateGstin(data.gstin)) {
+        throw new Error("Invalid GSTIN statutory format");
+      }
+
       for (const [k, col] of Object.entries(map)) {
         if (data[k as keyof typeof data] === undefined) continue;
         if (!fields.includes(col as (typeof fields)[number]) && !["lat", "lng", "delivery_available", "weekly_holidays"].includes(col)) {
@@ -237,10 +251,29 @@ export const submitForReview = createServerFn({ method: "POST" })
       if (ctx.dataLabel === "SIMULATED") {
         throw new Error("A simulated kitchen cannot be submitted for verification.");
       }
+      const rows = await sql<{ fssai_number: string; pan: string; bank_ifsc: string; gstin: string }>`
+        select fssai_number, pan, bank_ifsc, gstin from restaurants where id = ${ctx.restaurantId}
+      `;
+      const rest = rows[0];
+      const { validateFssai, validatePan, validateIfsc, validateGstin } = await import("@/lib/merchant-kyc");
+      if (rest) {
+        if (!validateFssai(rest.fssai_number)) {
+          throw new Error("Cannot submit for review: Valid 14-digit FSSAI registration number is required.");
+        }
+        if (!validatePan(rest.pan)) {
+          throw new Error("Cannot submit for review: Valid 10-character PAN card is required.");
+        }
+        if (!validateIfsc(rest.bank_ifsc)) {
+          throw new Error("Cannot submit for review: Valid 11-character Bank IFSC code is required.");
+        }
+        if (rest.gstin && !validateGstin(rest.gstin)) {
+          throw new Error("Cannot submit for review: Invalid GSTIN format.");
+        }
+      }
       await sql`
         update restaurants
-        set verification_status = 'SUBMITTED', updated_at = now()
-        where id = ${ctx.restaurantId} and verification_status in ('DRAFT','REJECTED')
+        set verification_status = 'PENDING_VERIFICATION', updated_at = now()
+        where id = ${ctx.restaurantId} and verification_status in ('DRAFT','REJECTED','SUBMITTED')
       `;
       await writeAudit(sql, {
         restaurantId: ctx.restaurantId,
@@ -249,7 +282,7 @@ export const submitForReview = createServerFn({ method: "POST" })
         entityType: "restaurant",
         entityId: ctx.restaurantId,
       });
-      return { ok: true as const, verificationStatus: "SUBMITTED" as const };
+      return { ok: true as const, verificationStatus: "PENDING_VERIFICATION" as const };
     });
   });
 

@@ -58,29 +58,11 @@ export async function processPayment(orderId: string, amountPaise: number, payme
     const sql = await getSql();
 
     await sql.transaction(async (tx) => {
-        // Record the raw gateway transaction
+        // Record the raw gateway transaction in PENDING state awaiting provider webhook verification
         await tx`
             INSERT INTO transactions (id, order_id, amount, gateway, status)
-            VALUES (${transactionId}, ${orderId}, ${amountPaise}, ${gateway}, 'SUCCESS')
+            VALUES (${transactionId}, ${orderId}, ${amountPaise}, ${gateway}, 'PENDING')
         `;
-
-        // Retrieve customer associated with order to log kingpay transaction
-        const [order] = await tx`
-            SELECT customer_id FROM orders WHERE id = ${orderId} LIMIT 1
-        `;
-
-        if (order?.customer_id) {
-            await tx`
-                INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
-                VALUES (
-                    ${'kp_tx_' + Date.now() + Math.random().toString(36).substring(2, 9)},
-                    ${order.customer_id},
-                    ${amountPaise},
-                    'CREDIT',
-                    'KingPay Payment Processing'
-                )
-            `;
-        }
     });
 
     return responseData;

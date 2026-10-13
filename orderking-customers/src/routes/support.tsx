@@ -76,7 +76,6 @@ export function SupportPage() {
       </CustomerShell>
     );
   }
-  if (!user) return <RedirectToSignIn />;
 
   const recentOrders = orders.data?.orders ?? [];
 

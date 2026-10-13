@@ -65,6 +65,7 @@ import {
   type UmarOsEngineSettings,
   type FounderCommandResponse
 } from "@/lib/orderking/ai/umaros-supreme";
+import { WorldTechCommandCenter } from "./WorldTechCommandCenter";
 
 export interface AttachedMedia {
   id: string;
@@ -597,7 +598,7 @@ function SettingsWidgetCard({ item, onToggleSetting }: { item: RichMediaOutput, 
 // =========================================================================
 
 export function UmarOS_AI_Terminal() {
-  const [activeTab, setActiveTab] = useState<"terminal" | "orchestrator" | "telemetry">("terminal");
+  const [activeTab, setActiveTab] = useState<"terminal" | "orchestrator" | "telemetry" | "tech_registry">("terminal");
   const [selectedModel, setSelectedModel] = useState<string>("gemini-2.5-pro");
   const [inputCommand, setInputCommand] = useState<string>("");
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
@@ -737,23 +738,8 @@ export function UmarOS_AI_Terminal() {
         toast.error("Voice Processing: Could not initialize audio stream.");
       }
     } else {
-      // Graceful fallback for environments without SpeechRecognition API
-      setIsListening(true);
-      toast.info("Voice Processing Active: Listening to microphone stream...");
-
-      const samplePrompts = [
-        "Audit zone supply-demand topology and kitchen SLA delays",
-        "Run algorithmic Haversine dispatch cycle across active orders",
-        "Reconcile double-entry financial ledger and calculate TCS TDS",
-        "Inspect multimodal kitchen CCTV dispatch stream"
-      ];
-      const randomPrompt = samplePrompts[Math.floor(Math.random() * samplePrompts.length)];
-
-      setTimeout(() => {
-        setInputCommand(randomPrompt);
-        setIsListening(false);
-        toast.success("Voice Processing: Audio transcribed into terminal command.");
-      }, 2400);
+      setIsListening(false);
+      toast.error("Speech Recognition API is not supported in this browser. Please use Chrome/Edge or type your command directly.");
     }
   };
 
@@ -1007,24 +993,25 @@ export function UmarOS_AI_Terminal() {
   };
 
   // Toggle Orchestration Setting
-  const handleToggleSetting = async (key: keyof UmarOsEngineSettings) => {
+  const handleToggleSetting = async (key: string | keyof UmarOsEngineSettings) => {
+    const k = key as keyof UmarOsEngineSettings;
     const updated = {
       ...engineSettings,
-      [key]: !engineSettings[key]
+      [k]: !engineSettings[k]
     };
     setEngineSettings(updated);
 
     const logEntry: AuditLogEntry = {
       id: `audit-${Date.now()}`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
-      action: `Setting '${String(key)}' changed to ${updated[key] ? "ENABLED" : "DISABLED"}`,
+      action: `Setting '${String(key)}' changed to ${updated[k] ? "ENABLED" : "DISABLED"}`,
       authorizedBy: "Authorized by Founder"
     };
     setAuditLogs((prev) => [logEntry, ...prev]);
 
     try {
       await updateUmarOsSettings({ data: updated });
-      toast.success(`Orchestration Engine: ${String(key)} set to ${updated[key] ? "ENABLED" : "DISABLED"}`);
+      toast.success(`Orchestration Engine: ${String(key)} set to ${updated[k] ? "ENABLED" : "DISABLED"}`);
       refreshTelemetry();
     } catch (err: any) {
       toast.error(`Failed to update setting: ${err?.message}`);
@@ -1251,6 +1238,21 @@ export function UmarOS_AI_Terminal() {
           <Activity className="h-4 w-4 text-purple-600" />
           <span>Live Autonomous Telemetry & Audits</span>
         </button>
+
+        <button
+          onClick={() => setActiveTab("tech_registry")}
+          className={`flex items-center gap-2 py-3 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
+            activeTab === "tech_registry"
+              ? "border-slate-900 text-slate-900 bg-white"
+              : "border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
+          }`}
+        >
+          <Layers className="h-4 w-4 text-emerald-600" />
+          <span>World Tech Registry</span>
+          <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-mono">
+            20 Integrated
+          </span>
+        </button>
       </div>
 
       {/* 4. TAB CONTENT PANELS */}
@@ -1305,7 +1307,42 @@ export function UmarOS_AI_Terminal() {
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-white border border-slate-300 text-slate-800 hover:bg-slate-100 hover:border-slate-400 transition-colors shadow-2xs cursor-pointer"
               >
                 <VideoIcon className="h-3 w-3 text-rose-600" />
-                <span>/video (CCTV Kitchen Dispatch Stream)</span>
+                <span>/video (CCTV Kitchen Stream)</span>
+              </button>
+              <button
+                onClick={() => handleSendCommand("/tech")}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 border border-emerald-300 text-emerald-800 hover:bg-emerald-100 transition-colors shadow-2xs cursor-pointer"
+              >
+                <Layers className="h-3 w-3 text-emerald-600" />
+                <span>/tech (World Tech Registry)</span>
+              </button>
+              <button
+                onClick={() => handleSendCommand("/freeze")}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-50 border border-rose-300 text-rose-800 hover:bg-rose-100 transition-colors shadow-2xs cursor-pointer"
+              >
+                <Flame className="h-3 w-3 text-rose-600" />
+                <span>/freeze (Emergency Freeze)</span>
+              </button>
+              <button
+                onClick={() => handleSendCommand("/rebalance")}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-50 border border-amber-300 text-amber-800 hover:bg-amber-100 transition-colors shadow-2xs cursor-pointer"
+              >
+                <Scale className="h-3 w-3 text-amber-600" />
+                <span>/rebalance (Ledger Audit)</span>
+              </button>
+              <button
+                onClick={() => handleSendCommand("/fleet-ping")}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 border border-blue-300 text-blue-800 hover:bg-blue-100 transition-colors shadow-2xs cursor-pointer"
+              >
+                <Radio className="h-3 w-3 text-blue-600" />
+                <span>/fleet-ping (Fleet Beacon)</span>
+              </button>
+              <button
+                onClick={() => handleSendCommand("/gst-audit")}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-purple-50 border border-purple-300 text-purple-800 hover:bg-purple-100 transition-colors shadow-2xs cursor-pointer"
+              >
+                <ShieldCheck className="h-3 w-3 text-purple-600" />
+                <span>/gst-audit (GST & FSSAI)</span>
               </button>
             </div>
 
@@ -2061,6 +2098,15 @@ export function UmarOS_AI_Terminal() {
                 </p>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 4: WORLD TECHNOLOGY REGISTRY & COMMAND HUB                            */}
+        {/* ========================================================================= */}
+        {activeTab === "tech_registry" && (
+          <div className="space-y-4">
+            <WorldTechCommandCenter />
           </div>
         )}
       </div>

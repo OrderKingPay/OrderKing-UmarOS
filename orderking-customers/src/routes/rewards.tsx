@@ -225,8 +225,8 @@ function RewardsPage() {
   const [activeTab, setActiveTab] = useState<"all" | "ecommerce" | "fuel" | "lpg" | "retail" | "fashion" | "edtech" | "health">("all");
   const [unlockedCodes, setUnlockedCodes] = useState<Record<string, boolean>>({});
 
-  // User's King Coins (10 coins per ₹1 spent)
-  const basePoints = loyalty.data?.loyalty.points ?? 1250;
+  // User's King Coins (10 coins per ₹1 spent, strictly from verified loyalty balance)
+  const basePoints = user ? (loyalty.data?.loyalty.points ?? 0) : 0;
   const userCoins = basePoints * 10;
 
   // Location-aware filtering algorithm:

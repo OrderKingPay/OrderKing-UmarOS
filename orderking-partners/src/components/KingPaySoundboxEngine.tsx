@@ -31,6 +31,10 @@ export const KingPaySoundboxEngine: React.FC<KingPaySoundboxEngineProps> = ({ me
       }
     };
 
+    ws.onerror = () => {
+      setIsConnected(false);
+    };
+
     ws.onclose = () => {
       setIsConnected(false);
     };

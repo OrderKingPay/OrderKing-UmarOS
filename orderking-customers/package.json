@@ -17,7 +17,8 @@
         "preview:stop": "node scripts/preview.mjs stop",
         "typecheck": "tsc --noEmit",
         "check:auth": "node scripts/check-auth-invariant.mjs",
-        "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/money.test.ts src/lib/pricing.test.ts src/lib/jackpot-engine.test.ts src/lib/viral-growth.test.ts src/lib/orders/state.test.ts src/lib/search.test.ts src/lib/hours.test.ts src/test/founder-ai-supreme.test.ts",
+        "test:earn": "vitest run src/test/micro-task-earn.test.ts",
+        "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/money.test.ts src/lib/pricing.test.ts src/lib/jackpot-engine.test.ts src/lib/viral-growth.test.ts src/lib/orders/state.test.ts src/lib/search.test.ts src/lib/hours.test.ts src/test/founder-ai-supreme.test.ts src/test/payment-security.test.ts && vitest run",
         "lint": "eslint .",
         "format": "prettier --write ."
     },
@@ -104,7 +105,8 @@
         "prettier": "^3.4.0",
         "typescript": "^5.7.0",
         "typescript-eslint": "^8.56.1",
-        "vite": "8.1.5"
+        "vite": "8.1.5",
+        "vitest": "^5.0.3"
     },
     "engines": {
         "node": ">=20.x",

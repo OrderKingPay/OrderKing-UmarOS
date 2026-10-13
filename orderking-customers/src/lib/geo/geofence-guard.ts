@@ -18,18 +18,9 @@ export interface ActiveDeliveryZone {
  * Verified zones where Order King Food Delivery infrastructure is live.
  * Default flagship launch zone: Sribhumi / Karimganj core 12km radius.
  */
-export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
-  {
-    id: "zone_sribhumi_core",
-    name: "Sribhumi / Karimganj Central",
-    cityId: "city_sribhumi",
-    centerLat: 24.8688,
-    centerLng: 92.3511,
-    radiusKm: 12.0, // 12 km strict radius
-    status: "ACTIVE",
-    description: "15-minute ultra-fast sovereign delivery active with 0% surge and live rider fleet.",
-  },
-];
+// Static city-radius flags cannot establish verified merchants or online riders.
+// Availability must come from the server's live launch, retailer and rider checks.
+export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [];
 
 /**
  * Calculates great-circle distance between two geographic coordinates using the Haversine formula (km).
@@ -55,7 +46,7 @@ export function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lo
  */
 export function isDeliveryActiveInLocation(lat?: number, lng?: number, cityId?: string): boolean {
   if (typeof lat !== "number" || typeof lng !== "number" || isNaN(lat) || isNaN(lng)) {
-    return cityId === "city_sribhumi";
+    return false; // no static city identifier may assert live delivery
   }
 
   for (const zone of ACTIVE_DELIVERY_ZONES) {
@@ -66,10 +57,7 @@ export function isDeliveryActiveInLocation(lat?: number, lng?: number, cityId?: 
     }
   }
 
-  // Backup verification by city identifier
-  if (cityId === "city_sribhumi") {
-    return true;
-  }
+  // No fallback: a city name alone cannot authorize rider dispatch.
 
   return false;
 }
@@ -84,16 +72,8 @@ export interface CityWaitlistEntry {
   estimatedLaunchDays: number;
 }
 
-export const EXPANSION_WAITLIST: Record<string, CityWaitlistEntry> = {
-  Silchar: { cityName: "Silchar", waitlistVotes: 3420, trendingRank: 1, estimatedLaunchDays: 14 },
-  Guwahati: { cityName: "Guwahati", waitlistVotes: 8910, trendingRank: 2, estimatedLaunchDays: 30 },
-  Hailakandi: { cityName: "Hailakandi", waitlistVotes: 1840, trendingRank: 3, estimatedLaunchDays: 21 },
-  Badarpur: { cityName: "Badarpur", waitlistVotes: 2150, trendingRank: 4, estimatedLaunchDays: 7 },
-  Kolkata: { cityName: "Kolkata", waitlistVotes: 12400, trendingRank: 5, estimatedLaunchDays: 45 },
-  Delhi: { cityName: "Delhi NCR", waitlistVotes: 18200, trendingRank: 6, estimatedLaunchDays: 60 },
-  Mumbai: { cityName: "Mumbai", waitlistVotes: 16900, trendingRank: 7, estimatedLaunchDays: 60 },
-  Bengaluru: { cityName: "Bengaluru", waitlistVotes: 15400, trendingRank: 8, estimatedLaunchDays: 60 },
-};
+// No fictitious votes, rankings or announced launch dates.
+export const EXPANSION_WAITLIST: Record<string, CityWaitlistEntry> = {};
 
 export function getCityWaitlistInfo(cityName: string): CityWaitlistEntry {
   const match = Object.values(EXPANSION_WAITLIST).find(
@@ -103,8 +83,8 @@ export function getCityWaitlistInfo(cityName: string): CityWaitlistEntry {
 
   return {
     cityName: cityName || "Your City",
-    waitlistVotes: 1280,
-    trendingRank: 9,
-    estimatedLaunchDays: 30,
+    waitlistVotes: 0,
+    trendingRank: 0,
+    estimatedLaunchDays: 0,
   };
 }

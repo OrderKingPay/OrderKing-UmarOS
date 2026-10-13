@@ -1,24 +1,35 @@
 import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 import { AgentExecutorEngine } from "@/lib/orderking/ai/agent-executor.server";
+import { getSessionUser } from "@/lib/auth/verify.server";
+import { getSql } from "@/lib/db";
 
 /**
  * 👑 AI Workforce Cron Endpoint
- * Hit by Vercel/Cloudflare CRON trigger to awaken the multi-agent engine.
- * Authorizes via CRON_SECRET, x-vercel-cron header, or Founder session.
+ * Authorizes strictly via process.env.CRON_SECRET Bearer token or verified Founder/Admin session.
  */
 export const APIRoute = createAPIFileRoute('/api/v1/admin/agent-cron')({
   GET: async ({ request }: any) => {
     try {
       const authHeader = request.headers.get('authorization');
-      const isVercelCron = request.headers.get('x-vercel-cron') === '1';
-      const cookieHeader = request.headers.get('cookie') || '';
-      
-      // Basic check for Founder session (can be expanded based on actual session architecture)
-      const isFounder = cookieHeader.includes('founder_session') || cookieHeader.includes('admin_token');
+      const cronSecret = process.env.CRON_SECRET?.trim();
+      const hasValidCronSecret = Boolean(cronSecret && cronSecret.length >= 16 && authHeader === `Bearer ${cronSecret}`);
 
-      // 4. Authorize request before triggering queue
-      if (!isVercelCron && authHeader !== `Bearer ${process.env.CRON_SECRET}` && !isFounder) {
-        return new Response(JSON.stringify({ success: false, message: 'Unauthorized. Valid CRON secret or Founder session required.' }), { status: 401 });
+      let isVerifiedFounder = false;
+      if (!hasValidCronSecret) {
+        const session = await getSessionUser();
+        if (session?.id) {
+          const sql = await getSql();
+          const rows = await sql`SELECT role FROM users WHERE id = ${session.id} LIMIT 1`;
+          const role = rows.length > 0 ? String((rows[0] as any).role || "").toUpperCase() : "";
+          isVerifiedFounder = ["SUPER_ADMIN", "FOUNDER", "ADMIN"].includes(role);
+        }
+      }
+
+      if (!hasValidCronSecret && !isVerifiedFounder) {
+        return new Response(
+          JSON.stringify({ success: false, message: 'Unauthorized. Valid CRON_SECRET or verified Founder session required.' }),
+          { status: 401, headers: { 'Content-Type': 'application/json' } }
+        );
       }
 
       console.log("[CRON] Awaking AgentExecutorEngine for queue processing...");

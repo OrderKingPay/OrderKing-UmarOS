@@ -106,6 +106,10 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
   const [showCmsEditor, setShowCmsEditor] = useState(false);
   const [cmsSaving, setCmsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<ConnectorTab>(forcedTab || "all");
+  const [activeCategory, setActiveCategory] = useState<
+    "ALL" | "PAYMENTS" | "MAPS" | "AI" | "MESSAGING" | "CLOUD"
+  >("ALL");
+  const [subTabsCollapsed, setSubTabsCollapsed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testingService, setTestingService] = useState<string | null>(null);
@@ -1177,46 +1181,114 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
         </div>
       )}
 
-      {/* Navigation Filter Tabs */}
-      {!forcedTab && (<div className="flex flex-wrap gap-2 border-b border-border pb-3">
-        {[
-          { id: "all" as const, label: "All Integrations", icon: Layers },
-          { id: "globalAdSyndicate" as const, label: "Global Ad Syndicate Hub (4 Streams)", icon: Landmark },
-          { id: "oemLockScreen" as const, label: "OEM Lock-Screen Ads (Glance / InMobi)", icon: Smartphone },
-          { id: "wifiCaptivePortal" as const, label: "Wi-Fi Captive Portal (UmarOS)", icon: Wifi },
-          { id: "aiMediaEngine" as const, label: "AI Deepfake Media Engine (Synthesia / HeyGen)", icon: Video },
-          { id: "metaOmnichannel" as const, label: "Meta Omnichannel Geo-Blast (IG / WA / Messenger)", icon: Share2 },
-          { id: "geospatialAdExchange" as const, label: "Telecom Broad_Reach Ad Exchange", icon: Crosshair },
-          { id: "razorpay" as const, label: "Razorpay Payments", icon: CreditCard },
-          { id: "stripeAtlas" as const, label: "Stripe Atlas (USD B2B SaaS)", icon: Globe },
-          { id: "payoneer" as const, label: "Payoneer Cross-Border", icon: Landmark },
-          { id: "whatsapp" as const, label: "WhatsApp Business API", icon: MessageSquare },
-          { id: "fssai" as const, label: "FSSAI Regulatory Gateway", icon: ShieldAlert },
-          { id: "mapbox" as const, label: "Mapbox Geospatial Matrix", icon: Navigation },
-          { id: "cleartax" as const, label: "Automated Tax (ClearTax)", icon: Calculator },
-          { id: "whatsappMarketing" as const, label: "Automated WhatsApp Marketing", icon: Megaphone },
-          { id: "b2bLeadGen" as const, label: "B2B Franchise Leads (Apollo/LinkedIn)", icon: Target },
-          { id: "telemarketing" as const, label: "AI Voice Telemarketing", icon: PhoneCall },
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isSelected = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-colors ${
-                isSelected
-                  ? "bg-primary text-primary-foreground shadow-xs"
-                  : "bg-card border border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>)}
+      {/* Connector Category Filter & Scroll Navigation Bar */}
+      {!forcedTab && (
+        <div className="space-y-3 rounded-xl border border-border bg-card p-4 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2.5">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {(
+                [
+                  { id: "ALL" as const, label: "All Connectors", defaultTab: "all" as const },
+                  { id: "PAYMENTS" as const, label: "Payments & UPI", defaultTab: "razorpay" as const },
+                  { id: "MAPS" as const, label: "Maps & Logistics", defaultTab: "mapbox" as const },
+                  { id: "AI" as const, label: "AI & LLM", defaultTab: "aiMediaEngine" as const },
+                  { id: "MESSAGING" as const, label: "Messaging & Auth", defaultTab: "whatsapp" as const },
+                  { id: "CLOUD" as const, label: "Cloud & Database", defaultTab: "globalAdSyndicate" as const },
+                ]
+              ).map((cat) => {
+                const isCatActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveCategory(cat.id);
+                      setActiveTab(cat.defaultTab);
+                    }}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
+                      isCatActive
+                        ? "bg-primary text-primary-foreground shadow-xs"
+                        : "border border-border bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setSubTabsCollapsed((prev) => !prev)}
+                className="rounded-lg border border-border bg-secondary/50 px-2.5 py-1 text-[11px] font-semibold text-foreground hover:bg-secondary transition-colors"
+              >
+                {subTabsCollapsed ? "Expand Connector List ▾" : "Collapse Connector List ▴"}
+              </button>
+              <button
+                type="button"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                className="rounded-lg border border-border bg-secondary/50 px-2 py-1 text-[11px] font-semibold text-foreground hover:bg-secondary"
+                title="Scroll to Top"
+              >
+                ↑ Top
+              </button>
+              <button
+                type="button"
+                onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })}
+                className="rounded-lg border border-border bg-secondary/50 px-2 py-1 text-[11px] font-semibold text-foreground hover:bg-secondary"
+                title="Scroll to Bottom"
+              >
+                ↓ Bottom
+              </button>
+            </div>
+          </div>
+
+          {!subTabsCollapsed && (
+            <div className="flex flex-wrap gap-2">
+              {[
+                { id: "all" as const, label: "All Integrations", icon: Layers, cat: "ALL" as const },
+                { id: "razorpay" as const, label: "Razorpay Payments", icon: CreditCard, cat: "PAYMENTS" as const },
+                { id: "stripeAtlas" as const, label: "Stripe Atlas (USD B2B SaaS)", icon: Globe, cat: "PAYMENTS" as const },
+                { id: "payoneer" as const, label: "Payoneer Cross-Border", icon: Landmark, cat: "PAYMENTS" as const },
+                { id: "cleartax" as const, label: "Automated Tax (ClearTax)", icon: Calculator, cat: "PAYMENTS" as const },
+                { id: "mapbox" as const, label: "Mapbox Geospatial Matrix", icon: Navigation, cat: "MAPS" as const },
+                { id: "fssai" as const, label: "FSSAI Regulatory Gateway", icon: ShieldAlert, cat: "MAPS" as const },
+                { id: "wifiCaptivePortal" as const, label: "Wi-Fi Captive Portal (UmarOS)", icon: Wifi, cat: "MAPS" as const },
+                { id: "aiMediaEngine" as const, label: "AI Deepfake Media Engine (Synthesia / HeyGen)", icon: Video, cat: "AI" as const },
+                { id: "telemarketing" as const, label: "AI Voice Telemarketing", icon: PhoneCall, cat: "AI" as const },
+                { id: "b2bLeadGen" as const, label: "B2B Franchise Leads (Apollo/LinkedIn)", icon: Target, cat: "AI" as const },
+                { id: "whatsapp" as const, label: "WhatsApp Business API", icon: MessageSquare, cat: "MESSAGING" as const },
+                { id: "whatsappMarketing" as const, label: "Automated WhatsApp Marketing", icon: Megaphone, cat: "MESSAGING" as const },
+                { id: "metaOmnichannel" as const, label: "Meta Omnichannel Geo-Blast (IG / WA / Messenger)", icon: Share2, cat: "MESSAGING" as const },
+                { id: "globalAdSyndicate" as const, label: "Global Ad Syndicate Hub (4 Streams)", icon: Landmark, cat: "CLOUD" as const },
+                { id: "oemLockScreen" as const, label: "OEM Lock-Screen Ads (Glance / InMobi)", icon: Smartphone, cat: "CLOUD" as const },
+                { id: "geospatialAdExchange" as const, label: "Telecom Broad_Reach Ad Exchange", icon: Crosshair, cat: "CLOUD" as const },
+              ]
+                .filter((tab) => activeCategory === "ALL" || tab.cat === activeCategory || tab.id === "all")
+                .map((tab) => {
+                  const Icon = tab.icon;
+                  const isSelected = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-colors ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground shadow-xs"
+                          : "bg-card border border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+            </div>
+          )}
+        </div>
+      )}
 
       {loading ? (
         <div className="flex h-64 items-center justify-center rounded-xl border border-border bg-card">

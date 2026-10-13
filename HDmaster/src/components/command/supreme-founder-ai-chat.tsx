@@ -3562,6 +3562,20 @@ export function PremiumFounderAiChat({
     setMessages((prev) => [...prev, initialAiMsg]);
 
     try {
+      // Bi-directional UMAR AI ↔ Platform Settings Auto-Execution
+      let liveCustomizationNote = "";
+      if (text) {
+        try {
+          const liveCustom = await systemMasterController.executeFounderLiveCustomization(text);
+          if (liveCustom.matched) {
+            liveCustomizationNote = `\n\n---\n✅ **UMAR AI Live Platform Customization Executed**:\n${liveCustom.summary}`;
+            toast.success(`👑 UMAR AI Applied Setting: ${liveCustom.summary}`);
+          }
+        } catch (customErr) {
+          console.warn("[ai-chat] Live customization check warning:", customErr);
+        }
+      }
+
       const apiMessages = newMessages.slice(-10).map((m) => ({
         role: (m.sender === "founder" ? "user" : "assistant") as "user" | "assistant",
         content: m.text,
@@ -3661,13 +3675,14 @@ export function PremiumFounderAiChat({
         }
       }
 
+      const finalStreamedText = liveCustomizationNote ? `${streamedText}${liveCustomizationNote}` : streamedText;
       setIsProcessing(false);
       setMessages((prev) =>
         prev.map((m) =>
           m.id === aiMsgId
             ? {
                 ...m,
-                text: streamedText,
+                text: finalStreamedText,
                 language: detectedLanguage,
                 modelUsed: finalModelUsed,
                 executionSteps,

@@ -34,6 +34,12 @@ export interface ClientProspect {
   history: Array<{ stage: AcquisitionStage; timestamp: string; note: string }>;
   sentAt?: string;
   followUpDate?: string;
+  dataProvenance?: "VERIFIED_CRM_RECORD" | "SCENARIO_TEMPLATE";
+  contactPermissionConfirmed?: boolean;
+  verifiedCollectedInr?: number;
+  invoicedInr?: number;
+  refundsInr?: number;
+  directDeliveryCostInr?: number;
 }
 
 export class ClientAcquisitionMachine {
@@ -76,8 +82,14 @@ export class ClientAcquisitionMachine {
       ].join("\n"),
       stage: "OUTREACH_DRAFTED",
       isOptedOut: false,
+      dataProvenance: "SCENARIO_TEMPLATE",
+      contactPermissionConfirmed: false,
+      verifiedCollectedInr: 0,
+      invoicedInr: 0,
+      refundsInr: 0,
+      directDeliveryCostInr: 0,
       history: [
-        { stage: "RESEARCH", timestamp: "2026-09-18 10:00", note: "Audited delivery volume in Silchar" },
+        { stage: "RESEARCH", timestamp: "2026-09-18 10:00", note: "Audited delivery volume in Silchar (Scenario Template)" },
         { stage: "NEED_IDENTIFIED", timestamp: "2026-09-19 11:30", note: "Calculated ₹5.18L/mo margin loss" },
         { stage: "SERVICE_MATCHED", timestamp: "2026-09-20 14:00", note: "Matched OrderKing Turnkey Suite" },
         { stage: "OUTREACH_DRAFTED", timestamp: "2026-09-21 09:00", note: "Drafted personalized ROI letter" },
@@ -109,8 +121,14 @@ export class ClientAcquisitionMachine {
       ].join("\n"),
       stage: "OUTREACH_DRAFTED",
       isOptedOut: false,
+      dataProvenance: "SCENARIO_TEMPLATE",
+      contactPermissionConfirmed: false,
+      verifiedCollectedInr: 0,
+      invoicedInr: 0,
+      refundsInr: 0,
+      directDeliveryCostInr: 0,
       history: [
-        { stage: "RESEARCH", timestamp: "2026-09-20 15:00", note: "Mobile Lighthouse speed audit completed" },
+        { stage: "RESEARCH", timestamp: "2026-09-20 15:00", note: "Mobile Lighthouse speed audit completed (Scenario Template)" },
         { stage: "NEED_IDENTIFIED", timestamp: "2026-09-21 10:00", note: "High abandonment due to latency" },
         { stage: "OUTREACH_DRAFTED", timestamp: "2026-09-21 16:30", note: "Drafted speed improvement offer" },
       ],
@@ -126,6 +144,73 @@ export class ClientAcquisitionMachine {
 
   getProspect(id: string): ClientProspect | undefined {
     return this.prospects.get(id);
+  }
+
+  draftOutreachForCrmLead(params: {
+    leadId: string;
+    businessName: string;
+    contactPerson: string;
+    contactEmail?: string;
+    contactPhone?: string;
+    location: string;
+    painPoint: string;
+    matchedService: string;
+    dealValueInr: number;
+    dataProvenance?: "VERIFIED_CRM_RECORD" | "SCENARIO_TEMPLATE";
+    contactPermissionConfirmed?: boolean;
+  }): ClientProspect {
+    const message = [
+      `Dear ${params.contactPerson},`,
+      "",
+      `Following our operational review of ${params.businessName} (${params.location}), we identified a direct opportunity to resolve: ${params.painPoint}`,
+      "",
+      `Proposed OrderKing Deliverable: ${params.matchedService}`,
+      `Commercial Investment: ₹${params.dealValueInr.toLocaleString("en-IN")} (GST INV-1 invoice, 50% advance milestone, 14-day deployment SLA).`,
+      "",
+      "Key Operational Guarantees:",
+      "1. 0% aggregator commission bleed with direct UPI QR & Intent checkout",
+      "2. Real-time KOT & order operations dashboard",
+      "3. Full customer data ownership and statutory GST compliance",
+      "",
+      "Would you have 10 minutes this week to review the live architecture walkthrough?",
+      "",
+      "Warm regards,",
+      "OrderKing Commercial Desk (Ex-Burger King Multi-Unit Operations)",
+      "To opt out of future communications, reply 'STOP' or 'UNSUBSCRIBE'.",
+    ].join("\n");
+
+    const prospect: ClientProspect = {
+      id: `PROS-${params.leadId}`,
+      businessName: params.businessName,
+      contactPerson: params.contactPerson,
+      contactEmail: params.contactEmail,
+      contactPhone: params.contactPhone,
+      category: "restaurant",
+      location: params.location,
+      source: "CRM Pipeline Sync",
+      identifiedNeed: params.painPoint,
+      matchedService: params.matchedService,
+      personalizedValueProposition: `Deploy ${params.matchedService} for ₹${params.dealValueInr.toLocaleString("en-IN")} with 0% aggregator commission bleed.`,
+      draftedOutreachMessage: message,
+      stage: "OUTREACH_DRAFTED",
+      isOptedOut: false,
+      dataProvenance: params.dataProvenance ?? "VERIFIED_CRM_RECORD",
+      contactPermissionConfirmed: params.contactPermissionConfirmed ?? true,
+      verifiedCollectedInr: 0,
+      invoicedInr: 0,
+      refundsInr: 0,
+      directDeliveryCostInr: 0,
+      history: [
+        {
+          stage: "OUTREACH_DRAFTED",
+          timestamp: new Date().toISOString().replace("T", " ").slice(0, 16),
+          note: `Personalized outreach drafted for ${params.businessName}`,
+        },
+      ],
+    };
+
+    this.prospects.set(prospect.id, prospect);
+    return prospect;
   }
 
   // Anti-Spam & Rate-Limited Outreach Sender

@@ -1,16 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { getSessionUser } from "@/lib/auth/verify.server";
 
 export const Route = createFileRoute("/api/razorpay/create-order")({
-  
   server: {
     handlers: {
       POST: async ({ request }: any) => {
         try {
+          const user = await getSessionUser();
+          if (!user?.id) {
+            return new Response(JSON.stringify({ error: "Unauthorized" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
           const body = await request.json();
           const { amount, currency = "INR" } = body;
 
-          if (!amount) {
-            return new Response(JSON.stringify({ error: "Amount is required" }), {
+          if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0 || amount > 100000) {
+            return new Response(JSON.stringify({ error: "Valid positive amount is required" }), {
               status: 400,
               headers: { "Content-Type": "application/json" },
             });
@@ -30,13 +38,13 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
             );
           }
 
-          const token = btoa(process.env.RAZORPAY_KEY_ID + ':' + process.env.RAZORPAY_KEY_SECRET);
-          
+          const token = btoa(process.env.RAZORPAY_KEY_ID + ":" + process.env.RAZORPAY_KEY_SECRET);
+
           // Amount in smallest unit (paise for INR)
           const options = {
             amount: Math.round(amount * 100),
             currency,
-            receipt: 'rcpt_' + crypto.randomUUID().replace(/-/g, '').substring(0, 16),
+            receipt: "rcpt_" + crypto.randomUUID().replace(/-/g, "").substring(0, 16),
           };
 
           const res = await fetch("https://api.razorpay.com/v1/orders", {

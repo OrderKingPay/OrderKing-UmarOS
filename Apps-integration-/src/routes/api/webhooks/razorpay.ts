@@ -99,14 +99,14 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
             delivery_fee_paise: number;
             payment_status: string;
           }>`
-            SELECT org_id, restaurant_id, rider_id, total_paise, commission_paise, delivery_fee_paise, payment_status 
+            SELECT org_id, restaurant_id, rider_id, COALESCE(total_paise, order_value_paise, 0)::bigint as total_paise, COALESCE(commission_paise, 0)::bigint as commission_paise, COALESCE(delivery_fee_paise, 0)::bigint as delivery_fee_paise, payment_status 
             FROM orders 
             WHERE id = ${internalOrderId} 
-            FOR UPDATE SKIP LOCKED
+            FOR UPDATE
           `;
 
           if (orderRows.length === 0) {
-            console.error(`[FATAL] Order ${internalOrderId} not found or locked.`);
+            console.error(`[FATAL] Order ${internalOrderId} not found.`);
             return; 
           }
 
@@ -115,6 +115,14 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
           // 2. Idempotency Check (Don't double-credit)
           if (order.payment_status === 'PAID') {
             console.log(`[IDEMPOTENT] Order ${internalOrderId} is already paid.`);
+            return;
+          }
+
+          // Strict Gateway Amount Integrity Check
+          const receivedAmountPaise = Number(paymentData.amount || 0);
+          const expectedTotalPaise = Number(order.total_paise || 0);
+          if (expectedTotalPaise > 0 && receivedAmountPaise !== expectedTotalPaise) {
+            console.error(`[SECURITY ALERT] Amount mismatch for Order ${internalOrderId}: expected ${expectedTotalPaise} paise, received ${receivedAmountPaise} paise.`);
             return;
           }
 
@@ -128,9 +136,10 @@ export const Route = createAPIFileRoute('/api/webhooks/razorpay')({
           `;
 
           // 4. Distribute the Genuine Money into Ledgers (The Revenue Split)
-          const founderRevenue = order.commission_paise; // e.g. 20% commission
-          const riderPayout = order.delivery_fee_paise;
-          const restaurantPayout = order.total_paise - founderRevenue - riderPayout;
+          const founderRevenue = Number(order.commission_paise || 0); // e.g. 20% commission
+          const riderPayout = Number(order.delivery_fee_paise || 0);
+          const totalPaise = Number(order.total_paise || 0);
+          const restaurantPayout = Math.max(0, totalPaise - founderRevenue - riderPayout);
 
           // Credit Restaurant
           await tx`

@@ -1,53 +1,46 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Link } from '@tanstack/react-router';
 
 export default function KingPayLoans() {
-  const [amount, setAmount] = useState(100000);
-  const [status, setStatus] = useState<'idle' | 'pending'>('idle');
-
-  const handleApply = () => {
-    setStatus('pending');
-  };
-
   return (
-    <div style={{ backgroundColor: '#121212', color: '#ffffff', minHeight: '100vh', padding: '2rem', fontFamily: 'sans-serif' }}>
-      <div style={{ maxWidth: '600px', margin: '0 auto', backgroundColor: '#1e1e1e', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
-        <h1 style={{ textAlign: 'center', color: '#e0e0e0' }}>KingPay Credit</h1>
-        <p style={{ textAlign: 'center', color: '#a0a0a0', marginBottom: '2rem' }}>Instant Credit, Zero Hassle.</p>
-        
-        {status === 'idle' ? (
-          <>
-            <div style={{ marginBottom: '2rem' }}>
-              <label style={{ display: 'block', marginBottom: '1rem', fontSize: '1.2rem' }}>
-                Select Loan Amount: <strong>₹{amount.toLocaleString('en-IN')}</strong>
-              </label>
-              <input 
-                type="range" 
-                min="10000" 
-                max="500000" 
-                step="5000"
-                value={amount} 
-                onChange={(e) => setAmount(Number(e.target.value))}
-                style={{ width: '100%', cursor: 'pointer' }}
-              />
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#888', marginTop: '0.5rem', fontSize: '0.9rem' }}>
-                <span>₹10,000</span>
-                <span>₹5,00,000</span>
-              </div>
-            </div>
-            
-            <button 
-              onClick={handleApply}
-              style={{ width: '100%', padding: '1rem', fontSize: '1.1rem', backgroundColor: '#bb86fc', color: '#000', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              Apply Now
-            </button>
-          </>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-            <h3 style={{ color: '#ffb74d' }}>Pending KYC / Awaiting RBI Partner Approval</h3>
-            <p style={{ color: '#a0a0a0', marginTop: '1rem' }}>We are processing your application. Please check back later.</p>
+    <div className="min-h-screen bg-[#0A0A0A] text-white p-6 sm:p-10 font-sans flex items-center justify-center">
+      <div className="max-w-xl w-full bg-[#141414] border border-white/10 rounded-3xl p-8 shadow-2xl space-y-6">
+        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div>
+            <h1 className="text-2xl font-bold text-white">KingPay Credit &amp; Lending</h1>
+            <p className="text-xs text-gray-400 mt-1">Digital Lending Regulatory Disclosure</p>
           </div>
-        )}
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
+            Partner Pending
+          </span>
+        </div>
+
+        <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-5 space-y-2">
+          <h2 className="text-sm font-bold text-amber-300 uppercase tracking-wider">
+            Requires Regulated NBFC / RBI Partner Authorization
+          </h2>
+          <p className="text-xs text-gray-300 leading-relaxed">
+            In compliance with the Reserve Bank of India (RBI) Digital Lending Guidelines, credit origination, Key Fact Statements (KFS), and loan disbursals must be executed directly by an RBI-registered Commercial Bank or Non-Banking Financial Company (NBFC).
+          </p>
+          <p className="text-xs text-gray-400 leading-relaxed">
+            OrderKing does not currently have an active Lending Service Provider (LSP) or regulated NBFC co-lending integration enabled on this workspace. No credit applications, KYC records, or loan quotes are generated here.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <Link
+            to="/king-pay"
+            className="px-5 py-2.5 rounded-xl bg-yellow-500 text-black font-bold text-xs hover:bg-yellow-400 transition-colors"
+          >
+            Return to Canonical /king-pay
+          </Link>
+          <Link
+            to="/"
+            className="px-5 py-2.5 rounded-xl bg-white/10 text-gray-200 font-semibold text-xs hover:bg-white/15 transition-colors"
+          >
+            Back to OrderKing Food App
+          </Link>
+        </div>
       </div>
     </div>
   );

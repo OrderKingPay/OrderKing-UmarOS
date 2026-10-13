@@ -1,18 +1,38 @@
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { GROK_PROVIDERS, authClient, authEnabled, signIn } from "@/lib/auth/client";
+import { authClient } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { OrderKingMark } from "@/components/mark";
 import { useT } from "@/components/use-t";
 import { platformConfig } from "@/lib/platform-config";
-import { ShieldCheck, ArrowRight } from "lucide-react";
+import { ShieldCheck, ArrowRight, Phone, Mail, Building2, Globe } from "lucide-react";
 
 export const Route = createFileRoute("/login")({ component: Login });
 
+/**
+ * Resolves either a 10-digit Indian mobile number (+91 optional) or a standard email address
+ * into a canonical authentication email identifier for Better-Auth.
+ */
+function resolveIdentifierToEmail(rawInput: string): { email: string; isMobile: boolean; valid: boolean } {
+  const trimmed = rawInput.trim();
+  if (trimmed.includes("@")) {
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+    return { email: trimmed.toLowerCase(), isMobile: false, valid: emailValid };
+  }
+  const digitsOnly = trimmed.replace(/\D/g, "");
+  const normalizedMobile =
+    digitsOnly.length === 12 && digitsOnly.startsWith("91") ? digitsOnly.slice(2) : digitsOnly;
+  const mobileValid = /^[6-9]\d{9}$/.test(normalizedMobile);
+  return {
+    email: `${normalizedMobile}@partner.orderking.in`,
+    isMobile: true,
+    valid: mobileValid,
+  };
+}
+
 function Login() {
-  const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const t = useT();
   const { user } = useCurrentUserState();
   const [mode, setMode] = useState<"in" | "up">(() => {
@@ -22,7 +42,7 @@ function Login() {
     }
     return "in";
   });
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -30,17 +50,36 @@ function Login() {
 
   if (user) return <Navigate to="/dashboard" />;
 
-  async function onEmail(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    setWorking(true);
     setError(null);
+
+    const resolved = resolveIdentifierToEmail(identifier);
+    if (!resolved.valid) {
+      setError(
+        "Please enter a valid 10-digit Indian mobile number (starting with 6–9) or a valid business email address.",
+      );
+      return;
+    }
+
+    setWorking(true);
     try {
       if (mode === "up") {
-        const res = await authClient.signUp.email({ email, password, name: name || email.split("@")[0] });
+        const defaultName =
+          name.trim() ||
+          (resolved.isMobile ? `Partner ${identifier.trim().slice(-4)}` : resolved.email.split("@")[0]);
+        const res = await authClient.signUp.email({
+          email: resolved.email,
+          password,
+          name: defaultName,
+        });
         if (res.error) throw new Error(res.error.message || t("auth.error"));
         window.location.assign("/onboarding");
       } else {
-        const res = await authClient.signIn.email({ email, password });
+        const res = await authClient.signIn.email({
+          email: resolved.email,
+          password,
+        });
         if (res.error) throw new Error(res.error.message || t("auth.error"));
         window.location.assign("/dashboard");
       }
@@ -57,87 +96,83 @@ function Login() {
           <OrderKingMark className="size-10 text-chili" />
           <div>
             <div className="font-display text-2xl font-bold tracking-tight">{platformConfig.brand.appName}</div>
-            <div className="text-xs text-slate-400">Zero-Fee Merchant Acquisition Gateway</div>
+            <div className="text-xs text-slate-400">
+              Restaurant Partner Operations, KDS &amp; Statutory Settlement Portal
+            </div>
           </div>
         </Link>
 
-        {/* Aggressive Enterprise Acquisition Guarantee */}
+        {/* Institutional Trust & Compliance Summary */}
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 shadow-sm">
-          <div className="flex items-center gap-2 text-xs font-mono font-semibold text-emerald-400">
+          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
             <ShieldCheck className="size-4 shrink-0" />
-            <span>Zero Setup Fees. Zero Hidden Charges. Live in 60 Seconds.</span>
+            <span>Direct Partner Onboarding • FSSAI &amp; GST Compliant</span>
           </div>
-          <p className="mt-1 text-[11px] text-slate-400">
-            No payment gateways, credit cards, or upfront fees required. Instant kitchen deployment.
+          <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
+            Manage live KDS orders, menu availability, preparation SLAs, and automated bank settlements with full CGST
+            Sec 9(5), TCS Sec 52, and Income Tax Sec 194-O ledger transparency.
           </p>
         </div>
 
         <div className="rounded-[24px] border border-slate-800 bg-slate-900/80 p-6 shadow-2xl backdrop-blur-sm">
           <div className="flex items-center justify-between pb-2">
             <h1 className="font-display text-2xl font-bold text-white">
-              {mode === "in" ? "Partner Sign In" : "Direct Merchant Registration"}
+              {mode === "in" ? "Partner Sign In" : "Restaurant Partner Registration"}
             </h1>
-            <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
-              ₹0 SETUP
+            <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-400">
+              23 LANGUAGES
             </span>
           </div>
           <p className="text-xs text-slate-400">
             {mode === "in"
-              ? "Access live kitchen operations, menu controls, and settlements."
-              : "Register your restaurant in seconds. Zero gateway hurdles."}
+              ? "Sign in with your 10-digit registered mobile number or restaurant email address."
+              : "Create your partner account to complete FSSAI, GSTIN, and bank payout verification."}
           </p>
 
-          {authEnabled && !isVercel ? (
-            <div className="mt-5 grid gap-2">
-              {GROK_PROVIDERS.map((p) => (
-                <Button
-                  key={p.providerId}
-                  type="button"
-                  variant="secondary"
-                  className="border-slate-800 bg-slate-800/80 hover:bg-slate-700 text-slate-200"
-                  onClick={() => signIn(p.providerId, { callbackURL: mode === "up" ? "/onboarding" : "/dashboard" })}
-                >
-                  {p.idp === "google" ? t("auth.continueGoogle") : t("auth.continueX")}
-                </Button>
-              ))}
-            </div>
-          ) : null}
-
-          <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-slate-500 font-mono">
-            <span className="h-px flex-1 bg-slate-800" />
-            {t("auth.orEmail")}
-            <span className="h-px flex-1 bg-slate-800" />
-          </div>
-
-          <form className="space-y-3" onSubmit={onEmail}>
+          <form className="mt-5 space-y-3.5" onSubmit={onSubmit}>
             {mode === "up" ? (
               <div>
-                <Label htmlFor="name" className="text-xs text-slate-300">Contact / Owner Name</Label>
+                <Label htmlFor="name" className="text-xs text-slate-300">
+                  Authorized Signatory / Owner Name
+                </Label>
                 <Input
                   id="name"
+                  required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
-                  placeholder="e.g. Vikram Sharma"
+                  placeholder="e.g. Rajeshwari Iyer"
                   className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600"
                 />
               </div>
             ) : null}
+
             <div>
-              <Label htmlFor="email" className="text-xs text-slate-300">{t("auth.email")}</Label>
+              <Label htmlFor="identifier" className="flex items-center justify-between text-xs text-slate-300">
+                <span>10-Digit Mobile Number or Business Email</span>
+                <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                  <Phone className="size-3" /> / <Mail className="size-3" />
+                </span>
+              </Label>
               <Input
-                id="email"
-                type="email"
+                id="identifier"
+                type="text"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                placeholder="partner@restaurant.in"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                autoComplete="username"
+                placeholder="9876543210 or partner@restaurant.in"
                 className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600"
               />
+              <p className="mt-1 text-[11px] text-slate-500">
+                Enter your 10-digit Indian mobile number (no @ needed) or your registered email ID.
+              </p>
             </div>
+
             <div>
-              <Label htmlFor="password" className="text-xs text-slate-300">{t("auth.password")}</Label>
+              <Label htmlFor="password" className="text-xs text-slate-300">
+                {t("auth.password")}
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -151,29 +186,62 @@ function Login() {
               />
               <p className="mt-1 text-[11px] text-slate-500">{t("auth.passwordHint")}</p>
             </div>
-            {error ? <p className="text-xs text-rose-400">{error}</p> : null}
+
+            {error ? (
+              <div className="rounded-lg border border-rose-500/30 bg-rose-950/30 px-3 py-2 text-xs text-rose-300">
+                {error}
+              </div>
+            ) : null}
+
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-md shadow-emerald-950 h-11"
+              className="h-11 w-full bg-emerald-600 font-medium text-white shadow-md shadow-emerald-950 hover:bg-emerald-500"
               size="lg"
               disabled={working}
             >
               {working
                 ? t("auth.working")
                 : mode === "in"
-                  ? "Sign In to Restaurant Portal"
-                  : "Deploy Restaurant (Live in 60s)"}
+                  ? "Sign In to Partner Portal"
+                  : "Continue to FSSAI & KYC Onboarding"}
             </Button>
           </form>
 
           <button
             type="button"
-            className="mt-4 text-xs text-emerald-400 hover:underline inline-flex items-center gap-1"
-            onClick={() => setMode(mode === "in" ? "up" : "in")}
+            className="mt-4 inline-flex items-center gap-1 text-xs text-emerald-400 hover:underline"
+            onClick={() => {
+              setError(null);
+              setMode(mode === "in" ? "up" : "in");
+            }}
           >
-            {mode === "in" ? "Need a restaurant account? Register free in 60s" : "Already registered? Sign in here"}
+            {mode === "in"
+              ? "New restaurant partner? Register for onboarding"
+              : "Already have a partner account? Sign in here"}
             <ArrowRight className="size-3" />
           </button>
+        </div>
+
+        {/* Institutional Partner Highlights */}
+        <div className="grid grid-cols-2 gap-2.5 text-xs text-slate-400">
+          <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-3">
+            <div className="flex items-center gap-1.5 font-medium text-slate-200">
+              <Building2 className="size-3.5 text-emerald-400" />
+              <span>Self-Service Control</span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-400">
+              Manage menu stock, rush prep SLAs, tax invoices, and bank accounts directly.
+            </p>
+          </div>
+          <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-3">
+            <div className="flex items-center gap-1.5 font-medium text-slate-200">
+              <Globe className="size-3.5 text-emerald-400" />
+              <span>All 22 Indian Languages</span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-400">
+              Native script UI &amp; voice KDS alerts across all 22 Eighth Schedule languages + English.
+            </p>
+          </div>
         </div>
       </div>
     </main>

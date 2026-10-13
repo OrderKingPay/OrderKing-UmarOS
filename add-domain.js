@@ -1,7 +1,15 @@
-const token = 'cfoat_wI1vN6DOyRGvrrumN46jIhmEvSWd63A13wULAD3Wx_0.o9zd-uB7x5N_E16JvpfI69OP4W0-XXgUm4LsXQ7GIq8';
-const accountId = 'fc53b6fd613df944a3a46606cfbf21d0';
-const projectName = 'orderking-customers';
-const domain = 'www.orderkingpay.com';
+// Secure Cloudflare Domain Provisioning Script
+// Reads tokens strictly from environment variables to prevent credential exposure
+
+const token = process.env.CLOUDFLARE_API_TOKEN || process.env.CF_API_TOKEN;
+const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || process.env.CF_ACCOUNT_ID;
+const projectName = process.env.CLOUDFLARE_PROJECT_NAME || 'orderking-customers';
+const domain = process.argv[2] || process.env.DOMAIN_NAME || 'www.orderkingpay.com';
+
+if (!token || !accountId) {
+  console.error('[SECURITY ERROR] CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID must be set in environment variables.');
+  process.exit(1);
+}
 
 fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/domains`, {
   method: 'POST',

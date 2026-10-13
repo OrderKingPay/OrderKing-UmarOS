@@ -5,6 +5,7 @@ import { paise } from "@/lib/money";
 import { withVendor, writeAudit } from "./helpers";
 import type { AvailabilityStatus, DietFlag } from "@/lib/contracts";
 import { createPresignedUpload } from "./storage.server";
+import { getMenuLockState, assertMenuUnlocked } from "@/lib/merchant-kyc";
 
 export const getMenu = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
@@ -65,10 +66,15 @@ export const getMenu = createServerFn({ method: "GET" })
         select item_id, status, next_available_at::text as next_available_at, note
         from item_availability where restaurant_id = ${ctx.restaurantId}
       `;
+      const lockState = getMenuLockState(ctx.verificationStatus);
       return {
         restaurantId: ctx.restaurantId,
         role: ctx.role,
         dataLabel: ctx.dataLabel,
+        verificationStatus: ctx.verificationStatus,
+        menuStatus: lockState.menuStatus,
+        isMenuLocked: lockState.isLocked,
+        menuLockReason: lockState.reason,
         categories,
         items: items.map((it) => ({
           ...it,
@@ -94,6 +100,7 @@ export const saveCategory = createServerFn({ method: "POST" })
   .validator((d: { restaurantId?: string; id?: string; name: string; sortOrder?: number }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (sql, ctx) => {
+      assertMenuUnlocked(ctx.verificationStatus);
       const name = data.name.trim();
       if (!name) throw new Error("Category name is required");
       if (data.id) {
@@ -117,6 +124,7 @@ export const reorderCategories = createServerFn({ method: "POST" })
   .validator((d: { restaurantId?: string; orderedIds: string[] }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (sql, ctx) => {
+      assertMenuUnlocked(ctx.verificationStatus);
       let i = 0;
       for (const id of data.orderedIds) {
         await sql`
@@ -134,6 +142,7 @@ export const getMenuItemUploadUrl = createServerFn({ method: "POST" })
   .validator((d: { restaurantId?: string; fileName: string; contentType: string; itemId?: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (_sql, ctx) => {
+      assertMenuUnlocked(ctx.verificationStatus);
       const upload = await createPresignedUpload({
         fileName: data.fileName,
         contentType: data.contentType,
@@ -162,6 +171,7 @@ export const saveItem = createServerFn({ method: "POST" })
   }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (sql, ctx) => {
+      assertMenuUnlocked(ctx.verificationStatus);
       const name = data.name.trim();
       if (!name) throw new Error("Item name is required");
       if (!data.variants.length) throw new Error("At least one variant is required");
@@ -262,6 +272,7 @@ export const duplicateItem = createServerFn({ method: "POST" })
   .validator((d: { restaurantId?: string; itemId: string }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (sql, ctx) => {
+      assertMenuUnlocked(ctx.verificationStatus);
       const items = await sql<{ id: string }>`
         select id from items where id = ${data.itemId} and restaurant_id = ${ctx.restaurantId}
       `;
@@ -310,6 +321,7 @@ export const setAvailability = createServerFn({ method: "POST" })
   }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "availability.edit", async (sql, ctx) => {
+      assertMenuUnlocked(ctx.verificationStatus);
       for (const itemId of data.itemIds) {
         await sql`
           insert into item_availability (item_id, restaurant_id, status, next_available_at, updated_at)
@@ -330,6 +342,7 @@ export const saveAddon = createServerFn({ method: "POST" })
   .validator((d: { restaurantId?: string; id?: string; name: string; pricePaise: number }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "menu.edit", async (sql, ctx) => {
+      assertMenuUnlocked(ctx.verificationStatus);
       paise(data.pricePaise);
       const name = data.name.trim();
       if (!name) throw new Error("Add-on name is required");

@@ -22,11 +22,14 @@ export type VehicleType = "BICYCLE" | "MOTORCYCLE" | "SCOOTER" | "WALKING";
 
 export type DeliveryState =
   | "OFFERED"
+  | "OFFER_PRESENTED"
   | "ACCEPTED"
   | "ARRIVING_AT_RESTAURANT"
   | "ARRIVED_AT_RESTAURANT"
+  | "ARRIVED_AT_STORE"
   | "PICKED_UP"
   | "ON_THE_WAY"
+  | "OUT_FOR_DELIVERY"
   | "ARRIVED_AT_CUSTOMER"
   | "DELIVERED"
   | "OFFER_EXPIRED"
@@ -101,7 +104,30 @@ export type Actor = "RIDER" | "SYSTEM" | "DISPATCH" | "RESTAURANT" | "CUSTOMER" 
 
 export type GeoPoint = { lat: number; lng: number };
 
-export type LocaleCode = "en" | "bn" | "hi" | "te" | "ta" | "mr" | "gu" | "kn" | "ml" | "pa" | "or" | "as" | "ur";
+export type LocaleCode =
+  | "en"
+  | "hi"
+  | "bn"
+  | "te"
+  | "mr"
+  | "ta"
+  | "ur"
+  | "gu"
+  | "kn"
+  | "ml"
+  | "or"
+  | "pa"
+  | "as"
+  | "mai"
+  | "sat"
+  | "ks"
+  | "ne"
+  | "sd"
+  | "kok"
+  | "doi"
+  | "mni"
+  | "brx"
+  | "sa";
 
 export type FeatureFlags = {
   rider_ai: boolean;

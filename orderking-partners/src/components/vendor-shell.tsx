@@ -30,16 +30,18 @@ import { useVendor } from "./use-vendor";
 import { useState, type ReactNode } from "react";
 import { OrderKingSparkModal } from "./ai/order-king-spark-modal";
 import type { AppLanguage } from "@/lib/platform-config";
+import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
+
 export const PRIMARY_NAV = [
   { to: "/dashboard", key: "nav.home", icon: Home, perm: "dashboard.view" as Permission },
   { to: "/orders", key: "nav.orders", icon: ClipboardList, perm: "orders.view" as Permission },
   { to: "/kitchen", key: "nav.kitchen", icon: ChefHat, perm: "kitchen.view" as Permission },
   { to: "/menu", key: "nav.menu", icon: UtensilsCrossed, perm: "menu.view" as Permission },
+  { to: "/settlements", key: "nav.settlements", icon: Wallet, perm: "settlements.view" as Permission },
 ] as const;
 
 export const MORE_NAV = [
   { to: "/promotions", key: "nav.promotions", icon: Tag, perm: "promotions.view" as Permission },
-  { to: "/settlements", key: "nav.settlements", icon: Wallet, perm: "settlements.view" as Permission },
   { to: "/analytics", key: "nav.analytics", icon: LineChart, perm: "analytics.view" as Permission },
   { to: "/reviews", key: "nav.reviews", icon: Star, perm: "reviews.view" as Permission },
   { to: "/hours", key: "nav.hours", icon: Clock3, perm: "hours.edit" as Permission },
@@ -71,7 +73,7 @@ export function VendorShell({
   const role = vendor.role;
   const primary = PRIMARY_NAV.filter((item) => !role || can(role, item.perm));
   const more = MORE_NAV.filter((item) => !role || can(role, item.perm));
-  const mobilePrimary = (primary.length >= 4 ? primary : [...primary, ...more]).slice(0, 4);
+  const mobilePrimary = primary.slice(0, 4);
 
   const [sparkOpen, setSparkOpen] = useState(false);
 
@@ -100,13 +102,19 @@ export function VendorShell({
               <div className="text-xs text-slate-400">{restaurantName ?? t("app.tagline")}</div>
             </div>
           </div>
-          <nav className="flex flex-1 flex-col gap-1" aria-label="Main">
+          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto scrollbar-none" aria-label="Main">
+            <div className="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Daily Operations
+            </div>
             {primary.map((item) => (
               <NavLink key={item.to} to={item.to} active={pathname.startsWith(item.to)} icon={item.icon}>
                 {t(item.key)}
               </NavLink>
             ))}
-            <div className="my-3 h-px bg-line" />
+            <div className="my-2.5 h-px bg-slate-800/60" />
+            <div className="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Store Management
+            </div>
             {more.map((item) => (
               <NavLink key={item.to} to={item.to} active={pathname.startsWith(item.to)} icon={item.icon}>
                 {t(item.key)}
@@ -128,16 +136,16 @@ export function VendorShell({
             <div className="flex items-center gap-2">
               <div className="relative">
                 <select
-                  className="h-11 appearance-none rounded-[12px] border border-slate-800/60 bg-slate-900/60 backdrop-blur-xl pl-9 pr-8 text-sm outline-none transition-colors hover:bg-slate-800/60 backdrop-blur-xl focus:border-chili focus:ring-1 focus:ring-chili"
+                  className="h-11 appearance-none rounded-[12px] border border-slate-800/60 bg-slate-900/60 backdrop-blur-xl pl-9 pr-8 text-xs sm:text-sm outline-none transition-colors hover:bg-slate-800/60 focus:border-chili focus:ring-1 focus:ring-chili"
                   value={lang}
                   onChange={(e) => setLang(e.target.value as AppLanguage)}
                   aria-label={t("settings.language")}
                 >
-                  <option value="en">English</option>
-                  <option value="hi">हिंदी</option>
-                  <option value="bn">বাংলা</option>
-                  <option value="te">తెలుగు</option>
-                  <option value="ta">தமிழ்</option>
+                  {INDIAN_LANGUAGE_CATALOG.map((item) => (
+                    <option key={item.code} value={item.code}>
+                      {item.native} ({item.label})
+                    </option>
+                  ))}
                 </select>
                 <Languages className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
               </div>
@@ -205,7 +213,7 @@ export function VendorShell({
         </Link>
       </nav>
 
-      {/* 🍳 Order King Spark Restaurant AI Modal */}
+      {/* Order King Spark Restaurant AI Modal */}
       <OrderKingSparkModal isOpen={sparkOpen} onClose={() => setSparkOpen(false)} />
     </div>
   );
@@ -235,4 +243,3 @@ function NavLink({
     </Link>
   );
 }
-

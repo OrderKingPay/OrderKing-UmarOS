@@ -4,7 +4,14 @@ import { isEligibleRider, evaluateRiderEligibilityAndScore } from "./dispatch.ts
 import { assertPlausiblePing } from "./gps.ts";
 import { assertNotSelfVerify, assertRiderKycSubmit } from "./kyc.ts";
 import { assertTransition, isActiveDelivery } from "./machine.ts";
-import { assertNonNegativePaise } from "./money.ts";
+import {
+  assertNonNegativePaise,
+  calculateRiderPayout,
+  enforcePayoutFloor,
+  STATUTORY_BASE_FARE_PAISE,
+  STATUTORY_BASE_DISTANCE_KM,
+  STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
+} from "./money.ts";
 import { generateOtp, isPlausibleOtp, newOtpSecret, verifyOtpHash } from "./otp.ts";
 import { minimizeCustomer, offerCustomerView } from "./privacy.ts";
 import type { RiderStore } from "./store.ts";
@@ -80,9 +87,74 @@ const PROFILE_KEYS = [
 type ProfilePatch = Partial<Pick<RiderProfile, (typeof PROFILE_KEYS)[number]>>;
 
 export class RiderEngine {
-public presentOffer(offer: any): any { return offer; }
-  public async respondOffer(...args: any[]): Promise<any> { return null; }
-  public async otpForSimulation(...args: any[]): Promise<any> { return "1234"; }
+  public calculatePayout(distanceKm: number, customRatePerKmPaise?: number): number {
+    return calculateRiderPayout(distanceKm, customRatePerKmPaise);
+  }
+
+  public presentOffer(offer: DispatchOffer): DispatchOffer & { aiMetrics?: any } {
+    return {
+      ...offer,
+      expectedPayoutPaise: enforcePayoutFloor(offer.expectedPayoutPaise),
+      customer: offerCustomerView(offer.customer),
+      aiMetrics: (offer as any)._aiMetrics || undefined
+    };
+  }
+
+  public async respondOffer(
+    userId: string,
+    offerId: string,
+    decision: "ACCEPT" | "DECLINE",
+    reason: string | undefined,
+    idempotencyKey: string,
+  ) {
+    return this.idem(userId, idempotencyKey, "offer.respond", async () => {
+      const rider = await this.requireRider(userId);
+      const offer = await this.store.getOfferById(offerId);
+      if (!offer) throw new RiderError("NOT_FOUND", "Offer not found", 404);
+      const owner = await this.store.getRiderById(offer.riderId);
+      if (!owner || owner.userId !== userId) {
+        throw new RiderError("FORBIDDEN", "You cannot respond to another rider's offer", 403);
+      }
+      if (offer.status !== "OPEN") {
+        throw new RiderError("OFFER_GONE", "This offer is no longer available", 409);
+      }
+      if (new Date(offer.expiresAt).getTime() <= Date.now()) {
+        await this.store.casOffer(offer.id, rider.id, "EXPIRED");
+        throw new RiderError("OFFER_EXPIRED", "This offer has expired", 409);
+      }
+      if (decision === "DECLINE") {
+        const claimed = await this.store.casOffer(offer.id, rider.id, "DECLINED");
+        if (!claimed) throw new RiderError("OFFER_GONE", "This offer is no longer available", 409);
+        await this.audit(userId, "OFFER_DECLINED", "offer", offer.id, reason ?? "");
+        return { decision, delivery: null as Delivery | null, offer: { ...offer, status: "DECLINED" as const } };
+      }
+      const existing = await this.store.getActiveDeliveryForRider(rider.id);
+      if (existing) {
+        throw new RiderError("BUSY", "You already have an active delivery", 409);
+      }
+      const claimed = await this.store.casOffer(offer.id, rider.id, "ACCEPTED");
+      if (!claimed) {
+        throw new RiderError("OFFER_GONE", "This offer is no longer available", 409);
+      }
+      // Enforce ₹35 (3500 paise) base floor for rider fair earnings
+      const hardenedOffer = {
+        ...offer,
+        expectedPayoutPaise: enforcePayoutFloor(offer.expectedPayoutPaise),
+        status: "ACCEPTED" as const
+      };
+      const delivery = await this.createDeliveryFromOffer(rider, hardenedOffer);
+      const busy: RiderProfile = { ...rider, status: "BUSY", updatedAt: this.now() };
+      await this.store.upsertRider(busy);
+      return { decision, delivery, offer: hardenedOffer };
+    });
+  }
+
+  public async otpForSimulation(userId: string, deliveryId: string): Promise<string | null> {
+    const delivery = await this.getDelivery(userId, deliveryId);
+    if (!delivery) return null;
+    const otp = await this.store.getOtp(deliveryId);
+    return otp?.simulatedPlain ?? null;
+  }
   private store: RiderStore;
   constructor(store: RiderStore) {
     this.store = store;
@@ -416,12 +488,12 @@ public presentOffer(offer: any): any { return offer; }
       pickupLocation: offer.pickupLocation,
       dropLocation: offer.dropLocation,
       packageCount: offer.packageCount,
-      expectedPayoutPaise: offer.expectedPayoutPaise,
+      expectedPayoutPaise: enforcePayoutFloor(offer.expectedPayoutPaise),
       cod: offer.cod,
       codAmountPaise: offer.codAmountPaise,
       pickupVerification: cfg.pickupVerification,
       pickupCode: String(1000 + Math.floor(Math.random() * 9000)),
-      otpRequired: cfg.flags.delivery_otp,
+      otpRequired: true,
       arrivedRestaurantAt: null,
       expectedReadyAt: null,
       pickedUpAt: null,
@@ -437,21 +509,19 @@ public presentOffer(offer: any): any { return offer; }
     };
     await this.store.insertDelivery(delivery);
     await this.recordTransition(delivery, null, "ACCEPTED", "RIDER", rider.userId, "accepted offer");
-    if (cfg.flags.delivery_otp) {
-      const otp = generateOtp(4);
-      const secret = newOtpSecret(otp);
-      await this.store.saveOtp(
-        {
-          deliveryId: delivery.id,
-          hash: secret.hash,
-          salt: secret.salt,
-          attempts: 0,
-          verifiedAt: null,
-      simulatedPlain: "1234"
-    },
-        rider.userId,
-      );
-    }
+    const plainOtp = generateOtp(4);
+    const secret = newOtpSecret(plainOtp);
+    await this.store.saveOtp(
+      {
+        deliveryId: delivery.id,
+        hash: secret.hash,
+        salt: secret.salt,
+        attempts: 0,
+        verifiedAt: null,
+        simulatedPlain: plainOtp,
+      },
+      rider.userId,
+    );
     if (offer.cod && cfg.flags.cod) {
       await this.store.saveCash(
         {
@@ -638,7 +708,13 @@ public presentOffer(offer: any): any { return offer; }
       if (d.state === "ORDER_CANCELLED") {
         throw new RiderError("ORDER_CANCELLED", "This order was cancelled. Do not deliver it.", 409);
       }
-      if (d.state !== "ARRIVED_AT_CUSTOMER" && d.state !== "SUPPORT_ESCALATION") {
+      const validPreDeliveryStates: DeliveryState[] = [
+        "ARRIVED_AT_CUSTOMER",
+        "OUT_FOR_DELIVERY",
+        "ON_THE_WAY",
+        "SUPPORT_ESCALATION",
+      ];
+      if (!validPreDeliveryStates.includes(d.state)) {
         throw new RiderError("INVALID_STATE", "Arrive at the customer before completing delivery", 409);
       }
       if (d.cod) {
@@ -647,45 +723,45 @@ public presentOffer(offer: any): any { return offer; }
           throw new RiderError("CASH_REQUIRED", "Collect cash before completing this delivery", 400);
         }
       }
-      if (cfg.flags.delivery_otp && d.otpRequired) {
-        if (!otp || !isPlausibleOtp(otp)) {
-          throw new RiderError("OTP_REQUIRED", "Enter the customer OTP to complete delivery", 400);
-        }
-        const limited = await this.store.hitRateLimit(userId, `otp:${deliveryId}`, 60_000, cfg.otpMaxAttempts);
-        if (limited) {
-          throw new RiderError("OTP_LOCKED", "Too many attempts. Support has been notified.", 429);
-        }
-        const rec = await this.store.getOtp(deliveryId);
-        if (!rec) throw new RiderError("OTP_MISSING", "OTP is not available for this delivery", 500);
-        if (rec.verifiedAt) {
-          /* already verified — continue */
-        } else {
-          const ok = verifyOtpHash(otp, rec.salt, rec.hash);
-          rec.attempts += 1;
-          if (!ok) {
-            await this.store.saveOtp(rec, userId);
-            if (rec.attempts >= cfg.otpSuspiciousThreshold) {
-              await this.store.insertSignal(
-                {
-                  id: nid(),
-                  riderId: d.riderId,
-                  deliveryId: d.id,
-                  kind: "REPEATED_FAILED_OTP",
-                  detail: `${rec.attempts} failed attempts`,
-                  stage: "SIGNAL",
-                  createdAt: this.now(),
-                },
-                userId,
-              );
-            }
-            if (rec.attempts >= cfg.otpMaxAttempts) {
-              throw new RiderError("OTP_LOCKED", "Too many attempts. Support has been notified.", 429);
-            }
-            throw new RiderError("OTP_WRONG", "That code does not match. Try again.", 400);
-          }
-          rec.verifiedAt = this.now();
+      // Delivery completion strictly requires valid customer 4-digit OTP match
+      if (!otp || typeof otp !== "string" || !/^\d{4}$/.test(otp.trim())) {
+        throw new RiderError("OTP_REQUIRED", "Enter the valid customer 4-digit OTP to complete delivery", 400);
+      }
+      const trimmedOtp = otp.trim();
+      const limited = await this.store.hitRateLimit(userId, `otp:${deliveryId}`, 60_000, cfg.otpMaxAttempts);
+      if (limited) {
+        throw new RiderError("OTP_LOCKED", "Too many attempts. Support has been notified.", 429);
+      }
+      const rec = await this.store.getOtp(deliveryId);
+      if (!rec) throw new RiderError("OTP_MISSING", "OTP is not available for this delivery", 500);
+      if (rec.verifiedAt) {
+        /* already verified — continue */
+      } else {
+        const ok = verifyOtpHash(trimmedOtp, rec.salt, rec.hash);
+        rec.attempts += 1;
+        if (!ok) {
           await this.store.saveOtp(rec, userId);
+          if (rec.attempts >= cfg.otpSuspiciousThreshold) {
+            await this.store.insertSignal(
+              {
+                id: nid(),
+                riderId: d.riderId,
+                deliveryId: d.id,
+                kind: "REPEATED_FAILED_OTP",
+                detail: `${rec.attempts} failed attempts`,
+                stage: "SIGNAL",
+                createdAt: this.now(),
+              },
+              userId,
+            );
+          }
+          if (rec.attempts >= cfg.otpMaxAttempts) {
+            throw new RiderError("OTP_LOCKED", "Too many attempts. Support has been notified.", 429);
+          }
+          throw new RiderError("OTP_WRONG", "That code does not match. Try again.", 400);
         }
+        rec.verifiedAt = this.now();
+        await this.store.saveOtp(rec, userId);
       }
       const delivered = await this.transition(userId, deliveryId, "DELIVERED", "otp verified", (row) => {
         row.deliveredAt = this.now();
@@ -706,7 +782,7 @@ public presentOffer(offer: any): any { return offer; }
         deliveryId: d.id,
         orderCode: d.orderCode,
         kind: "DELIVERY_PAYOUT",
-        amountPaise: d.expectedPayoutPaise,
+        amountPaise: enforcePayoutFloor(d.expectedPayoutPaise),
         note: "Delivery payout",
         at: this.now(),
         dataMode: cfg.dataMode,
@@ -1172,4 +1248,13 @@ export function mapsUrl(point: GeoPoint, label: string): string {
 export function geoUrl(point: GeoPoint): string {
   return `geo:${point.lat},${point.lng}`;
 }
+
+export {
+  calculateRiderPayout,
+  enforcePayoutFloor,
+  STATUTORY_BASE_FARE_PAISE,
+  STATUTORY_BASE_DISTANCE_KM,
+  STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
+};
+
 

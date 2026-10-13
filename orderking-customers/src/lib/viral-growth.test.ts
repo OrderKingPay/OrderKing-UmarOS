@@ -1,8 +1,23 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
 
-// @ts-ignore
-const viralGrowth: any = {}; const { generateViralShareUrl, GENUINE_SUBSIDIES_REGISTRY, PRESTIGE_AWARDS_REGISTRY, ACADEMIC_INVITATIONS_REGISTRY, generateMetaAdCampaignSpec, generateGoogleLocalSeoSchema, generateInstitutionalPitchDossier, OPPORTUNITY_RADAR_REGISTRY, scanAndRankOpportunities, generateAutoBookingDossier, generateMetaMarketingApiPayload, generateGoogleAdsPMaxPayload, generateViralReelsScripts, generateLocalInfluencerBarterPitch, ViralSharePayload } = viralGrowth;
+import {
+  generateViralShareUrl,
+  GENUINE_SUBSIDIES_REGISTRY,
+  PRESTIGE_AWARDS_REGISTRY,
+  ACADEMIC_INVITATIONS_REGISTRY,
+  generateMetaAdCampaignSpec,
+  generateGoogleLocalSeoSchema,
+  generateInstitutionalPitchDossier,
+  OPPORTUNITY_RADAR_REGISTRY,
+  scanAndRankOpportunities,
+  generateAutoBookingDossier,
+  generateMetaMarketingApiPayload,
+  generateGoogleAdsPMaxPayload,
+  generateViralReelsScripts,
+  generateLocalInfluencerBarterPitch,
+  type ViralSharePayload,
+} from "./viral-growth.ts";
 
 describe("OrderKing Omni-Prestige, Subsidies & Hyper-Viral Engine", () => {
   const payload: any = {

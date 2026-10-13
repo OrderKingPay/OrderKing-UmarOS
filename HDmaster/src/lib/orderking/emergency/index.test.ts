@@ -16,7 +16,7 @@ describe('Emergency Control Plane', () => {
     let sqlSimulated: any;
 
     beforeEach(async () => {
-        vi.clearAllSimulateds();
+        vi.clearAllMocks();
         sqlSimulated = await dbModule.getSql();
     });
 

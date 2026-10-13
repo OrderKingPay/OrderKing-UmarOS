@@ -1,35 +1,54 @@
-import type { ReactNode } from "react";
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
-import { getDashboard, quickThrottleKitchen } from "@/lib/server/api-orders";
+import {
+  acceptOrder,
+  getDashboard,
+  listOrders,
+  markPreparing,
+  markReady,
+  quickThrottleKitchen,
+  rejectOrder,
+} from "@/lib/server/api-orders";
+import { formatINR } from "@/lib/money";
 import { cn } from "@/lib/utils";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from "recharts";
-import { Cpu, Zap, RadioTower, Banknote, ShieldAlert, ArrowUpRight, TrendingUp, IndianRupee, Activity, Smartphone, Server, AlertTriangle } from "lucide-react";
-import { useState } from "react";
 import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
+import {
+  AlertTriangle,
+  ArrowUpRight,
+  Banknote,
+  CheckCircle2,
+  ChefHat,
+  ClipboardList,
+  Clock,
+  Cpu,
+  Flame,
+  PauseCircle,
+  PlayCircle,
+  Settings,
+  ShieldCheck,
+  Star,
+  Store,
+  TrendingUp,
+  UtensilsCrossed,
+  XCircle,
+} from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({ component: DashboardPage });
-
-const AI_DEMAND_DATA = [
-  { time: "08:00", actual: 12, predicted: 15, surge: 1.0 },
-  { time: "10:00", actual: 24, predicted: 22, surge: 1.0 },
-  { time: "12:00", actual: 85, predicted: 90, surge: 1.2 },
-  { time: "14:00", actual: 45, predicted: 50, surge: 1.0 },
-  { time: "16:00", actual: 30, predicted: 35, surge: 1.0 },
-  { time: "18:00", actual: 95, predicted: 110, surge: 1.5 },
-  { time: "20:00", actual: 145, predicted: 165, surge: 2.1 }, // Peak
-  { time: "22:00", actual: 80, predicted: 95, surge: 1.4 },
-  { time: "00:00", actual: 10, predicted: 15, surge: 1.0 },
-];
 
 function DashboardPage() {
   const t = useT();
   const vendor = useVendor();
+  const qc = useQueryClient();
+  const [throttleBusy, setThrottleBusy] = useState<string | null>(null);
+  const [throttleMsg, setThrottleMsg] = useState<string | null>(null);
+  const [orderActionBusy, setOrderActionBusy] = useState<string | null>(null);
+
   const dash = useQuery({
     queryKey: ["dashboard", vendor.restaurantId],
     queryFn: () => getDashboard({ data: { restaurantId: vendor.restaurantId } }),
@@ -37,57 +56,109 @@ function DashboardPage() {
     refetchInterval: 8000,
   });
 
-  const [surgeActive, setSurgeActive] = useState(true);
-  const [payoutStatus, setPayoutStatus] = useState<"idle" | "processing" | "success">("idle");
+  const liveOrdersQ = useQuery({
+    queryKey: ["orders", vendor.restaurantId, "live"],
+    queryFn: () => listOrders({ data: { restaurantId: vendor.restaurantId, scope: "live" } }),
+    enabled: Boolean(vendor.restaurantId),
+    refetchInterval: 8000,
+  });
 
-  const handlePayout = () => {
-    setPayoutStatus("processing");
-    setTimeout(() => setPayoutStatus("success"), 2500);
-  };
+  async function handleThrottle(mode: "NORMAL" | "RUSH" | "PAUSE" | "RESUME") {
+    if (!vendor.restaurantId) return;
+    setThrottleBusy(mode);
+    setThrottleMsg(null);
+    try {
+      await quickThrottleKitchen({
+        data: { restaurantId: vendor.restaurantId, mode },
+      });
+      await qc.invalidateQueries({ queryKey: ["dashboard"] });
+      const labels: Record<typeof mode, string> = {
+        NORMAL: "Standard kitchen prep time (20 mins) applied.",
+        RUSH: "Peak rush prep time (35 mins) applied.",
+        PAUSE: "Outlet paused. New incoming orders are temporarily halted.",
+        RESUME: "Outlet resumed and accepting customer orders.",
+      };
+      setThrottleMsg(labels[mode]);
+    } catch (err) {
+      setThrottleMsg(err instanceof Error ? err.message : "Failed to update kitchen status");
+    } finally {
+      setThrottleBusy(null);
+    }
+  }
+
+  async function handleQuickOrderAction(
+    orderId: string,
+    action: "ACCEPT" | "PREPARING" | "READY" | "REJECT",
+  ) {
+    if (!vendor.restaurantId) return;
+    setOrderActionBusy(`${orderId}:${action}`);
+    try {
+      if (action === "ACCEPT") {
+        await acceptOrder({ data: { restaurantId: vendor.restaurantId, orderId } });
+      } else if (action === "PREPARING") {
+        await markPreparing({ data: { restaurantId: vendor.restaurantId, orderId } });
+      } else if (action === "READY") {
+        await markReady({ data: { restaurantId: vendor.restaurantId, orderId } });
+      } else if (action === "REJECT") {
+        await rejectOrder({
+          data: {
+            restaurantId: vendor.restaurantId,
+            orderId,
+            reason: "Item unavailable / Kitchen capacity reached",
+          },
+        });
+      }
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["orders"] }),
+        qc.invalidateQueries({ queryKey: ["dashboard"] }),
+      ]);
+    } catch (err) {
+      setThrottleMsg(err instanceof Error ? err.message : "Could not update order state");
+    } finally {
+      setOrderActionBusy(null);
+    }
+  }
 
   if (!vendor.isPending && vendor.memberships.length === 0) {
     return (
-      <VendorShell title="Merchant Acquisition Launchpad">
+      <VendorShell title="Restaurant Partner Onboarding">
         <div className="mx-auto max-w-2xl space-y-4 py-4">
-          <div className="rounded-2xl border border-emerald-500/30 bg-slate-900/90 p-6 shadow-xl space-y-4">
+          <Card className="border-slate-800 bg-slate-900/90 p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
-                <span className="inline-block size-2 rounded-full bg-emerald-400 animate-pulse" />
-                Zero-Fee Direct Acquisition
+                <Store className="size-4" />
+                OrderKing Restaurant Partner
               </div>
-              <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400">
-                ₹0 SETUP FEE
+              <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-mono font-semibold text-emerald-400">
+                SELF-SERVICE ONBOARDING
               </span>
             </div>
             <h2 className="font-display text-2xl font-bold text-slate-100">
-              Zero Setup Fees. Zero Hidden Charges. Live in 60 Seconds.
+              Register Your Restaurant &amp; Complete Statutory KYC
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed">
-              Your partner account is active. Register your restaurant profile now with zero upfront costs, zero payment gateway hurdles, and instant direct integer-paise bank settlements.
+              Your partner account is ready. Complete your restaurant profile, 14-digit FSSAI registration, GSTIN/PAN credentials, and settlement bank details to start receiving customer orders.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800">
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <div className="text-[10px] uppercase font-mono text-slate-400">Setup Fee</div>
-                <div className="text-base font-bold text-emerald-400">₹0.00 (Waived)</div>
+                <div className="text-[10px] uppercase font-mono text-slate-400">Food Safety Compliance</div>
+                <div className="text-sm font-semibold text-slate-100 mt-0.5">14-Digit FSSAI Mandatory</div>
               </div>
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <div className="text-[10px] uppercase font-mono text-slate-400">Gateway KYC</div>
-                <div className="text-base font-bold text-slate-200">Bypassed / None</div>
+                <div className="text-[10px] uppercase font-mono text-slate-400">Tax &amp; Accounting</div>
+                <div className="text-sm font-semibold text-slate-100 mt-0.5">CGST §9(5) &amp; TDS §194-O</div>
               </div>
               <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                <div className="text-[10px] uppercase font-mono text-slate-400">Deployment SLA</div>
-                <div className="text-base font-bold text-amber-400">&lt; 60 Seconds</div>
+                <div className="text-[10px] uppercase font-mono text-slate-400">Payout Ledger</div>
+                <div className="text-sm font-semibold text-emerald-400 mt-0.5">Integer-Paise NEFT/IMPS</div>
               </div>
             </div>
             <div className="flex flex-wrap gap-3 pt-2">
-              <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-md shadow-emerald-950">
-                <Link to="/onboarding">Deploy Live Restaurant (60s SLA)</Link>
-              </Button>
-              <Button variant="secondary" asChild className="border-slate-800 bg-slate-800 text-slate-300 hover:bg-slate-700">
-                <Link to="/onboarding">Explore Demo Kitchen</Link>
+              <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium">
+                <Link to="/onboarding">Complete Restaurant Onboarding</Link>
               </Button>
             </div>
-          </div>
+          </Card>
         </div>
       </VendorShell>
     );
@@ -95,6 +166,12 @@ function DashboardPage() {
 
   const d = dash.data;
   const stale = dash.isError;
+  const isOpen = Boolean(d?.isOpen);
+  const pendingCount = d?.today.pending ?? 0;
+  const unavailableCount = d?.today.unavailableItems ?? 0;
+  const aovPaise = d?.today.aovPaise ?? 0;
+  const recommendedPromoMinPaise = aovPaise > 0 ? Math.round((aovPaise * 1.15) / 1000) * 1000 : 25000;
+  const liveOrders = liveOrdersQ.data?.orders ?? [];
 
   return (
     <VendorShell
@@ -103,231 +180,557 @@ function DashboardPage() {
       stale={stale}
       restaurantName={d?.restaurantName}
     >
-      <div className="font-mono bg-zinc-950 text-zinc-100 p-4 sm:p-6 min-h-screen rounded-xl border border-zinc-800 shadow-[0_0_40px_rgba(16,185,129,0.05)] flex flex-col gap-6 relative overflow-hidden">
-        
-        {/* Terminal Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-800 pb-4 gap-4 z-10 relative">
-          <div className="flex items-center gap-3">
-            <Cpu className="text-emerald-500 animate-pulse" size={28} />
-            <div>
-              <h1 className="text-2xl font-bold tracking-widest text-emerald-400 leading-none">ORDERKING // AI TERMINAL</h1>
-              <p className="text-[10px] text-zinc-500 mt-1 uppercase tracking-widest">Sys: v4.9.0-PROD | Node: OK-BLR-09</p>
-            </div>
-          </div>
-          <div className="flex flex-col items-end gap-1 text-xs font-bold bg-zinc-900/50 px-3 py-2 rounded border border-zinc-800">
-            <span className="flex items-center gap-2 text-emerald-500"><RadioTower size={14} className="animate-pulse" /> NETWORK ACTIVE (12ms)</span>
-            <span className="text-zinc-400">ENCRYPTION: AES-256-GCM</span>
-          </div>
-        </div>
-
+      <div className="space-y-5">
         {/* FSSAI Statutory Food Safety Regulatory Compliance Banner */}
-        <FssaiExpiryBanner fssaiNumber={dash.data?.fssaiNumber} />
+        <FssaiExpiryBanner fssaiNumber={d?.fssaiNumber} />
 
-        {/* Top KPI Grid (Bloomberg Style) */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 z-10 relative">
-          <TerminalStat label="LIVE ORDERS" value="142" sub="↑ 24% vs last hr" color="emerald" />
-          <TerminalStat label="GROSS VOLUME (INR)" value="₹3,42,901" sub="Target: ₹400k" color="cyan" />
-          <TerminalStat label="AVG PREP TIME" value="11m 04s" sub="Excellent" color="emerald" />
-          <TerminalStat label="CANCELLATION RISK" value="1.2%" sub="Optimal" color="zinc" />
-          <Link to="/menu" className="block">
-            <TerminalStat 
-              label="OUT OF STOCK" 
-              value={String(dash.data?.today?.unavailableItems ?? 0)} 
-              sub="1-Tap Toggle →" 
-              color={(dash.data?.today?.unavailableItems ?? 0) > 0 ? "rose" : "zinc"} 
-            />
-          </Link>
-        </div>
-
-        {/* Middle Section: AI Chart & Surge Pricing */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 z-10 relative">
-          
-          {/* AI Demand Prediction Chart */}
-          <div className="lg:col-span-2 border border-zinc-800 bg-black p-4 rounded text-xs flex flex-col gap-4 shadow-inner">
-            <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
-              <div className="flex items-center gap-2 text-cyan-400 font-bold uppercase tracking-widest">
-                <Activity size={16} /> Demand Forecasting
-              </div>
-              <span className="text-zinc-500">ACCURACY: 98.4%</span>
-            </div>
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={AI_DEMAND_DATA} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorPredicted" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                  <XAxis dataKey="time" stroke="#52525b" tick={{fill: '#a1a1aa', fontSize: 10}} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#52525b" tick={{fill: '#a1a1aa', fontSize: 10}} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '4px', color: '#fff' }}
-                    itemStyle={{ color: '#06b6d4', fontSize: '12px' }}
-                  />
-                  <ReferenceLine x="20:00" stroke="#f59e0b" strokeDasharray="3 3" label={{ position: 'top', value: 'SURGE PEAK', fill: '#f59e0b', fontSize: 10 }} />
-                  <Area type="monotone" dataKey="predicted" stroke="#06b6d4" strokeWidth={2} fillOpacity={1} fill="url(#colorPredicted)" />
-                  <Area type="monotone" dataKey="actual" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorActual)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex gap-4 border-t border-zinc-800 pt-2 text-[10px] text-zinc-400">
-              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-emerald-500 rounded-full" /> ACTUAL VOLUME</span>
-              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-cyan-500 rounded-full" /> AI PREDICTION</span>
-            </div>
-          </div>
-
-          {/* Dynamic Surge Pricing */}
-          <div className="border border-amber-500/30 bg-amber-950/10 p-4 rounded flex flex-col gap-4">
-            <div className="flex justify-between items-center border-b border-amber-900/50 pb-2">
-              <div className="flex items-center gap-2 text-amber-500 font-bold uppercase tracking-widest text-xs">
-                <Zap size={16} /> 1-Tap Surge Engine
-              </div>
-              <div className="px-2 py-0.5 bg-amber-500 text-black text-[9px] font-bold rounded-sm animate-pulse">LIVE</div>
-            </div>
-            <div className="text-xs text-zinc-400 leading-relaxed">
-              AI detects extreme local demand. Enable algorithmic surge pricing to throttle inbound requests while maximizing per-ticket AOV.
-            </div>
-            
-            <div className="bg-black border border-zinc-800 p-3 rounded flex flex-col gap-3">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-zinc-300">AUTO-SURGE MODULE</span>
-                <button 
-                  onClick={() => setSurgeActive(!surgeActive)}
-                  className={cn("w-12 h-6 rounded-full flex items-center p-1 transition-colors", surgeActive ? "bg-amber-500 justify-end" : "bg-zinc-800 justify-start")}
+        {/* Outlet Live Status & Kitchen Rush Controls */}
+        <Card className="border-slate-800 bg-slate-900/90 p-5 space-y-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold tracking-wide",
+                    isOpen
+                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                      : "bg-rose-500/15 text-rose-300 border border-rose-500/30",
+                  )}
                 >
-                  <div className="w-4 h-4 bg-black rounded-full shadow-sm" />
-                </button>
+                  <span
+                    className={cn(
+                      "size-2 rounded-full",
+                      isOpen ? "bg-emerald-400 animate-pulse" : "bg-rose-400",
+                    )}
+                  />
+                  {isOpen ? "ONLINE — ACCEPTING ORDERS" : "OFFLINE / CLOSED"}
+                </span>
+                <span className="rounded-md border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-[11px] font-mono text-slate-300">
+                  KYC: {d?.verificationStatus ?? vendor.selected?.verificationStatus ?? "DRAFT"}
+                </span>
+                {d?.fssaiNumber ? (
+                  <span className="rounded-md border border-slate-800 bg-slate-950/70 px-2.5 py-1 text-[11px] font-mono text-slate-400">
+                    FSSAI: {d.fssaiNumber}
+                  </span>
+                ) : null}
               </div>
-              <div className="text-[10px] text-zinc-500">Currently overriding base menu prices by <span className="text-amber-500 font-bold">2.1x</span> (Max: 3x). Algorithm optimizing for lowest bounce rate.</div>
+              <h2 className="font-display text-xl font-bold text-white pt-1">
+                {d?.restaurantName ?? vendor.selected?.restaurantName ?? "Restaurant Operations Center"}
+              </h2>
+              <p className="text-xs text-slate-400">
+                Self-service kitchen dispatch, 1-tap prep-time throttling, and statutory integer-paise sales telemetry.
+              </p>
             </div>
 
-            <div className="mt-auto grid grid-cols-2 gap-2">
-              <Button size="sm" variant="outline" className="h-8 text-[10px] border-zinc-700 bg-zinc-900 text-zinc-300 hover:bg-zinc-800">
-                MANUAL OVERRIDE
+            {/* 1-Tap Kitchen Mode Controls */}
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                disabled={throttleBusy !== null || !vendor.restaurantId}
+                onClick={() => void handleThrottle("NORMAL")}
+                className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs"
+              >
+                <Clock className="mr-1.5 size-3.5 text-emerald-400" />
+                {throttleBusy === "NORMAL" ? "Updating..." : "Standard Prep (20m)"}
               </Button>
-              <Button size="sm" className="h-8 text-[10px] bg-amber-600 hover:bg-amber-500 text-white font-bold tracking-wider">
-                LOCK SURGE
+              <Button
+                size="sm"
+                variant="secondary"
+                disabled={throttleBusy !== null || !vendor.restaurantId}
+                onClick={() => void handleThrottle("RUSH")}
+                className="border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs"
+              >
+                <Flame className="mr-1.5 size-3.5 text-amber-400" />
+                {throttleBusy === "RUSH" ? "Updating..." : "Peak Rush Mode (35m)"}
+              </Button>
+              <Button
+                size="sm"
+                disabled={throttleBusy !== null || !vendor.restaurantId}
+                onClick={() => void handleThrottle(isOpen ? "PAUSE" : "RESUME")}
+                className={cn(
+                  "text-xs font-semibold",
+                  isOpen
+                    ? "bg-rose-600 hover:bg-rose-500 text-white"
+                    : "bg-emerald-600 hover:bg-emerald-500 text-white",
+                )}
+              >
+                {isOpen ? (
+                  <>
+                    <PauseCircle className="mr-1.5 size-3.5" />
+                    {throttleBusy === "PAUSE" ? "Pausing..." : "Pause Outlet"}
+                  </>
+                ) : (
+                  <>
+                    <PlayCircle className="mr-1.5 size-3.5" />
+                    {throttleBusy === "RESUME" ? "Resuming..." : "Resume Outlet"}
+                  </>
+                )}
               </Button>
             </div>
           </div>
-        </div>
 
-        {/* Lower Section: UPI Payouts & Heatmap */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 z-10 relative">
-          
-          {/* Instant Payout / UPI */}
-          <div className="border border-zinc-800 bg-black p-4 rounded flex flex-col gap-4">
-            <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold uppercase tracking-widest text-xs">
-                <Banknote size={16} /> Treasury & Settlement
-              </div>
-              <span className="text-zinc-500 text-[10px] border border-zinc-800 px-1.5 py-0.5 rounded">UPI IMPS ACTIVE</span>
+          {throttleMsg ? (
+            <div className="rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2 text-xs text-slate-200 flex items-center justify-between">
+              <span>{throttleMsg}</span>
+              <button
+                type="button"
+                onClick={() => setThrottleMsg(null)}
+                className="text-[11px] text-slate-400 hover:text-white"
+              >
+                Dismiss
+              </button>
             </div>
+          ) : null}
 
-            <div className="flex items-end justify-between">
-              <div>
-                <div className="text-[10px] text-zinc-500 mb-1">AVAILABLE TO WITHDRAW</div>
-                <div className="text-3xl font-bold text-emerald-500 tracking-tight">₹84,293<span className="text-zinc-500 text-lg">.42</span></div>
-              </div>
-              <div className="text-right">
-                <div className="text-[10px] text-zinc-500 mb-1">UNSETTLED HOLD</div>
-                <div className="text-sm font-bold text-zinc-300">₹12,400.00</div>
-              </div>
-            </div>
-
-            <div className="bg-zinc-900 border border-zinc-800 p-3 rounded text-xs flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="p-1.5 bg-indigo-500/20 text-indigo-400 rounded"><Smartphone size={14} /></div>
+          {/* Actionable Attention Banner if Pending Orders > 0 */}
+          {pendingCount > 0 ? (
+            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <AlertTriangle className="size-5 text-amber-400 shrink-0" />
                 <div>
-                  <div className="font-bold text-zinc-300">restaurant@ybl</div>
-                  <div className="text-[10px] text-zinc-500">Verified Merchant VPA</div>
+                  <div className="text-sm font-bold text-amber-200">
+                    {pendingCount} Pending {pendingCount === 1 ? "Order" : "Orders"} Awaiting Kitchen Acceptance
+                  </div>
+                  <div className="text-xs text-amber-300/80">
+                    Accept orders below or in the Order Queue to maintain SLA and prevent customer cancellation.
+                  </div>
                 </div>
               </div>
-              <span className="text-emerald-500 text-[10px] font-bold">✓ LINKED</span>
+              <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shrink-0">
+                <Link to="/orders">
+                  Open Full Order Queue <ArrowUpRight className="ml-1 size-4" />
+                </Link>
+              </Button>
             </div>
+          ) : null}
+        </Card>
 
-            <Button 
-              onClick={handlePayout}
-              disabled={payoutStatus !== "idle"}
-              className={cn(
-                "w-full h-10 font-bold tracking-widest text-xs mt-2 transition-all",
-                payoutStatus === "idle" ? "bg-emerald-600 hover:bg-emerald-500 text-white" :
-                payoutStatus === "processing" ? "bg-zinc-800 text-zinc-400 cursor-not-allowed border border-zinc-700" :
-                "bg-emerald-500 text-black"
-              )}
-            >
-              {payoutStatus === "idle" && "INSTANT UPI PAYOUT"}
-              {payoutStatus === "processing" && "INITIATING IMPS TRANSFER..."}
-              {payoutStatus === "success" && "SETTLEMENT COMPLETE ✓"}
-            </Button>
-          </div>
-
-          {/* Neighborhood Demand Heatmap (Abstracted) */}
-          <div className="border border-zinc-800 bg-black p-4 rounded flex flex-col gap-4">
-            <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
-              <div className="flex items-center gap-2 text-cyan-400 font-bold uppercase tracking-widest text-xs">
-                <Server size={16} /> Geo-Spatial Heatmap
+        {/* Direct Live Kitchen Action Queue right on Dashboard */}
+        {liveOrders.length > 0 ? (
+          <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <ChefHat className="size-4 text-emerald-400" />
+                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-white">
+                  Active Kitchen Queue ({liveOrders.length}) — Instant 1-Tap Control
+                </h3>
               </div>
-              <span className="text-zinc-500 text-[10px]">RADAR SCAN: 3KM RADIUS</span>
+              <Link to="/orders" className="text-xs font-semibold text-emerald-400 hover:text-emerald-300">
+                Manage All Orders →
+              </Link>
             </div>
-            
-            <div className="flex-1 bg-zinc-950 rounded border border-zinc-900 p-2 grid grid-cols-7 gap-1 overflow-hidden relative">
-              {/* Simulated Heatmap Grid */}
-              {Array.from({ length: 28 }).map((_, i) => {
-                const intensity = Math.random();
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {liveOrders.slice(0, 6).map((ord: any) => {
+                const st = String(ord.state ?? "");
                 return (
-                  <div 
-                    key={i} 
-                    className="rounded-sm animate-pulse"
-                    style={{
-                      backgroundColor: `rgba(6, 182, 212, ${intensity * 0.8})`,
-                      animationDuration: `${2 + Math.random() * 3}s`
-                    }}
-                  />
-                )
+                  <div
+                    key={ord.id}
+                    className="rounded-xl border border-slate-800 bg-slate-950/80 p-3.5 flex flex-col justify-between gap-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-sm font-bold text-white">#{ord.orderNumber}</span>
+                          <span className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
+                            {st}
+                          </span>
+                          {ord.isCod ? (
+                            <span className="rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-mono text-amber-300">
+                              COD
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className="text-xs text-slate-300 mt-1">
+                          {ord.lines?.length
+                            ? ord.lines.map((l: any) => `${l.quantity}× ${l.itemName}`).join(", ")
+                            : "Standard Kitchen Order"}
+                        </div>
+                        {ord.specialInstructions ? (
+                          <div className="text-[11px] text-amber-300 mt-1">
+                            Note: {ord.specialInstructions}
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="font-mono text-sm font-bold text-emerald-400 tabular">
+                          {formatINR(ord.prices?.restaurantPayablePaise ?? ord.prices?.foodValuePaise ?? 0)}
+                        </div>
+                        <div className="text-[10px] text-slate-500">Net Payable</div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-slate-800/80">
+                      {(st === "PENDING" || st === "PLACED") && (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled={orderActionBusy !== null}
+                            onClick={() => void handleQuickOrderAction(ord.id, "REJECT")}
+                            className="h-8 text-xs border-rose-500/30 bg-rose-950/30 text-rose-300 hover:bg-rose-900/40"
+                          >
+                            <XCircle className="mr-1 size-3.5" />
+                            Reject
+                          </Button>
+                          <Button
+                            size="sm"
+                            disabled={orderActionBusy !== null}
+                            onClick={() => void handleQuickOrderAction(ord.id, "ACCEPT")}
+                            className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white"
+                          >
+                            <CheckCircle2 className="mr-1 size-3.5" />
+                            Accept Order
+                          </Button>
+                        </>
+                      )}
+                      {(st === "CONFIRMED" || st === "ACCEPTED") && (
+                        <Button
+                          size="sm"
+                          disabled={orderActionBusy !== null}
+                          onClick={() => void handleQuickOrderAction(ord.id, "PREPARING")}
+                          className="h-8 text-xs bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold"
+                        >
+                          <Flame className="mr-1 size-3.5" />
+                          Mark Preparing
+                        </Button>
+                      )}
+                      {st === "PREPARING" && (
+                        <Button
+                          size="sm"
+                          disabled={orderActionBusy !== null}
+                          onClick={() => void handleQuickOrderAction(ord.id, "READY")}
+                          className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+                        >
+                          <CheckCircle2 className="mr-1 size-3.5" />
+                          Mark Food Ready for Rider
+                        </Button>
+                      )}
+                      <Link
+                        to="/orders"
+                        className="text-[11px] font-medium text-slate-400 hover:text-white px-2"
+                      >
+                        KOT Details →
+                      </Link>
+                    </div>
+                  </div>
+                );
               })}
-              {/* Overlay elements */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-4 h-4 bg-emerald-500 rounded-full border-2 border-black shadow-[0_0_15px_#10b981] z-10" />
-                <div className="w-16 h-16 border border-emerald-500/50 rounded-full absolute animate-ping" />
+            </div>
+          </Card>
+        ) : null}
+
+        {/* Real Today's Performance KPI Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span className="font-mono uppercase tracking-wider">Pending Orders</span>
+              <ClipboardList className={cn("size-4", pendingCount > 0 ? "text-amber-400" : "text-slate-500")} />
+            </div>
+            <div className="my-2">
+              <div className={cn("font-display text-3xl font-bold tabular", pendingCount > 0 ? "text-amber-400" : "text-slate-100")}>
+                {pendingCount}
+              </div>
+              <div className="text-xs text-slate-400 mt-0.5">
+                {pendingCount > 0 ? "Action required in order queue" : "All incoming orders acknowledged"}
               </div>
             </div>
-            
-            <div className="flex justify-between text-[9px] text-zinc-500 font-bold tracking-widest">
-              <span>LOW DENSITY</span>
-              <div className="w-24 h-2 bg-gradient-to-r from-transparent via-cyan-500/50 to-cyan-500 rounded-full" />
-              <span>HIGH DENSITY</span>
+            <Link
+              to="/orders"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 pt-2 border-t border-slate-800/80"
+            >
+              Open Live Orders <ArrowUpRight className="size-3.5" />
+            </Link>
+          </Card>
+
+          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span className="font-mono uppercase tracking-wider">Today&apos;s Orders</span>
+              <ChefHat className="size-4 text-emerald-400" />
             </div>
+            <div className="my-2">
+              <div className="font-display text-3xl font-bold text-slate-100 tabular">
+                {d?.today.orders ?? 0}
+              </div>
+              <div className="text-xs text-slate-400 mt-0.5 tabular">
+                <span className="text-emerald-400 font-medium">{d?.today.accepted ?? 0} accepted</span>
+                {" · "}
+                <span className="text-rose-400 font-medium">{d?.today.cancelled ?? 0} cancelled</span>
+              </div>
+            </div>
+            <Link
+              to="/kitchen"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white pt-2 border-t border-slate-800/80"
+            >
+              Kitchen Display System (KDS) <ArrowUpRight className="size-3.5" />
+            </Link>
+          </Card>
+
+          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span className="font-mono uppercase tracking-wider">Today&apos;s Gross Sales</span>
+              <TrendingUp className="size-4 text-emerald-400" />
+            </div>
+            <div className="my-2">
+              <div className="font-display text-3xl font-bold text-emerald-400 tabular">
+                {formatINR(d?.today.salesPaise ?? 0)}
+              </div>
+              <div className="text-xs text-slate-400 mt-0.5 tabular">
+                Avg Order Value (AOV): <span className="text-slate-200 font-semibold">{formatINR(d?.today.aovPaise ?? 0)}</span>
+              </div>
+            </div>
+            <Link
+              to="/analytics"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white pt-2 border-t border-slate-800/80"
+            >
+              View Sales Analytics <ArrowUpRight className="size-3.5" />
+            </Link>
+          </Card>
+
+          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span className="font-mono uppercase tracking-wider">Estimated Net Payout</span>
+              <Banknote className="size-4 text-emerald-400" />
+            </div>
+            <div className="my-2">
+              <div className="font-display text-3xl font-bold text-slate-100 tabular">
+                {formatINR(d?.today.settlementPaise ?? 0)}
+              </div>
+              <div className="text-xs text-slate-400 mt-0.5 tabular">
+                Refund adjustments: {formatINR(d?.today.refundsPaise ?? 0)}
+              </div>
+            </div>
+            <Link
+              to="/settlements"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 pt-2 border-t border-slate-800/80"
+            >
+              Settlement Ledger <ArrowUpRight className="size-3.5" />
+            </Link>
+          </Card>
+        </div>
+
+        {/* OMR OS Algorithmic Growth, Prep-SLA & Margin Optimization Advisor */}
+        <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2.5">
+              <Cpu className="size-5 text-emerald-400" />
+              <div>
+                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-white">
+                  OMR OS Algorithmic Growth &amp; Kitchen Efficiency Advisor
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Deterministic recommendations calculated from your live kitchen queue, menu availability, and basket AOV.
+                </p>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded self-start sm:self-center">
+              AUTONOMOUS TELEMETRY
+            </span>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 flex flex-col justify-between gap-2">
+              <div>
+                <div className="text-[10px] font-mono uppercase text-emerald-400">1. Prep Time &amp; Rider Handover</div>
+                <div className="font-semibold text-white mt-1">
+                  {liveOrders.length >= 4
+                    ? `High Active Queue (${liveOrders.length} orders) — Enable 35m Rush Mode`
+                    : "Queue Load Normal — Maintain 20m Standard Prep"}
+                </div>
+                <p className="text-slate-400 mt-1">
+                  {liveOrders.length >= 4
+                    ? "Increasing prep SLA to 35m prevents rider wait-time penalties and improves customer ETA accuracy."
+                    : "20m standard prep SLA maximizes search conversion and ranking in customer feed."}
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => void handleThrottle(liveOrders.length >= 4 ? "RUSH" : "NORMAL")}
+                className="w-full text-xs mt-1"
+              >
+                {liveOrders.length >= 4 ? "Apply 35m Peak Rush Mode" : "Confirm 20m Standard SLA"}
+              </Button>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 flex flex-col justify-between gap-2">
+              <div>
+                <div className="text-[10px] font-mono uppercase text-emerald-400">2. Menu Availability &amp; Stock</div>
+                <div className="font-semibold text-white mt-1">
+                  {unavailableCount > 0
+                    ? `${unavailableCount} Dishes Currently Marked Out-of-Stock`
+                    : "100% Active Menu Availability"}
+                </div>
+                <p className="text-slate-400 mt-1">
+                  {unavailableCount > 0
+                    ? "Restoring stock on popular dishes before dinner peak directly recovers lost order conversion."
+                    : "All active dishes are available for ordering. Keep stock accurate to maintain 0% rejection rate."}
+                </p>
+              </div>
+              <Button asChild size="sm" variant="secondary" className="w-full text-xs mt-1">
+                <Link to="/menu">Review Menu Stock Toggles →</Link>
+              </Button>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 flex flex-col justify-between gap-2">
+              <div>
+                <div className="text-[10px] font-mono uppercase text-emerald-400">3. Basket AOV Expansion</div>
+                <div className="font-semibold text-white mt-1">
+                  Target Minimum Order: {formatINR(recommendedPromoMinPaise)}
+                </div>
+                <p className="text-slate-400 mt-1">
+                  Based on your current AOV ({formatINR(aovPaise)}), setting a promotion threshold at{" "}
+                  {formatINR(recommendedPromoMinPaise)} lifts basket size by ~15% while protecting net take-home margin.
+                </p>
+              </div>
+              <Button asChild size="sm" variant="secondary" className="w-full text-xs mt-1">
+                <Link to="/promotions">Simulate in Margin Calculator →</Link>
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Secondary Operational Metrics: Stock, Ratings, Repeat Rate, Attention Alerts */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span className="font-mono uppercase tracking-wider">Out-of-Stock Dishes</span>
+              <UtensilsCrossed className={cn("size-4", unavailableCount > 0 ? "text-rose-400" : "text-emerald-400")} />
+            </div>
+            <div className="my-2">
+              <div className={cn("font-display text-2xl font-bold tabular", unavailableCount > 0 ? "text-rose-400" : "text-slate-100")}>
+                {unavailableCount} unavailable
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Keep item availability accurate to prevent order rejections during peak hours.
+              </p>
+            </div>
+            <Link
+              to="/menu"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 pt-2 border-t border-slate-800/80"
+            >
+              1-Tap Menu &amp; Stock Manager <ArrowUpRight className="size-3.5" />
+            </Link>
+          </Card>
+
+          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span className="font-mono uppercase tracking-wider">Customer Rating &amp; Repeat Rate</span>
+              <Star className="size-4 text-amber-400" />
+            </div>
+            <div className="my-2">
+              <div className="font-display text-2xl font-bold text-slate-100 tabular">
+                {d?.today.rating ? `${d.today.rating} ★ (${d.today.ratingCount})` : "No ratings yet"}
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Repeat customer share:{" "}
+                <span className="font-semibold text-slate-200">
+                  {d?.today.repeatPct != null ? `${d.today.repeatPct}%` : "—"}
+                </span>
+              </p>
+            </div>
+            <Link
+              to="/reviews"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white pt-2 border-t border-slate-800/80"
+            >
+              Read &amp; Reply to Customer Reviews <ArrowUpRight className="size-3.5" />
+            </Link>
+          </Card>
+
+          <Card className="border-slate-800 bg-slate-900/70 p-4 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span className="font-mono uppercase tracking-wider">Operational Alerts</span>
+              <ShieldCheck className="size-4 text-emerald-400" />
+            </div>
+            <div className="my-2 space-y-1.5">
+              {(d?.attention?.length ?? 0) === 0 ? (
+                <p className="text-xs text-emerald-400 font-medium">
+                  All statutory checks and kitchen queues are healthy.
+                </p>
+              ) : (
+                d?.attention.map((item) => (
+                  <div
+                    key={item.id}
+                    className={cn(
+                      "rounded-lg px-2.5 py-1.5 text-xs flex items-center justify-between",
+                      item.tone === "danger"
+                        ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                        : item.tone === "warn"
+                          ? "bg-amber-500/15 text-amber-200 border border-amber-500/30"
+                          : "bg-slate-800 text-slate-300 border border-slate-700",
+                    )}
+                  >
+                    <span>{t(item.key, { n: item.n ?? 0, status: item.status ?? "" })}</span>
+                  </div>
+                ))
+              )}
+            </div>
+            <Link
+              to="/onboarding"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white pt-2 border-t border-slate-800/80"
+            >
+              Self-Service KYC &amp; Bank Profile <ArrowUpRight className="size-3.5" />
+            </Link>
+          </Card>
         </div>
-        
-        {/* Decorative Grid Background for entire component */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')] opacity-50 z-0 pointer-events-none" />
+
+        {/* Quick Operations Navigation */}
+        <Card className="border-slate-800 bg-slate-900/60 p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-display text-sm font-bold uppercase tracking-wider text-slate-300">
+              Self-Service Partner Control Center
+            </h3>
+            <span className="text-[11px] font-mono text-slate-400">
+              Role: {d?.role ?? vendor.role ?? "PARTNER"}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Link
+              to="/orders"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
+            >
+              <div>
+                <div className="text-xs font-semibold text-white">Live Kitchen Orders</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Accept, prepare, print KOT, and mark orders ready</div>
+              </div>
+              <ClipboardList className="size-4 text-emerald-400 shrink-0" />
+            </Link>
+
+            <Link
+              to="/menu"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
+            >
+              <div>
+                <div className="text-xs font-semibold text-white">Menu &amp; Stock Manager</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Edit prices, GST slabs, variants, addons &amp; stock</div>
+              </div>
+              <UtensilsCrossed className="size-4 text-emerald-400 shrink-0" />
+            </Link>
+
+            <Link
+              to="/settlements"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
+            >
+              <div>
+                <div className="text-xs font-semibold text-white">Settlement &amp; Tax Ledger</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Download CSV/JSON statements, TDS/GST summary &amp; bank KYC</div>
+              </div>
+              <Banknote className="size-4 text-emerald-400 shrink-0" />
+            </Link>
+
+            <Link
+              to="/settings"
+              className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 hover:border-slate-700 transition flex items-start justify-between gap-2"
+            >
+              <div>
+                <div className="text-xs font-semibold text-white">Outlet Config &amp; Legal Center</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">13 Indian languages, self-healing SLA, POS printer &amp; policies</div>
+              </div>
+              <Settings className="size-4 text-emerald-400 shrink-0" />
+            </Link>
+          </div>
+        </Card>
       </div>
     </VendorShell>
-  );
-}
-
-function TerminalStat({ label, value, sub, color }: { label: string, value: string, sub: string, color: "emerald" | "cyan" | "zinc" | "rose" }) {
-  const colors = {
-    emerald: "text-emerald-500 border-emerald-500/30 bg-emerald-950/10",
-    cyan: "text-cyan-500 border-cyan-500/30 bg-cyan-950/10",
-    zinc: "text-zinc-300 border-zinc-700 bg-zinc-900",
-    rose: "text-rose-400 border-rose-500/40 bg-rose-950/20",
-  };
-  
-  return (
-    <div className={cn("border p-3 rounded flex flex-col gap-1 shadow-inner", colors[color])}>
-      <span className="text-[10px] text-zinc-500 font-bold tracking-widest">{label}</span>
-      <span className="text-xl font-bold tracking-tight">{value}</span>
-      <span className="text-[9px] text-zinc-400">{sub}</span>
-    </div>
   );
 }

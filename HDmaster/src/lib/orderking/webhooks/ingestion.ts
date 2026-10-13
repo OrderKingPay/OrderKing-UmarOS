@@ -1,4 +1,5 @@
-import { createHmac } from 'crypto';
+import { createHmac, timingSafeEqual } from 'crypto';
+import { Buffer } from 'node:buffer';
 import { ReplayProtector } from './replay-protection';
 import { DeadLetterQueue } from './dead-letter';
 
@@ -15,10 +16,13 @@ export interface IngestResult {
 
 export class DefaultHmacVerifier implements Verifier {
   verify(payload: string, signature: string, secret: string): boolean {
+    if (!payload || !signature || !secret) return false;
     const expectedSignature = createHmac('sha256', secret)
       .update(payload)
       .digest('hex');
-    return signature === expectedSignature;
+    const a = Buffer.from(expectedSignature);
+    const b = Buffer.from(signature);
+    return a.length === b.length && timingSafeEqual(a, b);
   }
 
   extractEventId(payload: any, headers: Record<string, string>): string | undefined {

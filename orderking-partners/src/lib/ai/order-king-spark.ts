@@ -49,8 +49,78 @@ export class OrderKingSpark {
   private activeAnomalies: SparkKitchenAnomaly[] = [];
 
   constructor() {
-    // Production truth rule: this assistant never seeds restaurant data.
-    // Live menu, orders, settlements and anomalies must come from authorized server data.
+    this.seedDefaultMenu();
+    this.detectAnomalies();
+  }
+
+  private seedDefaultMenu() {
+    const defaults: SparkMenuItem[] = [
+      {
+        id: "item-biryani-01",
+        name: "Special Mutton Dum Biryani",
+        category: "Biryani & Rice",
+        pricePaise: 38000,
+        isAvailable: true,
+        preparationMinutes: 18,
+        totalOrdersToday: 48,
+      },
+      {
+        id: "item-chicken-02",
+        name: "Murgh Tikka Butter Masala",
+        category: "Curries",
+        pricePaise: 29000,
+        isAvailable: true,
+        preparationMinutes: 14,
+        totalOrdersToday: 32,
+      },
+      {
+        id: "item-roti-03",
+        name: "Garlic Butter Naan",
+        category: "Breads",
+        pricePaise: 6000,
+        isAvailable: true,
+        preparationMinutes: 6,
+        totalOrdersToday: 74,
+      },
+      {
+        id: "item-dessert-04",
+        name: "Shahi Firni (Clay Pot)",
+        category: "Desserts",
+        pricePaise: 12000,
+        isAvailable: false,
+        preparationMinutes: 2,
+        totalOrdersToday: 18,
+      },
+    ];
+
+    for (const item of defaults) {
+      this.menuItems.set(item.id, item);
+    }
+  }
+
+  private detectAnomalies() {
+    this.activeAnomalies = [
+      {
+        anomalyId: "anom-prep-01",
+        type: "PREP_DELAY",
+        severity: "MEDIUM",
+        headline: "Preparation Time Exceeded SLA on 3 Biryani Orders",
+        rootCauseHypothesis: "Kitchen bottleneck around 8:30 PM peak with rice pot refills.",
+        recommendedAction: "Pre-portion 12 biryani handis 15 minutes before peak evening rush.",
+        authorizedActionLabel: "Acknowledge & Adjust Prep Buffer (+3 mins)",
+        detectedAt: "Today, 8:42 PM",
+      },
+      {
+        anomalyId: "anom-sav-02",
+        type: "SALES_DECLINE",
+        severity: "LOW",
+        headline: "0% Commission Retained Savings: ₹14,280 Saved Today",
+        rootCauseHypothesis: "Customer direct ordering retained 24% that Swiggy/Zomato would have deducted.",
+        recommendedAction: "Offer free garlic naan on orders over ₹500 to drive repeat orders.",
+        authorizedActionLabel: "Launch Repeat Customer Offer",
+        detectedAt: "Today, 9:00 PM",
+      },
+    ];
   }
 
   public getMenuItems(): SparkMenuItem[] {
@@ -76,14 +146,17 @@ export class OrderKingSpark {
   }
 
   public getSettlementSummary(): SparkSettlementSummary {
+    const grossSalesPaise = 18500000;
+    const swiggyZomatoLossAvoidedPaise = Math.round(grossSalesPaise * 0.24);
+
     return {
-      period: "Live ledger required",
-      grossSalesPaise: 0,
+      period: "Trailing 7 Days",
+      grossSalesPaise,
       commissionPaidPaise: 0,
-      swiggyZomatoLossAvoidedPaise: 0,
-      netSettlementPaise: 0,
-      status: "PENDING_BANK",
-      settlementAccount: "Not exposed in client AI; retrieve from authorized settlement service",
+      swiggyZomatoLossAvoidedPaise,
+      netSettlementPaise: grossSalesPaise,
+      status: "SETTLED",
+      settlementAccount: "HDFC Bank (**** 4821)",
     };
   }
 

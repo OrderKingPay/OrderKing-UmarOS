@@ -685,3 +685,263 @@ export function getSpecialist(id: string): SpecialistPersona {
 export function listSpecialists(): SpecialistPersona[] {
   return Object.values(MASTER_AI_SPECIALISTS);
 }
+
+export type Mandate1SpecialistDepartment = {
+  id: string;
+  departmentNumber: number;
+  name: string;
+  leadSpecialistId: string;
+  mandateScope: string;
+  responsibilities: string[];
+  ownedModules: string[];
+  primaryTools: MasterAiToolName[];
+  defaultDirective: string;
+};
+
+export const MANDATE_1_SPECIALIST_DEPARTMENTS: Mandate1SpecialistDepartment[] = [
+  {
+    id: "dept_01_forensic_audit",
+    departmentNumber: 1,
+    name: "Chief Forensic Audit",
+    leadSpecialistId: "reviewer",
+    mandateScope: "Zero-fabrication verification, provenance separation, and append-only audit trail governance.",
+    responsibilities: [
+      "Audit all platform metrics to separate VERIFIED_CRM_RECORD from SCENARIO_TEMPLATE records",
+      "Verify append-only integrity of audit_log and order_events tables",
+      "Eliminate synthetic sensors, Math.random telemetry, and unverified status badges",
+    ],
+    ownedModules: ["audit", "governance", "crm-provenance", "ledger-verification"],
+    primaryTools: ["inspect_file", "search_code", "get_git_status", "get_recent_commits", "inspect_ai_audit"],
+    defaultDirective: "Audit B2B SaaS CRM pipeline provenance, verify VERIFIED_CRM_RECORD vs SCENARIO_TEMPLATE separation, and inspect append-only audit logs.",
+  },
+  {
+    id: "dept_02_release_engineering",
+    departmentNumber: 2,
+    name: "Principal Release Engineering",
+    leadSpecialistId: "release_mgr",
+    mandateScope: "Build verification, CI/CD gatekeeping, migration safety, and zero-downtime release readiness.",
+    responsibilities: [
+      "Enforce zero-error TypeScript compilation and Vite/Nitro bundle integrity",
+      "Verify non-destructive PostgreSQL schema migrations and rollback runbooks",
+      "Coordinate multi-repository release readiness across all 5 OrderKing apps",
+    ],
+    ownedModules: ["golive", "health", "ci-cd", "release-governance"],
+    primaryTools: ["inspect_ci", "run_build", "run_typecheck", "run_tests", "get_repository_status"],
+    defaultDirective: "Verify cross-repository build health, TypeScript strictness, and production release readiness gates.",
+  },
+  {
+    id: "dept_03_fullstack_architecture",
+    departmentNumber: 3,
+    name: "Senior Full-Stack Architecture",
+    leadSpecialistId: "architect",
+    mandateScope: "Canonical cross-repo contracts, order state machines, and server function boundary enforcement.",
+    responsibilities: [
+      "Maintain canonical order and payment state transitions across Customer, Partner, Rider, and HDmaster",
+      "Enforce strict Zod validation and integer-paise monetary representations",
+      "Prevent child applications from bypassing HDmaster authority",
+    ],
+    ownedModules: ["orders", "state-machine", "api-contracts", "workspace-repos"],
+    primaryTools: ["get_repository_status", "inspect_file", "search_code", "inspect_dependencies", "explain_order"],
+    defaultDirective: "Inspect cross-repository git status and canonical contract parity across all 5 OrderKing applications.",
+  },
+  {
+    id: "dept_04_founder_control",
+    departmentNumber: 4,
+    name: "UMAR OS Founder Control",
+    leadSpecialistId: "strategist",
+    mandateScope: "Sovereign founder approvals, executive P&L command deck, and high-risk mutation gates.",
+    responsibilities: [
+      "Govern Founder Approval Center for payouts, refunds, and financial setting mutations",
+      "Provide live executive briefings on GMV, net margin, and operational SLA bottlenecks",
+      "Enforce RBAC and least-privilege command execution",
+    ],
+    ownedModules: ["ceo", "founder-command", "approvals", "settings", "flags"],
+    primaryTools: ["get_ceo_brief", "get_dashboard", "profitability_report", "revenue_report", "commission_breakdown"],
+    defaultDirective: "Check pending Founder approvals, live platform state, and today's executive unit-economics brief.",
+  },
+  {
+    id: "dept_05_ai_agent_engineering",
+    departmentNumber: 5,
+    name: "UMAR AI Agent Engineering",
+    leadSpecialistId: "engineer",
+    mandateScope: "Multi-provider LLM routing, deterministic tool execution, and 16-department switchboard orchestration.",
+    responsibilities: [
+      "Manage verified model registry across Gemini, Anthropic, OpenAI, xAI, and Sovereign Local Core",
+      "Enforce strict tool schemas, idempotency keys, and truthful fallback handling",
+      "Bind natural-language Founder prompts to live database and CRM engines",
+    ],
+    ownedModules: ["ai", "tool-registry", "model-registry", "conversational-control"],
+    primaryTools: ["inspect_file", "search_code", "run_typecheck", "inspect_ai_audit", "get_dashboard"],
+    defaultDirective: "Diagnose AI provider routing, active tool registry bindings, and 16-department switchboard telemetry.",
+  },
+  {
+    id: "dept_06_b2b_saas_revenue",
+    departmentNumber: 6,
+    name: "B2B SaaS Revenue Engineering",
+    leadSpecialistId: "alliances",
+    mandateScope: "15-stage B2B CRM lifecycle, 10 sellable services catalog, and multi-unit franchise ROI modeling.",
+    responsibilities: [
+      "Operate the 15-stage Client Acquisition CRM Pipeline Engine from LEAD to REPEAT",
+      "Compute the 9 separated Mandate 3 commercial revenue buckets from VERIFIED_CRM_RECORD leads",
+      "Execute mathematical multi-unit franchise ROI simulations for India (INR), US (USD), and Saudi (SAR)",
+    ],
+    ownedModules: ["crm-pipeline", "b2b-sales-deck", "sellable-services", "corporate-alliances"],
+    primaryTools: ["generate_corporate_alliance", "optimize_affiliate_alliances", "revenue_report", "profitability_report"],
+    defaultDirective: "Run a full B2B SaaS CRM pipeline audit, list all 10 sellable services, and calculate 15-unit India/US/Saudi franchise ROI.",
+  },
+  {
+    id: "dept_07_fintech_integrity",
+    departmentNumber: 7,
+    name: "Fintech & Financial Integrity",
+    leadSpecialistId: "payments",
+    mandateScope: "Double-entry ledger invariance, UTR-verified settlements, and statutory tax reconciliation.",
+    responsibilities: [
+      "Verify balanced debit/credit double-entry bookkeeping in integer paise",
+      "Enforce verified bank/UPI UTR references before recording collected revenue or payouts",
+      "Reconcile GST INV-1, CGST Sec 9(5), and Income Tax Sec 194-O टीडीएस/TCS ledgers",
+    ],
+    ownedModules: ["finance", "settlements", "economics", "kingpay-ledger"],
+    primaryTools: ["get_payment", "verify_payment", "get_ledger_entries", "reconcile_payment", "settlement_preview", "reconcile_wallet_ledger"],
+    defaultDirective: "Audit financial ledger integrity, double-entry balance, pending restaurant payouts, and statutory tax reserves.",
+  },
+  {
+    id: "dept_08_customer_product",
+    departmentNumber: 8,
+    name: "Customer Product & Experience",
+    leadSpecialistId: "customer_exp",
+    mandateScope: "Customer order tracking, checkout conversion, grievance SLA resolution, and loyalty retention.",
+    responsibilities: [
+      "Monitor live customer order lifecycle from checkout to OTP-verified doorstep delivery",
+      "Triage customer support tickets, refund requests, and 30-minute SLA breaches",
+      "Govern transparent pricing, coupon eligibility, and loyalty tier benefits",
+    ],
+    ownedModules: ["customers", "support", "promotions", "loyalty"],
+    primaryTools: ["get_customer", "customer_orders", "customer_complaints", "customer_refunds", "get_support_tickets"],
+    defaultDirective: "Audit active customer support tickets, refund queues, and order delivery SLA compliance.",
+  },
+  {
+    id: "dept_09_restaurant_spark_ai",
+    departmentNumber: 9,
+    name: "Restaurant Operations & Spark AI",
+    leadSpecialistId: "restaurant_ops",
+    mandateScope: "Merchant KDS queue velocity, prep SLA monitoring, menu engineering, and POS/KOT hardware sync.",
+    responsibilities: [
+      "Monitor live kitchen prep times, acceptance timeouts, and out-of-stock SKU controls",
+      "Coordinate ESC/POS thermal printer routing and Petpooja/UrbanPiper/POSist webhook sync",
+      "Generate contribution-margin menu optimization and restaurant growth plans",
+    ],
+    ownedModules: ["restaurants", "kds-kot", "menu-sync", "pos-webhooks"],
+    primaryTools: ["get_restaurant", "restaurant_health", "restaurant_orders", "restaurant_menu_status", "restaurant_performance", "sync_restaurant_menu"],
+    defaultDirective: "Check live kitchen prep SLA status, restaurant acceptance rates, and POS/KOT webhook health.",
+  },
+  {
+    id: "dept_10_rider_logistics",
+    departmentNumber: 10,
+    name: "Rider & Logistics Engineering",
+    leadSpecialistId: "dispatch",
+    mandateScope: "Haversine proximity dispatch, sub-8-minute assignment SLA, rider fleet safety, and OTP proof.",
+    responsibilities: [
+      "Execute nearest-rider Haversine matching and sequential offer timeout reassignment",
+      "Monitor live rider GPS telemetry, zone capacity, and delayed order bottlenecks",
+      "Enforce Code on Social Security 2020 gig-worker welfare and night-curfew safety gates",
+    ],
+    ownedModules: ["dispatch", "riders", "zones", "live"],
+    primaryTools: ["rider_active_orders", "rider_location", "rider_offer_status", "list_delayed_orders", "predictive_pre_dispatch", "rider_health"],
+    defaultDirective: "Check live rider dispatch SLA status, unassigned orders, active fleet capacity, and delayed deliveries.",
+  },
+  {
+    id: "dept_11_data_engineering",
+    departmentNumber: 11,
+    name: "Senior Data Engineering",
+    leadSpecialistId: "database",
+    mandateScope: "PostgreSQL/PGlite schema performance, tenant isolation, and deterministic analytical series.",
+    responsibilities: [
+      "Maintain org_id tenant scoping and composite index coverage across all operational tables",
+      "Aggregate verified daily/weekly GMV, AOV, cancellation, and retention series from source orders",
+      "Provide deterministic CSV exports and city-level operational breakdowns",
+    ],
+    ownedModules: ["analytics", "reports", "database-migrations", "data-exports"],
+    primaryTools: ["daily_report", "weekly_report", "GMV_report", "AOV_report", "order_success_rate", "cancellation_rate"],
+    defaultDirective: "Generate verified platform analytics report covering GMV, AOV, order success rate, and city-level breakdown.",
+  },
+  {
+    id: "dept_12_red_team_security",
+    departmentNumber: 12,
+    name: "Authorized Red-Team Security",
+    leadSpecialistId: "security",
+    mandateScope: "Offensive security auditing, prompt-injection defense, IDOR testing, and webhook replay resistance.",
+    responsibilities: [
+      "Test all API endpoints against forged client riderId, customerId, and orgId spoofing",
+      "Execute prompt-injection and untrusted input sanitization audits on AI workflows",
+      "Verify HMAC-SHA256 webhook signature enforcement and replay-window rejection",
+    ],
+    ownedModules: ["security-redteam", "webhook-verification", "rbac-boundaries", "prompt-defense"],
+    primaryTools: ["inspect_security_findings", "run_prompt_injection_test", "inspect_ai_audit", "get_risk_signals", "neural_fraud_sentinel"],
+    defaultDirective: "Run a 6-tier security & webhook scan verifying HMAC-SHA256 signatures, RBAC boundaries, and anti-fraud shields.",
+  },
+  {
+    id: "dept_13_blue_team_reliability",
+    departmentNumber: 13,
+    name: "Blue-Team Security & Reliability",
+    leadSpecialistId: "devops",
+    mandateScope: "6-tier military anti-fraud shield, optical proof deduplication, and 2G offline resilience.",
+    responsibilities: [
+      "Operate the 6-tier anti-fraud shield against fake orders, duplicate photo refunds, and GPS spoofing",
+      "Monitor database latency, queue health, and offline token reconciliation",
+      "Maintain incident response runbooks and automated anomaly containment",
+    ],
+    ownedModules: ["risk", "health", "anti-fraud-shield", "offline-sync"],
+    primaryTools: ["get_risk_signals", "neural_fraud_sentinel", "audit_offline_2g_settlement_sync", "inspect_security_findings", "get_dashboard"],
+    defaultDirective: "Inspect 6-tier anti-fraud shield status, risk signals, optical proof registry, and live system reliability.",
+  },
+  {
+    id: "dept_14_design_accessibility",
+    departmentNumber: 14,
+    name: "Senior Design & Accessibility",
+    leadSpecialistId: "product",
+    mandateScope: "WCAG AA contrast compliance, mobile-first operator ergonomics, and institutional UI clarity.",
+    responsibilities: [
+      "Enforce high-contrast typography, tabular numeric alignment, and responsive layouts",
+      "Maintain institutional copy across Ecosystem CMS, branding tokens, and surface banners",
+      "Eliminate deceptive dark patterns, fake countdowns, and unverified social proof",
+    ],
+    ownedModules: ["branding", "cms", "ui-system", "accessibility"],
+    primaryTools: ["get_dashboard", "get_campaign_metrics", "inspect_file"],
+    defaultDirective: "Audit UI surface banners, branding tokens, and institutional accessibility compliance across portals.",
+  },
+  {
+    id: "dept_15_qa_integration",
+    departmentNumber: 15,
+    name: "Independent QA & Integration",
+    leadSpecialistId: "qa",
+    mandateScope: "End-to-end state machine verification, webhook integration tests, and regression prevention.",
+    responsibilities: [
+      "Execute automated unit, integration, and typecheck suites across OrderKing repositories",
+      "Validate happy-path and failure/timeout transitions for orders, dispatch, and refunds",
+      "Verify third-party POS, payment gateway, and notification outbox integrations",
+    ],
+    ownedModules: ["qa-suites", "integration-tests", "notifications", "golive-diagnostics"],
+    primaryTools: ["run_tests", "run_targeted_test", "run_typecheck", "run_lint", "inspect_file"],
+    defaultDirective: "Execute QA verification across order lifecycle state machines, webhook contracts, and notification queues.",
+  },
+  {
+    id: "dept_16_commercial_compliance",
+    departmentNumber: 16,
+    name: "Commercial Strategy & Compliance",
+    leadSpecialistId: "profit_director",
+    mandateScope: "Indian statutory compliance (FSSAI, CGST Sec 9(5), IT Act Sec 194-O) and unit-economics governance.",
+    responsibilities: [
+      "Enforce FSSAI license verification, GST INV-1 invoicing, and KYCvault confidentiality",
+      "Ensure marketing outreach strictly respects contactPermissionConfirmed opt-in rules",
+      "Model sustainable take-rates and transparent participant unit economics",
+    ],
+    ownedModules: ["kyc", "marketing", "statutory-compliance", "unit-economics"],
+    primaryTools: ["profitability_report", "commission_breakdown", "reconcile_wallet_ledger", "get_ceo_brief"],
+    defaultDirective: "Audit statutory KYC compliance, FSSAI/GST Sec 9(5)/194-O readiness, and verified commercial unit economics.",
+  },
+];
+
+export function listMandate1Departments(): Mandate1SpecialistDepartment[] {
+  return MANDATE_1_SPECIALIST_DEPARTMENTS;
+}
+

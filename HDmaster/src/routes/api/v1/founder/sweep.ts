@@ -1,19 +1,37 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { checkRateLimit } from "@/lib/orderking/security/rate-limiter";
 import { getSql } from "@/lib/db";
+import { getSessionUser } from "@/lib/auth/verify.server";
 
 export const Route = createFileRoute("/api/v1/founder/sweep")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         try {
-          const ip = request?.headers?.get('x-forwarded-for') || '127.0.0.1';
-          const rl = checkRateLimit(ip, 100, 60000);
-          if (!rl.allowed) {
-            return new Response('Too Many Requests', { status: 429 });
+          const session = await getSessionUser();
+          if (!session?.id) {
+            return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const sql = await getSql();
+          const roleRows = await sql`SELECT role FROM users WHERE id = ${session.id} LIMIT 1`;
+          const role = roleRows.length > 0 ? String((roleRows[0] as any).role || "").toUpperCase() : "";
+          if (!["SUPER_ADMIN", "FOUNDER", "ADMIN"].includes(role)) {
+            return new Response(JSON.stringify({ success: false, error: "Forbidden" }), {
+              status: 403,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          const ip = request?.headers?.get("x-forwarded-for") || "127.0.0.1";
+          const rl = checkRateLimit(ip, 100, 60000);
+          if (!rl.allowed) {
+            return new Response("Too Many Requests", { status: 429 });
+          }
+
           const result = await sql`
             SELECT COALESCE(SUM(restaurant_payable_paise), 0) as payable_paise
             FROM orders
@@ -33,7 +51,6 @@ export const Route = createFileRoute("/api/v1/founder/sweep")({
               status: 409,
               headers: {
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
               },
             },
           );

@@ -285,6 +285,10 @@ class PremiumWebAudioDsp {
 }
 
 export const supremeAudioDsp = new PremiumWebAudioDsp();
+export const SupremeAudioDsp = supremeAudioDsp;
+export const EnterpriseAudioDsp = supremeAudioDsp;
+export type SupremeAudioDsp = PremiumWebAudioDsp;
+export type EnterpriseAudioDsp = PremiumWebAudioDsp;
 
 // Best Voice Finder Heuristics
 export function selectBestBrowserVoice(

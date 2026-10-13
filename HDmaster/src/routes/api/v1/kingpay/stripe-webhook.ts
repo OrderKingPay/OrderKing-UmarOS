@@ -23,11 +23,16 @@ export const Route = createFileRoute("/api/v1/kingpay/stripe-webhook")({
           const connectors = await loadPluginConnectorsData();
           const webhookSecret = connectors.stripeAtlas?.webhookSecret || process.env.STRIPE_WEBHOOK_SECRET;
 
-          if (webhookSecret && signature) {
-            const isValid = verifyStripeWebhook(rawBody, signature, webhookSecret);
-            if (!isValid) {
-              return new Response(JSON.stringify({ error: "Invalid Stripe cryptographic signature" }), { status: 403 });
-            }
+          if (!signature) {
+            return new Response(JSON.stringify({ error: "Missing stripe-signature header" }), { status: 400 });
+          }
+          if (!webhookSecret) {
+            return new Response(JSON.stringify({ error: "Stripe webhook secret not configured" }), { status: 500 });
+          }
+
+          const isValid = verifyStripeWebhook(rawBody, signature, webhookSecret);
+          if (!isValid) {
+            return new Response(JSON.stringify({ error: "Invalid Stripe cryptographic signature" }), { status: 403 });
           }
 
           const event = StripeWebhookSchema.parse(JSON.parse(rawBody));

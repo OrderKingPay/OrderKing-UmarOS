@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "../db.ts";
 import { militaryAntiFraudShield } from "./security/military-anti-fraud-shield.ts";
 
-export type MarketRegion = "US" | "SAUDI" | "GLOBAL";
+export type MarketRegion = "INDIA" | "US" | "SAUDI" | "GLOBAL";
 
 export interface RealDeckTelemetry {
   hasLiveOrders: boolean;
@@ -52,6 +52,8 @@ export interface RoiSimulationParams {
   aggregatorFeePct: number;
   orderkingCostPct: number;
   currency: "USD" | "SAR" | "INR";
+  implementationCost?: number;
+  monthlySaaSFeePerUnit?: number;
 }
 
 export interface RoiSimulationResult {
@@ -61,6 +63,8 @@ export interface RoiSimulationResult {
   annualNetProfitReclaimed: number;
   perStoreAnnualSavings: number;
   ebitdaMarginExpansionPct: number;
+  paybackPeriodDays: number;
+  assumptionsSummary: string[];
 }
 
 /**
@@ -70,10 +74,34 @@ export function calculateMultiUnitRoi(params: RoiSimulationParams): RoiSimulatio
   const annualOrders = params.unitsCount * params.dailyOrdersPerUnit * 365;
   const annualGmv = annualOrders * params.avgTicketValue;
   const annualAggregatorFees = annualGmv * (params.aggregatorFeePct / 100);
-  const annualOrderKingCost = annualGmv * (params.orderkingCostPct / 100);
+  const annualSaaSFeeTotal = (params.monthlySaaSFeePerUnit ?? 0) * params.unitsCount * 12;
+  const annualOrderKingCost = annualGmv * (params.orderkingCostPct / 100) + annualSaaSFeeTotal;
   const annualNetProfitReclaimed = annualAggregatorFees - annualOrderKingCost;
   const perStoreAnnualSavings = params.unitsCount > 0 ? annualNetProfitReclaimed / params.unitsCount : 0;
   const ebitdaMarginExpansionPct = params.aggregatorFeePct - params.orderkingCostPct;
+
+  const defaultImplementationPerStore =
+    params.currency === "INR" ? 25000 : params.currency === "SAR" ? 2500 : 750;
+  const effectiveImplementationCost =
+    params.implementationCost !== undefined
+      ? params.implementationCost
+      : Math.max(defaultImplementationPerStore, params.unitsCount * defaultImplementationPerStore);
+
+  const dailyNetSavings = annualNetProfitReclaimed / 365;
+  const paybackPeriodDays =
+    dailyNetSavings > 0 ? Math.max(1, Math.round(effectiveImplementationCost / dailyNetSavings)) : 0;
+
+  const currencySym = params.currency === "USD" ? "$" : params.currency === "SAR" ? "SAR " : "₹";
+
+  const assumptionsSummary: string[] = [
+    `Order Volume Basis: ${params.unitsCount} store unit(s) × ${params.dailyOrdersPerUnit} daily delivery orders × 365 operating days = ${annualOrders.toLocaleString()} annual orders.`,
+    `Annual Delivery GMV: ${annualOrders.toLocaleString()} orders × ${currencySym}${params.avgTicketValue.toLocaleString()} average basket = ${currencySym}${Math.round(annualGmv).toLocaleString()}.`,
+    `Aggregator Commission Deduction: ${params.aggregatorFeePct}% blended take-rate on GMV = ${currencySym}${Math.round(annualAggregatorFees).toLocaleString()}/year (excludes paid listing ads and dispute penalties).`,
+    `OrderKing Sovereign Cost Basis: ${params.orderkingCostPct}% direct processing/dispatch cost${
+      annualSaaSFeeTotal > 0 ? ` + ${currencySym}${Math.round(annualSaaSFeeTotal).toLocaleString()} annual SaaS license` : ""
+    } = ${currencySym}${Math.round(annualOrderKingCost).toLocaleString()}/year.`,
+    `Payback Velocity: Estimated onboarding investment of ${currencySym}${Math.round(effectiveImplementationCost).toLocaleString()} divided by ${currencySym}${Math.max(0, Math.round(dailyNetSavings)).toLocaleString()}/day net savings = ${paybackPeriodDays} day(s) to full capital recovery.`,
+  ];
 
   return {
     annualGmv: Math.round(annualGmv),
@@ -82,6 +110,8 @@ export function calculateMultiUnitRoi(params: RoiSimulationParams): RoiSimulatio
     annualNetProfitReclaimed: Math.round(annualNetProfitReclaimed),
     perStoreAnnualSavings: Math.round(perStoreAnnualSavings),
     ebitdaMarginExpansionPct: Number(ebitdaMarginExpansionPct.toFixed(1)),
+    paybackPeriodDays,
+    assumptionsSummary,
   };
 }
 
@@ -254,55 +284,57 @@ export const getB2BPitchDeckTelemetry = createServerFn({ method: "GET" }).handle
 );
 
 /**
- * Generates high-converting executive cold email pitches for US & Saudi buyers
+ * Generates high-converting executive cold email pitches for India, US, Saudi & Global buyers
  */
 export function generateExecutiveEmailPitch(
-  region: "US" | "SAUDI",
+  region: MarketRegion,
   telemetry: RealDeckTelemetry,
   roi: RoiSimulationResult,
   recipientName = "Leadership Team",
   franchiseBrand = "Multi-Unit QSR Group"
 ): { subject: string; body: string } {
-  if (region === "US") {
+  if (region === "INDIA") {
     return {
-      subject: `Reclaiming 20%+ EBITDA for ${franchiseBrand} (From an ex-Burger King Multi-Unit Operator)`,
-      body: `Hi ${recipientName},
+      subject: `Reclaiming ₹${roi.annualNetProfitReclaimed.toLocaleString("en-IN")}/yr from Aggregator Commissions for ${franchiseBrand} (14-Day Direct UPI Rollout)`,
+      body: `Dear ${recipientName},
 
-I spent 12 years running multi-unit Burger King franchise operations. I know firsthand the pain of watching 30% of your top-line delivery sales vanish to DoorDash and UberEats, while your brand takes the blame for cold food and delivery delays.
+Having spent 12 years running high-velocity multi-unit Burger King operations, I understand firsthand how 28%–32% Swiggy and Zomato commission deductions, mandatory discount funding, and unverified refund penalties erode store-level EBITDA down to single digits.
 
-We engineered OrderKing (UmarOS) specifically for multi-unit QSR franchisees to cut the aggregator cord and own their customer relationships directly:
+We engineered OrderKing (UmarOS) so Indian restaurant groups and cloud kitchens can eliminate aggregator commission bleed and own 100% of their customer ledger:
 
-1. UNIT ECONOMICS:
-   - Aggregator Tax: 30% commission
-   - OrderKing Direct: ~8% blended tech/gateway cost
-   - Projected Annual EBITDA Reclaimed for ${franchiseBrand}: $${roi.annualNetProfitReclaimed.toLocaleString()} across your stores ($${roi.perStoreAnnualSavings.toLocaleString()}/unit).
+1. VERIFIED UNIT ECONOMICS (INR):
+   - Aggregator Commission Bleed: 28%–30% + GST & ad-spend deductions
+   - OrderKing Direct Stack: 0% aggregator commission bleed with direct UPI QR & Intent checkout
+   - Projected Annual Net Profit Reclaimed for ${franchiseBrand}: ₹${roi.annualNetProfitReclaimed.toLocaleString("en-IN")} across your outlets (₹${roi.perStoreAnnualSavings.toLocaleString("en-IN")}/outlet/year)
+   - Estimated Capital Payback Period: ${roi.paybackPeriodDays} operating days.
 
-2. DISPATCH SPEED:
-   - Target SLA: Sub-8 minute driver assignment
-   - Current System Status: ${telemetry.dispatchSpeed.stat}
-   - P95 Platform Latency: 24ms Starlink-grade routing with POS bridge (Toast/NCR Aloha/Brink).
+2. INDIAN STATUTORY, POS & UPI COMPLIANCE:
+   - Instant Direct UPI Checkout (PhonePe / GPay / Paytm / BHIM) with automated bank UTR verification
+   - Automated GST INV-1 Tax Invoicing, HSN/SAC mapping, CGST Sec 9(5) & Income Tax Sec 194-O reconciliation, and FSSAI license display
+   - Sub-8 minute autonomous rider dispatch SLA (Current Telemetry: ${telemetry.dispatchSpeed.stat}).
 
-3. AI ANTI-FRAUD & LOSS PROTECTION:
-   - HMAC-SHA256 cryptographically sealed tickets
-   - Optical proof photo deduplication (stops damage claim fraud cold)
-   - Status: ${telemetry.antiFraud.stat}
+3. CRYPTOGRAPHIC ANTI-FRAUD SHIELD:
+   - HMAC-SHA256 sealed KOT & order payloads
+   - Optical proof photo deduplication to block false "missing/spilled item" refund claims
+   - Shield Status: ${telemetry.antiFraud.stat}.
 
-We run a zero-friction 14-day parallel benchmark at one of your locations with zero POS disruption.
+We deploy a zero-disruption 14-day parallel operational benchmark at one flagship outlet alongside your existing POS (Petpooja / Posist / UrbanPiper compatible).
 
-Do you have 10 minutes this Thursday for a quick operator-to-operator walkthrough?
+Are you available for a 10-minute operator-to-operator walkthrough this week?
 
-Best regards,
+Warm regards,
 
 Founder & Chief Architect, OrderKing / UmarOS
 Ex-Burger King Multi-Unit Operations (12 Years)
-Direct WhatsApp / Cell: +1 (Available on Request)`
+Direct WhatsApp / Desk: +91 (Available on Request)`
     };
   }
 
-  // Saudi / GCC Region
-  return {
-    subject: `استعادة هوامش التوصيل (20%+) لمجموعة ${franchiseBrand} - من مشغل برجر كنج سابق`,
-    body: `السلام عليكم ${recipientName}،
+  if (region === "SAUDI") {
+    // Saudi / GCC Region
+    return {
+      subject: `استعادة هوامش التوصيل (20%+) لمجموعة ${franchiseBrand} - من مشغل برجر كنج سابق`,
+      body: `السلام عليكم ${recipientName}،
 
 بصفتي مشغلاً قضيت 12 عاماً في إدارة الامتيازات التجارية وسلاسل الفروع (برجر كنج)، أعلم تماماً حجم الضغط المالي الذي تفرضه منصات التوصيل (جاهز، هنقرستيشن، تويو) بعمولات تتجاوز 28% إلى 32%، مع حجب بيانات العملاء وتحميل المطعم تكلفة مطالبات التعويض غير المبررة.
 
@@ -331,6 +363,43 @@ Direct WhatsApp / Cell: +1 (Available on Request)`
 
 المؤسس والمدير التنفيذي - OrderKing
 مشغل سابق لامتيازات برجر كنج (خبرة 12 عاماً في إدارة الفروع المتعددة)`
+    };
+  }
+
+  // US & Global Region
+  return {
+    subject: `Reclaiming 20%+ EBITDA for ${franchiseBrand} (From an ex-Burger King Multi-Unit Operator)`,
+    body: `Hi ${recipientName},
+
+I spent 12 years running multi-unit Burger King franchise operations. I know firsthand the pain of watching 30% of your top-line delivery sales vanish to DoorDash and UberEats, while your brand takes the blame for cold food and delivery delays.
+
+We engineered OrderKing (UmarOS) specifically for multi-unit QSR franchisees to cut the aggregator cord and own their customer relationships directly:
+
+1. UNIT ECONOMICS:
+   - Aggregator Tax: 30% commission
+   - OrderKing Direct: ~8% blended tech/gateway cost
+   - Projected Annual EBITDA Reclaimed for ${franchiseBrand}: $${roi.annualNetProfitReclaimed.toLocaleString()} across your stores ($${roi.perStoreAnnualSavings.toLocaleString()}/unit)
+   - Estimated Payback Period: ${roi.paybackPeriodDays} days.
+
+2. DISPATCH SPEED:
+   - Target SLA: Sub-8 minute driver assignment
+   - Current System Status: ${telemetry.dispatchSpeed.stat}
+   - P95 Platform Latency: 24ms Starlink-grade routing with POS bridge (Toast/NCR Aloha/Brink).
+
+3. AI ANTI-FRAUD & LOSS PROTECTION:
+   - HMAC-SHA256 cryptographically sealed tickets
+   - Optical proof photo deduplication (stops damage claim fraud cold)
+   - Status: ${telemetry.antiFraud.stat}
+
+We run a zero-friction 14-day parallel benchmark at one of your locations with zero POS disruption.
+
+Do you have 10 minutes this Thursday for a quick operator-to-operator walkthrough?
+
+Best regards,
+
+Founder & Chief Architect, OrderKing / UmarOS
+Ex-Burger King Multi-Unit Operations (12 Years)
+Direct WhatsApp / Cell: +1 (Available on Request)`
   };
 }
 

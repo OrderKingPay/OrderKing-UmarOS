@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DeviceAvatar } from "@/components/common/device-avatar";
 import { useBrand, useT } from "@/components/providers";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { ensureProfile, getLoyalty, requestDeletion, updateProfile } from "@/lib/server/account";

@@ -1,15 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { logGeospatialTelemetry, type TelemetryPayload } from "@/lib/orderking/server/telemetry.server";
+import { getSessionUser } from "@/lib/auth/verify.server";
 
 // @ts-ignore: Router tree is generated during build
 export const Route = createFileRoute("/api/telemetry")({
-  
   server: {
     handlers: {
       POST: async ({ request }: any) => {
         try {
-          const body = await request.json() as TelemetryPayload;
-          
+          const session = await getSessionUser();
+          if (!session?.id) {
+            return new Response(JSON.stringify({ error: "Unauthorized" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          const body = (await request.json()) as TelemetryPayload;
+
           // Basic validation
           if (!body.orgId || !body.entityType || !body.entityId || body.lat === undefined || body.lng === undefined) {
             return new Response("Missing required geospatial fields", { status: 400 });

@@ -98,6 +98,7 @@ import { FounderSovereignDeck } from "./founder-sovereign-deck";
 import { FounderEconomics } from "../dashboard/FounderEconomics";
 import { UmarOS_AI_Terminal } from "../dashboard/UmarOS_AI_Terminal";
 import { LiveFounderProfitDashboard } from "../dashboard/LiveFounderProfitDashboard";
+import { MANDATE_1_SPECIALIST_DEPARTMENTS } from "@/lib/orderking/ai/specialists";
 
 
 function useInvalidate() {
@@ -112,6 +113,7 @@ const TravelPage = lazy(() => import("../travel/TravelPage").then(m => ({ defaul
 const WorkMarketplaceControlCenter = lazy(() => import("../jobs/WorkMarketplaceControlCenter").then(m => ({ default: m.WorkMarketplaceControlCenter })));
 const EcosystemCMS = lazy(() => import("../dashboard/EcosystemCMS").then(m => ({ default: m.EcosystemCMS })));
 const PluginConnectors = lazy(() => import("../dashboard/PluginConnectors").then(m => ({ default: m.PluginConnectors })));
+const WorldTechCommandCenter = lazy(() => import("../dashboard/WorldTechCommandCenter").then(m => ({ default: m.WorldTechCommandCenter })));
 
 export function ModuleView({ module, id }: { module: string; id?: string }) {
   const emp = useEmployee();
@@ -154,6 +156,7 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "notifications") return <NotificationsPage />;
   if (module === "audit") return <AuditPage />;
   if (module === "health") return <HealthPage />;
+  if (module === "tech-registry" || module === "world-tech") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><WorldTechCommandCenter /></Suspense>;
   if (module === "travel") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><TravelPage /></Suspense>;
   if (module === "education") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><EducationDashboard /></Suspense>;
     if (module === "jio-airtel") return <Suspense fallback={<div className="p-4 text-muted">Loading...</div>}><PluginConnectors forcedTab="globalAdSyndicate" /></Suspense>;
@@ -2198,6 +2201,9 @@ const ZOMATO_PARITY_ITEMS = [
 function AiPage({ mode }: { mode: "ops" | "ceo" }) {
   const [activeTab, setActiveTab] = useState<"console" | "ecosystem" | "backlog" | "governance" | "growth">("console");
   const [specialistId, setSpecialistId] = useState<string>("architect");
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>(
+    MANDATE_1_SPECIALIST_DEPARTMENTS[5]?.id ?? "dept_06_b2b_saas_revenue"
+  );
   const [provider, setProvider] = useState<any>("local_deterministic");
   const [q, setQ] = useState(
     mode === "ceo"
@@ -2211,6 +2217,9 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
 
   const specialists = specQuery.data && specQuery.data.ok ? specQuery.data.specialists : [];
   const currentSpecialist = specialists.find((s) => s.id === specialistId) || specialists[0];
+  const currentDepartment =
+    MANDATE_1_SPECIALIST_DEPARTMENTS.find((d) => d.id === selectedDepartmentId) ??
+    MANDATE_1_SPECIALIST_DEPARTMENTS[0];
   const ecosystem = ecoQuery.data && ecoQuery.data.ok ? ecoQuery.data : null;
 
   const ask = useMutation({
@@ -2360,6 +2369,227 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
           </button>
         </div>
       </header>
+
+      {/* 1-Click Natural-Language Command Chips (Mandate 1, 3.8 & 6) */}
+      <div className="rounded-[20px] border border-border bg-surface p-4 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-[11px] font-mono uppercase tracking-wider text-primary font-semibold">
+              Instant Natural-Language Command Chips
+            </p>
+            <p className="text-xs text-muted">
+              1-click routing to verified CRM revenue buckets, multi-region franchise ROI math, 6-tier security shield, and live kitchen/rider SLA telemetry.
+            </p>
+          </div>
+          <Badge tone="info">16-DEPT SWITCHBOARD LINKED</Badge>
+        </div>
+        <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+          <button
+            type="button"
+            className="text-left rounded-[14px] border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/15 p-3 transition-all"
+            onClick={() => {
+              const prompt =
+                "Audit B2B SaaS CRM pipeline leads, proposals, 10 sellable services, and verifiedMoneyCollectedInr strictly separating VERIFIED_CRM_RECORD from SCENARIO_TEMPLATE.";
+              setQ(prompt);
+              setSpecialistId("alliances");
+              setSelectedDepartmentId("dept_06_b2b_saas_revenue");
+              setActiveTab("console");
+            }}
+          >
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                1. B2B SaaS CRM Pipeline Audit
+              </span>
+              <span className="text-[10px] font-mono text-emerald-600">DEPT #06</span>
+            </div>
+            <p className="mt-1 text-[11px] text-muted">
+              Verify 9 commercial revenue buckets, VERIFIED_CRM_RECORD vs SCENARIO_TEMPLATE, and 10 sellable services.
+            </p>
+          </button>
+
+          <button
+            type="button"
+            className="text-left rounded-[14px] border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/15 p-3 transition-all"
+            onClick={() => {
+              const prompt =
+                "Calculate 15-unit India, US, and Saudi franchise ROI comparing 28%-30% aggregator commissions vs OrderKing direct stack and capital payback days.";
+              setQ(prompt);
+              setSpecialistId("strategist");
+              setSelectedDepartmentId("dept_06_b2b_saas_revenue");
+              setActiveTab("console");
+            }}
+          >
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                2. 15-Unit India/US/Saudi Franchise ROI
+              </span>
+              <span className="text-[10px] font-mono text-blue-600">DEPT #06</span>
+            </div>
+            <p className="mt-1 text-[11px] text-muted">
+              Run mathematical 15-unit ROI simulation in INR, USD, and SAR with per-store annual savings.
+            </p>
+          </button>
+
+          <button
+            type="button"
+            className="text-left rounded-[14px] border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/15 p-3 transition-all"
+            onClick={() => {
+              const prompt =
+                "Run a 6-tier security & webhook scan verifying HMAC-SHA256 signatures, optical proof photo deduplication, RBAC tenant isolation, and anti-fraud shields.";
+              setQ(prompt);
+              setSpecialistId("security");
+              setSelectedDepartmentId("dept_12_red_team_security");
+              setActiveTab("console");
+            }}
+          >
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-xs font-bold text-purple-700 dark:text-purple-300">
+                3. 6-Tier Security &amp; Webhook Scan
+              </span>
+              <span className="text-[10px] font-mono text-purple-600">DEPT #12</span>
+            </div>
+            <p className="mt-1 text-[11px] text-muted">
+              Audit HMAC-SHA256 webhook replay windows, optical proof registry, and server-bound RBAC invariants.
+            </p>
+          </button>
+
+          <button
+            type="button"
+            className="text-left rounded-[14px] border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/15 p-3 transition-all"
+            onClick={() => {
+              const prompt =
+                "Check live kitchen/rider SLA status, active restaurants online, available fleet riders, delayed orders, and sub-8-minute dispatch SLA telemetry.";
+              setQ(prompt);
+              setSpecialistId("dispatch");
+              setSelectedDepartmentId("dept_10_rider_logistics");
+              setActiveTab("console");
+            }}
+          >
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-xs font-bold text-amber-700 dark:text-amber-300">
+                4. Live Kitchen/Rider SLA Status
+              </span>
+              <span className="text-[10px] font-mono text-amber-600">DEPT #09/#10</span>
+            </div>
+            <p className="mt-1 text-[11px] text-muted">
+              Inspect live kitchen KDS prep queues, Haversine rider proximity assignment, and delayed order count.
+            </p>
+          </button>
+        </div>
+      </div>
+
+      {/* 16 Specialist Departments Switchboard (MANDATE_1_SPECIALIST_DEPARTMENTS) */}
+      <Panel
+        title={`16 Specialist Departments Switchboard (${MANDATE_1_SPECIALIST_DEPARTMENTS.length} Mandate 1 Departments)`}
+        action={
+          currentDepartment ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                setQ(currentDepartment.defaultDirective);
+                setSpecialistId(currentDepartment.leadSpecialistId);
+                setActiveTab("console");
+              }}
+            >
+              Load Dept #{String(currentDepartment.departmentNumber).padStart(2, "0")} Directive
+            </Button>
+          ) : null
+        }
+      >
+        <div className="space-y-4">
+          <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-4">
+            {MANDATE_1_SPECIALIST_DEPARTMENTS.map((dept) => {
+              const isSelected = dept.id === selectedDepartmentId;
+              return (
+                <button
+                  key={dept.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedDepartmentId(dept.id);
+                    setSpecialistId(dept.leadSpecialistId);
+                    setQ(dept.defaultDirective);
+                  }}
+                  className={cn(
+                    "text-left rounded-[12px] border p-2.5 transition-all text-xs",
+                    isSelected
+                      ? "border-primary bg-primary/10 shadow-xs"
+                      : "border-border bg-elevated/60 hover:bg-elevated"
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-mono text-[10px] font-bold text-primary">
+                      DEPT #{String(dept.departmentNumber).padStart(2, "0")}
+                    </span>
+                    <span className="font-mono text-[10px] text-muted">
+                      {dept.leadSpecialistId}
+                    </span>
+                  </div>
+                  <p className="mt-1 font-semibold text-foreground line-clamp-1">
+                    {dept.name}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-muted line-clamp-1">
+                    {dept.ownedModules.join(" · ")}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+
+          {currentDepartment && (
+            <div className="rounded-[16px] border border-border bg-elevated/50 p-4 text-xs space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2.5">
+                <div>
+                  <span className="font-mono text-[11px] font-bold text-primary">
+                    MANDATE 1 · DEPARTMENT #{String(currentDepartment.departmentNumber).padStart(2, "0")}
+                  </span>
+                  <h3 className="text-sm font-bold text-foreground">
+                    {currentDepartment.name}
+                  </h3>
+                  <p className="text-muted mt-0.5">{currentDepartment.mandateScope}</p>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {currentDepartment.ownedModules.map((mod) => (
+                    <Badge key={mod} tone="default">
+                      module:{mod}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted font-semibold">
+                    Department Responsibilities
+                  </p>
+                  <ul className="mt-1.5 list-disc pl-4 space-y-1 text-muted">
+                    {currentDepartment.responsibilities.map((resp, idx) => (
+                      <li key={idx} className="text-foreground/90">
+                        {resp}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted font-semibold">
+                    Authorized Primary Tools ({currentDepartment.primaryTools.length})
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {currentDepartment.primaryTools.map((toolName) => (
+                      <span
+                        key={toolName}
+                        className="rounded-md border border-border bg-surface px-2 py-0.5 font-mono text-[11px] text-foreground"
+                      >
+                        {toolName}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </Panel>
 
       {activeTab === "console" && (
         <div className="grid gap-6 lg:grid-cols-3">

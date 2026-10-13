@@ -35,6 +35,15 @@ import { ensureWorkspace, appendAudit } from "./workspace.server.ts";
 import { requirePermission } from "../rbac.ts";
 import { z } from "zod";
 import { UniversalAdvancedintelligenceEngine } from "../ai/universal-superintelligence-engine.server.ts";
+import {
+  CrmPipelineEngine,
+  crmEngine,
+  SELLABLE_ORDERKING_SERVICES,
+} from "@/lib/orderking/crm/pipeline-engine";
+import {
+  calculateMultiUnitRoi,
+  getB2BPitchDeckTelemetryCore,
+} from "@/lib/orderking/b2b-sales-deck-engine";
 
 export interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -317,6 +326,158 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
     }
   }
 
+  // 6. B2B Sales, CRM Leads, Proposals, Sellable Services & Multi-Unit Franchise ROI
+  const isB2BCrmOrRoiPrompt =
+    qClean.includes("b2b") ||
+    qClean.includes("crm") ||
+    qClean.includes("lead") ||
+    qClean.includes("proposal") ||
+    qClean.includes("sellable service") ||
+    qClean.includes("orderking service") ||
+    qClean.includes("franchise roi") ||
+    qClean.includes("multi-unit roi") ||
+    qClean.includes("15-unit") ||
+    qClean.includes("commercial revenue") ||
+    qClean.includes("verified_crm_record") ||
+    qClean.includes("scenario_template");
+
+  if (isB2BCrmOrRoiPrompt) {
+    try {
+      const pipeline = crmEngine ?? new CrmPipelineEngine();
+      const breakdown = pipeline.getCommercialRevenueBreakdown();
+      const allLeads = pipeline.getLeads();
+      const verifiedLeads = allLeads.filter((l) => l.dataProvenance === "VERIFIED_CRM_RECORD");
+      const scenarioLeads = allLeads.filter((l) => l.dataProvenance === "SCENARIO_TEMPLATE");
+
+      const unitMatch = query.match(/(\d+)[\s-]*unit/i);
+      const unitsCount = unitMatch ? Math.max(1, Number(unitMatch[1])) : 15;
+
+      const roiIndia = calculateMultiUnitRoi({
+        unitsCount,
+        dailyOrdersPerUnit: 85,
+        avgTicketValue: 420,
+        aggregatorFeePct: 28,
+        orderkingCostPct: 6,
+        currency: "INR",
+        monthlySaaSFeePerUnit: 4999,
+      });
+
+      const roiUs = calculateMultiUnitRoi({
+        unitsCount,
+        dailyOrdersPerUnit: 95,
+        avgTicketValue: 32,
+        aggregatorFeePct: 30,
+        orderkingCostPct: 8,
+        currency: "USD",
+        monthlySaaSFeePerUnit: 149,
+      });
+
+      const roiSaudi = calculateMultiUnitRoi({
+        unitsCount,
+        dailyOrdersPerUnit: 90,
+        avgTicketValue: 95,
+        aggregatorFeePct: 28,
+        orderkingCostPct: 7,
+        currency: "SAR",
+        monthlySaaSFeePerUnit: 499,
+      });
+
+      return [
+        `### 📊 B2B SaaS Commercial Revenue & CRM Pipeline Audit`,
+        `> **Provenance Governance**: All 9 commercial revenue buckets are computed strictly from \`VERIFIED_CRM_RECORD\` leads (\`${breakdown.verifiedLeadsCount}\` verified). Sample \`SCENARIO_TEMPLATE\` records (\`${breakdown.scenarioTemplatesCount}\` templates) are **100% excluded** from financial buckets.`,
+        ``,
+        `#### 1. Mandate 3 Commercial Revenue Breakdown (\`VERIFIED_CRM_RECORD\` Only)`,
+        `- **Verified Money Collected (\`verifiedMoneyCollectedInr\`)**: **₹${breakdown.verifiedMoneyCollectedInr.toLocaleString("en-IN")}** (\`verifiedMoneyCollectedInr: ${breakdown.verifiedMoneyCollectedInr}\`)`,
+        `- **Lead Pipeline Value**: ₹${breakdown.leadPipelineValueInr.toLocaleString("en-IN")}`,
+        `- **Quoted Proposal Value**: ₹${breakdown.quotedValueInr.toLocaleString("en-IN")}`,
+        `- **Signed Contract Value**: ₹${breakdown.signedContractValueInr.toLocaleString("en-IN")}`,
+        `- **Invoiced Value (GST INV-1)**: ₹${breakdown.invoicedValueInr.toLocaleString("en-IN")}`,
+        `- **Outstanding Receivables**: ₹${breakdown.outstandingReceivablesInr.toLocaleString("en-IN")}`,
+        `- **Refunds Disbursed**: ₹${breakdown.refundsInr.toLocaleString("en-IN")}`,
+        `- **Direct Delivery Costs**: ₹${breakdown.directDeliveryCostsInr.toLocaleString("en-IN")}`,
+        `- **Net Verified Profit**: **₹${breakdown.netProfitInr.toLocaleString("en-IN")}**`,
+        ``,
+        `#### 2. CRM Lead Registry (Strict Provenance Separation)`,
+        `- **\`VERIFIED_CRM_RECORD\` Leads (${verifiedLeads.length})**:`,
+        ...(verifiedLeads.length > 0
+          ? verifiedLeads.map(
+              (l) =>
+                `  - \`${l.id}\` **${l.businessName}** (${l.location}) — Stage: \`${l.currentStage}\` | Deal: ₹${l.dealValueInr.toLocaleString("en-IN")} | Verified Collected (\`verifiedCollectedInr\`): ₹${(l.verifiedCollectedInr ?? 0).toLocaleString("en-IN")}${l.paymentUtr ? ` (UTR: \`${l.paymentUtr}\`)` : ""}`
+            )
+          : [`  - *No \`VERIFIED_CRM_RECORD\` leads recorded yet. Add a verified client lead with bank/UPI UTR to recognize collected revenue.*`]),
+        `- **\`SCENARIO_TEMPLATE\` Reference Examples (${scenarioLeads.length} — Excluded from Revenue)**:`,
+        ...scenarioLeads.map(
+          (l) =>
+            `  - \`${l.id}\` **${l.businessName}** [\`SCENARIO_TEMPLATE\`] — Stage: \`${l.currentStage}\` | Illustrative Deal: ₹${l.dealValueInr.toLocaleString("en-IN")} | Proposal: ${l.proposal ? l.proposal.title : l.selectedServiceName || "Standard"} | Verified Collected: ₹0`
+        ),
+        ``,
+        `#### 3. Sellable OrderKing B2B Services Catalog (\`SELLABLE_ORDERKING_SERVICES\` — ${SELLABLE_ORDERKING_SERVICES.length} Services)`,
+        `| ID | Service Name | Category | Setup (INR / USD) | Monthly Retainer (INR / USD) | Timeline |`,
+        `|---|---|---|---|---|---|`,
+        ...SELLABLE_ORDERKING_SERVICES.map(
+          (s) =>
+            `| \`${s.id}\` | **${s.name}** | \`${s.category}\` | ₹${s.setupFeeInr.toLocaleString("en-IN")} / $${s.setupFeeUsd} | ₹${s.monthlyRetainerInr.toLocaleString("en-IN")}/mo / $${s.monthlyRetainerUsd}/mo | ${s.timelineDays} days |`
+        ),
+        ``,
+        `#### 4. ${unitsCount}-Unit Multi-Region Franchise ROI Simulation (\`calculateMultiUnitRoi\`)`,
+        `| Market Region | Annual Delivery GMV | Aggregator Fees | OrderKing Cost | Annual Net Profit Reclaimed | Per-Store Savings/Yr | EBITDA Expansion | Payback Period |`,
+        `|---|---|---|---|---|---|---|---|`,
+        `| **India (INR)** | ₹${roiIndia.annualGmv.toLocaleString("en-IN")} | ₹${roiIndia.annualAggregatorFees.toLocaleString("en-IN")} (28%) | ₹${roiIndia.annualOrderKingCost.toLocaleString("en-IN")} (6% + SaaS) | **₹${roiIndia.annualNetProfitReclaimed.toLocaleString("en-IN")}** | ₹${roiIndia.perStoreAnnualSavings.toLocaleString("en-IN")} | +${roiIndia.ebitdaMarginExpansionPct}% | ${roiIndia.paybackPeriodDays} days |`,
+        `| **United States (USD)** | $${roiUs.annualGmv.toLocaleString()} | $${roiUs.annualAggregatorFees.toLocaleString()} (30%) | $${roiUs.annualOrderKingCost.toLocaleString()} (8% + SaaS) | **$${roiUs.annualNetProfitReclaimed.toLocaleString()}** | $${roiUs.perStoreAnnualSavings.toLocaleString()} | +${roiUs.ebitdaMarginExpansionPct}% | ${roiUs.paybackPeriodDays} days |`,
+        `| **Saudi Arabia (SAR)** | SAR ${roiSaudi.annualGmv.toLocaleString()} | SAR ${roiSaudi.annualAggregatorFees.toLocaleString()} (28%) | SAR ${roiSaudi.annualOrderKingCost.toLocaleString()} (7% + SaaS) | **SAR ${roiSaudi.annualNetProfitReclaimed.toLocaleString()}** | SAR ${roiSaudi.perStoreAnnualSavings.toLocaleString()} | +${roiSaudi.ebitdaMarginExpansionPct}% | ${roiSaudi.paybackPeriodDays} days |`,
+      ].join("\n");
+    } catch (err) {
+      return `### 📊 B2B CRM & ROI Audit\nError computing CRM and ROI metrics: ${err instanceof Error ? err.message : String(err)}`;
+    }
+  }
+
+  // 7. 6-Tier Security & Webhook Scan
+  if (
+    qClean.includes("6-tier security") ||
+    qClean.includes("webhook scan") ||
+    (qClean.includes("security") && qClean.includes("webhook"))
+  ) {
+    try {
+      const telemetry = await getB2BPitchDeckTelemetryCore();
+      return [
+        `### 🛡️ 6-Tier Security & Webhook Verification Scan`,
+        `- **Shield Status**: \`${telemetry.antiFraud.status}\` (${telemetry.antiFraud.stat})`,
+        `- **Tier 1 — HMAC-SHA256 Webhook Signatures**: \`${telemetry.antiFraud.hmacSignaturesActive ? "ENFORCED" : "INACTIVE"}\` (Replay window: 300s strict check)`,
+        `- **Tier 2 — Optical Proof Photo Deduplication**: \`${telemetry.antiFraud.opticalProofRegistryActive ? "ACTIVE" : "INACTIVE"}\` (Blocks duplicate damage/refund image hashes)`,
+        `- **Tier 3 — Fake Orders Intercepted**: \`${telemetry.antiFraud.fakeOrdersIntercepted}\``,
+        `- **Tier 4 — Fake Refund Claims Blocked**: \`${telemetry.antiFraud.fakeRefundsBlocked}\``,
+        `- **Tier 5 — GPS Spoofing & Teleportation Blocked**: \`${telemetry.antiFraud.gpsSpoofingBlocked}\``,
+        `- **Tier 6 — RBAC & Tenant Isolation**: Server-authenticated \`org_id\`, \`riderId\`, and \`customerId\` bindings enforced.`,
+      ].join("\n");
+    } catch (err) {
+      return `### 🛡️ Security & Webhook Scan\nCould not complete scan: ${err instanceof Error ? err.message : String(err)}`;
+    }
+  }
+
+  // 8. Live Kitchen & Rider SLA Status
+  if (
+    qClean.includes("kitchen/rider sla") ||
+    qClean.includes("kitchen & rider sla") ||
+    (qClean.includes("sla") && (qClean.includes("kitchen") || qClean.includes("rider")))
+  ) {
+    try {
+      const ws = await ensureWorkspace("system_supreme_ai_founder");
+      const dash = await q.dashboardPayload(ws);
+      const telemetry = await getB2BPitchDeckTelemetryCore();
+      return [
+        `### ⚡ Live Kitchen & Rider Dispatch SLA Status`,
+        `- **Active Kitchens Online**: \`${dash.today.activeRestaurants.value}\` (${dash.today.activeRestaurants.label})`,
+        `- **Online Fleet Riders**: \`${dash.today.onlineRiders.value}\` (${dash.today.onlineRiders.label})`,
+        `- **Active Deliveries in Flight**: \`${dash.today.activeDeliveries.value}\``,
+        `- **Delayed Orders (>Promised SLA)**: \`${dash.live.delayedOrders}\``,
+        `- **Unassigned Orders in Queue**: \`${dash.live.unassignedOrders}\``,
+        `- **Dispatch SLA Benchmark**: \`${telemetry.dispatchSpeed.stat}\` (Target: ${telemetry.dispatchSpeed.targetSla} | Routing: ${telemetry.dispatchSpeed.algorithmMode})`,
+      ].join("\n");
+    } catch (err) {
+      return `### ⚡ Kitchen & Rider SLA Status\nCould not fetch live SLA telemetry: ${err instanceof Error ? err.message : String(err)}`;
+    }
+  }
+
   return null;
 }
 
@@ -344,7 +505,7 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
   // Connect to real workspace / DB
   // Defaulting to founder/system user for supreme operations if no userId provided
   const ws = await ensureWorkspace(userId || "system_supreme_ai_founder");
-  const idempotencyKey = `auto-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+  const idempotencyKey = `auto-${startTime}-${taskType}`;
 
   try {
     await appendAudit({

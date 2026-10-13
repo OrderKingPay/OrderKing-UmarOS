@@ -1,4 +1,12 @@
 import * as crypto from 'crypto';
+import { Buffer } from 'node:buffer';
+
+function timingSafeCompare(expected: string, received: string): boolean {
+  if (!expected || !received) return false;
+  const a = Buffer.from(expected);
+  const b = Buffer.from(received);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
 
 /**
  * Verifies a Razorpay webhook signature.
@@ -14,7 +22,7 @@ export function verifyRazorpayWebhook(payloadStr: string, signature: string, sec
     .update(payloadStr)
     .digest('hex');
 
-  if (expectedSignature !== signature) {
+  if (!timingSafeCompare(expectedSignature, signature)) {
     throw new Error('Invalid Razorpay webhook signature');
   }
 
@@ -55,7 +63,7 @@ export function verifyStripeWebhook(payloadStr: string, signatureHeader: string,
     .update(signedPayload)
     .digest('hex');
 
-  if (expectedSignature !== signature) {
+  if (!timingSafeCompare(expectedSignature, signature)) {
     throw new Error('Invalid Stripe webhook signature');
   }
 
@@ -76,7 +84,7 @@ export function verifyPayoneerWebhook(payloadStr: string, signature: string, sec
     .update(payloadStr)
     .digest('hex');
 
-  if (expectedSignature !== signature) {
+  if (!timingSafeCompare(expectedSignature, signature)) {
     throw new Error('Invalid Payoneer webhook signature');
   }
 

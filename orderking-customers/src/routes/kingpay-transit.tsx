@@ -1,64 +1,64 @@
 import React from 'react';
+import { Link } from '@tanstack/react-router';
 
 export default function KingPayTransit() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8 font-sans">
-      <header className="mb-10 text-center">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200">
-          KingPay Transit
-        </h1>
-        <p className="mt-2 text-gray-400">Seamless mobility. Premium rewards.</p>
-      </header>
-
-      <main className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* FASTag Section */}
-        <section className="bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-xl hover:border-yellow-500 transition-colors">
-          <h2 className="text-2xl font-bold mb-4 flex items-center">
-            <span className="bg-green-500 p-2 rounded-lg mr-3 text-sm text-black">FASTag</span>
-            Recharge
-          </h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Vehicle Number</label>
-              <input type="text" placeholder="e.g. MH 01 AB 1234" className="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-yellow-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Amount (₹)</label>
-              <input type="number" placeholder="500" className="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-yellow-500" />
-            </div>
-            <div className="bg-yellow-900/30 border border-yellow-700/50 rounded-lg p-3 text-sm text-yellow-300">
-              🎁 <strong>Offer:</strong> Recharge FASTag, earn Food Cash!
-            </div>
-            <button className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-bold py-3 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all">
-              Recharge Now
-            </button>
+    <div className="min-h-screen bg-[#0A0A0A] text-white p-6 sm:p-10 font-sans flex items-center justify-center">
+      <div className="max-w-2xl w-full bg-[#141414] border border-white/10 rounded-3xl p-8 shadow-2xl space-y-6">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div>
+            <h1 className="text-2xl font-bold text-white">
+              KingPay Transit (NETC FASTag &amp; NCMC)
+            </h1>
+            <p className="mt-1 text-xs text-gray-400">
+              National Electronic Toll Collection &amp; National Common Mobility Card Disclosure
+            </p>
           </div>
-        </section>
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
+            Integration Pending
+          </span>
+        </header>
 
-        {/* NCMC Metro Card Section */}
-        <section className="bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-xl hover:border-blue-500 transition-colors">
-          <h2 className="text-2xl font-bold mb-4 flex items-center">
-            <span className="bg-blue-500 p-2 rounded-lg mr-3 text-sm text-black">NCMC</span>
-            Metro Card
+        <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-5 space-y-2">
+          <h2 className="text-sm font-bold text-amber-300 uppercase tracking-wider">
+            Requires Regulated Transit Partner Authorization
           </h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Card Number</label>
-              <input type="text" placeholder="16-digit NCMC number" className="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Amount (₹)</label>
-              <input type="number" placeholder="200" className="w-full bg-gray-900 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500" />
-            </div>
-            <div className="bg-transparent border border-transparent rounded-lg p-3 text-sm text-transparent select-none">
-              Spacer
-            </div>
-            <button className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold py-3 rounded-lg hover:from-blue-500 hover:to-blue-700 transition-all mt-6">
-              Top Up Card
-            </button>
+          <p className="text-xs text-gray-300 leading-relaxed">
+            Live NETC FASTag vehicle tag recharges and RuPay NCMC (National Common Mobility Card) offline balance top-ups require certified NPCI NETC acquirer/issuer bank connectivity and transit authority clearing integration.
+          </p>
+          <p className="text-xs text-gray-400 leading-relaxed">
+            No vehicle registration numbers or NCMC card numbers are accepted or processed on this route. Please use your issuing bank portal or canonical KingPay for food order checkout.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div className="rounded-2xl bg-[#1A1A1A] border border-white/5 p-4 space-y-1">
+            <span className="font-bold text-gray-200 block">NPCI NETC FASTag</span>
+            <span className="text-amber-400 font-medium block">Status: Issuer Bank API Pending</span>
+            <p className="text-gray-400">Requires live Bharat BillPay / NETC tag validation endpoint.</p>
           </div>
-        </section>
-      </main>
+          <div className="rounded-2xl bg-[#1A1A1A] border border-white/5 p-4 space-y-1">
+            <span className="font-bold text-gray-200 block">RuPay NCMC Metro Card</span>
+            <span className="text-amber-400 font-medium block">Status: AFC Transit Host Pending</span>
+            <p className="text-gray-400">Requires certified Automated Fare Collection (AFC) top-up gateway.</p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <Link
+            to="/king-pay"
+            className="px-5 py-2.5 rounded-xl bg-yellow-500 text-black font-bold text-xs hover:bg-yellow-400 transition-colors"
+          >
+            Return to Canonical /king-pay
+          </Link>
+          <Link
+            to="/"
+            className="px-5 py-2.5 rounded-xl bg-white/10 text-gray-200 font-semibold text-xs hover:bg-white/15 transition-colors"
+          >
+            Back to OrderKing Food App
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

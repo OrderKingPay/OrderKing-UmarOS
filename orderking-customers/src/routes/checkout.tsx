@@ -1,4 +1,3 @@
-
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -13,7 +12,12 @@ import { formatPaise } from "@/lib/money";
 import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { quoteCart, trackAnalytics } from "@/lib/server/quote";
-import { placeOrder } from "@/lib/server/orders";
+import {
+  COD_MAX_PAISE,
+  getCheckoutContext,
+  placeOrder,
+  type RazorpayVerificationInput,
+} from "@/lib/server/orders";
 import { placeOrderViaHDmaster } from "@/lib/server/hdmaster-orders";
 import { loadConfig } from "@/lib/server/load-config";
 import { useCartStore } from "@/lib/stores/cart";
@@ -31,13 +35,13 @@ function CheckoutPage() {
   const { user, isPending } = useCurrentUserState();
   const { restaurantId, restaurantName, items, coupon, clear } = useCartStore();
   const location = useLocationStore((s) => s.location);
-  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY">("KING_PAY");
+  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY">("RAZORPAY_ONLINE");
+  const [preferredUpiApp, setPreferredUpiApp] = useState<string>("GPay");
   const [notes, setNotes] = useState("");
   const [forSomeoneElse, setForSomeoneElse] = useState(false);
   const [recipientName, setRecipientName] = useState("");
   const [recipientPhone, setRecipientPhone] = useState("");
   const [tipPaise, setTipPaise] = useState<number>(0);
-  const [roundupGold, setRoundupGold] = useState(true);
   const [noCutlery, setNoCutlery] = useState(true);
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
@@ -70,30 +74,84 @@ function CheckoutPage() {
   const quote = useQuery({
     queryKey: ["quote", restaurantId, items, coupon, location],
     enabled: Boolean(restaurantId && items.length),
-    queryFn: () => quoteCart({ data: { restaurantId: restaurantId!, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, lines: items } }),
+    queryFn: () =>
+      quoteCart({
+        data: {
+          restaurantId: restaurantId!,
+          zoneId: location.zoneId,
+          lat: location.lat,
+          lng: location.lng,
+          coupon,
+          lines: items,
+        },
+      }),
   });
 
-  if (isPending) return (
-    <CustomerShell>
-      <div className="p-6 space-y-4 animate-pulse">
-        <div className="h-8 w-1/3 bg-neutral-200 dark:bg-neutral-800 rounded-xl" />
-        <div className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-2xl" />
-        <div className="h-24 bg-neutral-200 dark:bg-neutral-800 rounded-2xl" />
-      </div>
-    </CustomerShell>
-  );
+  const checkoutCtx = useQuery({
+    queryKey: ["checkout-ctx", restaurantId, (user as any)?.id],
+    enabled: Boolean(user && restaurantId),
+    queryFn: () => getCheckoutContext({ data: { restaurantId } }),
+  });
+
+  if (isPending) {
+    return (
+      <CustomerShell>
+        <div className="p-6 space-y-4 animate-pulse">
+          <div className="h-8 w-1/3 bg-neutral-200 dark:bg-neutral-800 rounded-xl" />
+          <div className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-2xl" />
+          <div className="h-24 bg-neutral-200 dark:bg-neutral-800 rounded-2xl" />
+        </div>
+      </CustomerShell>
+    );
+  }
   if (!user) return <RedirectToSignIn />;
+
+  const walletBalancePaise = checkoutCtx.data?.walletBalancePaise ?? 0;
+  const restaurantOpen = checkoutCtx.data?.restaurantOpen ?? true;
+  const codMaxPaise = checkoutCtx.data?.codMaxPaise ?? COD_MAX_PAISE;
+
+  // Server-authoritative integer-paise payable calculation (quote total + validated integer tip)
+  const safeTipPaise = Number.isInteger(tipPaise) && tipPaise >= 0 ? tipPaise : 0;
+  const totalPayable = (quote.data?.quote.totalPaise ?? 0) + safeTipPaise;
+
+  const isCodEligible = totalPayable > 0 && totalPayable <= codMaxPaise;
+  const isKingPaySufficient = walletBalancePaise >= totalPayable && totalPayable > 0;
 
   const submit = async () => {
     if (!restaurantId || !quote.data) return;
-    if (!quote.data.isDeliverable) { toast.error(t("checkout.blocked") || "Minimum order not met"); return; }
-    if (!location.line1.trim()) { toast.error(t("checkout.needAddress")); return; }
+    if (!restaurantOpen) {
+      toast.error("This restaurant is currently closed and not accepting orders.");
+      return;
+    }
+    if (!quote.data.isDeliverable || quote.data.quote.blockers.length > 0) {
+      toast.error(t("checkout.blocked") || "Order cannot be delivered to the selected location.");
+      return;
+    }
+    if (!location.line1.trim()) {
+      toast.error(t("checkout.needAddress"));
+      return;
+    }
+    if (!location.zoneId || !Number.isFinite(location.lat) || !Number.isFinite(location.lng)) {
+      toast.error("Valid delivery zone and coordinates are required.");
+      return;
+    }
+    if (method === "COD" && !isCodEligible) {
+      toast.error(`Cash on Delivery is only available for orders up to ${formatPaise(codMaxPaise, { locale })}.`);
+      return;
+    }
+    if (method === "KING_PAY" && !isKingPaySufficient) {
+      toast.error(
+        `Insufficient KingPay wallet balance (${formatPaise(walletBalancePaise, { locale })} available, ${formatPaise(totalPayable, { locale })} required).`
+      );
+      return;
+    }
+
     setBusy(true);
     try {
       void trackAnalytics({ data: { name: "checkout_started" } });
       const idempotencyKey = newId("idem");
       const cfg = await loadConfig();
-        // Handle RAZORPAY_ONLINE later
+
       let orderNotes = notes;
       if (noCutlery) {
         orderNotes = `[🌱 No Cutlery Needed] ${orderNotes}`.trim();
@@ -101,44 +159,111 @@ function CheckoutPage() {
       if (forSomeoneElse && recipientName.trim()) {
         orderNotes = `[Deliver to: ${recipientName.trim()}${recipientPhone.trim() ? ` (${recipientPhone.trim()})` : ""}] ${orderNotes}`.trim();
       }
-      if (roundupGold && goldRoundupPaise > 0) {
-        orderNotes = `[✨ 24K Gold Savings: ₹${(goldRoundupPaise / 100).toFixed(2)}] ${orderNotes}`.trim();
-      }
-      const placeFinalOrder = async (finalPaymentMethod: string) => {
-        const result = cfg.marketplace.launchMode === "live"
-          ? await placeOrderViaHDmaster({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod as any, notes: orderNotes, idempotencyKey } })
-          : await placeOrder({ data: { restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng, coupon, tipPaise, lines: items, address: { line1: location.line1, area: location.zoneName, label: location.label }, paymentMethod: finalPaymentMethod as any, notes: orderNotes, idempotencyKey } });
+
+      const placeFinalOrder = async (
+        finalPaymentMethod: "COD" | "UPI_SANDBOX" | "KING_PAY" | "RAZORPAY_ONLINE",
+        razorpayPayment?: RazorpayVerificationInput
+      ) => {
+        const result =
+          cfg.marketplace.launchMode === "live" && finalPaymentMethod !== "RAZORPAY_ONLINE"
+            ? await placeOrderViaHDmaster({
+                data: {
+                  restaurantId,
+                  zoneId: location.zoneId,
+                  lat: location.lat,
+                  lng: location.lng,
+                  coupon,
+                  tipPaise: safeTipPaise,
+                  lines: items,
+                  address: { line1: location.line1, area: location.zoneName, label: location.label },
+                  paymentMethod: finalPaymentMethod as "COD" | "UPI_SANDBOX" | "KING_PAY",
+                  notes: orderNotes,
+                  idempotencyKey,
+                },
+              })
+            : await placeOrder({
+                data: {
+                  restaurantId,
+                  zoneId: location.zoneId,
+                  lat: location.lat,
+                  lng: location.lng,
+                  coupon,
+                  tipPaise: safeTipPaise,
+                  lines: items,
+                  address: { line1: location.line1, area: location.zoneName, label: location.label },
+                  paymentMethod: finalPaymentMethod,
+                  razorpayPayment,
+                  notes: orderNotes,
+                  idempotencyKey,
+                },
+              });
         clear();
         toast.success(t("orders.placed"));
         void navigate({ to: "/orders/$id", params: { id: result.orderId } });
       };
 
       if (method === "RAZORPAY_ONLINE") {
-        const rzpOrder = await createRazorpayOrder({ data: { amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey } });
+        const rzpOrder = await createRazorpayOrder({
+          data: { amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey },
+        });
+        if (rzpOrder.amountPaise !== totalPayable) {
+          throw new Error("Gateway order amount mismatch detected. Checkout aborted.");
+        }
         const options = {
           key: rzpOrder.keyId,
           amount: rzpOrder.amountPaise,
           currency: rzpOrder.currency,
           name: cfg.brand.appName,
-          description: "OrderKing Food Delivery",
+          description: `OrderKing Order (${restaurantName || "Kitchen"})`,
           image: cfg.brand.logoUrl,
           order_id: rzpOrder.orderId,
-          handler: async function (response: any) {
-            await placeFinalOrder("UPI_SANDBOX");
+          handler: async function (response: {
+            razorpay_order_id?: string;
+            razorpay_payment_id?: string;
+            razorpay_signature?: string;
+          }) {
+            try {
+              if (
+                !response?.razorpay_order_id ||
+                !response?.razorpay_payment_id ||
+                !response?.razorpay_signature ||
+                response.razorpay_order_id !== rzpOrder.orderId
+              ) {
+                throw new Error("Incomplete or mismatched payment verification response from gateway.");
+              }
+              await placeFinalOrder("RAZORPAY_ONLINE", {
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+                amountPaise: rzpOrder.amountPaise,
+              });
+            } catch (err) {
+              toast.error(err instanceof Error ? err.message : t("checkout.failed"));
+              setBusy(false);
+            }
+          },
+          modal: {
+            ondismiss: function () {
+              setBusy(false);
+            },
           },
           prefill: {
             name: (user as any).name ?? "",
             email: (user as any).email ?? "",
-            contact: (user as any).phone ?? ""
+            contact: (user as any).phone ?? "",
           },
           theme: {
-            color: cfg.brand.primaryColor
-          }
+            color: cfg.brand.primaryColor,
+          },
         };
-        // @ts-ignore
-        const rzp = new window.Razorpay(options);
+        const RazorpayCtor = (window as unknown as { Razorpay?: new (opts: unknown) => any }).Razorpay;
+        if (!RazorpayCtor) {
+          throw new Error("Razorpay payment SDK is not loaded. Please check your connection or choose another payment method.");
+        }
+        const rzp = new RazorpayCtor(options);
         rzp.on("payment.failed", function (response: any) {
-          toast.error("Payment failed. ");
+          const reason = response?.error?.description || "Payment authorization declined by bank or gateway.";
+          toast.error(`Payment failed: ${reason}`);
           setBusy(false);
         });
         rzp.open();
@@ -151,398 +276,435 @@ function CheckoutPage() {
     }
   };
 
-  const basePayable = (quote.data?.quote.totalPaise ?? 0) + tipPaise;
-  const remainderPaise = basePayable % 1000;
-  const goldRoundupPaise = basePayable > 0 ? (remainderPaise === 0 ? 1000 : 1000 - remainderPaise) : 0;
-  const totalPayable = basePayable + (roundupGold ? goldRoundupPaise : 0);
-
   return (
     <CustomerShell>
       <div className="px-4 py-5">
         <h1 className="font-display text-3xl">{t("checkout.title")}</h1>
-        {!items.length ? <p className="mt-6 text-muted">{t("cart.empty")}</p> : <>
-          <section className="mt-6"><h2 className="text-sm font-medium text-muted">{t("checkout.address")}</h2><p className="mt-1 font-medium">{location.label}</p><p className="text-sm text-muted">{location.line1}</p></section>
-          
-          {/* Urgency Banner */}
-          <div className="mt-4 animate-pulse flex items-center gap-3 rounded-2xl bg-gradient-to-r from-rose-500/10 to-orange-500/10 border border-rose-500/20 p-3.5 shadow-sm">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-600 text-xl shadow-inner">
-              🔥
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-bold tracking-tight text-rose-700 dark:text-rose-400">High Demand in your area</h3>
-              <p className="mt-0.5 text-xs font-medium text-rose-600/80 dark:text-rose-300/80">Kitchen is closing soon. Complete order now to secure delivery.</p>
-            </div>
-          </div>
+        {!items.length ? (
+          <p className="mt-6 text-muted">{t("cart.empty")}</p>
+        ) : (
+          <>
+            <section className="mt-6">
+              <h2 className="text-sm font-medium text-muted">{t("checkout.address")}</h2>
+              <p className="mt-1 font-medium">{location.label}</p>
+              <p className="text-sm text-muted">{location.line1}</p>
+            </section>
 
-          {/* WhatsApp Deep-Link Sharing Component */}
-          <WhatsAppShare 
-            variant="checkout" 
-            orderTotalPaise={totalPayable} 
-            className="mt-4" 
-          />
-
-          {/* Ordering for someone else? (Zomato-style) */}
-          <section className="mt-4 rounded-[var(--radius-xl)] border border-border bg-surface p-4">
-            <label className="flex cursor-pointer items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="text-xl">🎁</span>
-                <div>
-                  <span className="block text-sm font-semibold">Ordering for someone else?</span>
-                  <span className="block text-xs text-muted">Delivery partner will call the recipient</span>
+            {/* Factual Restaurant & Zone Availability Banner */}
+            {!restaurantOpen ? (
+              <div className="mt-4 flex items-center gap-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3.5 shadow-sm">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-600 text-xl">
+                  ⛔
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-bold tracking-tight text-rose-700 dark:text-rose-400">
+                    Restaurant Currently Closed
+                  </h3>
+                  <p className="mt-0.5 text-xs font-medium text-rose-600/80 dark:text-rose-300/80">
+                    {restaurantName || "This kitchen"} is outside operating hours or temporarily unavailable for checkout.
+                  </p>
                 </div>
               </div>
-              <input
-                type="checkbox"
-                className="size-4 rounded border-border text-primary focus:ring-primary"
-                checked={forSomeoneElse}
-                onChange={(e) => setForSomeoneElse(e.target.checked)}
-              />
-            </label>
-            {forSomeoneElse && (
-              <div className="mt-3 grid gap-3 border-t border-border/60 pt-3 sm:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-medium text-muted">Recipient Name</label>
-                  <Input
-                    className="mt-1 text-sm"
-                    placeholder="e.g. Rahul Sharma"
-                    value={recipientName}
-                    onChange={(e) => setRecipientName(e.target.value)}
-                  />
+            ) : (
+              <div className="mt-4 flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3.5 shadow-sm">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 text-xl">
+                  ✓
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-muted">Recipient Phone</label>
-                  <Input
-                    className="mt-1 text-sm"
-                    placeholder="e.g. 9876543210"
-                    type="tel"
-                    value={recipientPhone}
-                    onChange={(e) => setRecipientPhone(e.target.value)}
-                  />
+                <div className="flex-1">
+                  <h3 className="text-sm font-bold tracking-tight text-emerald-800 dark:text-emerald-300">
+                    Verified Delivery Zone &amp; Kitchen Availability
+                  </h3>
+                  <p className="mt-0.5 text-xs font-medium text-muted">
+                    {restaurantName || "Kitchen"} is open and accepting orders for {location.zoneName || location.label}. All prices are calculated in server-authoritative integer paise.
+                  </p>
                 </div>
               </div>
             )}
-          </section>
 
-          {/* Eco-friendly Cutlery Option (Zomato-style) */}
-          <section className="mt-4 rounded-[var(--radius-xl)] border border-emerald-500/20 bg-emerald-500/5 p-4">
-            <label className="flex cursor-pointer items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="text-xl">🌱</span>
-                <div>
-                  <span className="block text-sm font-semibold text-emerald-900 dark:text-emerald-300">Don&apos;t send cutlery</span>
-                  <span className="block text-xs text-muted">Help reduce plastic waste. Thank you for caring for nature!</span>
+            {/* WhatsApp Deep-Link Sharing Component */}
+            <WhatsAppShare variant="checkout" orderTotalPaise={totalPayable} className="mt-4" />
+
+            {/* Ordering for someone else? (Zomato-style) */}
+            <section className="mt-4 rounded-[var(--radius-xl)] border border-border bg-surface p-4">
+              <label className="flex cursor-pointer items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xl">🎁</span>
+                  <div>
+                    <span className="block text-sm font-semibold">Ordering for someone else?</span>
+                    <span className="block text-xs text-muted">Delivery partner will call the recipient</span>
+                  </div>
                 </div>
-              </div>
-              <input
-                type="checkbox"
-                className="size-4 rounded border-emerald-500 text-emerald-600 focus:ring-emerald-500"
-                checked={noCutlery}
-                onChange={(e) => setNoCutlery(e.target.checked)}
-              />
-            </label>
-          </section>
+                <input
+                  type="checkbox"
+                  className="size-4 rounded border-border text-primary focus:ring-primary"
+                  checked={forSomeoneElse}
+                  onChange={(e) => setForSomeoneElse(e.target.checked)}
+                />
+              </label>
+              {forSomeoneElse && (
+                <div className="mt-3 grid gap-3 border-t border-border/60 pt-3 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-xs font-medium text-muted">Recipient Name</label>
+                    <Input
+                      className="mt-1 text-sm"
+                      placeholder="e.g. Rahul Sharma"
+                      value={recipientName}
+                      onChange={(e) => setRecipientName(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-muted">Recipient Phone</label>
+                    <Input
+                      className="mt-1 text-sm"
+                      placeholder="e.g. 9876543210"
+                      type="tel"
+                      value={recipientPhone}
+                      onChange={(e) => setRecipientPhone(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+            </section>
 
-          {/* Delivery Instructions (Zomato-style chips) */}
-          <section className="mt-6">
-            <h2 className="text-sm font-medium text-muted">Delivery instructions for rider</h2>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {DELIVERY_INSTRUCTIONS.map((chip) => {
-                const active = notes.includes(chip);
-                return (
-                  <button
-                    key={chip}
-                    type="button"
-                    onClick={() => toggleInstruction(chip)}
-                    className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
-                      active
-                        ? "border-primary bg-primary text-fg"
-                        : "border-border bg-surface text-muted hover:border-primary/50"
-                    }`}
-                  >
-                    {active ? "✓ " : "+ "}{chip}
-                  </button>
-                );
-              })}
-            </div>
-            <Input
-              className="mt-2 text-sm"
-              placeholder="Add more details (e.g. Landmark, directions)..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-          </section>
-
-          {/* Delivery Partner Tip (Zomato-style) */}
-          <section className="mt-6 rounded-[var(--radius-xl)] border border-primary/15 bg-primary/5 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-primary">Tip your delivery partner</h2>
-                <p className="text-xs text-muted">100% of your tip goes directly to the partner</p>
-              </div>
-              <span className="text-xl">🛵</span>
-            </div>
-            <div className="mt-3 grid grid-cols-5 gap-2">
-              {TIP_OPTIONS.map((opt) => {
-                const selected = tipPaise === opt.value;
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setTipPaise(opt.value)}
-                    className={`flex flex-col items-center justify-center rounded-[var(--radius-lg)] border py-2 text-center transition ${
-                      selected
-                        ? "border-primary bg-primary font-bold text-fg shadow-sm"
-                        : "border-border bg-surface text-sm font-medium hover:bg-surface/80"
-                    }`}
-                  >
-                    {opt.emoji && <span className="text-xs">{opt.emoji}</span>}
-                    <span className="text-xs">{opt.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-            {tipPaise > 0 && (
-              <p className="mt-2 text-center text-xs font-medium text-primary">
-                Added {formatPaise(tipPaise, { locale })} tip for your delivery partner! ❤️
-              </p>
-            )}
-          </section>
-
-          {restaurantId && items.length > 0 && (
-            <CheckoutUpsellEngine
-              restaurantId={restaurantId}
-              restaurantName={restaurantName}
-              locale={locale}
-              deliveryFeePaise={quote.data?.quote.deliveryFeePaise}
-              currentSubtotalPaise={quote.data?.quote.foodSubtotalPaise}
-            />
-          )}
-
-          {/* Spare Change 24K Gold Roundup (Jar/Cred style) */}
-          <section className="mt-4 rounded-[var(--radius-xl)] border border-amber-500/20 bg-amber-500/5 p-4">
-            <label className="flex cursor-pointer items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="text-xl">✨</span>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="block text-sm font-semibold text-amber-950 dark:text-amber-200">
-                      Save Spare Change in 24K Gold
+            {/* Eco-friendly Cutlery Option (Zomato-style) */}
+            <section className="mt-4 rounded-[var(--radius-xl)] border border-emerald-500/20 bg-emerald-500/5 p-4">
+              <label className="flex cursor-pointer items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xl">🌱</span>
+                  <div>
+                    <span className="block text-sm font-semibold text-emerald-900 dark:text-emerald-300">
+                      Don&apos;t send cutlery
                     </span>
-                    <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:text-amber-300">
-                      99.9% Purity
+                    <span className="block text-xs text-muted">
+                      Help reduce plastic waste. Thank you for caring for nature!
                     </span>
                   </div>
-                  <span className="block text-xs text-muted mt-0.5">
-                    Round up to nearest ₹10 to save {formatPaise(goldRoundupPaise, { locale })} in 24K digital gold. Instant liquidation to KingPay anytime.
-                  </span>
                 </div>
+                <input
+                  type="checkbox"
+                  className="size-4 rounded border-emerald-500 text-emerald-600 focus:ring-emerald-500"
+                  checked={noCutlery}
+                  onChange={(e) => setNoCutlery(e.target.checked)}
+                />
+              </label>
+            </section>
+
+            {/* Delivery Instructions (Zomato-style chips) */}
+            <section className="mt-6">
+              <h2 className="text-sm font-medium text-muted">Delivery instructions for rider</h2>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {DELIVERY_INSTRUCTIONS.map((chip) => {
+                  const active = notes.includes(chip);
+                  return (
+                    <button
+                      key={chip}
+                      type="button"
+                      onClick={() => toggleInstruction(chip)}
+                      className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                        active
+                          ? "border-primary bg-primary text-fg"
+                          : "border-border bg-surface text-muted hover:border-primary/50"
+                      }`}
+                    >
+                      {active ? "✓ " : "+ "}
+                      {chip}
+                    </button>
+                  );
+                })}
               </div>
-              <input
-                type="checkbox"
-                className="size-4 rounded border-amber-500 text-amber-600 focus:ring-amber-500"
-                checked={roundupGold}
-                onChange={(e) => setRoundupGold(e.target.checked)}
+              <Input
+                className="mt-2 text-sm"
+                placeholder="Add more details (e.g. Landmark, directions)..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               />
-            </label>
-          </section>
+            </section>
 
-          <section className="mt-6">
-            <h2 className="text-sm font-medium text-muted">{t("checkout.pay")}</h2>
+            {/* Delivery Partner Tip (Zomato-style) */}
+            <section className="mt-6 rounded-[var(--radius-xl)] border border-primary/15 bg-primary/5 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-semibold text-primary">Tip your delivery partner</h2>
+                  <p className="text-xs text-muted">100% of your tip goes directly to the partner</p>
+                </div>
+                <span className="text-xl">🛵</span>
+              </div>
+              <div className="mt-3 grid grid-cols-5 gap-2">
+                {TIP_OPTIONS.map((opt) => {
+                  const selected = safeTipPaise === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setTipPaise(opt.value)}
+                      className={`flex flex-col items-center justify-center rounded-[var(--radius-lg)] border py-2 text-center transition ${
+                        selected
+                          ? "border-primary bg-primary font-bold text-fg shadow-sm"
+                          : "border-border bg-surface text-sm font-medium hover:bg-surface/80"
+                      }`}
+                    >
+                      {opt.emoji && <span className="text-xs">{opt.emoji}</span>}
+                      <span className="text-xs">{opt.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {safeTipPaise > 0 && (
+                <p className="mt-2 text-center text-xs font-medium text-primary">
+                  Added {formatPaise(safeTipPaise, { locale })} tip for your delivery partner! ❤️
+                </p>
+              )}
+            </section>
 
-            {/* 1-Tap KingPay (Instant Zero-OTP Wallet) */}
-            <div className={`mt-2 rounded-[var(--radius-lg)] border-2 transition ${method === "KING_PAY" ? "border-primary bg-primary/5 p-3.5" : "border-border bg-surface p-3"}`}>
-              <label className="flex cursor-pointer items-start gap-3">
+            {restaurantId && items.length > 0 && (
+              <CheckoutUpsellEngine
+                restaurantId={restaurantId}
+                restaurantName={restaurantName}
+                locale={locale}
+                deliveryFeePaise={quote.data?.quote.deliveryFeePaise}
+                currentSubtotalPaise={quote.data?.quote.foodSubtotalPaise}
+              />
+            )}
+
+            <section className="mt-6">
+              <h2 className="text-sm font-medium text-muted">{t("checkout.pay")}</h2>
+
+              {/* KingPay Wallet (Database-verified balance) */}
+              <div
+                className={`mt-2 rounded-[var(--radius-lg)] border-2 transition ${
+                  method === "KING_PAY" ? "border-primary bg-primary/5 p-3.5" : "border-border bg-surface p-3"
+                }`}
+              >
+                <label className="flex cursor-pointer items-start gap-3">
+                  <input
+                    type="radio"
+                    name="pay"
+                    className="mt-1 size-4 text-primary focus:ring-primary"
+                    checked={method === "KING_PAY"}
+                    onChange={() => setMethod("KING_PAY")}
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="block font-semibold text-foreground">💳 KingPay Wallet</span>
+                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                          Ledger Verified
+                        </span>
+                      </div>
+                      <span
+                        className={`text-xs font-bold ${
+                          isKingPaySufficient
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-amber-600 dark:text-amber-400"
+                        }`}
+                      >
+                        Balance:{" "}
+                        {checkoutCtx.isPending
+                          ? "Checking..."
+                          : formatPaise(walletBalancePaise, { locale })}
+                      </span>
+                    </div>
+                    <span className="block text-xs text-muted mt-0.5">
+                      Atomic wallet debit with row-level lock verification.
+                    </span>
+                  </div>
+                </label>
+
+                {method === "KING_PAY" && (
+                  <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs">
+                    <span className="text-muted">
+                      Available Wallet:{" "}
+                      <strong className="text-foreground">
+                        {formatPaise(walletBalancePaise, { locale })}
+                      </strong>
+                      {!isKingPaySufficient && totalPayable > 0 && (
+                        <span className="ml-2 text-rose-600 dark:text-rose-400 font-medium">
+                          (Short by {formatPaise(totalPayable - walletBalancePaise, { locale })})
+                        </span>
+                      )}
+                    </span>
+                    <Link to="/king-pay" className="font-semibold text-primary hover:underline">
+                      + Add Money / Recharges
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Verified Online UPI / Cards via Razorpay Gateway */}
+              <div
+                className={`mt-3 overflow-hidden rounded-2xl border transition-all duration-300 ${
+                  method === "RAZORPAY_ONLINE"
+                    ? "border-black dark:border-white shadow-xl bg-gradient-to-br from-zinc-50 to-zinc-100/50 dark:from-zinc-900 dark:to-black"
+                    : "border-border bg-surface hover:border-zinc-300 dark:hover:border-zinc-700"
+                }`}
+              >
+                <label className="flex cursor-pointer items-start gap-4 p-4">
+                  <input
+                    type="radio"
+                    name="pay"
+                    className="mt-1.5 size-4 accent-black dark:accent-white focus:ring-black dark:focus:ring-white"
+                    checked={method === "RAZORPAY_ONLINE"}
+                    onChange={() => setMethod("RAZORPAY_ONLINE")}
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="block font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+                        UPI / Cards Online Checkout
+                      </span>
+                      <span className="flex items-center gap-1 rounded-full bg-zinc-900 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm dark:bg-white dark:text-black">
+                        HMAC-SHA256 Verified
+                      </span>
+                    </div>
+                    <span className="mt-1 block text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
+                      Cryptographic gateway order &amp; signature verification before order placement
+                    </span>
+                  </div>
+                </label>
+
+                {method === "RAZORPAY_ONLINE" && (
+                  <div className="border-t border-black/5 bg-white/50 px-4 pb-4 pt-3 backdrop-blur-sm dark:border-white/5 dark:bg-zinc-900/50">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                      Preferred Payment Instrument ({preferredUpiApp})
+                    </p>
+                    <div className="mt-3 grid grid-cols-4 gap-2.5">
+                      {(["GPay", "PhonePe", "Paytm", "Cards/NetBanking"] as const).map((appLabel) => {
+                        const isSelected = preferredUpiApp === appLabel;
+                        const icon =
+                          appLabel === "GPay"
+                            ? "🟢"
+                            : appLabel === "PhonePe"
+                              ? "🟣"
+                              : appLabel === "Paytm"
+                                ? "🔵"
+                                : "💳";
+                        return (
+                          <button
+                            key={appLabel}
+                            type="button"
+                            onClick={() => {
+                              setMethod("RAZORPAY_ONLINE");
+                              setPreferredUpiApp(appLabel);
+                              toast.info(`${appLabel} selected. Click 'Place Order' below to complete verified payment.`);
+                            }}
+                            className={`group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border p-3 text-center shadow-sm transition-all ${
+                              isSelected
+                                ? "border-black bg-zinc-100 dark:border-white dark:bg-zinc-800"
+                                : "border-zinc-200 bg-white hover:border-black dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-white"
+                            }`}
+                          >
+                            <span className="relative z-10 text-2xl drop-shadow-sm">{icon}</span>
+                            <span className="relative z-10 mt-1.5 text-[10px] font-bold tracking-tight text-zinc-700 dark:text-zinc-300">
+                              {appLabel === "Cards/NetBanking" ? "Cards" : appLabel}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Cash on Delivery (COD) with Statutory Eligibility Limit */}
+              <label
+                className={`mt-2 flex min-h-14 cursor-pointer items-start gap-3 rounded-[var(--radius-lg)] border transition ${
+                  method === "COD" ? "border-primary bg-primary/5 p-3.5" : "border-border bg-surface p-3"
+                } ${!isCodEligible ? "opacity-60" : ""}`}
+              >
                 <input
                   type="radio"
                   name="pay"
                   className="mt-1 size-4 text-primary focus:ring-primary"
-                  checked={method === "KING_PAY"}
-                  onChange={() => setMethod("KING_PAY")}
+                  checked={method === "COD"}
+                  disabled={!isCodEligible}
+                  onChange={() => setMethod("COD")}
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="block font-semibold text-foreground">💳 KingPay (1-Tap Instant Checkout)</span>
-                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-                        Zero OTP Delay
+                    <span className="block font-medium">{t("checkout.cod")}</span>
+                    <span className="text-[11px] font-medium text-muted">
+                      Max {formatPaise(codMaxPaise, { locale })}
+                    </span>
+                  </div>
+                  <span className="block text-xs text-muted mt-0.5">
+                    {isCodEligible
+                      ? `${t("checkout.codHint")} (Cash or verified rider UPI collection upon delivery)`
+                      : `Cash on Delivery is unavailable for orders above ${formatPaise(codMaxPaise, { locale })}.`}
+                  </span>
+                </div>
+              </label>
+            </section>
+
+            <div className="mt-6 rounded-[var(--radius-xl)] bg-surface p-4">
+              {quote.data ? (
+                <>
+                  <QuoteLines lines={quote.data.quote.lines} locale={locale} />
+                  <div className="mt-3 rounded-lg border border-dashed border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50">
+                    <div className="flex justify-between items-center text-[10px] text-zinc-500 font-mono mb-1">
+                      <span>CGST Act Sec 9(5) ECO Compliance</span>
+                      <span>FSSAI Verified Kitchen</span>
+                    </div>
+                    <div className="flex justify-between text-xs text-zinc-600 dark:text-zinc-400">
+                      <span>Restaurant GST (2.5% CGST + 2.5% SGST)</span>
+                      <span>
+                        {quote.data.quote.taxPaise > 0
+                          ? formatPaise(quote.data.quote.taxPaise, { locale })
+                          : "Tax-inclusive menu pricing"}
                       </span>
                     </div>
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                      Balance: ₹750.00
-                    </span>
                   </div>
-                  <span className="block text-xs text-muted mt-0.5">Direct secure deduction. Saves 2% gateway surcharge.</span>
-                </div>
-              </label>
-
-              {method === "KING_PAY" && (
-                <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs">
-                  <span className="text-muted">Available Wallet: <strong className="text-foreground">₹750.00</strong></span>
-                  <Link
-                    to="/king-pay"
-                    className="font-semibold text-primary hover:underline"
-                  >
-                    + Add Money / Recharges
-                  </Link>
-                </div>
-              )}
-            </div>
-            
-            {/* Ultra-Premium 1-Click UPI */}
-            <div className={`mt-3 overflow-hidden rounded-2xl border transition-all duration-300 ${method === "RAZORPAY_ONLINE" ? "border-black dark:border-white shadow-xl bg-gradient-to-br from-zinc-50 to-zinc-100/50 dark:from-zinc-900 dark:to-black" : "border-border bg-surface hover:border-zinc-300 dark:hover:border-zinc-700"}`}>
-              <label className="flex cursor-pointer items-start gap-4 p-4">
-                <input
-                  type="radio"
-                  name="pay"
-                  className="mt-1.5 size-4 accent-black dark:accent-white focus:ring-black dark:focus:ring-white"
-                  checked={method === "RAZORPAY_ONLINE"}
-                  onChange={() => setMethod("RAZORPAY_ONLINE")}
-                />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="block font-bold tracking-tight text-zinc-900 dark:text-zinc-50">UPI 1-Tap Checkout</span>
-                    <span className="flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm dark:bg-white dark:text-black">
-                      <span className="relative flex h-1.5 w-1.5">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                      </span>
-                      Lightning
-                    </span>
-                  </div>
-                  <span className="mt-1 block text-[11px] font-medium text-zinc-500 dark:text-zinc-400">Zero processing fee · 256-bit Bank Grade Security</span>
-                </div>
-              </label>
-
-              {method === "RAZORPAY_ONLINE" && (
-                <div className="border-t border-black/5 bg-white/50 px-4 pb-4 pt-3 backdrop-blur-sm dark:border-white/5 dark:bg-white/50">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Select Partner App</p>
-                  <div className="mt-3 grid grid-cols-4 gap-2.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const upiUrl = `upi://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("Google Pay selected. Click 'Place Order' below to proceed.");
-                      }}
-                      className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 text-center shadow-sm transition-all hover:border-black hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-white"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-green-500/10 opacity-0 transition-opacity group-hover:opacity-100"></div>
-                      <span className="relative z-10 text-2xl drop-shadow-sm">🟢</span>
-                      <span className="relative z-10 mt-1.5 text-[10px] font-bold tracking-tight text-zinc-700 dark:text-zinc-300">GPay</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const upiUrl = `phonepe://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("PhonePe selected. Click 'Place Order' below to proceed.");
-                      }}
-                      className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 text-center shadow-sm transition-all hover:border-black hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-white"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-purple-600/10 opacity-0 transition-opacity group-hover:opacity-100"></div>
-                      <span className="relative z-10 text-2xl drop-shadow-sm">🟣</span>
-                      <span className="relative z-10 mt-1.5 text-[10px] font-bold tracking-tight text-zinc-700 dark:text-zinc-300">PhonePe</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const upiUrl = `paytmmp://pay?pa=orderking@icici&pn=OrderKing&am=${(totalPayable / 100).toFixed(2)}&cu=INR&tn=OrderKing Order`;
-                        if (navigator.userAgent.includes("Mobile")) window.location.href = upiUrl;
-                        else toast.info("Paytm selected. Click 'Place Order' below to proceed.");
-                      }}
-                      className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 text-center shadow-sm transition-all hover:border-black hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-white"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-sky-400/10 to-blue-600/10 opacity-0 transition-opacity group-hover:opacity-100"></div>
-                      <span className="relative z-10 text-2xl drop-shadow-sm">🔵</span>
-                      <span className="relative z-10 mt-1.5 text-[10px] font-bold tracking-tight text-zinc-700 dark:text-zinc-300">Paytm</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => toast.info("Cards / NetBanking selected. Click 'Place Order' below to proceed.")}
-                      className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 text-center shadow-sm transition-all hover:border-black hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-white"
-                    >
-                      <div className="absolute inset-0 bg-zinc-100/50 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-zinc-800/50"></div>
-                      <span className="relative z-10 text-2xl opacity-90 grayscale drop-shadow-sm">💳</span>
-                      <span className="relative z-10 mt-1.5 text-[10px] font-bold tracking-tight text-zinc-700 dark:text-zinc-300">More</span>
-                    </button>
-                  </div>
-                </div>
+                  {safeTipPaise > 0 && (
+                    <div className="mt-2 flex justify-between border-t border-border pt-2 text-sm">
+                      <span className="text-muted">Delivery partner tip</span>
+                      <span className="font-medium text-primary">+{formatPaise(safeTipPaise, { locale })}</span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p>{t("common.loading")}</p>
               )}
             </div>
 
-            {/* Cash on Delivery (COD) */}
-            <label className={`mt-2 flex min-h-14 cursor-pointer items-start gap-3 rounded-[var(--radius-lg)] border transition ${method === "COD" ? "border-primary bg-primary/5 p-3.5" : "border-border bg-surface p-3"}`}>
-              <input
-                type="radio"
-                name="pay"
-                className="mt-1 size-4 text-primary focus:ring-primary"
-                checked={method === "COD"}
-                onChange={() => setMethod("COD")}
-              />
-              <div>
-                <span className="block font-medium">{t("checkout.cod")}</span>
-                <span className="block text-xs text-muted mt-0.5">{t("checkout.codHint")} (Exact change or rider UPI)</span>
-              </div>
-            </label>
+            {/* 'Refer a Friend, Get ₹500' Gamified Viral Loop */}
+            <ReferralGamifiedLoop source="checkout" className="mt-6" />
 
-            
-          </section>
+            {quote.data?.quote.blockers.length ? (
+              <p className="mt-3 text-sm text-warn">
+                {quote.data.quote.blockers.includes("MIN_ORDER")
+                  ? t("cart.minOrder", { amount: formatPaise(quote.data.quote.minOrderPaise, { locale }) })
+                  : t("checkout.blocked")}
+              </p>
+            ) : null}
 
-          <div className="mt-6 rounded-[var(--radius-xl)] bg-surface p-4">
-            {quote.data ? (
-              <>
-                <QuoteLines lines={quote.data.quote.lines} locale={locale} />
-                <div className="mt-3 rounded-lg border border-dashed border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50">
-                  <div className="flex justify-between items-center text-[10px] text-zinc-500 font-mono mb-1">
-                     <span>GSTIN: 29GGGGG1314R9Z6</span>
-                     <span>FSSAI: 11221334000192</span>
-                  </div>
-                  <div className="flex justify-between text-xs text-zinc-600 dark:text-zinc-400">
-                     <span>CGST (2.5%)</span>
-                     <span>Included in price</span>
-                  </div>
-                  <div className="flex justify-between text-xs text-zinc-600 dark:text-zinc-400">
-                     <span>SGST (2.5%)</span>
-                     <span>Included in price</span>
-                  </div>
-                </div>
-                {tipPaise > 0 && (
-                  <div className="mt-2 flex justify-between border-t border-border pt-2 text-sm">
-                    <span className="text-muted">Delivery partner tip</span>
-                    <span className="font-medium text-primary">+{formatPaise(tipPaise, { locale })}</span>
-                  </div>
-                )}
-                {roundupGold && goldRoundupPaise > 0 && (
-                  <div className="mt-2 flex justify-between border-t border-border pt-2 text-sm">
-                    <span className="font-medium text-amber-600 dark:text-amber-400">✨ 24K Digital Gold Savings</span>
-                    <span className="font-medium text-amber-600 dark:text-amber-400">+{formatPaise(goldRoundupPaise, { locale })}</span>
-                  </div>
-                )}
-              </>
-            ) : <p>{t("common.loading")}</p>}
-          </div>
-
-          {/* 'Refer a Friend, Get ₹500' Gamified Viral Loop */}
-          <ReferralGamifiedLoop source="checkout" className="mt-6" />
-
-          {quote.data?.quote.blockers.length ? <p className="mt-3 text-sm text-warn">{quote.data.quote.blockers.includes("MIN_ORDER") ? t("cart.minOrder", { amount: formatPaise(quote.data.quote.minOrderPaise, { locale }) }) : t("checkout.blocked")}</p> : null}
-          <Button 
-            className="mt-6 w-full h-14 text-lg font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-95" 
-            aria-label="Place Order" 
-            disabled={busy || !quote.data || !quote.data.isDeliverable} 
-            onClick={() => void submit()}
-          >
-            {busy ? (
-              <span className="flex items-center gap-2">
-                <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Processing Securely...
-              </span>
-            ) : "Place Order • " + formatPaise(totalPayable, { locale })}
-          </Button>
-        </>}
-        <p className="mt-6 text-sm"><Link to="/cart" className="text-muted">← {t("cart.title")}</Link></p>
+            <Button
+              className="mt-6 w-full h-14 text-lg font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-95"
+              aria-label="Place Order"
+              disabled={
+                busy ||
+                !quote.data ||
+                !quote.data.isDeliverable ||
+                !restaurantOpen ||
+                (method === "KING_PAY" && !isKingPaySufficient) ||
+                (method === "COD" && !isCodEligible)
+              }
+              onClick={() => void submit()}
+            >
+              {busy ? (
+                <span className="flex items-center gap-2">
+                  <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Processing Securely...
+                </span>
+              ) : (
+                "Place Order • " + formatPaise(totalPayable, { locale })
+              )}
+            </Button>
+          </>
+        )}
+        <p className="mt-6 text-sm">
+          <Link to="/cart" className="text-muted">
+            ← {t("cart.title")}
+          </Link>
+        </p>
       </div>
     </CustomerShell>
   );
 }
-
