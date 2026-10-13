@@ -1,16 +1,14 @@
-
-// Re-export createRazorpayOrder server function for client-side RPC invocation.
-// The actual implementation stays in razorpay.server.ts (server-only).
-// TanStack Start createServerFn() is designed to be called from client code,
-// but the import must NOT come from a .server.ts file directly.
-
+// Client-callable RPC bridge. Gateway credentials and price calculation stay server-side.
 import { createServerFn } from "@tanstack/react-start";
+import { authMiddleware } from "@/lib/auth/middleware";
+import type { QuoteRequest } from "@/lib/market-types";
+import { buildQuote } from "./quote";
 
-export type RazorpayOrderRequest = {
+export type RazorpayOrderRequest = QuoteRequest & {
   amountPaise: number;
+  tipPaise?: number;
   currency?: string;
   receipt: string;
-  notes?: Record<string, string>;
 };
 
 export type RazorpayOrderResponse = {
@@ -21,49 +19,51 @@ export type RazorpayOrderResponse = {
   isSandbox: boolean;
 };
 
-/**
- * Creates a Razorpay Order for online UPI/Card payment.
- * This is the client-callable RPC bridge. The handler runs server-side only.
- */
 export const createRazorpayOrder = createServerFn({ method: "POST" })
-  
-.  validator((data: RazorpayOrderRequest) => data)
-  .handler(async ({ data }: { data: RazorpayOrderRequest }): Promise<RazorpayOrderResponse> => {
-    // Dynamic import keeps node:crypto out of client bundle
-    const { getRazorpayConfig } = await import("./razorpay.server");
-
-    const config = getRazorpayConfig();
-
-    if (!config.hasCredentials || !config.keyId || !config.keySecret) {
-      throw new Error("Razorpay credentials missing. Payment creation BLOCKED (Fail-Closed Enforcement).");
+  .middleware([authMiddleware])
+  .validator((data: RazorpayOrderRequest) => data)
+  .handler(async ({ context, data }): Promise<RazorpayOrderResponse> => {
+    if (!context?.userId) throw new Error("Sign in before requesting payment.");
+    if (!data?.restaurantId || !data.zoneId || !Array.isArray(data.lines) || !data.lines.length) {
+      throw new Error("A delivery cart and location are required.");
     }
-
+    const tip = data.tipPaise ?? 0;
+    if (!Number.isSafeInteger(tip) || tip < 0 || tip > 100_000) {
+      throw new Error("Invalid tip amount.");
+    }
+    if (typeof data.receipt !== "string" || !data.receipt.trim() || data.receipt.length > 40) {
+      throw new Error("A valid payment receipt is required.");
+    }
+    if (data.currency && data.currency !== "INR") throw new Error("Only INR is supported.");
+    // Recompute the amount and apply delivery gates before any gateway request.
+    // No first-order entitlement is inferred from browser input.
+    const built = await buildQuote(data, false);
+    if (!built.result.isDeliverable || built.result.quote.blockers.length) {
+      throw new Error("Delivery is unavailable for this cart.");
+    }
+    const amountPaise = built.result.quote.totalPaise + tip;
+    if (!Number.isSafeInteger(amountPaise) || amountPaise <= 0 || data.amountPaise !== amountPaise) {
+      throw new Error("Checkout amount changed. Refresh your cart before paying.");
+    }
+    const { getRazorpayConfig } = await import("./razorpay.server");
+    const config = getRazorpayConfig();
+    if (!config.hasCredentials || !config.keyId || !config.keySecret) {
+      throw new Error("Payment provider is unavailable. No payment was requested.");
+    }
     const authHeader = Buffer.from(`${config.keyId}:${config.keySecret}`).toString("base64");
     const response = await fetch("https://api.razorpay.com/v1/orders", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${authHeader}`,
-      },
-      body: JSON.stringify({
-        amount: data.amountPaise,
-        currency: data.currency || "INR",
-        receipt: data.receipt,
-        notes: data.notes || {},
-      }),
+      headers: { "Content-Type": "application/json", Authorization: `Basic ${authHeader}` },
+      body: JSON.stringify({ amount: amountPaise, currency: "INR", receipt: data.receipt }),
+      signal: AbortSignal.timeout(15_000),
     });
-
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`Razorpay order creation failed (${response.status}): ${err}`);
+    if (!response.ok) throw new Error("Payment provider could not prepare checkout. Please try again later.");
+    const result = await response.json() as { id?: string; amount?: number; currency?: string };
+    if (!result.id || result.amount !== amountPaise || result.currency !== "INR") {
+      throw new Error("Payment provider returned an invalid checkout. No payment was initiated.");
     }
-
-    const resData = (await response.json()) as { id: string; amount: number; currency: string };
     return {
-      orderId: resData.id,
-      amountPaise: resData.amount,
-      currency: resData.currency,
-      keyId: config.keyId,
-      isSandbox: false,
+      orderId: result.id, amountPaise, currency: "INR", keyId: config.keyId,
+      isSandbox: config.keyId.startsWith("rzp_test_"),
     };
   });

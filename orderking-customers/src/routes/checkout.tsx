@@ -204,7 +204,11 @@ function CheckoutPage() {
 
       if (method === "RAZORPAY_ONLINE") {
         const rzpOrder = await createRazorpayOrder({
-          data: { amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey },
+          data: {
+            restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng,
+            lines: items, coupon, tipPaise: safeTipPaise,
+            amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey,
+          },
         });
         if (rzpOrder.amountPaise !== totalPayable) {
           throw new Error("Gateway order amount mismatch detected. Checkout aborted.");

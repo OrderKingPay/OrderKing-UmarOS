@@ -127,7 +127,7 @@ export function MultimodelBenchmarkDashboard() {
 
     setTestOutput({
       modelName: activeModel.name,
-      estimatedCostInr: cost.totalCostInr,
+      estimatedCostInr: cost.costInr,
       previewText: `[${activeModel.name} • Max ${settings.maxTokensPerReply} tokens]\n${sampleReplies[testCategory]}\n\nRule Applied: "${settings.customSystemInstruction}"`,
       testedAt: new Date().toLocaleTimeString(),
     });
@@ -185,7 +185,7 @@ export function MultimodelBenchmarkDashboard() {
             Daily Cap: ₹{settings.dailyBudgetLimitInr}/day
           </p>
           <p className="text-xs text-slate-600 mt-1">
-            100 customer replies cost ~₹{daily100RepliesCost.totalCostInr.toFixed(2)} on {activeModel.name}.
+            100 customer replies cost ~₹{daily100RepliesCost.costInr.toFixed(2)} on {activeModel.name}.
           </p>
         </div>
 

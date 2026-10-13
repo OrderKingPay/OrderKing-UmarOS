@@ -7,6 +7,7 @@ import { computeQuote, type FeeSchedule, type PricedCartLine, type PromoInput } 
 import type { QuoteRequest, QuoteResult } from "@/lib/market-types";
 import type { DataLabel } from "@/lib/config/types";
 import { loadConfig } from "./load-config";
+import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
 type Built = {
   restaurantId: string;
@@ -23,6 +24,16 @@ type Built = {
 };
 
 export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Promise<Built & { result: QuoteResult }> {
+  if (!input || !Number.isFinite(input.lat) || !Number.isFinite(input.lng) ||
+      Math.abs(input.lat) > 90 || Math.abs(input.lng) > 180) {
+    throw new Error("Valid delivery coordinates are required.");
+  }
+  // Apply the same closed rollout gate to direct server requests, not just the UI.
+  // There are currently no enabled zones. Enabling delivery still requires live
+  // merchant/rider serviceability and launch checks; static coordinates are not proof.
+  if (!isDeliveryActiveInLocation(input.lat, input.lng)) {
+    throw new Error("Verified delivery is unavailable in this location. No payment was requested.");
+  }
   const cfg = await loadConfig();
   const sql = await getSql();
   if (input.lines.length === 0) {

@@ -27,9 +27,7 @@ const LazyLocationDialog = lazy(() =>
 const LazyLanguageSelectorModal = lazy(() =>
   import("@/components/common/language-selector-modal").then((m) => ({ default: m.LanguageSelectorModal }))
 );
-const LazyCustomerConciergeDrawer = lazy(() =>
-  import("@/components/ai/customer-concierge-drawer").then((m) => ({ default: m.CustomerConciergeDrawer }))
-);
+import { CustomerConciergeDrawer } from "@/components/ai/customer-concierge-drawer";
 import { useBrand, useT } from "@/components/providers";
 import { cartCount, useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
@@ -63,8 +61,10 @@ export function CustomerShell({
   const [locOpen, setLocOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  const [interactive, setInteractive] = useState(false);
 
   useEffect(() => {
+    setInteractive(true);
     // Strictly enforce light mode in DOM
     if (typeof document !== "undefined") {
       document.documentElement.classList.remove("dark");
@@ -150,8 +150,15 @@ export function CustomerShell({
         </div>
 
         {path === "/" && (
-          <button type="button" onClick={() => setConciergeOpen(true)}
+          <a href="/support" onClick={(event) => {
+            // Preserve normal link behavior until the app is interactive, and for new tabs.
+            if (!interactive || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            setConciergeOpen(true);
+          }}
             aria-label="Open OrderKing AI Concierge"
+            aria-haspopup={interactive ? "dialog" : undefined}
+            aria-expanded={interactive ? conciergeOpen : undefined}
             className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-amber-200 bg-gradient-to-r from-emerald-950 via-emerald-900 to-slate-950 px-3 py-2.5 text-left text-white shadow-sm transition hover:border-amber-400 hover:shadow-md">
             <OrderKingMark className="size-10" />
             <span className="min-w-0 flex-1">
@@ -159,7 +166,7 @@ export function CustomerShell({
               <span className="block truncate text-[11px] text-emerald-100">Tap for AI concierge &amp; delivery support</span>
             </span>
             <Sparkles className="size-5 text-amber-300" aria-hidden />
-          </button>
+          </a>
         )}
 
         {/* Food search is shown only in Delivery; each other service has its own search. */}
@@ -245,9 +252,7 @@ export function CustomerShell({
       </nav>
 
       {conciergeOpen && (
-        <Suspense fallback={null}>
-          <LazyCustomerConciergeDrawer open={conciergeOpen} onClose={() => setConciergeOpen(false)} area="food" />
-        </Suspense>
+        <CustomerConciergeDrawer open={conciergeOpen} onClose={() => setConciergeOpen(false)} area="food" />
       )}
       {locOpen ? (
         <Suspense fallback={null}>

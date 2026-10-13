@@ -1,4 +1,4 @@
-import { test, describe } from "vitest";
+import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import {
   calculateMultiUnitRoi,
@@ -152,14 +152,18 @@ describe("B2B SaaS Sales Deck Engine & 15-Stage CRM Revenue System", () => {
     // Add a real verified lead with contact permission
     const added = engine.addLead({
       businessName: "Royal Spice Kitchen",
-      category: "RESTAURANT",
-      contactName: "Ankit Verma",
+      category: "restaurant",
+      contactPerson: "Ankit Verma",
       phone: "+91 9876543210",
       email: "ankit@royalspice.in",
-      city: "Silchar",
-      state: "Assam",
+      location: "Silchar, Assam",
+      monthlyRevenueEst: "₹2,00,000",
       painPoint: "High aggregator commissions",
-      estimatedDealValueInr: 45000,
+      dealValueInr: 45000,
+      advanceLockedInr: 0,
+      currentStage: "LEAD",
+      notes: [],
+      nextFollowUpDate: "2026-10-15",
       source: "INBOUND",
       contactPermissionConfirmed: true,
       selectedServiceId: SELLABLE_ORDERKING_SERVICES[0].id,

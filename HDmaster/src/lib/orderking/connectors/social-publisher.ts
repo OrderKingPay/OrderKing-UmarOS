@@ -35,6 +35,7 @@ export interface ChannelConstraints {
   allowedAspectRatios: ("9:16" | "16:9" | "1:1")[];
   maxHourlyRate: number;
   requiresVideo: boolean;
+  maxHashtags?: number;
 }
 
 export const CHANNEL_CONSTRAINTS: Record<SocialChannel, ChannelConstraints> = {
@@ -43,30 +44,35 @@ export const CHANNEL_CONSTRAINTS: Record<SocialChannel, ChannelConstraints> = {
     allowedAspectRatios: ["9:16"],
     maxHourlyRate: 5,
     requiresVideo: true,
+    maxHashtags: 30,
   },
   youtube_shorts: {
     maxCaptionLength: 100, // Short title length
     allowedAspectRatios: ["9:16"],
     maxHourlyRate: 8,
     requiresVideo: true,
+    maxHashtags: 5,
   },
   facebook_page: {
     maxCaptionLength: 5000,
     allowedAspectRatios: ["9:16", "16:9", "1:1"],
     maxHourlyRate: 10,
     requiresVideo: false,
+    maxHashtags: 30,
   },
   x_twitter: {
     maxCaptionLength: 280,
     allowedAspectRatios: ["16:9", "1:1"],
     maxHourlyRate: 20,
     requiresVideo: false,
+    maxHashtags: 5,
   },
   whatsapp_broadcast: {
     maxCaptionLength: 1024,
     allowedAspectRatios: ["1:1", "16:9"],
     maxHourlyRate: 15,
     requiresVideo: false,
+    maxHashtags: 3,
   },
 };
 
