@@ -33,8 +33,8 @@ export const Route = createFileRoute("/r/$slug")({
       : "Restaurant";
     const title = `${cleanName} - Food Delivery Near Me | Order Online | OrderKing`;
     const desc = `Order food online from ${cleanName}. Fast 30-min food delivery, live tracking, and fair pricing on OrderKing.`;
-    const pageUrl = `https://orderkingpay.com/r/${slug}`;
-    const ogImg = `https://orderkingpay.com/icon-512.png`;
+    const pageUrl = `https://orderking.in/r/${slug}`;
+    const ogImg = `https://orderking.in/icon-512.png`;
     return {
       meta: [
         { title },

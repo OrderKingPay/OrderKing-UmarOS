@@ -229,3 +229,51 @@ self.addEventListener("sync", (event) => {
     })()
   );
 });
+
+// Native Web Push notifications (W3C RFC 8291/8292 VAPID)
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+  try {
+    const payload = event.data.json();
+    const title = payload.title || "OrderKing Notification";
+    const options = {
+      body: payload.body || "",
+      icon: payload.icon || "/icon-192.png",
+      badge: payload.badge || "/icon-192.png",
+      vibrate: [100, 50, 100],
+      data: payload.data || { url: "/" },
+      tag: payload.tag || "orderking-alert",
+      renotify: true,
+    };
+    event.waitUntil(self.registration.showNotification(title, options));
+  } catch {
+    const text = event.data.text();
+    event.waitUntil(
+      self.registration.showNotification("OrderKing", {
+        body: text,
+        icon: "/icon-192.png",
+        data: { url: "/" },
+      })
+    );
+  }
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || "/";
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes(self.location.origin) && "focus" in client) {
+          if ("navigate" in client) {
+            client.navigate(targetUrl);
+          }
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});

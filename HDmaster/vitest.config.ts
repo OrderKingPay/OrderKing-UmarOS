@@ -17,6 +17,7 @@ export default defineConfig({
       "src/lib/orderking/multimodal-media/vector-engine.test.ts",
       "src/lib/orderking/multimodal-audio/soundbox-dsp.test.ts",
       "src/lib/orderking/ai/providers/providers.test.ts",
+      "src/lib/orderking/campaigns/campaign-budget-ledger.test.ts",
     ],
     environment: "node",
   },

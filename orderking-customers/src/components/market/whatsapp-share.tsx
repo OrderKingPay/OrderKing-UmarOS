@@ -24,7 +24,7 @@ export function WhatsAppShare({
   const [copied, setCopied] = useState(false);
 
   const getShareData = () => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://orderking.app";
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://orderking.in";
     
     if (variant === "restaurant") {
       const restName = restaurantName || "OrderKing Partner Kitchen";

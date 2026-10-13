@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { createServerFn } from "@tanstack/react-start";
 import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState, Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
@@ -128,6 +128,33 @@ function Root() {
   const context = Route.useRouteContext();
   const config = context.config ?? DEFAULT_CONFIG;
   const location = useRouterState({ select: (s) => s.location });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const utmSource = params.get("utm_source");
+      const utmMedium = params.get("utm_medium");
+      const utmCampaign = params.get("utm_campaign");
+      const tableNo = params.get("table");
+      const mode = params.get("mode");
+      const ref = params.get("ref");
+
+      if (utmSource || utmMedium || utmCampaign || tableNo || mode || ref) {
+        const attribution = {
+          utm_source: utmSource,
+          utm_medium: utmMedium,
+          utm_campaign: utmCampaign,
+          table_no: tableNo,
+          order_mode: mode || "delivery",
+          referral_code: ref,
+          captured_at: new Date().toISOString(),
+        };
+        sessionStorage.setItem("orderking_attribution", JSON.stringify(attribution));
+      }
+    } catch {}
+  }, [location.search]);
+
   return (
     <html lang="en" className="antialiased bg-white text-gray-900" suppressHydrationWarning>
       <head>

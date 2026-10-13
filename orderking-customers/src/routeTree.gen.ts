@@ -28,11 +28,15 @@ import { Route as TravelRouteImport } from './routes/travel'
 import { Route as TutorRouteImport } from './routes/tutor'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as ApiCrmRouteImport } from './routes/api/crm'
+import { Route as ApiOgRouteImport } from './routes/api/og'
+import { Route as ApiQrRouteImport } from './routes/api/qr'
 import { Route as ApiRestaurantRouteImport } from './routes/api/restaurant'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
+import { Route as ApiSitemapRouteImport } from './routes/api/sitemap'
 import { Route as ApiVcardRouteImport } from './routes/api/vcard'
 import { Route as ApiWhatsappRouteImport } from './routes/api/whatsapp'
 import { Route as AppFounderCommandRouteImport } from './routes/app/founder-command'
+import { Route as DeliveryIndexRouteImport } from './routes/delivery/index'
 import { Route as DevBrandRouteImport } from './routes/dev/brand'
 import { Route as KingPayAssistRouteImport } from './routes/king-pay/assist'
 import { Route as LegalPrivacyRouteImport } from './routes/legal/privacy'
@@ -47,8 +51,10 @@ import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/setting
 import { Route as ApiAdminTestConnectionRouteImport } from './routes/api/admin/test-connection'
 import { Route as ApiAiChatRouteImport } from './routes/api/ai/chat'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiPushSubscribeRouteImport } from './routes/api/push/subscribe'
 import { Route as ApiRazorpayCreateOrderRouteImport } from './routes/api/razorpay/create-order'
 import { Route as ApiRazorpayVerifyRouteImport } from './routes/api/razorpay/verify'
+import { Route as DeliveryTownAreaRouteImport } from './routes/delivery/$town.$area'
 import { Route as ApiOrdersOrderIdStreamRouteImport } from './routes/api/orders/$orderId/stream'
 
 const IndexRoute = IndexRouteImport.update({
@@ -146,6 +152,16 @@ const ApiCrmRoute = ApiCrmRouteImport.update({
   path: '/api/crm',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiOgRoute = ApiOgRouteImport.update({
+  id: '/api/og',
+  path: '/api/og',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiQrRoute = ApiQrRouteImport.update({
+  id: '/api/qr',
+  path: '/api/qr',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRestaurantRoute = ApiRestaurantRouteImport.update({
   id: '/api/restaurant',
   path: '/api/restaurant',
@@ -154,6 +170,11 @@ const ApiRestaurantRoute = ApiRestaurantRouteImport.update({
 const ApiSearchRoute = ApiSearchRouteImport.update({
   id: '/api/search',
   path: '/api/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSitemapRoute = ApiSitemapRouteImport.update({
+  id: '/api/sitemap',
+  path: '/api/sitemap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiVcardRoute = ApiVcardRouteImport.update({
@@ -169,6 +190,11 @@ const ApiWhatsappRoute = ApiWhatsappRouteImport.update({
 const AppFounderCommandRoute = AppFounderCommandRouteImport.update({
   id: '/app/founder-command',
   path: '/app/founder-command',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeliveryIndexRoute = DeliveryIndexRouteImport.update({
+  id: '/delivery/',
+  path: '/delivery/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DevBrandRoute = DevBrandRouteImport.update({
@@ -241,6 +267,11 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPushSubscribeRoute = ApiPushSubscribeRouteImport.update({
+  id: '/api/push/subscribe',
+  path: '/api/push/subscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRazorpayCreateOrderRoute = ApiRazorpayCreateOrderRouteImport.update({
   id: '/api/razorpay/create-order',
   path: '/api/razorpay/create-order',
@@ -249,6 +280,11 @@ const ApiRazorpayCreateOrderRoute = ApiRazorpayCreateOrderRouteImport.update({
 const ApiRazorpayVerifyRoute = ApiRazorpayVerifyRouteImport.update({
   id: '/api/razorpay/verify',
   path: '/api/razorpay/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeliveryTownAreaRoute = DeliveryTownAreaRouteImport.update({
+  id: '/delivery/$town/$area',
+  path: '/delivery/$town/$area',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiOrdersOrderIdStreamRoute = ApiOrdersOrderIdStreamRouteImport.update({
@@ -276,8 +312,11 @@ export interface FileRoutesByFullPath {
   '/travel': typeof TravelRouteWithChildren
   '/tutor': typeof TutorRoute
   '/api/crm': typeof ApiCrmRoute
+  '/api/og': typeof ApiOgRoute
+  '/api/qr': typeof ApiQrRoute
   '/api/restaurant': typeof ApiRestaurantRoute
   '/api/search': typeof ApiSearchRoute
+  '/api/sitemap': typeof ApiSitemapRoute
   '/api/vcard': typeof ApiVcardRoute
   '/api/whatsapp': typeof ApiWhatsappRoute
   '/app/founder-command': typeof AppFounderCommandRoute
@@ -291,13 +330,16 @@ export interface FileRoutesByFullPath {
   '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
   '/travel/trips': typeof TravelTripsRoute
   '/account/': typeof AccountIndexRoute
+  '/delivery/': typeof DeliveryIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
 export interface FileRoutesByTo {
@@ -319,8 +361,11 @@ export interface FileRoutesByTo {
   '/travel': typeof TravelRouteWithChildren
   '/tutor': typeof TutorRoute
   '/api/crm': typeof ApiCrmRoute
+  '/api/og': typeof ApiOgRoute
+  '/api/qr': typeof ApiQrRoute
   '/api/restaurant': typeof ApiRestaurantRoute
   '/api/search': typeof ApiSearchRoute
+  '/api/sitemap': typeof ApiSitemapRoute
   '/api/vcard': typeof ApiVcardRoute
   '/api/whatsapp': typeof ApiWhatsappRoute
   '/app/founder-command': typeof AppFounderCommandRoute
@@ -334,13 +379,16 @@ export interface FileRoutesByTo {
   '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
   '/travel/trips': typeof TravelTripsRoute
   '/account': typeof AccountIndexRoute
+  '/delivery': typeof DeliveryIndexRoute
   '/orders': typeof OrdersIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
 export interface FileRoutesById {
@@ -363,8 +411,11 @@ export interface FileRoutesById {
   '/travel': typeof TravelRouteWithChildren
   '/tutor': typeof TutorRoute
   '/api/crm': typeof ApiCrmRoute
+  '/api/og': typeof ApiOgRoute
+  '/api/qr': typeof ApiQrRoute
   '/api/restaurant': typeof ApiRestaurantRoute
   '/api/search': typeof ApiSearchRoute
+  '/api/sitemap': typeof ApiSitemapRoute
   '/api/vcard': typeof ApiVcardRoute
   '/api/whatsapp': typeof ApiWhatsappRoute
   '/app/founder-command': typeof AppFounderCommandRoute
@@ -378,13 +429,16 @@ export interface FileRoutesById {
   '/tracking/$dispatchJobId': typeof TrackingDispatchJobIdRoute
   '/travel/trips': typeof TravelTripsRoute
   '/account/': typeof AccountIndexRoute
+  '/delivery/': typeof DeliveryIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/admin/test-connection': typeof ApiAdminTestConnectionRoute
   '/api/ai/chat': typeof ApiAiChatRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/push/subscribe': typeof ApiPushSubscribeRoute
   '/api/razorpay/create-order': typeof ApiRazorpayCreateOrderRoute
   '/api/razorpay/verify': typeof ApiRazorpayVerifyRoute
+  '/delivery/$town/$area': typeof DeliveryTownAreaRoute
   '/api/orders/$orderId/stream': typeof ApiOrdersOrderIdStreamRoute
 }
 export interface FileRouteTypes {
@@ -408,8 +462,11 @@ export interface FileRouteTypes {
     | '/travel'
     | '/tutor'
     | '/api/crm'
+    | '/api/og'
+    | '/api/qr'
     | '/api/restaurant'
     | '/api/search'
+    | '/api/sitemap'
     | '/api/vcard'
     | '/api/whatsapp'
     | '/app/founder-command'
@@ -423,13 +480,16 @@ export interface FileRouteTypes {
     | '/tracking/$dispatchJobId'
     | '/travel/trips'
     | '/account/'
+    | '/delivery/'
     | '/orders/'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
     | '/api/auth/$'
+    | '/api/push/subscribe'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -451,8 +511,11 @@ export interface FileRouteTypes {
     | '/travel'
     | '/tutor'
     | '/api/crm'
+    | '/api/og'
+    | '/api/qr'
     | '/api/restaurant'
     | '/api/search'
+    | '/api/sitemap'
     | '/api/vcard'
     | '/api/whatsapp'
     | '/app/founder-command'
@@ -466,13 +529,16 @@ export interface FileRouteTypes {
     | '/tracking/$dispatchJobId'
     | '/travel/trips'
     | '/account'
+    | '/delivery'
     | '/orders'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
     | '/api/auth/$'
+    | '/api/push/subscribe'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
   id:
     | '__root__'
@@ -494,8 +560,11 @@ export interface FileRouteTypes {
     | '/travel'
     | '/tutor'
     | '/api/crm'
+    | '/api/og'
+    | '/api/qr'
     | '/api/restaurant'
     | '/api/search'
+    | '/api/sitemap'
     | '/api/vcard'
     | '/api/whatsapp'
     | '/app/founder-command'
@@ -509,13 +578,16 @@ export interface FileRouteTypes {
     | '/tracking/$dispatchJobId'
     | '/travel/trips'
     | '/account/'
+    | '/delivery/'
     | '/orders/'
     | '/api/admin/settings'
     | '/api/admin/test-connection'
     | '/api/ai/chat'
     | '/api/auth/$'
+    | '/api/push/subscribe'
     | '/api/razorpay/create-order'
     | '/api/razorpay/verify'
+    | '/delivery/$town/$area'
     | '/api/orders/$orderId/stream'
   fileRoutesById: FileRoutesById
 }
@@ -538,8 +610,11 @@ export interface RootRouteChildren {
   TravelRoute: typeof TravelRouteWithChildren
   TutorRoute: typeof TutorRoute
   ApiCrmRoute: typeof ApiCrmRoute
+  ApiOgRoute: typeof ApiOgRoute
+  ApiQrRoute: typeof ApiQrRoute
   ApiRestaurantRoute: typeof ApiRestaurantRoute
   ApiSearchRoute: typeof ApiSearchRoute
+  ApiSitemapRoute: typeof ApiSitemapRoute
   ApiVcardRoute: typeof ApiVcardRoute
   ApiWhatsappRoute: typeof ApiWhatsappRoute
   AppFounderCommandRoute: typeof AppFounderCommandRoute
@@ -551,13 +626,16 @@ export interface RootRouteChildren {
   RSlugRoute: typeof RSlugRoute
   TrackingDispatchJobIdRoute: typeof TrackingDispatchJobIdRoute
   AccountIndexRoute: typeof AccountIndexRoute
+  DeliveryIndexRoute: typeof DeliveryIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiAdminTestConnectionRoute: typeof ApiAdminTestConnectionRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiPushSubscribeRoute: typeof ApiPushSubscribeRoute
   ApiRazorpayCreateOrderRoute: typeof ApiRazorpayCreateOrderRoute
   ApiRazorpayVerifyRoute: typeof ApiRazorpayVerifyRoute
+  DeliveryTownAreaRoute: typeof DeliveryTownAreaRoute
   ApiOrdersOrderIdStreamRoute: typeof ApiOrdersOrderIdStreamRoute
 }
 
@@ -696,6 +774,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCrmRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/og': {
+      id: '/api/og'
+      path: '/api/og'
+      fullPath: '/api/og'
+      preLoaderRoute: typeof ApiOgRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/qr': {
+      id: '/api/qr'
+      path: '/api/qr'
+      fullPath: '/api/qr'
+      preLoaderRoute: typeof ApiQrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/restaurant': {
       id: '/api/restaurant'
       path: '/api/restaurant'
@@ -708,6 +800,13 @@ declare module '@tanstack/react-router' {
       path: '/api/search'
       fullPath: '/api/search'
       preLoaderRoute: typeof ApiSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sitemap': {
+      id: '/api/sitemap'
+      path: '/api/sitemap'
+      fullPath: '/api/sitemap'
+      preLoaderRoute: typeof ApiSitemapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/vcard': {
@@ -729,6 +828,13 @@ declare module '@tanstack/react-router' {
       path: '/app/founder-command'
       fullPath: '/app/founder-command'
       preLoaderRoute: typeof AppFounderCommandRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/delivery/': {
+      id: '/delivery/'
+      path: '/delivery'
+      fullPath: '/delivery/'
+      preLoaderRoute: typeof DeliveryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dev/brand': {
@@ -829,6 +935,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/push/subscribe': {
+      id: '/api/push/subscribe'
+      path: '/api/push/subscribe'
+      fullPath: '/api/push/subscribe'
+      preLoaderRoute: typeof ApiPushSubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/razorpay/create-order': {
       id: '/api/razorpay/create-order'
       path: '/api/razorpay/create-order'
@@ -841,6 +954,13 @@ declare module '@tanstack/react-router' {
       path: '/api/razorpay/verify'
       fullPath: '/api/razorpay/verify'
       preLoaderRoute: typeof ApiRazorpayVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/delivery/$town/$area': {
+      id: '/delivery/$town/$area'
+      path: '/delivery/$town/$area'
+      fullPath: '/delivery/$town/$area'
+      preLoaderRoute: typeof DeliveryTownAreaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/orders/$orderId/stream': {
@@ -894,8 +1014,11 @@ const rootRouteChildren: RootRouteChildren = {
   TravelRoute: TravelRouteWithChildren,
   TutorRoute: TutorRoute,
   ApiCrmRoute: ApiCrmRoute,
+  ApiOgRoute: ApiOgRoute,
+  ApiQrRoute: ApiQrRoute,
   ApiRestaurantRoute: ApiRestaurantRoute,
   ApiSearchRoute: ApiSearchRoute,
+  ApiSitemapRoute: ApiSitemapRoute,
   ApiVcardRoute: ApiVcardRoute,
   ApiWhatsappRoute: ApiWhatsappRoute,
   AppFounderCommandRoute: AppFounderCommandRoute,
@@ -907,13 +1030,16 @@ const rootRouteChildren: RootRouteChildren = {
   RSlugRoute: RSlugRoute,
   TrackingDispatchJobIdRoute: TrackingDispatchJobIdRoute,
   AccountIndexRoute: AccountIndexRoute,
+  DeliveryIndexRoute: DeliveryIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiAdminTestConnectionRoute: ApiAdminTestConnectionRoute,
   ApiAiChatRoute: ApiAiChatRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiPushSubscribeRoute: ApiPushSubscribeRoute,
   ApiRazorpayCreateOrderRoute: ApiRazorpayCreateOrderRoute,
   ApiRazorpayVerifyRoute: ApiRazorpayVerifyRoute,
+  DeliveryTownAreaRoute: DeliveryTownAreaRoute,
   ApiOrdersOrderIdStreamRoute: ApiOrdersOrderIdStreamRoute,
 }
 export const routeTree = rootRouteImport
