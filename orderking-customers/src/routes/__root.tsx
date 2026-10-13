@@ -11,7 +11,6 @@ import { OfflineDetector } from "@/components/offline-detector";
 import { PwaInstallPrompt } from "@/components/pwa/install-prompt";
 import appCss from "../styles.css?url";
 import { NextGenSeo } from "@/components/seo/NextGenSeo";
-import { Home, Utensils, Wallet, GraduationCap, User } from "lucide-react";
 
 const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
   try {
@@ -162,29 +161,6 @@ function Root() {
         </AuthProvider>
         <Scripts />
         <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(()=>{}))}` }} />
-
-        <div className="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-2 z-50">
-           <Link to="/" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to Delivery">
-             <Home className="w-6 h-6" aria-hidden="true" />
-             <span className="text-[10px] mt-1 font-medium">Delivery</span>
-           </Link>
-           <Link to="/dining" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to Dining">
-             <Utensils className="w-6 h-6" aria-hidden="true" />
-             <span className="text-[10px] mt-1 font-medium">Dining</span>
-           </Link>
-           <Link to="/kingpay-wallet" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to KingPay">
-             <Wallet className="w-6 h-6" aria-hidden="true" />
-             <span className="text-[10px] mt-1 font-medium">KingPay</span>
-           </Link>
-           <Link to="/tutor" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to AI Tutor">
-             <GraduationCap className="w-6 h-6" aria-hidden="true" />
-             <span className="text-[10px] mt-1 font-medium">AI Tutor</span>
-           </Link>
-           <Link to="/account" className="flex flex-col items-center text-gray-600 hover:text-[#E23744] [&.active]:text-[#E23744]" aria-label="Navigate to Profile">
-             <User className="w-6 h-6" aria-hidden="true" />
-             <span className="text-[10px] mt-1 font-medium">Profile</span>
-           </Link>
-        </div>
       </body>
     </html>
   );

@@ -135,13 +135,13 @@ export function KingPayShell({
         <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent pointer-events-none" />
 
         <ul className="mx-auto grid max-w-lg grid-cols-5 items-end justify-items-center relative px-2 pt-2">
-          {/* 1. Tutor & Jobs */}
+          {/* 1. Delivery */}
+          <NavItem to="/" icon={House} label="Delivery" active={false} />
+
+          {/* 2. Tutor & Jobs */}
           <NavItem to="/tutor" icon={GraduationCap} label="Tutor & Jobs" active={false} />
 
-          {/* 2. Travel & Bookings (Second Middle) */}
-          <NavItem to="/travel" icon={Plane} label="Travel" active={activeSection === "travel"} />
-
-          {/* 3. CENTER ELEVATED JEWEL: ← Back to Order King Food */}
+          {/* 3. Center: OrderKing returns to food delivery */}
           <li className="w-full flex justify-center">
             <Link
               to="/"
@@ -157,15 +157,14 @@ export function KingPayShell({
               </div>
               <div className="flex flex-col items-center mt-1">
                 <span className="text-[10px] sm:text-[11px] font-black tracking-tight text-amber-400 group-hover:text-amber-200 flex items-center gap-0.5">
-                  <span>←</span>
-                  <span>Food</span>
+                  OrderKing
                 </span>
               </div>
             </Link>
           </li>
 
-          {/* 4. Delivery / Food (Placed to right side) */}
-          <NavItem to="/" icon={House} label="Delivery" active={false} />
+          {/* 4. Travel */}
+          <NavItem to="/travel" icon={Plane} label="Travel" active={activeSection === "travel"} />
 
           {/* 5. Orders (Right side ending) */}
           <NavItem to="/orders" icon={ClipboardList} label="Orders" active={false} />

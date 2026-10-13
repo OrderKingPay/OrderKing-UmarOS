@@ -190,22 +190,22 @@ export function CustomerShell({
         <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent pointer-events-none" />
 
         <ul className="mx-auto grid max-w-lg grid-cols-5 items-end justify-items-center relative px-2 pt-2">
-          {/* 1. Tutor & Jobs */}
+          {/* 1. Delivery — food ordering is the primary destination */}
+          <NavItem to="/" icon={House} label="Delivery" active={path === "/"} />
+
+          {/* 2. Tutor & Jobs */}
           <NavItem to="/tutor" icon={GraduationCap} label="Tutor & Jobs" active={path.startsWith("/tutor")} />
 
-          {/* 2. Travel & Bookings (Second Middle) */}
-          <NavItem to="/travel" icon={Plane} label="Travel" active={path.startsWith("/travel")} />
-
-          {/* 3. Centerpiece Jewel (King Pay or Return to Food) */}
+          {/* 3. King Pay / OrderKing */}
           <KingPayCenterItem
             active={path.startsWith("/king-pay")}
             isKingPayPage={path.startsWith("/king-pay") || path.startsWith("/travel") || path.startsWith("/tutor")}
           />
 
-          {/* 4. Delivery (Placed to right side) */}
-          <NavItem to="/" icon={House} label="Delivery" active={path === "/"} />
+          {/* 4. Travel */}
+          <NavItem to="/travel" icon={Plane} label="Travel" active={path.startsWith("/travel")} />
 
-          {/* 5. Orders (Right side ending) */}
+          {/* 5. Orders */}
           <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
         </ul>
       </nav>
@@ -249,8 +249,7 @@ function KingPayCenterItem({ active, isKingPayPage }: { active: boolean; isKingP
           </div>
           <div className="flex flex-col items-center mt-1">
             <span className="text-[10px] sm:text-[11px] font-black tracking-tight text-amber-900 flex items-center gap-0.5 group-hover:text-amber-700">
-              <span>←</span>
-              <span>Food</span>
+              OrderKing
             </span>
           </div>
         </Link>

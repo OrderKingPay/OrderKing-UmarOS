@@ -358,9 +358,9 @@ export function HomeFeed({
           <div className="flex items-center justify-between mb-3">
             <div>
               <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight">
-                Inspiration for your first order
+                Explore dishes and cuisines
               </h2>
-              <p className="text-xs text-gray-500 font-medium">Explore popular dishes and cuisines</p>
+              <p className="text-xs text-gray-500 font-medium">Choose a category to find food you like</p>
             </div>
             <Link
               to="/search"
@@ -410,13 +410,6 @@ export function HomeFeed({
         </section>
       )}
 
-      {/* 2.5. ELEGANT GIFT TREAT TO FRIENDS (Compact WhatsApp Share) */}
-      {!q && (
-        <section aria-label="Gift Treat to Friends" className="pt-1">
-          <WhatsAppViralBountiesWidget source="home_feed" />
-        </section>
-      )}
-
       {/* 3. ACTIVE ORDER BANNER (Real Data Only) */}
       {activeOrder && !q && (
         <section aria-label="Active Order">
@@ -445,70 +438,21 @@ export function HomeFeed({
         </section>
       )}
 
-      {/* 4. REORDER CAROUSEL (Real Past Orders Only) */}
-      {pastOrders.data?.orders && pastOrders.data.orders.length > 0 && !q && (
-        <section aria-label="Order Again">
-          <div className="flex items-center justify-between mb-2.5">
-            <div>
-              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight">Order Again</h2>
-              <p className="text-xs text-gray-500 font-medium">From your past favorite kitchens</p>
-            </div>
-            <Link to="/orders" className="text-xs font-bold text-[#E23744] hover:underline">
-              View all orders
-            </Link>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
-            {pastOrders.data.orders.slice(0, 4).map((o) => (
-              <div
-                key={o.id}
-                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-gray-200 bg-white p-3.5 shadow-sm transition hover:shadow-md"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="line-clamp-1 text-sm font-bold text-gray-900">{o.restaurantName}</h3>
-                    <span className="text-xs font-bold text-gray-700">
-                      {formatPaise(o.totalPaise, { locale })}
-                    </span>
-                  </div>
-                  <p className="mt-1 line-clamp-1 text-xs text-gray-500">{o.itemPreview || "Past culinary order"}</p>
-                </div>
-                <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5">
-                  <span className="text-[10px] text-gray-400 font-medium">
-                    {new Date(o.placedAt).toLocaleDateString(locale, {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => void handleReorder(o.id)}
-                    className="inline-flex items-center gap-1 rounded-full bg-gray-100 hover:bg-[#E23744] hover:text-white px-3 py-1 text-xs font-bold text-gray-800 transition"
-                  >
-                    <RotateCcw className="size-3" />
-                    <span>Reorder</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* 5. RESTAURANTS GRID: MASSIVE EDGE-TO-EDGE CARDS */}
       <section aria-label="Restaurants Grid" className="pt-2">
         <div className="flex items-center justify-between mb-3.5">
           <div>
             <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">
               {selectedCategory
-                ? "Category Selections"
+                ? "Explore this category"
                 : dietFilter === "veg"
-                ? "Pure Vegetarian Restaurants"
+                ? "Vegetarian restaurants"
                 : dietFilter === "non-veg"
-                ? "Non-Veg Specialty Kitchens"
-                : `Top-Rated Restaurants in ${location.cityName || "Your Area"}`}
+                ? "Non-vegetarian restaurants"
+                : `Restaurants in ${location.cityName || "Your Area"}`}
             </h2>
             <p className="text-xs text-gray-500 font-medium">
-              Real-time culinary excellence available in {location.cityName || "your neighborhood"}
+              Explore menus and delivery options in {location.cityName || "your neighborhood"}
             </p>
           </div>
         </div>
@@ -577,6 +521,64 @@ export function HomeFeed({
           </div>
         )}
       </section>
+
+      {/* 4. REORDER CAROUSEL (Real Past Orders Only) */}
+      {pastOrders.data?.orders && pastOrders.data.orders.length > 0 && !q && (
+        <section aria-label="Order Again">
+          <div className="flex items-center justify-between mb-2.5">
+            <div>
+              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight">Order Again</h2>
+              <p className="text-xs text-gray-500 font-medium">Order again from restaurants you've tried</p>
+            </div>
+            <Link to="/orders" className="text-xs font-bold text-[#E23744] hover:underline">
+              View all orders
+            </Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+            {pastOrders.data.orders.slice(0, 4).map((o) => (
+              <div
+                key={o.id}
+                className="flex w-64 shrink-0 flex-col justify-between rounded-2xl border border-gray-200 bg-white p-3.5 shadow-sm transition hover:shadow-md"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="line-clamp-1 text-sm font-bold text-gray-900">{o.restaurantName}</h3>
+                    <span className="text-xs font-bold text-gray-700">
+                      {formatPaise(o.totalPaise, { locale })}
+                    </span>
+                  </div>
+                  <p className="mt-1 line-clamp-1 text-xs text-gray-500">{o.itemPreview || "Previous order"}</p>
+                </div>
+                <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5">
+                  <span className="text-[10px] text-gray-400 font-medium">
+                    {new Date(o.placedAt).toLocaleDateString(locale, {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => void handleReorder(o.id)}
+                    className="inline-flex items-center gap-1 rounded-full bg-gray-100 hover:bg-[#E23744] hover:text-white px-3 py-1 text-xs font-bold text-gray-800 transition"
+                  >
+                    <RotateCcw className="size-3" />
+                    <span>Reorder</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 2.5. ELEGANT GIFT TREAT TO FRIENDS (Compact WhatsApp Share) */}
+      {!q && (
+        <section aria-label="Gift Treat to Friends" className="pt-1">
+          <WhatsAppViralBountiesWidget source="home_feed" />
+        </section>
+      )}
+
+
     </div>
   );
 }
