@@ -25,7 +25,7 @@ import { useLocationStore } from "@/lib/stores/location";
 import { newId } from "@/lib/ids";
 import { createRazorpayOrder } from "@/lib/server/razorpay-order";
 import { WhatsAppShare } from "@/components/market/whatsapp-share";
-import { ReferralGamifiedLoop } from "@/components/market/referral-gamified-loop";
+import { WhatsAppViralBountiesWidget as ReferralGamifiedLoop } from "@/components/market/whatsapp-viral-bounties-widget";
 
 export const Route = createFileRoute("/checkout")({ component: CheckoutPage });
 

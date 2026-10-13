@@ -814,17 +814,17 @@ export function RoyalAiConcierge({
       let replyText = "";
       if (lang.code === "hi") {
         replyText =
-          `आदरणीय अतिथि, जिओ, एयरटेल, वी या बीएसएनएल का मोबाइल रिचार्ज करने पर आपको तुरंत 2% फ्लैट कैशबैक मिलता है। 0% गेटवे फीस और 1-टैप में सुपरफास्ट एक्टिवेशन! ${selectedPersona.encouragement}`;
+          `जिओ, एयरटेल, वी या बीएसएनएल रिचार्ज और कैशबैक की लाइव उपलब्धता अभी सत्यापित नहीं है। भुगतान या कैशबैक की पुष्टि नहीं की गई है। ${selectedPersona.encouragement}`;
       } else if (lang.code === "bn") {
         replyText =
-          `শ্রদ্ধেয় গ্রাহক, জিও, এয়ারটেল, ভিআই বা বিএসএনএল রিচার্জে ফ্ল্যাট ২% ক্যাশব্যাক পাবেন। কোনো অতিরিক্ত চার্জ নেই এবং তাৎক্ষণিক সক্রিয়করণ! ${selectedPersona.encouragement}`;
+          `জিও, এয়ারটেল, ভিআই বা বিএসএনএল রিচার্জ এবং ক্যাশব্যাক পরিষেবা এখনও যাচাই করা হয়নি। কোনো পেমেন্ট বা পুরস্কার নিশ্চিত করা হচ্ছে না। ${selectedPersona.encouragement}`;
       } else {
         replyText =
-          `Respected Patron, recharge any Jio, Airtel, Vi, or BSNL number with 0% convenience fee and enjoy flat 2% instant cashback with live operator plan browsing! ${selectedPersona.encouragement}`;
+          `Mobile recharge and cashback providers are not verified as available in OrderKing yet. No payment or cashback can be confirmed here. ${selectedPersona.encouragement}`;
       }
       return {
         text: replyText,
-        action: { type: "MOBILE_RECHARGE", label: "📱 2% Cashback Mobile Recharge" },
+        action: { type: "MOBILE_RECHARGE", label: "📱 Mobile recharge information" },
       };
     }
 

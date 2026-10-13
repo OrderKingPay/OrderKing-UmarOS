@@ -30,8 +30,8 @@ export const ViralGrowthEngine = {
   generateDeepLink(referralCode: string): string {
     const baseUrl = typeof process !== "undefined" && process.env.VERCEL_PROJECT_PRODUCTION_URL 
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` 
-      : "https://orderking.in";
-    return `${baseUrl}/r/${referralCode}`;
+      : "https://www.orderkingpay.com";
+    return `${baseUrl}/?ref=${encodeURIComponent(referralCode)}`;
   },
 
   /**
@@ -39,7 +39,7 @@ export const ViralGrowthEngine = {
    */
   createViralShareIntent(referralCode: string, amount: number = 500) {
     const link = this.generateDeepLink(referralCode);
-    const copy = `👑 I just ordered free food on OrderKing! 🚀\n\nUse my VIP invite link to claim your ₹${amount} instant welcome bonus. Download now before it expires!\n\nClaim here: ${link}`;
+    const copy = `Explore OrderKing services: ${link}. Referral cash and promotional credits are not active.`;
     const encodedCopy = encodeURIComponent(copy);
 
     return {
@@ -74,6 +74,18 @@ export const ViralGrowthEngine = {
    * Funded directly by RESTAURANT_AD_REVENUE.
    */
   async processReferralActivation(referralCode: string, newUserId: string): Promise<{ success: boolean; message: string; amountCredited: number }> {
+    // Permanent fail-closed gate: no cash reward, UPI transfer, or wallet
+    // top-up may be funded from an unverified internal ad-revenue number.
+    // Server-authorized, commission-settled Crown discounts need a separate
+    // audited implementation before this program can ever be activated.
+    const cashReferralPayoutsDisabled = true;
+    if (cashReferralPayoutsDisabled) {
+      return {
+        success: false,
+        message: "Referral cash payouts are not active. No wallet balance was changed.",
+        amountCredited: 0,
+      };
+    }
     const sql = await getSql();
     
     return await sql.transaction(async (tx: Sql) => {

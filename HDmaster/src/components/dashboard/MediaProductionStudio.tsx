@@ -1,127 +1,138 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Video,
-  Play,
-  Pause,
+  FileText,
   Volume2,
-  VolumeX,
-  Languages,
-  Film,
-  Sparkles,
-  Download,
   Copy,
-  Clock,
-  Radio,
-  Sliders,
+  Check,
   CheckCircle2,
-  RefreshCw,
+  Sliders,
+  Save,
+  RotateCcw,
   Bell,
-  Waves,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-interface StoryboardScene {
-  sceneNumber: number;
-  durationSeconds: number;
-  title: string;
-  visualPrompt: string;
-  voiceover: {
-    en: string;
-    hi: string;
-    bn: string;
-    as: string;
-  };
+interface PromoCopyConfig {
+  dishName: string;
+  kitchenName: string;
+  priceInr: number;
+  offerText: string;
+  deliveryMins: number;
+  dietaryType: "veg" | "non_veg" | "jain";
+  language: "en" | "hi" | "bn" | "as";
+  orderLink: string;
 }
 
-const DEFAULT_STORYBOARD: StoryboardScene[] = [
-  {
-    sceneNumber: 1,
-    durationSeconds: 3,
-    title: "Scene 1: The Midnight Craving",
-    visualPrompt: "Close-up cinematic 4k shot of steaming handi biryani garnished with saffron and fried onions at midnight, warm amber lighting.",
-    voiceover: {
-      en: "Midnight hunger striking again? Don't settle for cold leftovers.",
-      hi: "आधी रात को लगी है ज़ोर की भूख? अब समझौता क्यों करना?",
-      bn: "মধ্যরাতে হঠাৎ খিদে পেয়েছে? বাসি খাবার আর নয়।",
-      as: "মাজনিশা বৰকৈ ভোক লাগিছে নেকি? ঠাণ্ডা খোৱা বন্ধ কৰক।",
-    },
-  },
-  {
-    sceneNumber: 2,
-    durationSeconds: 4,
-    title: "Scene 2: Instant Hyperlocal Dispatch",
-    visualPrompt: "Rider on electric smart scooter picking up sealed insulated thermal bag, digital dashboard showing 12 mins ETA.",
-    voiceover: {
-      en: "OrderKing partners with top local kitchens to deliver boiling hot food in under 15 minutes.",
-      hi: "ऑर्डरकिंग लाता है गरमा-गरम खाना मात्र १५ मिनट में, सीधे आपकी पसंदीदा रसोई से।",
-      bn: "অর্ডারকিং আপনার পছন্দের রেস্তোরাঁ থেকে গরম খাবার ১৫ মিনিটের মধ্যে পৌঁছে দেয়।",
-      as: "অৰ্ডাৰকিঙে আপোনাৰ প্ৰিয় ৰান্ধনীশালৰ পৰা ১৫ মিনিটৰ ভিতৰতে তপত খাদ্য আনে।",
-    },
-  },
-  {
-    sceneNumber: 3,
-    durationSeconds: 3,
-    title: "Scene 3: Zero-Failure KingPay Soundbox",
-    visualPrompt: "Customer tapping UPI on KingPay Soundbox. Instant green light strobe and loud crystal chime confirmation.",
-    voiceover: {
-      en: "Pay with one tap using KingPay UPI — zero merchant commission, instant rewards.",
-      hi: "किंगपे यूपीआई से करें एक टैप में भुगतान — जीरो मर्चेंट कमीशन और तुरंत कैशबैक।",
-      bn: "কিংপে ইউপিআই দিয়ে এক ট্যাপে পেমেন্ট করুন — শূন্য কমিশন এবং নিশ্চিত ক্যাশব্যাক।",
-      as: "কিংপে ইউপিআইৰে মাত্ৰ এটা টেপতে পৰিশোধ কৰক — কোনো মাচুল নাই, নিশ্চিত পুৰস্কাৰ।",
-    },
-  },
-  {
-    sceneNumber: 4,
-    durationSeconds: 2,
-    title: "Scene 4: Call to Action",
-    visualPrompt: "Bold animated emerald crest: OrderKing app download QR code and ₹100 first-order voucher.",
-    voiceover: {
-      en: "Download OrderKing now. First delivery free!",
-      hi: "अभी डाउनलोड करें ऑर्डरकिंग। पहली डिलीवरी बिल्कुल मुफ्त!",
-      bn: "এখনই ডাউনলোড করুন অর্ডারকিং। প্রথম ডেলিভারি একদম ফ্রি!",
-      as: "এতিয়াই ডাউনলোড কৰক অৰ্ডাৰকিং। প্ৰথম ডেলিভাৰী সম্পূৰ্ণ বিনামূলীয়া!",
-    },
-  },
-];
+const DEFAULT_PROMO_CONFIG: PromoCopyConfig = {
+  dishName: "Hyderabadi Dum Biryani (Full Handi)",
+  kitchenName: "OrderKing Partner Kitchen",
+  priceInr: 249,
+  offerText: "Flat ₹50 OFF + Free Delivery",
+  deliveryMins: 25,
+  dietaryType: "non_veg",
+  language: "en",
+  orderLink: "https://orderking.in",
+};
+
+const STORAGE_KEY = "orderking_menu_promo_copy_v1";
 
 export function MediaProductionStudio() {
-  const [selectedLanguage, setSelectedLanguage] = useState<"en" | "hi" | "bn" | "as">("hi");
-  const [activeSceneIndex, setActiveSceneIndex] = useState(0);
-  const [isPlayingSoundbox, setIsPlayingSoundbox] = useState(false);
-  const [storyboard, setStoryboard] = useState<StoryboardScene[]>(DEFAULT_STORYBOARD);
-  const [prompt, setPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [config, setConfig] = useState<PromoCopyConfig>(DEFAULT_PROMO_CONFIG);
+  const [savedConfig, setSavedConfig] = useState<PromoCopyConfig>(DEFAULT_PROMO_CONFIG);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
-  const activeScene = storyboard[activeSceneIndex];
-
-  // Web Audio API Soundbox hardware chime synthesizer
-  const playSoundboxChime = (lang: "en" | "hi" | "bn" | "as") => {
+  useEffect(() => {
     try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = { ...DEFAULT_PROMO_CONFIG, ...JSON.parse(raw) };
+        setConfig(parsed);
+        setSavedConfig(parsed);
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
+  const hasChanges = JSON.stringify(config) !== JSON.stringify(savedConfig);
+
+  const dietaryLabel =
+    config.dietaryType === "veg"
+      ? "Pure Veg"
+      : config.dietaryType === "jain"
+      ? "Jain Friendly"
+      : "Non-Veg";
+
+  const copyTemplates: Record<
+    "en" | "hi" | "bn" | "as",
+    { menuDesc: string; whatsappPromo: string; reelScript: string }
+  > = {
+    en: {
+      menuDesc: `${config.dishName} (${dietaryLabel}) — Freshly prepared by ${config.kitchenName} in an FSSAI-verified kitchen and packed in sealed tamper-evident containers. Price: ₹${config.priceInr}.`,
+      whatsappPromo: `Hot & Fresh ${config.dishName} from ${config.kitchenName} for just ₹${config.priceInr}!\nOffer: ${config.offerText}\nEstimated delivery in ${config.deliveryMins} mins.\nOrder directly here: ${config.orderLink}`,
+      reelScript: `[0-3s] Craving fresh ${config.dishName}?\n[3-10s] Order directly from ${config.kitchenName} at ₹${config.priceInr} with ${config.offerText}.\n[10-15s] Delivered hot in ${config.deliveryMins} mins. Tap the link to order now!`,
+    },
+    hi: {
+      menuDesc: `${config.dishName} (${dietaryLabel}) — ${config.kitchenName} की FSSAI-प्रमाणित रसोई में ताज़ा तैयार और सुरक्षित पैकिंग में। कीमत: ₹${config.priceInr}।`,
+      whatsappPromo: `गरमा-गरम ${config.dishName} अब सिर्फ ₹${config.priceInr} में!\nऑफर: ${config.offerText}\nडिलीवरी समय: लगभग ${config.deliveryMins} मिनट।\nअभी ऑर्डर करें: ${config.orderLink}`,
+      reelScript: `[0-3s] क्या आपका मन कर रहा है ताज़ा ${config.dishName} खाने का?\n[3-10s] ${config.kitchenName} से सीधे ऑर्डर करें मात्र ₹${config.priceInr} में (${config.offerText})।\n[10-15s] ${config.deliveryMins} मिनट में गरमा-गरम डिलीवरी। अभी लिंक पर क्लिक करें!`,
+    },
+    bn: {
+      menuDesc: `${config.dishName} (${dietaryLabel}) — ${config.kitchenName}-এর FSSAI অনুমোদিত রান্নাঘরে তাজা তৈরি এবং সুরক্ষিত প্যাকিংয়ে পরিবেশিত। মূল্য: ₹${config.priceInr}।`,
+      whatsappPromo: `গরম ও তাজা ${config.dishName} মাত্র ₹${config.priceInr}-এ!\nঅফার: ${config.offerText}\nডেলিভারি সময়: প্রায় ${config.deliveryMins} মিনিট।\nএখনই অর্ডার করুন: ${config.orderLink}`,
+      reelScript: `[0-3s] গরম ${config.dishName} খেতে ইচ্ছে করছে?\n[3-10s] ${config.kitchenName} থেকে সরাসরি অর্ডার করুন ₹${config.priceInr}-এ (${config.offerText})।\n[10-15s] ${config.deliveryMins} মিনিটে হোম ডেলিভারি। এখনই অর্ডার করুন!`,
+    },
+    as: {
+      menuDesc: `${config.dishName} (${dietaryLabel}) — ${config.kitchenName}-ৰ FSSAI পঞ্জীয়নভুক্ত পাকঘৰত সতেজভাৱে প্ৰস্তুত কৰা হৈছে। মূল্য: ₹${config.priceInr}।`,
+      whatsappPromo: `তপত আৰু সতেজ ${config.dishName} মাত্ৰ ₹${config.priceInr} টকাত!\nঅফাৰ: ${config.offerText}\nডেলিভাৰী সময়: প্ৰায় ${config.deliveryMins} মিনিট।\nইয়াত অৰ্ডাৰ কৰক: ${config.orderLink}`,
+      reelScript: `[0-3s] সতেজ ${config.dishName} খাবলৈ মন গৈছেনে?\n[3-10s] ${config.kitchenName} ৰ পৰা পোনপটীয়াকৈ ₹${config.priceInr} টকাত অৰ্ডাৰ কৰক (${config.offerText})।\n[10-15s] ${config.deliveryMins} মিনিটত ঘৰতে ডেলিভাৰী পাওক!`,
+    },
+  };
+
+  const activeCopy = copyTemplates[config.language];
+
+  const handleCopy = (text: string, id: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(id);
+    setTimeout(() => setCopiedKey(null), 2000);
+    toast.success(`Copied ${label}`);
+  };
+
+  const handleSave = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+      setSavedConfig(config);
+      toast.success("Menu and promo copy settings saved.");
+    } catch {
+      setSavedConfig(config);
+      toast.success("Promo copy settings updated.");
+    }
+  };
+
+  const playOrderSoundAlert = (lang: "en" | "hi" | "bn" | "as") => {
+    try {
+      const AudioContext = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
       if (!AudioContext) {
-        toast.info("Audio API not supported in this browser.");
+        toast.info("Browser audio is not available.");
         return;
       }
 
-      setIsPlayingSoundbox(true);
+      setIsPlayingAudio(true);
       const ctx = new AudioContext();
 
-      // Soundbox signature chime (two bell tones: 587 Hz (D5) -> 880 Hz (A5))
       const playTone = (freq: number, start: number, duration: number) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = "sine";
         osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
-
-        gain.gain.setValueAtTime(0.3, ctx.currentTime + start);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime + start);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
-
         osc.connect(gain);
         gain.connect(ctx.destination);
-
         osc.start(ctx.currentTime + start);
         osc.stop(ctx.currentTime + start + duration);
       };
@@ -129,282 +140,316 @@ export function MediaProductionStudio() {
       playTone(587.33, 0, 0.25);
       playTone(880.0, 0.15, 0.4);
 
-      // Speech synthesis for hardware voice prompt
-      setTimeout(() => {
-        if ("speechSynthesis" in window) {
-          const texts: Record<string, { text: string; langTag: string }> = {
-            en: { text: "KingPay: Received two hundred and fifty rupees.", langTag: "en-IN" },
-            hi: { text: "किंगपे पर दो सौ पचास रुपये प्राप्त हुए।", langTag: "hi-IN" },
-            bn: { text: "কিংপে-তে দুইশত পঞ্চাশ টাকা প্রাপ্ত হলো।", langTag: "bn-IN" },
-            as: { text: "কিংপেত দুশ পঞ্চাশ টকা লাভ কৰা হ'ল।", langTag: "as-IN" },
-          };
+      if ("speechSynthesis" in window) {
+        const texts: Record<"en" | "hi" | "bn" | "as", { text: string; langTag: string }> = {
+          en: {
+            text: `New Order Received for ${config.dishName}. Amount Rupees ${config.priceInr}.`,
+            langTag: "en-IN",
+          },
+          hi: {
+            text: `नया ऑर्डर प्राप्त हुआ: ₹${config.priceInr} रुपये।`,
+            langTag: "hi-IN",
+          },
+          bn: {
+            text: `নতুন অর্ডার এসেছে: ₹${config.priceInr} টাকা।`,
+            langTag: "bn-IN",
+          },
+          as: {
+            text: `নতুন অৰ্ডাৰ আহিছে: ₹${config.priceInr} টকা।`,
+            langTag: "as-IN",
+          },
+        };
 
-          const voiceData = texts[lang];
-          const utterance = new SpeechSynthesisUtterance(voiceData.text);
-          utterance.lang = voiceData.langTag;
-          utterance.rate = 1.0;
-          utterance.pitch = 1.05;
-          utterance.onend = () => setIsPlayingSoundbox(false);
-          utterance.onerror = () => setIsPlayingSoundbox(false);
-
-          window.speechSynthesis.speak(utterance);
-        } else {
-          setIsPlayingSoundbox(false);
-        }
-      }, 500);
-
-      toast.success(`Soundbox Chime Broadcast: [${lang.toUpperCase()}] ₹250.00`);
-    } catch (e: any) {
-      setIsPlayingSoundbox(false);
-      toast.error("Audio playback error: " + e.message);
+        const voiceData = texts[lang];
+        const utterance = new SpeechSynthesisUtterance(voiceData.text);
+        utterance.lang = voiceData.langTag;
+        utterance.onend = () => setIsPlayingAudio(false);
+        utterance.onerror = () => setIsPlayingAudio(false);
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setIsPlayingAudio(false);
+      }
+    } catch {
+      setIsPlayingAudio(false);
     }
-  };
-
-  const handleGenerateScript = () => {
-    if (!prompt.trim()) {
-      toast.error("Please enter a campaign topic prompt.");
-      return;
-    }
-
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-      toast.success("Synthesized 4-scene multilingual video campaign!");
-    }, 900);
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col space-y-6 p-6">
       {/* Header */}
-      <div className="p-6 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <Video className="h-5 w-5 text-emerald-600" />
+            <FileText className="h-5 w-5 text-emerald-600" />
             <h2 className="text-xl font-black text-slate-900 tracking-tight">
-              Universal Video & Audio Studio (DEMO C)
+              Menu & Promo Copy Generator
             </h2>
-            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full">
-              STORYBOARD & SOUNDBOX DSP
+            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+              4 Indian Languages
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1 max-w-2xl">
-            Multilingual viral video production and KingPay hardware acoustic synthesizer supporting English, Hindi, Bengali, and Assamese.
+          <p className="text-xs text-slate-600 mt-1">
+            Generate clear menu descriptions, WhatsApp offer messages, and kitchen audio alerts in English, Hindi, Bengali, and Assamese.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Language Switcher */}
-          <div className="bg-white border border-slate-300 rounded-xl p-1 flex items-center gap-1 shadow-sm">
-            <button
-              onClick={() => setSelectedLanguage("en")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors ${
-                selectedLanguage === "en" ? "bg-emerald-600 text-white" : "text-slate-600 hover:text-slate-900"
-              }`}
+          {hasChanges && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setConfig(DEFAULT_PROMO_CONFIG)}
+              className="text-xs font-semibold gap-1.5 border-slate-300"
             >
-              EN
-            </button>
-            <button
-              onClick={() => setSelectedLanguage("hi")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors ${
-                selectedLanguage === "hi" ? "bg-emerald-600 text-white" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              हिन्दी
-            </button>
-            <button
-              onClick={() => setSelectedLanguage("bn")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors ${
-                selectedLanguage === "bn" ? "bg-emerald-600 text-white" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              বাংলা
-            </button>
-            <button
-              onClick={() => setSelectedLanguage("as")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors ${
-                selectedLanguage === "as" ? "bg-emerald-600 text-white" : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              অসমীয়া
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Script Prompt Bar */}
-      <div className="p-6 border-b border-slate-200 bg-white space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
-            type="text"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="e.g. 15-second viral Instagram Reel for Durga Puja sweets delivery with 10-minute guarantee..."
-            className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 font-sans"
-          />
+              <RotateCcw className="h-3.5 w-3.5" /> Reset
+            </Button>
+          )}
           <Button
-            onClick={handleGenerateScript}
-            disabled={isGenerating}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-6 py-2.5 rounded-xl gap-2 shadow-sm"
+            size="sm"
+            onClick={handleSave}
+            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs gap-1.5 shadow-sm"
           >
-            {isGenerating ? (
-              <>
-                <RefreshCw className="h-3.5 w-3.5 animate-spin" /> Synthesizing...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-3.5 w-3.5" /> Generate Storyboard
-              </>
-            )}
+            <Save className="h-3.5 w-3.5" /> {hasChanges ? "Save Copy" : "Copy Saved"}
           </Button>
         </div>
       </div>
 
-      {/* Studio Workspace Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[500px]">
-        {/* Left Side: Scene Sequencer */}
-        <div className="lg:col-span-5 border-r border-slate-200 bg-slate-50/60 p-6 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono flex items-center gap-1.5">
-              <Film className="h-4 w-4 text-emerald-600" /> Storyboard Timeline (12s Total)
-            </span>
-            <span className="text-[10px] font-mono text-slate-500 bg-slate-200 px-2 py-0.5 rounded">
-              4 SCENES
-            </span>
+      {/* 1. Current Status / Result & Next Action */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <span className="text-[11px] font-bold uppercase text-slate-500 block">
+            Current Status / Result
+          </span>
+          <p className="text-sm font-bold text-slate-900 mt-1 flex items-center gap-1.5">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+            3 Promo Texts Ready
+          </p>
+          <p className="text-xs text-slate-600 mt-1 truncate">
+            Dish: {config.dishName} (₹{config.priceInr})
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <span className="text-[11px] font-bold uppercase text-slate-500 block">
+            Selected Language & Tag
+          </span>
+          <p className="text-xs font-semibold text-slate-900 mt-1 uppercase">
+            Language: {config.language} • {dietaryLabel}
+          </p>
+          <p className="text-xs text-slate-600 mt-1 truncate">
+            Offer: {config.offerText}
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+          <span className="text-[11px] font-bold uppercase text-emerald-800 block">
+            Next Action
+          </span>
+          <p className="text-xs font-semibold text-emerald-950 mt-1">
+            Enter your dish details on the left and click Copy on any card on the right to paste into your menu or WhatsApp.
+          </p>
+        </div>
+      </div>
+
+      {/* 2. Settings & Customizations + Generated Copy */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-5 rounded-xl border border-slate-200 bg-slate-50/60 p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div className="flex items-center gap-2">
+              <Sliders className="h-4 w-4 text-emerald-600" />
+              <h3 className="text-sm font-bold text-slate-900">Settings & Customizations</h3>
+            </div>
+            <div className="flex items-center gap-1">
+              {(
+                [
+                  { id: "en", label: "EN" },
+                  { id: "hi", label: "हिन्दी" },
+                  { id: "bn", label: "বাংলা" },
+                  { id: "as", label: "অসমীয়া" },
+                ] as const
+              ).map((lang) => (
+                <button
+                  key={lang.id}
+                  type="button"
+                  onClick={() => setConfig((p) => ({ ...p, language: lang.id }))}
+                  className={`px-2 py-1 rounded text-xs font-bold ${
+                    config.language === lang.id
+                      ? "bg-emerald-600 text-white"
+                      : "bg-white border border-slate-300 text-slate-700"
+                  }`}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-3">
-            {storyboard.map((scene, idx) => (
-              <div
-                key={scene.sceneNumber}
-                onClick={() => setActiveSceneIndex(idx)}
-                className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                  activeSceneIndex === idx
-                    ? "bg-white border-emerald-500 shadow-sm ring-1 ring-emerald-500"
-                    : "bg-white/60 border-slate-200 hover:bg-white text-slate-600"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="font-bold text-xs text-slate-900">
-                    {scene.title}
-                  </span>
-                  <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded flex items-center gap-1">
-                    <Clock className="h-3 w-3" /> {scene.durationSeconds}s
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-500 line-clamp-2">
-                  {scene.voiceover[selectedLanguage]}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Soundbox Acoustic Testing Box */}
-          <div className="mt-6 pt-6 border-t border-slate-200 bg-emerald-950 p-5 rounded-xl text-white space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Bell className="h-4 w-4 text-emerald-400" />
-                <span className="font-bold text-xs font-mono uppercase tracking-wider text-emerald-300">
-                  KingPay Soundbox Hardware DSP
-                </span>
-              </div>
-              <span className="text-[9px] font-mono bg-emerald-900 px-2 py-0.5 rounded text-emerald-300 border border-emerald-700">
-                LIVE WEB AUDIO
-              </span>
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Dish or Combo Name</label>
+              <input
+                type="text"
+                value={config.dishName}
+                onChange={(e) => setConfig((p) => ({ ...p, dishName: e.target.value }))}
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900"
+              />
             </div>
 
-            <p className="text-xs text-emerald-200/80">
-              Trigger real-time acoustic chime and spoken payment confirmation for merchant hardware terminals.
-            </p>
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Restaurant / Kitchen Name</label>
+              <input
+                type="text"
+                value={config.kitchenName}
+                onChange={(e) => setConfig((p) => ({ ...p, kitchenName: e.target.value }))}
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900"
+              />
+            </div>
 
-            <div className="grid grid-cols-2 gap-2 pt-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Price (₹ INR)</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={config.priceInr}
+                  onChange={(e) =>
+                    setConfig((p) => ({ ...p, priceInr: Number(e.target.value) || 0 }))
+                  }
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Delivery Time (Mins)</label>
+                <input
+                  type="number"
+                  min={5}
+                  max={120}
+                  value={config.deliveryMins}
+                  onChange={(e) =>
+                    setConfig((p) => ({ ...p, deliveryMins: Number(e.target.value) || 25 }))
+                  }
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Special Offer Line</label>
+              <input
+                type="text"
+                value={config.offerText}
+                onChange={(e) => setConfig((p) => ({ ...p, offerText: e.target.value }))}
+                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Dietary Tag</label>
+                <select
+                  value={config.dietaryType}
+                  onChange={(e) =>
+                    setConfig((p) => ({
+                      ...p,
+                      dietaryType: e.target.value as "veg" | "non_veg" | "jain",
+                    }))
+                  }
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900"
+                >
+                  <option value="veg">Pure Veg</option>
+                  <option value="non_veg">Non-Veg</option>
+                  <option value="jain">Jain Friendly</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Order Link</label>
+                <input
+                  type="text"
+                  value={config.orderLink}
+                  onChange={(e) => setConfig((p) => ({ ...p, orderLink: e.target.value }))}
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Kitchen Sound Alert Tester */}
+          <div className="rounded-xl bg-emerald-950 text-white p-4 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                <Bell className="h-3.5 w-3.5" /> Test Kitchen Order Voice Alert
+              </span>
+              <span className="text-[10px] font-mono bg-emerald-900 px-2 py-0.5 rounded text-emerald-200">
+                Browser Audio
+              </span>
+            </div>
+            <p className="text-[11px] text-emerald-200/80">
+              Preview the loud bell chime and spoken order alert for kitchen staff.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
               <button
-                onClick={() => playSoundboxChime("en")}
-                disabled={isPlayingSoundbox}
-                className="bg-emerald-800 hover:bg-emerald-700 p-2.5 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-colors"
+                type="button"
+                disabled={isPlayingAudio}
+                onClick={() => playOrderSoundAlert(config.language)}
+                className="col-span-2 bg-emerald-700 hover:bg-emerald-600 py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5"
               >
-                <Volume2 className="h-3.5 w-3.5 text-emerald-400" /> English Chime
-              </button>
-              <button
-                onClick={() => playSoundboxChime("hi")}
-                disabled={isPlayingSoundbox}
-                className="bg-emerald-800 hover:bg-emerald-700 p-2.5 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-colors"
-              >
-                <Volume2 className="h-3.5 w-3.5 text-emerald-400" /> हिन्दी आवाज़
-              </button>
-              <button
-                onClick={() => playSoundboxChime("bn")}
-                disabled={isPlayingSoundbox}
-                className="bg-emerald-800 hover:bg-emerald-700 p-2.5 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-colors"
-              >
-                <Volume2 className="h-3.5 w-3.5 text-emerald-400" /> বাংলা ভয়েস
-              </button>
-              <button
-                onClick={() => playSoundboxChime("as")}
-                disabled={isPlayingSoundbox}
-                className="bg-emerald-800 hover:bg-emerald-700 p-2.5 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-colors"
-              >
-                <Volume2 className="h-3.5 w-3.5 text-emerald-400" /> অসমীয়া
+                <Volume2 className="h-3.5 w-3.5" /> Play Alert ({config.language.toUpperCase()})
               </button>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Active Scene Preview & Subtitle Inspector */}
-        <div className="lg:col-span-7 p-6 flex flex-col justify-between bg-white">
-          <div className="space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-              <span className="font-bold text-xs uppercase tracking-wider text-slate-700 font-mono">
-                Active Scene View ({activeScene.title})
-              </span>
-              <span className="text-[10px] font-mono text-slate-500">
-                TARGET ASPECT: 9:16 VERTICAL REEL
-              </span>
-            </div>
-
-            {/* Visual Direction Card */}
-            <div className="bg-slate-900 text-white p-5 rounded-2xl border border-slate-800 space-y-3">
-              <div className="flex items-center gap-2 text-emerald-400 text-xs font-mono font-bold">
-                <Film className="h-4 w-4" /> VISUAL DIRECTION & CINEMATOGRAPHY
+        {/* Right Side: Ready-to-Copy Outputs */}
+        <div className="lg:col-span-7 space-y-4">
+          {[
+            {
+              id: "menu_desc",
+              title: "1. Menu Item Description (FSSAI Compliant)",
+              subtitle: "Paste this into your Menu Editor for customer clarity.",
+              text: activeCopy.menuDesc,
+            },
+            {
+              id: "wa_promo",
+              title: "2. WhatsApp Broadcast & Customer Message",
+              subtitle: "Send to opted-in customers on WhatsApp or SMS.",
+              text: activeCopy.whatsappPromo,
+            },
+            {
+              id: "reel_script",
+              title: "3. Short 15-Second Reel / Status Script",
+              subtitle: "Read aloud or add as captions when filming kitchen food videos.",
+              text: activeCopy.reelScript,
+            },
+          ].map((card) => (
+            <div
+              key={card.id}
+              className="rounded-xl border border-slate-200 bg-white p-5 space-y-3 shadow-xs"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">{card.title}</h4>
+                  <p className="text-[11px] text-slate-500">{card.subtitle}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(card.text, card.id, card.title)}
+                  className="flex items-center gap-1 rounded-lg bg-slate-100 hover:bg-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-800 shrink-0"
+                >
+                  {copiedKey === card.id ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5 text-slate-600" />
+                  )}
+                  <span>{copiedKey === card.id ? "Copied" : "Copy Text"}</span>
+                </button>
               </div>
-              <p className="text-sm font-sans text-slate-200 leading-relaxed">
-                "{activeScene.visualPrompt}"
-              </p>
+              <pre className="rounded-lg bg-slate-50 border border-slate-200 p-3.5 text-xs text-slate-800 font-sans whitespace-pre-wrap leading-relaxed">
+                {card.text}
+              </pre>
             </div>
-
-            {/* Subtitle Teleprompter in 4 Languages */}
-            <div className="space-y-3">
-              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono block">
-                Multilingual Subtitle Tracks
-              </span>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className={`p-4 rounded-xl border ${selectedLanguage === 'en' ? 'bg-emerald-50 border-emerald-300' : 'bg-slate-50 border-slate-200'}`}>
-                  <span className="text-[10px] font-mono font-bold text-slate-500 block mb-1">ENGLISH (en-IN)</span>
-                  <p className="text-xs text-slate-800 font-medium">{activeScene.voiceover.en}</p>
-                </div>
-
-                <div className={`p-4 rounded-xl border ${selectedLanguage === 'hi' ? 'bg-emerald-50 border-emerald-300' : 'bg-slate-50 border-slate-200'}`}>
-                  <span className="text-[10px] font-mono font-bold text-slate-500 block mb-1">HINDI (hi-IN)</span>
-                  <p className="text-xs text-slate-800 font-medium">{activeScene.voiceover.hi}</p>
-                </div>
-
-                <div className={`p-4 rounded-xl border ${selectedLanguage === 'bn' ? 'bg-emerald-50 border-emerald-300' : 'bg-slate-50 border-slate-200'}`}>
-                  <span className="text-[10px] font-mono font-bold text-slate-500 block mb-1">BENGALI (bn-IN)</span>
-                  <p className="text-xs text-slate-800 font-medium">{activeScene.voiceover.bn}</p>
-                </div>
-
-                <div className={`p-4 rounded-xl border ${selectedLanguage === 'as' ? 'bg-emerald-50 border-emerald-300' : 'bg-slate-50 border-slate-200'}`}>
-                  <span className="text-[10px] font-mono font-bold text-slate-500 block mb-1">ASSAMESE (as-IN)</span>
-                  <p className="text-xs text-slate-800 font-medium">{activeScene.voiceover.as}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-6 border-t border-slate-200 flex items-center justify-between text-xs font-mono text-slate-500">
-            <span>BITRATE: 1080x1920 (60 FPS)</span>
-            <span>AUDIO CODEC: AAC-LC 320 KBPS</span>
-          </div>
+          ))}
         </div>
       </div>
     </div>

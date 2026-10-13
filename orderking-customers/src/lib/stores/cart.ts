@@ -7,29 +7,62 @@ import { supabase } from "@/lib/db-cloud";
 
 export type { CartItem };
 
+// The cloud cart is optional. Never contact the placeholder Supabase endpoint
+// when credentials have not been configured; keep a truthful device-local cart.
+const cloudCartConfigured = Boolean(
+  import.meta.env.VITE_SUPABASE_URL?.startsWith("https://") &&
+  !import.meta.env.VITE_SUPABASE_URL?.includes("dummy.supabase.co") &&
+  import.meta.env.VITE_SUPABASE_ANON_KEY &&
+  import.meta.env.VITE_SUPABASE_ANON_KEY !== "dummy-key"
+);
+
+function readDeviceCart(name: string): string | null {
+  try { return localStorage.getItem(name); }
+  catch { return null; }
+}
+function getCartDeviceId(): string | null {
+  try {
+    let id = localStorage.getItem("device_id");
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem("device_id", id);
+    }
+    return id;
+  } catch { return null; }
+}
+
 const supabaseStorage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (!deviceId) {
-      deviceId = crypto.randomUUID();
-      localStorage.setItem("device_id", deviceId);
-    }
-    const { data } = await supabase.from("customer_carts").select("cart_state").eq("id", deviceId).single();
-    return data ? data.cart_state : null;
+    const localCopy = readDeviceCart(name);
+    if (!cloudCartConfigured) return localCopy;
+    const deviceId = getCartDeviceId();
+    if (!deviceId) return localCopy;
+    try {
+      const { data, error } = await supabase.from("customer_carts")
+        .select("cart_state").eq("id", deviceId).maybeSingle();
+      if (error || typeof data?.cart_state !== "string") return localCopy;
+      try { localStorage.setItem(name, data.cart_state); } catch { /* storage restricted */ }
+      return data.cart_state;
+    } catch { return localCopy; }
   },
   setItem: async (name: string, value: string): Promise<void> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (!deviceId) {
-      deviceId = crypto.randomUUID();
-      localStorage.setItem("device_id", deviceId);
-    }
-    await supabase.from("customer_carts").upsert({ id: deviceId, cart_state: value });
+    // Keep the cart usable offline. Cloud sync is attempted only when configured.
+    try { localStorage.setItem(name, value); } catch { /* storage restricted */ }
+    if (!cloudCartConfigured) return;
+    const deviceId = getCartDeviceId();
+    if (!deviceId) return;
+    try {
+      await supabase.from("customer_carts").upsert({ id: deviceId, cart_state: value });
+    } catch { /* device-local copy remains available */ }
   },
   removeItem: async (name: string): Promise<void> => {
-    let deviceId = localStorage.getItem("device_id");
-    if (deviceId) {
+    try { localStorage.removeItem(name); } catch { /* storage restricted */ }
+    if (!cloudCartConfigured) return;
+    const deviceId = getCartDeviceId();
+    if (!deviceId) return;
+    try {
       await supabase.from("customer_carts").delete().eq("id", deviceId);
-    }
+    } catch { /* never invent a successful cloud deletion */ }
   },
 };
 

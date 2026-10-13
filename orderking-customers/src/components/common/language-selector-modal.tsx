@@ -13,12 +13,12 @@ export type IndianLanguageOption = {
 };
 
 export const ALL_INDIAN_LANGUAGES: IndianLanguageOption[] = [
-  { code: "en", name: "English", nativeName: "English", voiceLang: "en-IN", region: "Pan-India", greeting: "Hello & Welcome" },
-  { code: "hi", name: "Hindi", nativeName: "हिन्दी", voiceLang: "hi-IN", region: "North & Central India", greeting: "नमस्ते" },
-  { code: "bn", name: "Bengali", nativeName: "বাংলা", voiceLang: "bn-IN", region: "West Bengal, Assam & Tripura", greeting: "নমস্কার" },
-  { code: "as", name: "Assamese", nativeName: "অসমীয়া", voiceLang: "as-IN", region: "Assam & Northeast", greeting: "নমস্কাৰ" },
-  { code: "ta", name: "Tamil", nativeName: "தமிழ்", voiceLang: "ta-IN", region: "Tamil Nadu & Puducherry", greeting: "வணக்கம்" },
-  { code: "te", name: "Telugu", nativeName: "తెలుగు", voiceLang: "te-IN", region: "Andhra Pradesh & Telangana", greeting: "నమస్కారం" }
+  { code: "en", name: "English", nativeName: "English", voiceLang: "en-IN", region: "Pan-India", greeting: "Welcome" },
+  { code: "hi", name: "Hindi", nativeName: "हिन्दी", voiceLang: "hi-IN", region: "North & Central India", greeting: "आपका स्वागत है" },
+  { code: "bn", name: "Bengali", nativeName: "বাংলা", voiceLang: "bn-IN", region: "West Bengal, Assam & Tripura", greeting: "স্বাগতম" },
+  { code: "as", name: "Assamese", nativeName: "অসমীয়া", voiceLang: "as-IN", region: "Assam & Northeast", greeting: "স্বাগতম" },
+  { code: "ta", name: "Tamil", nativeName: "தமிழ்", voiceLang: "ta-IN", region: "Tamil Nadu & Puducherry", greeting: "நல்வரவு" },
+  { code: "te", name: "Telugu", nativeName: "తెలుగు", voiceLang: "te-IN", region: "Andhra Pradesh & Telangana", greeting: "స్వాగతం" }
 ];
 
 interface LanguageSelectorModalProps {
@@ -148,7 +148,7 @@ export function LanguageSelectorModal({
         <div className="pt-2 border-t border-border/60 text-center">
           <p className="text-[11px] text-muted flex items-center justify-center gap-1">
             <Sparkles className="size-3 text-amber-500" />
-            <span>AI Voice Concierge automatically responds in your selected language</span>
+            <span>Translation and voice availability varies by language and service.</span>
           </p>
         </div>
       </div>

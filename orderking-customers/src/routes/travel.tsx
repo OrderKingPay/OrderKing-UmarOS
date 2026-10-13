@@ -128,8 +128,9 @@ function buildPartnerUrl(baseUrl: string, extraParams?: Record<string, string>):
       if (v) url.searchParams.set(k, v);
     });
   }
+  // Attribution is descriptive only until a verified provider supplies an authorized partner ID.
+  // Do not invent an affiliate identifier or promise commission for a third-party handoff.
   url.searchParams.set("utm_source", "orderking");
-  url.searchParams.set("aid", "orderking");
   return url.toString();
 }
 

@@ -19,631 +19,729 @@ import {
   CheckCircle2,
   AlertTriangle,
   HelpCircle,
-  ExternalLink,
   Layers,
-  ArrowRight,
   Eye,
   Smartphone,
   Cpu,
-  Calculator,
   Megaphone,
   SlidersHorizontal,
+  Plus,
+  Trash2,
+  Link as LinkIcon,
 } from "lucide-react";
 import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
 
 interface FieldDefinition {
   key: keyof EcosystemCmsConfig;
   label: string;
-  category: "branding" | "pricing" | "fintech" | "orders" | "compliance" | "growth" | "connectors";
+  category:
+    | "branding"
+    | "pricing"
+    | "fintech"
+    | "orders"
+    | "compliance"
+    | "growth"
+    | "connectors";
   description: string;
   placeholder: string;
   customerSurface: string;
   multiline?: boolean;
 }
 
+export interface CustomAppBanner {
+  id: string;
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  linkUrl: string;
+  bgColor: string;
+  enabled: boolean;
+}
+
+const BANNERS_STORAGE_KEY = "orderking_custom_banners_v1";
+const CMS_STORAGE_KEY = "orderking_cms_strings_v1";
+
+const DEFAULT_CUSTOM_BANNERS: CustomAppBanner[] = [
+  {
+    id: "banner-1",
+    title: "Flat 25% Off Local Kitchens",
+    subtitle: "Order fresh biryani, rolls, and thalis with zero surge fees.",
+    buttonText: "Order Now",
+    linkUrl: "/offers/local-specials",
+    bgColor: "#E23744",
+    enabled: true,
+  },
+  {
+    id: "banner-2",
+    title: "Free Delivery Above ₹399",
+    subtitle: "Add items worth ₹399 or more to unlock free doorstep delivery.",
+    buttonText: "View Menu",
+    linkUrl: "/collections/free-delivery",
+    bgColor: "#0D9488",
+    enabled: true,
+  },
+  {
+    id: "banner-3",
+    title: "Pay with KingPay Wallet",
+    subtitle: "Enjoy 1-tap instant checkout and instant cashback on every meal.",
+    buttonText: "Open Wallet",
+    linkUrl: "/wallet/kingpay",
+    bgColor: "#2563EB",
+    enabled: true,
+  },
+];
+
 const FIELD_DEFINITIONS: FieldDefinition[] = [
-  // 1. Branding & Hero
+  // 1. Branding & Home Banner
   {
     key: "homepageHeroText",
-    label: "Homepage Hero Headline",
+    label: "Home Screen Main Title",
     category: "branding",
-    description: "Primary promotional headline shown on the customer app home screen above the kitchen discovery feed.",
+    description: "The main big headline customers see at the top of the app home screen.",
     placeholder: "From local master kitchens to your doorstep.",
-    customerSurface: "Customer Home / Hero Viewport",
+    customerSurface: "Home Screen Top Banner",
   },
   {
     key: "homepageHeroSubtitle",
-    label: "Homepage Hero Subtitle",
+    label: "Home Screen Subtitle",
     category: "branding",
-    description: "Supporting descriptive narrative highlighting local provenance, hygiene standards, and kitchen authenticity.",
-    placeholder: "Authentic culinary selections, zero artificial markup, and community-first delivery.",
-    customerSurface: "Customer Home / Sub-Hero Deck",
+    description: "A short line below the main headline explaining your fresh local food promise.",
+    placeholder: "Authentic meals, honest menu prices, and fast local delivery.",
+    customerSurface: "Home Screen Sub-Banner",
     multiline: true,
   },
   {
     key: "brandTagline",
-    label: "Core Brand Tagline",
+    label: "App Slogan / Tagline",
     category: "branding",
-    description: "Institutional brand motto displayed on header badges, splash screens, and official web manifests.",
+    description: "Short slogan shown next to the logo in the top header and splash screen.",
     placeholder: "Have It Your Way",
-    customerSurface: "Customer Global Header & Splash Screen",
+    customerSurface: "App Top Header",
   },
   {
     key: "searchPlaceholderText",
-    label: "Search Bar Placeholder Text",
+    label: "Search Box Hint Text",
     category: "branding",
-    description: "Interactive placeholder inside the global search input across merchant menus and item catalog.",
-    placeholder: "Search restaurants, regional specialties, dishes, or groceries...",
-    customerSurface: "Discovery Search Input Bar",
+    description: "Hint text shown inside the search bar before a customer types.",
+    placeholder: "Search restaurants, dishes, or groceries...",
+    customerSurface: "Home Search Bar",
   },
   {
     key: "deliveryLocationPrompt",
-    label: "Delivery Address Selector Prompt",
+    label: "Delivery Address Bar Label",
     category: "branding",
-    description: "Top bar location selector greeting before geolocation geocode resolves.",
+    description: "Short label shown next to the customer's chosen delivery address.",
     placeholder: "Delivering fresh to your location",
-    customerSurface: "Global Navigation Location Bar",
+    customerSurface: "Top Location Bar",
   },
   {
     key: "badgeGuaranteeText",
-    label: "Quality & Packaging Guarantee Badge",
+    label: "Hygiene & Safety Badge Text",
     category: "branding",
-    description: "Trust badge displayed below search to reassure customers regarding kitchen hygiene and packaging safety.",
+    description: "Trust badge shown below the search bar to highlight clean kitchens and sealed boxes.",
     placeholder: "100% Hygiene-Inspected Kitchens & Tamper-Evident Packaging",
-    customerSurface: "Customer Home / Trust Assurance Ribbon",
+    customerSurface: "Home Screen Trust Badge",
   },
   {
     key: "closedHoursNoticeText",
-    label: "Off-Hours Resting State Notice",
+    label: "Night Closing Notice",
     category: "branding",
-    description: "Message rendered when customer browses during late-night hours when commercial kitchen bays are closed.",
-    placeholder: "Partner kitchens are currently offline for resting hours. Dispatch opens at 06:00 AM.",
-    customerSurface: "Store Closed / Resting Modal",
+    description: "Message shown late at night when partner restaurants are closed for rest.",
+    placeholder: "Partner kitchens are currently closed for the night. Ordering opens at 6:00 AM.",
+    customerSurface: "Store Closed Notice",
     multiline: true,
   },
 
-  // 2. Pricing & Anti-Surge
+  // 2. Pricing & No-Surge Notices
   {
     key: "zomatoSurgeWarningText",
-    label: "Zomato Surge Warning & Zero-Surge Guarantee",
+    label: "No-Surge Price Promise Banner",
     category: "pricing",
-    description: "High-visibility banner clarifying that OrderKing strictly refuses dynamic price surging during peak hours or rainfall.",
-    placeholder: "Zero Dynamic Surge Guarantee: Our delivery fees are strictly fixed regardless of peak hours or bad weather.",
-    customerSurface: "Checkout Surge Comparison Banner & Cart",
+    description: "Tells customers that delivery fees stay fair and fixed even during rain or peak hours.",
+    placeholder: "Zero Surge Guarantee: Our delivery fees stay fixed during busy hours and rain.",
+    customerSurface: "Cart & Checkout Banner",
     multiline: true,
   },
   {
     key: "surgeDisclaimerSubtext",
-    label: "Menu Dine-in Parity Notice",
+    label: "Honest Menu Price Notice",
     category: "pricing",
-    description: "Explains that restaurant menu rates match physical dine-in cards without inflated aggregator markups.",
-    placeholder: "Unlike aggregator surge models, restaurant menu rates remain authentic without inflated commission markups.",
-    customerSurface: "Merchant Menu Header & Cart Subtext",
+    description: "Explains that food prices on the app match the restaurant's real dine-in menu.",
+    placeholder: "Menu prices match restaurant dine-in prices without hidden markups.",
+    customerSurface: "Restaurant Menu Header",
     multiline: true,
   },
   {
     key: "transparentFeeHeader",
-    label: "Transparent Bill Breakdown Headline",
+    label: "Bill Breakdown Title",
     category: "pricing",
-    description: "Headline for the fee transparency modal showing itemized delivery, packaging, and government taxes.",
-    placeholder: "Complete Operational Fee Transparency",
-    customerSurface: "Cart / Bill Breakdown Accordion",
+    description: "Heading shown above the itemized delivery, packaging, and tax breakdown in the cart.",
+    placeholder: "Clear Bill Breakdown",
+    customerSurface: "Cart Bill Summary",
   },
   {
     key: "freeDeliveryThresholdNotice",
-    label: "Free Delivery Incentive Banner",
+    label: "Free Delivery Offer Text",
     category: "pricing",
-    description: "Notice displayed in cart encouraging cart additions to unlock complimentary local dispatch.",
+    description: "Message in the cart reminding customers how to get free delivery.",
     placeholder: "Free delivery unlocked for orders above ₹399",
-    customerSurface: "Cart / Dynamic Progress Tracker",
+    customerSurface: "Cart Progress Bar",
   },
   {
     key: "platformFeeDescription",
-    label: "Platform Convenience Fee Explanation",
+    label: "Platform Fee Note",
     category: "pricing",
-    description: "Informational tooltip text explaining the nominal pass-through platform fee.",
-    placeholder: "Direct operational pass-through fee supporting local rider partner dispatch safety.",
-    customerSurface: "Bill Summary / Platform Fee Tooltip",
+    description: "One-line note explaining what the small platform fee covers.",
+    placeholder: "Supports local delivery partner safety and live order support.",
+    customerSurface: "Bill Summary Tooltip",
     multiline: true,
   },
   {
     key: "packagingFeeDisclaimer",
-    label: "Packaging Fee Regulatory Disclaimer",
+    label: "Packaging Charge Note",
     category: "pricing",
-    description: "Mandatory compliance disclaimer regarding restaurant packaging material costs.",
-    placeholder: "Mandatory food-grade tamper-evident container packaging tariff.",
-    customerSurface: "Bill Summary / Container Packaging Row",
+    description: "Explains that the packaging fee goes toward clean, food-grade containers.",
+    placeholder: "Food-grade sealed container charge set by the restaurant.",
+    customerSurface: "Bill Summary Packaging Row",
   },
 
-  // 3. Fintech & KingPay
+  // 3. KingPay & Payment Messages
   {
     key: "kingPayOfflineMessage",
-    label: "KingPay Offline Maintenance Notice",
+    label: "KingPay Maintenance Notice",
     category: "fintech",
-    description: "Critical broadcast message displayed on customer checkout if the KingPay ledger node or switch is temporarily paused.",
-    placeholder: "KingPay digital wallet switch is undergoing scheduled reserve settlement maintenance. Instant UPI and card rails remain fully active.",
-    customerSurface: "Payment Selection Viewport / Offline Alert",
+    description: "Shown at checkout if KingPay wallet is paused while UPI and cards stay active.",
+    placeholder: "KingPay wallet is under brief maintenance. UPI and cards are working normally.",
+    customerSurface: "Checkout Payment Screen",
     multiline: true,
   },
   {
     key: "kingPayHeroHeadline",
-    label: "KingPay Sovereign Wallet Promotion Title",
+    label: "KingPay Wallet Banner Title",
     category: "fintech",
-    description: "Headline introducing the KingPay 1-tap checkout wallet in the payments tab.",
-    placeholder: "Instant 1-Tap Checkout with Zero Payment Failure Rate",
-    customerSurface: "Customer Payment Methods Drawer",
+    description: "Headline inviting customers to use the 1-tap KingPay wallet.",
+    placeholder: "Instant 1-Tap Checkout with Zero Payment Failures",
+    customerSurface: "Payment Methods Screen",
   },
   {
     key: "kingPayWalletBalanceLabel",
-    label: "Wallet Balance Display Label",
+    label: "Wallet Balance Label",
     category: "fintech",
-    description: "Terminology used to display the customer's prepaid balance.",
-    placeholder: "Available Sovereign Balance",
-    customerSurface: "User Account / Wallet Hub",
+    description: "Label shown above the customer's available wallet money.",
+    placeholder: "Available Wallet Balance",
+    customerSurface: "Account Wallet Screen",
   },
   {
     key: "kingPayInstantCheckoutCta",
-    label: "KingPay 1-Tap CTA Button Text",
+    label: "KingPay Pay Button Text",
     category: "fintech",
-    description: "High-conversion action button text when customer selects KingPay as payment source.",
-    placeholder: "Pay with KingPay (1-Tap Instant Checkout)",
-    customerSurface: "Checkout Payment Action Button",
+    description: "Text shown on the main payment button when KingPay is selected.",
+    placeholder: "Pay with KingPay (1-Tap Checkout)",
+    customerSurface: "Checkout Pay Button",
   },
   {
     key: "kingPayCashbackPromoText",
-    label: "Cashback Reward Announcement",
+    label: "Wallet Cashback Offer Text",
     category: "fintech",
-    description: "Announcement text promoting instant wallet cashback deposited post-delivery.",
-    placeholder: "Earn instant cash rewards deposited directly into your verified wallet on every meal order.",
-    customerSurface: "Checkout Perks & Wallet Card",
+    description: "Message telling customers about wallet cashback earned on food orders.",
+    placeholder: "Earn instant wallet cashback on every delivered meal order.",
+    customerSurface: "Checkout Perks Card",
     multiline: true,
   },
   {
     key: "kingPayLaterNotice",
-    label: "KingPay Later / Credit Facility Disclaimer",
+    label: "Pay Later Terms Note",
     category: "fintech",
-    description: "Disclosure text outlining 15-day interest-free deferred settlement terms.",
-    placeholder: "0% Interest 15-Day Flexible Credit Line powered by RBI-regulated banking partners.",
-    customerSurface: "Deferred Payment Terms Modal",
+    description: "Short note explaining the 15-day interest-free pay-later option.",
+    placeholder: "0% interest 15-day bill settlement powered by regulated banking partners.",
+    customerSurface: "Pay Later Info Box",
   },
   {
     key: "kingPaySecurityGuaranteeText",
-    label: "Payment Security & RBI Compliance Guarantee",
+    label: "Payment Security Footer Text",
     category: "fintech",
-    description: "Security footnote assuring bank-grade tokenization and data privacy compliance.",
-    placeholder: "PCI-DSS Level 1 v4.0 & RBI Compliant End-to-End Encrypted Settlement Vault",
-    customerSurface: "Checkout Footer / Security Seal",
+    description: "Reassures customers at checkout that all payments are encrypted and RBI-compliant.",
+    placeholder: "100% Encrypted & RBI-Compliant Payment Security",
+    customerSurface: "Checkout Bottom Note",
   },
 
-  // 4. Order Lifecycle
+  // 4. Order Status Messages
   {
     key: "cartEmptyHeadline",
-    label: "Cart Empty State Title",
+    label: "Empty Cart Title",
     category: "orders",
-    description: "Headline displayed when customer visits cart without any selected items.",
-    placeholder: "Your order basket is currently empty",
-    customerSurface: "Cart Modal / Empty State",
+    description: "Headline shown when a customer opens the cart before adding any food.",
+    placeholder: "Your food basket is empty",
+    customerSurface: "Empty Cart Screen",
   },
   {
     key: "cartEmptySubtext",
-    label: "Cart Empty State Subtext",
+    label: "Empty Cart Subtitle",
     category: "orders",
-    description: "Engaging call-to-action guiding the customer back to explore local merchant options.",
-    placeholder: "Discover authentic culinary specialties from verified neighborhood kitchens.",
-    customerSurface: "Cart Modal / Empty State Body",
+    description: "Friendly line encouraging customers to browse nearby kitchens.",
+    placeholder: "Explore fresh dishes from verified neighborhood kitchens.",
+    customerSurface: "Empty Cart Screen",
   },
   {
     key: "orderConfirmationModalText",
-    label: "Order Confirmation Modal Headline",
+    label: "Order Placed Thank-You Message",
     category: "orders",
-    description: "Appreciative greeting shown immediately upon order authorization.",
-    placeholder: "Thank you for supporting independent local restaurants.",
-    customerSurface: "Order Placed / Success Modal",
+    description: "Thank-you message shown as soon as an order is placed.",
+    placeholder: "Thank you for ordering from a local restaurant!",
+    customerSurface: "Order Confirmed Screen",
   },
   {
     key: "kitchenConfirmedStatusText",
-    label: "Order Stage: Kitchen Preparing",
+    label: "Status: Kitchen is Cooking",
     category: "orders",
-    description: "Live order telemetry text when kitchen accepts ticket and begins culinary prep.",
-    placeholder: "Kitchen has accepted your order and initiated fresh culinary preparation.",
-    customerSurface: "Live Tracking Timeline Stage 1",
+    description: "Status text shown when the restaurant accepts the order and starts cooking.",
+    placeholder: "The kitchen has accepted your order and started cooking fresh food.",
+    customerSurface: "Live Order Tracker Step 1",
   },
   {
     key: "riderAssignedStatusText",
-    label: "Order Stage: Rider Partner Assigned",
+    label: "Status: Rider Assigned",
     category: "orders",
-    description: "Live tracking update when the autonomous dispatch engine assigns a nearby rider.",
-    placeholder: "Delivery partner has been assigned and is heading to the pickup station.",
-    customerSurface: "Live Tracking Timeline Stage 2",
+    description: "Status text shown when a delivery rider is assigned to pick up the food.",
+    placeholder: "A delivery partner has been assigned and is heading to the restaurant.",
+    customerSurface: "Live Order Tracker Step 2",
   },
   {
     key: "riderEnRouteStatusText",
-    label: "Order Stage: Rider En Route",
+    label: "Status: Rider On the Way",
     category: "orders",
-    description: "Telemetry notification when rider collects food and initiates travel to customer destination.",
-    placeholder: "Rider is en route to your doorstep with insulated thermal temperature control.",
-    customerSurface: "Live Tracking Timeline Stage 3",
+    description: "Status text shown when the rider picks up the order and rides toward the customer.",
+    placeholder: "Your rider has picked up your food and is on the way to you.",
+    customerSurface: "Live Order Tracker Step 3",
   },
   {
     key: "riderArrivedStatusText",
-    label: "Order Stage: Rider Arrived at Doorstep",
+    label: "Status: Rider Arrived Outside",
     category: "orders",
-    description: "Arrival alert reminding customer to provide the delivery verification OTP.",
-    placeholder: "Rider partner has arrived outside. Please present your delivery verification code.",
-    customerSurface: "Live Tracking Arrival Sheet",
+    description: "Alert reminding the customer to share the delivery OTP code with the rider.",
+    placeholder: "Your rider has arrived! Please share your delivery code to receive your order.",
+    customerSurface: "Live Order Tracker Step 4",
   },
   {
     key: "orderCompletedSuccessText",
-    label: "Order Stage: Successfully Delivered",
+    label: "Status: Order Delivered",
     category: "orders",
-    description: "Final completion status message on order fulfillment.",
-    placeholder: "Order successfully delivered. Enjoy your meal!",
-    customerSurface: "Order History / Completed Screen",
+    description: "Final message shown once the food is handed over to the customer.",
+    placeholder: "Order delivered! Enjoy your meal.",
+    customerSurface: "Order Completed Screen",
   },
   {
     key: "cancellationGracePeriodNotice",
-    label: "Order Cancellation Grace Period Policy",
+    label: "60-Second Cancellation Rule Note",
     category: "orders",
-    description: "Clear notification regarding the 60-second operational cancellation grace period.",
-    placeholder: "Orders can be amended or cancelled within 60 seconds of merchant confirmation.",
-    customerSurface: "Order Tracking Footer / Cancellation Action",
+    description: "Lets customers know they can cancel for free within 60 seconds of placing an order.",
+    placeholder: "You can change or cancel your order within 60 seconds of confirmation.",
+    customerSurface: "Order Tracking Footer",
   },
 
-  // 5. Compliance, FSSAI & Support
+  // 5. Support & Food Safety Rules
   {
     key: "supportAssistantGreeting",
-    label: "Customer Support Initial Welcome Greeting",
+    label: "Help Chat Welcome Message",
     category: "compliance",
-    description: "Introductory message generated when customer opens the 24/7 in-app support chat.",
-    placeholder: "Welcome to 24/7 Enterprise Customer Care. How may we assist your dining experience today?",
-    customerSurface: "Customer Support Chat Window",
+    description: "First message customers see when they open the in-app help chat.",
+    placeholder: "Hi! Welcome to 24/7 OrderKing Help. How can we help with your order today?",
+    customerSurface: "Help Chat Window",
     multiline: true,
   },
   {
     key: "supportEscalationButtonLabel",
-    label: "Operations Escalation Button Label",
+    label: "Talk to Senior Support Button",
     category: "compliance",
-    description: "Label on button allowing user to request instant supervisor intervention.",
-    placeholder: "Request Executive Escalation Officer",
-    customerSurface: "Support Chat Escalation Action",
+    description: "Button text letting customers ask for a support manager right away.",
+    placeholder: "Speak to a Support Manager",
+    customerSurface: "Help Chat Button",
   },
   {
     key: "fssaiComplianceBannerText",
-    label: "FSSAI Food Safety Network Disclaimer",
+    label: "FSSAI Food Safety Footer Text",
     category: "compliance",
-    description: "Regulatory compliance note confirming all merchant kitchens operate under active FSSAI credentials.",
-    placeholder: "Food Safety and Standards Authority of India (FSSAI) verified merchant network.",
-    customerSurface: "Restaurant Page / License Footer",
+    description: "Confirms that all listed restaurants hold valid FSSAI food safety licenses.",
+    placeholder: "All partner restaurants are verified with FSSAI food safety licenses.",
+    customerSurface: "Restaurant Page Footer",
   },
   {
     key: "grievanceOfficerContactText",
-    label: "Grievance Redressal Officer Notice",
+    label: "Grievance Officer Contact Line",
     category: "compliance",
-    description: "Mandatory statutory notice complying with Consumer Protection (E-Commerce) Rules 2020.",
-    placeholder: "Designated Grievance Redressal Officer: compliance@orderkingpay.com (SLA 24 Hours)",
-    customerSurface: "Legal / Terms & Grievance Modal",
+    description: "Official contact email required by Indian e-commerce consumer rules.",
+    placeholder: "Grievance Officer: compliance@orderkingpay.com (Response within 24 hours)",
+    customerSurface: "Legal & Help Screen",
   },
   {
     key: "refundGuaranteeNotice",
-    label: "Instant Refund Guarantee Policy",
+    label: "Missing Item Refund Promise",
     category: "compliance",
-    description: "Customer assurance policy regarding prompt reimbursement for order defects.",
-    placeholder: "100% Instant Resolution Guarantee: Immediate wallet reimbursement for missing or compromised items.",
-    customerSurface: "Support Policy & Bill Summary",
+    description: "Reassures customers that missing or damaged items get refunded quickly.",
+    placeholder: "Instant refund to your wallet if any item is missing or damaged.",
+    customerSurface: "Help & Bill Screen",
     multiline: true,
   },
 
-  // 6. Growth & Loyalty
+  // 6. Referrals & Offers
   {
     key: "referralHeadline",
-    label: "Viral Referral Program Headline",
+    label: "Refer-a-Friend Title",
     category: "growth",
-    description: "Headline on the customer referral dashboard promoting neighbor invite rewards.",
-    placeholder: "Invite Neighborhood Friends & Earn Cash Credits",
-    customerSurface: "Referral & Earn Dashboard",
+    description: "Headline inviting customers to share the app with friends for reward credits.",
+    placeholder: "Invite Friends & Earn Free Meal Credits",
+    customerSurface: "Refer & Earn Screen",
   },
   {
     key: "referralShareBodyTemplate",
-    label: "Social Share Text Template",
+    label: "WhatsApp Invite Message",
     category: "growth",
-    description: "Pre-filled text copied when user shares via WhatsApp, SMS, or Telegram. Use {LINK} as link placeholder.",
-    placeholder: "Order authentic food with zero markup and zero surge pricing on OrderKing: {LINK}",
-    customerSurface: "WhatsApp / Share Dialog",
+    description: "Pre-written message sent when a customer invites a friend on WhatsApp.",
+    placeholder: "Order fresh local food with zero surge fees on OrderKing: {LINK}",
+    customerSurface: "WhatsApp Share Message",
     multiline: true,
   },
   {
     key: "goldPassMembershipTitle",
-    label: "Gold Priority Pass Subscription Title",
+    label: "Gold Pass Membership Title",
     category: "growth",
-    description: "Branding title for the zero-surge priority delivery membership program.",
-    placeholder: "Gold Priority Pass: Zero-Surge Guarantee & Priority Dispatch Allocation",
-    customerSurface: "Loyalty Pass Subscription Card",
+    description: "Title for the free-delivery and priority dispatch membership card.",
+    placeholder: "Gold Pass: Free Delivery & Priority Rider Dispatch",
+    customerSurface: "Membership Card",
   },
   {
     key: "dailySpecialsSectionTitle",
-    label: "Daily Kitchen Specials Section Header",
+    label: "Daily Specials Row Heading",
     category: "growth",
-    description: "Section header for daily chef specials curated directly from partner kitchens.",
-    placeholder: "Curated Chef Specials & Direct-from-Kitchen Selections",
-    customerSurface: "Home Screen Featured Horizontal Carousel",
+    description: "Heading above the daily chef specials row on the home screen.",
+    placeholder: "Today's Fresh Kitchen Specials",
+    customerSurface: "Home Screen Specials Row",
   },
 
-  // 7. Connectors Hub & Global Integrations Copy
+  // 7. Connected Services Labels
   {
     key: "connectorsHubTitle",
-    label: "Connectors Hub Main Title",
+    label: "Connected Services Page Title",
     category: "connectors",
-    description: "Main header headline for the Plugin Switchboard & External Connectors matrix.",
-    placeholder: "Plugin Switchboard & External Connectors",
-    customerSurface: "Plugin Connectors Hub Header",
+    description: "Main heading for the payment, tax, WhatsApp, and map connections screen.",
+    placeholder: "Connected Services & Gateways",
+    customerSurface: "Admin Connectors Header",
   },
   {
     key: "connectorsHubSubtitle",
-    label: "Connectors Hub Subtitle",
+    label: "Connected Services Page Subtitle",
     category: "connectors",
-    description: "Descriptive overview of integrated external gateways and institutional telemetry.",
-    placeholder: "Institutional integration management. Securely configure Razorpay payment rails, WhatsApp Business API, FSSAI regulatory verification, Mapbox geospatial telemetry, ClearTax automated GST calculation, and Automated WhatsApp Marketing.",
-    customerSurface: "Plugin Connectors Hub Subtitle",
+    description: "One-line summary explaining what external services are connected.",
+    placeholder: "Manage Razorpay, WhatsApp alerts, FSSAI license checks, Mapbox maps, and ClearTax GST.",
+    customerSurface: "Admin Connectors Subtitle",
     multiline: true,
   },
   {
     key: "connectorClearTaxTitle",
-    label: "ClearTax Connector Headline",
+    label: "ClearTax GST Card Title",
     category: "connectors",
-    description: "Display name for the Automated Tax Calculation (ClearTax) gateway integration.",
-    placeholder: "Automated Tax Calculation (ClearTax)",
-    customerSurface: "Plugin Connectors Matrix / ClearTax Card Title",
+    description: "Title shown on the ClearTax GST tax calculation card.",
+    placeholder: "Automated GST Calculation (ClearTax)",
+    customerSurface: "ClearTax Card",
   },
   {
     key: "connectorClearTaxSubtitle",
-    label: "ClearTax Connector Description",
+    label: "ClearTax GST Card Description",
     category: "connectors",
-    description: "Descriptive copy highlighting automated GST computation, e-invoicing, and compliance.",
-    placeholder: "Statutory automated GST calculation, real-time e-invoicing, reverse charge determination, and seamless automated tax reconciliation for compliant restaurant operations.",
-    customerSurface: "Plugin Connectors Matrix / ClearTax Card Deck",
+    description: "Short description of how GST invoices and tax filings are handled.",
+    placeholder: "Automatically calculates restaurant GST and prepares GST-ready order invoices.",
+    customerSurface: "ClearTax Card",
     multiline: true,
   },
   {
     key: "connectorClearTaxToggleLabel",
-    label: "ClearTax Active Switch Label",
+    label: "ClearTax Switch Label",
     category: "connectors",
-    description: "1-Click toggle switch label to enable or disable the ClearTax tax calculation engine.",
-    placeholder: "Tax Engine Active",
-    customerSurface: "Plugin Connectors Matrix / ClearTax Switch",
+    description: "Label next to the on/off switch for ClearTax GST.",
+    placeholder: "GST Calculation On",
+    customerSurface: "ClearTax Card Switch",
   },
   {
     key: "connectorClearTaxTestBtnText",
-    label: "ClearTax Diagnostic Action Label",
+    label: "ClearTax Test Button Text",
     category: "connectors",
-    description: "Action button label to run connection diagnostics with ClearTax GSTN servers.",
-    placeholder: "Test ClearTax Diagnostic",
-    customerSurface: "Plugin Connectors Matrix / ClearTax Action Button",
+    description: "Text on the button that checks the ClearTax connection.",
+    placeholder: "Test ClearTax Connection",
+    customerSurface: "ClearTax Card Button",
   },
   {
     key: "connectorClearTaxPolicyTitle",
-    label: "ClearTax Statutory Policy Header",
+    label: "ClearTax Rule Box Heading",
     category: "connectors",
-    description: "Compliance header for GST & e-invoicing enforcement rules.",
-    placeholder: "Statutory GST & E-Invoicing Enforcement",
-    customerSurface: "Plugin Connectors Matrix / ClearTax Policy Box Title",
+    description: "Heading for the GST invoice rule box.",
+    placeholder: "GST Invoice Verification",
+    customerSurface: "ClearTax Policy Box",
   },
   {
     key: "connectorClearTaxPolicyNotice",
-    label: "ClearTax Statutory Policy Notice",
+    label: "ClearTax Rule Box Text",
     category: "connectors",
-    description: "Detailed compliance policy text for IRN generation and GSTIN validation upon order fulfillment.",
-    placeholder: "Generates IRN & QR-coded e-invoices instantly via ClearTax APIs upon order fulfillment, verifying restaurant GSTIN active status.",
-    customerSurface: "Plugin Connectors Matrix / ClearTax Policy Box Body",
+    description: "Explains that GST numbers are checked before generating tax invoices.",
+    placeholder: "Creates GST-compliant invoices on every completed order and checks restaurant GSTIN.",
+    customerSurface: "ClearTax Policy Box",
     multiline: true,
   },
   {
     key: "connectorClearTaxWebhookNotice",
-    label: "ClearTax Webhook Instructions",
+    label: "ClearTax Monthly Sync Note",
     category: "connectors",
-    description: "Information notice explaining GSTN reconciliation callback listener events.",
-    placeholder: "ClearTax GSTN Reconciliation Webhook: Automatically imports GSTR-1 & GSTR-3B monthly outward supply filings.",
-    customerSurface: "Plugin Connectors Matrix / ClearTax Webhook Info",
+    description: "Explains how monthly GST return summaries are synced.",
+    placeholder: "Syncs monthly GSTR-1 and GSTR-3B tax summaries automatically.",
+    customerSurface: "ClearTax Webhook Note",
     multiline: true,
   },
   {
     key: "connectorWhatsappMarketingTitle",
-    label: "WhatsApp Marketing Connector Headline",
+    label: "WhatsApp Offers Card Title",
     category: "connectors",
-    description: "Display name for the Automated WhatsApp Marketing engine integration.",
-    placeholder: "Automated WhatsApp Marketing",
-    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Card Title",
+    description: "Title shown on the WhatsApp promotional offers card.",
+    placeholder: "WhatsApp Promotional Offers",
+    customerSurface: "WhatsApp Offers Card",
   },
   {
     key: "connectorWhatsappMarketingSubtitle",
-    label: "WhatsApp Marketing Connector Description",
+    label: "WhatsApp Offers Card Description",
     category: "connectors",
-    description: "Descriptive copy highlighting automated customer re-engagement, promotional drops, and cart recovery.",
-    placeholder: "High-conversion automated customer re-engagement, promotional drops, festival banquet offers, and personalized loyalty cart recovery campaigns with full TRAI/DND compliance.",
-    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Card Deck",
+    description: "Explains how festival and discount offers are sent on WhatsApp.",
+    placeholder: "Send festival deals and discount coupons to opted-in customers on WhatsApp.",
+    customerSurface: "WhatsApp Offers Card",
     multiline: true,
   },
   {
     key: "connectorWhatsappMarketingToggleLabel",
-    label: "WhatsApp Marketing Active Switch Label",
+    label: "WhatsApp Offers Switch Label",
     category: "connectors",
-    description: "1-Click toggle switch label to enable or disable automated promotional marketing campaigns.",
-    placeholder: "Marketing Engine Active",
-    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Switch",
+    description: "Label next to the on/off switch for WhatsApp offers.",
+    placeholder: "WhatsApp Offers On",
+    customerSurface: "WhatsApp Offers Switch",
   },
   {
     key: "connectorWhatsappMarketingTestBtnText",
-    label: "WhatsApp Marketing Diagnostic Action Label",
+    label: "WhatsApp Offers Test Button",
     category: "connectors",
-    description: "Action button label to run connection diagnostics with WhatsApp marketing dispatch gateway.",
-    placeholder: "Test Broadcast Dispatch",
-    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Action Button",
+    description: "Button text for sending a test WhatsApp message.",
+    placeholder: "Send Test Message",
+    customerSurface: "WhatsApp Offers Button",
   },
   {
     key: "connectorWhatsappMarketingPolicyTitle",
-    label: "WhatsApp Marketing Policy Header",
+    label: "WhatsApp Timing Rule Heading",
     category: "connectors",
-    description: "Compliance header for anti-spam and TRAI marketing delivery hours.",
-    placeholder: "Strict DND & Anti-Spam Marketing Policy",
-    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Policy Box Title",
+    description: "Heading for the daytime-only messaging rule.",
+    placeholder: "Daytime Messaging & Opt-Out Rule",
+    customerSurface: "WhatsApp Rule Box",
   },
   {
     key: "connectorWhatsappMarketingPolicyNotice",
-    label: "WhatsApp Marketing Policy Notice",
+    label: "WhatsApp Timing Rule Text",
     category: "connectors",
-    description: "Detailed compliance policy text explaining 10 AM - 9 PM regulatory windows and opt-out processing.",
-    placeholder: "Ensures all automated promotional broadcasts respect 10:00 AM - 09:00 PM regulatory delivery windows and honour instant opt-out requests without exception.",
-    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Policy Box Body",
+    description: "Confirms offers are only sent between 10 AM and 9 PM per TRAI rules.",
+    placeholder: "Promotional messages are only sent between 10:00 AM and 9:00 PM as required by TRAI.",
+    customerSurface: "WhatsApp Rule Box",
     multiline: true,
   },
   {
     key: "connectorWhatsappMarketingOptInNotice",
-    label: "WhatsApp Marketing Opt-Out Instructions",
+    label: "WhatsApp STOP Reply Rule",
     category: "connectors",
-    description: "Information notice explaining automatic opt-out handling upon receiving STOP/UNSUBSCRIBE.",
-    placeholder: "Automatic Unsubscribe Handler: Customers replying STOP or UNSUBSCRIBE are instantly purged from promotional broadcast audiences.",
-    customerSurface: "Plugin Connectors Matrix / WhatsApp Marketing Opt-Out Info",
+    description: "Explains that replying STOP immediately unsubscribes a customer.",
+    placeholder: "Customers who reply STOP are immediately removed from future offer lists.",
+    customerSurface: "WhatsApp Opt-Out Note",
     multiline: true,
   },
   {
     key: "connectorRazorpayTitle",
-    label: "Razorpay Gateway Title",
+    label: "Razorpay Payments Card Title",
     category: "connectors",
-    description: "Display name for the Razorpay Payment Gateway integration.",
-    placeholder: "Razorpay Payment Gateway Integration",
-    customerSurface: "Plugin Connectors Matrix / Razorpay Card Title",
+    description: "Title for the Razorpay UPI and card payment gateway card.",
+    placeholder: "Razorpay UPI & Card Payments",
+    customerSurface: "Razorpay Card",
   },
   {
     key: "connectorRazorpaySubtitle",
-    label: "Razorpay Gateway Description",
+    label: "Razorpay Payments Description",
     category: "connectors",
-    description: "Descriptive copy for customer UPI, card tokenization, and settlements.",
-    placeholder: "Handles instant customer UPI, credit/debit card tokenization, auto-capture, and merchant settlement transfers.",
-    customerSurface: "Plugin Connectors Matrix / Razorpay Card Deck",
+    description: "Short explanation of UPI, cards, and restaurant payouts via Razorpay.",
+    placeholder: "Processes customer UPI, debit/credit cards, and direct restaurant bank payouts.",
+    customerSurface: "Razorpay Card",
     multiline: true,
   },
   {
     key: "connectorWhatsappTitle",
-    label: "WhatsApp Operational API Title",
+    label: "WhatsApp Order Alerts Title",
     category: "connectors",
-    description: "Display name for WhatsApp Business transactional messaging.",
-    placeholder: "WhatsApp Business API Connector",
-    customerSurface: "Plugin Connectors Matrix / WhatsApp Card Title",
+    description: "Title for the WhatsApp order receipt and OTP alert service.",
+    placeholder: "WhatsApp Order Receipts & OTP Alerts",
+    customerSurface: "WhatsApp Alerts Card",
   },
   {
     key: "connectorWhatsappSubtitle",
-    label: "WhatsApp Operational API Description",
+    label: "WhatsApp Order Alerts Description",
     category: "connectors",
-    description: "Descriptive copy for order receipts, OTP delivery, and merchant alerts.",
-    placeholder: "Transmits real-time order receipts, OTP delivery handshakes, and merchant alerts via Meta Cloud API or Gupshup.",
-    customerSurface: "Plugin Connectors Matrix / WhatsApp Card Deck",
+    description: "Short explanation of order receipts and login codes sent on WhatsApp.",
+    placeholder: "Sends instant order bills, delivery OTPs, and kitchen alerts over WhatsApp.",
+    customerSurface: "WhatsApp Alerts Card",
     multiline: true,
   },
   {
     key: "connectorFssaiTitle",
-    label: "FSSAI Gateway Title",
+    label: "FSSAI License Check Title",
     category: "connectors",
-    description: "Display name for the FSSAI Regulatory Verification Gateway.",
-    placeholder: "FSSAI Government Regulatory Verification Gateway",
-    customerSurface: "Plugin Connectors Matrix / FSSAI Card Title",
+    description: "Title for the FSSAI food license verification card.",
+    placeholder: "FSSAI Food License Verification",
+    customerSurface: "FSSAI Card",
   },
   {
     key: "connectorFssaiSubtitle",
-    label: "FSSAI Gateway Description",
+    label: "FSSAI License Check Description",
     category: "connectors",
-    description: "Descriptive copy for FoSCoS portal verification of restaurant licenses.",
-    placeholder: "Direct integration with the FoSCoS Government Portal. Verifies 14-digit restaurant food licenses and enforces statutory onboarding rules.",
-    customerSurface: "Plugin Connectors Matrix / FSSAI Card Deck",
+    description: "Explains how 14-digit FSSAI restaurant licenses are verified.",
+    placeholder: "Checks 14-digit restaurant FSSAI food safety licenses before activating menus.",
+    customerSurface: "FSSAI Card",
     multiline: true,
   },
   {
     key: "connectorFssaiPolicyTitle",
-    label: "FSSAI Regulatory Policy Title",
+    label: "FSSAI License Rule Heading",
     category: "connectors",
-    description: "Header for strict regulatory onboarding gating rules.",
-    placeholder: "Strict Regulatory Onboarding Gate",
-    customerSurface: "Plugin Connectors Matrix / FSSAI Policy Box Title",
+    description: "Heading for the mandatory food license rule.",
+    placeholder: "Mandatory Food Safety License Rule",
+    customerSurface: "FSSAI Policy Box",
   },
   {
     key: "connectorFssaiPolicyNotice",
-    label: "FSSAI Regulatory Policy Notice",
+    label: "FSSAI License Rule Text",
     category: "connectors",
-    description: "Detailed compliance notice explaining automatic order blocking for unverified food licenses.",
-    placeholder: "Automatically block merchant kitchens from taking live customer orders if their 14-digit FSSAI license is absent, lapsed, or rejected by the FoSCoS gateway.",
-    customerSurface: "Plugin Connectors Matrix / FSSAI Policy Box Body",
+    description: "Explains that kitchens without an active FSSAI license cannot take orders.",
+    placeholder: "Blocks restaurants from taking customer orders if their 14-digit FSSAI license is expired.",
+    customerSurface: "FSSAI Policy Box",
     multiline: true,
   },
   {
     key: "connectorMapboxTitle",
-    label: "Mapbox Matrix Title",
+    label: "Mapbox Live Maps Title",
     category: "connectors",
-    description: "Display name for Mapbox Geospatial Matrix & Routing Telemetry.",
-    placeholder: "Mapbox Geospatial Matrix & Routing Telemetry",
-    customerSurface: "Plugin Connectors Matrix / Mapbox Card Title",
+    description: "Title for the Mapbox delivery distance and route map service.",
+    placeholder: "Mapbox Delivery Maps & Distance Calculator",
+    customerSurface: "Mapbox Card",
   },
   {
     key: "connectorMapboxSubtitle",
-    label: "Mapbox Matrix Description",
+    label: "Mapbox Live Maps Description",
     category: "connectors",
-    description: "Descriptive copy for distance matrix, congestion avoidance, and rider GPS estimation.",
-    placeholder: "Powers multi-point distance matrix calculations, live congestion avoidance, and real-time rider GPS vector estimation.",
-    customerSurface: "Plugin Connectors Matrix / Mapbox Card Deck",
+    description: "Short explanation of road distance calculation and live rider map pins.",
+    placeholder: "Calculates road distance between kitchens and customers and displays live rider pins.",
+    customerSurface: "Mapbox Card",
     multiline: true,
   },
 ];
 
-type CategoryId = "all" | "algorithm" | "branding" | "pricing" | "fintech" | "orders" | "compliance" | "growth" | "connectors";
+type CategoryId =
+  | "banners"
+  | "all"
+  | "algorithm"
+  | "branding"
+  | "pricing"
+  | "fintech"
+  | "orders"
+  | "compliance"
+  | "growth"
+  | "connectors";
 
 export function EcosystemCMS() {
   const [formData, setFormData] = useState<EcosystemCmsConfig>(DEFAULT_ECOSYSTEM_CMS);
   const [initialData, setInitialData] = useState<EcosystemCmsConfig>(DEFAULT_ECOSYSTEM_CMS);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryId>("all");
+
+  const [banners, setBanners] = useState<CustomAppBanner[]>(DEFAULT_CUSTOM_BANNERS);
+  const [initialBanners, setInitialBanners] = useState<CustomAppBanner[]>(DEFAULT_CUSTOM_BANNERS);
+
+  const [selectedCategory, setSelectedCategory] = useState<CategoryId>("banners");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error" | "info"; text: string } | null>(null);
-  const [previewFieldKey, setPreviewFieldKey] = useState<keyof EcosystemCmsConfig>("homepageHeroText");
+  const [statusMessage, setStatusMessage] = useState<{
+    type: "success" | "error" | "info";
+    text: string;
+  } | null>(null);
+  const [previewFieldKey, setPreviewFieldKey] =
+    useState<keyof EcosystemCmsConfig>("homepageHeroText");
 
-  // Load config on mount
+  // Load config and banners on mount
   useEffect(() => {
     let mounted = true;
     async function loadData() {
       try {
         setLoading(true);
-        // Try server function first, fallback to REST API
-        let data: EcosystemCmsConfig | null = null;
+
+        // 1. Load custom banners from localStorage
+        try {
+          const savedBanners = localStorage.getItem(BANNERS_STORAGE_KEY);
+          if (savedBanners) {
+            const parsed = JSON.parse(savedBanners);
+            if (Array.isArray(parsed) && parsed.length > 0 && mounted) {
+              setBanners(parsed);
+              setInitialBanners(parsed);
+            }
+          }
+        } catch {
+          // Ignore storage error
+        }
+
+        // 2. Load CMS strings from localStorage + server
+        let localCms: Partial<EcosystemCmsConfig> = {};
+        try {
+          const savedCms = localStorage.getItem(CMS_STORAGE_KEY);
+          if (savedCms) localCms = JSON.parse(savedCms);
+        } catch {
+          // Ignore
+        }
+
+        let serverData: EcosystemCmsConfig | null = null;
         try {
           const res = await loadEcosystemCmsFn();
           if (res && res.ok && res.data) {
-            data = res.data;
+            serverData = res.data;
           }
         } catch {
-          // fallback to REST
           const resp = await fetch("/api/v1/admin/settings");
           if (resp.ok) {
             const json = await resp.json();
-            if (json.cms) data = json.cms;
+            if (json.cms) serverData = json.cms;
           }
         }
 
-        if (mounted && data) {
-          const merged = { ...DEFAULT_ECOSYSTEM_CMS, ...data };
+        if (mounted) {
+          const merged = {
+            ...DEFAULT_ECOSYSTEM_CMS,
+            ...localCms,
+            ...(serverData || {}),
+          };
           setFormData(merged);
           setInitialData(merged);
         }
       } catch (err) {
-        console.error("Error loading Ecosystem CMS configuration:", err);
+        console.error("Error loading banners & announcements:", err);
       } finally {
         if (mounted) setLoading(false);
       }
     }
     loadData();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  // Filtered fields based on category and search
   const filteredFields = useMemo(() => {
     return FIELD_DEFINITIONS.filter((f) => {
-      const matchCat = selectedCategory === "all" || f.category === selectedCategory;
+      const matchCat =
+        selectedCategory === "all" ||
+        selectedCategory === "banners" ||
+        f.category === selectedCategory;
       const q = searchQuery.trim().toLowerCase();
       const matchQuery =
         !q ||
@@ -655,19 +753,23 @@ export function EcosystemCMS() {
     });
   }, [selectedCategory, searchQuery, formData]);
 
-  // Check if form has unsaved modifications
   const hasChanges = useMemo(() => {
-    return JSON.stringify(formData) !== JSON.stringify(initialData);
-  }, [formData, initialData]);
+    return (
+      JSON.stringify(formData) !== JSON.stringify(initialData) ||
+      JSON.stringify(banners) !== JSON.stringify(initialBanners)
+    );
+  }, [formData, initialData, banners, initialBanners]);
 
-  // Count modified fields
   const changedCount = useMemo(() => {
     let count = 0;
     for (const def of FIELD_DEFINITIONS) {
       if (formData[def.key] !== initialData[def.key]) count++;
     }
+    if (JSON.stringify(banners) !== JSON.stringify(initialBanners)) {
+      count += 1;
+    }
     return count;
-  }, [formData, initialData]);
+  }, [formData, initialData, banners, initialBanners]);
 
   const handleChange = (key: keyof EcosystemCmsConfig, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -681,42 +783,80 @@ export function EcosystemCMS() {
     setFormData((prev) => ({ ...prev, [key]: "" }));
   };
 
+  const updateBanner = (id: string, updates: Partial<CustomAppBanner>) => {
+    setBanners((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
+  };
+
+  const addBanner = () => {
+    const nextNum = banners.length + 1;
+    setBanners((prev) => [
+      ...prev,
+      {
+        id: `banner-${Date.now()}`,
+        title: `New Offer Banner #${nextNum}`,
+        subtitle: "Tap to view this special offer in the app.",
+        buttonText: "View Offer",
+        linkUrl: "/offers",
+        bgColor: "#E23744",
+        enabled: true,
+      },
+    ]);
+  };
+
+  const removeBanner = (id: string) => {
+    setBanners((prev) => prev.filter((b) => b.id !== id));
+  };
+
   const handleSave = async () => {
     try {
       setSaving(true);
       setStatusMessage(null);
 
-      // Save via server function or REST API
+      // 1. Save to localStorage
+      try {
+        localStorage.setItem(BANNERS_STORAGE_KEY, JSON.stringify(banners));
+        localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(formData));
+      } catch {
+        // Ignore storage error
+      }
+
+      // 2. Save via server function or REST API
       let success = false;
       try {
         const res = await saveEcosystemCmsFn({ data: { cms: formData } });
         if (res && res.ok) success = true;
       } catch {
+        // Fallback below
+      }
+
+      try {
         const resp = await fetch("/api/v1/admin/settings", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cms: formData }),
+          body: JSON.stringify({ cms: formData, banners }),
         });
         if (resp.ok) success = true;
+      } catch {
+        // Handled by success check
       }
 
       if (success) {
         setInitialData(formData);
+        setInitialBanners(banners);
         setStatusMessage({
           type: "success",
-          text: `Ecosystem CMS successfully synchronized. ${changedCount} content fields updated across customer mobile surfaces.`,
+          text: `Saved! Your app banners and announcements are now live for customers.`,
         });
-        setTimeout(() => setStatusMessage(null), 6000);
       } else {
         setStatusMessage({
           type: "error",
-          text: "Failed to persist CMS modifications to platform configuration. Please check network logs.",
+          text: "Could not save changes to the server. Please check your connection and try again.",
         });
       }
     } catch (err: any) {
       setStatusMessage({
         type: "error",
-        text: err?.message || "Unexpected exception during CMS synchronization.",
+        text: err?.message || "Error while saving banners and announcements.",
       });
     } finally {
       setSaving(false);
@@ -724,485 +864,619 @@ export function EcosystemCMS() {
   };
 
   const handleResetAllToOriginal = () => {
-    if (confirm("Revert all pending modifications back to current production values?")) {
-      setFormData(initialData);
-      setStatusMessage({ type: "info", text: "Modifications discarded. Production values restored." });
-    }
+    setFormData(initialData);
+    setBanners(initialBanners);
+    setStatusMessage({ type: "info", text: "Unsaved changes were undone." });
   };
 
   const handleResetAllToSystemDefaults = () => {
-    if (confirm("Reset ALL fields to official platform default copy? You will still need to click 'Publish & Synchronize' to apply.")) {
-      setFormData(DEFAULT_ECOSYSTEM_CMS);
-      setStatusMessage({ type: "info", text: "Reset to default platform copy. Review and save when ready." });
-    }
+    setFormData(DEFAULT_ECOSYSTEM_CMS);
+    setBanners(DEFAULT_CUSTOM_BANNERS);
+    setStatusMessage({
+      type: "info",
+      text: "Restored default banners and messages. Click 'Save Banners & Text (1-Click)' to publish.",
+    });
   };
 
   const categories = [
-    { id: "all" as const, label: "All Copy", count: FIELD_DEFINITIONS.length, icon: Layers },
-    { id: "algorithm" as const, label: "Algorithmic Matrix", count: 4, icon: SlidersHorizontal },
-    { id: "connectors" as const, label: "Plugin & Connectors", count: FIELD_DEFINITIONS.filter(f => f.category === "connectors").length, icon: Cpu },
-    { id: "branding" as const, label: "Hero & Brand Positioning", count: 7, icon: Sparkles },
-    { id: "pricing" as const, label: "Surge & Pricing Notices", count: 6, icon: ShieldCheck },
-    { id: "fintech" as const, label: "KingPay & Fintech Rails", count: 7, icon: CreditCard },
-    { id: "orders" as const, label: "Order Journey & Status", count: 9, icon: Truck },
-    { id: "compliance" as const, label: "Regulatory & Support", count: 5, icon: AlertTriangle },
-    { id: "growth" as const, label: "Loyalty & Growth", count: 4, icon: FileText },
+    {
+      id: "banners" as const,
+      label: "Promo Banners",
+      count: banners.length,
+      icon: Megaphone,
+    },
+    {
+      id: "all" as const,
+      label: "All App Text",
+      count: FIELD_DEFINITIONS.length,
+      icon: Layers,
+    },
+    {
+      id: "branding" as const,
+      label: "Home & Header",
+      count: FIELD_DEFINITIONS.filter((f) => f.category === "branding").length,
+      icon: Sparkles,
+    },
+    {
+      id: "pricing" as const,
+      label: "Price & No-Surge",
+      count: FIELD_DEFINITIONS.filter((f) => f.category === "pricing").length,
+      icon: ShieldCheck,
+    },
+    {
+      id: "fintech" as const,
+      label: "KingPay Wallet",
+      count: FIELD_DEFINITIONS.filter((f) => f.category === "fintech").length,
+      icon: CreditCard,
+    },
+    {
+      id: "orders" as const,
+      label: "Order Tracking",
+      count: FIELD_DEFINITIONS.filter((f) => f.category === "orders").length,
+      icon: Truck,
+    },
+    {
+      id: "compliance" as const,
+      label: "Help & FSSAI",
+      count: FIELD_DEFINITIONS.filter((f) => f.category === "compliance").length,
+      icon: AlertTriangle,
+    },
+    {
+      id: "growth" as const,
+      label: "Referrals & Gold",
+      count: FIELD_DEFINITIONS.filter((f) => f.category === "growth").length,
+      icon: FileText,
+    },
+    {
+      id: "connectors" as const,
+      label: "Gateway Labels",
+      count: FIELD_DEFINITIONS.filter((f) => f.category === "connectors").length,
+      icon: Cpu,
+    },
+    {
+      id: "algorithm" as const,
+      label: "Delivery Rules",
+      count: 4,
+      icon: SlidersHorizontal,
+    },
   ];
+
+  const activeBannersCount = banners.filter((b) => b.enabled).length;
 
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 rounded-xl border border-border bg-card p-6 shadow-sm">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <FileText className="h-5 w-5" />
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 shrink-0">
+              <Megaphone className="h-5 w-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                  Global Ecosystem CMS
-                </h2>
-                <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-600 border border-emerald-500/20">
-                  Live Customer Sync
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Authoritative content management switchboard. Direct customization of customer app copy, pricing disclaimers, and fintech alerts.
+              <h2 className="text-xl font-bold tracking-tight text-slate-900">
+                App Banners &amp; Announcements
+              </h2>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Create promotional banners, edit home screen headlines, and customize every customer notice.
               </p>
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <button
-            type="button"
-            onClick={handleResetAllToSystemDefaults}
-            className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-2 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
-            title="Reset all inputs to platform standard defaults"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            Reset Defaults
-          </button>
-
-          {hasChanges && (
+          <div className="flex flex-wrap items-center gap-2.5">
             <button
               type="button"
-              onClick={handleResetAllToOriginal}
-              className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+              onClick={handleResetAllToSystemDefaults}
+              className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition cursor-pointer"
             >
-              Discard Changes
+              <RotateCcw className="h-3.5 w-3.5" />
+              Reset Defaults
             </button>
-          )}
 
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving || !hasChanges}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold shadow-sm transition-all ${
-              hasChanges
-                ? "bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
-                : "bg-muted text-muted-foreground cursor-not-allowed"
+            {hasChanges && (
+              <button
+                type="button"
+                onClick={handleResetAllToOriginal}
+                className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+              >
+                Undo Changes
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition cursor-pointer disabled:opacity-50"
+            >
+              <Save className="h-3.5 w-3.5" />
+              {saving
+                ? "Saving..."
+                : hasChanges
+                ? `Save Banners & Text (${changedCount})`
+                : "Save Banners & Text (1-Click)"}
+            </button>
+          </div>
+        </div>
+
+        {/* Clear Current Result & What Action To Take */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+          <div className="rounded-xl bg-slate-50 border border-slate-200 p-3.5">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              Current Result
+            </div>
+            <p className="text-xs font-semibold text-slate-900 mt-1">
+              {activeBannersCount} promo banners are switched ON, home headline is &ldquo;
+              {formData.homepageHeroText}&rdquo;, and {FIELD_DEFINITIONS.length} app messages are configured.
+            </p>
+          </div>
+          <div className="rounded-xl bg-emerald-50/60 border border-emerald-200 p-3.5">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+              What Action To Take
+            </div>
+            <p className="text-xs font-medium text-emerald-950 mt-1">
+              {hasChanges
+                ? "You have unsaved banner or text edits—click 'Save Banners & Text' in the top right to publish."
+                : "Edit any promo banner title, link, color, or app announcement below and click 'Save Banners & Text (1-Click)'."}
+            </p>
+          </div>
+        </div>
+
+        {statusMessage && (
+          <div
+            className={`flex items-center justify-between rounded-xl border p-3.5 text-xs font-medium ${
+              statusMessage.type === "success"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                : statusMessage.type === "error"
+                ? "border-red-200 bg-red-50 text-red-800"
+                : "border-blue-200 bg-blue-50 text-blue-800"
             }`}
           >
-            <Save className="h-3.5 w-3.5" />
-            {saving ? "Publishing Updates..." : hasChanges ? `Publish & Synchronize (${changedCount})` : "All Strings In Sync"}
-          </button>
-        </div>
+            <div className="flex items-center gap-2">
+              {statusMessage.type === "success" && <CheckCircle2 className="h-4 w-4 shrink-0" />}
+              {statusMessage.type === "error" && <AlertTriangle className="h-4 w-4 shrink-0" />}
+              {statusMessage.type === "info" && <HelpCircle className="h-4 w-4 shrink-0" />}
+              <span>{statusMessage.text}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setStatusMessage(null)}
+              className="text-xs font-bold hover:underline"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Status Notifications */}
-      {statusMessage && (
-        <div
-          className={`flex items-center justify-between rounded-lg border p-4 text-sm ${
-            statusMessage.type === "success"
-              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-              : statusMessage.type === "error"
-              ? "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300"
-              : "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300"
-          }`}
-        >
-          <div className="flex items-center gap-2.5">
-            {statusMessage.type === "success" && <CheckCircle2 className="h-4 w-4 shrink-0" />}
-            {statusMessage.type === "error" && <AlertTriangle className="h-4 w-4 shrink-0" />}
-            {statusMessage.type === "info" && <HelpCircle className="h-4 w-4 shrink-0" />}
-            <span>{statusMessage.text}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setStatusMessage(null)}
-            className="text-xs opacity-70 hover:opacity-100"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* Operational Mode Switcher: Content CMS vs Algorithmic Matrix */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-border bg-card p-2.5 shadow-sm">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setSelectedCategory("all")}
-            className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition ${
-              selectedCategory !== "algorithm"
-                ? "bg-secondary text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-            }`}
-          >
-            <Layers className="h-4 w-4" />
-            <span>Content & Messaging CMS</span>
-            <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground font-mono">
-              {FIELD_DEFINITIONS.length} Strings
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setSelectedCategory("algorithm")}
-            className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition ${
-              selectedCategory === "algorithm"
-                ? "bg-emerald-500 text-slate-950 shadow-md font-bold"
-                : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-            }`}
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            <span>Algorithmic Settings Matrix</span>
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-mono font-bold ${
-              selectedCategory === "algorithm" ? "bg-slate-950/20 text-slate-950" : "bg-emerald-500/10 text-emerald-500"
-            }`}>
-              4 Engine Sliders
-            </span>
-          </button>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-2 font-mono text-[11px] text-muted-foreground pr-2">
-          <span>Active Layer:</span>
-          <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-emerald-500 font-semibold">
-            {selectedCategory === "algorithm" ? "OPERATIONAL DISPATCH MATH" : "CUSTOMER SURFACES"}
-          </span>
-        </div>
+      {/* Category Filter Pills */}
+      <div className="flex flex-wrap gap-1.5 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+        {categories.map((cat) => {
+          const Icon = cat.icon;
+          const isSelected = selectedCategory === cat.id;
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer ${
+                isSelected
+                  ? "bg-emerald-600 text-white shadow-xs"
+                  : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              <span>{cat.label}</span>
+              <span
+                className={`ml-1 rounded-full px-1.5 py-0.2 text-[10px] font-mono ${
+                  isSelected ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
+                }`}
+              >
+                {cat.count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {selectedCategory === "algorithm" ? (
-        <AlgorithmSettings />
+        <AlgorithmSettings compact />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left / Center Section: Category Tabs & Form Fields */}
-        <div className="lg:col-span-8 space-y-6">
-          {/* Search & Category Filter Toolbar */}
-          <div className="space-y-3 rounded-xl border border-border bg-card p-4 shadow-sm">
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search strings by name, content, surface or keyword (e.g. 'surge', 'hero', 'kingpay')..."
-                className="w-full rounded-lg border border-border bg-background pl-9 pr-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              {searchQuery && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left / Center Section: Banners Manager + Text Fields */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* Interactive Promo Banners Builder */}
+            {(selectedCategory === "banners" || selectedCategory === "all") && (
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <Megaphone className="h-4 w-4 text-emerald-600" />
+                      Home Screen Promo Banners (Title, Link &amp; Color)
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Add or edit promotional offer cards shown at the top of the customer app.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addBanner}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold cursor-pointer"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Add New Banner
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {banners.map((banner, index) => (
+                    <div
+                      key={banner.id}
+                      className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-800">
+                            Banner #{index + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => updateBanner(banner.id, { enabled: !banner.enabled })}
+                            className={`px-2.5 py-0.5 rounded-lg text-[10px] font-bold cursor-pointer ${
+                              banner.enabled
+                                ? "bg-emerald-600 text-white"
+                                : "bg-slate-200 text-slate-600"
+                            }`}
+                          >
+                            {banner.enabled ? "ACTIVE ON APP" : "HIDDEN"}
+                          </button>
+                        </div>
+
+                        {banners.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeBanner(banner.id)}
+                            className="inline-flex items-center gap-1 text-[11px] text-rose-600 hover:underline font-semibold cursor-pointer"
+                          >
+                            <Trash2 className="h-3 w-3" /> Delete
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                            Banner Headline
+                          </label>
+                          <input
+                            type="text"
+                            value={banner.title}
+                            onChange={(e) => updateBanner(banner.id, { title: e.target.value })}
+                            className="w-full px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-900"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                            Banner Subtitle
+                          </label>
+                          <input
+                            type="text"
+                            value={banner.subtitle}
+                            onChange={(e) => updateBanner(banner.id, { subtitle: e.target.value })}
+                            className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 bg-white text-slate-900"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                            Button Label &amp; Tap Link
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={banner.buttonText}
+                              onChange={(e) =>
+                                updateBanner(banner.id, { buttonText: e.target.value })
+                              }
+                              placeholder="Order Now"
+                              className="w-28 px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-900"
+                            />
+                            <div className="relative flex-1">
+                              <LinkIcon className="h-3 w-3 text-slate-400 absolute left-2.5 top-2" />
+                              <input
+                                type="text"
+                                value={banner.linkUrl}
+                                onChange={(e) =>
+                                  updateBanner(banner.id, { linkUrl: e.target.value })
+                                }
+                                placeholder="/offers"
+                                className="w-full pl-7 pr-2.5 py-1.5 text-xs font-mono rounded-lg border border-slate-300 bg-white text-slate-900"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                            Banner Background Color
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="color"
+                              value={banner.bgColor}
+                              onChange={(e) =>
+                                updateBanner(banner.id, { bgColor: e.target.value.toUpperCase() })
+                              }
+                              className="h-8 w-10 rounded cursor-pointer border border-slate-300"
+                            />
+                            <input
+                              type="text"
+                              value={banner.bgColor}
+                              onChange={(e) =>
+                                updateBanner(banner.id, { bgColor: e.target.value.toUpperCase() })
+                              }
+                              className="flex-1 px-2.5 py-1.5 text-xs font-mono font-bold rounded-lg border border-slate-300 bg-white text-slate-900"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Search Toolbar for App Text & Announcements */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="relative">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search any app banner, notice, or message (e.g. 'surge', 'wallet', 'FSSAI')..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-14 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-2.5 text-xs font-semibold text-slate-500 hover:text-slate-800"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Text Input Cards List */}
+            {loading ? (
+              <div className="flex h-48 items-center justify-center rounded-2xl border border-slate-200 bg-white">
+                <span className="text-xs text-slate-500">
+                  Loading app banners and announcements...
+                </span>
+              </div>
+            ) : filteredFields.length === 0 ? (
+              <div className="flex h-40 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center">
+                <p className="text-sm font-semibold text-slate-800">No matching messages found</p>
                 <button
                   type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-2.5 text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedCategory("all");
+                  }}
+                  className="mt-2 text-xs font-bold text-emerald-600 hover:underline"
                 >
-                  Clear
+                  Show All App Messages
                 </button>
-              )}
-            </div>
-
-            {/* Category Pills */}
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {categories.map((cat) => {
-                const Icon = cat.icon;
-                const isSelected = selectedCategory === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                      isSelected
-                        ? "bg-primary text-primary-foreground shadow-xs"
-                        : "bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground"
-                    }`}
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    <span>{cat.label}</span>
-                    <span className={`ml-1 rounded-full px-1.5 py-0.2 text-[10px] ${
-                      isSelected ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-muted-foreground"
-                    }`}>
-                      {cat.count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Input Cards List */}
-          {loading ? (
-            <div className="flex h-64 items-center justify-center rounded-xl border border-border bg-card">
-              <div className="flex flex-col items-center gap-2 text-muted-foreground text-sm">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                <span>Synchronizing Ecosystem Content Schema...</span>
               </div>
-            </div>
-          ) : filteredFields.length === 0 ? (
-            <div className="flex h-48 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card p-6 text-center">
-              <FileText className="h-8 w-8 text-muted-foreground/60 mb-2" />
-              <p className="text-sm font-medium text-foreground">No matching content strings found</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Try searching for a different keyword or select "All Copy" to view all content domains.
-              </p>
-              <button
-                type="button"
-                onClick={() => { setSearchQuery(""); setSelectedCategory("all"); }}
-                className="mt-3 text-xs font-medium text-primary hover:underline"
-              >
-                Reset Search Filters
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredFields.map((field) => {
-                const currentValue = formData[field.key] || "";
-                const isModified = currentValue !== initialData[field.key];
-                const isDefault = currentValue === DEFAULT_ECOSYSTEM_CMS[field.key];
-                const isSelectedForPreview = previewFieldKey === field.key;
+            ) : (
+              <div className="space-y-4">
+                {filteredFields.map((field) => {
+                  const currentValue = formData[field.key] || "";
+                  const isModified = currentValue !== initialData[field.key];
+                  const isDefault = currentValue === DEFAULT_ECOSYSTEM_CMS[field.key];
+                  const isSelectedForPreview = previewFieldKey === field.key;
 
-                return (
-                  <div
-                    key={field.key}
-                    className={`rounded-xl border transition-all p-5 shadow-xs ${
-                      isSelectedForPreview
-                        ? "border-primary/50 bg-card ring-1 ring-primary/20"
-                        : isModified
-                        ? "border-amber-500/30 bg-amber-500/5"
-                        : "border-border bg-card hover:border-border/80"
-                    }`}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <label className="text-sm font-semibold text-foreground">
-                          {field.label}
-                        </label>
-                        {isModified ? (
-                          <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 border border-amber-500/20">
-                            Unsaved Change
-                          </span>
-                        ) : !currentValue ? (
-                          <span className="rounded-md bg-zinc-500/10 px-2 py-0.5 text-[10px] font-medium text-zinc-500 border border-zinc-500/20">
-                            Blank / Not Configured
-                          </span>
-                        ) : isDefault ? (
-                          <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                            System Default
-                          </span>
-                        ) : (
-                          <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 border border-emerald-500/20">
-                            Customized
-                          </span>
-                        )}
+                  return (
+                    <div
+                      key={field.key}
+                      className={`rounded-2xl border transition-all p-5 shadow-xs bg-white ${
+                        isSelectedForPreview
+                          ? "border-emerald-500 ring-2 ring-emerald-500/15"
+                          : isModified
+                          ? "border-amber-400 bg-amber-50/20"
+                          : "border-slate-200"
+                      }`}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <label className="text-sm font-bold text-slate-900">{field.label}</label>
+                          {isModified ? (
+                            <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                              Unsaved Edit
+                            </span>
+                          ) : !isDefault ? (
+                            <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                              Customized
+                            </span>
+                          ) : null}
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewFieldKey(field.key)}
+                            className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer ${
+                              isSelectedForPreview
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "text-slate-500 hover:bg-slate-100"
+                            }`}
+                          >
+                            <Eye className="h-3 w-3" />
+                            Preview
+                          </button>
+
+                          {!isDefault && (
+                            <button
+                              type="button"
+                              onClick={() => handleResetField(field.key)}
+                              className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold text-slate-500 hover:bg-slate-100 cursor-pointer"
+                            >
+                              <RotateCcw className="h-3 w-3" />
+                              Default
+                            </button>
+                          )}
+
+                          {currentValue && (
+                            <button
+                              type="button"
+                              onClick={() => handleClearField(field.key)}
+                              className="rounded-lg px-2 py-1 text-[11px] font-semibold text-slate-400 hover:text-rose-600 cursor-pointer"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 self-end sm:self-auto">
-                        <button
-                          type="button"
-                          onClick={() => setPreviewFieldKey(field.key)}
-                          className={`flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors ${
-                            isSelectedForPreview
-                              ? "bg-primary/10 text-primary"
-                              : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                          }`}
-                          title="Simulate this string in Mobile Customer Viewport"
-                        >
-                          <Eye className="h-3 w-3" />
-                          Simulate
-                        </button>
+                      <p className="text-xs text-slate-500 mb-3">{field.description}</p>
 
-                        {!isDefault && (
-                          <button
-                            type="button"
-                            onClick={() => handleResetField(field.key)}
-                            className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
-                            title="Reset this field to standard platform default"
-                          >
-                            <RotateCcw className="h-3 w-3" />
-                            Reset Default
-                          </button>
-                        )}
+                      {field.multiline ? (
+                        <textarea
+                          rows={2}
+                          value={currentValue}
+                          onChange={(e) => handleChange(field.key, e.target.value)}
+                          placeholder={field.placeholder}
+                          className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={currentValue}
+                          onChange={(e) => handleChange(field.key, e.target.value)}
+                          placeholder={field.placeholder}
+                          className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white"
+                        />
+                      )}
 
-                        {currentValue && (
-                          <button
-                            type="button"
-                            onClick={() => handleClearField(field.key)}
-                            className="rounded-md px-2 py-1 text-[11px] text-muted-foreground hover:bg-secondary hover:text-red-500 transition-colors"
-                            title="Clear string value (empty state)"
-                          >
-                            Clear
-                          </button>
-                        )}
+                      <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
+                        <span>
+                          Shown on: <strong className="text-slate-600">{field.customerSurface}</strong>
+                        </span>
+                        <span className="font-mono text-[10px]">{currentValue.length} chars</span>
                       </div>
                     </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
-                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                      {field.description}
-                    </p>
+          {/* Right Section: Live Customer Phone Preview */}
+          <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-6">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <Smartphone className="h-4 w-4 text-emerald-600" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                    Live Phone Preview
+                  </h3>
+                </div>
+                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-semibold">
+                  LIVE TEXT
+                </span>
+              </div>
 
-                    {/* Input Element */}
-                    {field.multiline ? (
-                      <textarea
-                        rows={3}
-                        value={currentValue}
-                        onChange={(e) => handleChange(field.key, e.target.value)}
-                        placeholder={field.placeholder}
-                        className="w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary leading-normal resize-y"
-                      />
-                    ) : (
-                      <input
-                        type="text"
-                        value={currentValue}
-                        onChange={(e) => handleChange(field.key, e.target.value)}
-                        placeholder={field.placeholder}
-                        className="w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary"
-                      />
-                    )}
+              <p className="text-xs text-slate-500">
+                See how your active banners and announcements look inside the customer mobile app.
+              </p>
 
-                    {/* Footer Info Row */}
-                    <div className="mt-2.5 flex flex-wrap items-center justify-between text-[11px] text-muted-foreground gap-2 pt-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-mono text-[10px] text-muted-foreground/80 bg-secondary/80 px-1.5 py-0.5 rounded">
-                          {field.key}
-                        </span>
-                        <span>•</span>
-                        <span className="text-muted-foreground">
-                          Surface: <strong className="font-medium text-foreground/80">{field.customerSurface}</strong>
-                        </span>
-                      </div>
-                      <span className="font-mono text-[10px]">
-                        {currentValue.length} characters
+              {/* Phone Frame */}
+              <div className="mx-auto max-w-[280px] rounded-3xl border-4 border-slate-800 bg-slate-950 p-3 shadow-xl text-slate-100 font-sans">
+                <div className="flex items-center justify-between text-[10px] text-slate-400 mb-2 px-1">
+                  <span>09:41</span>
+                  <span className="font-bold text-white">OrderKing</span>
+                  <span>5G</span>
+                </div>
+
+                <div className="space-y-2.5 py-1">
+                  {/* Brand Header */}
+                  <div className="rounded-xl bg-slate-900 border border-slate-800 p-2.5 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-amber-400">
+                        {formData.brandTagline || "Have It Your Way"}
                       </span>
+                      <span className="text-[9px] text-slate-400">Sribhumi</span>
+                    </div>
+                    <div className="text-[10px] text-slate-300">
+                      📍 {formData.deliveryLocationPrompt || "Delivering fresh to your location"}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
 
-        {/* Right Section: Mobile Customer Viewport Simulation */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="sticky top-6 rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-border">
-              <div className="flex items-center gap-2">
-                <Smartphone className="h-4 w-4 text-primary" />
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Customer App Telemetry Simulator
-                </h3>
-              </div>
-              <span className="text-[10px] font-mono text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                100% Native Render
-              </span>
-            </div>
+                  {/* Active Promo Banners */}
+                  {banners
+                    .filter((b) => b.enabled)
+                    .slice(0, 2)
+                    .map((b) => (
+                      <div
+                        key={b.id}
+                        className="rounded-xl p-2.5 text-white space-y-1"
+                        style={{ backgroundColor: b.bgColor }}
+                      >
+                        <div className="text-xs font-extrabold leading-tight">{b.title}</div>
+                        <div className="text-[9px] opacity-90 leading-snug">{b.subtitle}</div>
+                        <div className="pt-1 flex items-center justify-between">
+                          <span className="inline-block rounded bg-black/25 px-2 py-0.5 text-[9px] font-bold">
+                            {b.buttonText}
+                          </span>
+                          <span className="text-[8px] font-mono opacity-75">{b.linkUrl}</span>
+                        </div>
+                      </div>
+                    ))}
 
-            <p className="text-xs text-muted-foreground">
-              Real-time rendering of active copy across customer interaction viewports. Select any field to inspect its appearance.
-            </p>
-
-            {/* Simulated Phone Frame */}
-            <div className="mx-auto max-w-[280px] rounded-2xl border-4 border-zinc-800 bg-zinc-950 p-3 shadow-xl text-zinc-100 font-sans">
-              {/* Phone Status Bar */}
-              <div className="flex items-center justify-between text-[10px] text-zinc-400 mb-2 px-1">
-                <span>09:41</span>
-                <span className="font-semibold tracking-tighter">OrderKing Pay</span>
-                <span>5G 100%</span>
-              </div>
-
-              {/* In-app Notification / Banner preview */}
-              <div className="space-y-3 py-1">
-                {/* Brand Header */}
-                <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-2.5 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-amber-400">
-                      {formData.brandTagline || "Have It Your Way"}
-                    </span>
-                    <span className="text-[9px] text-zinc-400">Karimganj Town</span>
+                  {/* Hero Showcase */}
+                  <div className="rounded-xl bg-slate-900 border border-slate-800 p-2.5 space-y-1">
+                    <h4 className="text-xs font-bold leading-tight text-white">
+                      {formData.homepageHeroText || "Home Headline"}
+                    </h4>
+                    <p className="text-[10px] text-slate-400 leading-snug">
+                      {formData.homepageHeroSubtitle || "Home Subtitle"}
+                    </p>
                   </div>
-                  <div className="text-[10px] text-zinc-300">
-                    📍 {formData.deliveryLocationPrompt || "Delivering fresh to your location"}
-                  </div>
-                </div>
 
-                {/* Hero Showcase */}
-                <div className="rounded-lg bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 p-3 space-y-1.5">
-                  <h4 className="text-xs font-bold leading-tight text-white">
-                    {formData.homepageHeroText || "[Homepage Hero Text Unconfigured]"}
-                  </h4>
-                  <p className="text-[10px] text-zinc-400 leading-snug">
-                    {formData.homepageHeroSubtitle || "[Hero Subtitle Unconfigured]"}
-                  </p>
-                  <div className="pt-1">
-                    <span className="inline-block rounded bg-amber-500/20 px-2 py-0.5 text-[9px] font-medium text-amber-300 border border-amber-500/30">
-                      {formData.badgeGuaranteeText || "100% Hygienic Packaging"}
-                    </span>
+                  {/* Zero Surge Promise Card */}
+                  <div className="rounded-xl bg-emerald-950/60 border border-emerald-800/50 p-2.5 space-y-1">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
+                      <ShieldCheck className="h-3 w-3 shrink-0" />
+                      <span>NO-SURGE PROMISE</span>
+                    </div>
+                    <p className="text-[9px] text-emerald-200 leading-tight">
+                      {formData.zomatoSurgeWarningText}
+                    </p>
                   </div>
-                </div>
 
-                {/* Zomato Surge Warning Simulated Card */}
-                <div className="rounded-lg bg-emerald-950/60 border border-emerald-800/50 p-2.5 space-y-1">
-                  <div className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-400">
-                    <ShieldCheck className="h-3 w-3 shrink-0" />
-                    <span>ZERO SURGE ASSURANCE</span>
+                  {/* Regulatory Footer */}
+                  <div className="text-center pt-1 text-[8px] text-slate-500">
+                    {formData.fssaiComplianceBannerText}
                   </div>
-                  <p className="text-[9px] text-emerald-200 leading-tight">
-                    {formData.zomatoSurgeWarningText || "[Surge Warning Text Unconfigured]"}
-                  </p>
-                </div>
-
-                {/* KingPay Offline / Online Switch Card */}
-                <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-2.5 space-y-1">
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="font-semibold text-amber-400">KingPay 1-Tap Node</span>
-                    <span className="text-[9px] text-zinc-400">Status Check</span>
-                  </div>
-                  <p className="text-[9px] text-zinc-300 leading-snug">
-                    {formData.kingPayOfflineMessage || "[KingPay Offline Message Unconfigured]"}
-                  </p>
-                </div>
-
-                {/* Live Order Timeline Snippet */}
-                <div className="rounded-lg bg-zinc-900/80 border border-zinc-800/80 p-2.5 space-y-1.5">
-                  <div className="text-[10px] font-semibold text-zinc-200">Live Delivery Telemetry</div>
-                  <div className="flex items-start gap-1.5 text-[9px] text-zinc-300">
-                    <div className="mt-0.5 h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
-                    <span>{formData.riderEnRouteStatusText || "[Rider En Route Status Unconfigured]"}</span>
-                  </div>
-                </div>
-
-                {/* Regulatory Footer */}
-                <div className="text-center pt-1 text-[8px] text-zinc-500">
-                  {formData.fssaiComplianceBannerText || "FSSAI Food Safety Network"}
                 </div>
               </div>
-            </div>
 
-            {/* Currently Focused Field Breakdown */}
-            <div className="rounded-lg border border-border bg-muted/40 p-3 space-y-1.5">
-              <span className="text-[10px] font-semibold uppercase text-muted-foreground tracking-wider">
-                Active Simulation Focus
-              </span>
-              <div className="text-xs font-semibold text-foreground">
-                {FIELD_DEFINITIONS.find((f) => f.key === previewFieldKey)?.label}
+              {/* Selected Text Preview Box */}
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                  Selected Text Preview
+                </span>
+                <div className="text-xs font-bold text-slate-800">
+                  {FIELD_DEFINITIONS.find((f) => f.key === previewFieldKey)?.label}
+                </div>
+                <p className="text-xs font-mono text-emerald-800 bg-white p-2 rounded-lg border border-slate-200 break-words">
+                  {formData[previewFieldKey] || "[Currently empty]"}
+                </p>
               </div>
-              <p className="text-xs font-mono text-primary bg-background/80 p-2 rounded border border-border/80 break-words">
-                {formData[previewFieldKey] || "[Value is currently blank]"}
-              </p>
             </div>
           </div>
         </div>
-      </div>
       )}
     </div>
   );

@@ -198,32 +198,32 @@ function AccountPage() {
                   🎁
                 </span>
                 <div>
-                  <h3 className="font-display text-lg font-bold text-fg">Refer & Earn Wallet Cash</h3>
-                  <p className="text-xs text-muted">Give ₹40 + Free Delivery, Get ₹25 for every friend who orders (min ₹249)</p>
+                  <h3 className="font-display text-lg font-bold text-fg">Share OrderKing with Friends</h3>
+                  <p className="text-xs text-muted">Invite friends to discover OrderKing. Cash referrals and voucher offers are not active.</p>
                 </div>
               </div>
             </div>
 
             <div className="mt-4 rounded-xl border border-border bg-surface p-3 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">Your Referral Code</span>
-                <p className="font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">KINGVIP</p>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">Referral program</span>
+                <p className="font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">Not active</p>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  void navigator.clipboard?.writeText("KINGVIP");
-                  toast.success("Referral code copied!");
+                  void navigator.clipboard?.writeText("https://www.orderkingpay.com/?src=invite");
+                  toast.success("OrderKing invitation link copied. No cash reward is offered.");
                 }}
                 className="rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-fg hover:bg-surface-3 transition"
               >
-                Copy Code
+                Copy Link
               </button>
             </div>
 
             <div className="mt-3 flex gap-2">
               <a
-                href={`https://wa.me/?text=${encodeURIComponent("Hey! Use my referral code KINGVIP to get ₹40 OFF + Free Delivery on your first delicious food order on OrderKing: https://orderking.in/?ref=KINGVIP")}`}
+                href={`https://wa.me/?text=${encodeURIComponent("Explore OrderKing services in your area: https://www.orderkingpay.com/?src=invite. No referral cash or voucher is promised.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-fg shadow-xs hover:bg-emerald-700 transition"
@@ -241,7 +241,7 @@ function AccountPage() {
               <span>⚙️</span>
               <span className="font-medium">App Settings &amp; Language Preferences</span>
             </div>
-            <span className="rounded bg-primary/15 px-2 py-0.5 text-[11px] font-bold text-primary">12 Indian Languages</span>
+            <span className="rounded bg-primary/15 px-2 py-0.5 text-[11px] font-bold text-primary">Language settings</span>
           </Link>
           <Link className="flex min-h-11 items-center justify-between rounded-[var(--radius-md)] bg-surface px-3 py-3 text-fg no-underline" to="/king-pay">
             <span className="font-medium">💳 KingPay (Wallet, Bills & Travel)</span>

@@ -188,8 +188,8 @@ export function DashboardPage() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.16em] text-muted">Today</p>
-          <h1 className="font-display text-3xl">Marketplace pulse</h1>
-          <p className="mt-1 text-sm text-muted">What happened. Is it normal. Does it need action.</p>
+          <h1 className="font-display text-3xl">Today&apos;s Live Dashboard</h1>
+          <p className="mt-1 text-sm text-muted">Live Result · What Action To Take · Settings &amp; Customizations</p>
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" size="sm" onClick={() => { void q.refetch(); void zq.refetch(); inv(); }}>
@@ -204,6 +204,87 @@ export function DashboardPage() {
         <p className="text-muted">{q.data && !q.data.ok ? q.data.error : "Loading…"}</p>
       ) : (
         <>
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="rounded-[20px] border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-1.5">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-500">
+                1. Live Result
+              </p>
+              <h2 className="text-base font-bold text-fg">
+                {formatNumber(t!.orders.value)} Orders · {money(t!.gmv.value)} GMV
+              </h2>
+              <p className="text-xs text-muted">
+                {formatNumber(t!.activeRestaurants.value)} active kitchens and{" "}
+                {formatNumber(t!.onlineRiders.value)} riders online right now.
+              </p>
+            </div>
+
+            <div className="rounded-[20px] border border-amber-500/30 bg-amber-500/5 p-4 space-y-2">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-amber-500">
+                2. What Action To Take
+              </p>
+              <h2 className="text-base font-bold text-fg">
+                {data.live.delayedOrders > 0 || data.live.unassignedOrders > 0
+                  ? `${formatNumber(data.live.delayedOrders)} Delayed · ${formatNumber(data.live.unassignedOrders)} Unassigned`
+                  : "All Orders On Time"}
+              </h2>
+              <div className="flex flex-wrap gap-1.5 pt-0.5 text-xs">
+                <Link
+                  to="/app/$module"
+                  params={{ module: "dispatch" }}
+                  className="rounded-lg border border-border bg-surface px-2.5 py-1 font-semibold hover:bg-elevated"
+                >
+                  Open Dispatch →
+                </Link>
+                <Link
+                  to="/app/$module"
+                  params={{ module: "orders" }}
+                  className="rounded-lg border border-border bg-surface px-2.5 py-1 font-semibold hover:bg-elevated"
+                >
+                  Check Orders →
+                </Link>
+                <Link
+                  to="/app/$module"
+                  params={{ module: "approvals" }}
+                  className="rounded-lg border border-border bg-surface px-2.5 py-1 font-semibold hover:bg-elevated"
+                >
+                  Approvals →
+                </Link>
+              </div>
+            </div>
+
+            <div className="rounded-[20px] border border-border bg-surface p-4 space-y-2">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-primary">
+                3. Settings &amp; Customizations
+              </p>
+              <h2 className="text-base font-bold text-fg">
+                Customize Fees, Zones &amp; Switches
+              </h2>
+              <div className="flex flex-wrap gap-1.5 pt-0.5 text-xs">
+                <Link
+                  to="/app/$module"
+                  params={{ module: "settings" }}
+                  className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
+                >
+                  ⚙️ Fees &amp; SLA
+                </Link>
+                <Link
+                  to="/app/$module"
+                  params={{ module: "zones" }}
+                  className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
+                >
+                  🗺️ Map Zones
+                </Link>
+                <Link
+                  to="/app/$module"
+                  params={{ module: "flags" }}
+                  className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
+                >
+                  🚩 Feature Switches
+                </Link>
+              </div>
+            </div>
+          </div>
+
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard label="Orders" value={formatNumber(t!.orders.value)} source={t!.orders.label} />
             <MetricCard label="GMV" value={money(t!.gmv.value)} source={t!.gmv.label} />
@@ -2198,7 +2279,7 @@ const ZOMATO_PARITY_ITEMS = [
   { tier: "P1", title: "Unified notification outbox for Push, SMS, and WhatsApp", status: "VERIFIED" },
 ];
 
-function AiPage({ mode }: { mode: "ops" | "ceo" }) {
+export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
   const [activeTab, setActiveTab] = useState<"console" | "ecosystem" | "backlog" | "governance" | "growth">("console");
   const [specialistId, setSpecialistId] = useState<string>("architect");
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>(
@@ -2291,10 +2372,10 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
               </p>
             </div>
             <h1 className="mt-1 font-display text-2xl sm:text-3xl">
-              Master AI Command Center
+              6. UMAR AI — Assistant &amp; 16 Teams
             </h1>
             <p className="mt-1 text-xs text-muted sm:text-sm">
-              Governed engineering, multi-repository orchestration & operations control layer.
+              Live Result · What Action To Take · Settings &amp; Customizations
             </p>
           </div>
 
@@ -2365,23 +2446,82 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
               activeTab === "growth" ? "bg-amber-500 text-black font-semibold shadow-xs" : "bg-elevated text-muted hover:text-foreground"
             )}
           >
-            <span>🏛️</span> 10,000x Executive Growth &amp; Grants Vault
+            <span>🏛️</span> Growth &amp; Grants Vault
           </button>
         </div>
       </header>
 
-      {/* 1-Click Natural-Language Command Chips (Mandate 1, 3.8 & 6) */}
+      {/* 3-Card Summary: Live Result, What Action To Take, Settings & Customizations */}
+      <div className="grid gap-3 md:grid-cols-3">
+        <div className="rounded-[20px] border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-1">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-500">
+            1. Live Result
+          </p>
+          <h2 className="text-base font-bold text-fg">
+            {MANDATE_1_SPECIALIST_DEPARTMENTS.length} AI Teams · {ecosystem?.repos?.filter((r) => r.existsOnDisk).length ?? 5} / 5 Apps Ready
+          </h2>
+          <p className="text-xs text-muted">
+            Active team: <strong className="text-fg">{currentDepartment?.name}</strong> ({currentSpecialist?.name ?? specialistId}).
+          </p>
+        </div>
+
+        <div className="rounded-[20px] border border-amber-500/30 bg-amber-500/5 p-4 space-y-1">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-amber-500">
+            2. What Action To Take
+          </p>
+          <h2 className="text-base font-bold text-fg">
+            Pick a Quick Check or Ask a Question
+          </h2>
+          <p className="text-xs text-muted">
+            Click any quick check below or type a question in plain English, then click <strong>Dispatch Command</strong>.
+          </p>
+        </div>
+
+        <div className="rounded-[20px] border border-border bg-surface p-4 space-y-2">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-primary">
+            3. Settings &amp; Customizations
+          </p>
+          <h2 className="text-base font-bold text-fg">
+            AI Model, Safety Rules &amp; Approvals
+          </h2>
+          <div className="flex flex-wrap gap-1.5 text-xs">
+            <button
+              type="button"
+              onClick={() => setActiveTab("governance")}
+              className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
+            >
+              ⚙️ AI Safety Rules
+            </button>
+            <Link
+              to="/app/$module"
+              params={{ module: "approvals" }}
+              className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
+            >
+              ✅ Approvals
+            </Link>
+            <Link
+              to="/app/$module"
+              params={{ module: "settings" }}
+              className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
+            >
+              ⚙️ Master Settings
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* 1-Click Quick Actions */}
       <div className="rounded-[20px] border border-border bg-surface p-4 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <p className="text-[11px] font-mono uppercase tracking-wider text-primary font-semibold">
-              Instant Natural-Language Command Chips
+              Quick Actions — What Action To Take
             </p>
             <p className="text-xs text-muted">
-              1-click routing to verified CRM revenue buckets, multi-region franchise ROI math, 6-tier security shield, and live kitchen/rider SLA telemetry.
+              1-click checks for B2B CRM sales, franchise ROI math, security &amp; webhooks, and live kitchen/rider SLAs.
             </p>
           </div>
-          <Badge tone="info">16-DEPT SWITCHBOARD LINKED</Badge>
+          <Badge tone="info">16 AI TEAMS LINKED</Badge>
         </div>
         <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
           <button
@@ -2398,12 +2538,12 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
           >
             <div className="flex items-center justify-between gap-1">
               <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                1. B2B SaaS CRM Pipeline Audit
+                1. B2B &amp; CRM Sales Check
               </span>
-              <span className="text-[10px] font-mono text-emerald-600">DEPT #06</span>
+              <span className="text-[10px] font-mono text-emerald-600">TEAM #06</span>
             </div>
             <p className="mt-1 text-[11px] text-muted">
-              Verify 9 commercial revenue buckets, VERIFIED_CRM_RECORD vs SCENARIO_TEMPLATE, and 10 sellable services.
+              Check verified CRM deals, scenario templates, and 10 B2B services.
             </p>
           </button>
 
@@ -2421,12 +2561,12 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
           >
             <div className="flex items-center justify-between gap-1">
               <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
-                2. 15-Unit India/US/Saudi Franchise ROI
+                2. 15-Store Franchise ROI
               </span>
-              <span className="text-[10px] font-mono text-blue-600">DEPT #06</span>
+              <span className="text-[10px] font-mono text-blue-600">TEAM #06</span>
             </div>
             <p className="mt-1 text-[11px] text-muted">
-              Run mathematical 15-unit ROI simulation in INR, USD, and SAR with per-store annual savings.
+              Compare 28%-30% aggregator commissions vs direct platform savings.
             </p>
           </button>
 
@@ -2444,12 +2584,12 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
           >
             <div className="flex items-center justify-between gap-1">
               <span className="text-xs font-bold text-purple-700 dark:text-purple-300">
-                3. 6-Tier Security &amp; Webhook Scan
+                3. Security &amp; Webhook Check
               </span>
-              <span className="text-[10px] font-mono text-purple-600">DEPT #12</span>
+              <span className="text-[10px] font-mono text-purple-600">TEAM #12</span>
             </div>
             <p className="mt-1 text-[11px] text-muted">
-              Audit HMAC-SHA256 webhook replay windows, optical proof registry, and server-bound RBAC invariants.
+              Verify HMAC-SHA256 payment webhooks, role permissions, and fraud checks.
             </p>
           </button>
 
@@ -2467,20 +2607,20 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
           >
             <div className="flex items-center justify-between gap-1">
               <span className="text-xs font-bold text-amber-700 dark:text-amber-300">
-                4. Live Kitchen/Rider SLA Status
+                4. Live Kitchen &amp; Rider Status
               </span>
-              <span className="text-[10px] font-mono text-amber-600">DEPT #09/#10</span>
+              <span className="text-[10px] font-mono text-amber-600">TEAM #09/#10</span>
             </div>
             <p className="mt-1 text-[11px] text-muted">
-              Inspect live kitchen KDS prep queues, Haversine rider proximity assignment, and delayed order count.
+              Check active kitchens, online riders, and delayed orders right now.
             </p>
           </button>
         </div>
       </div>
 
-      {/* 16 Specialist Departments Switchboard (MANDATE_1_SPECIALIST_DEPARTMENTS) */}
+      {/* 16 Specialist Teams Switchboard */}
       <Panel
-        title={`16 Specialist Departments Switchboard (${MANDATE_1_SPECIALIST_DEPARTMENTS.length} Mandate 1 Departments)`}
+        title={`16 AI Teams — Select a Specialist Team (${MANDATE_1_SPECIALIST_DEPARTMENTS.length} Teams)`}
         action={
           currentDepartment ? (
             <Button
@@ -2595,7 +2735,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Left Column: Specialist Selector & Presets */}
           <div className="space-y-4 lg:col-span-1">
-            <Panel title="Specialist Delegation">
+            <Panel title="AI Team &amp; Model Settings">
               <label className="block text-xs font-medium text-muted">Active Specialist Persona</label>
               <select
                 className="mt-1.5 w-full rounded-[12px] border border-border bg-elevated px-3 py-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
@@ -2641,7 +2781,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
               </div>
             </Panel>
 
-            <Panel title="Operational Directives">
+            <Panel title="Daily Checks">
               <div className="space-y-1.5 text-xs">
                 <button
                   type="button"
@@ -2686,7 +2826,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
               </div>
             </Panel>
 
-            <Panel title="Autonomous Owner Directives">
+            <Panel title="1-Click Founder Actions">
               <div className="space-y-1.5 text-xs">
                 <button
                   type="button"
@@ -3010,7 +3150,7 @@ function AiPage({ mode }: { mode: "ops" | "ceo" }) {
 
           {/* Right Column: Interactive Console & Execution Stream */}
           <div className="space-y-4 lg:col-span-2">
-            <Panel title="Command Console">
+            <Panel title="Ask UMAR AI — Live Result &amp; Action Plan">
               <div className="space-y-4">
                 {/* Input Area */}
                 <div className="relative">

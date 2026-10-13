@@ -46,10 +46,13 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { bootstrapSession, updateEmployeeFn } from "@/lib/orderking/actions";
 import {
   NAV,
+  UMAR_OS_10_WORLDS,
   UMAR_OS_BOTTOM_HUBS,
   itemAllowed,
   type BottomNavHub,
   type BottomNavOption,
+  type BottomNavWorld,
+  type BottomNavWorldId,
 } from "@/lib/orderking/nav";
 import { LOCALES, LOCALE_LABELS, t, type Locale } from "@/lib/orderking/i18n";
 import { parseCommand, intentPath } from "@/lib/orderking/search";
@@ -210,6 +213,84 @@ const TIER_STYLES: Record<AlertSeverityTier, { badge: string; border: string }> 
   },
 };
 
+function resolveWorldFromPath(pathname: string): BottomNavWorld {
+  if (
+    pathname.startsWith("/app/orders") ||
+    pathname.startsWith("/app/dispatch") ||
+    pathname.startsWith("/app/restaurants") ||
+    pathname.startsWith("/app/riders") ||
+    pathname.startsWith("/app/customers") ||
+    pathname.startsWith("/app/kyc") ||
+    pathname.startsWith("/app/support") ||
+    pathname.startsWith("/app/promotions")
+  ) {
+    return UMAR_OS_10_WORLDS[1]!;
+  }
+  if (
+    pathname.startsWith("/app/finance") ||
+    pathname.startsWith("/app/settlements") ||
+    pathname.startsWith("/app/economics") ||
+    pathname.startsWith("/app/loyalty") ||
+    pathname.startsWith("/app/rbi-compliance-hub")
+  ) {
+    return UMAR_OS_10_WORLDS[2]!;
+  }
+  if (
+    pathname.startsWith("/app/travel") ||
+    pathname.startsWith("/app/education") ||
+    pathname.startsWith("/app/jobs") ||
+    pathname.startsWith("/app/employees")
+  ) {
+    return UMAR_OS_10_WORLDS[3]!;
+  }
+  if (
+    pathname.startsWith("/app/ceo") ||
+    pathname.startsWith("/app/founder-command") ||
+    pathname.startsWith("/app/baas-hijack-hub") ||
+    pathname.startsWith("/app/pos-terminals") ||
+    pathname.startsWith("/app/reports")
+  ) {
+    return UMAR_OS_10_WORLDS[4]!;
+  }
+  if (pathname.startsWith("/app/ai")) {
+    return UMAR_OS_10_WORLDS[5]!;
+  }
+  if (
+    pathname.startsWith("/app/cms") ||
+    pathname.startsWith("/app/branding") ||
+    pathname.startsWith("/app/marketing") ||
+    pathname.startsWith("/app/meta-dm") ||
+    pathname.startsWith("/app/jio-airtel") ||
+    pathname.startsWith("/app/telecom-arbitrage") ||
+    pathname.startsWith("/app/wifi-interception") ||
+    pathname.startsWith("/app/oem-lockscreen")
+  ) {
+    return UMAR_OS_10_WORLDS[6]!;
+  }
+  if (
+    pathname.startsWith("/app/golive") ||
+    pathname.startsWith("/app/fintech-connectors") ||
+    pathname.startsWith("/app/zones") ||
+    pathname.startsWith("/app/tech-registry") ||
+    pathname.startsWith("/app/world-tech")
+  ) {
+    return UMAR_OS_10_WORLDS[7]!;
+  }
+  if (
+    pathname.startsWith("/app/notifications") ||
+    pathname.startsWith("/app/risk") ||
+    pathname.startsWith("/app/approvals") ||
+    pathname.startsWith("/app/audit") ||
+    pathname.startsWith("/app/health")
+  ) {
+    return UMAR_OS_10_WORLDS[8]!;
+  }
+  if (pathname.startsWith("/app/settings") || pathname.startsWith("/app/flags")) {
+    return UMAR_OS_10_WORLDS[9]!;
+  }
+  return UMAR_OS_10_WORLDS[0]!;
+}
+
 export function CommandShell() {
   const { user, isPending } = useCurrentUserState();
   const [locale, setLocale] = useState<Locale>("en");
@@ -218,10 +299,14 @@ export function CommandShell() {
   const [cmdOpen, setCmdOpen] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [bellOpen, setBellOpen] = useState(false);
+  const [pageSettingsOpen, setPageSettingsOpen] = useState(false);
+  const [pageDensity, setPageDensity] = useState<"comfortable" | "compact">("comfortable");
+  const [pageAutoRefresh, setPageAutoRefresh] = useState<"10s" | "30s" | "manual">("10s");
+  const [pageDefaultCity, setPageDefaultCity] = useState<"all" | "karimganj" | "silchar">("all");
   const [selectedTierFilter, setSelectedTierFilter] = useState<"ALL" | AlertSeverityTier>("ALL");
   const [alerts, setAlerts] = useState<FounderRemediationAlert[]>(INITIAL_FOUNDER_ALERTS);
-  const [activeHubId, setActiveHubId] = useState<BottomNavHub["id"] | null>(null);
-  const [activeCategoryId, setActiveCategoryId] = useState<string>("delivery");
+  const [activeWorldId, setActiveWorldId] = useState<BottomNavWorldId | null>(null);
+  const [activeCategoryId, setActiveCategoryId] = useState<string>("home_dashboard");
   const [hubFilterQuery, setHubFilterQuery] = useState<string>("");
 
   const mainViewportRef = useRef<HTMLDivElement | null>(null);
@@ -263,7 +348,8 @@ export function CommandShell() {
         e.preventDefault();
         setCmdOpen((v) => !v);
       } else if (e.key === "Escape") {
-        setActiveHubId(null);
+        setActiveWorldId(null);
+        setPageSettingsOpen(false);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -370,25 +456,36 @@ export function CommandShell() {
     (a) => selectedTierFilter === "ALL" || a.tier === selectedTierFilter
   );
 
-  const activeHub = UMAR_OS_BOTTOM_HUBS.find((h) => h.id === activeHubId) ?? null;
+  const currentRouteWorld = resolveWorldFromPath(pathname);
+  const activeWorld = UMAR_OS_10_WORLDS.find((w) => w.id === activeWorldId) ?? null;
 
-  const handleSelectBottomHub = (hub: BottomNavHub) => {
-    if (activeHubId === hub.id) {
-      setActiveHubId(null);
+  const handleSelectBottomWorld = (world: BottomNavWorld) => {
+    if (activeWorldId === world.id) {
+      setActiveWorldId(null);
       setHubFilterQuery("");
       return;
     }
-    setActiveHubId(hub.id);
-    setActiveCategoryId(hub.categories[0]?.id ?? "");
+    setActiveWorldId(world.id);
+    setActiveCategoryId(world.categories[0]?.id ?? "");
+    setHubFilterQuery("");
+    void navigate({ to: world.defaultTo as "/app" });
+  };
+
+  const handleOpenWorldSettings = (world: BottomNavWorld) => {
+    const settingsCategory =
+      world.categories.find((c) => c.id.endsWith("_settings")) ??
+      world.categories[world.categories.length - 1];
+    setActiveWorldId(world.id);
+    setActiveCategoryId(settingsCategory?.id ?? world.categories[0]?.id ?? "");
     setHubFilterQuery("");
   };
 
   const handleSelectBottomOption = (
-    hub: BottomNavHub,
+    world: BottomNavWorld | BottomNavHub,
     categoryLabel: string,
     option: BottomNavOption
   ) => {
-    setActiveHubId(null);
+    setActiveWorldId(null);
     setHubFilterQuery("");
     void navigate({
       to: option.to as "/app",
@@ -396,14 +493,14 @@ export function CommandShell() {
       hash: option.hash,
     });
     toast.success(
-      `Opened ${option.label} (${hub.label} › ${categoryLabel} › ${option.subCategory})`
+      `Opened ${option.label} (${world.label} › ${categoryLabel} › ${option.subCategory})`
     );
   };
 
   const normalizedHubQuery = hubFilterQuery.trim().toLowerCase();
 
-  const visibleHubCategories = activeHub
-    ? activeHub.categories.filter((cat) => {
+  const visibleHubCategories = activeWorld
+    ? activeWorld.categories.filter((cat) => {
         if (!normalizedHubQuery) return true;
         const catMatches =
           cat.label.toLowerCase().includes(normalizedHubQuery) ||
@@ -429,7 +526,7 @@ export function CommandShell() {
   const displayedOptions: Array<{
     categoryLabel: string;
     option: BottomNavOption;
-  }> = activeHub
+  }> = activeWorld
     ? normalizedHubQuery
       ? visibleHubCategories.flatMap((cat) =>
           cat.options
@@ -618,6 +715,19 @@ export function CommandShell() {
               </div>
             </div>
 
+            {/* Page Settings & Customize Button (Every Page in /app/*) */}
+            <button
+              type="button"
+              onClick={() => setPageSettingsOpen(true)}
+              className="flex h-10 items-center gap-1.5 rounded-[10px] border border-amber-400/50 bg-amber-500/15 px-2.5 text-xs font-bold text-amber-300 hover:bg-amber-500/25 transition"
+              aria-label="Open Page Settings and Customize"
+              title="Customize this page's settings, rules, and layout"
+            >
+              <Settings className="size-4 text-amber-400 shrink-0" />
+              <span className="hidden sm:inline">⚙️ Page Settings &amp; Customize</span>
+              <span className="sm:hidden">⚙️ Settings</span>
+            </button>
+
             {/* 6-Tier Founder Notification & Auto-Remediation Bell */}
             <button
               type="button"
@@ -687,7 +797,15 @@ export function CommandShell() {
             </div>
           </header>
 
-          <main id="main" className="flex-1 px-3 py-4 pb-24 md:px-6 md:py-6 md:pb-24">
+          <main
+            id="main"
+            className={cn(
+              "flex-1 pb-28 md:pb-28",
+              pageDensity === "compact"
+                ? "px-2 py-2.5 md:px-4 md:py-3"
+                : "px-3 py-4 md:px-6 md:py-6"
+            )}
+          >
             <Suspense fallback={<CommandContentSkeleton />}>
               <Outlet />
             </Suspense>
@@ -716,6 +834,242 @@ export function CommandShell() {
           </div>
         </div>
       </div>
+
+      {/* Page Settings & Customize Slide-Over Drawer (Accessible from Every /app/* Page) */}
+      {pageSettingsOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-xs"
+          onClick={() => setPageSettingsOpen(false)}
+        >
+          <div
+            className="flex h-full w-full max-w-lg flex-col border-l border-border bg-surface text-fg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Settings className="size-5 text-amber-400" />
+                  <h2 className="text-base font-bold">
+                    ⚙️ Page Settings &amp; Customize
+                  </h2>
+                </div>
+                <p className="mt-0.5 text-xs text-muted">
+                  Active World: <strong className="text-fg">{currentRouteWorld.label}</strong> ({currentRouteWorld.shortTitle}) · Route <code className="font-mono">{pathname}</code>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPageSettingsOpen(false)}
+                className="rounded-lg p-1.5 text-muted hover:bg-elevated hover:text-fg"
+                aria-label="Close Page Settings Drawer"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 space-y-5 overflow-y-auto p-5 text-xs">
+              {/* Section 1: Live Page Layout & Display Controls */}
+              <div className="rounded-2xl border border-border bg-elevated/40 p-4 space-y-3">
+                <h3 className="text-sm font-bold text-fg">
+                  1. Customize This Page&apos;s Layout &amp; Refresh
+                </h3>
+                <div className="space-y-2.5">
+                  <div>
+                    <label className="block font-medium text-muted mb-1">
+                      Page Layout Spacing
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(["comfortable", "compact"] as const).map((mode) => (
+                        <button
+                          key={mode}
+                          type="button"
+                          onClick={() => {
+                            setPageDensity(mode);
+                            toast.success(`Page layout set to ${mode}`);
+                          }}
+                          className={cn(
+                            "rounded-xl border px-3 py-2 font-semibold capitalize transition",
+                            pageDensity === mode
+                              ? "border-amber-400 bg-amber-500/15 text-fg"
+                              : "border-border bg-surface text-muted hover:text-fg"
+                          )}
+                        >
+                          {mode} View
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-muted mb-1">
+                      Live Data Refresh Speed
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["10s", "30s", "manual"] as const).map((interval) => (
+                        <button
+                          key={interval}
+                          type="button"
+                          onClick={() => {
+                            setPageAutoRefresh(interval);
+                            toast.success(`Refresh mode set to ${interval}`);
+                          }}
+                          className={cn(
+                            "rounded-xl border px-2.5 py-2 font-semibold uppercase transition",
+                            pageAutoRefresh === interval
+                              ? "border-amber-400 bg-amber-500/15 text-fg"
+                              : "border-border bg-surface text-muted hover:text-fg"
+                          )}
+                        >
+                          {interval}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-muted mb-1">
+                      Default City Scope
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(
+                        [
+                          { id: "all", label: "All Cities" },
+                          { id: "karimganj", label: "Karimganj" },
+                          { id: "silchar", label: "Silchar" },
+                        ] as const
+                      ).map((cityOpt) => (
+                        <button
+                          key={cityOpt.id}
+                          type="button"
+                          onClick={() => {
+                            setPageDefaultCity(cityOpt.id);
+                            toast.success(`Default city filter set to ${cityOpt.label}`);
+                          }}
+                          className={cn(
+                            "rounded-xl border px-2.5 py-2 font-semibold transition",
+                            pageDefaultCity === cityOpt.id
+                              ? "border-amber-400 bg-amber-500/15 text-fg"
+                              : "border-border bg-surface text-muted hover:text-fg"
+                          )}
+                        >
+                          {cityOpt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Current World Categories & Settings */}
+              <div className="rounded-2xl border border-border bg-elevated/40 p-4 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-bold text-fg">
+                      2. {currentRouteWorld.label} — Categories &amp; Options
+                    </h3>
+                    <p className="text-[11px] text-muted">
+                      {currentRouteWorld.shortTitle}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPageSettingsOpen(false);
+                      handleOpenWorldSettings(currentRouteWorld);
+                    }}
+                    className="rounded-xl border border-amber-400/50 bg-amber-500/15 px-3 py-1.5 font-bold text-amber-300 hover:bg-amber-500/25 transition"
+                  >
+                    Open Drawer →
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  {currentRouteWorld.categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => {
+                        setPageSettingsOpen(false);
+                        setActiveWorldId(currentRouteWorld.id);
+                        setActiveCategoryId(cat.id);
+                      }}
+                      className="flex items-center justify-between rounded-xl border border-border bg-surface px-3 py-2 text-left hover:bg-elevated transition"
+                    >
+                      <div>
+                        <p className="font-bold text-fg">{cat.label}</p>
+                        <p className="text-[11px] text-muted">{cat.summary}</p>
+                      </div>
+                      <span className="rounded-md border border-border bg-bg px-2 py-0.5 font-mono text-[10px] text-muted">
+                        {cat.options.length} options
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Section 3: Direct Master Settings & Rule Pages */}
+              <div className="rounded-2xl border border-border bg-elevated/40 p-4 space-y-2.5">
+                <h3 className="text-sm font-bold text-fg">
+                  3. Master Rules, Fees &amp; App Customizations
+                </h3>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPageSettingsOpen(false);
+                      void navigate({ to: "/app/settings" as "/app" });
+                    }}
+                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
+                  >
+                    <p className="font-bold text-fg">⚙️ Fees &amp; SLA Rules</p>
+                    <p className="mt-0.5 text-[11px] text-muted">
+                      Delivery fees, commission bps &amp; prep timers
+                    </p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPageSettingsOpen(false);
+                      void navigate({ to: "/app/flags" as "/app" });
+                    }}
+                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
+                  >
+                    <p className="font-bold text-fg">🚩 Feature Switches</p>
+                    <p className="mt-0.5 text-[11px] text-muted">
+                      Turn modules on or off in 1 click
+                    </p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPageSettingsOpen(false);
+                      void navigate({ to: "/app/branding" as "/app" });
+                    }}
+                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
+                  >
+                    <p className="font-bold text-fg">🎨 App Colors &amp; Brand</p>
+                    <p className="mt-0.5 text-[11px] text-muted">
+                      Theme colors, logo &amp; white-label name
+                    </p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPageSettingsOpen(false);
+                      void navigate({ to: "/app/golive" as "/app" });
+                    }}
+                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
+                  >
+                    <p className="font-bold text-fg">🔌 API Keys &amp; Go-Live</p>
+                    <p className="mt-0.5 text-[11px] text-muted">
+                      Razorpay, SMS OTP, Maps &amp; DB keys
+                    </p>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {/* 6-Tier Founder Notification & Auto-Remediation Slide-Over Drawer */}
       {bellOpen ? (
@@ -882,11 +1236,11 @@ export function CommandShell() {
         </div>
       ) : null}
 
-      {/* Hierarchical Category -> Sub-Category -> Actionable Option Mega-Drawer */}
-      {activeHub ? (
+      {/* Hierarchical Category -> Sub-Category -> Actionable Option Mega-Drawer for the 10 Worlds */}
+      {activeWorld ? (
         <div
           className="fixed inset-0 bottom-16 z-40 flex flex-col justify-end bg-black/65 backdrop-blur-xs"
-          onClick={() => setActiveHubId(null)}
+          onClick={() => setActiveWorldId(null)}
         >
           <div
             className="mx-auto flex max-h-[78vh] w-full max-w-7xl flex-col overflow-hidden rounded-t-3xl border border-border bg-surface text-fg shadow-2xl"
@@ -898,56 +1252,64 @@ export function CommandShell() {
                 <div
                   className={cn(
                     "flex size-10 shrink-0 items-center justify-center rounded-xl border text-lg",
-                    activeHub.isPrimary
+                    activeWorld.isPrimary
                       ? "border-amber-400/50 bg-amber-500/15 text-amber-300"
                       : "border-border bg-surface text-fg"
                   )}
                 >
-                  <span aria-hidden="true">{activeHub.emoji}</span>
+                  <span aria-hidden="true">{activeWorld.emoji}</span>
                 </div>
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="font-display text-base font-bold text-fg md:text-lg">
-                      {activeHub.label}
+                      {activeWorld.label} — {activeWorld.shortTitle}
                     </h2>
                     <span
                       className={cn(
                         "rounded-full border px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider",
-                        activeHub.isPrimary
+                        activeWorld.isPrimary
                           ? "border-amber-400/50 bg-amber-500/20 text-amber-300"
                           : "border-border bg-surface text-muted"
                       )}
                     >
-                      {activeHub.badge}
+                      {activeWorld.badge}
                     </span>
                     <span className="text-[11px] font-mono text-muted">
-                      {activeHub.categories.length} Categories ·{" "}
-                      {activeHub.categories.reduce(
+                      {activeWorld.categories.length} Categories ·{" "}
+                      {activeWorld.categories.reduce(
                         (sum, cat) => sum + cat.options.length,
                         0
                       )}{" "}
-                      Controls
+                      Options
                     </span>
                   </div>
-                  <p className="mt-0.5 text-xs text-muted">{activeHub.tagline}</p>
+                  <p className="mt-0.5 text-xs text-muted">{activeWorld.tagline}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <div className="w-full md:w-80">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleOpenWorldSettings(activeWorld)}
+                  className="rounded-xl border border-amber-400/50 bg-amber-500/15 px-3 py-2 text-xs font-bold text-amber-300 hover:bg-amber-500/25 transition"
+                >
+                  ⚙️ World Settings
+                </button>
+                <div className="w-full sm:w-64">
                   <Input
                     value={hubFilterQuery}
                     onChange={(e) => setHubFilterQuery(e.target.value)}
-                    placeholder="Filter categories, sub-categories, or controls..."
-                    aria-label="Filter categories, sub-categories, or controls"
+                    placeholder="Search categories or options..."
+                    aria-label="Search categories or options"
                   />
                 </div>
                 <button
                   type="button"
-                  onClick={() => setActiveHubId(null)}
-                  className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-border bg-surface text-muted hover:bg-elevated hover:text-fg transition"
-                  aria-label="Close Hub Mega-Drawer"
+                  onClick={() => setActiveWorldId(null)}
+                  className="flex h-9 items-center gap-1 rounded-xl border border-border bg-surface px-2.5 text-xs font-semibold text-muted hover:bg-elevated hover:text-fg transition"
+                  aria-label="Close World Drawer"
                 >
+                  <span>View Page</span>
                   <X className="size-4" />
                 </button>
               </div>
@@ -955,10 +1317,10 @@ export function CommandShell() {
 
             {/* Mega-Drawer Two-Column Hierarchy Body */}
             <div className="grid flex-1 grid-cols-1 overflow-hidden md:grid-cols-12">
-              {/* Left/Top Column: Categories inside the selected Hub */}
+              {/* Left/Top Column: Categories inside the selected World */}
               <div className="border-b border-border bg-bg/40 p-3 overflow-y-auto md:col-span-4 md:border-b-0 md:border-r lg:col-span-3">
                 <p className="mb-2 px-2 font-mono text-[10px] font-bold uppercase tracking-widest text-muted">
-                  1. Select Category ({visibleHubCategories.length})
+                  1. Category ({visibleHubCategories.length})
                 </p>
                 <div className="flex gap-1.5 overflow-x-auto pb-1 md:flex-col md:overflow-x-visible md:pb-0">
                   {visibleHubCategories.map((cat) => {
@@ -974,7 +1336,7 @@ export function CommandShell() {
                         className={cn(
                           "flex shrink-0 items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left transition md:w-full",
                           isSelected
-                            ? activeHub.isPrimary
+                            ? activeWorld.isPrimary
                               ? "border-amber-400/50 bg-amber-500/15 text-fg shadow-xs"
                               : "border-primary/50 bg-elevated text-fg shadow-xs"
                             : "border-transparent bg-surface/50 text-muted hover:border-border hover:bg-surface hover:text-fg"
@@ -1002,7 +1364,7 @@ export function CommandShell() {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400">
-                          2. Sub-Categories &amp; Actionable Controls
+                          2. Sub-Category &amp; Option
                         </span>
                         <span className="rounded-full border border-border bg-elevated px-2 py-0.5 font-mono text-[10px] text-muted">
                           {activeCategory.badge}
@@ -1020,7 +1382,7 @@ export function CommandShell() {
                       Filtered Results ({displayedOptions.length})
                     </p>
                     <p className="text-xs text-muted">
-                      Showing matching sub-categories and controls in {activeHub.label}
+                      Showing matching sub-categories and options in {activeWorld.label}
                     </p>
                   </div>
                 )}
@@ -1028,7 +1390,7 @@ export function CommandShell() {
                 {displayedOptions.length === 0 ? (
                   <div className="rounded-2xl border border-border bg-bg/40 p-6 text-center">
                     <p className="text-sm font-semibold text-fg">
-                      No matching categories or controls found
+                      No matching categories or options found
                     </p>
                     <p className="mt-1 text-xs text-muted">
                       Clear the search filter or select another category on the left.
@@ -1046,7 +1408,7 @@ export function CommandShell() {
                           key={option.id}
                           type="button"
                           onClick={() =>
-                            handleSelectBottomOption(activeHub, categoryLabel, option)
+                            handleSelectBottomOption(activeWorld, categoryLabel, option)
                           }
                           className={cn(
                             "group flex flex-col justify-between rounded-2xl border p-4 text-left transition",
@@ -1080,7 +1442,7 @@ export function CommandShell() {
                               {option.hash ? `#${option.hash}` : ""}
                             </span>
                             <span className="font-semibold text-fg group-hover:translate-x-0.5 transition">
-                              Open Control →
+                              Open Option →
                             </span>
                           </div>
                         </button>
@@ -1094,90 +1456,65 @@ export function CommandShell() {
         </div>
       ) : null}
 
-      {/* Sticky Bottom Command Navigation Bar (5 Hubs + Home Dashboard) */}
+      {/* 10-Tab Sticky Bottom Navigation Bar (UMAR_OS_10_WORLDS) */}
       <nav
-        aria-label="UMAR OS Bottom Command Navigation Hubs"
-        className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-surface/95 px-2 py-1.5 shadow-2xl backdrop-blur md:px-4"
+        aria-label="UMAR OS 10-World Bottom Command Navigation"
+        className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-surface/95 px-2 py-1.5 shadow-2xl backdrop-blur md:px-3"
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-1.5 overflow-x-auto">
-          {/* Quick Home Dashboard Button */}
-          <button
-            type="button"
-            onClick={() => {
-              setActiveHubId(null);
-              setHubFilterQuery("");
-              void navigate({ to: "/app" });
-              mainViewportRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-              toast.success("Home Dashboard — Sovereign Command Overview");
-            }}
-            className={cn(
-              "flex shrink-0 items-center gap-1.5 rounded-xl border px-2.5 py-2 text-xs font-semibold transition",
-              pathname === "/app" && !activeHubId
-                ? "border-primary/50 bg-elevated text-fg"
-                : "border-border bg-bg/50 text-muted hover:bg-elevated hover:text-fg"
-            )}
-            title="Return to Home Dashboard (/app)"
-          >
-            <LayoutDashboard className="size-4 text-emerald-400 shrink-0" />
-            <span className="hidden sm:inline">Home Dashboard</span>
-          </button>
-
-          {/* 5 Hierarchical Bottom Navigation Hubs */}
-          <div className="flex flex-1 items-center justify-start gap-1.5 md:justify-center">
-            {UMAR_OS_BOTTOM_HUBS.map((hub) => {
-              const isOpen = activeHubId === hub.id;
-              const isPrimary = Boolean(hub.isPrimary);
-              return (
-                <button
-                  key={hub.id}
-                  type="button"
-                  onClick={() => handleSelectBottomHub(hub)}
-                  aria-expanded={isOpen}
-                  className={cn(
-                    "flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-left transition",
-                    isPrimary
-                      ? isOpen
-                        ? "border-amber-400 bg-amber-500/25 text-fg shadow-md ring-2 ring-amber-400/30"
-                        : "border-amber-400/60 bg-amber-500/15 text-fg hover:bg-amber-500/25 shadow-sm"
-                      : isOpen
-                        ? "border-primary bg-elevated text-fg shadow-sm"
-                        : "border-border bg-bg/60 text-muted hover:border-border hover:bg-elevated hover:text-fg"
-                  )}
-                >
-                  <span className="text-base leading-none" aria-hidden="true">
-                    {hub.emoji}
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-1 overflow-x-auto">
+          {UMAR_OS_10_WORLDS.map((world) => {
+            const isDrawerOpen = activeWorldId === world.id;
+            const isRouteActive = currentRouteWorld.id === world.id;
+            const isPrimary = Boolean(world.isPrimary);
+            return (
+              <button
+                key={world.id}
+                type="button"
+                onClick={() => handleSelectBottomWorld(world)}
+                aria-expanded={isDrawerOpen}
+                title={`${world.label} — ${world.shortTitle}`}
+                className={cn(
+                  "flex shrink-0 items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-left transition",
+                  isPrimary
+                    ? isDrawerOpen || isRouteActive
+                      ? "border-amber-400 bg-amber-500/25 text-fg shadow-md ring-1 ring-amber-400/30"
+                      : "border-amber-400/60 bg-amber-500/15 text-fg hover:bg-amber-500/25"
+                    : isDrawerOpen || isRouteActive
+                      ? "border-primary bg-elevated text-fg shadow-xs"
+                      : "border-border bg-bg/60 text-muted hover:border-border hover:bg-elevated hover:text-fg"
+                )}
+              >
+                <span className="text-sm leading-none" aria-hidden="true">
+                  {world.emoji}
+                </span>
+                <div className="leading-tight">
+                  <span
+                    className={cn(
+                      "block text-[11px] whitespace-nowrap",
+                      isPrimary
+                        ? "font-extrabold text-amber-300"
+                        : isDrawerOpen || isRouteActive
+                          ? "font-bold text-fg"
+                          : "font-semibold text-fg/90"
+                    )}
+                  >
+                    {world.label}
                   </span>
-                  <div className="leading-tight">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className={cn(
-                          "text-xs whitespace-nowrap",
-                          isPrimary ? "font-extrabold text-amber-300" : "font-bold text-fg"
-                        )}
-                      >
-                        {hub.label}
-                      </span>
-                      <span
-                        className={cn(
-                          "hidden rounded-full border px-1.5 py-0.2 font-mono text-[9px] font-bold uppercase lg:inline-block",
-                          isPrimary
-                            ? "border-amber-400/50 bg-amber-500/20 text-amber-200"
-                            : "border-border bg-surface text-muted"
-                        )}
-                      >
-                        {hub.badge}
-                      </span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                  <span className="hidden text-[9px] text-muted xl:block truncate max-w-[7.5rem]">
+                    {world.shortTitle}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </nav>
     </div>
   );
 }
+
+export const Shell = CommandShell;
+export { UMAR_OS_10_WORLDS, UMAR_OS_BOTTOM_HUBS };
 
 export function useEmployee() {
   const q = useQuery({ queryKey: ["session"], queryFn: () => bootstrapSession() });

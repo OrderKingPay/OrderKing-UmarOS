@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { getSql } from "@/lib/db";
 import { cn, formatInrExact } from "@/lib/utils";
 import {
@@ -10,7 +10,6 @@ import {
   RefreshCw,
   Calculator,
   Percent,
-  Sparkles,
   AlertCircle,
   CheckCircle2,
   Sliders,
@@ -20,8 +19,8 @@ import {
   CreditCard,
   ArrowDownRight,
   ArrowUpRight,
-  Activity,
-  Flame,
+  Save,
+  Settings,
 } from "lucide-react";
 
 export interface RealOrderTelemetry {
@@ -61,13 +60,36 @@ export interface FounderProfitSummary {
   timestamp: string;
 }
 
-// SERVER FUNCTION: Microscopic Real Money Financial Telemetry Engine
+interface CustomFounderSettings {
+  commissionPct: number;
+  minOrderInr: number;
+  deliveryFeeInr: number;
+  rainFeeInr: number;
+  riderBasePayInr: number;
+  gstPct: number;
+  payoutDay: string;
+  walletCashbackPct: number;
+}
+
+const DEFAULT_FOUNDER_SETTINGS: CustomFounderSettings = {
+  commissionPct: 20,
+  minOrderInr: 149,
+  deliveryFeeInr: 40,
+  rainFeeInr: 20,
+  riderBasePayInr: 30,
+  gstPct: 5,
+  payoutDay: "Daily (T+1)",
+  walletCashbackPct: 2,
+};
+
+const STORAGE_KEY = "orderking_founder_profit_settings";
+
+// Server function: Queries real paid customer orders from PostgreSQL
 export const getLiveFounderProfit = createServerFn({ method: "GET" }).handler(
   async (): Promise<FounderProfitSummary> => {
     try {
       const sql = await getSql();
 
-      // Query only REAL, non-simulated live orders to strictly honor the ZERO FAKE DATA mandate
       const rows = await sql<{
         id: string;
         public_id: string | null;
@@ -98,7 +120,7 @@ export const getLiveFounderProfit = createServerFn({ method: "GET" }).handler(
           payment_fee_paise,
           total_paise
         FROM orders
-        WHERE (data_mode IS NULL OR UPPER(data_mode) != 'SIMULATED')
+        WHERE (data_mode IS NULL OR UPPER(data_mode) = 'REAL')
           AND status NOT IN ('CANCELLED', 'DRAFT')
         ORDER BY created_at DESC
         LIMIT 50
@@ -119,8 +141,8 @@ export const getLiveFounderProfit = createServerFn({ method: "GET" }).handler(
           totalPaymentFeePaise: 0,
           orders: [],
           isEmpty: true,
-          displayProfitString: "₹0.00 (Awaiting Real Transactions)",
-          displayAvgString: "₹0.00 (Awaiting Real Transactions)",
+          displayProfitString: "₹0",
+          displayAvgString: "₹0",
           timestamp: new Date().toISOString(),
         };
       }
@@ -137,32 +159,30 @@ export const getLiveFounderProfit = createServerFn({ method: "GET" }).handler(
       const telemetryOrders: RealOrderTelemetry[] = rows.map((r) => {
         const foodSubtotal = Number(r.food_subtotal_paise ?? r.food_paise ?? 0);
         const deliveryFee = Number(r.delivery_fee_paise ?? 0);
-        const commissionBps = Number(r.commission_bps ?? 2000); // 20% standard baseline if bps not set
-        
-        // Exact Restaurant Commission calculation:
+        const commissionBps = Number(r.commission_bps ?? 2000);
+
         const commissionPaise =
           r.commission_paise != null && Number(r.commission_paise) > 0
             ? Number(r.commission_paise)
             : Math.floor((foodSubtotal * commissionBps) / 10000);
 
         const riderPayout = Number(r.rider_payout_paise ?? 0);
-        
-        // Payment Gateway Fee (Razorpay/PG standard ~1.95% or recorded fee)
+
         const paymentFee =
           r.payment_fee_paise != null && Number(r.payment_fee_paise) > 0
             ? Number(r.payment_fee_paise)
             : Math.floor((Number(r.total_paise ?? foodSubtotal) * 195) / 10000);
 
-        const totalPaise = Number(r.total_paise ?? (foodSubtotal + deliveryFee));
+        const totalPaise = Number(r.total_paise ?? foodSubtotal + deliveryFee);
 
-        // EXACT REVENUE FORMULA:
-        // (Restaurant Commission % + Delivery Fee) - (Rider Payout + Payment Gateway Fee)
         const inflowPaise = commissionPaise + deliveryFee;
         const outflowPaise = riderPayout + paymentFee;
         const exactProfitPaise = inflowPaise - outflowPaise;
 
         const marginPct =
-          totalPaise > 0 ? Number(((exactProfitPaise / totalPaise) * 100).toFixed(2)) : 0;
+          totalPaise > 0
+            ? Number(((exactProfitPaise / totalPaise) * 100).toFixed(2))
+            : 0;
 
         totalInflowPaise += inflowPaise;
         totalOutflowPaise += outflowPaise;
@@ -219,7 +239,7 @@ export const getLiveFounderProfit = createServerFn({ method: "GET" }).handler(
         timestamp: new Date().toISOString(),
       };
     } catch (err) {
-      console.error("[getLiveFounderProfit] Database telemetry query failed:", err);
+      console.error("[getLiveFounderProfit] Database query failed:", err);
       return {
         realOrdersCount: 0,
         totalProfitPaise: 0,
@@ -234,8 +254,8 @@ export const getLiveFounderProfit = createServerFn({ method: "GET" }).handler(
         totalPaymentFeePaise: 0,
         orders: [],
         isEmpty: true,
-        displayProfitString: "₹0.00 (Awaiting Real Transactions)",
-        displayAvgString: "₹0.00 (Awaiting Real Transactions)",
+        displayProfitString: "₹0",
+        displayAvgString: "₹0",
         timestamp: new Date().toISOString(),
       };
     }
@@ -249,38 +269,105 @@ export function LiveFounderProfitDashboard() {
     refetchInterval: 10_000,
   });
 
-  // INTERACTIVE SIMULATOR TELEMETRY STATE
-  // Allows the Founder to model and enforce micro-margins on demand
-  const [commissionRatePct, setCommissionRatePct] = useState<number>(22); // e.g. 22%
-  const [avgFoodSubtotalInr, setAvgFoodSubtotalInr] = useState<number>(400); // ₹400
-  const [deliveryFeeInr, setDeliveryFeeInr] = useState<number>(45); // ₹45 charged to customer
-  const [riderPayoutInr, setRiderPayoutInr] = useState<number>(35); // ₹35 paid to rider
-  const [pgFeePct, setPgFeePct] = useState<number>(1.95); // 1.95% payment gateway fee
+  // Customization settings state (saved to localStorage + /api/v1/admin/settings)
+  const [customSettings, setCustomSettings] = useState<CustomFounderSettings>(
+    DEFAULT_FOUNDER_SETTINGS
+  );
+  const [isCustomizeOpen, setIsCustomizeOpen] = useState<boolean>(false);
+  const [isSavingSettings, setIsSavingSettings] = useState<boolean>(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+
+  // Calculator (Test Your Rates) state
+  const [commissionRatePct, setCommissionRatePct] = useState<number>(20);
+  const [avgFoodSubtotalInr, setAvgFoodSubtotalInr] = useState<number>(400);
+  const [deliveryFeeInr, setDeliveryFeeInr] = useState<number>(40);
+  const [riderPayoutInr, setRiderPayoutInr] = useState<number>(30);
+  const [pgFeePct, setPgFeePct] = useState<number>(1.95);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState<boolean>(true);
 
-  // Microscopic Per-Order Math
+  // Load saved custom settings on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<CustomFounderSettings>;
+        const merged = { ...DEFAULT_FOUNDER_SETTINGS, ...parsed };
+        setCustomSettings(merged);
+        setCommissionRatePct(merged.commissionPct);
+        setDeliveryFeeInr(merged.deliveryFeeInr);
+        setRiderPayoutInr(merged.riderBasePayInr);
+      }
+    } catch {
+      // Ignore storage parse errors
+    }
+
+    fetch("/api/v1/admin/settings")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((serverData) => {
+        if (serverData?.founder_profit_settings) {
+          const merged = {
+            ...DEFAULT_FOUNDER_SETTINGS,
+            ...serverData.founder_profit_settings,
+          };
+          setCustomSettings(merged);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        }
+      })
+      .catch(() => {
+        // Offline or local-only mode
+      });
+  }, []);
+
+  const handleSaveCustomSettings = async () => {
+    setIsSavingSettings(true);
+    setSaveMessage(null);
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(customSettings));
+      // Sync calculator inputs with saved custom defaults
+      setCommissionRatePct(customSettings.commissionPct);
+      setDeliveryFeeInr(customSettings.deliveryFeeInr);
+      setRiderPayoutInr(customSettings.riderBasePayInr);
+
+      const response = await fetch("/api/v1/admin/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          founder_profit_settings: customSettings,
+        }),
+      });
+
+      if (response.ok) {
+        setSaveMessage("Settings saved to database and applied to calculator.");
+      } else {
+        setSaveMessage("Settings saved locally on this device.");
+      }
+    } catch {
+      setSaveMessage("Settings saved locally on this device (offline mode).");
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
+  // Calculator math
   const simulation = useMemo(() => {
     const foodSubtotal = avgFoodSubtotalInr;
     const deliveryFee = deliveryFeeInr;
     const totalOrderValue = foodSubtotal + deliveryFee;
 
-    // Inflow: Commission + Delivery Fee
     const restaurantCommission = (foodSubtotal * commissionRatePct) / 100;
     const inflow = restaurantCommission + deliveryFee;
 
-    // Outflow: Rider Payout + Payment Gateway Fee
     const riderPayout = riderPayoutInr;
     const paymentGatewayFee = (totalOrderValue * pgFeePct) / 100;
     const outflow = riderPayout + paymentGatewayFee;
 
-    // Exact Real Money Profit
     const exactNetProfit = inflow - outflow;
-    const profitMarginPct = totalOrderValue > 0 ? (exactNetProfit / totalOrderValue) * 100 : 0;
+    const profitMarginPct =
+      totalOrderValue > 0 ? (exactNetProfit / totalOrderValue) * 100 : 0;
 
-    // Daily Projections
     const daily100 = exactNetProfit * 100;
     const daily500 = exactNetProfit * 500;
-    const daily2500 = exactNetProfit * 2500;
     const monthlyRunRate = daily500 * 30;
 
     return {
@@ -296,261 +383,470 @@ export function LiveFounderProfitDashboard() {
       profitMarginPct,
       daily100,
       daily500,
-      daily2500,
       monthlyRunRate,
       isProfitable: exactNetProfit > 0,
     };
-  }, [commissionRatePct, avgFoodSubtotalInr, deliveryFeeInr, riderPayoutInr, pgFeePct]);
+  }, [
+    commissionRatePct,
+    avgFoodSubtotalInr,
+    deliveryFeeInr,
+    riderPayoutInr,
+    pgFeePct,
+  ]);
 
   const isEmpty = !data || data.isEmpty || data.realOrdersCount === 0;
 
   return (
     <section className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm text-slate-900 transition-all">
-      {/* 1. Header & Live Telemetry Ribbon */}
+      {/* 1. Simple Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600">
-              <Activity className="h-4 w-4 animate-pulse" />
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+            <Wallet className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-black tracking-tight text-slate-900">
+                Founder Profit & Money
+              </h2>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <ShieldCheck className="h-3 w-3" />
+                Real Database Numbers
+              </span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-black tracking-tight text-slate-900">
-                  Live Founder Profit Dashboard
-                </h2>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <ShieldCheck className="h-3 w-3" />
-                  Real Money Telemetry
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Precision operating control over net revenue realization per order
-              </p>
-            </div>
+            <p className="text-xs text-slate-600 mt-0.5">
+              See your real profit from paid orders and customize your fee rules.
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-mono">
-            <span
-              className={cn(
-                "h-2 w-2 rounded-full",
-                isEmpty ? "bg-amber-500 animate-pulse" : "bg-emerald-500 animate-ping"
-              )}
-            />
-            <span className="text-slate-600 font-medium">
-              {isEmpty ? "POSTGRESQL IDLE" : "CANONICAL LEDGER STREAMING"}
-            </span>
-          </div>
-
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => refetch()}
             disabled={isLoading || isFetching}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs transition-colors disabled:opacity-50"
-            title="Refresh database telemetry"
           >
-            <RefreshCw className={cn("h-3.5 w-3.5", isFetching && "animate-spin text-emerald-600")} />
-            <span>Sync</span>
+            <RefreshCw
+              className={cn(
+                "h-3.5 w-3.5",
+                isFetching && "animate-spin text-emerald-600"
+              )}
+            />
+            <span>Refresh Data</span>
           </button>
         </div>
       </div>
 
-      {/* 2. REVENUE TELEMETRY EQUATION BANNER */}
-      <div className="mt-6 p-4 md:p-5 rounded-xl bg-slate-50 text-slate-900 shadow-xs border border-slate-200">
-        <div className="flex items-center justify-between mb-3 text-[11px] font-mono tracking-wider uppercase text-slate-500">
-          <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
-            <Sparkles className="h-3.5 w-3.5" />
-            Net Settlement Formula
-          </span>
-          <span className="text-slate-500">Production Ledger Active</span>
+      {/* 2. Top 3-Box Summary: Live Result + Action Needed + Customize & Settings */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        {/* Box 1: Live Result */}
+        <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-4">
+          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-800">
+            Live Result
+          </div>
+          <div className="text-lg font-black text-slate-900 mt-1">
+            {isEmpty ? "₹0 Profit (0 Orders)" : `${data?.displayProfitString} (${data?.realOrdersCount} Orders)`}
+          </div>
+          <p className="text-xs text-slate-600 mt-1">
+            Active rates: {customSettings.commissionPct}% commission, ₹{customSettings.deliveryFeeInr} delivery fee, ₹{customSettings.riderBasePayInr} rider pay.
+          </p>
         </div>
 
-        {/* Visual Mathematical Formula */}
-        <div className="grid grid-cols-1 md:grid-cols-11 items-center gap-2 md:gap-3 text-center md:text-left py-2 font-mono">
-          {/* INFLOW */}
-          <div className="md:col-span-4 bg-white border border-slate-200 rounded-lg p-3">
-            <div className="flex items-center justify-between text-xs text-emerald-700 font-bold mb-1">
-              <span className="flex items-center gap-1">
-                <ArrowUpRight className="h-3.5 w-3.5 text-emerald-600" />
-                Gross Platform Inflow
+        {/* Box 2: Action Needed */}
+        <div className="bg-amber-50/60 border border-amber-200 rounded-xl p-4">
+          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-800">
+            Action Needed
+          </div>
+          <div className="text-sm font-bold text-slate-900 mt-1">
+            {isEmpty
+              ? "Check your default rates before your first order arrives."
+              : "Review your order margins and upcoming payout day."}
+          </div>
+          <p className="text-xs text-slate-600 mt-1">
+            Next scheduled restaurant payout: {customSettings.payoutDay}.
+          </p>
+        </div>
+
+        {/* Box 3: Customize & Settings Button */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-600">
+              Customize & Settings
+            </div>
+            <p className="text-xs text-slate-600 mt-1">
+              Change commission %, min order ₹, rain fee ₹, GST %, and payout day.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsCustomizeOpen(!isCustomizeOpen)}
+            className="mt-3 w-full inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors"
+          >
+            <Settings className="h-3.5 w-3.5" />
+            <span>
+              {isCustomizeOpen ? "Hide Custom Settings" : "Customize & Settings"}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Expandable Full Customization Panel */}
+      {isCustomizeOpen && (
+        <div className="mt-6 p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">
+                Custom Profit & Payout Rules
+              </h3>
+              <p className="text-xs text-slate-600">
+                Set your default fees, tax rates (CGST Sec 9(5)), and payout day.
+              </p>
+            </div>
+            {saveMessage && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-lg">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                {saveMessage}
               </span>
-              <span className="text-[10px] text-slate-500">(INCOMING)</span>
-            </div>
-            <div className="text-sm md:text-base font-bold text-slate-900 tracking-tight">
-              Restaurant Commission % <span className="text-emerald-600 font-normal">+</span> Delivery Fee
-            </div>
-            <p className="text-[10px] text-slate-500 mt-1">Merchant take-rate plus customer delivery tariff</p>
+            )}
           </div>
 
-          {/* MINUS SIGN */}
-          <div className="md:col-span-1 flex items-center justify-center">
-            <div className="h-7 w-7 rounded-full bg-rose-50 border border-rose-200 text-rose-600 font-black text-base flex items-center justify-center">
-              −
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+              <label className="block text-xs font-bold text-slate-800">
+                Commission %
+              </label>
+              <p className="text-[11px] text-slate-500 mb-2">
+                Fee charged to restaurants.
+              </p>
+              <input
+                type="number"
+                min="0"
+                max="50"
+                step="0.5"
+                value={customSettings.commissionPct}
+                onChange={(e) =>
+                  setCustomSettings({
+                    ...customSettings,
+                    commissionPct: Number(e.target.value),
+                  })
+                }
+                className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+              <label className="block text-xs font-bold text-slate-800">
+                Minimum Order (₹)
+              </label>
+              <p className="text-[11px] text-slate-500 mb-2">
+                Smallest cart for standard delivery.
+              </p>
+              <input
+                type="number"
+                min="0"
+                step="10"
+                value={customSettings.minOrderInr}
+                onChange={(e) =>
+                  setCustomSettings({
+                    ...customSettings,
+                    minOrderInr: Number(e.target.value),
+                  })
+                }
+                className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+              <label className="block text-xs font-bold text-slate-800">
+                Delivery Fee (₹)
+              </label>
+              <p className="text-[11px] text-slate-500 mb-2">
+                Standard delivery charge to customer.
+              </p>
+              <input
+                type="number"
+                min="0"
+                step="5"
+                value={customSettings.deliveryFeeInr}
+                onChange={(e) =>
+                  setCustomSettings({
+                    ...customSettings,
+                    deliveryFeeInr: Number(e.target.value),
+                  })
+                }
+                className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+              <label className="block text-xs font-bold text-slate-800">
+                Rain Surge Fee (₹)
+              </label>
+              <p className="text-[11px] text-slate-500 mb-2">
+                Extra fee during bad weather.
+              </p>
+              <input
+                type="number"
+                min="0"
+                step="5"
+                value={customSettings.rainFeeInr}
+                onChange={(e) =>
+                  setCustomSettings({
+                    ...customSettings,
+                    rainFeeInr: Number(e.target.value),
+                  })
+                }
+                className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+              <label className="block text-xs font-bold text-slate-800">
+                Rider Base Pay (₹)
+              </label>
+              <p className="text-[11px] text-slate-500 mb-2">
+                Base amount paid to delivery partner.
+              </p>
+              <input
+                type="number"
+                min="10"
+                step="5"
+                value={customSettings.riderBasePayInr}
+                onChange={(e) =>
+                  setCustomSettings({
+                    ...customSettings,
+                    riderBasePayInr: Number(e.target.value),
+                  })
+                }
+                className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+              <label className="block text-xs font-bold text-slate-800">
+                Food GST % (Sec 9(5))
+              </label>
+              <p className="text-[11px] text-slate-500 mb-2">
+                Statutory tax rate on food orders.
+              </p>
+              <input
+                type="number"
+                min="0"
+                max="28"
+                step="0.5"
+                value={customSettings.gstPct}
+                onChange={(e) =>
+                  setCustomSettings({
+                    ...customSettings,
+                    gstPct: Number(e.target.value),
+                  })
+                }
+                className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold text-slate-900"
+              />
+            </div>
+
+            <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+              <label className="block text-xs font-bold text-slate-800">
+                Payout Schedule
+              </label>
+              <p className="text-[11px] text-slate-500 mb-2">
+                When restaurants receive bank payouts.
+              </p>
+              <select
+                value={customSettings.payoutDay}
+                onChange={(e) =>
+                  setCustomSettings({
+                    ...customSettings,
+                    payoutDay: e.target.value,
+                  })
+                }
+                className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-900 bg-white"
+              >
+                <option value="Daily (T+1)">Daily (T+1)</option>
+                <option value="Every Monday">Every Monday</option>
+                <option value="Every Wednesday">Every Wednesday</option>
+                <option value="Every Friday">Every Friday</option>
+              </select>
+            </div>
+
+            <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+              <label className="block text-xs font-bold text-slate-800">
+                Wallet Cashback %
+              </label>
+              <p className="text-[11px] text-slate-500 mb-2">
+                Customer reward on KingPay orders.
+              </p>
+              <input
+                type="number"
+                min="0"
+                max="25"
+                step="0.5"
+                value={customSettings.walletCashbackPct}
+                onChange={(e) =>
+                  setCustomSettings({
+                    ...customSettings,
+                    walletCashbackPct: Number(e.target.value),
+                  })
+                }
+                className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold text-slate-900"
+              />
             </div>
           </div>
 
-          {/* OUTFLOW */}
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setCustomSettings(DEFAULT_FOUNDER_SETTINGS)}
+              className="px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-100"
+            >
+              Reset Defaults
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveCustomSettings}
+              disabled={isSavingSettings}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
+            >
+              <Save className="h-3.5 w-3.5" />
+              <span>{isSavingSettings ? "Saving..." : "Save Custom Settings"}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Simple Profit Formula */}
+      <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200">
+        <div className="text-xs font-bold text-slate-700 mb-2">
+          How Your Profit Is Calculated
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-11 items-center gap-2 text-center md:text-left font-mono">
           <div className="md:col-span-4 bg-white border border-slate-200 rounded-lg p-3">
-            <div className="flex items-center justify-between text-xs text-rose-700 font-bold mb-1">
-              <span className="flex items-center gap-1">
-                <ArrowDownRight className="h-3.5 w-3.5 text-rose-600" />
-                Operational Deductions
-              </span>
-              <span className="text-[10px] text-slate-500">(OUTGOING)</span>
+            <div className="flex items-center gap-1 text-xs text-emerald-700 font-bold mb-1">
+              <ArrowUpRight className="h-3.5 w-3.5" />
+              <span>Money Coming In</span>
             </div>
-            <div className="text-sm md:text-base font-bold text-slate-900 tracking-tight">
-              Rider Payout <span className="text-rose-600 font-normal">+</span> Gateway Fee (PG)
-            </div>
-            <p className="text-[10px] text-slate-500 mt-1">Fleet delivery compensation plus payment gateway MDR</p>
-          </div>
-
-          {/* EQUALS SIGN */}
-          <div className="md:col-span-1 flex items-center justify-center">
-            <div className="h-7 w-7 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-black text-base flex items-center justify-center">
-              =
+            <div className="text-sm font-bold text-slate-900">
+              Restaurant Commission + Delivery Fee
             </div>
           </div>
 
-          {/* FOUNDER PROFIT */}
+          <div className="md:col-span-1 flex items-center justify-center font-black text-rose-600">
+            −
+          </div>
+
+          <div className="md:col-span-4 bg-white border border-slate-200 rounded-lg p-3">
+            <div className="flex items-center gap-1 text-xs text-rose-700 font-bold mb-1">
+              <ArrowDownRight className="h-3.5 w-3.5" />
+              <span>Money Going Out</span>
+            </div>
+            <div className="text-sm font-bold text-slate-900">
+              Rider Pay + Payment Gateway Fee
+            </div>
+          </div>
+
+          <div className="md:col-span-1 flex items-center justify-center font-black text-emerald-700">
+            =
+          </div>
+
           <div className="md:col-span-1 bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-700 block mb-0.5">
-              Exact Net
+            <span className="text-xs font-black text-emerald-900 block">
+              YOUR PROFIT
             </span>
-            <span className="text-xs font-black text-emerald-900 block">REAL PROFIT</span>
           </div>
         </div>
       </div>
 
-      {/* 3. CORE REAL MONEY METRIC CARDS */}
+      {/* 4. Real Database Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-        {/* Card 1: Real Money Profit Per Order */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 relative overflow-hidden group">
-          <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-slate-500">
-            <span>Avg Profit Per Order</span>
-            <span className="p-1 rounded bg-white text-slate-600 border border-slate-200">
-              <DollarSign className="h-3.5 w-3.5" />
-            </span>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-600">
+            <span>Profit Per Order</span>
+            <DollarSign className="h-4 w-4 text-emerald-600" />
           </div>
-          <div className="mt-3">
-            <div
-              className={cn(
-                "text-2xl font-black tracking-tight",
-                isEmpty ? "text-slate-700 text-lg sm:text-xl font-mono" : "text-emerald-600 font-mono"
-              )}
-            >
-              {isEmpty ? "₹0.00 (Awaiting Real Transactions)" : data?.displayAvgString}
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Net retained founder cash per delivered order
-            </p>
+          <div className="mt-2 text-2xl font-black font-mono text-emerald-700">
+            {isEmpty ? "₹0" : data?.displayAvgString}
           </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Average money you keep from each completed order.
+          </p>
         </div>
 
-        {/* Card 2: Total Real Money Profit */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 relative overflow-hidden group">
-          <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-slate-500">
-            <span>Total Real Net Profit</span>
-            <span className="p-1 rounded bg-white text-emerald-600 border border-slate-200">
-              <Wallet className="h-3.5 w-3.5" />
-            </span>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-600">
+            <span>Total Real Profit</span>
+            <Wallet className="h-4 w-4 text-emerald-600" />
           </div>
-          <div className="mt-3">
-            <div
-              className={cn(
-                "text-2xl font-black tracking-tight",
-                isEmpty ? "text-slate-700 text-lg sm:text-xl font-mono" : "text-emerald-700 font-mono"
-              )}
-            >
-              {isEmpty ? "₹0.00 (Awaiting Real Transactions)" : data?.displayProfitString}
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Cumulative founder net income across all real orders
-            </p>
+          <div className="mt-2 text-2xl font-black font-mono text-emerald-700">
+            {isEmpty ? "₹0" : data?.displayProfitString}
           </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Total money earned from all completed orders.
+          </p>
         </div>
 
-        {/* Card 3: Real Margin % */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 relative overflow-hidden group">
-          <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-slate-500">
-            <span>Realized Take Margin</span>
-            <span className="p-1 rounded bg-white text-blue-600 border border-slate-200">
-              <Percent className="h-3.5 w-3.5" />
-            </span>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-600">
+            <span>Profit Margin %</span>
+            <Percent className="h-4 w-4 text-blue-600" />
           </div>
-          <div className="mt-3">
-            <div
-              className={cn(
-                "text-2xl font-black tracking-tight",
-                isEmpty ? "text-slate-700 text-lg sm:text-xl font-mono" : "text-blue-600 font-mono"
-              )}
-            >
-              {isEmpty ? "0.0% (Awaiting Real Transactions)" : `${data?.marginPct}%`}
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Effective net platform margin on total gross volume
-            </p>
+          <div className="mt-2 text-2xl font-black font-mono text-blue-600">
+            {isEmpty ? "0%" : `${data?.marginPct}%`}
           </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Share of total order value kept as net profit.
+          </p>
         </div>
 
-        {/* Card 4: Settled Real Orders */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 relative overflow-hidden group">
-          <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-slate-500">
-            <span>Settled Real Orders</span>
-            <span className="p-1 rounded bg-white text-purple-600 border border-slate-200">
-              <TrendingUp className="h-3.5 w-3.5" />
-            </span>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-600">
+            <span>Completed Orders</span>
+            <TrendingUp className="h-4 w-4 text-purple-600" />
           </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black tracking-tight text-slate-900 font-mono">
-              {isEmpty ? "0 (Awaiting Real Transactions)" : data?.realOrdersCount}
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Non-simulated real customer orders verified
-            </p>
+          <div className="mt-2 text-2xl font-black font-mono text-slate-900">
+            {isEmpty ? "0" : data?.realOrdersCount}
           </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Verified paid orders recorded in your database.
+          </p>
         </div>
       </div>
 
-      {/* 4. INTERACTIVE PROFIT MARGIN TELEMETRY & SIMULATOR */}
+      {/* 5. Interactive Profit & Fee Calculator */}
       <div className="mt-8 border border-slate-200 rounded-xl overflow-hidden bg-white shadow-xs">
-        <div className="p-5 bg-slate-50/80 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-5 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-              <Sliders className="h-4 w-4" />
+            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200">
+              <Calculator className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
-                Operational Margin Controller & Live Simulator
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">
-                  EXECUTIVE CONTROLS
-                </span>
+              <h3 className="text-sm font-bold text-slate-900">
+                Calculator (Test Your Rates)
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Tune live financial levers to compute exact instantaneous real cash per order
+              <p className="text-xs text-slate-600 mt-0.5">
+                Move the sliders to see how much profit you earn per order.
               </p>
             </div>
           </div>
 
           <button
             onClick={() => setIsSimulatorOpen(!isSimulatorOpen)}
-            className="text-xs font-mono font-medium text-slate-600 hover:text-slate-900 px-3 py-1 rounded bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
+            className="text-xs font-semibold text-slate-700 hover:text-slate-900 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition-colors"
           >
-            {isSimulatorOpen ? "Collapse Telemetry Controls" : "Expand Controls"}
+            {isSimulatorOpen ? "Hide Calculator" : "Open Calculator"}
           </button>
         </div>
 
         {isSimulatorOpen && (
           <div className="p-6 space-y-6">
-            {/* Input Levers Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
-              {/* Lever 1: Restaurant Commission % */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              {/* Slider 1: Restaurant Commission % */}
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                <div className="flex items-center justify-between text-xs font-medium text-slate-700 mb-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
                   <span className="flex items-center gap-1.5">
                     <Utensils className="h-3.5 w-3.5 text-emerald-600" />
-                    Restaurant Comm. %
+                    Commission %
                   </span>
-                  <span className="font-mono font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  <span className="font-mono font-black text-emerald-700">
                     {commissionRatePct}%
                   </span>
                 </div>
@@ -563,48 +859,38 @@ export function LiveFounderProfitDashboard() {
                   onChange={(e) => setCommissionRatePct(Number(e.target.value))}
                   className="w-full accent-emerald-600 cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
-                  <span>5% (Floor)</span>
-                  <span>22% (Std)</span>
-                  <span>35% (Max)</span>
-                </div>
               </div>
 
-              {/* Lever 2: Food Subtotal / AOV */}
+              {/* Slider 2: Food Order Value */}
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                <div className="flex items-center justify-between text-xs font-medium text-slate-700 mb-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
                   <span className="flex items-center gap-1.5">
                     <DollarSign className="h-3.5 w-3.5 text-blue-600" />
-                    Food Basket (AOV)
+                    Order Food Value
                   </span>
-                  <span className="font-mono font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                  <span className="font-mono font-black text-blue-700">
                     ₹{avgFoodSubtotalInr}
                   </span>
                 </div>
                 <input
                   type="range"
-                  min="150"
+                  min="100"
                   max="1200"
                   step="10"
                   value={avgFoodSubtotalInr}
                   onChange={(e) => setAvgFoodSubtotalInr(Number(e.target.value))}
                   className="w-full accent-blue-600 cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
-                  <span>₹150</span>
-                  <span>₹400 (Avg)</span>
-                  <span>₹1200</span>
-                </div>
               </div>
 
-              {/* Lever 3: Delivery Fee Charged */}
+              {/* Slider 3: Delivery Fee */}
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                <div className="flex items-center justify-between text-xs font-medium text-slate-700 mb-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
                   <span className="flex items-center gap-1.5">
                     <Truck className="h-3.5 w-3.5 text-emerald-600" />
-                    Delivery Fee (Cust)
+                    Delivery Fee
                   </span>
-                  <span className="font-mono font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  <span className="font-mono font-black text-emerald-700">
                     ₹{deliveryFeeInr}
                   </span>
                 </div>
@@ -617,21 +903,16 @@ export function LiveFounderProfitDashboard() {
                   onChange={(e) => setDeliveryFeeInr(Number(e.target.value))}
                   className="w-full accent-emerald-600 cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
-                  <span>₹0 (Free)</span>
-                  <span>₹45 (Base)</span>
-                  <span>₹100 (Surge)</span>
-                </div>
               </div>
 
-              {/* Lever 4: Rider Payout */}
+              {/* Slider 4: Rider Pay */}
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                <div className="flex items-center justify-between text-xs font-medium text-slate-700 mb-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
                   <span className="flex items-center gap-1.5">
                     <Truck className="h-3.5 w-3.5 text-rose-600" />
-                    Rider Payout (Fleet)
+                    Rider Base Pay
                   </span>
-                  <span className="font-mono font-black text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                  <span className="font-mono font-black text-rose-700">
                     ₹{riderPayoutInr}
                   </span>
                 </div>
@@ -644,21 +925,16 @@ export function LiveFounderProfitDashboard() {
                   onChange={(e) => setRiderPayoutInr(Number(e.target.value))}
                   className="w-full accent-rose-600 cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
-                  <span>₹15 (Micro)</span>
-                  <span>₹35 (Std)</span>
-                  <span>₹80 (Peak)</span>
-                </div>
               </div>
 
-              {/* Lever 5: Payment Gateway Fee % */}
+              {/* Slider 5: Payment Fee % */}
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                <div className="flex items-center justify-between text-xs font-medium text-slate-700 mb-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
                   <span className="flex items-center gap-1.5">
                     <CreditCard className="h-3.5 w-3.5 text-amber-600" />
-                    Gateway MDR %
+                    Payment Fee %
                   </span>
-                  <span className="font-mono font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                  <span className="font-mono font-black text-amber-700">
                     {pgFeePct}%
                   </span>
                 </div>
@@ -671,133 +947,80 @@ export function LiveFounderProfitDashboard() {
                   onChange={(e) => setPgFeePct(Number(e.target.value))}
                   className="w-full accent-amber-600 cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
-                  <span>0.0% (KingPay)</span>
-                  <span>1.95% (Cards)</span>
-                  <span>3.0%</span>
-                </div>
               </div>
             </div>
 
-            {/* Microscopic Math Result Card */}
-            <div className="p-6 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-md">
+            {/* Calculator Output Box */}
+            <div className="p-5 rounded-xl bg-slate-900 text-white border border-slate-800">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                {/* Breakdown Math Columns */}
-                <div className="lg:col-span-7 space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <span className="text-xs uppercase font-mono tracking-wider text-slate-400">
-                      Microscopic Line-Item Math
-                    </span>
-                    <span className="text-xs font-mono text-emerald-400">
-                      Total Order: ₹{simulation.totalOrderValue.toFixed(2)}
+                <div className="lg:col-span-7 space-y-2.5 text-xs font-mono">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2 text-slate-400">
+                    <span>Order Bill Breakdown</span>
+                    <span className="text-emerald-400 font-bold">
+                      Customer Pays: ₹{simulation.totalOrderValue.toFixed(2)}
                     </span>
                   </div>
 
-                  {/* Line Item: Inflow */}
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                      <span className="text-slate-300">
-                        Restaurant Commission ({commissionRatePct}% of ₹{simulation.foodSubtotal}):
-                      </span>
-                    </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">
+                      + Restaurant Commission ({commissionRatePct}% of ₹{simulation.foodSubtotal}):
+                    </span>
                     <span className="text-emerald-400 font-bold">
                       +₹{simulation.restaurantCommission.toFixed(2)}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                      <span className="text-slate-300">Delivery Fee Collected:</span>
-                    </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">+ Customer Delivery Fee:</span>
                     <span className="text-emerald-400 font-bold">
                       +₹{simulation.deliveryFee.toFixed(2)}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs font-mono bg-white/5 px-2.5 py-1.5 rounded">
-                    <span className="text-emerald-300 font-semibold">Total Platform Inflow:</span>
-                    <span className="text-emerald-300 font-black">+₹{simulation.inflow.toFixed(2)}</span>
-                  </div>
-
-                  {/* Line Item: Outflow */}
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-rose-400" />
-                      <span className="text-slate-300">Rider Payout Disbursed:</span>
-                    </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">− Rider Base Pay:</span>
                     <span className="text-rose-400 font-bold">
                       −₹{simulation.riderPayout.toFixed(2)}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-rose-400" />
-                      <span className="text-slate-300">
-                        Payment Gateway Fee ({pgFeePct}%):
-                      </span>
-                    </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">
+                      − Payment Gateway Fee ({pgFeePct}%):
+                    </span>
                     <span className="text-rose-400 font-bold">
                       −₹{simulation.paymentGatewayFee.toFixed(2)}
                     </span>
                   </div>
-
-                  <div className="flex items-center justify-between text-xs font-mono bg-white/5 px-2.5 py-1.5 rounded">
-                    <span className="text-rose-300 font-semibold">Total Operational Deductions:</span>
-                    <span className="text-rose-300 font-black">−₹{simulation.outflow.toFixed(2)}</span>
-                  </div>
                 </div>
 
-                {/* Exact Profit Highlight Box */}
-                <div className="lg:col-span-5 flex flex-col justify-between h-full bg-white/5 border border-white/10 rounded-xl p-5 text-center">
-                  <div>
-                    <span className="text-[11px] font-mono tracking-wider uppercase text-slate-400 block mb-1">
-                      Exact Real Money Profit Per Order
-                    </span>
-                    <div
-                      className={cn(
-                        "text-3xl md:text-4xl font-black font-mono tracking-tight",
-                        simulation.isProfitable ? "text-emerald-400" : "text-rose-400"
-                      )}
-                    >
-                      ₹{simulation.exactNetProfit.toFixed(2)}
-                    </div>
-                    <div className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-white">
-                      <span>Margin:</span>
-                      <span
-                        className={
-                          simulation.profitMarginPct >= 15
-                            ? "text-emerald-400"
-                            : simulation.profitMarginPct > 0
-                            ? "text-amber-400"
-                            : "text-rose-400"
-                        }
-                      >
-                        {simulation.profitMarginPct.toFixed(1)}%
-                      </span>
-                    </div>
+                <div className="lg:col-span-5 bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+                  <span className="text-xs font-mono uppercase text-slate-400 block">
+                    Estimated Profit Per Order
+                  </span>
+                  <div
+                    className={cn(
+                      "text-3xl font-black font-mono mt-1",
+                      simulation.isProfitable ? "text-emerald-400" : "text-rose-400"
+                    )}
+                  >
+                    ₹{simulation.exactNetProfit.toFixed(2)}
+                  </div>
+                  <div className="text-xs font-mono text-slate-300 mt-1">
+                    Margin: {simulation.profitMarginPct.toFixed(1)}%
                   </div>
 
-                  <div className="mt-5 pt-4 border-t border-white/10 text-left space-y-1.5">
-                    <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
-                      Projected Founder Run-Rate:
-                    </div>
-                    <div className="flex justify-between text-xs font-mono text-slate-300">
-                      <span>100 orders/day:</span>
-                      <span className="font-bold text-white">₹{simulation.daily100.toLocaleString()}/day</span>
-                    </div>
-                    <div className="flex justify-between text-xs font-mono text-slate-300">
-                      <span>500 orders/day:</span>
-                      <span className="font-bold text-emerald-400">
-                        ₹{simulation.daily500.toLocaleString()}/day
+                  <div className="mt-4 pt-3 border-t border-white/10 text-left space-y-1 text-xs font-mono text-slate-300">
+                    <div className="flex justify-between">
+                      <span>At 100 orders/day:</span>
+                      <span className="font-bold text-white">
+                        ₹{Math.round(simulation.daily100).toLocaleString()}/day
                       </span>
                     </div>
-                    <div className="flex justify-between text-xs font-mono text-slate-300">
-                      <span>Monthly Run-Rate (500/d):</span>
-                      <span className="font-black text-emerald-400">
-                        ₹{simulation.monthlyRunRate.toLocaleString()}/mo
+                    <div className="flex justify-between">
+                      <span>At 500 orders/day:</span>
+                      <span className="font-bold text-emerald-400">
+                        ₹{Math.round(simulation.daily500).toLocaleString()}/day
                       </span>
                     </div>
                   </div>
@@ -808,71 +1031,52 @@ export function LiveFounderProfitDashboard() {
         )}
       </div>
 
-      {/* 5. LIVE ORDER TELEMETRY STREAM & ZERO FAKE DATA VERIFIER */}
+      {/* 6. Recent Paid Orders Table */}
       <div className="mt-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <div>
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
-              Live Order Telemetry Ledger
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-normal">
-                REAL TRANSACTIONS ONLY
-              </span>
+            <h3 className="text-sm font-bold text-slate-900">
+              Recent Paid Orders
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Live line-by-line settlement ledger directly queried from PostgreSQL orders
+            <p className="text-xs text-slate-500">
+              Real customer orders loaded directly from your database.
             </p>
           </div>
-
-          <div className="text-xs font-mono text-slate-500">
-            {isEmpty ? "0 Real Orders" : `${data?.realOrdersCount} Real Orders Streamed`}
+          <div className="text-xs font-mono text-slate-600">
+            {isEmpty ? "0 Paid Orders" : `${data?.realOrdersCount} Paid Orders`}
           </div>
         </div>
 
-        {/* Empty State Banner (Strict Compliance with Mandate #3) */}
         {isEmpty ? (
-          <div className="border border-dashed border-slate-300 rounded-xl p-8 md:p-12 text-center bg-slate-50/50">
-            <div className="h-12 w-12 rounded-full bg-slate-200/70 text-slate-500 flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="h-6 w-6" />
+          <div className="border border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50/50">
+            <div className="h-10 w-10 rounded-full bg-slate-200/70 text-slate-600 flex items-center justify-center mx-auto mb-3">
+              <AlertCircle className="h-5 w-5" />
             </div>
-            <div className="text-xl md:text-2xl font-black font-mono text-slate-800 tracking-tight">
-              ₹0.00 (Awaiting Real Transactions)
+            <div className="text-lg font-black font-mono text-slate-800">
+              ₹0 (No Paid Orders Yet)
             </div>
-            <p className="text-xs md:text-sm text-slate-500 max-w-lg mx-auto mt-2 leading-relaxed">
-              Zero fake data mandate enforced. The database currently contains zero settled real customer
-              transactions. Simulated and test items are isolated from founder financial telemetry.
+            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+              Your database currently has zero completed customer orders. Once real orders are paid and delivered, they will appear here automatically.
             </p>
-
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-[11px] font-mono text-slate-600">
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-white border border-slate-200">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                Formula: (Commission + Delivery) − (Rider + PG)
-              </span>
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-white border border-slate-200">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-                PostgreSQL Listener: Connected & Ready
-              </span>
-            </div>
           </div>
         ) : (
-          /* Live Order Breakdown Table */
           <div className="border border-slate-200 rounded-xl overflow-x-auto bg-white shadow-xs">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px]">
                 <tr>
                   <th className="py-3 px-4">Order ID</th>
-                  <th className="py-3 px-4">Subtotal</th>
+                  <th className="py-3 px-4">Food Value</th>
                   <th className="py-3 px-4 text-emerald-700">Commission</th>
                   <th className="py-3 px-4 text-emerald-700">Delivery Fee</th>
-                  <th className="py-3 px-4 text-rose-700">Rider Payout</th>
-                  <th className="py-3 px-4 text-rose-700">PG Fee</th>
-                  <th className="py-3 px-4 text-emerald-800 font-bold">Exact Profit</th>
-                  <th className="py-3 px-4">Margin %</th>
+                  <th className="py-3 px-4 text-rose-700">Rider Pay</th>
+                  <th className="py-3 px-4 text-rose-700">Payment Fee</th>
+                  <th className="py-3 px-4 text-emerald-800 font-bold">Net Profit</th>
                   <th className="py-3 px-4">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {data?.orders.map((ord) => (
-                  <tr key={ord.id} className="hover:bg-slate-50/70 transition-colors">
+                  <tr key={ord.id} className="hover:bg-slate-50/70">
                     <td className="py-3 px-4 font-bold text-slate-800">
                       {ord.publicId}
                     </td>
@@ -893,18 +1097,6 @@ export function LiveFounderProfitDashboard() {
                     </td>
                     <td className="py-3 px-4 font-black text-emerald-600">
                       {formatInrExact(ord.exactProfitPaise)}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={cn(
-                          "px-2 py-0.5 rounded font-bold text-[11px]",
-                          ord.marginPct >= 15
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            : "bg-amber-50 text-amber-700 border border-amber-200"
-                        )}
-                      >
-                        {ord.marginPct}%
-                      </span>
                     </td>
                     <td className="py-3 px-4">
                       <span className="px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 font-medium">

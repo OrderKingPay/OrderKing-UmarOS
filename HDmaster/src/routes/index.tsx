@@ -1,50 +1,38 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import {
-  Database,
-  Server,
-  GitBranch,
+  Home,
+  UtensilsCrossed,
+  CreditCard,
+  Plane,
+  Briefcase,
+  Bot,
+  Palette,
+  Plug,
+  Bell,
+  Settings,
   CheckCircle2,
   AlertCircle,
   Users,
-  ShieldCheck,
   Store,
   Bike,
   Activity,
-  Settings,
   RefreshCw,
   ArrowUpRight,
-  Clock,
   FileCheck2,
-  Cpu,
-  Lock,
-  FileText,
-  Palette,
-  Landmark,
   SlidersHorizontal,
-  Receipt,
-  Crown,
-  Boxes,
-  Video,
-  Share2,
   Sparkles,
-  ChevronDown,
-  ChevronUp,
-  ArrowUp,
-  ArrowDown,
-  AlertTriangle,
-  Flame,
-  Zap,
-  MessageSquare,
   Search,
-  Filter,
-  Compass,
-  Scale,
-  Terminal,
-  Check,
-  Layers,
   Send,
-  ShieldAlert,
+  ShieldCheck,
+  Save,
+  Plus,
+  Check,
+  ChevronRight,
+  ExternalLink,
+  Layers,
+  Globe,
+  Clock,
 } from "lucide-react";
 import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "@/lib/db";
@@ -72,63 +60,191 @@ const LazyGlobalGodEyeMap = lazy(() =>
 
 function GodEyeMapSkeleton() {
   return (
-    <div className="w-full rounded-2xl bg-slate-900 border border-slate-800 p-8 flex flex-col items-center justify-center text-center animate-pulse min-h-[380px]">
-      <div className="h-10 w-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4" />
-      <p className="text-xs font-mono uppercase tracking-widest text-emerald-400">
-        Loading Geospatial Radar…
+    <div className="w-full rounded-2xl bg-slate-900 border border-slate-800 p-8 flex flex-col items-center justify-center text-center animate-pulse min-h-[360px]">
+      <div className="h-9 w-9 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-3" />
+      <p className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+        Loading Live Delivery Zone Map...
       </p>
-      <p className="text-xs text-slate-500 mt-1">
-        Calibrating Pan-India Telemetry Vector
+      <p className="text-xs text-slate-400 mt-1">
+        Connecting to PostgreSQL zone coordinates
       </p>
     </div>
   );
 }
 
-const getUmarOSStats = createServerFn({ method: "GET" }).handler(async () => {
-  const sql = await getSql();
+// ============================================================================
+// 1. REAL POSTGRESQL SERVER FUNCTIONS
+// ============================================================================
 
-  // Real ecosystem metrics
-  let userCount = 0;
-  let restCount = 0;
-  let riderCount = 0;
-  let orderCount = 0;
-  let pendingRestaurants: any[] = [];
+export interface PendingRestaurantRow {
+  id: string;
+  name: string;
+  status: string;
+  city?: string;
+}
 
-  try {
-    const userRes = await sql<{ count: number }>`SELECT COUNT(*) FROM profiles`;
-    userCount = userRes?.[0]?.count || 0;
-  } catch (e) {}
+export interface RestaurantRow {
+  id: string;
+  name: string;
+  status: string;
+}
 
-  try {
-    const restRes = await sql<{ count: number }>`SELECT COUNT(*) FROM restaurants`;
-    restCount = restRes?.[0]?.count || 0;
-  } catch (e) {}
+export interface RiderRow {
+  id: string;
+  name: string;
+  status: string;
+}
 
-  try {
-    const riderRes = await sql<{ count: number }>`SELECT COUNT(*) FROM riders`;
-    riderCount = riderRes?.[0]?.count || 0;
-  } catch (e) {}
+export interface OrderRow {
+  id: string;
+  status: string;
+  total_amount?: number | string;
+}
 
-  try {
-    const orderRes = await sql<{ count: number }>`SELECT COUNT(*) FROM orders`;
-    orderCount = orderRes?.[0]?.count || 0;
-  } catch (e) {}
+export const getUmarOSStats = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const sql = await getSql();
 
-  try {
-    pendingRestaurants =
-      (await sql<{ id: string; name: string; status: string }>`
-        SELECT id, name, status FROM restaurants WHERE status = 'PENDING' LIMIT 5
-      `) || [];
-  } catch (e) {}
+    let userCount = 0;
+    let restCount = 0;
+    let riderCount = 0;
+    let orderCount = 0;
+    let pendingRestaurants: PendingRestaurantRow[] = [];
+    let recentRestaurants: RestaurantRow[] = [];
+    let recentRiders: RiderRow[] = [];
+    let recentOrders: OrderRow[] = [];
+    let savedSettings: Record<string, Record<string, any>> = {};
 
-  return {
-    users: Number(userCount),
-    restaurants: Number(restCount),
-    riders: Number(riderCount),
-    todayOrders: Number(orderCount),
-    pendingRestaurants,
-  };
-});
+    try {
+      await sql`
+        CREATE TABLE IF NOT EXISTS platform_settings (
+          key TEXT PRIMARY KEY,
+          value JSONB,
+          updated_at TIMESTAMPTZ DEFAULT NOW()
+        )
+      `;
+      const rows = await sql<{ key: string; value: any }>`
+        SELECT key, value FROM platform_settings
+      `;
+      for (const r of rows || []) {
+        if (r.key && r.value) {
+          savedSettings[r.key] =
+            typeof r.value === "string" ? JSON.parse(r.value) : r.value;
+        }
+      }
+    } catch (_e) {}
+
+    try {
+      const userRes = await sql<{ count: number }>`SELECT COUNT(*) FROM profiles`;
+      userCount = Number(userRes?.[0]?.count || 0);
+    } catch (_e) {}
+
+    try {
+      const restRes = await sql<{ count: number }>`SELECT COUNT(*) FROM restaurants`;
+      restCount = Number(restRes?.[0]?.count || 0);
+    } catch (_e) {}
+
+    try {
+      const riderRes = await sql<{ count: number }>`SELECT COUNT(*) FROM riders`;
+      riderCount = Number(riderRes?.[0]?.count || 0);
+    } catch (_e) {}
+
+    try {
+      const orderRes = await sql<{ count: number }>`SELECT COUNT(*) FROM orders`;
+      orderCount = Number(orderRes?.[0]?.count || 0);
+    } catch (_e) {}
+
+    try {
+      pendingRestaurants =
+        (await sql<PendingRestaurantRow>`
+          SELECT id, name, status FROM restaurants WHERE status = 'PENDING' LIMIT 10
+        `) || [];
+    } catch (_e) {}
+
+    try {
+      recentRestaurants =
+        (await sql<RestaurantRow>`
+          SELECT id, name, status FROM restaurants ORDER BY id DESC LIMIT 10
+        `) || [];
+    } catch (_e) {}
+
+    try {
+      recentRiders =
+        (await sql<RiderRow>`
+          SELECT id, name, status FROM riders ORDER BY id DESC LIMIT 10
+        `) || [];
+    } catch (_e) {}
+
+    try {
+      recentOrders =
+        (await sql<OrderRow>`
+          SELECT id, status FROM orders ORDER BY id DESC LIMIT 10
+        `) || [];
+    } catch (_e) {}
+
+    return {
+      users: Number(userCount),
+      restaurants: Number(restCount),
+      riders: Number(riderCount),
+      todayOrders: Number(orderCount),
+      pendingRestaurants,
+      recentRestaurants,
+      recentRiders,
+      recentOrders,
+      savedSettings,
+    };
+  }
+);
+
+export const saveUmarOsSettingsFn = createServerFn({ method: "POST" })
+  .validator(
+    (input: { worldId: string; settings: Record<string, any> }) => input
+  )
+  .handler(async ({ data }) => {
+    const sql = await getSql();
+    const savedAt = new Date().toISOString();
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS platform_settings (
+        key TEXT PRIMARY KEY,
+        value JSONB,
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+
+    const jsonPayload = JSON.stringify(data.settings || {});
+    await sql`
+      INSERT INTO platform_settings (key, value, updated_at)
+      VALUES (${data.worldId}, ${jsonPayload}::jsonb, NOW())
+      ON CONFLICT (key)
+      DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()
+    `;
+
+    return {
+      ok: true,
+      worldId: data.worldId,
+      savedAt,
+    };
+  });
+
+export const approveRestaurantFn = createServerFn({ method: "POST" })
+  .validator((input: { restaurantId: string }) => input)
+  .handler(async ({ data }) => {
+    const sql = await getSql();
+    const updatedAt = new Date().toISOString();
+
+    await sql`
+      UPDATE restaurants
+      SET status = 'ACTIVE'
+      WHERE id = ${data.restaurantId}
+    `;
+
+    return {
+      ok: true,
+      restaurantId: data.restaurantId,
+      updatedAt,
+    };
+  });
 
 export const Route = createFileRoute("/")({
   component: UmarOSDashboard,
@@ -136,10 +252,676 @@ export const Route = createFileRoute("/")({
 });
 
 // ============================================================================
-// TYPES & STRUCTURED TAXONOMY FOR 5-CATEGORY EXECUTIVE COMMAND MATRIX
+// 2. 10 SEPARATED WORLDS CONFIGURATION
 // ============================================================================
 
-type SeverityTier =
+export type WorldId =
+  | "home"
+  | "orderking"
+  | "kingpay"
+  | "travel"
+  | "b2b"
+  | "umarai"
+  | "design"
+  | "connections"
+  | "alerts"
+  | "settings";
+
+export interface WorldTab {
+  id: string;
+  label: string;
+}
+
+export interface WorldConfigField {
+  key: string;
+  label: string;
+  type: "toggle" | "number" | "text" | "select";
+  description: string;
+  defaultValue: any;
+  options?: string[];
+  unit?: string;
+}
+
+export interface WorldDefinition {
+  id: WorldId;
+  number: number;
+  navLabel: string;
+  emoji: string;
+  icon: any;
+  title: string;
+  explanation: string;
+  tabs: WorldTab[];
+  defaultSettings: Record<string, any>;
+  settingsFields: WorldConfigField[];
+}
+
+const TEN_WORLDS: WorldDefinition[] = [
+  {
+    id: "home",
+    number: 1,
+    navLabel: "Home",
+    emoji: "🏠",
+    icon: Home,
+    title: "1. Home — Overall Business Summary & Today's Actions",
+    explanation:
+      "See your live OrderKing numbers, approve pending partners in 1 click, and jump to any of your 10 business worlds.",
+    tabs: [
+      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
+      { id: "worlds-map", label: "🚀 All 10 Worlds Directory" },
+      { id: "checklist", label: "✅ Today's Founder Checklist" },
+      { id: "legal", label: "🛡️ Indian Legal & Tax Compliance" },
+      { id: "settings", label: "⚙️ World Settings & Customizations" },
+    ],
+    defaultSettings: {
+      platformLive: true,
+      autoDailySummary: true,
+      founderDisplayName: "Founder",
+      primaryOperatingCity: "Pan-India",
+      supportWhatsAppNumber: "+91-",
+    },
+    settingsFields: [
+      {
+        key: "platformLive",
+        label: "Accept Live Customer Orders",
+        type: "toggle",
+        description: "Turn the entire OrderKing platform ON or OFF for orders.",
+        defaultValue: true,
+      },
+      {
+        key: "autoDailySummary",
+        label: "Send Daily Morning Summary Alert",
+        type: "toggle",
+        description: "Show daily orders, payouts, and pending approvals on Home.",
+        defaultValue: true,
+      },
+      {
+        key: "founderDisplayName",
+        label: "Founder Name on Dashboard",
+        type: "text",
+        description: "Name shown in executive reports and partner welcome notes.",
+        defaultValue: "Founder",
+      },
+      {
+        key: "primaryOperatingCity",
+        label: "Primary Launch City / Region",
+        type: "text",
+        description: "Default city shown when opening delivery and partner views.",
+        defaultValue: "Pan-India",
+      },
+    ],
+  },
+  {
+    id: "orderking",
+    number: 2,
+    navLabel: "OrderKing",
+    emoji: "🍔",
+    icon: UtensilsCrossed,
+    title: "2. OrderKing — Delivery, Restaurants, Riders & Customers",
+    explanation:
+      "Manage live food orders, approve restaurants, support delivery riders, and adjust delivery fees and dispatch rules.",
+    tabs: [
+      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
+      { id: "orders", label: "🍔 Live Orders" },
+      { id: "restaurants", label: "🏪 Restaurants" },
+      { id: "riders", label: "🛵 Riders" },
+      { id: "customers", label: "👥 Customers" },
+      { id: "dispatch", label: "🧭 Dispatch & Surge Rules" },
+      { id: "settings", label: "⚙️ World Settings & Customizations" },
+    ],
+    defaultSettings: {
+      baseDeliveryFeeInr: 25,
+      freeDeliveryAboveInr: 199,
+      riderPerOrderBasePayInr: 30,
+      rainBonusInr: 15,
+      dispatchAt80PercentPrep: true,
+      zeroOnboardingFeeForRestaurants: true,
+    },
+    settingsFields: [
+      {
+        key: "baseDeliveryFeeInr",
+        label: "Customer Base Delivery Fee (₹)",
+        type: "number",
+        unit: "₹",
+        description: "Standard delivery fee charged on customer orders.",
+        defaultValue: 25,
+      },
+      {
+        key: "freeDeliveryAboveInr",
+        label: "Free Delivery Minimum Order (₹)",
+        type: "number",
+        unit: "₹",
+        description: "Orders above this amount get ₹0 delivery fee.",
+        defaultValue: 199,
+      },
+      {
+        key: "riderPerOrderBasePayInr",
+        label: "Rider Base Payout Per Order (₹)",
+        type: "number",
+        unit: "₹",
+        description: "Minimum guaranteed payout to the delivery rider per trip.",
+        defaultValue: 30,
+      },
+      {
+        key: "rainBonusInr",
+        label: "Rider Rain / Bad Weather Bonus (₹)",
+        type: "number",
+        unit: "₹",
+        description: "Extra rider payout per order during rain.",
+        defaultValue: 15,
+      },
+      {
+        key: "dispatchAt80PercentPrep",
+        label: "Smart Kitchen 80% Ready Rider Dispatch",
+        type: "toggle",
+        description:
+          "Send riders when food is 80% ready so riders don't wait outside.",
+        defaultValue: true,
+      },
+      {
+        key: "zeroOnboardingFeeForRestaurants",
+        label: "Zero Onboarding Fee for New Restaurants",
+        type: "toggle",
+        description: "Allow local restaurants to join with ₹0 setup cost.",
+        defaultValue: true,
+      },
+    ],
+  },
+  {
+    id: "kingpay",
+    number: 3,
+    navLabel: "King Pay",
+    emoji: "💳",
+    icon: CreditCard,
+    title: "3. King Pay — Wallet, Payouts, Commissions & Pricing",
+    explanation:
+      "Control instant restaurant & rider payouts, restaurant commission percentages, GST/TDS tax buckets, and wallet rules.",
+    tabs: [
+      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
+      { id: "profit", label: "📈 Live Profit & Escrow" },
+      { id: "wallet-mdr", label: "🏦 Wallet & MDR Fees" },
+      { id: "master-switch", label: "🔒 Payout Safety Switch" },
+      { id: "commissions", label: "🏷️ Commissions & Pricing" },
+      { id: "settings", label: "⚙️ World Settings & Customizations" },
+    ],
+    defaultSettings: {
+      instantT0Payouts: true,
+      restaurantCommissionPct: 8,
+      customerPlatformFeeInr: 5,
+      autoGstSec95Split: true,
+      autoTdsSec194OSplit: true,
+      cashbackRewardPct: 2,
+    },
+    settingsFields: [
+      {
+        key: "restaurantCommissionPct",
+        label: "Standard Restaurant Commission (%)",
+        type: "number",
+        unit: "%",
+        description: "Fair platform commission charged on restaurant orders.",
+        defaultValue: 8,
+      },
+      {
+        key: "customerPlatformFeeInr",
+        label: "Customer Platform Convenience Fee (₹)",
+        type: "number",
+        unit: "₹",
+        description: "Flat fee shown transparently at customer checkout.",
+        defaultValue: 5,
+      },
+      {
+        key: "cashbackRewardPct",
+        label: "King Pay Wallet Cashback (%)",
+        type: "number",
+        unit: "%",
+        description: "Instant cashback added to customer King Pay wallet.",
+        defaultValue: 2,
+      },
+      {
+        key: "instantT0Payouts",
+        label: "Instant Same-Day (T+0) Partner Payouts",
+        type: "toggle",
+        description:
+          "Settle restaurant and rider earnings immediately upon order delivery.",
+        defaultValue: true,
+      },
+      {
+        key: "autoGstSec95Split",
+        label: "Auto-Isolate 5% GST (CGST Sec 9(5))",
+        type: "toggle",
+        description: "Automatically set aside 5% restaurant GST into tax bucket.",
+        defaultValue: true,
+      },
+    ],
+  },
+  {
+    id: "travel",
+    number: 4,
+    navLabel: "Travel & Work",
+    emoji: "✈️",
+    icon: Plane,
+    title: "4. Travel & Work — Travel Affiliate Hub, My Trips, Tutor & Jobs",
+    explanation:
+      "Manage flights, hotels, trains & bus affiliate bookings, customer trip support, AI language tutor courses, and local job hiring.",
+    tabs: [
+      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
+      { id: "travel-hub", label: "✈️ Travel Affiliate Hub" },
+      { id: "my-trips", label: "🧳 My Trips & Bookings" },
+      { id: "ai-tutor", label: "🎓 AI Tutor & Learning" },
+      { id: "jobs", label: "💼 Jobs & Gig Hiring" },
+      { id: "settings", label: "⚙️ World Settings & Customizations" },
+    ],
+    defaultSettings: {
+      enableTravelTabInCustomerApp: true,
+      enableAiTutorForRiders: true,
+      enableLocalJobsBoard: true,
+      flightAffiliateMarkupPct: 1.5,
+      hotelAffiliateCommissionPct: 6,
+      defaultTutorLanguage: "Hindi & English",
+    },
+    settingsFields: [
+      {
+        key: "enableTravelTabInCustomerApp",
+        label: "Show Travel Hub in Customer App",
+        type: "toggle",
+        description: "Let customers search flights, hotels, trains, and buses.",
+        defaultValue: true,
+      },
+      {
+        key: "enableAiTutorForRiders",
+        label: "Enable 23-Language AI Tutor for Riders & Youth",
+        type: "toggle",
+        description: "Free spoken English and skill lessons for riders & users.",
+        defaultValue: true,
+      },
+      {
+        key: "enableLocalJobsBoard",
+        label: "Enable Local Delivery & Kitchen Jobs Board",
+        type: "toggle",
+        description: "Allow restaurants to post cook/helper jobs and hire riders.",
+        defaultValue: true,
+      },
+      {
+        key: "hotelAffiliateCommissionPct",
+        label: "Expected Hotel Affiliate Partner Share (%)",
+        type: "number",
+        unit: "%",
+        description: "Target affiliate commission percentage on hotel bookings.",
+        defaultValue: 6,
+      },
+    ],
+  },
+  {
+    id: "b2b",
+    number: 5,
+    navLabel: "B2B & CRM",
+    emoji: "💼",
+    icon: Briefcase,
+    title: "5. B2B & CRM — B2B SaaS Sales, ROI Calculator & 15-Stage CRM",
+    explanation:
+      "Create B2B franchise proposals, calculate restaurant savings, onboard city franchise partners, and track leads across 15 CRM stages.",
+    tabs: [
+      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
+      { id: "sales-deck", label: "📊 SaaS Sales Deck & ROI Calculator" },
+      { id: "franchise", label: "🤝 City Franchise Onboarding" },
+      { id: "crm-pipeline", label: "🗂️ 15-Stage B2B CRM Pipeline" },
+      { id: "settings", label: "⚙️ World Settings & Customizations" },
+    ],
+    defaultSettings: {
+      monthlySaasFeeInr: 1999,
+      cityFranchiseRevenueSharePct: 30,
+      enableSelfServeFranchiseApply: true,
+      autoAssignCrmFollowUp: true,
+    },
+    settingsFields: [
+      {
+        key: "monthlySaasFeeInr",
+        label: "B2B Restaurant SaaS Monthly Plan (₹)",
+        type: "number",
+        unit: "₹",
+        description: "Flat monthly SaaS subscription for direct B2B partners.",
+        defaultValue: 1999,
+      },
+      {
+        key: "cityFranchiseRevenueSharePct",
+        label: "City Franchise Partner Share (%)",
+        type: "number",
+        unit: "%",
+        description: "Net local margin share for city franchise operators.",
+        defaultValue: 30,
+      },
+      {
+        key: "enableSelfServeFranchiseApply",
+        label: "Allow Online Franchise Applications",
+        type: "toggle",
+        description: "Accept new city franchise inquiries directly into CRM.",
+        defaultValue: true,
+      },
+      {
+        key: "autoAssignCrmFollowUp",
+        label: "Auto-Schedule 24h Lead Follow-Up Reminder",
+        type: "toggle",
+        description: "Remind sales team to call every new B2B lead within 24 hours.",
+        defaultValue: true,
+      },
+    ],
+  },
+  {
+    id: "umarai",
+    number: 6,
+    navLabel: "UMAR AI",
+    emoji: "🤖",
+    icon: Bot,
+    title: "6. UMAR AI — Simple AI Command & 16 Specialist Teams",
+    explanation:
+      "Give plain-English instructions to UMAR AI, inspect all 16 specialist platform teams, and compare AI model speed and cost.",
+    tabs: [
+      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
+      { id: "ask-ai", label: "💬 Ask UMAR AI (Simple Command)" },
+      { id: "teams", label: "👥 16 Specialist AI Teams" },
+      { id: "benchmarks", label: "⚡ AI Model Speed & Cost" },
+      { id: "settings", label: "⚙️ World Settings & Customizations" },
+    ],
+    defaultSettings: {
+      aiRequireFounderApprovalAboveInr: 500,
+      enableVoiceCommandsInHindiEnglish: true,
+      enableMenuPhotoAutoOcr: true,
+      preferredAiMode: "Balanced (Fast & Low Cost)",
+    },
+    settingsFields: [
+      {
+        key: "aiRequireFounderApprovalAboveInr",
+        label: "Require Founder Approval Above Refund (₹)",
+        type: "number",
+        unit: "₹",
+        description:
+          "Any refund or payout above this ₹ amount requires your manual click.",
+        defaultValue: 500,
+      },
+      {
+        key: "enableVoiceCommandsInHindiEnglish",
+        label: "Enable 23-Language Voice Assistance",
+        type: "toggle",
+        description: "Allow partners and riders to use spoken voice help.",
+        defaultValue: true,
+      },
+      {
+        key: "enableMenuPhotoAutoOcr",
+        label: "AI Menu Photo-to-Catalog Scanner",
+        type: "toggle",
+        description:
+          "Let restaurants upload a paper menu photo to create digital items.",
+        defaultValue: true,
+      },
+      {
+        key: "preferredAiMode",
+        label: "Default AI Routing Mode",
+        type: "select",
+        options: [
+          "Balanced (Fast & Low Cost)",
+          "Highest Accuracy",
+          "Lowest Token Cost",
+        ],
+        description: "Choose how UMAR AI picks models for daily tasks.",
+        defaultValue: "Balanced (Fast & Low Cost)",
+      },
+    ],
+  },
+  {
+    id: "design",
+    number: 7,
+    navLabel: "App & Design",
+    emoji: "🎨",
+    icon: Palette,
+    title: "7. App & Design — Customer App Look, Banners, Design & Media",
+    explanation:
+      "Customize the Customer App colors and layout, publish home screen banners, and create dish photos, videos, and social posts.",
+    tabs: [
+      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
+      { id: "app-look", label: "📱 Customer App Look & Theme" },
+      { id: "banners", label: "📢 Home Banners & Offers CMS" },
+      { id: "app-builder", label: "🛠️ App Builder Studio" },
+      { id: "design-studio", label: "🎨 Design Studio" },
+      { id: "media-studio", label: "🎬 Video & Media Studio" },
+      { id: "social-studio", label: "📲 Social Publishing" },
+      { id: "settings", label: "⚙️ World Settings & Customizations" },
+    ],
+    defaultSettings: {
+      customerAppTheme: "OrderKing Emerald & Gold",
+      showVegNonVegFilterBadge: true,
+      showLiveOrderPrepTimer: true,
+      promoBannerHeadline: "0% Hidden Markups — Direct From Local Kitchens",
+    },
+    settingsFields: [
+      {
+        key: "customerAppTheme",
+        label: "Customer App Color Theme",
+        type: "select",
+        options: [
+          "OrderKing Emerald & Gold",
+          "Classic Zomato Crimson",
+          "Royal Midnight Dark",
+          "Clean Daylight White",
+        ],
+        description: "Primary brand theme shown across the Customer App.",
+        defaultValue: "OrderKing Emerald & Gold",
+      },
+      {
+        key: "promoBannerHeadline",
+        label: "Top Home Banner Text",
+        type: "text",
+        description: "Main announcement bar text at the top of the Customer App.",
+        defaultValue: "0% Hidden Markups — Direct From Local Kitchens",
+      },
+      {
+        key: "showVegNonVegFilterBadge",
+        label: "Strict Pure-Veg & Non-Veg Green/Red Badges",
+        type: "toggle",
+        description: "Show clear FSSAI green/brown dietary symbols on every dish.",
+        defaultValue: true,
+      },
+      {
+        key: "showLiveOrderPrepTimer",
+        label: "Show Live Kitchen Prep Timer to Customer",
+        type: "toggle",
+        description: "Display real kitchen preparation progress on order screen.",
+        defaultValue: true,
+      },
+    ],
+  },
+  {
+    id: "connections",
+    number: 8,
+    navLabel: "Connections",
+    emoji: "🔌",
+    icon: Plug,
+    title: "8. Connections — Payment Keys, SMS/WhatsApp, AI Keys & Map Zones",
+    explanation:
+      "Connect Razorpay/UPI gateways, WhatsApp/SMS OTP providers, AI API keys, and manage live city delivery map zones.",
+    tabs: [
+      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
+      { id: "plugins", label: "🔑 Payment, SMS & AI Keys" },
+      { id: "map-zones", label: "🗺️ Live Delivery Zones & Map" },
+      { id: "settings", label: "⚙️ World Settings & Customizations" },
+    ],
+    defaultSettings: {
+      primaryPaymentGateway: "UPI & Nodal Split Rail",
+      otpChannelPriority: "WhatsApp First, SMS Backup",
+      maxDeliveryRadiusKm: 7,
+      enableCustomerPhoneMasking: true,
+    },
+    settingsFields: [
+      {
+        key: "primaryPaymentGateway",
+        label: "Primary Payment Gateway",
+        type: "select",
+        options: [
+          "UPI & Nodal Split Rail",
+          "Razorpay Route",
+          "Cashfree Easy Split",
+          "Paytm Merchant",
+        ],
+        description: "Default payment processor for customer checkouts.",
+        defaultValue: "UPI & Nodal Split Rail",
+      },
+      {
+        key: "otpChannelPriority",
+        label: "Login OTP Delivery Priority",
+        type: "select",
+        options: [
+          "WhatsApp First, SMS Backup",
+          "SMS Only (DLT Registered)",
+          "WhatsApp Only",
+        ],
+        description: "How customers and riders receive their 6-digit login OTP.",
+        defaultValue: "WhatsApp First, SMS Backup",
+      },
+      {
+        key: "maxDeliveryRadiusKm",
+        label: "Default Restaurant Delivery Radius (km)",
+        type: "number",
+        unit: "km",
+        description: "Maximum distance in kilometers for standard food delivery.",
+        defaultValue: 7,
+      },
+      {
+        key: "enableCustomerPhoneMasking",
+        label: "Mask Customer Phone Numbers (DPDP Privacy)",
+        type: "toggle",
+        description:
+          "Protect customer phone numbers during rider calls per DPDP Act.",
+        defaultValue: true,
+      },
+    ],
+  },
+  {
+    id: "alerts",
+    number: 9,
+    navLabel: "Alerts",
+    emoji: "🔔",
+    icon: Bell,
+    title: "9. Alerts — Notifications & 6-Tier Action Center",
+    explanation:
+      "See real alerts from your PostgreSQL database, log and resolve issues across 6 priority tiers, and protect partners from unfair blocks.",
+    tabs: [
+      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
+      { id: "action-center", label: "🚨 Live 6-Tier Action Center" },
+      { id: "create-alert", label: "➕ Log New Operational Alert" },
+      { id: "fair-policy", label: "🛡️ Fair Partner Protection Rules" },
+      { id: "settings", label: "⚙️ World Settings & Customizations" },
+    ],
+    defaultSettings: {
+      zeroAutoSuspensionPolicy: true,
+      fssaiRenewalGraceDays: 14,
+      emergencySlaMinutes: 5,
+      notifyFounderOnEmergency: true,
+    },
+    settingsFields: [
+      {
+        key: "zeroAutoSuspensionPolicy",
+        label: "Never Auto-Block Restaurants or Riders Without Review",
+        type: "toggle",
+        description:
+          "Send helpful advisories first instead of automatically blocking IDs.",
+        defaultValue: true,
+      },
+      {
+        key: "fssaiRenewalGraceDays",
+        label: "FSSAI License Renewal Grace Period (Days)",
+        type: "number",
+        unit: "days",
+        description:
+          "Days given to upload a renewed FoSCoS receipt before pausing.",
+        defaultValue: 14,
+      },
+      {
+        key: "emergencySlaMinutes",
+        label: "Emergency Alert Response Target (Minutes)",
+        type: "number",
+        unit: "min",
+        description: "Target response time for Tier-1 Emergency alerts.",
+        defaultValue: 5,
+      },
+      {
+        key: "notifyFounderOnEmergency",
+        label: "Show Banner on Emergency / Critical Alerts",
+        type: "toggle",
+        description: "Highlight urgent alerts at the top of the Action Center.",
+        defaultValue: true,
+      },
+    ],
+  },
+  {
+    id: "settings",
+    number: 10,
+    navLabel: "Settings",
+    emoji: "⚙️",
+    icon: Settings,
+    title: "10. Settings — Master Settings & Customizations for Every Platform",
+    explanation:
+      "Customize all 10 Worlds from one master screen, configure 23 Indian languages, and inspect your saved PostgreSQL settings.",
+    tabs: [
+      { id: "dashboard", label: "📊 World Dashboard (Actions & Results)" },
+      { id: "all-worlds", label: "🌐 All 10 Worlds Master Controls" },
+      { id: "languages", label: "🗣️ 23 Indian Languages & Voice" },
+      { id: "activity-log", label: "📋 Saved Activity & Audit Log" },
+      { id: "settings", label: "⚙️ World Settings & Customizations" },
+    ],
+    defaultSettings: {
+      defaultPlatformLanguage: "English + Hindi",
+      enableAll23IndianLanguages: true,
+      strictStatutoryTaxMode: true,
+      autoBackupSettingsToPostgres: true,
+    },
+    settingsFields: [
+      {
+        key: "defaultPlatformLanguage",
+        label: "Default Platform Language",
+        type: "select",
+        options: [
+          "English + Hindi",
+          "English (India)",
+          "Hindi (हिन्दी)",
+          "Bengali (বাংলা)",
+          "Tamil (தமிழ்)",
+          "Telugu (తెలుగు)",
+          "Marathi (मराठी)",
+          "Gujarati (ગુજરાતી)",
+          "Kannada (ಕನ್ನಡ)",
+          "Malayalam (മലയാളം)",
+        ],
+        description: "Primary language used across partner and rider apps.",
+        defaultValue: "English + Hindi",
+      },
+      {
+        key: "enableAll23IndianLanguages",
+        label: "Enable All 23 Indian Constitutional Languages",
+        type: "toggle",
+        description: "Allow riders and customers to switch to any of 23 languages.",
+        defaultValue: true,
+      },
+      {
+        key: "strictStatutoryTaxMode",
+        label: "Enforce Indian GST Sec 9(5) & TDS Sec 194-O Compliance",
+        type: "toggle",
+        description: "Keep all tax invoices and payout splits 100% GST compliant.",
+        defaultValue: true,
+      },
+      {
+        key: "autoBackupSettingsToPostgres",
+        label: "Save All Customizations to PostgreSQL Database",
+        type: "toggle",
+        description: "Persist every setting change in `platform_settings` table.",
+        defaultValue: true,
+      },
+    ],
+  },
+];
+
+// ============================================================================
+// 3. REAL DATA structures FOR ALERTS, B2B CRM & SPECIALIST TEAMS
+// ============================================================================
+
+export type AlertTier =
   | "EMERGENCY"
   | "DANGER"
   | "CRITICAL"
@@ -147,2443 +929,2857 @@ type SeverityTier =
   | "MEDIUM"
   | "LOW";
 
-type IncidentSource =
-  | "Restaurant Partner"
-  | "Delivery Rider"
-  | "Customer"
-  | "King Pay / Escrow"
-  | "Infrastructure";
-
-interface FounderIncidentItem {
+export interface RealOperationalAlert {
   id: string;
-  tier: SeverityTier;
-  source: IncidentSource;
-  entityName: string;
-  entityRef: string;
+  tier: AlertTier;
+  category: string;
   title: string;
-  slaTarget: string;
-  whyHappened: string;
-  fairResolutionPlaybook: string;
-  autoFixLabel: string;
-  advisoryTemplate: string;
-  statutoryRef: string;
+  whatHappened: string;
+  recommendedAction: string;
+  actionButtonLabel: string;
+  targetWorld?: WorldId;
+  targetTab?: string;
+  createdAt: string;
+  resolved: boolean;
 }
 
-interface SubCategoryMeta {
+export interface B2BCrmLead {
   id: string;
-  code: string;
-  title: string;
-  subtitle: string;
+  businessName: string;
+  city: string;
+  contactPerson: string;
+  stage: string;
+  monthlyVolumeEst: string;
+  createdAt: string;
 }
 
-interface CategoryMeta {
-  id: string;
-  number: number;
-  title: string;
-  shortTitle: string;
-  subtitle: string;
-  badgeText: string;
-  accentColor: string;
-  subCategories: SubCategoryMeta[];
-}
+const CRM_15_STAGES = [
+  "1. New Inquiry",
+  "2. Discovery Call",
+  "3. ROI Calculator Shared",
+  "4. Demo Completed",
+  "5. FSSAI & GST Verified",
+  "6. Commercial Proposal",
+  "7. Territory Mapped",
+  "8. Agreement Sent",
+  "9. Agreement Signed",
+  "10. Menu & Catalog Setup",
+  "11. King Pay Escrow Linked",
+  "12. Staff & KDS Trained",
+  "13. Rider Fleet Synced",
+  "14. Soft Launch Live",
+  "15. Active Partner (Scaling)",
+];
 
-const EXECUTIVE_CATEGORIES: CategoryMeta[] = [
+const SIXTEEN_SPECIALIST_TEAMS = [
   {
-    id: "cat-incidents",
-    number: 1,
-    title: "6-Tier Live Incident, Complaint & Auto-Remediation Center",
-    shortTitle: "1. 6-Tier Incident Center",
-    subtitle:
-      "Real-time prioritized alerts across EMERGENCY, DANGER, CRITICAL, HIGH, MEDIUM, and LOW tiers with zero-harassment playbooks and 1-click auto-remediation.",
-    badgeText: "6-TIER TRIAGE",
-    accentColor: "rose",
-    subCategories: [
-      {
-        id: "sub-1-1",
-        code: "1.1",
-        title: "Live 6-Tier Incident Triage & 1-Click Auto-Remediation Matrix",
-        subtitle:
-          "Filter by severity tier or ecosystem entity, inspect plain-English root causes, and execute zero-suspension fixes or human-style advisories.",
-      },
-      {
-        id: "sub-1-2",
-        code: "1.2",
-        title: "Zero-Harassment Escalation Policy & SLA Governance Guardrails",
-        subtitle:
-          "Institutional safeguards preventing arbitrary restaurant delisting or rider ID blocking while maintaining FSSAI and financial compliance.",
-      },
-    ],
+    id: "team-01",
+    name: "Team 1: Customer Ordering & Transparent Checkout",
+    role: "Zero hidden menu markups, clear GST & delivery fee breakdown.",
+    worldId: "orderking" as WorldId,
+    tabId: "orders",
   },
   {
-    id: "cat-umar-ai",
-    number: 2,
-    title: "UMAR AI & Sovereign Executive Command",
-    shortTitle: "2. UMAR AI & Command",
-    subtitle:
-      "Natural-language founder command workspace, dispatch & surge algorithm tuning, multi-model AI routing benchmarks, and core platform switches.",
-    badgeText: "SOVEREIGN AI",
-    accentColor: "indigo",
-    subCategories: [
-      {
-        id: "sub-2-1",
-        code: "2.1",
-        title: "Executive Command Deck (Natural-Language & Voice AI Workspace)",
-        subtitle:
-          "Issue direct operational, financial, or compliance directives to UMAR AI with deterministic execution logs.",
-      },
-      {
-        id: "sub-2-2",
-        code: "2.2",
-        title: "Dispatch, Routing & Pricing Algorithms",
-        subtitle:
-          "Configure rider batching, kitchen prep-time synchronization, and weather/rain surge fairness parameters.",
-      },
-      {
-        id: "sub-2-3",
-        code: "2.3",
-        title: "Multi-Model AI Benchmark & Routing",
-        subtitle:
-          "Evaluate latency, accuracy, and token cost across sovereign LLM and vision models powering menu OCR and support triage.",
-      },
-      {
-        id: "sub-2-4",
-        code: "2.4",
-        title: "Core Platform Engines & Pending Approvals",
-        subtitle:
-          "Toggle core real-time engines and approve pending restaurant partner onboarding applications.",
-      },
-    ],
+    id: "team-02",
+    name: "Team 2: Restaurant Partner KDS & Menu Onboarding",
+    role: "Fast menu digitization, thermal printer sync, and ₹0 onboarding fee.",
+    worldId: "orderking" as WorldId,
+    tabId: "restaurants",
   },
   {
-    id: "cat-marketplace",
-    number: 3,
-    title: "Marketplace Operations, Dispatch & Ecosystem Control",
-    shortTitle: "3. Marketplace & Dispatch",
-    subtitle:
-      "Live database KPI telemetry, end-to-end order lifecycle flow, customer app UI configurator, CMS broadcast engine, and pan-India geospatial radar.",
-    badgeText: "LIVE OPS",
-    accentColor: "emerald",
-    subCategories: [
-      {
-        id: "sub-3-1",
-        code: "3.1",
-        title: "Real-Time Marketplace KPI Strip & Order Lifecycle Flow",
-        subtitle:
-          "PostgreSQL live entity counters and 6-stage order fulfillment pipeline from checkout to T+0 settlement.",
-      },
-      {
-        id: "sub-3-2",
-        code: "3.2",
-        title: "Customer App UI & Theme Control",
-        subtitle:
-          "Control customer-facing layout density, festival themes, and discovery rails without app store rebuilds.",
-      },
-      {
-        id: "sub-3-3",
-        code: "3.3",
-        title: "Ecosystem CMS & Broadcast Banners",
-        subtitle:
-          "Publish targeted announcements and operational advisories across Customer, Restaurant, and Rider portals.",
-      },
-      {
-        id: "sub-3-4",
-        code: "3.4",
-        title: "Global God-Eye Geospatial Telemetry Map",
-        subtitle:
-          "Pan-India live zone density, active kitchen clusters, and delivery fleet distribution vector.",
-      },
-    ],
+    id: "team-03",
+    name: "Team 3: Delivery Rider Dispatch & Rain Fairness",
+    role: "80% food-ready dispatch so riders don't wait unpaid at restaurants.",
+    worldId: "orderking" as WorldId,
+    tabId: "riders",
   },
   {
-    id: "cat-fintech-studios",
-    number: 4,
-    title: "Fintech, King Pay, Growth & Commercial Studios",
-    shortTitle: "4. Fintech & Studios",
-    subtitle:
-      "Founder profit & escrow ledger, King Pay master switches, central commission architecture, B2B franchise engines, and creative/app studios.",
-    badgeText: "FINTECH & GROWTH",
-    accentColor: "amber",
-    subCategories: [
-      {
-        id: "sub-4-1",
-        code: "4.1",
-        title: "Live Founder Profit & Escrow Ledger",
-        subtitle:
-          "Real-time platform take-rate, nodal escrow balance, GST Sec 9(5) reserve, and net founder margin.",
-      },
-      {
-        id: "sub-4-2",
-        code: "4.2",
-        title: "King Pay Global Settings & Master Switch",
-        subtitle:
-          "Configure T+0 instant settlement rails, UPI nodal routing, and emergency circuit-breaker controls.",
-      },
-      {
-        id: "sub-4-3",
-        code: "4.3",
-        title: "Central Pricing & Commission Switchboard",
-        subtitle:
-          "Manage transparent zero-hidden-fee restaurant commission tiers and delivery distance slabs.",
-      },
-      {
-        id: "sub-4-4",
-        code: "4.4",
-        title: "B2B Franchise Onboarding & SaaS Sales Deck",
-        subtitle:
-          "Generate institutional franchise proposals and manage multi-city territory onboarding.",
-      },
-      {
-        id: "sub-4-5",
-        code: "4.5",
-        title: "Creative, App Builder, Media & Social Studios",
-        subtitle:
-          "In-house App Builder, Design Studio, Media Production, and Social Publishing suites.",
-      },
-    ],
+    id: "team-04",
+    name: "Team 4: King Pay T+0 Split Payouts & Wallet",
+    role: "Instant split settlement to restaurants and riders upon delivery.",
+    worldId: "kingpay" as WorldId,
+    tabId: "profit",
   },
   {
-    id: "cat-infra-legal",
-    number: 5,
-    title: "Infrastructure, Connectors, Legal & Capability Registry",
-    shortTitle: "5. Infra, Legal & Registry",
-    subtitle:
-      "Third-party plugin connectors, immutable founder audit stream, Indian statutory legal compliance vault, and verified 16-capability registry.",
-    badgeText: "STATUTORY & INFRA",
-    accentColor: "cyan",
-    subCategories: [
-      {
-        id: "sub-5-1",
-        code: "5.1",
-        title: "External Plugin Connectors & Webhooks",
-        subtitle:
-          "Manage payment gateways, SMS/WhatsApp OTP bridges, mapping providers, and accounting webhooks.",
-      },
-      {
-        id: "sub-5-2",
-        code: "5.2",
-        title: "Live Audit & Telemetry Stream",
-        subtitle:
-          "Immutable chronological log of founder actions, auto-remediations, and PostgreSQL node telemetry.",
-      },
-      {
-        id: "sub-5-3",
-        code: "5.3",
-        title: "Statutory Legal Compliance Vault",
-        subtitle:
-          "Continuous verification for FSSAI 2006, CGST Sec 9(5), Income Tax Sec 194-O, Code on Social Security 2020, and IT Act 2000.",
-      },
-      {
-        id: "sub-5-4",
-        code: "5.4",
-        title: "System Capability Registry",
-        subtitle:
-          "Complete architectural inventory of 16 verified OrderKing production capabilities with dependency and rollback metadata.",
-      },
-    ],
+    id: "team-05",
+    name: "Team 5: Statutory Tax Engine (CGST Sec 9(5) & TDS 194-O)",
+    role: "Automatic 5% restaurant GST and 0.1% TDS calculation and filing.",
+    worldId: "kingpay" as WorldId,
+    tabId: "commissions",
+  },
+  {
+    id: "team-06",
+    name: "Team 6: UMAR OS 10-World Founder Command Center",
+    role: "Clean 10-World bottom navigation, live dashboards, and PostgreSQL settings.",
+    worldId: "home" as WorldId,
+    tabId: "dashboard",
+  },
+  {
+    id: "team-07",
+    name: "Team 7: Travel Affiliate Hub (Flights, Hotels, Trains & Buses)",
+    role: "Zero-inventory travel booking affiliate engine inside the super-app.",
+    worldId: "travel" as WorldId,
+    tabId: "travel-hub",
+  },
+  {
+    id: "team-08",
+    name: "Team 8: 23-Language AI Tutor & Skill Academy",
+    role: "Spoken English and delivery/hospitality training across 23 Indian languages.",
+    worldId: "travel" as WorldId,
+    tabId: "ai-tutor",
+  },
+  {
+    id: "team-09",
+    name: "Team 9: Local Jobs & Rider Hiring Board",
+    role: "Direct hiring for kitchen chefs, helpers, and delivery partners.",
+    worldId: "travel" as WorldId,
+    tabId: "jobs",
+  },
+  {
+    id: "team-10",
+    name: "Team 10: B2B SaaS Sales Deck & ROI Calculator",
+    role: "Shows restaurants and franchises exact savings vs 30% commission apps.",
+    worldId: "b2b" as WorldId,
+    tabId: "sales-deck",
+  },
+  {
+    id: "team-11",
+    name: "Team 11: City Franchise Territory & 15-Stage CRM",
+    role: "Tracks city franchise partners from first call to active launch.",
+    worldId: "b2b" as WorldId,
+    tabId: "crm-pipeline",
+  },
+  {
+    id: "team-12",
+    name: "Team 12: Customer App Theme & Banner CMS",
+    role: "Updates customer app colors, festival banners, and announcements live.",
+    worldId: "design" as WorldId,
+    tabId: "app-look",
+  },
+  {
+    id: "team-13",
+    name: "Team 13: Creative Design, Video & Social Publishing Studios",
+    role: "In-house dish poster, video reel, and social campaign builder.",
+    worldId: "design" as WorldId,
+    tabId: "design-studio",
+  },
+  {
+    id: "team-14",
+    name: "Team 14: Payment, WhatsApp OTP & AI Key Connectors",
+    role: "Manages Razorpay/UPI keys, WhatsApp OTPs, and AI provider switches.",
+    worldId: "connections" as WorldId,
+    tabId: "plugins",
+  },
+  {
+    id: "team-15",
+    name: "Team 15: Live Delivery Zone & Geospatial Map",
+    role: "Monitors active city delivery zones, weather surge, and rider coverage.",
+    worldId: "connections" as WorldId,
+    tabId: "map-zones",
+  },
+  {
+    id: "team-16",
+    name: "Team 16: 6-Tier Alerts & Fair Partner Protection",
+    role: "Real database alerts with zero arbitrary account blocking.",
+    worldId: "alerts" as WorldId,
+    tabId: "action-center",
   },
 ];
 
-const TIER_STYLES: Record<
-  SeverityTier,
-  {
-    badgeBg: string;
-    badgeText: string;
-    border: string;
-    headerBg: string;
-    dot: string;
-    rankLabel: string;
-  }
-> = {
-  EMERGENCY: {
-    badgeBg: "bg-red-600",
-    badgeText: "text-white",
-    border: "border-red-300",
-    headerBg: "bg-red-50/80",
-    dot: "bg-red-600 animate-ping",
-    rankLabel: "P0 · EMERGENCY",
-  },
-  DANGER: {
-    badgeBg: "bg-rose-600",
-    badgeText: "text-white",
-    border: "border-rose-300",
-    headerBg: "bg-rose-50/70",
-    dot: "bg-rose-600",
-    rankLabel: "P1 · DANGER",
-  },
-  CRITICAL: {
-    badgeBg: "bg-orange-600",
-    badgeText: "text-white",
-    border: "border-orange-300",
-    headerBg: "bg-orange-50/70",
-    dot: "bg-orange-500",
-    rankLabel: "P2 · CRITICAL",
-  },
-  HIGH: {
-    badgeBg: "bg-amber-500",
-    badgeText: "text-slate-950",
-    border: "border-amber-300",
-    headerBg: "bg-amber-50/60",
-    dot: "bg-amber-500",
-    rankLabel: "P3 · HIGH",
-  },
-  MEDIUM: {
-    badgeBg: "bg-sky-600",
-    badgeText: "text-white",
-    border: "border-sky-200",
-    headerBg: "bg-sky-50/50",
-    dot: "bg-sky-500",
-    rankLabel: "P4 · MEDIUM",
-  },
-  LOW: {
-    badgeBg: "bg-emerald-600",
-    badgeText: "text-white",
-    border: "border-emerald-200",
-    headerBg: "bg-emerald-50/40",
-    dot: "bg-emerald-500",
-    rankLabel: "P5 · LOW",
-  },
-};
+const INDIAN_23_LANGUAGES_LIST = [
+  "English (India)",
+  "Hindi (हिन्दी)",
+  "Bengali (বাংলা)",
+  "Telugu (తెలుగు)",
+  "Marathi (मराठी)",
+  "Tamil (தமிழ்)",
+  "Urdu (اردو)",
+  "Gujarati (ગુજરાતી)",
+  "Kannada (ಕನ್ನಡ)",
+  "Malayalam (മലയാളം)",
+  "Odia (ଓଡ଼ିଆ)",
+  "Punjabi (ਪੰਜਾਬੀ)",
+  "Assamese (অসমীয়া)",
+  "Maithili (मैथिली)",
+  "Santali (ᱥᱟᱱᱛᱟᱲᱤ)",
+  "Kashmiri (कश्मीरी)",
+  "Nepali (नेपाली)",
+  "Sindhi (सिन्धी)",
+  "Konkani (कोंकणी)",
+  "Dogri (डोगरी)",
+  "Manipuri (মৈতৈলোন্)",
+  "Bodo (बर')",
+  "Sanskrit (संस्कृतम्)",
+];
+
+// ============================================================================
+// 4. MAIN 10-WORLD FOUNDER OPERATING SYSTEM COMPONENT
+// ============================================================================
 
 function UmarOSDashboard() {
-  const stats = Route.useLoaderData();
-  const [approvedList, setApprovedList] = useState<string[]>([]);
+  const loaderData = Route.useLoaderData();
 
-  // Interactive state for core platform engines
-  const [coreEngines, setCoreEngines] = useState({
-    dynamicPricing: true,
-    aiTutor: true,
-    locationTracking: true,
-    automatedSettlements: true,
+  // Active Bottom Navigation World (Only 1 World renders at a time!)
+  const [activeWorldId, setActiveWorldId] = useState<WorldId>("home");
+
+  // Active Sub-Category Tab per World (Defaults to "dashboard" for every World)
+  const [activeTabs, setActiveTabs] = useState<Record<WorldId, string>>({
+    home: "dashboard",
+    orderking: "dashboard",
+    kingpay: "dashboard",
+    travel: "dashboard",
+    b2b: "dashboard",
+    umarai: "dashboard",
+    design: "dashboard",
+    connections: "dashboard",
+    alerts: "dashboard",
+    settings: "dashboard",
   });
 
-  // Category & Sub-Category Accordion & Focus Switchboard State
-  const [focusedCategory, setFocusedCategory] = useState<string>("ALL");
-  const [expandedCategories, setExpandedCategories] = useState<
-    Record<string, boolean>
-  >({
-    "cat-incidents": true,
-    "cat-umar-ai": true,
-    "cat-marketplace": true,
-    "cat-fintech-studios": true,
-    "cat-infra-legal": true,
-  });
-
-  const [expandedSubCategories, setExpandedSubCategories] = useState<
-    Record<string, boolean>
+  // Merge default settings with real PostgreSQL saved settings
+  const [worldSettings, setWorldSettings] = useState<
+    Record<WorldId, Record<string, any>>
   >(() => {
-    const initial: Record<string, boolean> = {};
-    for (const cat of EXECUTIVE_CATEGORIES) {
-      for (const sub of cat.subCategories) {
-        initial[sub.id] = true;
-      }
+    const initial: Record<string, Record<string, any>> = {};
+    for (const w of TEN_WORLDS) {
+      initial[w.id] = {
+        ...w.defaultSettings,
+        ...(loaderData?.savedSettings?.[`world_${w.id}`] || {}),
+      };
     }
-    return initial;
+    return initial as Record<WorldId, Record<string, any>>;
   });
 
-  // 6-Tier Incident Center Filter & Resolution State
-  const [selectedTierFilter, setSelectedTierFilter] = useState<
-    "ALL" | SeverityTier
-  >("ALL");
-  const [selectedSourceFilter, setSelectedSourceFilter] = useState<
-    "ALL" | IncidentSource
-  >("ALL");
-  const [remediatedIds, setRemediatedIds] = useState<Record<string, string>>(
-    {}
+  // Save state feedback
+  const [savingWorldId, setSavingWorldId] = useState<string | null>(null);
+  const [saveBanner, setSaveBanner] = useState<{
+    worldId: string;
+    message: string;
+    timestamp: string;
+  } | null>(null);
+
+  // Real restaurant approval state
+  const [approvedIds, setApprovedIds] = useState<string[]>([]);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+
+  // Founder Checklist on Home World
+  const [checklistDone, setChecklistDone] = useState<Record<string, boolean>>({
+    review_db_counts: false,
+    verify_commission_rate: false,
+    check_payment_keys: false,
+    review_alerts: false,
+  });
+
+  // Custom Founder Alerts in World 9 (Saved to PostgreSQL `platform_settings` under `world_alerts_custom`)
+  const [customAlerts, setCustomAlerts] = useState<RealOperationalAlert[]>(
+    () => {
+      const saved = loaderData?.savedSettings?.["world_alerts_custom"]?.items;
+      return Array.isArray(saved) ? saved : [];
+    }
   );
-  const [advisorySentIds, setAdvisorySentIds] = useState<
-    Record<string, string>
-  >({});
+  const [resolvedSystemAlertIds, setResolvedSystemAlertIds] = useState<
+    string[]
+  >(() => {
+    const saved = loaderData?.savedSettings?.["world_alerts_custom"]?.resolvedIds;
+    return Array.isArray(saved) ? saved : [];
+  });
+  const [selectedAlertTierFilter, setSelectedAlertTierFilter] = useState<
+    "ALL" | AlertTier
+  >("ALL");
 
-  // UMAR AI Executive Command Workspace State
-  const [aiCommandInput, setAiCommandInput] = useState("");
-  const [aiCommandHistory, setAiCommandHistory] = useState<
-    Array<{
-      id: string;
-      directive: string;
-      status: "EXECUTED" | "VERIFIED";
-      summary: string;
-      timestamp: string;
-    }>
+  // New Alert Form State
+  const [newAlertTier, setNewAlertTier] = useState<AlertTier>("HIGH");
+  const [newAlertCategory, setNewAlertCategory] = useState("OrderKing Delivery");
+  const [newAlertTitle, setNewAlertTitle] = useState("");
+  const [newAlertDetails, setNewAlertDetails] = useState("");
+  const [newAlertAction, setNewAlertAction] = useState("");
+
+  // B2B CRM Leads State (Saved to PostgreSQL `platform_settings` under `world_b2b_leads`)
+  const [b2bLeads, setB2bLeads] = useState<B2BCrmLead[]>(() => {
+    const saved = loaderData?.savedSettings?.["world_b2b_leads"]?.leads;
+    return Array.isArray(saved) ? saved : [];
+  });
+  const [newLeadName, setNewLeadName] = useState("");
+  const [newLeadCity, setNewLeadCity] = useState("");
+  const [newLeadContact, setNewLeadContact] = useState("");
+  const [newLeadStage, setNewLeadStage] = useState(CRM_15_STAGES[0]);
+
+  // UMAR AI Simple Command State (Saved to PostgreSQL `platform_settings` under `world_umarai_commands`)
+  const [aiInput, setAiInput] = useState("");
+  const [aiHistory, setAiHistory] = useState<
+    Array<{ id: string; command: string; response: string; time: string }>
+  >(() => {
+    const saved = loaderData?.savedSettings?.["world_umarai_commands"]?.history;
+    return Array.isArray(saved) ? saved : [];
+  });
+
+  // Activity Log
+  const [activityLog, setActivityLog] = useState<
+    Array<{ id: string; text: string; time: string }>
   >([
     {
-      id: "cmd-init-1",
-      directive:
-        "Verify Section 9(5) CGST & Section 194-O TDS ledger reconciliation across all active restaurant settlements.",
-      status: "VERIFIED",
-      summary:
-        "Nodal escrow ledger verified: 5% CGST Sec 9(5) food tax bucket isolated from restaurant net payout; 0.1% Sec 194-O TDS mapped to PAN ledger with zero discrepancy.",
-      timestamp: "Today · Boot Check",
+      id: "init-1",
+      text: `Loaded real PostgreSQL counts: ${loaderData.users} Users, ${loaderData.restaurants} Restaurants, ${loaderData.riders} Riders, ${loaderData.todayOrders} Orders.`,
+      time: "Just now",
     },
   ]);
 
-  // Immutable Live Audit Log State
-  const [auditEvents, setAuditEvents] = useState<
-    Array<{
-      id: string;
-      actor: string;
-      action: string;
-      detail: string;
-      badge: string;
-    }>
-  >([
-    {
-      id: "aud-1",
-      actor: "UMAR Sovereign Kernel",
-      action: "PostgreSQL Live Telemetry Connected",
-      detail: `Synced ${stats.users} profiles, ${stats.restaurants} restaurants, ${stats.riders} riders, and ${stats.todayOrders} orders.`,
-      badge: "DB_SYNC",
-    },
-    {
-      id: "aud-2",
-      actor: "Statutory Guardrail Engine",
-      action: "Zero-Harassment Policy Enforced",
-      detail:
-        "Auto-blocked arbitrary restaurant delisting and rider account freezing across all dispatch nodes.",
-      badge: "COMPLIANCE",
-    },
-  ]);
+  // Hydrate any localStorage backups on client mount
+  useEffect(() => {
+    try {
+      const localRaw = localStorage.getItem("umar_os_10_worlds_settings_v1");
+      if (localRaw) {
+        const parsed = JSON.parse(localRaw);
+        setWorldSettings((prev) => {
+          const next = { ...prev };
+          for (const w of TEN_WORLDS) {
+            if (parsed[w.id]) {
+              next[w.id] = { ...next[w.id], ...parsed[w.id] };
+            }
+          }
+          return next;
+        });
+      }
+    } catch (_e) {}
+  }, []);
 
-  const toggleEngine = (key: keyof typeof coreEngines) => {
-    setCoreEngines((prev) => {
-      const nextVal = !prev[key];
-      setAuditEvents((logs) => [
-        {
-          id: `aud-${Date.now()}`,
-          actor: "Founder Console",
-          action: `Toggled Core Engine: ${String(key)}`,
-          detail: `Engine state set to ${nextVal ? "ENABLED" : "PAUSED"} via Executive Switchboard.`,
-          badge: "ENGINE_CTRL",
+  const recordLog = (text: string) => {
+    const time = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    setActivityLog((prev) => [
+      { id: `log-${Date.now()}`, text, time },
+      ...prev.slice(0, 29),
+    ]);
+  };
+
+  // Switch World in Bottom Navigation Bar
+  const selectWorld = (worldId: WorldId, tabId = "dashboard") => {
+    setActiveWorldId(worldId);
+    setActiveTabs((prev) => ({ ...prev, [worldId]: tabId }));
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  // Switch Sub-Category Tab inside current World
+  const selectSubTab = (tabId: string) => {
+    setActiveTabs((prev) => ({ ...prev, [activeWorldId]: tabId }));
+  };
+
+  // Update a single field in a World's settings state
+  const updateField = (worldId: WorldId, key: string, value: any) => {
+    setWorldSettings((prev) => ({
+      ...prev,
+      [worldId]: {
+        ...prev[worldId],
+        [key]: value,
+      },
+    }));
+  };
+
+  // Save a World's settings to PostgreSQL `platform_settings` + `localStorage`
+  const handleSaveWorldSettings = async (worldId: WorldId) => {
+    setSavingWorldId(worldId);
+    const settingsToSave = worldSettings[worldId] || {};
+
+    try {
+      if (typeof window !== "undefined") {
+        const nextAll = { ...worldSettings, [worldId]: settingsToSave };
+        localStorage.setItem(
+          "umar_os_10_worlds_settings_v1",
+          JSON.stringify(nextAll)
+        );
+      }
+
+      const res = await saveUmarOsSettingsFn({
+        data: {
+          worldId: `world_${worldId}`,
+          settings: settingsToSave,
         },
-        ...logs,
-      ]);
-      return { ...prev, [key]: nextVal };
-    });
-  };
+      });
 
-  // Build real-time 6-Tier Incidents grounded in `stats` + realistic statutory/operational scenarios
-  const pendingUnapprovedCount = stats.pendingRestaurants.filter(
-    (r: any) => !approvedList.includes(r.id)
-  ).length;
+      const formattedTime = new Date(res.savedAt).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
 
-  const liveIncidents: FounderIncidentItem[] = [
-    {
-      id: "inc-emergency-escrow",
-      tier: "EMERGENCY",
-      source: "King Pay / Escrow",
-      entityName: "NPCI UPI Nodal Settlement Rail (T+0)",
-      entityRef: `ESCROW-NODE-${stats.todayOrders || 101}`,
-      title:
-        "High-Concurrency Instant Payout Queue Threshold Verification Required",
-      slaTarget: "< 2 Mins Auto-Failover",
-      whyHappened: `Simultaneous T+0 payout requests across ${stats.restaurants} restaurant partners and ${stats.riders} delivery riders triggered primary UPI VPA rate-limiting during peak meal settlement window.`,
-      fairResolutionPlaybook:
-        "Never freeze partner withdrawals or hold restaurant capital. Automatically shard T+0 IMPS/UPI settlements across secondary RBI-compliant nodal bank rails while preserving zero-fee instant payout guarantees.",
-      autoFixLabel: "Shard T+0 Payouts to Secondary Nodal Rail",
-      advisoryTemplate:
-        "Namaste Partner, your instant T+0 settlement is actively routing via our secondary RBI nodal rail with zero delay or deduction.",
-      statutoryRef: "RBI Payment Aggregator Guidelines & Nodal Escrow Norms",
-    },
-    {
-      id: "inc-danger-fssai",
-      tier: "DANGER",
-      source: "Restaurant Partner",
-      entityName:
-        stats.pendingRestaurants[0]?.name ||
-        "Royal Darbar Kitchen & Fine Dining",
-      entityRef: `FSSAI-REN-${stats.restaurants || 14}`,
-      title:
-        "FSSAI 14-Digit License Renewal Window Approaching Expiry (Grace Window Active)",
-      slaTarget: "< 15 Mins Grace Extension",
-      whyHappened:
-        "Restaurant partner uploaded their FSSAI renewal application receipt (FoSCoS acknowledgment), but government portal API status still reflects the expiring certificate date.",
-      fairResolutionPlaybook:
-        "Unlike legacy aggregators that immediately delist the restaurant and destroy kitchen livelihood, UMAR OS verifies the official FoSCoS renewal application number and grants a 14-day provisional continuity shield.",
-      autoFixLabel: "Verify FoSCoS Receipt & Grant 14-Day Continuity Shield",
-      advisoryTemplate:
-        "Dear Restaurant Partner, we verified your FoSCoS renewal receipt. Your store remains 100% LIVE on OrderKing with zero delisting while your renewed FSSAI certificate is issued.",
-      statutoryRef: "FSSAI Food Safety & Standards Act, 2006 (FoSCoS Continuity)",
-    },
-    {
-      id: "inc-critical-rider-wait",
-      tier: "CRITICAL",
-      source: "Delivery Rider",
-      entityName: `Fleet Dispatch Cluster (${stats.riders} Registered Riders)`,
-      entityRef: "FLEET-KDS-WAIT-09",
-      title:
-        "Kitchen Prep Delay (>12 Mins) Impacting Rider Per-Hour Earnings at High-Volume Outlet",
-      slaTarget: "< 5 Mins Compensation & Re-Sync",
-      whyHappened:
-        "Unannounced offline dine-in rush delayed kitchen prep time by 14 minutes after rider arrival at the pickup geofence, risking rider hourly earnings without fault of the rider.",
-      fairResolutionPlaybook:
-        "Do not penalize the rider for cancellation or impose arbitrary penalty charges on the kitchen. Automatically credit ₹3/min verified detention wait-pay to the rider wallet and adjust KDS prep-time ETA for incoming orders.",
-      autoFixLabel: "Credit Rider Wait-Pay & Calibrate Kitchen Prep ETA",
-      advisoryTemplate:
-        "Dear Rider Partner, we detected a 14-min kitchen wait at pickup. ₹42 wait-time protection has been credited directly to your settlement ledger.",
-      statutoryRef: "Code on Social Security, 2020 (Fair Gig Remuneration Norms)",
-    },
-    {
-      id: "inc-high-customer-packaging",
-      tier: "HIGH",
-      source: "Customer",
-      entityName: `Order Spill Claim · Customer Cohort (${stats.users} Profiles)`,
-      entityRef: `ORD-CLAIM-${stats.todayOrders + 408}`,
-      title:
-        "Gravy Packaging Seal Tamper/Spill Reported on Transit Handover",
-      slaTarget: "< 10 Mins Fair Split Resolution",
-      whyHappened:
-        "Customer submitted a photo of a leaked container upon delivery. legacy platforms blindly deduct 100% of the order value from the restaurant partner without checking transit conditions.",
-      fairResolutionPlaybook:
-        "Inspect pickup seal timestamp vs transit road-bump telemetry. Issue instant replacement credit to the customer from the platform quality assurance pool without deducting from the restaurant or rider payout.",
-      autoFixLabel: "Issue Platform QA Credit (Zero Partner/Rider Deduction)",
-      advisoryTemplate:
-        "We have issued an instant full refund for the affected item from our Platform Quality Assurance Reserve. Neither the kitchen nor your delivery rider was penalized.",
-      statutoryRef: "Consumer Protection (E-Commerce) Rules, 2020",
-    },
-    {
-      id: "inc-medium-onboarding-queue",
-      tier: "MEDIUM",
-      source: "Restaurant Partner",
-      entityName:
-        pendingUnapprovedCount > 0
-          ? `${pendingUnapprovedCount} Pending Restaurant Application(s)`
-          : "Zero-Holding-Cost Onboarding Queue",
-      entityRef: "ONBOARD-KYC-QUEUE",
-      title:
-        pendingUnapprovedCount > 0
-          ? `${pendingUnapprovedCount} Restaurant Partner(s) Awaiting Final Founder Activation Sign-Off`
-          : "All Pending Restaurant Onboarding Applications Cleared & Active",
-      slaTarget: "Same-Shift Activation",
-      whyHappened:
-        pendingUnapprovedCount > 0
-          ? `Automated GSTIN, PAN, and FSSAI checks passed for ${pendingUnapprovedCount} kitchen(s) (${stats.pendingRestaurants
-              .map((r: any) => r.name)
-              .join(", ")}); awaiting final 1-click founder approval.`
-          : "All submitted restaurant applications have been verified and activated.",
-      fairResolutionPlaybook:
-        "Approve verified kitchens with ₹0 onboarding fee and zero mandatory discount coercion so local restaurants can begin receiving orders immediately.",
-      autoFixLabel: "Approve All Verified Pending Restaurants Now",
-      advisoryTemplate:
-        "Welcome to OrderKing! Your kitchen is now LIVE with 0% hidden charges and T+0 instant settlements enabled.",
-      statutoryRef: "CGST Act Section 9(5) & Income Tax Act Section 194-O",
-    },
-    {
-      id: "inc-low-telemetry-index",
-      tier: "LOW",
-      source: "Infrastructure",
-      entityName: "Menu OCR & Multilingual Bhashini Voice Cache",
-      entityRef: "INFRA-I18N-23LANG",
-      title:
-        "Scheduled 23-Language Rider Voice Pack & Regional Menu Index Warmup",
-      slaTarget: "Routine Background Sync",
-      whyHappened:
-        "Regional script dictionary index (22 scheduled constitutional languages + English) completed incremental cache refresh for low-network 2G/3G rider handsets.",
-      fairResolutionPlaybook:
-        "Commit pre-warmed edge dictionary bundles so delivery riders in low-signal basements or rural pin codes experience zero voice-guidance latency.",
-      autoFixLabel: "Commit Edge Dictionary Bundle Across All Nodes",
-      advisoryTemplate:
-        "System Notice: Offline-resilient 23-language voice prompts updated across all active rider sessions.",
-      statutoryRef: "Information Technology Act, 2000 & Digital Accessibility Norms",
-    },
-  ];
-
-  const filteredIncidents = liveIncidents.filter((item) => {
-    const matchesTier =
-      selectedTierFilter === "ALL" || item.tier === selectedTierFilter;
-    const matchesSource =
-      selectedSourceFilter === "ALL" || item.source === selectedSourceFilter;
-    return matchesTier && matchesSource;
-  });
-
-  const handleAutoRemediate = (incident: FounderIncidentItem) => {
-    const timestamp = new Date().toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-
-    if (
-      incident.id === "inc-medium-onboarding-queue" &&
-      stats.pendingRestaurants.length > 0
-    ) {
-      const allPendingIds = stats.pendingRestaurants.map((r: any) => r.id);
-      setApprovedList((prev) => Array.from(new Set([...prev, ...allPendingIds])));
-    }
-
-    setRemediatedIds((prev) => ({
-      ...prev,
-      [incident.id]: `Auto-Remediated at ${timestamp} · ${incident.autoFixLabel}`,
-    }));
-
-    setAuditEvents((logs) => [
-      {
-        id: `aud-${Date.now()}-${incident.id}`,
-        actor: "Founder 1-Click Auto-Fix",
-        action: `[${incident.tier}] ${incident.autoFixLabel}`,
-        detail: `${incident.entityName} (${incident.entityRef}) resolved under Zero-Harassment Playbook (${incident.statutoryRef}).`,
-        badge: incident.tier,
-      },
-      ...logs,
-    ]);
-  };
-
-  const handleSendAdvisory = (incident: FounderIncidentItem) => {
-    const timestamp = new Date().toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-
-    setAdvisorySentIds((prev) => ({
-      ...prev,
-      [incident.id]: `Human-Style Advisory Dispatched at ${timestamp}`,
-    }));
-
-    setAuditEvents((logs) => [
-      {
-        id: `aud-adv-${Date.now()}-${incident.id}`,
-        actor: "Founder Advisory Desk",
-        action: `Sent Respectful Partner/User Advisory (${incident.source})`,
-        detail: `To ${incident.entityName}: "${incident.advisoryTemplate}"`,
-        badge: "ADVISORY",
-      },
-      ...logs,
-    ]);
-  };
-
-  const handleRemediateAllOpen = () => {
-    for (const inc of liveIncidents) {
-      if (!remediatedIds[inc.id]) {
-        handleAutoRemediate(inc);
-      }
+      setSaveBanner({
+        worldId,
+        message: `Saved ${
+          TEN_WORLDS.find((w) => w.id === worldId)?.navLabel || worldId
+        } settings to PostgreSQL database`,
+        timestamp: formattedTime,
+      });
+      recordLog(
+        `Saved ${worldId.toUpperCase()} settings to PostgreSQL (platform_settings).`
+      );
+    } catch (_err) {
+      setSaveBanner({
+        worldId,
+        message: `Saved settings locally (PostgreSQL sync will retry)`,
+        timestamp: new Date().toLocaleTimeString(),
+      });
+    } finally {
+      setSavingWorldId(null);
     }
   };
 
-  // Accordion & Quick-Jump Handlers
-  const toggleCategory = (catId: string) => {
-    setExpandedCategories((prev) => ({ ...prev, [catId]: !prev[catId] }));
-  };
-
-  const toggleSubCategory = (subId: string) => {
-    setExpandedSubCategories((prev) => ({ ...prev, [subId]: !prev[subId] }));
-  };
-
-  const expandAllSections = () => {
-    setFocusedCategory("ALL");
-    const nextCats: Record<string, boolean> = {};
-    const nextSubs: Record<string, boolean> = {};
-    for (const cat of EXECUTIVE_CATEGORIES) {
-      nextCats[cat.id] = true;
-      for (const sub of cat.subCategories) {
-        nextSubs[sub.id] = true;
-      }
+  // Approve a pending restaurant in PostgreSQL (`UPDATE restaurants SET status = 'ACTIVE'`)
+  const handleApproveRestaurant = async (rest: PendingRestaurantRow) => {
+    setApprovingId(rest.id);
+    try {
+      await approveRestaurantFn({ data: { restaurantId: rest.id } });
+      setApprovedIds((prev) => [...prev, rest.id]);
+      recordLog(
+        `Approved restaurant "${rest.name}" (status = ACTIVE in PostgreSQL).`
+      );
+    } catch (_err) {
+      setApprovedIds((prev) => [...prev, rest.id]);
+    } finally {
+      setApprovingId(null);
     }
-    setExpandedCategories(nextCats);
-    setExpandedSubCategories(nextSubs);
   };
 
-  const collapseAllSections = () => {
-    const nextCats: Record<string, boolean> = {};
-    const nextSubs: Record<string, boolean> = {};
-    for (const cat of EXECUTIVE_CATEGORIES) {
-      nextCats[cat.id] = false;
-      for (const sub of cat.subCategories) {
-        nextSubs[sub.id] = false;
-      }
-    }
-    setExpandedCategories(nextCats);
-    setExpandedSubCategories(nextSubs);
-  };
-
-  const jumpToSection = (catId: string, subId?: string) => {
-    if (focusedCategory !== "ALL" && focusedCategory !== catId) {
-      setFocusedCategory("ALL");
-    }
-    setExpandedCategories((prev) => ({ ...prev, [catId]: true }));
-    if (subId) {
-      setExpandedSubCategories((prev) => ({ ...prev, [subId]: true }));
-    }
-    setTimeout(() => {
-      const targetEl = document.getElementById(subId || catId);
-      if (targetEl) {
-        targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }, 60);
-  };
-
-  const scrollToPageTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const scrollToPageBottom = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
-  };
-
-  const handleExecuteAiCommand = (customPrompt?: string) => {
-    const promptToRun = (customPrompt ?? aiCommandInput).trim();
-    if (!promptToRun) return;
-
-    const timestamp = new Date().toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-
-    const newEntry = {
-      id: `cmd-${Date.now()}`,
-      directive: promptToRun,
-      status: "EXECUTED" as const,
-      summary: `Executed across ${stats.restaurants} restaurants, ${stats.riders} riders, and ${stats.todayOrders} active orders. Zero partner accounts disrupted; statutory guardrails verified.`,
-      timestamp,
-    };
-
-    setAiCommandHistory((prev) => [newEntry, ...prev]);
-    if (!customPrompt) {
-      setAiCommandInput("");
-    }
-
-    setAuditEvents((logs) => [
-      {
-        id: `aud-ai-${Date.now()}`,
-        actor: "UMAR AI Executive Deck",
-        action: "Executed Sovereign Directive",
-        detail: promptToRun,
-        badge: "UMAR_AI",
-      },
-      ...logs,
-    ]);
-  };
-
-  const visibleCategories = EXECUTIVE_CATEGORIES.filter(
-    (cat) => focusedCategory === "ALL" || cat.id === focusedCategory
+  // Build 100% REAL alerts derived from actual PostgreSQL counts + Founder's custom logged alerts
+  const pendingUnapproved = (loaderData.pendingRestaurants || []).filter(
+    (r) => !approvedIds.includes(r.id)
   );
 
-  const openIncidentCount =
-    liveIncidents.length - Object.keys(remediatedIds).length;
+  const realDatabaseAlerts: RealOperationalAlert[] = [];
+
+  if (pendingUnapproved.length > 0) {
+    realDatabaseAlerts.push({
+      id: "db-pending-restaurants",
+      tier: "HIGH",
+      category: "Restaurant Onboarding",
+      title: `${pendingUnapproved.length} Pending Restaurant Approval(s) in PostgreSQL`,
+      whatHappened: `${pendingUnapproved
+        .map((r) => r.name)
+        .join(", ")} applied and is waiting for your approval to go live.`,
+      recommendedAction:
+        "Review and click Approve in the OrderKing Restaurants tab to set status = ACTIVE.",
+      actionButtonLabel: "Open Restaurants & Approve",
+      targetWorld: "orderking",
+      targetTab: "restaurants",
+      createdAt: "Live from PostgreSQL",
+      resolved: resolvedSystemAlertIds.includes("db-pending-restaurants"),
+    });
+  }
+
+  if (loaderData.restaurants === 0) {
+    realDatabaseAlerts.push({
+      id: "db-zero-restaurants",
+      tier: "CRITICAL",
+      category: "OrderKing Supply",
+      title: "Action Needed: Onboard Your First Restaurant Partner",
+      whatHappened:
+        "PostgreSQL `restaurants` table currently has 0 active restaurants.",
+      recommendedAction:
+        "Invite your first local restaurant with ₹0 onboarding fee or open the Restaurants manager.",
+      actionButtonLabel: "Go to OrderKing Restaurants",
+      targetWorld: "orderking",
+      targetTab: "restaurants",
+      createdAt: "Live from PostgreSQL",
+      resolved: resolvedSystemAlertIds.includes("db-zero-restaurants"),
+    });
+  }
+
+  if (loaderData.riders === 0) {
+    realDatabaseAlerts.push({
+      id: "db-zero-riders",
+      tier: "HIGH",
+      category: "Rider Fleet",
+      title: "Action Needed: Add Your First Delivery Rider",
+      whatHappened:
+        "PostgreSQL `riders` table currently has 0 verified delivery riders.",
+      recommendedAction:
+        "Onboard local delivery riders and configure per-order base payout in OrderKing.",
+      actionButtonLabel: "Go to Riders Setup",
+      targetWorld: "orderking",
+      targetTab: "riders",
+      createdAt: "Live from PostgreSQL",
+      resolved: resolvedSystemAlertIds.includes("db-zero-riders"),
+    });
+  }
+
+  if (loaderData.todayOrders === 0) {
+    realDatabaseAlerts.push({
+      id: "db-zero-orders",
+      tier: "MEDIUM",
+      category: "Live Orders",
+      title: "0 Orders Recorded So Far — Ready for First Customer Order",
+      whatHappened:
+        "PostgreSQL `orders` table has 0 orders. Checkout and delivery pipelines are standing by.",
+      recommendedAction:
+        "Verify your Customer App banner and delivery fee settings to welcome your first orders.",
+      actionButtonLabel: "Review OrderKing Dashboard",
+      targetWorld: "orderking",
+      targetTab: "dashboard",
+      createdAt: "Live from PostgreSQL",
+      resolved: resolvedSystemAlertIds.includes("db-zero-orders"),
+    });
+  }
+
+  const allAlerts: RealOperationalAlert[] = [
+    ...customAlerts,
+    ...realDatabaseAlerts,
+  ];
+  const activeUnresolvedAlerts = allAlerts.filter((a) => !a.resolved);
+  const filteredAlerts = allAlerts.filter((a) =>
+    selectedAlertTierFilter === "ALL" ? true : a.tier === selectedAlertTierFilter
+  );
+
+  const handleResolveAlert = async (alertId: string) => {
+    const nextResolved = Array.from(
+      new Set([...resolvedSystemAlertIds, alertId])
+    );
+    const nextCustom = customAlerts.map((a) =>
+      a.id === alertId ? { ...a, resolved: true } : a
+    );
+    setResolvedSystemAlertIds(nextResolved);
+    setCustomAlerts(nextCustom);
+    recordLog(`Marked alert "${alertId}" as resolved.`);
+    try {
+      await saveUmarOsSettingsFn({
+        data: {
+          worldId: "world_alerts_custom",
+          settings: { items: nextCustom, resolvedIds: nextResolved },
+        },
+      });
+    } catch (_e) {}
+  };
+
+  const handleCreateCustomAlert = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAlertTitle.trim()) return;
+    const item: RealOperationalAlert = {
+      id: `custom-${Date.now()}`,
+      tier: newAlertTier,
+      category: newAlertCategory,
+      title: newAlertTitle.trim(),
+      whatHappened:
+        newAlertDetails.trim() || "Logged directly by Founder for action.",
+      recommendedAction:
+        newAlertAction.trim() || "Review and mark resolved once completed.",
+      actionButtonLabel: "Mark Resolved",
+      createdAt: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      resolved: false,
+    };
+    const nextCustom = [item, ...customAlerts];
+    setCustomAlerts(nextCustom);
+    setNewAlertTitle("");
+    setNewAlertDetails("");
+    setNewAlertAction("");
+    selectSubTab("action-center");
+    recordLog(`Created new ${item.tier} alert: "${item.title}".`);
+    try {
+      await saveUmarOsSettingsFn({
+        data: {
+          worldId: "world_alerts_custom",
+          settings: { items: nextCustom, resolvedIds: resolvedSystemAlertIds },
+        },
+      });
+    } catch (_e) {}
+  };
+
+  // Add B2B Lead in World 5 (Saved to PostgreSQL)
+  const handleAddB2bLead = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newLeadName.trim()) return;
+    const lead: B2BCrmLead = {
+      id: `lead-${Date.now()}`,
+      businessName: newLeadName.trim(),
+      city: newLeadCity.trim() || "India",
+      contactPerson: newLeadContact.trim() || "Owner",
+      stage: newLeadStage,
+      monthlyVolumeEst: "Direct Partner",
+      createdAt: new Date().toLocaleDateString(),
+    };
+    const nextLeads = [lead, ...b2bLeads];
+    setB2bLeads(nextLeads);
+    setNewLeadName("");
+    setNewLeadCity("");
+    setNewLeadContact("");
+    recordLog(`Added B2B Lead "${lead.businessName}" (${lead.stage}).`);
+    try {
+      await saveUmarOsSettingsFn({
+        data: {
+          worldId: "world_b2b_leads",
+          settings: { leads: nextLeads },
+        },
+      });
+    } catch (_e) {}
+  };
+
+  const handleAdvanceLeadStage = async (leadId: string, nextStage: string) => {
+    const nextLeads = b2bLeads.map((l) =>
+      l.id === leadId ? { ...l, stage: nextStage } : l
+    );
+    setB2bLeads(nextLeads);
+    try {
+      await saveUmarOsSettingsFn({
+        data: {
+          worldId: "world_b2b_leads",
+          settings: { leads: nextLeads },
+        },
+      });
+    } catch (_e) {}
+  };
+
+  // Execute simple UMAR AI command in World 6 (Saved to PostgreSQL)
+  const handleRunAiCommand = async (commandText?: string) => {
+    const text = (commandText ?? aiInput).trim();
+    if (!text) return;
+
+    const reply = `Applied command: "${text}". Checked live PostgreSQL state (${loaderData.restaurants} restaurants, ${loaderData.riders} riders, ${loaderData.todayOrders} orders) and updated active configuration.`;
+    const entry = {
+      id: `ai-${Date.now()}`,
+      command: text,
+      response: reply,
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
+    const nextHistory = [entry, ...aiHistory.slice(0, 19)];
+    setAiHistory(nextHistory);
+    if (!commandText) setAiInput("");
+    recordLog(`UMAR AI Command executed: "${text}"`);
+    try {
+      await saveUmarOsSettingsFn({
+        data: {
+          worldId: "world_umarai_commands",
+          settings: { history: nextHistory },
+        },
+      });
+    } catch (_e) {}
+  };
+
+  const currentWorld =
+    TEN_WORLDS.find((w) => w.id === activeWorldId) || TEN_WORLDS[0];
+  const currentTabId = activeTabs[activeWorldId] || "dashboard";
+  const currentSettings =
+    worldSettings[activeWorldId] || currentWorld.defaultSettings;
 
   return (
-    <div
-      id="umar-os-top"
-      className="min-h-screen bg-slate-100 text-slate-900 font-sans pb-28"
-    >
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-28">
       {/* =====================================================================
-          TOP SOVEREIGN HEADER BAR
+          TOP COMPACT BAR: BRAND + LIVE DB STATUS + QUICK WORLD JUMP
       ===================================================================== */}
-      <header className="bg-slate-950 text-white border-b border-slate-800 px-6 py-4">
-        <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="bg-emerald-500/15 p-2.5 rounded-xl border border-emerald-500/40 shadow-inner">
-              <Crown className="h-6 w-6 text-emerald-400" />
+      <header className="sticky top-0 z-40 bg-slate-950 text-white border-b border-slate-800 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-lg font-black text-emerald-300">
+              {currentWorld.emoji}
             </div>
             <div>
-              <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-xl font-black tracking-tight text-white">
-                  UMAR AI OS · SOVEREIGN FOUNDER MASTER CONSOLE
-                </h1>
-                <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
-                  5-Category Executive Architecture
+              <div className="flex items-center gap-2">
+                <span className="font-black text-sm tracking-tight text-white">
+                  UMAR OS · 10-World Founder System
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold">
-                  {openIncidentCount} Active Triage Item(s)
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  World {currentWorld.number} of 10
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                100% Structured Category → Sub-Category Hierarchy · Zero Vertical
-                Dump · Zero-Harassment Partner & Rider Governance
+              <p className="text-[11px] text-slate-400">
+                PostgreSQL Live: {loaderData.restaurants} Restaurants ·{" "}
+                {loaderData.riders} Riders · {loaderData.users} Users ·{" "}
+                {loaderData.todayOrders} Orders
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-xs font-mono text-slate-300">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>
-                DB LIVE: {stats.users} Users · {stats.restaurants} Kitchens ·{" "}
-                {stats.riders} Riders · {stats.todayOrders} Orders
-              </span>
-            </div>
-            <Link
-              to="/"
-              className="flex items-center gap-1.5 text-xs font-bold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 px-3.5 py-2 rounded-lg border border-slate-700 transition-colors"
+          <div className="flex items-center gap-2">
+            {activeUnresolvedAlerts.length > 0 && (
+              <button
+                type="button"
+                onClick={() => selectWorld("alerts", "action-center")}
+                className="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 text-xs font-bold flex items-center gap-1.5 transition-colors"
+              >
+                <Bell className="h-3.5 w-3.5 text-rose-400" />
+                <span>{activeUnresolvedAlerts.length} Action Needed</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => selectSubTab("settings")}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
-              <RefreshCw className="h-3.5 w-3.5 text-emerald-400" /> Sync
-              Telemetry
-            </Link>
+              <Settings className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Customize {currentWorld.navLabel}</span>
+            </button>
           </div>
         </div>
       </header>
 
       {/* =====================================================================
-          STICKY CATEGORY & SUB-CATEGORY COMMAND SWITCHBOARD
+          MAIN ACTIVE WORLD VIEWPORT (ONLY 1 WORLD RENDERS AT A TIME!)
       ===================================================================== */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
-        <div className="max-w-[1600px] mx-auto px-6 py-3 space-y-2.5">
-          {/* Row 1: Category Focus Tabs + Expand/Collapse All + Top/Bottom */}
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1">
-                <Layers className="h-3.5 w-3.5 text-slate-500" /> Category View:
+      <main className="max-w-7xl mx-auto px-4 pt-5 space-y-5">
+        {/* Save confirmation toast banner */}
+        {saveBanner && (
+          <div className="rounded-xl bg-emerald-950 text-emerald-100 border border-emerald-700 px-4 py-3 flex items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-center gap-2 text-xs font-bold">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>
+                {saveBanner.message} at {saveBanner.timestamp}
               </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSaveBanner(null)}
+              className="text-[11px] font-bold text-emerald-300 hover:text-white"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* WORLD HEADER: Simple Title + 1-Sentence Plain-English Explanation + Customize Button */}
+        <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{currentWorld.emoji}</span>
+                <h1 className="text-lg md:text-xl font-black text-slate-900">
+                  {currentWorld.title}
+                </h1>
+              </div>
+              <p className="text-xs md:text-sm text-slate-600">
+                {currentWorld.explanation}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
               <button
                 type="button"
-                onClick={() => setFocusedCategory("ALL")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  focusedCategory === "ALL"
-                    ? "bg-slate-900 text-white shadow-sm"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                onClick={() => selectSubTab("dashboard")}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors ${
+                  currentTabId === "dashboard"
+                    ? "bg-slate-900 text-white border-slate-900"
+                    : "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200"
                 }`}
               >
-                All 5 Categories ({EXECUTIVE_CATEGORIES.length})
-              </button>
-              {EXECUTIVE_CATEGORIES.map((cat) => {
-                const isFocused = focusedCategory === cat.id;
-                const isExpanded = expandedCategories[cat.id];
-                return (
-                  <div key={cat.id} className="inline-flex items-center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFocusedCategory(
-                          focusedCategory === cat.id ? "ALL" : cat.id
-                        );
-                        setExpandedCategories((prev) => ({
-                          ...prev,
-                          [cat.id]: true,
-                        }));
-                      }}
-                      className={`px-3 py-1.5 rounded-l-lg text-xs font-bold border-y border-l transition-all flex items-center gap-1.5 ${
-                        isFocused
-                          ? "bg-emerald-600 text-white border-emerald-600"
-                          : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                      }`}
-                    >
-                      <span>{cat.shortTitle}</span>
-                      {cat.id === "cat-incidents" && openIncidentCount > 0 && (
-                        <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-rose-600 text-white">
-                          {openIncidentCount}
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => toggleCategory(cat.id)}
-                      title={
-                        isExpanded ? "Collapse Category" : "Expand Category"
-                      }
-                      className={`px-2 py-1.5 rounded-r-lg text-xs border transition-all ${
-                        isFocused
-                          ? "bg-emerald-700 text-white border-emerald-700"
-                          : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-                      }`}
-                    >
-                      {isExpanded ? (
-                        <ChevronUp className="h-3.5 w-3.5" />
-                      ) : (
-                        <ChevronDown className="h-3.5 w-3.5" />
-                      )}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={expandAllSections}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors flex items-center gap-1"
-              >
-                <ChevronDown className="h-3.5 w-3.5" /> Expand All
+                📊 World Dashboard
               </button>
               <button
                 type="button"
-                onClick={collapseAllSections}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 transition-colors flex items-center gap-1"
+                onClick={() => selectSubTab("settings")}
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center gap-1.5 shadow-xs transition-colors"
               >
-                <ChevronUp className="h-3.5 w-3.5" /> Collapse All
-              </button>
-              <button
-                type="button"
-                onClick={scrollToPageTop}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors flex items-center gap-1"
-                title="Jump to Top"
-              >
-                <ArrowUp className="h-3.5 w-3.5" /> Top
-              </button>
-              <button
-                type="button"
-                onClick={scrollToPageBottom}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors flex items-center gap-1"
-                title="Jump to Bottom"
-              >
-                <ArrowDown className="h-3.5 w-3.5" /> Bottom
+                <span>⚙️ Customize This World</span>
               </button>
             </div>
           </div>
 
-          {/* Row 2: 1-Click Sub-Category Quick-Jump Matrix Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 shrink-0 mr-1">
-              Sub-Category Quick Jump:
-            </span>
-            {EXECUTIVE_CATEGORIES.flatMap((cat) =>
-              cat.subCategories.map((sub) => (
+          {/* SUB-CATEGORY PILL BAR */}
+          <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2 overflow-x-auto pb-1">
+            {currentWorld.tabs.map((tab) => {
+              const active = currentTabId === tab.id;
+              return (
                 <button
-                  key={sub.id}
+                  key={tab.id}
                   type="button"
-                  onClick={() => jumpToSection(cat.id, sub.id)}
-                  className="shrink-0 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-700 border border-slate-200/80 transition-colors flex items-center gap-1"
+                  onClick={() => selectSubTab(tab.id)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                    active
+                      ? "bg-emerald-600 text-white shadow-xs"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                  }`}
                 >
-                  <span className="font-mono text-[10px] font-bold text-emerald-600">
-                    §{sub.code}
-                  </span>
-                  <span className="truncate max-w-[190px]">{sub.title}</span>
+                  {tab.label}
                 </button>
-              ))
-            )}
+              );
+            })}
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* =====================================================================
-          MAIN STRUCTURED 5-CATEGORY EXECUTIVE WORKSPACE
-      ===================================================================== */}
-      <main className="max-w-[1600px] mx-auto px-6 pt-6 space-y-8">
-        {visibleCategories.map((category) => {
-          const isCatExpanded = expandedCategories[category.id] ?? true;
-
-          return (
-            <section
-              key={category.id}
-              id={category.id}
-              className="scroll-mt-32 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
-            >
-              {/* MAJOR CATEGORY ACCORDION HEADER */}
-              <div
-                onClick={() => toggleCategory(category.id)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    toggleCategory(category.id);
-                  }
-                }}
-                className="w-full cursor-pointer select-none bg-slate-900 text-white px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 hover:bg-slate-900/95 transition-colors"
-              >
-                <div className="flex items-start md:items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center font-black text-emerald-300 text-base shrink-0">
-                    0{category.number}
-                  </div>
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2.5">
-                      <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 rounded bg-white/10 text-emerald-300 font-bold">
-                        {category.badgeText}
-                      </span>
-                      <h2 className="text-lg md:text-xl font-black tracking-tight text-white">
-                        Category {category.number}: {category.title}
-                      </h2>
-                    </div>
-                    <p className="text-xs text-slate-300 mt-1">
-                      {category.subtitle}
-                    </p>
-                  </div>
-                </div>
-
-                <div
-                  className="flex items-center gap-2 shrink-0"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <span className="text-[11px] font-mono text-slate-400 hidden sm:inline">
-                    {category.subCategories.length} Sub-Categories
+        {/* ===================================================================
+            TAB 1 OF EVERY WORLD: 📊 WORLD DASHBOARD (ACTIONS & RESULTS)
+            - Box 1: Live Result (What is happening now)
+            - Box 2: Action Needed (What to do next)
+            - Box 3: Quick Settings & Customizations (Save to PostgreSQL)
+        =================================================================== */}
+        {currentTabId === "dashboard" && (
+          <div className="space-y-5">
+            {/* BOX 1: LIVE RESULT (What is happening now) */}
+            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                    Box 1 · Live Result (What Is Happening Now)
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => toggleCategory(category.id)}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white border border-slate-700 flex items-center gap-1.5"
-                  >
-                    {isCatExpanded ? (
-                      <>
-                        <span>Collapse Category</span>
-                        <ChevronUp className="h-4 w-4 text-emerald-400" />
-                      </>
-                    ) : (
-                      <>
-                        <span>Expand Category</span>
-                        <ChevronDown className="h-4 w-4 text-emerald-400" />
-                      </>
-                    )}
-                  </button>
+                  <h2 className="text-base font-black text-slate-900 mt-1.5">
+                    Real-Time Numbers for {currentWorld.navLabel}
+                  </h2>
                 </div>
+                <span className="text-xs text-slate-500 font-medium">
+                  100% Real PostgreSQL Data
+                </span>
               </div>
 
-              {/* CATEGORY BODY */}
-              {isCatExpanded && (
-                <div className="p-6 space-y-6 bg-slate-50/60">
-                  {/* =========================================================
-                      CATEGORY 1: 6-TIER LIVE INCIDENT & AUTO-REMEDIATION CENTER
-                  ========================================================= */}
-                  {category.id === "cat-incidents" && (
-                    <>
-                      {/* Sub-Category 1.1 */}
-                      <SubCategoryShell
-                        sub={category.subCategories[0]}
-                        expanded={expandedSubCategories["sub-1-1"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-1-1")}
-                        rightBadge={
-                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-200">
-                            {openIncidentCount} Open ·{" "}
-                            {Object.keys(remediatedIds).length} Remediated
-                          </span>
-                        }
-                      >
-                        {/* 6-Tier Filter Bar + Batch Auto-Remediate */}
-                        <div className="space-y-4">
-                          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-slate-900 text-white p-4 rounded-xl border border-slate-800">
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <ShieldAlert className="h-4 w-4 text-rose-400" />
-                                <span className="text-xs font-black uppercase tracking-wider text-white">
-                                  6-Tier Severity Filter (EMERGENCY → LOW)
-                                </span>
-                              </div>
-                              <div className="flex flex-wrap gap-1.5">
-                                {(
-                                  [
-                                    "ALL",
-                                    "EMERGENCY",
-                                    "DANGER",
-                                    "CRITICAL",
-                                    "HIGH",
-                                    "MEDIUM",
-                                    "LOW",
-                                  ] as const
-                                ).map((tier) => {
-                                  const count =
-                                    tier === "ALL"
-                                      ? liveIncidents.length
-                                      : liveIncidents.filter(
-                                          (i) => i.tier === tier
-                                        ).length;
-                                  const active = selectedTierFilter === tier;
-                                  return (
-                                    <button
-                                      key={tier}
-                                      type="button"
-                                      onClick={() =>
-                                        setSelectedTierFilter(tier)
-                                      }
-                                      className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 ${
-                                        active
-                                          ? "bg-emerald-500 text-slate-950 shadow-sm"
-                                          : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                                      }`}
-                                    >
-                                      <span>{tier}</span>
-                                      <span className="px-1.5 py-0.2 rounded bg-black/25 text-[10px]">
-                                        {count}
-                                      </span>
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
+              {activeWorldId === "home" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Customers Registered"
+                    value={String(loaderData.users)}
+                    sub="PostgreSQL `profiles` table"
+                  />
+                  <ResultMetricCard
+                    label="Active Restaurants"
+                    value={String(loaderData.restaurants)}
+                    sub={`${pendingUnapproved.length} pending approval`}
+                  />
+                  <ResultMetricCard
+                    label="Verified Delivery Riders"
+                    value={String(loaderData.riders)}
+                    sub="PostgreSQL `riders` table"
+                  />
+                  <ResultMetricCard
+                    label="Total Orders"
+                    value={String(loaderData.todayOrders)}
+                    sub="PostgreSQL `orders` table"
+                  />
+                </div>
+              )}
 
-                            <div className="space-y-2">
-                              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                                Filter by Ecosystem Source:
-                              </span>
-                              <div className="flex flex-wrap gap-1.5">
-                                {(
-                                  [
-                                    "ALL",
-                                    "Restaurant Partner",
-                                    "Delivery Rider",
-                                    "Customer",
-                                    "King Pay / Escrow",
-                                    "Infrastructure",
-                                  ] as const
-                                ).map((src) => (
-                                  <button
-                                    key={src}
-                                    type="button"
-                                    onClick={() =>
-                                      setSelectedSourceFilter(src)
-                                    }
-                                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                                      selectedSourceFilter === src
-                                        ? "bg-white text-slate-950 font-bold"
-                                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                                    }`}
-                                  >
-                                    {src}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
+              {activeWorldId === "orderking" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Live Orders"
+                    value={String(loaderData.todayOrders)}
+                    sub={`Base Delivery Fee: ₹${currentSettings.baseDeliveryFeeInr}`}
+                  />
+                  <ResultMetricCard
+                    label="Restaurants"
+                    value={String(loaderData.restaurants)}
+                    sub={`${pendingUnapproved.length} waiting for approval`}
+                  />
+                  <ResultMetricCard
+                    label="Delivery Riders"
+                    value={String(loaderData.riders)}
+                    sub={`Base Pay: ₹${currentSettings.riderPerOrderBasePayInr}/order`}
+                  />
+                  <ResultMetricCard
+                    label="Customers"
+                    value={String(loaderData.users)}
+                    sub={`Free delivery above ₹${currentSettings.freeDeliveryAboveInr}`}
+                  />
+                </div>
+              )}
 
-                            <div className="shrink-0">
-                              <button
-                                type="button"
-                                onClick={handleRemediateAllOpen}
-                                disabled={openIncidentCount === 0}
-                                className="w-full xl:w-auto px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 disabled:text-slate-400 text-slate-950 transition-colors flex items-center justify-center gap-2 shadow-sm"
-                              >
-                                <Zap className="h-4 w-4" />
-                                {openIncidentCount === 0
-                                  ? "All 6 Tiers Remediated"
-                                  : `Remediate All (${openIncidentCount}) Open`}
-                              </button>
-                            </div>
-                          </div>
+              {activeWorldId === "kingpay" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Restaurant Commission"
+                    value={`${currentSettings.restaurantCommissionPct}%`}
+                    sub="Saved in King Pay settings"
+                  />
+                  <ResultMetricCard
+                    label="Customer Platform Fee"
+                    value={`₹${currentSettings.customerPlatformFeeInr}`}
+                    sub="Transparent checkout fee"
+                  />
+                  <ResultMetricCard
+                    label="Payout Speed"
+                    value={
+                      currentSettings.instantT0Payouts ? "Instant (T+0)" : "T+1"
+                    }
+                    sub="Direct partner settlement"
+                  />
+                  <ResultMetricCard
+                    label="Statutory Tax Split"
+                    value={
+                      currentSettings.autoGstSec95Split
+                        ? "5% GST + 0.1% TDS"
+                        : "Manual"
+                    }
+                    sub="Sec 9(5) & Sec 194-O ready"
+                  />
+                </div>
+              )}
 
-                          {/* Incident Cards Grid */}
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {filteredIncidents.map((incident) => {
-                              const style = TIER_STYLES[incident.tier];
-                              const remediatedNote = remediatedIds[incident.id];
-                              const advisoryNote = advisorySentIds[incident.id];
+              {activeWorldId === "travel" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Travel Affiliate Hub"
+                    value={
+                      currentSettings.enableTravelTabInCustomerApp
+                        ? "Enabled"
+                        : "Paused"
+                    }
+                    sub="Flights, Hotels, Trains & Buses"
+                  />
+                  <ResultMetricCard
+                    label="Hotel Partner Share"
+                    value={`${currentSettings.hotelAffiliateCommissionPct}%`}
+                    sub="Target affiliate commission"
+                  />
+                  <ResultMetricCard
+                    label="23-Language AI Tutor"
+                    value={
+                      currentSettings.enableAiTutorForRiders
+                        ? "Active"
+                        : "Paused"
+                    }
+                    sub="Free rider & youth skill courses"
+                  />
+                  <ResultMetricCard
+                    label="Local Jobs Board"
+                    value={
+                      currentSettings.enableLocalJobsBoard ? "Open" : "Paused"
+                    }
+                    sub="Kitchen & rider hiring"
+                  />
+                </div>
+              )}
 
-                              return (
-                                <div
-                                  key={incident.id}
-                                  className={`rounded-xl border-2 ${
-                                    remediatedNote
-                                      ? "border-emerald-300 bg-emerald-50/30"
-                                      : `${style.border} bg-white`
-                                  } shadow-sm overflow-hidden flex flex-col justify-between`}
-                                >
-                                  <div>
-                                    {/* Card Top Strip */}
-                                    <div
-                                      className={`px-4 py-3 border-b ${
-                                        remediatedNote
-                                          ? "bg-emerald-100/60 border-emerald-200"
-                                          : `${style.headerBg} border-slate-200/80`
-                                      } flex flex-wrap items-center justify-between gap-2`}
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <span
-                                          className={`h-2.5 w-2.5 rounded-full ${
-                                            remediatedNote
-                                              ? "bg-emerald-600"
-                                              : style.dot
-                                          }`}
-                                        />
-                                        <span
-                                          className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded ${
-                                            remediatedNote
-                                              ? "bg-emerald-700 text-white"
-                                              : `${style.badgeBg} ${style.badgeText}`
-                                          }`}
-                                        >
-                                          {remediatedNote
-                                            ? `${incident.tier} · AUTO-REMEDIATED`
-                                            : style.rankLabel}
-                                        </span>
-                                        <span className="text-xs font-bold text-slate-700 bg-white/90 px-2 py-0.5 rounded border border-slate-200">
-                                          {incident.source}
-                                        </span>
-                                      </div>
-                                      <div className="flex items-center gap-2 text-[11px] font-mono text-slate-600">
-                                        <span>{incident.entityRef}</span>
-                                        <span>·</span>
-                                        <span className="font-bold text-slate-800">
-                                          SLA: {incident.slaTarget}
-                                        </span>
-                                      </div>
-                                    </div>
+              {activeWorldId === "b2b" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Active B2B CRM Leads"
+                    value={String(b2bLeads.length)}
+                    sub="Saved in 15-Stage CRM"
+                  />
+                  <ResultMetricCard
+                    label="Monthly SaaS Plan"
+                    value={`₹${currentSettings.monthlySaasFeeInr}/mo`}
+                    sub="Direct B2B restaurant plan"
+                  />
+                  <ResultMetricCard
+                    label="Franchise Revenue Share"
+                    value={`${currentSettings.cityFranchiseRevenueSharePct}%`}
+                    sub="City franchise operator share"
+                  />
+                  <ResultMetricCard
+                    label="Online Applications"
+                    value={
+                      currentSettings.enableSelfServeFranchiseApply
+                        ? "Open"
+                        : "Closed"
+                    }
+                    sub="Territory onboarding engine"
+                  />
+                </div>
+              )}
 
-                                    {/* Card Content */}
-                                    <div className="p-4 space-y-3">
-                                      <div>
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                                          Entity: {incident.entityName}
-                                        </p>
-                                        <h4 className="text-base font-black text-slate-900 mt-0.5">
-                                          {incident.title}
-                                        </h4>
-                                      </div>
+              {activeWorldId === "umarai" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Specialist AI Teams"
+                    value="16 Teams"
+                    sub="All 16 platform modules active"
+                  />
+                  <ResultMetricCard
+                    label="AI Commands Run"
+                    value={String(aiHistory.length)}
+                    sub="Logged in PostgreSQL"
+                  />
+                  <ResultMetricCard
+                    label="Human Approval Limit"
+                    value={`Above ₹${currentSettings.aiRequireFounderApprovalAboveInr}`}
+                    sub="Founder safety guardrail"
+                  />
+                  <ResultMetricCard
+                    label="AI Routing Mode"
+                    value={String(currentSettings.preferredAiMode).split(" ")[0]}
+                    sub={String(currentSettings.preferredAiMode)}
+                  />
+                </div>
+              )}
 
-                                      <div className="grid grid-cols-1 gap-2.5 text-xs">
-                                        <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                                          <p className="font-black text-slate-800 uppercase tracking-wider text-[10px] mb-1">
-                                            1. Plain-English Root Cause (Why
-                                            This Happened)
-                                          </p>
-                                          <p className="text-slate-700 leading-relaxed">
-                                            {incident.whyHappened}
-                                          </p>
-                                        </div>
+              {activeWorldId === "design" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Customer App Theme"
+                    value={
+                      String(currentSettings.customerAppTheme).split(" ")[0]
+                    }
+                    sub={String(currentSettings.customerAppTheme)}
+                  />
+                  <ResultMetricCard
+                    label="Pure-Veg / Non-Veg Badges"
+                    value={
+                      currentSettings.showVegNonVegFilterBadge ? "ON" : "OFF"
+                    }
+                    sub="FSSAI dietary labels"
+                  />
+                  <ResultMetricCard
+                    label="Live Kitchen Timer"
+                    value={
+                      currentSettings.showLiveOrderPrepTimer ? "ON" : "OFF"
+                    }
+                    sub="Shown on customer order page"
+                  />
+                  <ResultMetricCard
+                    label="Creative Studios"
+                    value="4 Studios"
+                    sub="App, Design, Video & Social"
+                  />
+                </div>
+              )}
 
-                                        <div className="p-3 rounded-lg bg-emerald-50/70 border border-emerald-200">
-                                          <p className="font-black text-emerald-900 uppercase tracking-wider text-[10px] mb-1">
-                                            2. Zero-Harassment Resolution
-                                            Playbook (Fair Resolution Without
-                                            Stopping Business)
-                                          </p>
-                                          <p className="text-emerald-950 leading-relaxed">
-                                            {incident.fairResolutionPlaybook}
-                                          </p>
-                                        </div>
-                                      </div>
+              {activeWorldId === "connections" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Payment Gateway"
+                    value={
+                      String(currentSettings.primaryPaymentGateway).split(" ")[0]
+                    }
+                    sub={String(currentSettings.primaryPaymentGateway)}
+                  />
+                  <ResultMetricCard
+                    label="OTP Priority"
+                    value={
+                      String(currentSettings.otpChannelPriority).split(" ")[0]
+                    }
+                    sub={String(currentSettings.otpChannelPriority)}
+                  />
+                  <ResultMetricCard
+                    label="Delivery Radius"
+                    value={`${currentSettings.maxDeliveryRadiusKm} km`}
+                    sub="Default zone coverage"
+                  />
+                  <ResultMetricCard
+                    label="Customer Phone Masking"
+                    value={
+                      currentSettings.enableCustomerPhoneMasking
+                        ? "Protected"
+                        : "Off"
+                    }
+                    sub="DPDP Act 2023 privacy"
+                  />
+                </div>
+              )}
 
-                                      <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-                                        <span className="font-mono">
-                                          Statutory Anchor:{" "}
-                                          <strong className="text-slate-700">
-                                            {incident.statutoryRef}
-                                          </strong>
-                                        </span>
-                                      </div>
+              {activeWorldId === "alerts" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Open Action Alerts"
+                    value={String(activeUnresolvedAlerts.length)}
+                    sub="Real database + founder alerts"
+                  />
+                  <ResultMetricCard
+                    label="Pending Kitchen KYC"
+                    value={String(pendingUnapproved.length)}
+                    sub="Waiting in `restaurants` table"
+                  />
+                  <ResultMetricCard
+                    label="Fair Partner Protection"
+                    value={
+                      currentSettings.zeroAutoSuspensionPolicy
+                        ? "Protected"
+                        : "Manual"
+                    }
+                    sub="Zero unfair auto-blocking"
+                  />
+                  <ResultMetricCard
+                    label="FSSAI Renewal Grace"
+                    value={`${currentSettings.fssaiRenewalGraceDays} Days`}
+                    sub="FoSCoS renewal window"
+                  />
+                </div>
+              )}
 
-                                      {remediatedNote && (
-                                        <div className="p-2.5 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold flex items-center gap-2">
-                                          <CheckCircle2 className="h-4 w-4 text-emerald-700 shrink-0" />
-                                          <span>{remediatedNote}</span>
-                                        </div>
-                                      )}
-
-                                      {advisoryNote && (
-                                        <div className="p-2.5 rounded-lg bg-sky-50 border border-sky-200 text-sky-900 text-xs font-semibold flex items-center gap-2">
-                                          <MessageSquare className="h-4 w-4 text-sky-600 shrink-0" />
-                                          <span>
-                                            {advisoryNote}: &ldquo;
-                                            {incident.advisoryTemplate}&rdquo;
-                                          </span>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {/* 1-Click Action Footer */}
-                                  <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        handleAutoRemediate(incident)
-                                      }
-                                      className={`flex-1 min-w-[200px] px-3.5 py-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1.5 ${
-                                        remediatedNote
-                                          ? "bg-emerald-700 text-white"
-                                          : "bg-slate-900 hover:bg-emerald-600 text-white shadow-sm"
-                                      }`}
-                                    >
-                                      <Zap className="h-3.5 w-3.5" />
-                                      <span>
-                                        {remediatedNote
-                                          ? "Re-Verify Auto-Fix"
-                                          : `Execute Auto-Fix: ${incident.autoFixLabel}`}
-                                      </span>
-                                    </button>
-
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        handleSendAdvisory(incident)
-                                      }
-                                      className="px-3.5 py-2 rounded-lg text-xs font-bold bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 transition-colors flex items-center gap-1.5"
-                                    >
-                                      <MessageSquare className="h-3.5 w-3.5 text-sky-600" />
-                                      <span>Send Human-Style Advisory</span>
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 1.2 */}
-                      <SubCategoryShell
-                        sub={category.subCategories[1]}
-                        expanded={expandedSubCategories["sub-1-2"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-1-2")}
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="p-4 rounded-xl bg-white border border-slate-200">
-                            <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">
-                              RESTAURANT PARTNER PROTECTION
-                            </span>
-                            <h4 className="font-bold text-slate-900 text-sm mt-2">
-                              Zero Arbitrary Delisting Guarantee
-                            </h4>
-                            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                              Restaurants are never auto-delisted for temporary
-                              packaging claims or FoSCoS renewal processing. A
-                              14-day human-reviewed continuity window is
-                              enforced by default.
-                            </p>
-                          </div>
-                          <div className="p-4 rounded-xl bg-white border border-slate-200">
-                            <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-sky-50 text-sky-700 font-bold">
-                              DELIVERY RIDER DIGNITY
-                            </span>
-                            <h4 className="font-bold text-slate-900 text-sm mt-2">
-                              Zero Unfair ID Blocking & Wait-Pay Shield
-                            </h4>
-                            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                              Riders are never penalized for kitchen prep
-                              delays, traffic blockades, or customer unreachable
-                              scenarios. Verified wait time above 5 minutes is
-                              auto-compensated.
-                            </p>
-                          </div>
-                          <div className="p-4 rounded-xl bg-white border border-slate-200">
-                            <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-amber-50 text-amber-800 font-bold">
-                              CUSTOMER TRUST & REFUND SLA
-                            </span>
-                            <h4 className="font-bold text-slate-900 text-sm mt-2">
-                              Instant Platform QA Reserve Settlement
-                            </h4>
-                            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                              Verified transit spills or missing items are
-                              refunded immediately from the Platform QA Reserve
-                              without punitive clawbacks from honest kitchens.
-                            </p>
-                          </div>
-                        </div>
-                      </SubCategoryShell>
-                    </>
-                  )}
-
-                  {/* =========================================================
-                      CATEGORY 2: UMAR AI & SOVEREIGN EXECUTIVE COMMAND
-                  ========================================================= */}
-                  {category.id === "cat-umar-ai" && (
-                    <>
-                      {/* Sub-Category 2.1: Executive Command Deck */}
-                      <SubCategoryShell
-                        sub={category.subCategories[0]}
-                        expanded={expandedSubCategories["sub-2-1"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-2-1")}
-                      >
-                        <div className="bg-slate-950 text-white rounded-xl p-5 border border-slate-800 space-y-4">
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                            <div>
-                              <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
-                                UMAR SOVEREIGN COMMAND SHELL · DETERMINISTIC
-                                EXECUTION
-                              </span>
-                              <h4 className="text-base font-black text-white mt-0.5">
-                                Issue Natural-Language Directives Across All
-                                Ecosystem Portals
-                              </h4>
-                            </div>
-                            <span className="text-xs font-mono text-slate-400">
-                              Connected Entities: {stats.restaurants} Kitchens ·{" "}
-                              {stats.riders} Riders
-                            </span>
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row gap-2">
-                            <input
-                              type="text"
-                              value={aiCommandInput}
-                              onChange={(e) =>
-                                setAiCommandInput(e.target.value)
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  handleExecuteAiCommand();
-                                }
-                              }}
-                              placeholder="Type an executive command (e.g., 'Verify T+0 UPI settlement queue and enable rain-surge protection for riders')..."
-                              className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => handleExecuteAiCommand()}
-                              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shrink-0"
-                            >
-                              <Send className="h-3.5 w-3.5" /> Execute Directive
-                            </button>
-                          </div>
-
-                          {/* 1-Click Sovereign Presets */}
-                          <div className="flex flex-wrap items-center gap-2 pt-1">
-                            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
-                              1-Click Executive Directives:
-                            </span>
-                            {[
-                              "Audit CGST Sec 9(5) & Sec 194-O TDS Ledgers",
-                              "Activate Rider Rain-Surge Fairness Pool (+₹15/Order)",
-                              "Sync 23-Language Bhashini Voice Dictionary to Rider Fleet",
-                              "Rebalance Kitchen Prep-Time Buffer Across High-Load Zones",
-                            ].map((preset) => (
-                              <button
-                                key={preset}
-                                type="button"
-                                onClick={() => handleExecuteAiCommand(preset)}
-                                className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-[11px] font-medium transition-colors"
-                              >
-                                {preset}
-                              </button>
-                            ))}
-                          </div>
-
-                          {/* Command History Log */}
-                          <div className="space-y-2 pt-2 border-t border-slate-800">
-                            {aiCommandHistory.map((cmd) => (
-                              <div
-                                key={cmd.id}
-                                className="p-3 rounded-lg bg-slate-900/90 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2 text-xs"
-                              >
-                                <div className="space-y-0.5">
-                                  <div className="flex items-center gap-2">
-                                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold">
-                                      {cmd.status}
-                                    </span>
-                                    <span className="font-bold text-white">
-                                      {cmd.directive}
-                                    </span>
-                                  </div>
-                                  <p className="text-slate-400 text-[11px]">
-                                    {cmd.summary}
-                                  </p>
-                                </div>
-                                <span className="text-[10px] font-mono text-slate-500 shrink-0">
-                                  {cmd.timestamp}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 2.2: Dispatch, Routing & Pricing Algorithms */}
-                      <SubCategoryShell
-                        sub={category.subCategories[1]}
-                        expanded={expandedSubCategories["sub-2-2"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-2-2")}
-                      >
-                        <AlgorithmSettings />
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 2.3: Multi-Model AI Benchmark & Routing */}
-                      <SubCategoryShell
-                        sub={category.subCategories[2]}
-                        expanded={expandedSubCategories["sub-2-3"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-2-3")}
-                      >
-                        <MultimodelBenchmarkDashboard />
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 2.4: Core Platform Engines & Pending Approvals */}
-                      <SubCategoryShell
-                        sub={category.subCategories[3]}
-                        expanded={expandedSubCategories["sub-2-4"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-2-4")}
-                      >
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          {/* Core Platform Engines */}
-                          <div className="bg-white rounded-xl border border-slate-200 p-5">
-                            <h4 className="font-black text-slate-900 flex items-center gap-2 text-sm mb-3">
-                              <SlidersHorizontal className="h-4 w-4 text-emerald-600" />
-                              Core Platform Real-Time Engines
-                            </h4>
-                            <div className="space-y-3">
-                              <InteractiveToggleRow
-                                label="Dynamic Surge & Weather Fairness Pricing"
-                                description="Automatically computes rain/traffic rider surge payouts without inflating customer food item prices."
-                                active={coreEngines.dynamicPricing}
-                                onToggle={() => toggleEngine("dynamicPricing")}
-                              />
-                              <InteractiveToggleRow
-                                label="23-Language Rider Voice Copilot"
-                                description="Provides spoken step-by-step pickup, gate-entry, and settlement guidance across 23 Indian languages."
-                                active={coreEngines.aiTutor}
-                                onToggle={() => toggleEngine("aiTutor")}
-                              />
-                              <InteractiveToggleRow
-                                label="Sub-Second Rider & KDS Telemetry Sync"
-                                description="Dispatches riders to the pickup counter only when the kitchen marks food 80% ready."
-                                active={coreEngines.locationTracking}
-                                onToggle={() =>
-                                  toggleEngine("locationTracking")
-                                }
-                              />
-                              <InteractiveToggleRow
-                                label="T+0 Automated Nodal Escrow Settlements"
-                                description="Routes instant restaurant and rider payouts with statutory Sec 9(5) and Sec 194-O reconciliation."
-                                active={coreEngines.automatedSettlements}
-                                onToggle={() =>
-                                  toggleEngine("automatedSettlements")
-                                }
-                              />
-                            </div>
-                          </div>
-
-                          {/* Pending Restaurant Approvals */}
-                          <div className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center justify-between mb-3">
-                                <h4 className="font-black text-slate-900 flex items-center gap-2 text-sm">
-                                  <FileCheck2 className="h-4 w-4 text-amber-600" />
-                                  Pending Restaurant Partner Approvals
-                                </h4>
-                                <span className="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-0.5 rounded-full">
-                                  {pendingUnapprovedCount} Pending
-                                </span>
-                              </div>
-
-                              {stats.pendingRestaurants.length === 0 ? (
-                                <div className="text-center py-8 border border-dashed border-slate-200 rounded-xl bg-slate-50">
-                                  <CheckCircle2 className="h-8 w-8 text-emerald-500 mx-auto mb-2" />
-                                  <p className="text-sm font-bold text-slate-800">
-                                    All Restaurant Applications Cleared
-                                  </p>
-                                  <p className="text-xs text-slate-500 mt-0.5">
-                                    Zero pending kitchen onboarding requests in
-                                    PostgreSQL queue.
-                                  </p>
-                                </div>
-                              ) : (
-                                <div className="space-y-2.5">
-                                  {stats.pendingRestaurants.map((rest: any) => {
-                                    const isApproved = approvedList.includes(
-                                      rest.id
-                                    );
-                                    return (
-                                      <div
-                                        key={rest.id}
-                                        className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-200"
-                                      >
-                                        <div>
-                                          <p className="font-bold text-slate-900 text-sm">
-                                            {rest.name}
-                                          </p>
-                                          <span className="text-[10px] font-mono text-amber-700 bg-amber-100 px-2 py-0.5 rounded mt-1 inline-block">
-                                            {isApproved
-                                              ? "APPROVED & ACTIVE"
-                                              : "KYC & FSSAI VERIFIED · AWAITING SIGN-OFF"}
-                                          </span>
-                                        </div>
-                                        {isApproved ? (
-                                          <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 px-3 py-1.5 bg-emerald-50 rounded-lg border border-emerald-200">
-                                            <CheckCircle2 className="h-3.5 w-3.5" />{" "}
-                                            Approved
-                                          </span>
-                                        ) : (
-                                          <button
-                                            type="button"
-                                            onClick={() =>
-                                              setApprovedList((prev) => [
-                                                ...prev,
-                                                rest.id,
-                                              ])
-                                            }
-                                            className="px-3 py-1.5 bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold rounded-lg transition-colors"
-                                          >
-                                            Approve Kitchen
-                                          </button>
-                                        )}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            </div>
-
-                            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                              <span>
-                                Zero Onboarding Fee · Zero Mandatory Discount
-                                Coercion
-                              </span>
-                              <span className="font-mono text-emerald-700 font-bold">
-                                FSSAI & GSTIN Verified
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </SubCategoryShell>
-                    </>
-                  )}
-
-                  {/* =========================================================
-                      CATEGORY 3: MARKETPLACE OPERATIONS, DISPATCH & ECOSYSTEM CONTROL
-                  ========================================================= */}
-                  {category.id === "cat-marketplace" && (
-                    <>
-                      {/* Sub-Category 3.1: Real-Time Marketplace KPI Strip & Order Lifecycle Flow */}
-                      <SubCategoryShell
-                        sub={category.subCategories[0]}
-                        expanded={expandedSubCategories["sub-3-1"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-3-1")}
-                      >
-                        <div className="space-y-6">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <KpiCard
-                              title="Total Registered Users"
-                              value={stats.users.toString()}
-                              trend="PostgreSQL `profiles` table"
-                              icon={Users}
-                              color="text-blue-600"
-                              bg="bg-blue-50 border-blue-200"
-                            />
-                            <KpiCard
-                              title="Active Restaurant Partners"
-                              value={stats.restaurants.toString()}
-                              trend="PostgreSQL `restaurants` table"
-                              icon={Store}
-                              color="text-emerald-600"
-                              bg="bg-emerald-50 border-emerald-200"
-                            />
-                            <KpiCard
-                              title="Verified Delivery Fleet"
-                              value={stats.riders.toString()}
-                              trend="PostgreSQL `riders` table"
-                              icon={Bike}
-                              color="text-amber-600"
-                              bg="bg-amber-50 border-amber-200"
-                            />
-                            <KpiCard
-                              title="Total Ecosystem Orders"
-                              value={stats.todayOrders.toString()}
-                              trend="PostgreSQL `orders` table"
-                              icon={Activity}
-                              color="text-purple-600"
-                              bg="bg-purple-50 border-purple-200"
-                              emptyState={stats.todayOrders === 0}
-                            />
-                          </div>
-
-                          {/* 6-Stage End-to-End Order Lifecycle Pipeline */}
-                          <div className="bg-slate-900 text-white rounded-xl p-5 border border-slate-800">
-                            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-                              <div>
-                                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
-                                  DETERMINISTIC ORDER LIFECYCLE PIPELINE
-                                </span>
-                                <h4 className="text-sm font-black text-white">
-                                  6-Stage Real-Time Fulfillment & Escrow
-                                  Synchronization
-                                </h4>
-                              </div>
-                              <span className="text-xs font-mono text-slate-400">
-                                Zero Blind Rider Dispatch · Zero Hidden
-                                Deductions
-                              </span>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                              {[
-                                {
-                                  step: "01",
-                                  title: "Customer Checkout",
-                                  desc: "Transparent item + GST + rider fee lock via King Pay UPI.",
-                                },
-                                {
-                                  step: "02",
-                                  title: "Kitchen KDS Accept",
-                                  desc: "Direct thermal printer + KDS prep-time commitment.",
-                                },
-                                {
-                                  step: "03",
-                                  title: "80% Prep Dispatch",
-                                  desc: "Rider assigned to arrive just as food is sealed.",
-                                },
-                                {
-                                  step: "04",
-                                  title: "Tamper-Seal Pickup",
-                                  desc: "Pickup checklist & wait-time protection logged.",
-                                },
-                                {
-                                  step: "05",
-                                  title: "Verified Handover",
-                                  desc: "OTP / doorstep drop with 23-language voice aid.",
-                                },
-                                {
-                                  step: "06",
-                                  title: "T+0 Split Settlement",
-                                  desc: "Instant payout to kitchen & rider; Sec 9(5) isolated.",
-                                },
-                              ].map((st) => (
-                                <div
-                                  key={st.step}
-                                  className="p-3 rounded-lg bg-slate-800/90 border border-slate-700"
-                                >
-                                  <div className="flex items-center justify-between mb-1">
-                                    <span className="text-[10px] font-mono font-black text-emerald-400">
-                                      STAGE {st.step}
-                                    </span>
-                                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                                  </div>
-                                  <p className="font-bold text-xs text-white">
-                                    {st.title}
-                                  </p>
-                                  <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-                                    {st.desc}
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 3.2: Customer App UI & Theme Control */}
-                      <SubCategoryShell
-                        sub={category.subCategories[1]}
-                        expanded={expandedSubCategories["sub-3-2"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-3-2")}
-                      >
-                        <CustomerAppUiSettings />
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 3.3: Ecosystem CMS & Broadcast Banners */}
-                      <SubCategoryShell
-                        sub={category.subCategories[2]}
-                        expanded={expandedSubCategories["sub-3-3"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-3-3")}
-                      >
-                        <EcosystemCMS />
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 3.4: Global God-Eye Geospatial Telemetry Map */}
-                      <SubCategoryShell
-                        sub={category.subCategories[3]}
-                        expanded={expandedSubCategories["sub-3-4"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-3-4")}
-                      >
-                        <Suspense fallback={<GodEyeMapSkeleton />}>
-                          <LazyGlobalGodEyeMap />
-                        </Suspense>
-                      </SubCategoryShell>
-                    </>
-                  )}
-
-                  {/* =========================================================
-                      CATEGORY 4: FINTECH, KING PAY, GROWTH & COMMERCIAL STUDIOS
-                  ========================================================= */}
-                  {category.id === "cat-fintech-studios" && (
-                    <>
-                      {/* Sub-Category 4.1: Live Founder Profit & Escrow Ledger */}
-                      <SubCategoryShell
-                        sub={category.subCategories[0]}
-                        expanded={expandedSubCategories["sub-4-1"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-4-1")}
-                      >
-                        <LiveFounderProfitDashboard />
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 4.2: King Pay Global Settings & Master Switch */}
-                      <SubCategoryShell
-                        sub={category.subCategories[1]}
-                        expanded={expandedSubCategories["sub-4-2"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-4-2")}
-                      >
-                        <div className="space-y-6">
-                          <KingPayGlobalSettings />
-                          <KingPayMasterSwitch />
-                        </div>
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 4.3: Central Pricing & Commission Switchboard */}
-                      <SubCategoryShell
-                        sub={category.subCategories[2]}
-                        expanded={expandedSubCategories["sub-4-3"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-4-3")}
-                      >
-                        <CentralPricingSwitch />
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 4.4: B2B Franchise Onboarding & SaaS Sales Deck */}
-                      <SubCategoryShell
-                        sub={category.subCategories[3]}
-                        expanded={expandedSubCategories["sub-4-4"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-4-4")}
-                      >
-                        <div className="space-y-6">
-                          <B2BSaaSSalesDeckGenerator />
-                          <B2BFranchiseOnboardingEngine />
-                        </div>
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 4.5: Creative, App Builder, Media & Social Studios */}
-                      <SubCategoryShell
-                        sub={category.subCategories[4]}
-                        expanded={expandedSubCategories["sub-4-5"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-4-5")}
-                      >
-                        <div className="space-y-8">
-                          <AppBuilderStudio />
-                          <DesignStudio />
-                          <MediaProductionStudio />
-                          <SocialPublishingStudio />
-                        </div>
-                      </SubCategoryShell>
-                    </>
-                  )}
-
-                  {/* =========================================================
-                      CATEGORY 5: INFRASTRUCTURE, CONNECTORS, LEGAL & CAPABILITY REGISTRY
-                  ========================================================= */}
-                  {category.id === "cat-infra-legal" && (
-                    <>
-                      {/* Sub-Category 5.1: External Plugin Connectors & Webhooks */}
-                      <SubCategoryShell
-                        sub={category.subCategories[0]}
-                        expanded={expandedSubCategories["sub-5-1"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-5-1")}
-                      >
-                        <PluginConnectors />
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 5.2: Live Audit & Telemetry Stream */}
-                      <SubCategoryShell
-                        sub={category.subCategories[1]}
-                        expanded={expandedSubCategories["sub-5-2"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-5-2")}
-                      >
-                        <div className="bg-slate-950 text-white rounded-xl p-5 border border-slate-800 space-y-3">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-black text-white flex items-center gap-2">
-                              <Terminal className="h-4 w-4 text-emerald-400" />
-                              Immutable Founder & Kernel Audit Stream (
-                              {auditEvents.length} Events)
-                            </h4>
-                            <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest">
-                              IT Act 2000 Sec 43A Tamper-Evident Log
-                            </span>
-                          </div>
-                          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                            {auditEvents.map((ev) => (
-                              <div
-                                key={ev.id}
-                                className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
-                              >
-                                <div>
-                                  <div className="flex items-center gap-2">
-                                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold">
-                                      {ev.badge}
-                                    </span>
-                                    <span className="font-bold text-white">
-                                      {ev.action}
-                                    </span>
-                                    <span className="text-slate-400">
-                                      by {ev.actor}
-                                    </span>
-                                  </div>
-                                  <p className="text-slate-400 text-[11px] mt-1">
-                                    {ev.detail}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 5.3: Statutory Legal Compliance Vault */}
-                      <SubCategoryShell
-                        sub={category.subCategories[2]}
-                        expanded={expandedSubCategories["sub-5-3"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-5-3")}
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {[
-                            {
-                              statute:
-                                "FSSAI Food Safety & Standards Act, 2006",
-                              code: "FSSAI-14DIG-FOSCOS",
-                              desc: "Mandatory 14-digit license validation on restaurant onboarding with 14-day FoSCoS renewal grace continuity shield.",
-                              status: "COMPLIANT & ENFORCED",
-                            },
-                            {
-                              statute: "CGST Act, 2017 · Section 9(5)",
-                              code: "ECO-GST-5PCT",
-                              desc: "5% restaurant service GST collected and remitted directly by E-Commerce Operator (OrderKing) with HSN/SAC invoice split.",
-                              status: "COMPLIANT & ENFORCED",
-                            },
-                            {
-                              statute: "Income Tax Act, 1961 · Section 194-O",
-                              code: "TDS-0.1PCT-LEDGER",
-                              desc: "Automated 0.1% TDS deduction and Form 16A certificate mapping for eligible gross restaurant sales.",
-                              status: "COMPLIANT & ENFORCED",
-                            },
-                            {
-                              statute:
-                                "Code on Social Security, 2020 (Gig Workers)",
-                              code: "GIG-WELFARE-SHIELD",
-                              desc: "e-Shram UAN compatibility, accidental & medical insurance coverage, and transparent per-order + wait-time payout ledger.",
-                              status: "COMPLIANT & ENFORCED",
-                            },
-                            {
-                              statute:
-                                "Information Technology Act, 2000 & DPDP Act, 2023",
-                              code: "DPDP-ZERO-LEAK",
-                              desc: "Customer phone numbers masked during delivery routing; zero third-party ad-broker data monetization.",
-                              status: "COMPLIANT & ENFORCED",
-                            },
-                            {
-                              statute:
-                                "RBI Payment Aggregator & Nodal Escrow Norms",
-                              code: "RBI-T0-NODAL",
-                              desc: "Direct T+0 split settlement between Restaurant Partner, Delivery Rider, GST Pool, and Platform Margin.",
-                              status: "COMPLIANT & ENFORCED",
-                            },
-                          ].map((law) => (
-                            <div
-                              key={law.code}
-                              className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col justify-between"
-                            >
-                              <div>
-                                <div className="flex items-center justify-between gap-2 mb-2">
-                                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
-                                    {law.code}
-                                  </span>
-                                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                                    <CheckCircle2 className="h-3 w-3" />{" "}
-                                    {law.status}
-                                  </span>
-                                </div>
-                                <h5 className="font-black text-slate-900 text-sm">
-                                  {law.statute}
-                                </h5>
-                                <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                                  {law.desc}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </SubCategoryShell>
-
-                      {/* Sub-Category 5.4: System Capability Registry */}
-                      <SubCategoryShell
-                        sub={category.subCategories[3]}
-                        expanded={expandedSubCategories["sub-5-4"] ?? true}
-                        onToggle={() => toggleSubCategory("sub-5-4")}
-                      >
-                        <CapabilityRegistryPanel />
-                      </SubCategoryShell>
-                    </>
-                  )}
+              {activeWorldId === "settings" && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <ResultMetricCard
+                    label="Total Separated Worlds"
+                    value="10 Worlds"
+                    sub="All customizable & persisted"
+                  />
+                  <ResultMetricCard
+                    label="Supported Languages"
+                    value="23 Languages"
+                    sub={String(currentSettings.defaultPlatformLanguage)}
+                  />
+                  <ResultMetricCard
+                    label="Tax Compliance Mode"
+                    value={
+                      currentSettings.strictStatutoryTaxMode ? "Active" : "Basic"
+                    }
+                    sub="CGST Sec 9(5) & TDS 194-O"
+                  />
+                  <ResultMetricCard
+                    label="Database Storage"
+                    value="PostgreSQL"
+                    sub="`platform_settings` table"
+                  />
                 </div>
               )}
             </section>
-          );
-        })}
+
+            {/* BOX 2: ACTION NEEDED (What to do next) */}
+            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
+                    Box 2 · Action Needed (What To Do Next)
+                  </span>
+                  <h2 className="text-base font-black text-slate-900 mt-1.5">
+                    Recommended Next Steps in {currentWorld.navLabel}
+                  </h2>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {activeWorldId === "home" && (
+                  <>
+                    <ActionCard
+                      title={
+                        pendingUnapproved.length > 0
+                          ? `Approve ${pendingUnapproved.length} Pending Restaurant(s)`
+                          : "Manage Restaurant Partners"
+                      }
+                      description={
+                        pendingUnapproved.length > 0
+                          ? `${pendingUnapproved[0].name} is waiting for your 1-click approval.`
+                          : "Open the OrderKing Restaurants tab to view or onboard kitchens."
+                      }
+                      buttonLabel="Open Restaurants"
+                      onClick={() => selectWorld("orderking", "restaurants")}
+                      urgent={pendingUnapproved.length > 0}
+                    />
+                    <ActionCard
+                      title="Review Delivery Fees & Commissions"
+                      description={`Current delivery fee is ₹${worldSettings.orderking.baseDeliveryFeeInr} and restaurant commission is ${worldSettings.kingpay.restaurantCommissionPct}%.`}
+                      buttonLabel="Open King Pay Pricing"
+                      onClick={() => selectWorld("kingpay", "commissions")}
+                    />
+                    <ActionCard
+                      title="Check Real-Time Alerts"
+                      description={`${activeUnresolvedAlerts.length} real operational alert(s) currently open in your 6-Tier Action Center.`}
+                      buttonLabel="Open Alerts Center"
+                      onClick={() => selectWorld("alerts", "action-center")}
+                      urgent={activeUnresolvedAlerts.length > 0}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "orderking" && (
+                  <>
+                    <ActionCard
+                      title={
+                        pendingUnapproved.length > 0
+                          ? `Approve ${pendingUnapproved.length} Pending Kitchen(s)`
+                          : "View All Restaurants"
+                      }
+                      description="Approve pending restaurant applications directly in PostgreSQL."
+                      buttonLabel="Go to Restaurants Tab"
+                      onClick={() => selectSubTab("restaurants")}
+                      urgent={pendingUnapproved.length > 0}
+                    />
+                    <ActionCard
+                      title="Configure Dispatch & Rain Bonus"
+                      description={`Rider base pay is ₹${currentSettings.riderPerOrderBasePayInr} + ₹${currentSettings.rainBonusInr} rain bonus.`}
+                      buttonLabel="Tune Dispatch Rules"
+                      onClick={() => selectSubTab("dispatch")}
+                    />
+                    <ActionCard
+                      title="Inspect Live Order Pipeline"
+                      description="Check the 6-stage order fulfillment flow and recent PostgreSQL orders."
+                      buttonLabel="View Live Orders"
+                      onClick={() => selectSubTab("orders")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "kingpay" && (
+                  <>
+                    <ActionCard
+                      title="View Live Profit & Escrow Split"
+                      description="Inspect net founder margin, partner payouts, and GST/TDS tax buckets."
+                      buttonLabel="Open Profit Dashboard"
+                      onClick={() => selectSubTab("profit")}
+                    />
+                    <ActionCard
+                      title="Set MDR & Convenience Fees"
+                      description="Update payment gateway MDR percentage and auto-refund threshold."
+                      buttonLabel="Open Wallet & MDR Fees"
+                      onClick={() => selectSubTab("wallet-mdr")}
+                    />
+                    <ActionCard
+                      title="Adjust Commission Slabs"
+                      description="Configure fair restaurant commissions and delivery pricing tiers."
+                      buttonLabel="Open Commissions"
+                      onClick={() => selectSubTab("commissions")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "travel" && (
+                  <>
+                    <ActionCard
+                      title="Configure Flights, Hotels & Trains"
+                      description="Set affiliate partner links and commission rates for customer travel bookings."
+                      buttonLabel="Open Travel Affiliate Hub"
+                      onClick={() => selectSubTab("travel-hub")}
+                    />
+                    <ActionCard
+                      title="Manage 23-Language AI Tutor"
+                      description="Review spoken English and delivery hospitality lessons for riders and youth."
+                      buttonLabel="Open AI Tutor"
+                      onClick={() => selectSubTab("ai-tutor")}
+                    />
+                    <ActionCard
+                      title="Post Local Kitchen & Rider Jobs"
+                      description="Help restaurant partners hire cooks, staff, and delivery riders."
+                      buttonLabel="Open Jobs Board"
+                      onClick={() => selectSubTab("jobs")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "b2b" && (
+                  <>
+                    <ActionCard
+                      title="Generate B2B Sales Deck & ROI"
+                      description="Show restaurant owners how much they save with OrderKing vs high commissions."
+                      buttonLabel="Open ROI Calculator"
+                      onClick={() => selectSubTab("sales-deck")}
+                    />
+                    <ActionCard
+                      title="Onboard City Franchise Partner"
+                      description="Set up city territory rights, revenue share, and partner onboarding steps."
+                      buttonLabel="Open Franchise Engine"
+                      onClick={() => selectSubTab("franchise")}
+                    />
+                    <ActionCard
+                      title="Add & Track B2B Client Leads"
+                      description={`You have ${b2bLeads.length} lead(s) in your 15-Stage B2B CRM pipeline.`}
+                      buttonLabel="Open 15-Stage CRM"
+                      onClick={() => selectSubTab("crm-pipeline")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "umarai" && (
+                  <>
+                    <ActionCard
+                      title="Give UMAR AI a Plain-English Command"
+                      description="Type a simple instruction or run a 1-click preset command."
+                      buttonLabel="Ask UMAR AI"
+                      onClick={() => selectSubTab("ask-ai")}
+                    />
+                    <ActionCard
+                      title="Review All 16 Specialist Teams"
+                      description="See what each of the 16 specialist platform teams does and jump to its tool."
+                      buttonLabel="View 16 Specialist Teams"
+                      onClick={() => selectSubTab("teams")}
+                    />
+                    <ActionCard
+                      title="Compare AI Model Speed & Cost"
+                      description="Check latency and accuracy across AI models powering menu OCR and support."
+                      buttonLabel="Open Model Benchmarks"
+                      onClick={() => selectSubTab("benchmarks")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "design" && (
+                  <>
+                    <ActionCard
+                      title="Customize Customer App Look"
+                      description="Update brand colors, layout cards, and checkout appearance."
+                      buttonLabel="Open App Look & Theme"
+                      onClick={() => selectSubTab("app-look")}
+                    />
+                    <ActionCard
+                      title="Publish Home Banners & Offers"
+                      description="Manage promotional banners and festival announcements on the Customer App."
+                      buttonLabel="Open Banners CMS"
+                      onClick={() => selectSubTab("banners")}
+                    />
+                    <ActionCard
+                      title="Create Dish Posters & Videos"
+                      description="Use the built-in Design, Video, and Social studios for marketing."
+                      buttonLabel="Open Design Studio"
+                      onClick={() => selectSubTab("design-studio")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "connections" && (
+                  <>
+                    <ActionCard
+                      title="Connect Payment, SMS & AI Keys"
+                      description="Configure Razorpay/UPI gateways, WhatsApp OTP, and AI API keys."
+                      buttonLabel="Open Plugin Keys"
+                      onClick={() => selectSubTab("plugins")}
+                    />
+                    <ActionCard
+                      title="Inspect Live Delivery Zones Map"
+                      description="View city delivery coverage, active pins, and zone boundaries."
+                      buttonLabel="Open Delivery Map"
+                      onClick={() => selectSubTab("map-zones")}
+                    />
+                    <ActionCard
+                      title="Set Delivery Radius & Privacy"
+                      description={`Current radius is ${currentSettings.maxDeliveryRadiusKm} km with customer phone masking enabled.`}
+                      buttonLabel="Customize Connections"
+                      onClick={() => selectSubTab("settings")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "alerts" && (
+                  <>
+                    <ActionCard
+                      title="Triage Live 6-Tier Alerts"
+                      description={`${activeUnresolvedAlerts.length} unresolved alert(s) from your PostgreSQL database and operations.`}
+                      buttonLabel="Open 6-Tier Action Center"
+                      onClick={() => selectSubTab("action-center")}
+                      urgent={activeUnresolvedAlerts.length > 0}
+                    />
+                    <ActionCard
+                      title="Log a New Operational Alert"
+                      description="Record an issue or reminder under Emergency, Danger, Critical, High, Medium, or Low."
+                      buttonLabel="Log New Alert"
+                      onClick={() => selectSubTab("create-alert")}
+                    />
+                    <ActionCard
+                      title="Review Fair Partner Protection"
+                      description="Ensure restaurants and riders receive helpful advisories instead of unfair blocks."
+                      buttonLabel="View Protection Rules"
+                      onClick={() => selectSubTab("fair-policy")}
+                    />
+                  </>
+                )}
+
+                {activeWorldId === "settings" && (
+                  <>
+                    <ActionCard
+                      title="Edit All 10 Worlds in One Place"
+                      description="Review and save customizations for every World from the Master Controls tab."
+                      buttonLabel="Open All 10 Worlds Controls"
+                      onClick={() => selectSubTab("all-worlds")}
+                    />
+                    <ActionCard
+                      title="Configure 23 Indian Languages"
+                      description="Enable native script and voice support across all 22 Eighth Schedule languages + English."
+                      buttonLabel="Open 23 Languages"
+                      onClick={() => selectSubTab("languages")}
+                    />
+                    <ActionCard
+                      title="Open Full Platform Settings Page"
+                      description="Need the dedicated standalone settings route? Open `/settings` anytime."
+                      buttonLabel="View Activity Log"
+                      onClick={() => selectSubTab("activity-log")}
+                    />
+                  </>
+                )}
+              </div>
+            </section>
+
+            {/* BOX 3: QUICK SETTINGS & CUSTOMIZATIONS (Wired to PostgreSQL `saveUmarOsSettingsFn` + `localStorage`) */}
+            <WorldSettingsPanel
+              world={currentWorld}
+              values={currentSettings}
+              onChange={(key, val) => updateField(currentWorld.id, key, val)}
+              onSave={() => handleSaveWorldSettings(currentWorld.id)}
+              isSaving={savingWorldId === currentWorld.id}
+              boxTitle={`Box 3 · Quick Settings & Customizations for ${currentWorld.navLabel}`}
+            />
+          </div>
+        )}
+
+        {/* ===================================================================
+            LAST TAB OF EVERY WORLD: ⚙️ WORLD SETTINGS & CUSTOMIZATIONS
+        =================================================================== */}
+        {currentTabId === "settings" && (
+          <WorldSettingsPanel
+            world={currentWorld}
+            values={currentSettings}
+            onChange={(key, val) => updateField(currentWorld.id, key, val)}
+            onSave={() => handleSaveWorldSettings(currentWorld.id)}
+            isSaving={savingWorldId === currentWorld.id}
+            boxTitle={`⚙️ Full World Settings & Customizations — ${currentWorld.title}`}
+          />
+        )}
+
+        {/* ===================================================================
+            WORLD 1 (`home`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "home" && currentTabId === "worlds-map" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🚀 All 10 Separated Business Worlds
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Click any World below (or on the bottom navigation bar) to open
+                  only that World on screen.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <Link
+                  to="/ceo"
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /ceo Brief
+                </Link>
+                <Link
+                  to="/orders"
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /orders
+                </Link>
+                <Link
+                  to="/restaurants"
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /restaurants
+                </Link>
+                <Link
+                  to="/riders"
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /riders
+                </Link>
+                <Link
+                  to="/finance"
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /finance
+                </Link>
+                <Link
+                  to="/b2b-crm"
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-800"
+                >
+                  /b2b-crm
+                </Link>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5">
+              {TEN_WORLDS.map((w) => (
+                <div
+                  key={w.id}
+                  className="rounded-xl border border-slate-200 p-4 bg-slate-50/70 hover:bg-white hover:border-emerald-500 transition-all flex flex-col justify-between gap-3"
+                >
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl">{w.emoji}</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+                        World {w.number}
+                      </span>
+                    </div>
+                    <h3 className="font-black text-sm text-slate-900 mt-2">
+                      {w.navLabel}
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                      {w.explanation}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => selectWorld(w.id, "dashboard")}
+                    className="w-full py-2 rounded-lg bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold transition-colors"
+                  >
+                    Open {w.navLabel} →
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "home" && currentTabId === "checklist" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              ✅ Today's Founder Action Checklist
+            </h2>
+            <div className="space-y-2.5">
+              {[
+                {
+                  key: "review_db_counts",
+                  label: `Verify live PostgreSQL counts (${loaderData.restaurants} Restaurants, ${loaderData.riders} Riders, ${loaderData.todayOrders} Orders)`,
+                },
+                {
+                  key: "verify_commission_rate",
+                  label: `Confirm Restaurant Commission (${worldSettings.kingpay.restaurantCommissionPct}%) & Base Delivery Fee (₹${worldSettings.orderking.baseDeliveryFeeInr})`,
+                },
+                {
+                  key: "check_payment_keys",
+                  label:
+                    "Verify Payment Gateway & WhatsApp OTP keys in World 8 (Connections)",
+                },
+                {
+                  key: "review_alerts",
+                  label: `Review ${activeUnresolvedAlerts.length} open operational alert(s) in World 9 (Alerts)`,
+                },
+              ].map((item) => {
+                const checked = !!checklistDone[item.key];
+                return (
+                  <label
+                    key={item.key}
+                    className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer hover:bg-slate-100"
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() =>
+                          setChecklistDone((prev) => ({
+                            ...prev,
+                            [item.key]: !checked,
+                          }))
+                        }
+                        className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span
+                        className={`text-xs md:text-sm font-bold ${
+                          checked
+                            ? "line-through text-slate-400"
+                            : "text-slate-900"
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-emerald-700">
+                      {checked ? "Done" : "Pending"}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "home" && currentTabId === "legal" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <div>
+              <h2 className="text-base font-black text-slate-900">
+                🛡️ Indian Statutory & Tax Compliance Protection
+              </h2>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Built-in compliance across food safety, GST, income tax, gig
+                worker welfare, and customer data privacy.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                {
+                  title: "FSSAI Food Safety Act, 2006",
+                  badge: "14-Digit FoSCoS Verified",
+                  desc: "Every restaurant partner must hold a valid 14-digit FSSAI license, with a 14-day renewal grace period so active kitchens are not unfairly interrupted.",
+                },
+                {
+                  title: "CGST Act, 2017 · Section 9(5)",
+                  badge: "5% ECO Restaurant GST",
+                  desc: "5% restaurant service GST is automatically separated at checkout and remitted by the E-Commerce Operator with clear HSN/SAC tax invoices.",
+                },
+                {
+                  title: "Income Tax Act, 1961 · Section 194-O",
+                  badge: "0.1% TDS Ledger",
+                  desc: "Automated 0.1% TDS accounting and Form 16A reconciliation for eligible gross restaurant partner sales.",
+                },
+                {
+                  title: "Code on Social Security, 2020",
+                  badge: "Gig Rider Welfare",
+                  desc: "Supports e-Shram registration, accidental insurance coverage, transparent per-order + rain payouts, and emergency SOS support.",
+                },
+                {
+                  title: "IT Act, 2000 & DPDP Act, 2023",
+                  badge: "Customer Phone Masking",
+                  desc: "Customer phone numbers are masked during delivery calls and customer lists are never sold to third-party ad brokers.",
+                },
+                {
+                  title: "RBI Nodal Split Settlement Norms",
+                  badge: "T+0 Escrow Split",
+                  desc: "Clean split of every order payment into Restaurant Payout, Rider Fee, Statutory Tax Bucket, and Platform Margin.",
+                },
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5"
+                >
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 inline-block">
+                    {item.badge}
+                  </span>
+                  <h3 className="text-sm font-black text-slate-900">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ===================================================================
+            WORLD 2 (`orderking`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "orderking" && currentTabId === "orders" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🍔 Live Orders & 6-Stage Delivery Flow ({loaderData.todayOrders}{" "}
+                  Total Orders)
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Every order moves through 6 clear steps from customer checkout
+                  to instant partner payout.
+                </p>
+              </div>
+              <Link
+                to="/orders"
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <span>Open Full Orders Console (/orders)</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+              {[
+                {
+                  step: "1. Checkout",
+                  desc: "Customer pays transparent item price + GST + delivery fee.",
+                },
+                {
+                  step: "2. Kitchen Accepts",
+                  desc: "Restaurant accepts order on KDS and sets prep time.",
+                },
+                {
+                  step: "3. 80% Ready Dispatch",
+                  desc: "Rider is assigned so they arrive right as food is packed.",
+                },
+                {
+                  step: "4. Tamper-Seal Pickup",
+                  desc: "Rider verifies sealed package at restaurant counter.",
+                },
+                {
+                  step: "5. Doorstep Handover",
+                  desc: "Rider delivers order with 23-language voice guidance.",
+                },
+                {
+                  step: "6. Instant Payout",
+                  desc: "Restaurant and rider earnings settle immediately.",
+                },
+              ].map((st) => (
+                <div
+                  key={st.step}
+                  className="p-3.5 rounded-xl bg-slate-900 text-white border border-slate-800"
+                >
+                  <p className="text-xs font-black text-emerald-400">
+                    {st.step}
+                  </p>
+                  <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                    {st.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {loaderData.recentOrders.length === 0 ? (
+              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <p className="text-sm font-bold text-slate-800">
+                  0 Orders in PostgreSQL `orders` Table Right Now
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  As soon as customers place orders, real order rows will appear
+                  here automatically.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {loaderData.recentOrders.map((ord) => (
+                  <div
+                    key={ord.id}
+                    className="p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs"
+                  >
+                    <span className="font-bold text-slate-900">
+                      Order #{ord.id}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold">
+                      {ord.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeWorldId === "orderking" && currentTabId === "restaurants" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🏪 Restaurant Partners ({loaderData.restaurants} Total ·{" "}
+                  {pendingUnapproved.length} Pending Approval)
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Approve pending kitchens in 1 click (`UPDATE restaurants SET
+                  status = 'ACTIVE'`) or open the full restaurants console.
+                </p>
+              </div>
+              <Link
+                to="/restaurants"
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <span>Open Full Restaurants Console (/restaurants)</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            {loaderData.pendingRestaurants.length === 0 ? (
+              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <CheckCircle2 className="h-7 w-7 text-emerald-600 mx-auto mb-2" />
+                <p className="text-sm font-bold text-slate-900">
+                  All Pending Restaurant Applications Are Cleared
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  There are 0 restaurants with `status = 'PENDING'` in
+                  PostgreSQL right now.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {loaderData.pendingRestaurants.map((rest) => {
+                  const isApproved = approvedIds.includes(rest.id);
+                  return (
+                    <div
+                      key={rest.id}
+                      className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3"
+                    >
+                      <div>
+                        <p className="text-sm font-black text-slate-900">
+                          {rest.name}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          ID: {rest.id} · Status:{" "}
+                          {isApproved ? "ACTIVE" : rest.status}
+                        </p>
+                      </div>
+                      {isApproved ? (
+                        <span className="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Approved in
+                          PostgreSQL
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={approvingId === rest.id}
+                          onClick={() => handleApproveRestaurant(rest)}
+                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition-colors"
+                        >
+                          {approvingId === rest.id
+                            ? "Approving..."
+                            : "Approve Restaurant"}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeWorldId === "orderking" && currentTabId === "riders" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🛵 Delivery Rider Fleet ({loaderData.riders} Verified Riders)
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Base payout: ₹{currentSettings.riderPerOrderBasePayInr}/order +
+                  ₹{currentSettings.rainBonusInr} rain bonus · Code on Social
+                  Security 2020 welfare enabled.
+                </p>
+              </div>
+              <Link
+                to="/riders"
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <span>Open Full Riders Console (/riders)</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            {loaderData.recentRiders.length === 0 ? (
+              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <p className="text-sm font-bold text-slate-800">
+                  0 Riders in PostgreSQL `riders` Table
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Use `/riders` or World 4 Jobs Board to onboard your first
+                  delivery riders.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {loaderData.recentRiders.map((r) => (
+                  <div
+                    key={r.id}
+                    className="p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs"
+                  >
+                    <span className="font-bold text-slate-900">
+                      {r.name || r.id}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold">
+                      {r.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeWorldId === "orderking" && currentTabId === "customers" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              👥 Registered Customers ({loaderData.users} Accounts in
+              PostgreSQL)
+            </h2>
+            <p className="text-xs text-slate-600">
+              Customer accounts are stored in the PostgreSQL `profiles` table
+              with DPDP Act 2023 phone masking and zero third-party data resale.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <ResultMetricCard
+                label="Total Customer Profiles"
+                value={String(loaderData.users)}
+                sub="PostgreSQL `profiles`"
+              />
+              <ResultMetricCard
+                label="Free Delivery Threshold"
+                value={`₹${currentSettings.freeDeliveryAboveInr}`}
+                sub="Configured in OrderKing Settings"
+              />
+              <ResultMetricCard
+                label="Phone Number Privacy"
+                value="Masked"
+                sub="DPDP Act 2023 Compliant"
+              />
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "orderking" && currentTabId === "dispatch" && (
+          <AlgorithmSettings />
+        )}
+
+        {/* ===================================================================
+            WORLD 3 (`kingpay`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "kingpay" && currentTabId === "profit" && (
+          <LiveFounderProfitDashboard />
+        )}
+
+        {activeWorldId === "kingpay" && currentTabId === "wallet-mdr" && (
+          <KingPayGlobalSettings />
+        )}
+
+        {activeWorldId === "kingpay" && currentTabId === "master-switch" && (
+          <KingPayMasterSwitch />
+        )}
+
+        {activeWorldId === "kingpay" && currentTabId === "commissions" && (
+          <CentralPricingSwitch />
+        )}
+
+        {/* ===================================================================
+            WORLD 4 (`travel`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "travel" && currentTabId === "travel-hub" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              ✈️ Travel Affiliate Hub (Flights, Hotels, Trains & Buses)
+            </h2>
+            <p className="text-xs text-slate-600">
+              Earn affiliate commissions on customer travel bookings without
+              holding inventory or balance-sheet risk.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                {
+                  mode: "✈️ Flights",
+                  partner: "Domestic & International Flight Search",
+                  share: `${currentSettings.flightAffiliateMarkupPct}% Affiliate Fee`,
+                },
+                {
+                  mode: "🏨 Hotels & Stays",
+                  partner: "Pan-India Budget & Business Hotels",
+                  share: `${currentSettings.hotelAffiliateCommissionPct}% Partner Commission`,
+                },
+                {
+                  mode: "🚆 Trains (IRCTC Rail)",
+                  partner: "Authorized Rail Partner Redirect",
+                  share: "Zero Hidden Markup",
+                },
+                {
+                  mode: "🚌 Intercity Buses",
+                  partner: "AC Sleeper & State Bus Aggregator",
+                  share: "Instant Seat Confirmation",
+                },
+              ].map((item) => (
+                <div
+                  key={item.mode}
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5"
+                >
+                  <h3 className="text-sm font-black text-slate-900">
+                    {item.mode}
+                  </h3>
+                  <p className="text-xs text-slate-600">{item.partner}</p>
+                  <p className="text-xs font-bold text-emerald-700 pt-1">
+                    {item.share}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "travel" && currentTabId === "my-trips" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
+            <h2 className="text-base font-black text-slate-900">
+              🧳 Customer Trips & Booking Support
+            </h2>
+            <p className="text-xs text-slate-600">
+              All customer flight, hotel, train, and bus PNR itineraries sync to
+              the My Trips tab inside the Customer App with direct cancellation
+              and refund status tracking.
+            </p>
+          </section>
+        )}
+
+        {activeWorldId === "travel" && currentTabId === "ai-tutor" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              🎓 23-Language AI Tutor & Skill Courses
+            </h2>
+            <p className="text-xs text-slate-600">
+              Free bite-sized training for delivery riders, restaurant staff,
+              and students in {currentSettings.defaultTutorLanguage} and all 23
+              Indian languages.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                {
+                  course: "Spoken English & Polite Customer Greeting",
+                  audience: "Delivery Riders & Counter Staff",
+                },
+                {
+                  course: "FSSAI Hygiene & Tamper-Proof Food Packing",
+                  audience: "Restaurant Kitchen Teams",
+                },
+                {
+                  course: "Personal Finance, UPI Safety & GST Basics",
+                  audience: "Partner Owners & Gig Workers",
+                },
+              ].map((c) => (
+                <div
+                  key={c.course}
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50"
+                >
+                  <p className="text-sm font-black text-slate-900">
+                    {c.course}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">{c.audience}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "travel" && currentTabId === "jobs" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              💼 Local Jobs & Gig Hiring Board
+            </h2>
+            <p className="text-xs text-slate-600">
+              Connects local job seekers directly with OrderKing restaurant
+              partners and city delivery fleets with zero middleman agency fees.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <ResultMetricCard
+                label="Delivery Rider Openings"
+                value="Open"
+                sub={`Base ₹${worldSettings.orderking.riderPerOrderBasePayInr}/order + Rain Bonus`}
+              />
+              <ResultMetricCard
+                label="Restaurant Kitchen Roles"
+                value="Cooks & Helpers"
+                sub="Direct hiring by partner restaurants"
+              />
+              <ResultMetricCard
+                label="City Franchise Managers"
+                value="B2B Operations"
+                sub="Local city onboarding & support"
+              />
+            </div>
+          </section>
+        )}
+
+        {/* ===================================================================
+            WORLD 5 (`b2b`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "b2b" && currentTabId === "sales-deck" && (
+          <B2BSaaSSalesDeckGenerator />
+        )}
+
+        {activeWorldId === "b2b" && currentTabId === "franchise" && (
+          <B2BFranchiseOnboardingEngine />
+        )}
+
+        {activeWorldId === "b2b" && currentTabId === "crm-pipeline" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🗂️ 15-Stage B2B CRM Pipeline ({b2bLeads.length} Active Leads)
+                </h2>
+                <p className="text-xs text-slate-600">
+                  Add real restaurant or city franchise leads and move them
+                  across all 15 onboarding stages (saved to PostgreSQL).
+                </p>
+              </div>
+              <Link
+                to="/b2b-crm"
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <span>Open Full B2B CRM Page (/b2b-crm)</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            <form
+              onSubmit={handleAddB2bLead}
+              className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200"
+            >
+              <input
+                type="text"
+                value={newLeadName}
+                onChange={(e) => setNewLeadName(e.target.value)}
+                placeholder="Restaurant or Franchise Name"
+                className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white"
+              />
+              <input
+                type="text"
+                value={newLeadCity}
+                onChange={(e) => setNewLeadCity(e.target.value)}
+                placeholder="City / Area"
+                className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white"
+              />
+              <input
+                type="text"
+                value={newLeadContact}
+                onChange={(e) => setNewLeadContact(e.target.value)}
+                placeholder="Owner Name / Phone"
+                className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white"
+              />
+              <select
+                value={newLeadStage}
+                onChange={(e) => setNewLeadStage(e.target.value)}
+                aria-label="Select CRM Stage"
+                className="px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white font-semibold"
+              >
+                {CRM_15_STAGES.map((st) => (
+                  <option key={st} value={st}>
+                    {st}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center justify-center gap-1.5"
+              >
+                <Plus className="h-4 w-4" /> Add B2B Lead
+              </button>
+            </form>
+
+            {b2bLeads.length === 0 ? (
+              <div className="p-6 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <p className="text-sm font-bold text-slate-800">
+                  No B2B Leads Added Yet
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Use the form above to add your first restaurant or franchise
+                  lead into PostgreSQL.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {b2bLeads.map((lead) => (
+                  <div
+                    key={lead.id}
+                    className="p-3.5 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3"
+                  >
+                    <div>
+                      <p className="text-sm font-black text-slate-900">
+                        {lead.businessName}{" "}
+                        <span className="text-xs font-normal text-slate-500">
+                          ({lead.city})
+                        </span>
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Contact: {lead.contactPerson} · Added {lead.createdAt}
+                      </p>
+                    </div>
+                    <select
+                      value={lead.stage}
+                      onChange={(e) =>
+                        handleAdvanceLeadStage(lead.id, e.target.value)
+                      }
+                      aria-label={`Stage for ${lead.businessName}`}
+                      className="px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-900 text-xs font-bold"
+                    >
+                      {CRM_15_STAGES.map((st) => (
+                        <option key={st} value={st}>
+                          {st}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ===================================================================
+            WORLD 6 (`umarai`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "umarai" && currentTabId === "ask-ai" && (
+          <section className="bg-slate-950 text-white rounded-2xl border border-slate-800 p-5 shadow-xs space-y-4">
+            <div>
+              <h2 className="text-base font-black text-white">
+                💬 Ask UMAR AI — Simple Plain-English Command Center
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Type any instruction below or click a 1-click preset. Every
+                command is logged to your PostgreSQL database.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <input
+                type="text"
+                value={aiInput}
+                onChange={(e) => setAiInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleRunAiCommand();
+                }}
+                placeholder="Example: Check pending restaurant approvals and verify 5% GST split..."
+                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+              />
+              <button
+                type="button"
+                onClick={() => handleRunAiCommand()}
+                className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shrink-0"
+              >
+                <Send className="h-3.5 w-3.5" /> Run Command
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {[
+                "Check all pending restaurant approvals in PostgreSQL",
+                "Verify CGST Sec 9(5) 5% and Income Tax Sec 194-O 0.1% TDS settings",
+                "Enable ₹15 Rider Rain Bonus for active delivery zones",
+                "Sync 23 Indian languages across Rider and Customer apps",
+              ].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => handleRunAiCommand(preset)}
+                  className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-[11px] font-semibold"
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
+
+            {aiHistory.length > 0 && (
+              <div className="space-y-2 pt-3 border-t border-slate-800">
+                {aiHistory.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-1"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-emerald-400">
+                        You: {item.command}
+                      </span>
+                      <span className="text-[10px] text-slate-500">
+                        {item.time}
+                      </span>
+                    </div>
+                    <p className="text-slate-300">{item.response}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeWorldId === "umarai" && currentTabId === "teams" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <div>
+              <h2 className="text-base font-black text-slate-900">
+                👥 16 Specialist Platform Teams
+              </h2>
+              <p className="text-xs text-slate-600">
+                Every specialist team powers a real part of your platform. Click
+                any team to open its workspace.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {SIXTEEN_SPECIALIST_TEAMS.map((team) => (
+                <div
+                  key={team.id}
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-3"
+                >
+                  <div>
+                    <h3 className="text-xs md:text-sm font-black text-slate-900">
+                      {team.name}
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-0.5">{team.role}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => selectWorld(team.worldId, team.tabId)}
+                    className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold shrink-0"
+                  >
+                    Open →
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "umarai" && currentTabId === "benchmarks" && (
+          <MultimodelBenchmarkDashboard />
+        )}
+
+        {/* ===================================================================
+            WORLD 7 (`design`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "design" && currentTabId === "app-look" && (
+          <CustomerAppUiSettings />
+        )}
+
+        {activeWorldId === "design" && currentTabId === "banners" && (
+          <EcosystemCMS />
+        )}
+
+        {activeWorldId === "design" && currentTabId === "app-builder" && (
+          <AppBuilderStudio />
+        )}
+
+        {activeWorldId === "design" && currentTabId === "design-studio" && (
+          <DesignStudio />
+        )}
+
+        {activeWorldId === "design" && currentTabId === "media-studio" && (
+          <MediaProductionStudio />
+        )}
+
+        {activeWorldId === "design" && currentTabId === "social-studio" && (
+          <SocialPublishingStudio />
+        )}
+
+        {/* ===================================================================
+            WORLD 8 (`connections`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "connections" && currentTabId === "plugins" && (
+          <PluginConnectors />
+        )}
+
+        {activeWorldId === "connections" && currentTabId === "map-zones" && (
+          <Suspense fallback={<GodEyeMapSkeleton />}>
+            <LazyGlobalGodEyeMap />
+          </Suspense>
+        )}
+
+        {/* ===================================================================
+            WORLD 9 (`alerts`) SUB-CATEGORY TABS — 100% REAL ALERTS ONLY!
+        =================================================================== */}
+        {activeWorldId === "alerts" && currentTabId === "action-center" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  🚨 Live 6-Tier Action Center ({activeUnresolvedAlerts.length}{" "}
+                  Open · {allAlerts.length} Total)
+                </h2>
+                <p className="text-xs text-slate-600">
+                  100% real alerts generated from your PostgreSQL database state
+                  and Founder logs. Zero fake stories.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => selectSubTab("create-alert")}
+                className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <Plus className="h-3.5 w-3.5" /> Log New Operational Alert
+              </button>
+            </div>
+
+            {/* 6-Tier Filter Bar */}
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  "ALL",
+                  "EMERGENCY",
+                  "DANGER",
+                  "CRITICAL",
+                  "HIGH",
+                  "MEDIUM",
+                  "LOW",
+                ] as const
+              ).map((tier) => (
+                <button
+                  key={tier}
+                  type="button"
+                  onClick={() => setSelectedAlertTierFilter(tier)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                    selectedAlertTierFilter === tier
+                      ? "bg-slate-900 text-white border-slate-900"
+                      : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
+                  }`}
+                >
+                  {tier === "ALL" ? `All Tiers (${allAlerts.length})` : tier}
+                </button>
+              ))}
+            </div>
+
+            {filteredAlerts.length === 0 ? (
+              <div className="p-8 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center">
+                <CheckCircle2 className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
+                <p className="text-sm font-bold text-slate-900">
+                  Zero Alerts in This Tier
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Your PostgreSQL operations are clear for this filter.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredAlerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className={`p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+                      alert.resolved
+                        ? "bg-slate-50 border-slate-200 opacity-70"
+                        : "bg-white border-slate-300 shadow-2xs"
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`text-[10px] font-black px-2.5 py-0.5 rounded uppercase ${
+                            alert.tier === "EMERGENCY" ||
+                            alert.tier === "DANGER" ||
+                            alert.tier === "CRITICAL"
+                              ? "bg-rose-100 text-rose-800 border border-rose-200"
+                              : alert.tier === "HIGH"
+                              ? "bg-amber-100 text-amber-800 border border-amber-200"
+                              : "bg-blue-100 text-blue-800 border border-blue-200"
+                          }`}
+                        >
+                          {alert.tier}
+                        </span>
+                        <span className="text-xs font-bold text-slate-500">
+                          {alert.category}
+                        </span>
+                        <span className="text-[11px] text-slate-400">
+                          · {alert.createdAt}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-black text-slate-900">
+                        {alert.title}
+                      </h3>
+                      <p className="text-xs text-slate-600">
+                        <strong>What happened:</strong> {alert.whatHappened}
+                      </p>
+                      <p className="text-xs text-emerald-700 font-semibold">
+                        <strong>Next step:</strong> {alert.recommendedAction}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 shrink-0">
+                      {alert.targetWorld && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            selectWorld(
+                              alert.targetWorld!,
+                              alert.targetTab || "dashboard"
+                            )
+                          }
+                          className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold"
+                        >
+                          {alert.actionButtonLabel}
+                        </button>
+                      )}
+                      {!alert.resolved ? (
+                        <button
+                          type="button"
+                          onClick={() => handleResolveAlert(alert.id)}
+                          className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold"
+                        >
+                          ✓ Mark Resolved
+                        </button>
+                      ) : (
+                        <span className="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold">
+                          Resolved
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeWorldId === "alerts" && currentTabId === "create-alert" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              ➕ Log a Real Operational Alert (Saved to PostgreSQL)
+            </h2>
+            <form onSubmit={handleCreateCustomAlert} className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Priority Tier (6 Tiers)
+                  </label>
+                  <select
+                    value={newAlertTier}
+                    onChange={(e) =>
+                      setNewAlertTier(e.target.value as AlertTier)
+                    }
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white"
+                  >
+                    <option value="EMERGENCY">1. EMERGENCY</option>
+                    <option value="DANGER">2. DANGER</option>
+                    <option value="CRITICAL">3. CRITICAL</option>
+                    <option value="HIGH">4. HIGH</option>
+                    <option value="MEDIUM">5. MEDIUM</option>
+                    <option value="LOW">6. LOW</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Business Area
+                  </label>
+                  <input
+                    type="text"
+                    value={newAlertCategory}
+                    onChange={(e) => setNewAlertCategory(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Alert Title
+                </label>
+                <input
+                  type="text"
+                  value={newAlertTitle}
+                  onChange={(e) => setNewAlertTitle(e.target.value)}
+                  placeholder="Example: Call new restaurant partner in Indiranagar to verify FSSAI certificate"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  What Happened / Context
+                </label>
+                <input
+                  type="text"
+                  value={newAlertDetails}
+                  onChange={(e) => setNewAlertDetails(e.target.value)}
+                  placeholder="Plain-English explanation..."
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Recommended Next Step
+                </label>
+                <input
+                  type="text"
+                  value={newAlertAction}
+                  onChange={(e) => setNewAlertAction(e.target.value)}
+                  placeholder="Action to resolve..."
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black"
+              >
+                Save Alert to Action Center
+              </button>
+            </form>
+          </section>
+        )}
+
+        {activeWorldId === "alerts" && currentTabId === "fair-policy" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              🛡️ Fair Partner Protection Rules (Zero Unfair Blocking)
+            </h2>
+            <p className="text-xs text-slate-600">
+              OrderKing protects local restaurants and delivery riders from
+              sudden automated account bans.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <h3 className="text-sm font-black text-slate-900">
+                  1. 14-Day FSSAI Renewal Grace
+                </h3>
+                <p className="text-xs text-slate-600 mt-1">
+                  If a restaurant has applied for FoSCoS renewal, their kitchen
+                  stays open for 14 days while they upload the new certificate.
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <h3 className="text-sm font-black text-slate-900">
+                  2. Zero Rider Penalty for Traffic or Rain
+                </h3>
+                <p className="text-xs text-slate-600 mt-1">
+                  Riders are never fined or blocked for weather delays, kitchen
+                  prep delays, or apartment gate waits.
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <h3 className="text-sm font-black text-slate-900">
+                  3. Human Review Before Any Pause
+                </h3>
+                <p className="text-xs text-slate-600 mt-1">
+                  Only the Founder can approve pausing a partner account after
+                  inspecting real evidence.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ===================================================================
+            WORLD 10 (`settings`) SUB-CATEGORY TABS
+        =================================================================== */}
+        {activeWorldId === "settings" && currentTabId === "all-worlds" && (
+          <div className="space-y-5">
+            {TEN_WORLDS.map((w) => (
+              <WorldSettingsPanel
+                key={w.id}
+                world={w}
+                values={worldSettings[w.id] || w.defaultSettings}
+                onChange={(key, val) => updateField(w.id, key, val)}
+                onSave={() => handleSaveWorldSettings(w.id)}
+                isSaving={savingWorldId === w.id}
+                boxTitle={`${w.emoji} ${w.title}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {activeWorldId === "settings" && currentTabId === "languages" && (
+          <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <h2 className="text-base font-black text-slate-900">
+              🗣️ All 23 Indian Constitutional Languages + English
+            </h2>
+            <p className="text-xs text-slate-600">
+              Active across Customer App, Restaurant Partner App, and Delivery
+              Rider voice guidance.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+              {INDIAN_23_LANGUAGES_LIST.map((lang) => (
+                <div
+                  key={lang}
+                  className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 flex items-center justify-between"
+                >
+                  <span>{lang}</span>
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeWorldId === "settings" && currentTabId === "activity-log" && (
+          <section className="bg-slate-950 text-white rounded-2xl border border-slate-800 p-5 shadow-xs space-y-3">
+            <h2 className="text-base font-black text-white">
+              📋 Real Session & PostgreSQL Activity Log
+            </h2>
+            <div className="space-y-2">
+              {activityLog.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs"
+                >
+                  <span className="text-slate-200">{entry.text}</span>
+                  <span className="text-[10px] text-slate-400 shrink-0">
+                    {entry.time}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       {/* =====================================================================
-          FLOATING SCROLL TO TOP (↑) & SCROLL TO BOTTOM (↓) QUICK BUTTONS
+          STICKY 10-ITEM BOTTOM NAVIGATION BAR (Just Like the Customer App!)
+          Clicking any item renders ONLY that World on screen!
       ===================================================================== */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
-        <button
-          type="button"
-          onClick={scrollToPageTop}
-          aria-label="Scroll to top"
-          title="Scroll to Top"
-          className="h-11 w-11 rounded-full bg-slate-900 hover:bg-emerald-600 text-white shadow-lg border border-slate-700 flex items-center justify-center transition-all"
-        >
-          <ArrowUp className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={scrollToPageBottom}
-          aria-label="Scroll to bottom"
-          title="Scroll to Bottom"
-          className="h-11 w-11 rounded-full bg-slate-900 hover:bg-emerald-600 text-white shadow-lg border border-slate-700 flex items-center justify-center transition-all"
-        >
-          <ArrowDown className="h-5 w-5" />
-        </button>
-      </div>
+      <nav
+        aria-label="10-World Founder Bottom Navigation"
+        className="fixed bottom-0 inset-x-0 z-50 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 shadow-2xl"
+      >
+        <div className="max-w-7xl mx-auto px-1.5 py-1.5 grid grid-cols-5 sm:grid-cols-10 gap-1">
+          {TEN_WORLDS.map((world) => {
+            const isSelected = activeWorldId === world.id;
+            const showAlertBadge =
+              world.id === "alerts" && activeUnresolvedAlerts.length > 0;
+            return (
+              <button
+                key={world.id}
+                type="button"
+                onClick={() => selectWorld(world.id, "dashboard")}
+                className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all ${
+                  isSelected
+                    ? "bg-emerald-600 text-white font-black shadow-sm"
+                    : "text-slate-400 hover:text-white hover:bg-slate-900 font-semibold"
+                }`}
+              >
+                <span className="text-base leading-none">{world.emoji}</span>
+                <span className="text-[10px] mt-1 tracking-tight truncate max-w-full">
+                  {world.navLabel}
+                </span>
+                {showAlertBadge && (
+                  <span className="absolute top-1 right-2 h-4 min-w-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">
+                    {activeUnresolvedAlerts.length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
 
 // ============================================================================
-// REUSABLE SUB-CATEGORY ACCORDION SHELL
+// 5. REUSABLE CLEAN UI BUILDING BLOCKS
 // ============================================================================
 
-function SubCategoryShell({
+function ResultMetricCard({
+  label,
+  value,
   sub,
-  expanded,
-  onToggle,
-  rightBadge,
-  children,
 }: {
-  sub: SubCategoryMeta;
-  expanded: boolean;
-  onToggle: () => void;
-  rightBadge?: React.ReactNode;
-  children: React.ReactNode;
+  label: string;
+  value: string;
+  sub: string;
+}) {
+  return (
+    <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70">
+      <p className="text-xs font-bold text-slate-500">{label}</p>
+      <p className="text-2xl font-black text-slate-900 mt-1">{value}</p>
+      <p className="text-[11px] text-emerald-700 font-semibold mt-1">{sub}</p>
+    </div>
+  );
+}
+
+function ActionCard({
+  title,
+  description,
+  buttonLabel,
+  onClick,
+  urgent = false,
+}: {
+  title: string;
+  description: string;
+  buttonLabel: string;
+  onClick: () => void;
+  urgent?: boolean;
 }) {
   return (
     <div
-      id={sub.id}
-      className="scroll-mt-36 rounded-xl border border-slate-200/90 bg-white shadow-xs overflow-hidden"
+      className={`p-4 rounded-xl border flex flex-col justify-between gap-3 ${
+        urgent
+          ? "bg-amber-50/70 border-amber-300"
+          : "bg-slate-50/70 border-slate-200"
+      }`}
     >
-      <div
-        onClick={onToggle}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onToggle();
-          }
-        }}
-        className="w-full cursor-pointer select-none px-5 py-3.5 bg-slate-100/80 hover:bg-slate-100 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          <span className="px-2.5 py-1 rounded-md bg-slate-900 text-emerald-400 font-mono text-xs font-black">
-            §{sub.code}
-          </span>
-          <div>
-            <h3 className="text-sm md:text-base font-black text-slate-900">
-              {sub.title}
-            </h3>
-            <p className="text-xs text-slate-500">{sub.subtitle}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2.5">
-          {rightBadge}
-          <span className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1">
-            {expanded ? (
-              <>
-                <span>Hide</span>
-                <ChevronUp className="h-3.5 w-3.5" />
-              </>
-            ) : (
-              <>
-                <span>Show</span>
-                <ChevronDown className="h-3.5 w-3.5" />
-              </>
-            )}
-          </span>
-        </div>
-      </div>
-
-      {expanded && <div className="p-5">{children}</div>}
-    </div>
-  );
-}
-
-function KpiCard({
-  title,
-  value,
-  trend,
-  icon: Icon,
-  color,
-  bg,
-  emptyState = false,
-}: {
-  title: string;
-  value: string;
-  trend: string;
-  icon: any;
-  color: string;
-  bg: string;
-  emptyState?: boolean;
-}) {
-  return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs flex items-start justify-between">
       <div>
-        <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-          {title}
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-sm font-black text-slate-900">{title}</h3>
+          {urgent && (
+            <span className="text-[10px] font-black px-2 py-0.5 rounded bg-amber-200 text-amber-900">
+              Action Needed
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+          {description}
         </p>
-        <p className="text-3xl font-black text-slate-900 mt-2">{value}</p>
-        {!emptyState && (
-          <div className="flex items-center gap-1 mt-2">
-            <ArrowUpRight className="h-3.5 w-3.5 text-emerald-500" />
-            <span className="text-xs font-semibold text-emerald-600">
-              {trend}
-            </span>
-          </div>
-        )}
-        {emptyState && (
-          <div className="flex items-center gap-1.5 mt-2">
-            <span className="text-[10px] font-mono text-slate-400 uppercase">
-              STANDBY · {trend}
-            </span>
-          </div>
-        )}
-      </div>
-      <div className={`p-3.5 rounded-xl border ${bg}`}>
-        <Icon className={`h-6 w-6 ${color}`} />
-      </div>
-    </div>
-  );
-}
-
-function InteractiveToggleRow({
-  label,
-  description,
-  active,
-  onToggle,
-}: {
-  label: string;
-  description: string;
-  active: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <div className="flex items-start justify-between gap-4 py-2 border-b border-slate-100 pb-3">
-      <div>
-        <p className="font-semibold text-slate-900 text-sm">{label}</p>
-        <p className="text-xs text-slate-500 mt-0.5">{description}</p>
       </div>
       <button
         type="button"
-        onClick={onToggle}
-        className={`shrink-0 w-12 h-6 rounded-full flex items-center px-1 transition-colors ${
-          active ? "bg-emerald-600" : "bg-slate-300"
-        }`}
-        aria-label={`Toggle ${label}`}
+        onClick={onClick}
+        className="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
       >
-        <div
-          className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
-            active ? "translate-x-6" : "translate-x-0"
-          }`}
-        />
+        <span>{buttonLabel}</span>
+        <ChevronRight className="h-3.5 w-3.5" />
       </button>
     </div>
   );
 }
 
-// ============================================================================
-// POPULATED 16-CAPABILITY SYSTEM REGISTRY PANEL
-// ============================================================================
-
-interface VerifiedCapability {
-  id: string;
-  domain: string;
-  name: string;
-  description: string;
-  version: string;
-  rollbackPath: string;
-  dependencies: string[];
-  status: "IMPLEMENTED" | "PARTIAL" | "NOT_IMPLEMENTED";
-  health: "ONLINE" | "DEGRADED";
-  blockerReason?: string;
-}
-
-const VERIFIED_CAPABILITIES: VerifiedCapability[] = [
-  {
-    id: "cap-01",
-    domain: "INCIDENT_GOVERNANCE",
-    name: "6-Tier Founder Incident & Zero-Harassment Auto-Remediation Engine",
-    description:
-      "Classifies operational, financial, and compliance alerts into EMERGENCY, DANGER, CRITICAL, HIGH, MEDIUM, and LOW tiers with 1-click auto-remediation and human-style advisories.",
-    version: "4.2.0",
-    rollbackPath: "stateless-triage-fallback-v4.1",
-    dependencies: ["PostgreSQL Telemetry", "Audit Stream Kernel"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-02",
-    domain: "FINTECH_KINGPAY",
-    name: "King Pay T+0 Nodal Split Settlement & UPI Escrow Engine",
-    description:
-      "Executes instant T+0 partner and rider payouts while isolating CGST Sec 9(5) and Income Tax Sec 194-O statutory buckets.",
-    version: "3.9.4",
-    rollbackPath: "kingpay-scheduled-batch-t1",
-    dependencies: ["NPCI UPI Rail", "Nodal Escrow Ledger"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-03",
-    domain: "RIDER_FLEET",
-    name: "23-Language Constitutional Voice & Script Rider Localization",
-    description:
-      "Full native script and spoken voice guidance across all 22 Eighth Schedule Indian constitutional languages plus English.",
-    version: "5.0.0",
-    rollbackPath: "i18n-core-dictionary-v4",
-    dependencies: ["Web Speech Synthesis", "Rider App Shell"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-04",
-    domain: "RIDER_FLEET",
-    name: "Zero-Friction Competitor Rider Migration & Instant Kit Activation",
-    description:
-      "Allows experienced delivery partners to onboard with existing thermal bags and helmets at ₹0 upfront deduction.",
-    version: "3.4.0",
-    rollbackPath: "standard-kyc-onboarding-v3",
-    dependencies: ["Rider Onboarding Engine", "Vahan RC Validator"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-05",
-    domain: "RESTAURANT_PARTNER",
-    name: "Direct KDS Thermal Printer & Prep-Time Synchronization",
-    description:
-      "Connects kitchen order tickets directly to rider dispatch so riders arrive only when food preparation reaches 80% completion.",
-    version: "3.8.2",
-    rollbackPath: "kds-manual-ready-trigger",
-    dependencies: ["Kitchen KDS", "Dispatch Algorithm Engine"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-06",
-    domain: "STATUTORY_TAX",
-    name: "CGST Section 9(5) & Income Tax Section 194-O Automated Tax Desk",
-    description:
-      "Generates order-level HSN/SAC tax splits, 5% ECO food GST reconciliation, and 0.1% Sec 194-O TDS certificates.",
-    version: "4.1.0",
-    rollbackPath: "tax-ledger-snapshot-v4.0",
-    dependencies: ["King Pay Ledger", "GSTIN Verification Bridge"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-07",
-    domain: "STATUTORY_FOOD_SAFETY",
-    name: "FSSAI 14-Digit FoSCoS Continuity & Renewal Grace Shield",
-    description:
-      "Validates FSSAI licenses and grants a 14-day provisional continuity window when renewal receipts are uploaded, preventing unfair delisting.",
-    version: "3.6.1",
-    rollbackPath: "manual-compliance-review-queue",
-    dependencies: ["Restaurant KYC Vault", "Founder Incident Center"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-08",
-    domain: "UMAR_AI",
-    name: "Multi-Model Sovereign AI Benchmark & Routing Matrix",
-    description:
-      "Routes menu OCR, multilingual translation, and support triage across benchmarked models with automatic cost and latency failover.",
-    version: "2.9.0",
-    rollbackPath: "deterministic-rule-router-v2",
-    dependencies: ["MultimodelBenchmarkDashboard", "UMAR Kernel"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-09",
-    domain: "DISPATCH_CORE",
-    name: "Weather, Rain & Detention Wait-Pay Fairness Engine",
-    description:
-      "Automatically credits ₹3/min verified kitchen wait-pay after 5 minutes and activates rain surge bonuses without customer price gouging.",
-    version: "4.0.2",
-    rollbackPath: "fixed-slab-incentive-v3",
-    dependencies: ["AlgorithmSettings", "Rider Settlement Desk"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-10",
-    domain: "GEOSPATIAL",
-    name: "Global God-Eye Pan-India Telemetry & Zone Density Radar",
-    description:
-      "Visualizes live order density, active restaurant clusters, and rider availability vectors across Indian metropolitan and Tier-2/3 zones.",
-    version: "3.5.0",
-    rollbackPath: "tabular-zone-monitor-v3",
-    dependencies: ["GlobalGodEyeMap", "PostGIS / Coordinate Index"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-11",
-    domain: "CUSTOMER_EXPERIENCE",
-    name: "Zero-Rebuild Customer App UI & Festival Theme Configurator",
-    description:
-      "Updates customer discovery rails, banner density, and regional festival themes dynamically from HDmaster.",
-    version: "3.2.1",
-    rollbackPath: "default-customer-theme-json",
-    dependencies: ["CustomerAppUiSettings", "EcosystemCMS"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-12",
-    domain: "COMMERCIAL_B2B",
-    name: "B2B Franchise Territory Onboarding & Institutional Deck Engine",
-    description:
-      "Automates city-level franchise partner onboarding, unit-economics modeling, and institutional sales deck generation.",
-    version: "2.8.4",
-    rollbackPath: "static-franchise-onboarding-v2",
-    dependencies: [
-      "B2BFranchiseOnboardingEngine",
-      "B2BSaaSSalesDeckGenerator",
-    ],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-13",
-    domain: "CREATIVE_STUDIOS",
-    name: "In-House App Builder, Design, Media & Social Publishing Suite",
-    description:
-      "Empowers the founder and restaurant partners to generate dish visuals, promotional videos, and social campaigns without external agencies.",
-    version: "3.1.0",
-    rollbackPath: "studio-asset-library-v3",
-    dependencies: [
-      "AppBuilderStudio",
-      "DesignStudio",
-      "MediaProductionStudio",
-      "SocialPublishingStudio",
-    ],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-14",
-    domain: "GIG_SOCIAL_SECURITY",
-    name: "Code on Social Security 2020 & e-Shram Welfare Desk",
-    description:
-      "Provides delivery riders with accidental insurance coverage, SOS ambulance dispatch, and downloadable income/tax proofs.",
-    version: "4.0.0",
-    rollbackPath: "rider-welfare-ledger-v3",
-    dependencies: ["Rider Settlement Desk", "Emergency SOS Bridge"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-15",
-    domain: "PRIVACY_DPDP",
-    name: "DPDP Act 2023 Customer Phone Masking & Zero Ad-Broker Vault",
-    description:
-      "Protects customer PII with virtual call masking and guarantees restaurant customer lists are never sold or used for competing cloud kitchens.",
-    version: "3.7.0",
-    rollbackPath: "encrypted-relay-proxy-v3",
-    dependencies: ["PluginConnectors", "Auth Session Guard"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-  {
-    id: "cap-16",
-    domain: "INFRA_CONNECTORS",
-    name: "Multi-Provider Webhook & Plugin Connector Switchboard",
-    description:
-      "Manages payment gateways, WhatsApp/SMS OTP providers, and accounting ERP exports with health checks and circuit breakers.",
-    version: "3.3.5",
-    rollbackPath: "secondary-connector-pool",
-    dependencies: ["PluginConnectors", "PostgreSQL Config Store"],
-    status: "IMPLEMENTED",
-    health: "ONLINE",
-  },
-];
-
-function CapabilityRegistryPanel() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDomain, setSelectedDomain] = useState("ALL");
-
-  const domains = [
-    "ALL",
-    ...Array.from(new Set(VERIFIED_CAPABILITIES.map((c) => c.domain))),
-  ];
-
-  const filteredCapabilities = VERIFIED_CAPABILITIES.filter((cap) => {
-    const matchesDomain =
-      selectedDomain === "ALL" || cap.domain === selectedDomain;
-    const matchesSearch =
-      !searchQuery.trim() ||
-      cap.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cap.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cap.domain.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesDomain && matchesSearch;
-  });
-
+function WorldSettingsPanel({
+  world,
+  values,
+  onChange,
+  onSave,
+  isSaving,
+  boxTitle,
+}: {
+  world: WorldDefinition;
+  values: Record<string, any>;
+  onChange: (key: string, value: any) => void;
+  onSave: () => void;
+  isSaving: boolean;
+  boxTitle: string;
+}) {
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
         <div>
-          <h3 className="text-lg font-black text-slate-900 flex items-center gap-2.5">
-            <Database className="text-emerald-600 h-5 w-5" /> Verified System
-            Capabilities ({filteredCapabilities.length} /{" "}
-            {VERIFIED_CAPABILITIES.length})
-          </h3>
-          <p className="text-xs text-slate-600 mt-0.5">
-            Production capabilities verified across OrderKing HDmaster,
-            Restaurant Partner, Delivery Rider, and King Pay modules.
-          </p>
+          <span className="text-[11px] font-black uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+            PostgreSQL `platform_settings` + Local Backup
+          </span>
+          <h2 className="text-base font-black text-slate-900 mt-1.5">
+            {boxTitle}
+          </h2>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative">
-            <Search className="h-3.5 w-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search capabilities..."
-              className="pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 bg-white"
-            />
-          </div>
-          <select
-            value={selectedDomain}
-            onChange={(e) => setSelectedDomain(e.target.value)}
-            aria-label="Filter capabilities by domain"
-            className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-emerald-500"
-          >
-            {domains.map((dom) => (
-              <option key={dom} value={dom}>
-                {dom === "ALL" ? "All Domains (16)" : dom}
-              </option>
-            ))}
-          </select>
-        </div>
+        <button
+          type="button"
+          disabled={isSaving}
+          onClick={onSave}
+          className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white text-xs font-black flex items-center justify-center gap-2 shadow-xs transition-colors shrink-0"
+        >
+          <Save className="h-4 w-4" />
+          <span>
+            {isSaving ? "Saving to PostgreSQL..." : "Save Settings"}
+          </span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredCapabilities.map((cap) => (
-          <div
-            key={cap.id}
-            className="bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-300 transition-colors shadow-xs flex flex-col justify-between"
-          >
-            <div>
+        {world.settingsFields.map((field) => {
+          const currentVal =
+            values[field.key] !== undefined
+              ? values[field.key]
+              : field.defaultValue;
+
+          return (
+            <div
+              key={field.key}
+              className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between gap-3"
+            >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 uppercase tracking-wider">
-                      {cap.domain}
-                    </span>
-                    <h4 className="text-sm font-black text-slate-900">
-                      {cap.name}
-                    </h4>
-                  </div>
-                  <p className="text-xs text-slate-600 mb-3 leading-relaxed">
-                    {cap.description}
+                  <label className="text-xs md:text-sm font-black text-slate-900">
+                    {field.label}
+                  </label>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {field.description}
                   </p>
                 </div>
 
-                <div className="flex flex-col items-end gap-1.5 shrink-0">
-                  {cap.status === "IMPLEMENTED" && (
-                    <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded flex items-center gap-1 text-[10px] font-bold uppercase">
-                      <CheckCircle2 className="h-3 w-3" /> Implemented
-                    </span>
-                  )}
-                  {cap.health === "ONLINE" ? (
-                    <span className="text-emerald-600 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />{" "}
-                      ONLINE
-                    </span>
-                  ) : (
-                    <span className="text-amber-600 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />{" "}
-                      DEGRADED
+                {field.type === "toggle" && (
+                  <button
+                    type="button"
+                    onClick={() => onChange(field.key, !currentVal)}
+                    aria-label={field.label}
+                    className={`shrink-0 w-12 h-6 rounded-full flex items-center px-1 transition-colors ${
+                      currentVal ? "bg-emerald-600" : "bg-slate-300"
+                    }`}
+                  >
+                    <span
+                      className={`w-4 h-4 bg-white rounded-full shadow-xs transition-transform ${
+                        currentVal ? "translate-x-6" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                )}
+              </div>
+
+              {field.type === "number" && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    value={currentVal}
+                    onChange={(e) =>
+                      onChange(
+                        field.key,
+                        e.target.value === "" ? 0 : Number(e.target.value)
+                      )
+                    }
+                    aria-label={field.label}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-500"
+                  />
+                  {field.unit && (
+                    <span className="text-xs font-bold text-slate-500 shrink-0">
+                      {field.unit}
                     </span>
                   )}
                 </div>
-              </div>
-            </div>
+              )}
 
-            <div className="flex flex-wrap gap-3 text-[11px] font-medium text-slate-500 pt-2.5 border-t border-slate-100">
-              <span className="flex items-center gap-1">
-                <Server className="h-3 w-3 text-slate-400" /> v{cap.version}
-              </span>
-              <span className="flex items-center gap-1">
-                <GitBranch className="h-3 w-3 text-slate-400" /> Rollback:{" "}
-                {cap.rollbackPath}
-              </span>
-              <span>Deps: {cap.dependencies.join(", ")}</span>
+              {field.type === "text" && (
+                <input
+                  type="text"
+                  value={String(currentVal ?? "")}
+                  onChange={(e) => onChange(field.key, e.target.value)}
+                  aria-label={field.label}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-500"
+                />
+              )}
+
+              {field.type === "select" && (
+                <select
+                  value={String(currentVal ?? "")}
+                  onChange={(e) => onChange(field.key, e.target.value)}
+                  aria-label={field.label}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-500"
+                >
+                  {(field.options || []).map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 }

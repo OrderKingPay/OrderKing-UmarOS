@@ -22,24 +22,20 @@ interface WhatsAppGiftCardProps {
  */
 export function WhatsAppViralBountiesWidget({ className = "", source = "general" }: WhatsAppGiftCardProps) {
   const { user } = useCurrentUserState();
-  const [referralCode, setReferralCode] = useState<string>("KING50");
+  const [referralCode, setReferralCode] = useState<string>("");
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     if (user?.id) {
-      const derivedCode = `KING${user.id.replace(/[^a-zA-Z0-9]/g, "").slice(-4).toUpperCase() || "50"}`;
-      setReferralCode(derivedCode);
-      
       void getReferralStats()
         .then((s) => {
-          if (isMounted && s?.referralCode) {
-            setReferralCode(s.referralCode);
-          }
+          // Use only the referral code returned by the authorized server.
+          if (isMounted) setReferralCode(typeof s?.referralCode === "string" ? s.referralCode : "");
         })
-        .catch(() => {
-          // Keep deterministic fallback
-        });
+        .catch(() => { if (isMounted) setReferralCode(""); });
+    } else {
+      setReferralCode("");
     }
 
     return () => {
@@ -48,22 +44,22 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
   }, [user?.id]);
 
   const originUrl = typeof window !== "undefined" ? window.location.origin : "https://www.orderkingpay.com";
-  const shareUrl = `${originUrl}/?ref=${referralCode}&src=gift`;
+  const shareUrl = `${originUrl}/?src=invite${referralCode ? `&ref=${encodeURIComponent(referralCode)}` : ""}`;
 
   // Attractive, natural gift message for WhatsApp
-  const giftMessage = `Hey! Here is a ₹50 gift voucher for OrderKing. Order delicious food using my link and get ₹50 off: ${shareUrl} 🍔🍕`;
+  const giftMessage = `Explore OrderKing food, travel, and learning services when available in your area: ${shareUrl}`;
 
   const handleWhatsAppShare = () => {
     const waUrl = `https://wa.me/?text=${encodeURIComponent(giftMessage)}`;
     window.open(waUrl, "_blank");
-    toast.success("Opening WhatsApp to share your gift!");
+    toast.info("Opening WhatsApp to share the OrderKing link.");
   };
 
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      toast.success("Gift link copied to clipboard!");
+      toast.success("OrderKing link copied to clipboard.");
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Failed to copy link.");
@@ -88,18 +84,18 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-amber-100/90 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-800">
                 <Sparkles className="size-2.5 text-amber-600" />
-                Friend Gift
+                Invite friends
               </span>
               <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
-                ₹50 each
+                No cash reward
               </span>
             </div>
 
             <h3 className="text-base sm:text-lg font-black text-gray-900 tracking-tight leading-snug">
-              Gift ₹50 to your friends
+              Share OrderKing with friends
             </h3>
             <p className="text-xs text-gray-600 line-clamp-2 max-w-md">
-              Send them ₹50 off their first meal. You also earn ₹50 KingPay Cash as soon as they order.
+              Share a link to explore available OrderKing services. Referral cash and promotional credits are not active.
             </p>
           </div>
         </div>
@@ -112,14 +108,14 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
             className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] hover:bg-[#20be5b] active:scale-98 text-white px-4 py-2.5 text-xs sm:text-sm font-extrabold shadow-sm shadow-[#25D366]/25 transition cursor-pointer"
           >
             <MessageCircle className="size-4 fill-white" />
-            <span>Send Gift on WhatsApp</span>
+            <span>Share on WhatsApp</span>
           </button>
 
           <button
             type="button"
             onClick={handleCopyLink}
-            aria-label="Copy gift link"
-            title="Copy gift link"
+            aria-label="Copy OrderKing link"
+            title="Copy OrderKing link"
             className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white hover:bg-gray-50 active:scale-98 text-gray-700 transition shadow-2xs cursor-pointer"
           >
             {copied ? (

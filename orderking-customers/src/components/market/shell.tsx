@@ -16,6 +16,7 @@ import {
   Building2,
   Luggage,
   Sparkles,
+  Crown,
 } from "lucide-react";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { Wordmark, OrderKingMark } from "@/components/brand/wordmark";
@@ -35,6 +36,7 @@ import { useLocationStore } from "@/lib/stores/location";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { SignedIn, SignedOut, UserButton } from "@/lib/auth/gates";
 import { cn } from "@/lib/utils";
+import { DeviceAvatar } from "@/components/common/device-avatar";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 import { formatPaise } from "@/lib/money";
 
@@ -113,8 +115,11 @@ export function CustomerShell({
               className="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full bg-gradient-to-r from-amber-500/10 via-amber-400/20 to-yellow-500/10 border border-amber-400/70 text-amber-950 text-xs font-black shadow-xs hover:border-amber-500 hover:shadow-amber-500/20 transition active:scale-95 no-underline group"
               title="Crown Wallet & Promotional Credits"
             >
-              <span className="text-sm filter drop-shadow-xs group-hover:scale-110 transition-transform">👑</span>
-              <span className="text-[11px] font-black tracking-tight text-amber-950">Crown Wallet</span>
+              <Crown className="size-4 shrink-0 text-amber-800" aria-hidden />
+              <span className="flex min-w-0 flex-col leading-tight">
+                <span className="text-[11px] font-black tracking-tight text-amber-950">Crown Wallet</span>
+                <span className="text-[9px] font-semibold text-emerald-900">Cash unverified · Credits inactive</span>
+              </span>
             </Link>
 
             {/* Profile & Sign-In strictly at far right */}
@@ -126,19 +131,18 @@ export function CustomerShell({
                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 hover:ring-2 hover:ring-amber-400 transition no-underline text-gray-900"
                 title="Your Profile & Account"
               >
-                <div className="flex size-7 items-center justify-center rounded-full bg-slate-950 text-amber-300 text-xs font-black shadow-xs ring-1 ring-amber-400/30">
-                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : <UserRound className="size-3.5" />}
-                </div>
+                <DeviceAvatar userId={user.id} name={user.displayName} />
                 <span className="text-xs font-bold text-gray-800 hidden sm:inline">Profile</span>
               </Link>
             ) : (
               <SignedOut>
                 <Link
                   to="/login"
-                  className="rounded-full bg-[#E23744] hover:bg-[#c92f3b] text-white px-3.5 py-1.5 text-xs font-bold transition shadow-xs no-underline flex items-center gap-1"
+                  className="flex items-center gap-1.5 rounded-full border border-amber-400/70 bg-gradient-to-r from-emerald-950 to-slate-900 px-3 py-1.5 text-amber-200 shadow-sm no-underline transition hover:border-amber-300 hover:shadow-md"
+                  aria-label="Sign in or join OrderKing"
                 >
-                  <UserRound className="size-3.5" />
-                  <span>{t("common.signIn")}</span>
+                  <Crown className="size-4 shrink-0" aria-hidden />
+                  <span className="text-[11px] font-black">Join</span>
                 </Link>
               </SignedOut>
             )}

@@ -2,10 +2,12 @@
 import { type ReactNode, useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion, LayoutGroup } from "framer-motion";
-import { Bell, Car, CreditCard, History, Plane, QrCode, ShieldCheck, Search, Sparkles, User, UtilityPole, Wallet, Zap, House, ClipboardList, GraduationCap, UserRound } from "lucide-react";
+import { Bell, Car, CreditCard, History, Plane, QrCode, ShieldCheck, Search, Sparkles, User, UtilityPole, Wallet, Zap, House, ClipboardList, GraduationCap, UserRound, Crown } from "lucide-react";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { DeviceAvatar } from "@/components/common/device-avatar";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 export type KingPaySection = "pay" | "garage" | "loan" | "travel" | "bills" | "passbook" | "account" | "wealth";
 
@@ -29,6 +31,7 @@ export function KingPayShell({
   alertsCount = 0,
 }: Props) {
   const [serviceQuery, setServiceQuery] = useState("");
+  const { user, isPending } = useCurrentUserState();
   const searchableFeatures: { label: string; keywords: string; section: KingPaySection }[] = [
     { label: "Pay & Transfer (UPI / QR)", keywords: "pay send money transfer upi qr scan", section: "pay" },
     { label: "Bills & Utility Recharges", keywords: "electricity water dth broadband mobile gas lpg bill", section: "bills" },
@@ -59,12 +62,12 @@ export function KingPayShell({
                   King<span className="text-amber-500">Pay</span>
                 </span>
                 <span className="rounded-full bg-emerald-500/15 px-1.5 py-0.2 text-[9px] font-extrabold text-emerald-700 dark:text-emerald-300">
-                  NPCI UPI
+                  Service catalogue
                 </span>
               </div>
               <p className="text-[10px] text-muted leading-tight mt-0.5 flex items-center gap-1">
                 <ShieldCheck className="size-3 text-emerald-600" />
-                <span>Secure Payments · 256-Bit</span>
+                <span>Transaction tools require verified providers</span>
               </p>
             </div>
           </div>
@@ -84,7 +87,7 @@ export function KingPayShell({
               <Sparkles className="size-3.5 text-amber-500" />
               <span>Wealth</span>
               <span className="rounded-full bg-emerald-500/10 text-emerald-500 px-1 py-0.2 text-[9px] font-extrabold">
-                Earn
+                Explore
               </span>
             </button>
 
@@ -101,18 +104,27 @@ export function KingPayShell({
               <Plane className="size-3.5 text-cyan-500" />
               <span>Travel</span>
               <span className="rounded-full bg-[#D4AF37]/10 text-emerald-600 dark:text-emerald-300 px-1 py-0.2 text-[9px] font-extrabold">
-                ₹0 Fee
+                Check terms
               </span>
             </button>
 
-            {/* Wallet Balance Pill */}
-            <div className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-500/10 px-2.5 py-1 text-xs shadow-xs">
-              <Wallet className="size-3.5 text-amber-600 dark:text-amber-400" />
-              <span className="font-mono font-bold text-fg">
-                Cash: not verified · Crown: inactive
+            {/* Clear separation: no provider-verified money balances are asserted. */}
+            <Link to="/earn" className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-500/10 px-2.5 py-1 text-xs text-white no-underline shadow-xs"
+              title="Crown Wallet: verified cash balance unavailable; promotional credits inactive">
+              <Wallet className="size-4 shrink-0 text-amber-300" aria-hidden />
+              <span className="flex flex-col text-[10px] leading-tight font-semibold">
+                <span>Verified cash: unavailable</span>
+                <span className="text-amber-200">Crown credits: inactive</span>
               </span>
+            </Link>
 
-            </div>
+            {/* Far-right unified profile entry. Avatar is device-local until secure profile storage is enabled. */}
+            <Link to={user ? "/account" : "/login"} aria-label={user ? "Open your OrderKing profile" : "Sign in to OrderKing"}
+              className="shrink-0 rounded-full border border-amber-400/70 bg-emerald-950 p-1 text-amber-200 no-underline shadow-sm hover:border-amber-200">
+              {isPending ? <span className="block size-8 animate-pulse rounded-full bg-slate-700" /> :
+                user ? <DeviceAvatar userId={user.id} name={user.displayName} /> :
+                <span className="flex size-8 items-center justify-center"><Crown className="size-5" aria-hidden /></span>}
+            </Link>
 
             {/* Notification Bell with Badge */}
             <button
