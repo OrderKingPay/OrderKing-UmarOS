@@ -124,7 +124,7 @@ export function buildRestaurantJsonLd(
     ],
     description: restaurant.description || meta.dynamicDescription,
     url: canonicalUrl,
-    telephone: "+91-9999999999",
+    telephone: (restaurant as unknown as { phone?: string })?.phone || "+91-3843-295000",
     priceRange,
     servesCuisine: restaurant.card.cuisineSummary
       ? restaurant.card.cuisineSummary.split(",").map((s) => s.trim())
@@ -136,14 +136,14 @@ export function buildRestaurantJsonLd(
       "@type": "PostalAddress",
       streetAddress: restaurant.addressLine || restaurantArea,
       addressLocality: restaurantArea,
-      addressRegion: "West Bengal",
-      postalCode: "700001",
+      addressRegion: "Assam",
+      postalCode: location.lat > 24.85 ? "788710" : "788001",
       addressCountry: "IN",
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: location.lat || 22.5726,
-      longitude: location.lng || 88.3639,
+      latitude: location.lat || (restaurantArea.toLowerCase().includes("silchar") ? 24.8333 : 24.8690),
+      longitude: location.lng || (restaurantArea.toLowerCase().includes("silchar") ? 92.7789 : 92.3550),
     },
     aggregateRating: {
       "@type": "AggregateRating",

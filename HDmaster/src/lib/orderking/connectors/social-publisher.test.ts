@@ -80,14 +80,13 @@ describe("UMAR OS Social Publishing & Multi-Channel Campaign Connector", () => {
     expect(rateLimiter.checkAndConsume("instagram_reels")).toBe(false);
   });
 
-  it("successfully dispatches campaign and generates realistic performance analytics", () => {
+  it("successfully schedules campaign with zero synthetic metrics until live reporting", () => {
     const result = dispatchSocialCampaign(validReel, secretKey, rateLimiter);
     expect(result.success).toBe(true);
-    expect(result.post.status).toBe("PUBLISHED");
+    expect(result.post.status).toBe("SCHEDULED");
     expect(result.post.signature).toBeDefined();
-    expect(result.post.publishedUrl).toContain("instagram.reels.com");
     expect(result.post.analytics).toBeDefined();
-    expect(result.post.analytics?.estimatedReach).toBeGreaterThan(5000);
-    expect(result.post.analytics?.estimatedRoas).toBeGreaterThan(0);
+    expect(result.post.analytics?.estimatedReach).toBe(0);
+    expect(result.post.analytics?.estimatedRoas).toBe(0);
   });
 });

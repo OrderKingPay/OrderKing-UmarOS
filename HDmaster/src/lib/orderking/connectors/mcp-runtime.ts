@@ -764,32 +764,24 @@ export class McpServerRuntime {
         }
 
         const campaignId = `camp_${crypto.randomBytes(6).toString("hex")}`;
-        const baseReach =
-          args.channel === "youtube_shorts"
-            ? 18000
-            : args.channel === "instagram_reels"
-              ? 12000
-              : 5000;
-        const impressions = Math.round(baseReach * 1.35);
-        const clicks = Math.round(impressions * 0.048);
-        const conversions = Math.round(clicks * 0.12);
-        const estimatedRoas = Number((conversions * 4.2).toFixed(2));
-
+        // Zero-Mock Protocol: Real analytics start at 0 until live webhook reports actual impressions
         return {
           campaignId,
           channel: args.channel,
           caption: args.caption,
           mediaUrl: args.mediaUrl,
-          status: "PUBLISHED" as const,
-          publishedUrl: `https://${args.channel.replace("_", ".")}.com/share/ok_${campaignId}`,
+          status: "SCHEDULED" as const,
+          publishedUrl: null,
           metrics: {
-            estimatedReach: baseReach,
-            impressions,
-            clicks,
-            conversions,
-            estimatedRoas,
+            estimatedReach: 0,
+            impressions: 0,
+            clicks: 0,
+            conversions: 0,
+            estimatedRoas: 0,
           },
           publishedAt: new Date().toISOString(),
+          requiresConfiguration: true,
+          note: "Real social media dispatch requires OAuth tokens (META_GRAPH_ACCESS_TOKEN / YOUTUBE_API_KEY). Post scheduled for manual or webhook delivery.",
         };
       },
     });

@@ -9,6 +9,7 @@ export function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isDismissed, setIsDismissed] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIos, setIsIos] = useState(false);
 
   useEffect(() => {
     // Check if app is already running in standalone display mode
@@ -19,6 +20,15 @@ export function PwaInstallPrompt() {
     if (isStandalone) {
       setIsInstalled(true);
       return;
+    }
+
+    const isIosDevice =
+      typeof navigator !== "undefined" &&
+      /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase()) &&
+      !(window as unknown as { MSStream?: unknown }).MSStream;
+
+    if (isIosDevice) {
+      setIsIos(true);
     }
 
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -50,8 +60,41 @@ export function PwaInstallPrompt() {
     }
   };
 
-  if (!deferredPrompt || isDismissed || isInstalled) {
+  if (isDismissed || isInstalled || (!deferredPrompt && !isIos)) {
     return null;
+  }
+
+  // iOS Safari Install instructions
+  if (isIos && !deferredPrompt) {
+    return (
+      <div
+        role="banner"
+        aria-label="Install OrderKing on iPhone"
+        className="fixed bottom-4 left-4 right-4 z-[9998] mx-auto max-w-md rounded-2xl border border-white/10 bg-neutral-900/95 p-4 shadow-2xl backdrop-blur-md sm:bottom-6 sm:left-auto sm:right-6 sm:w-96"
+      >
+        <div className="flex items-start gap-3">
+          <img
+            src="/icon-192.png"
+            alt="OrderKing"
+            className="h-11 w-11 shrink-0 rounded-xl object-cover shadow-sm"
+          />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-white">Install OrderKing</p>
+            <p className="text-xs text-neutral-300 mt-1">
+              Tap <span className="font-bold text-orange-400">Share</span> (⎋) in Safari, then select <span className="font-bold text-orange-400">'Add to Home Screen'</span> (➕) for instant 1-tap ordering.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsDismissed(true)}
+            aria-label="Close install instructions"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-neutral-400 hover:bg-white/10 hover:text-white transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -4,10 +4,10 @@ import { toast } from "sonner";
 
 export function GrowthWidget() {
   const [copied, setCopied] = useState(false);
-  const inviteLink = "orderking.app/KING500";
+  const inviteLink = "orderkingpay.com/offers";
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`https://${inviteLink}`);
+    navigator.clipboard.writeText(`https://${inviteLink}?ref=KING50`);
     setCopied(true);
     toast.success("Link copied!");
     setTimeout(() => setCopied(false), 3000);
@@ -15,10 +15,10 @@ export function GrowthWidget() {
 
   const handleWhatsAppShare = () => {
     const text = encodeURIComponent(
-      "Hey! Use my exclusive OrderKing link to get ₹500 free on your first food order. I use it every day. Claim here: https://orderking.app/KING500"
+      "Hey! Order food on OrderKing and get ₹20 off on your first order of ₹299+. Zero surge pricing! Order here: https://orderkingpay.com/offers?ref=KING50"
     );
     window.open(`https://wa.me/?text=${text}`, "_blank");
-    toast.success("WhatsApp opened. Share to secure your unlock!");
+    toast.success("WhatsApp opened to share!");
   };
 
   return (
@@ -26,16 +26,16 @@ export function GrowthWidget() {
       <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="flex-1 space-y-3">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 border border-emerald-200">
-            <Lock className="size-3.5 text-emerald-700" />
+            <Gift className="size-3.5 text-emerald-700" />
             <span className="text-[11px] font-semibold tracking-wide text-emerald-700 uppercase">
-              Free Delivery Reward
+              King Wallet Credits
             </span>
           </div>
           <h3 className="text-2xl font-bold text-slate-900 tracking-tight leading-tight">
-            Unlock Lifetime Free Delivery
+            Earn ₹50 on Every Friend Referral
           </h3>
           <p className="text-sm text-slate-600 max-w-sm leading-relaxed">
-            Invite 3 colleagues or friends. Once they complete their first order, your account receives Lifetime Free Delivery + ₹500 credits.
+            Invite friends. Once they complete their first ₹299+ order, your King Wallet receives 5,000 Crowns (₹50) food credits and they get ₹20 off.
           </p>
         </div>
 

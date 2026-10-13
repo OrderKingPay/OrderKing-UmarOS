@@ -526,12 +526,10 @@ function OrderDetailPage() {
                 <div className="flex items-center justify-between pt-1 border-t border-border">
                   <span className="text-[11px] text-muted">Escalated to HDmaster Founder Operations at {submittedComplaint.createdAt}</span>
                   <a
-                    href="https://wa.me/918000000000?text=Hi%2C%20I%20have%20an%20urgent%20complaint%20regarding%20ticket%20"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={`/support?ticket=${encodeURIComponent(submittedComplaint.ticketId || "")}&orderId=${encodeURIComponent(id)}`}
                     className="text-primary font-bold text-[11px] hover:underline"
                   >
-                    💬 WhatsApp Escalation →
+                    💬 Contact Founder Support →
                   </a>
                 </div>
               </div>

@@ -19,7 +19,7 @@ import { cartKey, useCartStore, type CartItem } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
 import { WhatsAppShare } from "@/components/market/whatsapp-share";
-import { ReferralGamifiedLoop } from "@/components/market/referral-gamified-loop";
+import { WhatsAppViralBountiesWidget as ReferralGamifiedLoop } from "@/components/market/whatsapp-viral-bounties-widget";
 import { RestaurantSeo, buildRestaurantJsonLd } from "@/components/seo/RestaurantSeo";
 
 export const Route = createFileRoute("/r/$slug")({
@@ -32,7 +32,9 @@ export const Route = createFileRoute("/r/$slug")({
           .join(" ")
       : "Restaurant";
     const title = `${cleanName} - Food Delivery Near Me | Order Online | OrderKing`;
-    const desc = `Order food online from ${cleanName}. Fast 30-min food delivery near me, live order tracking, discounts and best offers on OrderKing.`;
+    const desc = `Order food online from ${cleanName}. Fast 30-min food delivery, live tracking, and fair pricing on OrderKing.`;
+    const pageUrl = `https://orderkingpay.com/r/${slug}`;
+    const ogImg = `https://orderkingpay.com/icon-512.png`;
     return {
       meta: [
         { title },
@@ -40,10 +42,15 @@ export const Route = createFileRoute("/r/$slug")({
         { name: "keywords", content: `${cleanName}, food delivery near me, order food online near me, restaurants near me, online food order, best food delivery, OrderKing` },
         { property: "og:title", content: title },
         { property: "og:description", content: desc },
+        { property: "og:url", content: pageUrl },
+        { property: "og:image", content: ogImg },
+        { property: "og:image:width", content: "512" },
+        { property: "og:image:height", content: "512" },
         { property: "og:type", content: "restaurant.restaurant" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: desc },
+        { name: "twitter:image", content: ogImg },
       ],
     };
   },

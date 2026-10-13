@@ -83,6 +83,15 @@
     "finance",
     "lifestyle"
   ],
+  "share_target": {
+    "action": "/search",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "q",
+      "url": "url"
+    }
+  },
   "lang": "en-IN",
   "dir": "ltr"
 }

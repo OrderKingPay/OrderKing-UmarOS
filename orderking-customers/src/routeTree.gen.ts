@@ -30,6 +30,7 @@ import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as ApiCrmRouteImport } from './routes/api/crm'
 import { Route as ApiRestaurantRouteImport } from './routes/api/restaurant'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
+import { Route as ApiVcardRouteImport } from './routes/api/vcard'
 import { Route as ApiWhatsappRouteImport } from './routes/api/whatsapp'
 import { Route as AppFounderCommandRouteImport } from './routes/app/founder-command'
 import { Route as DevBrandRouteImport } from './routes/dev/brand'
@@ -155,6 +156,11 @@ const ApiSearchRoute = ApiSearchRouteImport.update({
   path: '/api/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVcardRoute = ApiVcardRouteImport.update({
+  id: '/api/vcard',
+  path: '/api/vcard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiWhatsappRoute = ApiWhatsappRouteImport.update({
   id: '/api/whatsapp',
   path: '/api/whatsapp',
@@ -272,6 +278,7 @@ export interface FileRoutesByFullPath {
   '/api/crm': typeof ApiCrmRoute
   '/api/restaurant': typeof ApiRestaurantRoute
   '/api/search': typeof ApiSearchRoute
+  '/api/vcard': typeof ApiVcardRoute
   '/api/whatsapp': typeof ApiWhatsappRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
@@ -314,6 +321,7 @@ export interface FileRoutesByTo {
   '/api/crm': typeof ApiCrmRoute
   '/api/restaurant': typeof ApiRestaurantRoute
   '/api/search': typeof ApiSearchRoute
+  '/api/vcard': typeof ApiVcardRoute
   '/api/whatsapp': typeof ApiWhatsappRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
@@ -357,6 +365,7 @@ export interface FileRoutesById {
   '/api/crm': typeof ApiCrmRoute
   '/api/restaurant': typeof ApiRestaurantRoute
   '/api/search': typeof ApiSearchRoute
+  '/api/vcard': typeof ApiVcardRoute
   '/api/whatsapp': typeof ApiWhatsappRoute
   '/app/founder-command': typeof AppFounderCommandRoute
   '/dev/brand': typeof DevBrandRoute
@@ -401,6 +410,7 @@ export interface FileRouteTypes {
     | '/api/crm'
     | '/api/restaurant'
     | '/api/search'
+    | '/api/vcard'
     | '/api/whatsapp'
     | '/app/founder-command'
     | '/dev/brand'
@@ -443,6 +453,7 @@ export interface FileRouteTypes {
     | '/api/crm'
     | '/api/restaurant'
     | '/api/search'
+    | '/api/vcard'
     | '/api/whatsapp'
     | '/app/founder-command'
     | '/dev/brand'
@@ -485,6 +496,7 @@ export interface FileRouteTypes {
     | '/api/crm'
     | '/api/restaurant'
     | '/api/search'
+    | '/api/vcard'
     | '/api/whatsapp'
     | '/app/founder-command'
     | '/dev/brand'
@@ -528,6 +540,7 @@ export interface RootRouteChildren {
   ApiCrmRoute: typeof ApiCrmRoute
   ApiRestaurantRoute: typeof ApiRestaurantRoute
   ApiSearchRoute: typeof ApiSearchRoute
+  ApiVcardRoute: typeof ApiVcardRoute
   ApiWhatsappRoute: typeof ApiWhatsappRoute
   AppFounderCommandRoute: typeof AppFounderCommandRoute
   DevBrandRoute: typeof DevBrandRoute
@@ -695,6 +708,13 @@ declare module '@tanstack/react-router' {
       path: '/api/search'
       fullPath: '/api/search'
       preLoaderRoute: typeof ApiSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/vcard': {
+      id: '/api/vcard'
+      path: '/api/vcard'
+      fullPath: '/api/vcard'
+      preLoaderRoute: typeof ApiVcardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/whatsapp': {
@@ -876,6 +896,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCrmRoute: ApiCrmRoute,
   ApiRestaurantRoute: ApiRestaurantRoute,
   ApiSearchRoute: ApiSearchRoute,
+  ApiVcardRoute: ApiVcardRoute,
   ApiWhatsappRoute: ApiWhatsappRoute,
   AppFounderCommandRoute: AppFounderCommandRoute,
   DevBrandRoute: DevBrandRoute,

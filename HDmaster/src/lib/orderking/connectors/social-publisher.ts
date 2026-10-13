@@ -215,25 +215,19 @@ export function dispatchSocialCampaign(
   // Sign payload
   const signature = signSocialPayload(post, secretKey);
 
-  // Compute estimated performance metrics
-  const baseReach = post.channel === "youtube_shorts" ? 18000 : post.channel === "instagram_reels" ? 12000 : 4500;
-  const impressions = Math.round(baseReach * 1.35);
-  const clicks = Math.round(impressions * 0.048);
-  const conversions = Math.round(clicks * 0.12);
-  const estimatedRoas = Number((conversions * 4.2).toFixed(2));
-
+  // Compute real dispatch payload - initialize real analytics to 0 until webhook reports actual performance
   const publishedPost: SocialPostPayload = {
     ...post,
-    status: "PUBLISHED",
+    status: "SCHEDULED",
     signature,
     dispatchedAt: new Date().toISOString(),
-    publishedUrl: `https://${post.channel.replace("_", ".")}.com/share/ok_${post.id}`,
+    publishedUrl: undefined,
     analytics: {
-      estimatedReach: baseReach,
-      impressions,
-      clicks,
-      conversions,
-      estimatedRoas,
+      estimatedReach: 0,
+      impressions: 0,
+      clicks: 0,
+      conversions: 0,
+      estimatedRoas: 0,
     },
   };
 

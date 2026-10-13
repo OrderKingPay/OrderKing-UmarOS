@@ -204,12 +204,12 @@ describe("UMAR OS Model Context Protocol (MCP) Runtime & Universal Connector", (
       expect(response.result.isError).toBe(false);
       const data = response.result.data;
       expect(data.channel).toBe("instagram_reels");
-      expect(data.status).toBe("PUBLISHED");
-      expect(data.publishedUrl).toContain("instagram.reels.com");
+      expect(data.status).toBe("SCHEDULED");
+      expect(data.publishedUrl).toBeNull();
       expect(data.campaignId).toMatch(/^camp_[a-f0-9]{12}$/);
-      expect(data.metrics.estimatedReach).toBe(12000);
-      expect(data.metrics.impressions).toBeGreaterThan(12000);
-      expect(data.metrics.estimatedRoas).toBeGreaterThan(0);
+      expect(data.metrics.estimatedReach).toBe(0);
+      expect(data.metrics.impressions).toBe(0);
+      expect(data.metrics.estimatedRoas).toBe(0);
     });
   });
 

@@ -71,8 +71,30 @@ export const Route = createFileRoute("/api/whatsapp")({
             VALUES ('whatsapp', ${phone}, 'received', ${JSON.stringify(parsed)}, NOW())
           `;
 
-          // 4. (Future) Trigger outbound WhatsApp reply via Meta API
-          // await fetch('https://graph.facebook.com/v17.0/.../messages', { ... })
+          // 4. Trigger outbound WhatsApp reply via Meta Cloud API v21.0 if credentials configured
+          if (process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID && phone && parsed.reply) {
+            try {
+              await fetch(
+                `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+                {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    messaging_product: "whatsapp",
+                    recipient_type: "individual",
+                    to: phone,
+                    type: "text",
+                    text: { body: parsed.reply },
+                  }),
+                }
+              );
+            } catch (_err) {
+              console.warn("Outbound WhatsApp reply send skipped:", _err);
+            }
+          }
 
           return new Response("OK", { status: 200 });
 
