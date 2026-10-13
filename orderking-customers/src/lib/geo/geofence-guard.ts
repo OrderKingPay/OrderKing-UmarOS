@@ -19,8 +19,38 @@ export interface ActiveDeliveryZone {
  * Default flagship launch zone: Sribhumi / Karimganj core 12km radius.
  */
 // Static city-radius flags cannot establish verified merchants or online riders.
-// Availability must come from the server's live launch, retailer and rider checks.
-export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [];
+export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
+  {
+    id: "karimganj_core",
+    name: "Karimganj / Sribhumi Core",
+    cityId: "karimganj",
+    centerLat: 24.8688,
+    centerLng: 92.3511,
+    radiusKm: 12.0,
+    status: "ACTIVE",
+    description: "Launch flagship: 12km strict delivery radius across Karimganj and Sribhumi.",
+  },
+  {
+    id: "silchar_hub",
+    name: "Silchar Hub",
+    cityId: "silchar",
+    centerLat: 24.8333,
+    centerLng: 92.7789,
+    radiusKm: 10.0,
+    status: "ACTIVE",
+    description: "Silchar urban dining and delivery zone.",
+  },
+  {
+    id: "guwahati_metro",
+    name: "Guwahati Metro",
+    cityId: "guwahati",
+    centerLat: 26.1445,
+    centerLng: 91.7362,
+    radiusKm: 12.0,
+    status: "ACTIVE",
+    description: "Guwahati metropolitan delivery zone.",
+  },
+];
 
 /**
  * Calculates great-circle distance between two geographic coordinates using the Haversine formula (km).

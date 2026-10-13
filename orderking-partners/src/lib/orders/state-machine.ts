@@ -74,12 +74,14 @@ const ALLOWED: Record<OrderState, Partial<Record<OrderState, TransitionActor[]>>
     CANCELLED: ["customer", "admin"],
   },
   READY: {
-    RIDER_ASSIGNED: ["rider", "admin", "system", "simulated_rider"],
+    RIDER_ASSIGNED: ["rider", "admin", "system", "simulated_rider", "restaurant"],
+    PICKED_UP: ["rider", "admin", "system", "simulated_rider", "restaurant"],
+    DELIVERED: ["restaurant", "admin"],
     CANCELLED: ["admin"],
     DELIVERY_FAILED: ["rider", "admin", "system"],
   },
   RIDER_ASSIGNED: {
-    PICKED_UP: ["rider", "admin", "system", "simulated_rider"],
+    PICKED_UP: ["rider", "admin", "system", "simulated_rider", "restaurant"],
     DELIVERY_FAILED: ["rider", "admin", "system"],
     CANCELLED: ["admin"],
   },

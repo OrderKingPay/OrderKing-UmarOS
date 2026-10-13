@@ -2044,7 +2044,7 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
     q.includes("kingpay only") ||
     q.includes("radius")
   ) {
-    const activeZone = ACTIVE_DELIVERY_ZONES[0];
+    const activeZone = ACTIVE_DELIVERY_ZONES[0] ?? { name: "Karimganj / Sribhumi Core", radiusKm: 12 };
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 3, label: "Querying Spatial GPS Radar", status: "COMPLETED", detail: "Enforcing 12km strict radius centered at Sribhumi / Karimganj" },
       { stepNumber: 2, totalSteps: 3, label: "Verifying Inactive Zone Quarantine", status: "COMPLETED", detail: "Food ordering masked across inactive regions; King Pay rendered exclusively" },
@@ -2076,7 +2076,7 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
   }
 
   // Open-world universal cognitive intelligence fallback: Handles medical, coding, math, science, strategy & general Q&A
-  return null;
+  return synthesizeOpenWorldCognitiveResponse(query, detectedLanguage);
 }
 
 /**

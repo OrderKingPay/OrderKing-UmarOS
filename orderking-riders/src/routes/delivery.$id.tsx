@@ -82,13 +82,27 @@ function Page() {
     }
   }
 
+  const [now, setNow] = useState(() => Date.now());
   const d = pack?.delivery;
+
+  useEffect(() => {
+    if (d?.arrivedRestaurantAt && !d?.pickedUpAt) {
+      const interval = setInterval(() => setNow(Date.now()), 15000);
+      return () => clearInterval(interval);
+    }
+  }, [d?.arrivedRestaurantAt, d?.pickedUpAt]);
+
+  const endWaitTime = d?.pickedUpAt
+    ? new Date(d.pickedUpAt).getTime()
+    : d?.arrivedRestaurantAt
+      ? now
+      : null;
   const kitchenWaitMins =
-    d?.arrivedRestaurantAt && d?.pickedUpAt
+    d?.arrivedRestaurantAt && endWaitTime
       ? Math.max(
           0,
           Math.floor(
-            (new Date(d.pickedUpAt).getTime() - new Date(d.arrivedRestaurantAt).getTime()) /
+            (endWaitTime - new Date(d.arrivedRestaurantAt).getTime()) /
               60_000,
           ),
         )
@@ -146,7 +160,7 @@ function Page() {
 
           <DeliveryActions
             delivery={d}
-            cash={null}
+            cash={pack.cash ?? null}
             simulatedOtp={pack.simulatedOtp}
             onChanged={load}
           />

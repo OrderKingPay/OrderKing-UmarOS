@@ -23,16 +23,6 @@ export interface FssaiLicenseInfo {
   category: "State License" | "Central License" | "Petty FBO Registration";
 }
 
-// Default real-world statutory data for verified Indian partner restaurants
-const DEFAULT_FSSAI_INFO: FssaiLicenseInfo = {
-  licenseNumber: "11223334000128",
-  registeredName: "OrderKing Kitchen Operations Pvt Ltd",
-  expiryDate: "2026-10-31",
-  daysRemaining: 21,
-  status: "EXPIRING_SOON",
-  category: "State License",
-};
-
 export function FssaiExpiryBanner({
   fssaiNumber,
   expiryDate,
@@ -45,25 +35,37 @@ export function FssaiExpiryBanner({
   compact?: boolean;
 }) {
   const [snoozed, setSnoozed] = useState(false);
-  const [licenseInfo, setLicenseInfo] = useState<FssaiLicenseInfo>(() => {
-    const num = fssaiNumber?.trim() || DEFAULT_FSSAI_INFO.licenseNumber;
-    const days = daysRemaining != null ? daysRemaining : DEFAULT_FSSAI_INFO.daysRemaining;
-    const exp = expiryDate || DEFAULT_FSSAI_INFO.expiryDate;
-    
+  const [licenseInfo, setLicenseInfo] = useState<FssaiLicenseInfo | null>(() => {
+    if (!fssaiNumber?.trim()) {
+      return {
+        licenseNumber: "",
+        registeredName: "Kitchen Partner",
+        expiryDate: "",
+        daysRemaining: 0,
+        status: "MISSING",
+        category: "State License",
+      };
+    }
+
+    const calculatedDays =
+      daysRemaining != null
+        ? daysRemaining
+        : expiryDate
+          ? Math.ceil((new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+          : 365;
+
     let status: FssaiLicenseInfo["status"] = "VALID";
-    if (!fssaiNumber && !DEFAULT_FSSAI_INFO.licenseNumber) {
-      status = "MISSING";
-    } else if (days <= 0) {
+    if (calculatedDays <= 0) {
       status = "EXPIRED";
-    } else if (days <= 30) {
+    } else if (calculatedDays <= 30) {
       status = "EXPIRING_SOON";
     }
 
     return {
-      licenseNumber: num,
-      registeredName: DEFAULT_FSSAI_INFO.registeredName,
-      expiryDate: exp,
-      daysRemaining: days,
+      licenseNumber: fssaiNumber.trim(),
+      registeredName: "Kitchen Partner",
+      expiryDate: expiryDate || "",
+      daysRemaining: calculatedDays,
       status,
       category: "State License",
     };
@@ -87,7 +89,7 @@ export function FssaiExpiryBanner({
     } catch (e) {}
   };
 
-  if (licenseInfo.status === "VALID") {
+  if (!licenseInfo || licenseInfo.status === "VALID") {
     return null;
   }
 

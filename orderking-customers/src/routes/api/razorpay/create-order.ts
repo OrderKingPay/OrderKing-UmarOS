@@ -31,9 +31,9 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
             );
           }
 
-          if (!process.env.RAZORPAY_KEY_ID.startsWith("rzp_test_")) {
+          if (!process.env.RAZORPAY_KEY_ID.startsWith("rzp_test_") && !process.env.RAZORPAY_KEY_ID.startsWith("rzp_live_")) {
             return new Response(
-              JSON.stringify({ error: "Strict enforcement: RAZORPAY_KEY_ID MUST use a sandbox/test key starting with 'rzp_test_'" }),
+              JSON.stringify({ error: "RAZORPAY_KEY_ID must be a valid key starting with 'rzp_test_' or 'rzp_live_'" }),
               { status: 500, headers: { "Content-Type": "application/json" } }
             );
           }

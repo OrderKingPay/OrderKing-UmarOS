@@ -13,7 +13,9 @@ export function geoUrl(point: GeoPoint): string {
  * Direct Google Maps Turn-by-Turn navigation destination URL.
  */
 export function googleNavigationUrl(point: GeoPoint): string {
-  return `https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lng}`;
+  const lat = Number(point?.lat) || 0;
+  const lng = Number(point?.lng) || 0;
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=two-wheeler`;
 }
 
 /**

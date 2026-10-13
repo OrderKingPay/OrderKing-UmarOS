@@ -80,13 +80,17 @@ function Page() {
     void getSettlementsFn().then(setSettlements).catch(() => undefined);
   }, [loadEarnings]);
 
-  const completedTrips =
-    data?.lines.filter(
-      (l) =>
-        (l.kind as string) === "DELIVERY_PAYOUT" ||
-        (l.kind as string) === "DELIVERY" ||
-        Boolean(l.orderCode),
-    ).length ?? 0;
+  const uniqueTripCodes = new Set(
+    data?.lines
+      .filter(
+        (l) =>
+          (l.kind as string) === "DELIVERY_PAYOUT" ||
+          (l.kind as string) === "DELIVERY" ||
+          Boolean(l.orderCode),
+      )
+      .map((l) => l.orderCode || `${l.kind}_${l.at}`) ?? [],
+  );
+  const completedTrips = uniqueTripCodes.size;
   const milestoneProgress = calculateDailyMilestoneProgress(completedTrips, MILESTONES);
   const nextMilestone = milestoneProgress.nextMilestone;
 

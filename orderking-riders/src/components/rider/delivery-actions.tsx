@@ -255,12 +255,14 @@ export function DeliveryActions({
             "ON_THE_WAY",
             "OUT_FOR_DELIVERY",
             "ARRIVED_AT_CUSTOMER",
+            "CUSTOMER_UNAVAILABLE",
+            "SUPPORT_ESCALATION",
           ].includes(d.state);
           const navTarget = isHeadingToCustomer ? d.dropLocation : d.pickupLocation;
           const navTargetName = isHeadingToCustomer
             ? d.customer.displayName || d.customer.area || "Customer"
             : d.restaurant.name;
-          const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${navTarget.lat},${navTarget.lng}&travelmode=two_wheeler`;
+          const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${navTarget.lat},${navTarget.lng}&travelmode=two-wheeler`;
 
           return (
             <a
@@ -416,6 +418,7 @@ export function DeliveryActions({
           <Input
             type="file"
             accept="image/jpeg,image/png,image/webp"
+            capture="environment"
             onChange={(e) => void onPhoto(e.target.files?.[0])}
           />
           <Button

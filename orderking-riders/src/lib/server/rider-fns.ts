@@ -473,7 +473,8 @@ export const getDeliveryFn = createServerFn({ method: "GET" })
       const e = await engine();
       const delivery = await e.getDelivery(context.userId, data.deliveryId);
       const simulatedOtp = await e.otpForSimulation(context.userId, data.deliveryId);
-      return { delivery, simulatedOtp };
+      const cash = await e.getStore().getCash(data.deliveryId);
+      return { delivery, simulatedOtp, cash };
     } catch (err) {
       fail(err);
     }

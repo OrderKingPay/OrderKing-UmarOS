@@ -109,6 +109,76 @@ export interface OrderRow {
   total_amount?: number | string;
 }
 
+async function loadPlatformSettingBag(sql: any): Promise<Record<string, any>> {
+  const result: Record<string, any> = {};
+  try {
+    const bagRows = await sql<{ settings_json: any }>`
+      SELECT settings_json FROM platform_settings WHERE org_id = 'org_orderking' LIMIT 1
+    `;
+    if (bagRows && bagRows.length > 0 && bagRows[0].settings_json) {
+      const parsed =
+        typeof bagRows[0].settings_json === "string"
+          ? JSON.parse(bagRows[0].settings_json)
+          : bagRows[0].settings_json;
+      if (parsed && typeof parsed === "object") {
+        Object.assign(result, parsed);
+      }
+    }
+  } catch (_e) {}
+
+  try {
+    const rows = await sql<{ key: string; value: any }>`
+      SELECT key, value FROM platform_settings WHERE key IS NOT NULL
+    `;
+    for (const r of rows || []) {
+      if (r.key && r.value) {
+        result[r.key] =
+          typeof r.value === "string" ? JSON.parse(r.value) : r.value;
+      }
+    }
+  } catch (_e) {}
+
+  return result;
+}
+
+async function savePlatformSettingBag(
+  sql: any,
+  key: string,
+  value: any,
+): Promise<void> {
+  try {
+    const existing = await sql<{ settings_json: any }>`
+      SELECT settings_json FROM platform_settings WHERE org_id = 'org_orderking' LIMIT 1
+    `;
+    let bag: Record<string, any> = {};
+    if (existing && existing.length > 0 && existing[0].settings_json) {
+      bag =
+        typeof existing[0].settings_json === "string"
+          ? JSON.parse(existing[0].settings_json)
+          : existing[0].settings_json;
+    }
+    bag[key] = value;
+    const bagStr = JSON.stringify(bag);
+
+    await sql`
+      INSERT INTO platform_settings (org_id, settings_json, updated_at)
+      VALUES ('org_orderking', ${bagStr}, NOW())
+      ON CONFLICT (org_id)
+      DO UPDATE SET settings_json = EXCLUDED.settings_json, updated_at = NOW()
+    `;
+  } catch (_e) {}
+
+  try {
+    const jsonPayload = JSON.stringify(value || {});
+    await sql`
+      INSERT INTO platform_settings (key, value, updated_at)
+      VALUES (${key}, ${jsonPayload}::jsonb, NOW())
+      ON CONFLICT (key)
+      DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()
+    `;
+  } catch (_e) {}
+}
+
 export const getUmarOSStats = createServerFn({ method: "GET" }).handler(
   async () => {
     let userCount = 0;
@@ -125,22 +195,7 @@ export const getUmarOSStats = createServerFn({ method: "GET" }).handler(
       const sql = await getSql();
 
       try {
-        await sql`
-          CREATE TABLE IF NOT EXISTS platform_settings (
-            key TEXT PRIMARY KEY,
-            value JSONB,
-            updated_at TIMESTAMPTZ DEFAULT NOW()
-          )
-        `;
-        const rows = await sql<{ key: string; value: any }>`
-          SELECT key, value FROM platform_settings
-        `;
-        for (const r of rows || []) {
-          if (r.key && r.value) {
-            savedSettings[r.key] =
-              typeof r.value === "string" ? JSON.parse(r.value) : r.value;
-          }
-        }
+        savedSettings = await loadPlatformSettingBag(sql);
       } catch (_e) {}
 
       try {
@@ -227,21 +282,7 @@ export const saveUmarOsSettingsFn = createServerFn({ method: "POST" })
 
     try {
       const sql = await getSql();
-      await sql`
-        CREATE TABLE IF NOT EXISTS platform_settings (
-          key TEXT PRIMARY KEY,
-          value JSONB,
-          updated_at TIMESTAMPTZ DEFAULT NOW()
-        )
-      `;
-
-      const jsonPayload = JSON.stringify(data.settings || {});
-      await sql`
-        INSERT INTO platform_settings (key, value, updated_at)
-        VALUES (${data.worldId}, ${jsonPayload}::jsonb, NOW())
-        ON CONFLICT (key)
-        DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()
-      `;
+      await savePlatformSettingBag(sql, data.worldId, data.settings);
     } catch (_e) {}
 
     return {
@@ -414,25 +455,15 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
       if (sql) {
         try {
           if (updatedComm !== null) {
-            const patch = JSON.stringify({
+            await savePlatformSettingBag(sql, "world_kingpay", {
               restaurantCommissionPct: updatedComm,
             });
-            await sql`
-              INSERT INTO platform_settings (key, value, updated_at)
-              VALUES ('world_kingpay', ${patch}::jsonb, NOW())
-              ON CONFLICT (key) DO UPDATE SET value = platform_settings.value || ${patch}::jsonb, updated_at = NOW()
-            `;
           }
           if (updatedFee !== null || updatedRain !== null) {
             const patchObj: Record<string, any> = {};
             if (updatedFee !== null) patchObj.baseDeliveryFeeInr = updatedFee;
             if (updatedRain !== null) patchObj.rainBonusInr = updatedRain;
-            const patch = JSON.stringify(patchObj);
-            await sql`
-              INSERT INTO platform_settings (key, value, updated_at)
-              VALUES ('world_orderking', ${patch}::jsonb, NOW())
-              ON CONFLICT (key) DO UPDATE SET value = platform_settings.value || ${patch}::jsonb, updated_at = NOW()
-            `;
+            await savePlatformSettingBag(sql, "world_orderking", patchObj);
           }
         } catch (_e) {}
       }
@@ -564,21 +595,15 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
 
       if (sql) {
         try {
-          const curRows = await sql<{ value: any }>`
-            SELECT value FROM platform_settings WHERE key = 'world_alerts_custom'
-          `;
-          const cur = curRows?.[0]?.value || { items: [] };
+          const settings = await loadPlatformSettingBag(sql);
+          const cur = settings.world_alerts_custom || { items: [] };
           const items = Array.isArray(cur.items)
             ? [newAlert, ...cur.items]
             : [newAlert];
-          await sql`
-            INSERT INTO platform_settings (key, value, updated_at)
-            VALUES ('world_alerts_custom', ${JSON.stringify({
-              items,
-              resolvedIds: cur.resolvedIds || [],
-            })}::jsonb, NOW())
-            ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()
-          `;
+          await savePlatformSettingBag(sql, "world_alerts_custom", {
+            items,
+            resolvedIds: cur.resolvedIds || [],
+          });
         } catch (_e) {}
       }
 

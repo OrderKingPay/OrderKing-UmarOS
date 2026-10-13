@@ -84,6 +84,7 @@ function Root() {
         () => {
           console.log("[Realtime] Inventory changed, invalidating catalog");
           queryClient.invalidateQueries({ queryKey: ["catalog"] });
+          queryClient.invalidateQueries({ queryKey: ["menu"] });
           queryClient.invalidateQueries({ queryKey: ["dashboard"] });
         }
       )

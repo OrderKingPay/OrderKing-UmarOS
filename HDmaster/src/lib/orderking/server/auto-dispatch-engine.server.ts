@@ -51,9 +51,10 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
       // 1. Fetch unassigned active orders WITH restaurant coordinates
       const unassignedOrders = await tx<{ id: string, org_id: string, status: string, restaurant_id: string, rst_lat: number, rst_lng: number }>`
         SELECT o.id, o.org_id, o.status, o.restaurant_id,
-               COALESCE(o.delivery_lat, 24.869)::float as rst_lat,
-               COALESCE(o.delivery_lng, 92.359)::float as rst_lng
+               COALESCE(r.lat, 24.8688)::float as rst_lat,
+               COALESCE(r.lng, 92.3511)::float as rst_lng
         FROM orders o
+        LEFT JOIN restaurants r ON r.id = o.restaurant_id
         WHERE o.status IN ('PREPARING', 'READY', 'placed', 'confirmed')
           AND o.rider_id IS NULL
         ORDER BY o.placed_at ASC
@@ -75,9 +76,9 @@ export async function runAlgorithmicAutoDispatch(): Promise<AutoDispatchResult> 
 
       // 3. AI Dispatch Matching (Closest Proximity + Capacity)
       for (const order of unassignedOrders) {
-        // If the restaurant is missing coordinates, fallback to default center (execute for safety)
-        const rstLat = order.rst_lat || 20.5937; // Center of India fallback
-        const rstLng = order.rst_lng || 78.9629; 
+        // If the restaurant is missing coordinates, fallback to Karimganj core center
+        const rstLat = order.rst_lat || 24.8688;
+        const rstLng = order.rst_lng || 92.3511; 
 
         let bestRiderId: string | null = null;
         let bestDistance = Infinity;
