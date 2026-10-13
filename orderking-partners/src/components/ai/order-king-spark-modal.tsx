@@ -453,9 +453,9 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
         {
           id: `spark-throttle-${Date.now()}`,
           sender: "spark",
-          text: `Confirmed by merchant: Kitchen preparation time updated to ${res.prepMinutes} mins (${
-            mode === "RUSH" ? "Peak Rush 35m" : "Standard Prep 20m"
-          }).`,
+          text: `Confirmed by merchant: Kitchen preparation time updated to ${
+            mode === "RUSH" ? "35 mins (Peak Rush)" : "20 mins (Standard Prep)"
+          }.`,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           provenanceNote: "Applied only after explicit merchant confirmation.",
         },

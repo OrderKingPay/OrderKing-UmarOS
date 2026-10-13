@@ -100,7 +100,6 @@ function NotificationsPage() {
   return (
     <VendorShell
       title={t("nav.notifications")}
-      subtitle="Real-time operational, settlement, and statutory compliance alerts with 1-tap self-service resolution"
       dataLabel={vendor.dataLabel}
     >
       {/* Active Notification Channels & Self-Service Quick Links */}

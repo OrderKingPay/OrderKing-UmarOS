@@ -682,7 +682,7 @@ function AssistantPage() {
       ``,
       `2. ${lang.payoutHeader}:`,
       `   • Current Unsettled Payable: ${currentPayable} (Today's Accrued: ${formatINR(dash.data?.today.settlementPaise ?? 0)})`,
-      `   • Latest Batch: ${latestBatch ? `${formatINR(latestBatch.totalPayablePaise)} (${latestBatch.status} · ${latestBatch.scheduled_for.slice(0, 10)})` : "Next scheduled NEFT/IMPS cycle"}`,
+      `   • Latest Batch: ${latestBatch ? `${formatINR(latestBatch.totalPayablePaise)} (${latestBatch.status} · ${latestBatch.scheduled_for ? latestBatch.scheduled_for.slice(0, 10) : "Pending"})` : "Next scheduled NEFT/IMPS cycle"}`,
       `   • Formula: (Food + Packing − Restaurant Discount) − Commission + Platform Promo − Refunds − Statutory Taxes (CGST §9(5) 5%, TCS §52 0.5%, TDS §194-O 0.1%)`,
       ``,
       `3. ${lang.menuHeader} (Storefront Score: ${menuAudit.storefrontConversionScore}%):`,
@@ -746,9 +746,9 @@ function AssistantPage() {
       });
       setConfirmThrottleMode(null);
       setActionBanner(
-        `Confirmed by merchant: Kitchen preparation time updated to ${res.prepMinutes} mins (${
-          mode === "RUSH" ? "Peak Rush Mode" : "Standard Prep Mode"
-        }).`
+        `Confirmed by merchant: Kitchen preparation time updated to ${
+          mode === "RUSH" ? "35 mins (Peak Rush)" : "20 mins (Standard Prep)"
+        }.`
       );
       await Promise.all([
         qc.invalidateQueries({ queryKey: ["dashboard"] }),
@@ -1519,7 +1519,7 @@ function AssistantPage() {
                   </span>
                 </div>
                 {dash.data && dash.data.verificationStatus !== "VERIFIED" ? (
-                  <Link to="/kyc" className="text-[11px] font-semibold text-amber-400 underline">
+                  <Link to="/onboarding" className="text-[11px] font-semibold text-amber-400 underline">
                     Complete KYC →
                   </Link>
                 ) : null}
@@ -1538,7 +1538,7 @@ function AssistantPage() {
                   </span>
                 </div>
                 {!hasValidFssai ? (
-                  <Link to="/kyc" className="text-[11px] font-semibold text-amber-400 underline">
+                  <Link to="/onboarding" className="text-[11px] font-semibold text-amber-400 underline">
                     Update FSSAI →
                   </Link>
                 ) : null}
@@ -1627,7 +1627,7 @@ function AssistantPage() {
                 </div>
                 <div className="text-[10px] text-muted">
                   {latestBatch
-                    ? `Status: ${latestBatch.status} · Scheduled: ${latestBatch.scheduled_for.slice(0, 10)}`
+                    ? `Status: ${latestBatch.status} · Scheduled: ${latestBatch.scheduled_for ? latestBatch.scheduled_for.slice(0, 10) : "Pending"}`
                     : "Weekly NEFT/IMPS cycle"}
                 </div>
               </div>
@@ -1905,7 +1905,7 @@ function AssistantPage() {
                 </div>
               </Link>
               <Link
-                to="/devices"
+                to="/kitchen"
                 className="rounded-lg border border-line bg-surface p-2.5 hover:bg-surface-2 transition"
               >
                 <div className="font-bold text-ink">🖨️ 80mm ESC/POS &amp; KOT</div>
@@ -1914,7 +1914,7 @@ function AssistantPage() {
                 </div>
               </Link>
               <Link
-                to="/audit"
+                to="/analytics"
                 className="rounded-lg border border-line bg-surface p-2.5 hover:bg-surface-2 transition"
               >
                 <div className="font-bold text-ink">🔒 Immutable Audit Trail</div>
