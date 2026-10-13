@@ -52,7 +52,7 @@ export function SupportPage() {
   const [chatMessages, setChatMessages] = useState<AiChatMessage[]>([
     {
       role: "assistant",
-      content: "Hello! I am your OrderKing 24x7 Intelligent Assistant. How can I help you today? You can ask about your order tracking, ₹50 late delivery compensation, 0% interest KingPay Later, LPG cylinder bookings, refunds, or official regulatory ombudsman contacts.",
+      content: "Hello! I can help you find recorded order information and explain how to submit a support request. Chat does not issue refunds, award credits or make bookings. Sign in for help with your account.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -80,6 +80,7 @@ export function SupportPage() {
   const recentOrders = orders.data?.orders ?? [];
 
   const handleSendChat = async (textToSend?: string) => {
+    if (!user) { toast.error("Sign in for account support."); return; }
     const q = (textToSend ?? chatInput).trim();
     if (!q || isChatting) return;
     const userMsg: AiChatMessage = {
@@ -129,7 +130,7 @@ export function SupportPage() {
         },
       });
       setResolution(res);
-      toast.success("Resolution processed!");
+      toast.success(res.title);
       void tickets.refetch();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to resolve issue");
@@ -160,16 +161,16 @@ export function SupportPage() {
               <div>
                 <div className="flex items-center gap-1.5">
                   <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                    24x7 Live
+                    Support guide
                   </span>
-                  <span className="text-[10px] text-muted">Zero Wait Time</span>
+                  <span className="text-[10px] text-muted">Availability may vary</span>
                 </div>
                 <h2 className="font-display text-lg font-bold text-fg">
                   OrderKing Intelligent AI Assistant
                 </h2>
               </div>
             </div>
-            <span className="text-xs text-muted">Instant Q&A & Policy Bot</span>
+            <span className="text-xs text-muted">Read-only guidance</span>
           </div>
 
           {/* Chat Messages Log */}
@@ -239,17 +240,17 @@ export function SupportPage() {
           <div className="mt-3 flex flex-wrap gap-1.5">
             <button
               type="button"
-              onClick={() => void handleSendChat("Where is my order and how does the ₹50 delay credit work?")}
+              onClick={() => void handleSendChat("How can I check my recorded order status?")}
               className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] font-medium hover:border-primary/50 transition"
             >
-              ⚡ ₹50 Late Guarantee
+              Order status
             </button>
             <button
               type="button"
-              onClick={() => void handleSendChat("What is KingPay Later and how is it 0% interest?")}
+              onClick={() => void handleSendChat("Which King Pay services are currently available?")}
               className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] font-medium hover:border-primary/50 transition"
             >
-              💳 KingPay Later (0% Interest)
+              King Pay availability
             </button>
             <button
               type="button"
@@ -260,7 +261,7 @@ export function SupportPage() {
             </button>
             <button
               type="button"
-              onClick={() => void handleSendChat("How do I cancel my order and get an instant refund?")}
+              onClick={() => void handleSendChat("How do I submit a cancellation or refund request?")}
               className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] font-medium hover:border-primary/50 transition"
             >
               🛑 Cancellation & Refunds
@@ -288,31 +289,14 @@ export function SupportPage() {
             </button>
             <button
               type="button"
-              onClick={() => void handleSendChat("I want to speak with executive support regarding my delivery.")}
+              onClick={() => void handleSendChat("How can I record a support request about my delivery?")}
               className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-800 dark:text-emerald-300 hover:bg-[#D4AF37]/10 transition"
             >
-              🎧 Talk to Support Executive
+              Record a support request
             </button>
           </div>
 
-          {/* WhatsApp Automated 24x7 Support Banner */}
-          <div className="mt-3 flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="text-xl">💬</span>
-              <div>
-                <p className="font-bold text-emerald-900 dark:text-emerald-200">Prefer WhatsApp Support?</p>
-                <p className="text-[11px] text-muted">Chat 24x7 with OrderKing AI Assistant on WhatsApp (Zero wait time)</p>
-              </div>
-            </div>
-            <a
-              href="https://wa.me/919223166166?text=Hi%20OrderKing%20Support%20I%20need%20help%20with%20my%20order"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md bg-emerald-600 hover:bg-emerald-700 px-3 py-1 text-[11px] font-bold text-fg shadow-xs transition"
-            >
-              Open WhatsApp ↗
-            </a>
-          </div>
+          <p className="mt-3 text-xs text-muted">External support channels are not verified yet. Use the support request form below after signing in.</p>
 
           {/* Chat Input Bar */}
           <form
@@ -328,9 +312,9 @@ export function SupportPage() {
               placeholder="Ask anything about orders, KingPay, recharges, refunds, or ombudsman..."
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              disabled={isChatting}
+              disabled={isChatting || !user}
             />
-            <Button size="sm" type="submit" disabled={isChatting || !chatInput.trim()}>
+            <Button size="sm" type="submit" disabled={isChatting || !user || !chatInput.trim()}>
               Send
             </Button>
           </form>
@@ -343,10 +327,10 @@ export function SupportPage() {
             <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
               AI Support Bot
             </span>
-            <h2 className="font-display text-lg font-bold">Instant Order Diagnostics & Resolution</h2>
+            <h2 className="font-display text-lg font-bold">Order status and support requests</h2>
           </div>
           <p className="mt-1 text-xs text-muted">
-            Automated instant resolution for delays, missing items, cancellations, and delivery disputes.
+            Check recorded status or save a request for review. Refunds and cancellations require confirmation; submitting a request does not complete them.
           </p>
 
           {/* 1-Tap Quick Action Diagnostics Chips (Zomato-Style) */}
@@ -376,7 +360,7 @@ export function SupportPage() {
                   void triggerQuickResolve("cancel_order");
                 }}
               >
-                🛑 Cancel order
+                Request cancellation
               </Button>
               <Button
                 type="button"
@@ -444,8 +428,8 @@ export function SupportPage() {
                   value={issueType}
                   onChange={(e) => setIssueType(e.target.value as SupportIssueType)}
                 >
-                  <option value="where_order">Where is my order? (Check live ETA & delay)</option>
-                  <option value="cancel_order">Cancel this order</option>
+                  <option value="where_order">Where is my order? (Recorded status)</option>
+                  <option value="cancel_order">Request cancellation</option>
                   <option value="missing_item">Missing items in my delivery</option>
                   <option value="food_spilled">Food spilled or damaged package</option>
                   <option value="food_cold">Food arrived cold or poor quality</option>
@@ -469,7 +453,7 @@ export function SupportPage() {
                 disabled={isDiagnosing}
                 className="w-full sm:w-auto"
               >
-                {isDiagnosing ? "Diagnosing order..." : "⚡ Get Instant Resolution"}
+                {isDiagnosing ? "Diagnosing order..." : "Check status or record request"}
               </Button>
             </div>
           ) : (
@@ -488,16 +472,12 @@ export function SupportPage() {
                 </span>
               </div>
               <p className="mt-2 text-sm text-fg leading-relaxed">{resolution.explanation}</p>
-              {resolution.compensationPaise ? (
-                <div className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-success/15 px-3 py-1.5 text-xs font-semibold text-success">
-                  🎁 ₹{Math.round(resolution.compensationPaise / 100)} credited to your loyalty rewards!
-                </div>
-              ) : null}
+
             </div>
           ) : null}
         </div>
 
-        {/* Official Statutory Grievance & Government Ombudsman Hub */}
+        {/* Official complaint resources Hub */}
         <div className="rounded-[var(--radius-xl)] border border-border bg-surface p-5 shadow-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -509,12 +489,12 @@ export function SupportPage() {
                   Official Statutory Grievance & Government Ombudsman
                 </h2>
                 <p className="text-xs text-muted">
-                  Direct legal escalation under Consumer Protection Rules, RBI Directives & FSSAI Guidelines
+                  Visit the official websites for procedures and eligibility.
                 </p>
               </div>
             </div>
             <span className="rounded-full bg-surface-2 px-2.5 py-0.5 text-[10px] font-bold uppercase text-muted">
-              Zero Headache · 100% Legal
+              Official websites
             </span>
           </div>
 
@@ -557,7 +537,7 @@ export function SupportPage() {
                 </p>
               </div>
               <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/50 text-xs">
-                <span className="text-muted">Direct Escalation</span>
+                <span className="text-muted">Eligibility applies</span>
                 <a
                   href="https://cms.rbi.org.in"
                   target="_blank"
@@ -627,7 +607,7 @@ export function SupportPage() {
                   <span className="text-xs">⚡</span>
                 </div>
                 <p className="mt-1 text-xs text-muted">
-                  National Payments Corporation of India. Instant dispute resolution for UPI transfers and BBPS.
+                  National Payments Corporation of India. Information about UPI complaints and dispute procedures.
                 </p>
               </div>
               <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/50 text-xs">
@@ -647,20 +627,20 @@ export function SupportPage() {
             <div className="rounded-xl border border-border bg-surface-2/40 p-3.5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-fg">Statutory Grievance Officer</span>
+                  <span className="text-sm font-semibold text-fg">OrderKing contact details</span>
                   <span className="text-xs">📜</span>
                 </div>
                 <p className="mt-1 text-xs text-muted">
-                  OrderKing Foods Pvt Ltd · Designated Grievance Redressal Officer under IT & E-Commerce Rules.
+                  Verified business and grievance contact details must be published before public launch.
                 </p>
               </div>
               <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/50 text-xs">
-                <span className="text-muted">SLA: 48 Hours</span>
+                <span className="text-muted">Not yet verified</span>
                 <a
-                  href="mailto:grievance@orderking.in"
+                  href="#support-request"
                   className="font-bold text-primary hover:underline"
                 >
-                  grievance@orderking.in ↗
+                  Support request form
                 </a>
               </div>
             </div>
@@ -668,7 +648,7 @@ export function SupportPage() {
         </div>
 
         {/* Standard Manual Ticket Submission */}
-        <div className="mt-8">
+        <div id="support-request" className="mt-8">
           <h2 className="font-display text-xl">Submit Support Ticket</h2>
           <form
             className="mt-4 space-y-3"

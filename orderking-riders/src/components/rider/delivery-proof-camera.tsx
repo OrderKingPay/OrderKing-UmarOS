@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Camera, CheckCircle2, ShieldCheck, X, Image as ImageIcon, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,13 +18,34 @@ export function DeliveryProofCamera({
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [customerNote, setCustomerNote] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleSimulateCapture = () => {
-    // Simulated camera capture of doorstep package
-    const simulatedPhoto =
-      "https://images.unsplash.com/photo-1526367790999-0150786686a2?auto=format&fit=crop&w=400&q=80";
-    setPhotoPreview(simulatedPhoto);
-    toast.success("Doorstep photo captured!");
+  const handleTriggerCamera = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Photo too large (maximum 10MB)");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setPhotoPreview(reader.result);
+        toast.success("Doorstep photo captured!");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleClearPhoto = () => {
+    setPhotoPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleConfirmProof = () => {
@@ -52,6 +73,15 @@ export function DeliveryProofCamera({
         </p>
       </div>
 
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
       {/* Viewfinder Preview */}
       <div className="relative aspect-4/3 w-full rounded-xl border border-dashed border-border bg-surface-2 flex items-center justify-center overflow-hidden">
         {photoPreview ? (
@@ -59,20 +89,20 @@ export function DeliveryProofCamera({
             <img src={photoPreview} alt="Delivery Proof" className="size-full object-cover" />
             <button
               type="button"
-              onClick={() => setPhotoPreview(null)}
+              onClick={handleClearPhoto}
               className="absolute top-2 right-2 rounded-full bg-black/70 p-1 text-white hover:bg-black"
             >
               <X className="size-4" />
             </button>
             <div className="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-[10px] text-white font-mono">
-              GPS Verified · {new Date().toLocaleTimeString()}
+              Camera Verified · {new Date().toLocaleTimeString()}
             </div>
           </>
         ) : (
           <div className="text-center p-4 space-y-2">
             <Camera className="size-8 mx-auto text-muted/60" />
             <p className="text-xs text-muted">No photo captured yet</p>
-            <Button size="sm" onClick={handleSimulateCapture} className="text-xs gap-1.5">
+            <Button size="sm" onClick={handleTriggerCamera} className="text-xs gap-1.5">
               <Camera className="size-3.5" /> Capture Doorstep Photo
             </Button>
           </div>

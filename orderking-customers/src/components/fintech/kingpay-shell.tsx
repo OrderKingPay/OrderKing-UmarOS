@@ -52,7 +52,7 @@ export function KingPayShell({
     <motion.div layout className="min-h-screen bg-gradient-to-tr from-slate-950 via-[#0a0a0f] to-indigo-950 text-slate-50 flex flex-col antialiased selection:bg-amber-400 selection:text-black">
       {/* PURE FINTECH DEDICATED KINGPAY TOP APP BAR */}
       <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur-3xl shadow-2xl">
-        <div className="mx-auto flex max-w-lg md:max-w-5xl items-center justify-between gap-3">
+        <div className="mx-auto flex max-w-lg flex-wrap items-center justify-between gap-3 md:max-w-5xl">
           {/* KingPay Brand Identity */}
           <div className="flex items-center gap-2.5">
             <KingPayMark className="size-9 rounded-xl shadow-md" />
@@ -73,7 +73,7 @@ export function KingPayShell({
           </div>
 
           {/* Right Controls: Wallet Balance, Travel Shortcut & Notifications */}
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
             {/* Wealth & Affiliate Quick Pill */}
             <button
               type="button"

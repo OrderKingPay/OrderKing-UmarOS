@@ -61,7 +61,7 @@ export function CustomerConciergeDrawer({
         <div className="flex items-center justify-between gap-3 border-b border-amber-400/20 bg-gradient-to-r from-emerald-950 to-slate-950 px-5 py-4">
           <div>
             <p className="flex items-center gap-2 text-sm font-bold text-amber-200"><Crown className="size-5" /> King Assist</p>
-            <h2 className="mt-1 text-lg font-bold">OrderKing AI Concierge</h2>
+            <h2 className="mt-1 text-lg font-bold text-white">OrderKing AI Concierge</h2>
             <p className="text-xs text-slate-300">Read-only assistance · No payments or settings changes</p>
           </div>
           {!embedded && (

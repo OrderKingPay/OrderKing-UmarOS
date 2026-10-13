@@ -397,22 +397,12 @@ export function DeliveryActions({
             </div>
           ) : null}
 
-          {simulatedOtp ? (
-            <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs">
-              <span>
-                Customer Handover Verification PIN:{" "}
-                <strong className="font-mono text-sm">{simulatedOtp}</strong>
-              </span>
-              <Button
-                size="sm"
-                variant="outline"
-                type="button"
-                onClick={() => setOtp(simulatedOtp)}
-              >
-                Use Handover PIN
-              </Button>
-            </div>
-          ) : null}
+          <div className="rounded-lg border border-sky-500/30 bg-sky-500/10 p-3 text-xs text-sky-950 dark:text-sky-200">
+            <p className="font-semibold">🤝 Customer Handover Verification</p>
+            <p className="mt-0.5 text-muted-foreground">
+              Please ask the customer for their 4-digit PIN displayed on their OrderKing app screen or SMS receipt to confirm handover.
+            </p>
+          </div>
 
           <Label>{t("enterOtp")}</Label>
           <Input

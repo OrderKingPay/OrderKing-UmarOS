@@ -71,7 +71,7 @@ function AccountPage() {
           </form>
         )}
 
-        {/* KINGPAY SOVEREIGN FINTECH & VEHICLE GARAGE */}
+        {/* KINGPAY WALLET & VEHICLE GARAGE */}
         <section className="mt-8 overflow-hidden rounded-2xl border-2 border-amber-500/50 bg-gradient-to-br from-emerald-950/20 via-surface to-amber-500/15 p-5 shadow-lg relative group">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -92,7 +92,7 @@ function AccountPage() {
                   </span>
                 </div>
                 <p className="text-xs text-muted mt-0.5">
-                  Sovereign Wallet, Vehicle Garage &amp; BBPS Utilities
+                  King Pay Wallet, Vehicle Garage &amp; Bill Payments
                 </p>
               </div>
             </div>

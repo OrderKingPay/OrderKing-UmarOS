@@ -326,7 +326,7 @@ export function TravelPage() {
       <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8 space-y-6">
         <TravelCategoryDeck onChoose={setActiveTab} />
 
-        {/* Sovereign Travel & Mobility Header Hero */}
+        {/* OrderKing Travel & Stays Header Hero */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-amber-500/30">
           <div className="absolute top-0 right-0 -mr-12 -mt-12 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -334,7 +334,7 @@ export function TravelPage() {
             <div>
               <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 border border-amber-400/40 px-3 py-1 text-xs font-black text-amber-300 mb-3 shadow-xs">
                 <span>👑</span>
-                <span>OrderKing Sovereign Travel &amp; Mobility Desk</span>
+                <span>OrderKing Travel, Stays &amp; Flights Hub</span>
                 <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 text-[10px] font-extrabold ml-1">
                   Direct Partner Handoff
                 </span>

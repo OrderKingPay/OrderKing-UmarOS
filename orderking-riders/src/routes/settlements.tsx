@@ -425,7 +425,7 @@ function SettlementsDesk() {
                 <Button
                   key={p}
                   size="sm"
-                  variant={preset === p ? "primary" : "outline"}
+                  variant={preset === p ? "default" : "outline"}
                   onClick={() => setPreset(p)}
                 >
                   {t(p === "week" ? "thisWeek" : p === "month" ? "thisMonth" : p)}
@@ -568,7 +568,7 @@ function SettlementsDesk() {
 
                     <Button
                       size="sm"
-                      variant={isConfirmed ? "outline" : "primary"}
+                      variant={isConfirmed ? "outline" : "default"}
                       disabled={confirmingId === s.id || isConfirmed}
                       onClick={() => void confirmSettlementSeenFn(s)}
                     >

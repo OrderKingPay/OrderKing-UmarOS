@@ -17,39 +17,37 @@ import {
 import { askAssistantFn } from "@/lib/server/assistant";
 import { useEffect, useState, type FormEvent } from "react";
 
+import { LOCALE_LABELS } from "@/lib/rider/i18n";
+
 export const Route = createFileRoute("/assistant")({ component: Page });
 
 const SPEECH_LANG_MAP: Record<LocaleCode, string> = {
   en: "en-IN",
   hi: "hi-IN",
   bn: "bn-IN",
-  as: "as-IN",
-  ta: "ta-IN",
   te: "te-IN",
+  mr: "mr-IN",
+  ta: "ta-IN",
+  ur: "ur-IN",
+  gu: "gu-IN",
   kn: "kn-IN",
   ml: "ml-IN",
-  mr: "mr-IN",
-  gu: "gu-IN",
-  pa: "pa-IN",
   or: "or-IN",
-  ur: "ur-IN",
+  pa: "pa-IN",
+  as: "as-IN",
+  mai: "hi-IN",
+  sat: "hi-IN",
+  ks: "ur-IN",
+  ne: "ne-NP",
+  sd: "hi-IN",
+  kok: "mr-IN",
+  doi: "hi-IN",
+  mni: "bn-IN",
+  brx: "as-IN",
+  sa: "hi-IN",
 };
 
-const LOCALE_LABEL_MAP: Record<LocaleCode, string> = {
-  en: "English (India)",
-  hi: "हिन्दी (Hindi)",
-  bn: "বাংলা (Bengali)",
-  as: "অসমীয়া (Assamese)",
-  ta: "தமிழ் (Tamil)",
-  te: "తెలుగు (Telugu)",
-  kn: "ಕನ್ನಡ (Kannada)",
-  ml: "മലയാളം (Malayalam)",
-  mr: "मराठी (Marathi)",
-  gu: "ગુજરાતી (Gujarati)",
-  pa: "ਪੰਜਾਬੀ (Punjabi)",
-  or: "ଓଡ଼ିଆ (Odia)",
-  ur: "اردو (Urdu)",
-};
+const LOCALE_LABEL_MAP: Record<LocaleCode, string> = LOCALE_LABELS;
 
 const COD_FLOAT_LIMIT_PAISE = 250_000; // ₹2,500 COD float ceiling
 
