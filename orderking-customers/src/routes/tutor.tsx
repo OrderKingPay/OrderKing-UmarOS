@@ -754,12 +754,12 @@ function IntelligencePage() {
               </div>
               <div>
                 <h1 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-1.5 leading-none">
-                  LearnKing &amp; JobKing · Skills &amp; Careers
+                  LearnKing · JobKing Verified Careers
                 </h1>
                 <p className="text-[10px] text-zinc-400 font-medium mt-1 leading-none">
                   {mode === "tutor"
-                    ? "LearnKing: 23-Language Courses & Board Tutor (CBSE, Coding, Spoken English)"
-                    : "JobKing: Verified Career & Role Board (Delivery, Kitchens, Logistics & Operations)"}
+                    ? "LearnKing: 23-Language Courses, School Boards, Coding & Spoken English"
+                    : "JobKing: Verified Hiring for Delivery Partners, Cooks, Managers & Digital Work"}
                 </p>
               </div>
             </div>

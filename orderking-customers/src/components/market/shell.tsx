@@ -226,25 +226,25 @@ export function CustomerShell({
           {/* 1. OrderKing — food ordering is the primary destination */}
           <NavItem to="/" icon={House} label="OrderKing" active={path === "/"} />
 
-          {/* 2. LearnKing — 23-language tutor & skills */}
+          {/* 2. LearnKing — Tutor & Language Courses */}
           <NavItem to="/tutor" icon={GraduationCap} label="LearnKing" active={path.startsWith("/tutor")} />
 
-          {/* 3. King Pay — central wallet & UPI hub */}
+          {/* 3. King Pay / OrderKing */}
           <KingPayCenterItem
             active={path.startsWith("/king-pay")}
             isKingPayPage={false}
           />
 
-          {/* 4. TravelKing — flights, trains & hotels */}
+          {/* 4. TravelKing — Stays & Flights */}
           <NavItem to="/travel" icon={Plane} label="TravelKing" active={path.startsWith("/travel")} />
 
-          {/* 5. Contextual action: JobKing in Tutor, My Trips in Travel, Support in Support, Orders in Food */}
+          {/* 5. Contextual action: show food orders in Delivery, JobKing in Tutor, Trips in Travel, AI Support in Support */}
           {path.startsWith("/tutor") ? (
             <NavItem to="/tutor" hash="jobs" icon={Briefcase} label="JobKing" active={currentHash.replace(/^#/, "") === "jobs"} />
           ) : path.startsWith("/travel") ? (
             <NavItem to="/travel/trips" icon={Luggage} label="My Trips" active={path.startsWith("/travel/trips")} />
           ) : path.startsWith("/support") ? (
-            <NavItem to="/support" icon={ClipboardList} label="Support" active={path.startsWith("/support")} />
+            <NavItem to="/support" icon={ClipboardList} label="AI Support" active={path.startsWith("/support")} />
           ) : (
             <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
           )}

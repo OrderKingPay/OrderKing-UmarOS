@@ -333,14 +333,14 @@ export function TravelPage() {
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 border border-amber-400/40 px-3 py-1 text-xs font-black text-amber-300 mb-3 shadow-xs">
-                <span>👑</span>
-                <span>TravelKing · Flights, Trains &amp; Stays</span>
+                <span>✈️</span>
+                <span>TravelKing · Stays &amp; Flights Hub</span>
                 <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 text-[10px] font-extrabold ml-1">
                   Direct Partner Handoff
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                TravelKing · Flights, Stays &amp; My Trips
+                TravelKing · Flights, Stays &amp; Trips
               </h1>
               <p className="mt-1 text-xs sm:text-sm text-slate-300 max-w-xl">
                 Compare flights, Indian Railways trains, verified stays, airport transfers, and NETC highway tools, or organize your live PNR and booking references in one place.
