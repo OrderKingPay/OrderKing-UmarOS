@@ -754,12 +754,12 @@ function IntelligencePage() {
               </div>
               <div>
                 <h1 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-1.5 leading-none">
-                  Academic &amp; Skill Tutor · Verified Jobs Board
+                  LearnKing &amp; JobKing · Skills &amp; Careers
                 </h1>
                 <p className="text-[10px] text-zinc-400 font-medium mt-1 leading-none">
                   {mode === "tutor"
-                    ? "Categorized AI Tutoring (School Boards, Coding & AI, Spoken English, Competitive Exams)"
-                    : "Verified Career & Role Board (Delivery, Culinary, Retail Operations & Remote Contracts)"}
+                    ? "LearnKing: 23-Language Courses & Board Tutor (CBSE, Coding, Spoken English)"
+                    : "JobKing: Verified Career & Role Board (Delivery, Kitchens, Logistics & Operations)"}
                 </p>
               </div>
             </div>
@@ -776,7 +776,7 @@ function IntelligencePage() {
                 }`}
               >
                 <GraduationCap className="size-3.5" />
-                <span>AI Tutor</span>
+                <span>LearnKing</span>
               </button>
               <button
                 type="button"
@@ -788,7 +788,7 @@ function IntelligencePage() {
                 }`}
               >
                 <Briefcase className="size-3.5" />
-                <span>Verified Jobs</span>
+                <span>JobKing</span>
                 <span className="rounded-full bg-emerald-400/20 text-emerald-300 text-[9px] px-1.5 font-extrabold">
                   {VERIFIED_JOB_OPENINGS.length} Roles
                 </span>
