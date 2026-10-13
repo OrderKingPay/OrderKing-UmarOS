@@ -28,7 +28,9 @@ import { OrderKingMark } from "./mark";
 import { useT } from "./use-t";
 import { useVendor } from "./use-vendor";
 import { useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { OrderKingSparkModal } from "./ai/order-king-spark-modal";
+import { PartnerFloatingBottomNav } from "./navigation/partner-bottom-nav";
 import type { AppLanguage } from "@/lib/platform-config";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
 
@@ -67,9 +69,11 @@ export function VendorShell({
   const t = useT();
   const { user, isPending } = useCurrentUserState();
   const vendor = useVendor();
+  const qc = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const lang = useClientState((s) => s.lang);
   const setLang = useClientState((s) => s.setLang);
+  const setRestaurantId = useClientState((s) => s.setRestaurantId);
   const role = vendor.role;
   const primary = PRIMARY_NAV.filter((item) => !role || can(role, item.perm));
   const more = MORE_NAV.filter((item) => !role || can(role, item.perm));
@@ -134,6 +138,31 @@ export function VendorShell({
               <h1 className="hidden font-display text-2xl md:block">{title}</h1>
             </div>
             <div className="flex items-center gap-2">
+              {/* UmarOS Multi-Outlet Profile Router (Instant Branch Switcher) */}
+              {vendor.memberships.length > 0 && (
+                <div className="relative">
+                  <select
+                    className="h-11 appearance-none rounded-[12px] border border-emerald-500/30 bg-emerald-950/40 backdrop-blur-xl pl-8 pr-7 text-xs font-semibold text-emerald-300 outline-none transition-colors hover:bg-emerald-900/50 hover:border-emerald-500/60 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 max-w-[140px] sm:max-w-[200px] truncate cursor-pointer"
+                    value={vendor.restaurantId ?? ""}
+                    onChange={(e) => {
+                      const newId = e.target.value;
+                      if (newId && newId !== vendor.restaurantId) {
+                        setRestaurantId(newId);
+                        void qc.invalidateQueries();
+                      }
+                    }}
+                    title="UmarOS Multi-Outlet Profile Router (Instant Branch Switcher)"
+                    aria-label="Switch Restaurant Outlet Branch"
+                  >
+                    {vendor.memberships.map((m) => (
+                      <option key={m.restaurantId} value={m.restaurantId} className="bg-slate-900 text-slate-100">
+                        {m.restaurantName} ({m.role})
+                      </option>
+                    ))}
+                  </select>
+                  <Store className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-emerald-400" />
+                </div>
+              )}
               <div className="relative">
                 <select
                   className="h-11 appearance-none rounded-[12px] border border-slate-800/60 bg-slate-900/60 backdrop-blur-xl pl-9 pr-8 text-xs sm:text-sm outline-none transition-colors hover:bg-slate-800/60 focus:border-chili focus:ring-1 focus:ring-chili"
@@ -184,34 +213,8 @@ export function VendorShell({
         </div>
       </div>
 
-      <nav
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-800/60 bg-slate-900/60 backdrop-blur-xl pb-[env(safe-area-inset-bottom)] md:hidden"
-        aria-label="Mobile"
-      >
-        {mobilePrimary.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className={cn(
-              "flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px]",
-              pathname.startsWith(item.to) ? "text-chili" : "text-slate-400",
-            )}
-          >
-            <item.icon className="size-5" />
-            {t(item.key)}
-          </Link>
-        ))}
-        <Link
-          to="/more"
-          className={cn(
-            "flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px]",
-            pathname === "/more" || more.some((m) => pathname.startsWith(m.to)) ? "text-chili" : "text-slate-400",
-          )}
-        >
-          <MoreHorizontal className="size-5" />
-          {t("nav.more")}
-        </Link>
-      </nav>
+      {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
+      <PartnerFloatingBottomNav onOpenSpark={() => setSparkOpen(true)} />
 
       {/* Order King Spark Restaurant AI Modal */}
       <OrderKingSparkModal isOpen={sparkOpen} onClose={() => setSparkOpen(false)} />

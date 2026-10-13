@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Check, X, Clock, Flame, Loader2, Sparkles } from "lucide-react";
+import { Check, X, Clock, Flame, Loader2, Sparkles, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { setAvailability } from "@/lib/server/api-menu";
+import { getNextDay06AM } from "@/lib/ai/order-king-spark";
 import { useQueryClient } from "@tanstack/react-query";
 
 export interface OneTapStockToggleProps {
@@ -60,6 +61,33 @@ export function OneTapStockToggle({
     }
   };
 
+  const handle86Today = async () => {
+    if (disabled || loading || !restaurantId) return;
+
+    const nextAvailableDate = getNextDay06AM().toISOString();
+    setOptimisticStatus("temporarily_unavailable");
+    setLoading(true);
+    setShowDurations(false);
+
+    try {
+      await setAvailability({
+        data: {
+          restaurantId,
+          itemIds: [itemId],
+          status: "temporarily_unavailable",
+          nextAvailableAt: nextAvailableDate,
+        },
+      });
+      onToggled?.("temporarily_unavailable");
+      void qc.invalidateQueries({ queryKey: ["menu"] });
+      void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    } catch (e) {
+      setOptimisticStatus(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleTimedOut = async (hours: number) => {
     if (disabled || loading || !restaurantId) return;
 
@@ -87,9 +115,16 @@ export function OneTapStockToggle({
     }
   };
 
+  const isResetAt6AM =
+    nextAvailableAt &&
+    new Date(nextAvailableAt).getHours() === 6 &&
+    new Date(nextAvailableAt).getMinutes() === 0;
+
   const formattedOffTime =
     currentStatus === "temporarily_unavailable" && nextAvailableAt
-      ? new Date(nextAvailableAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      ? isResetAt6AM
+        ? "86 until 06:00 AM"
+        : `Until ${new Date(nextAvailableAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
       : null;
 
   return (
@@ -99,7 +134,7 @@ export function OneTapStockToggle({
         type="button"
         disabled={disabled || loading}
         onClick={handleInstantToggle}
-        title={isAvailable ? `1-Tap to mark ${itemName} OUT OF STOCK` : `1-Tap to restore ${itemName} IN STOCK`}
+        title={isAvailable ? `1-Tap to mark ${itemName} OUT OF STOCK (86)` : `1-Tap to restore ${itemName} IN STOCK`}
         className={`relative inline-flex items-center gap-2 rounded-lg font-bold transition-all duration-150 select-none ${
           size === "lg" 
             ? "px-4 py-2.5 text-sm" 
@@ -125,7 +160,7 @@ export function OneTapStockToggle({
         ) : (
           <span className="flex items-center gap-1.5">
             <X className="size-3.5 text-rose-400 stroke-[3]" />
-            <span>OUT OF STOCK</span>
+            <span>{isResetAt6AM ? "86 (06:00 AM)" : "OUT OF STOCK"}</span>
           </span>
         )}
 
@@ -133,7 +168,7 @@ export function OneTapStockToggle({
         <span className={`text-[9px] uppercase px-1 py-0.2 rounded font-mono ${
           isAvailable ? "bg-emerald-900/60 text-emerald-400" : "bg-rose-900/60 text-rose-400"
         }`}>
-          1-Tap
+          {isAvailable ? "1-Tap" : "86"}
         </span>
       </button>
 
@@ -144,15 +179,23 @@ export function OneTapStockToggle({
             type="button"
             disabled={disabled || loading}
             onClick={() => setShowDurations(!showDurations)}
-            title="Set temporary out of stock duration"
+            title="Set 86 duration with 06:00 AM automated reset"
             className="p-1.5 rounded-md bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 text-xs transition"
           >
             <Clock className="size-3.5" />
           </button>
 
           {showDurations && (
-            <div className="absolute right-0 top-8 z-30 flex flex-col bg-slate-900 border border-slate-700 p-1.5 rounded-lg shadow-xl text-xs text-white min-w-28 space-y-1 font-mono">
-              <span className="text-[10px] text-slate-400 px-2 py-0.5 uppercase tracking-wider">Turn Off For:</span>
+            <div className="absolute right-0 top-8 z-30 flex flex-col bg-slate-900 border border-slate-700 p-1.5 rounded-lg shadow-xl text-xs text-white min-w-36 space-y-1 font-mono">
+              <span className="text-[10px] text-slate-400 px-2 py-0.5 uppercase tracking-wider">Turn Off / 86:</span>
+              <button
+                type="button"
+                onClick={handle86Today}
+                className="w-full text-left px-2 py-1.5 hover:bg-slate-800 rounded text-amber-300 font-bold text-xs flex items-center justify-between"
+              >
+                <span>86 (06:00 AM Reset)</span>
+                <span className="text-[9px] bg-amber-500/20 px-1 py-0.5 rounded">Auto</span>
+              </button>
               <button
                 type="button"
                 onClick={() => handleTimedOut(2)}
@@ -167,19 +210,12 @@ export function OneTapStockToggle({
               >
                 Off 4 Hours
               </button>
-              <button
-                type="button"
-                onClick={() => handleTimedOut(24)}
-                className="w-full text-left px-2 py-1 hover:bg-slate-800 rounded text-slate-200 text-xs"
-              >
-                Off For Today
-              </button>
             </div>
           )}
         </div>
       ) : formattedOffTime ? (
         <span className="text-[10px] text-amber-400 font-mono bg-amber-950/60 border border-amber-800/60 px-1.5 py-0.5 rounded">
-          Until {formattedOffTime}
+          {formattedOffTime}
         </span>
       ) : null}
     </div>

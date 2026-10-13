@@ -32,5 +32,5 @@ export type AdminRestaurantAction =
   | { type: "suspend"; restaurantId: string; reason: string }
   | { type: "set_commission"; restaurantId: string; bps: number }
   | { type: "override_hours"; restaurantId: string; open: boolean };
-export type NotificationChannel = "in_app" | "push" | "sms" | "whatsapp";
+export type NotificationChannel = "in_app" | "push" | "sms" | "whatsapp" | "email";
 export type NotificationPayload = { restaurantId: string; type: string; title: string; body: string; channels: NotificationChannel[]; data?: Record<string, string> };

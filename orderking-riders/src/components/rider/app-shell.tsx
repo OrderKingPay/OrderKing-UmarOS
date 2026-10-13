@@ -6,6 +6,7 @@ import { DEFAULT_BRANDING } from "@/lib/rider/config";
 import { LanguageSelector } from "@/components/rider/language-selector";
 import { bootstrapRiderFn } from "@/lib/server/rider-fns";
 import type { RiderProfile } from "@/lib/rider/types";
+import { RiderFloatingBottomNav } from "@/components/navigation/rider-bottom-nav";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,
@@ -302,24 +303,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </aside>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
-        <ul className="mx-auto grid max-w-lg grid-cols-5">
-          {nav.map((item) => (
-            <li key={item.to}>
-              <Link
-                to={item.to}
-                className={cn(
-                  "flex min-h-14 flex-col items-center justify-center gap-1 text-[11px] font-medium transition",
-                  path === item.to ? "text-primary font-bold" : "text-muted-foreground",
-                )}
-              >
-                <item.icon className="size-5" />
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
+      <RiderFloatingBottomNav isDutyOnline={online && geoOk} />
     </div>
   );
 }

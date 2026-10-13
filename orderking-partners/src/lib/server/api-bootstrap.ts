@@ -150,6 +150,9 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     bankAccount?: string;
     bankIfsc?: string;
     bankName?: string;
+    openingTime?: string;
+    closingTime?: string;
+    businessStructure?: string;
   }) => d)
   .handler(async ({ context, data }) => {
     const { withVendor } = await import("./helpers");
@@ -238,6 +241,18 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
           await sql`update restaurants set bank_name = ${String(data.bankName)}, updated_at = now() where id = ${ctx.restaurantId}`;
         }
       }
+      if (data.openingTime && data.closingTime) {
+        const { hmToMinutes } = await import("@/lib/hours");
+        const openMin = hmToMinutes(data.openingTime);
+        const closeMin = hmToMinutes(data.closingTime);
+        for (let day = 0; day <= 6; day++) {
+          await sql`
+            update restaurant_hours
+            set open_minutes = ${openMin}, close_minutes = ${closeMin}
+            where restaurant_id = ${ctx.restaurantId} and weekday = ${day}
+          `;
+        }
+      }
       return { ok: true as const };
     });
   });
@@ -322,12 +337,15 @@ export const getRestaurant = createServerFn({ method: "GET" })
         weekly_holidays: string;
         lat: number | null;
         lng: number | null;
+        service_area: string;
+        contact_persons: string;
       }>`
         select id, name, display_name, owner_name, phone, email, address, landmark,
                cuisine, diet, description, gstin, fssai_number, pan,
                bank_account, bank_ifsc, bank_name, verification_status, data_label,
                commission_bps, packing_paise, prep_minutes, peak_prep_minutes,
-               min_order_paise, emergency_closed, vacation_mode, weekly_holidays, lat, lng
+               min_order_paise, emergency_closed, vacation_mode, weekly_holidays, lat, lng,
+               service_area, contact_persons
         from restaurants where id = ${ctx.restaurantId} limit 1
       `;
       const hours = await sql<{ weekday: number; open_minutes: number; close_minutes: number }>`
@@ -400,4 +418,70 @@ export const uploadDocument = createServerFn({ method: "POST" })
       };
     });
   });
+
+export const verifyBankPennyDrop = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: {
+    restaurantId?: string;
+    accountHolder: string;
+    accountNumber: string;
+    confirmAccountNumber?: string;
+    ifsc: string;
+    businessName?: string;
+    ownerName?: string;
+  }) => d)
+  .handler(async ({ context, data }) => {
+    let businessName = data.businessName;
+    let ownerName = data.ownerName;
+
+    if (data.restaurantId && (!businessName || !ownerName)) {
+      try {
+        const sql = await getSql();
+        const rows = await sql<{ name: string; owner_name: string; display_name: string }>`
+          select name, owner_name, display_name from restaurants where id = ${data.restaurantId} limit 1
+        `;
+        if (rows[0]) {
+          if (!businessName) businessName = rows[0].display_name || rows[0].name;
+          if (!ownerName) ownerName = rows[0].owner_name;
+        }
+      } catch (e) {
+        // Fall back to provided names
+      }
+    }
+
+    const { executePennyDropVerification } = await import("@/lib/merchant-kyc");
+    const result = executePennyDropVerification({
+      accountHolder: data.accountHolder,
+      accountNumber: data.accountNumber,
+      confirmAccountNumber: data.confirmAccountNumber,
+      ifsc: data.ifsc,
+      businessName,
+      ownerName,
+    });
+
+    if (data.restaurantId && result.success) {
+      try {
+        const sql = await getSql();
+        await writeAudit(sql, {
+          restaurantId: data.restaurantId,
+          actorUserId: context.userId,
+          action: "bank_penny_drop_verification",
+          entityType: "bank_account",
+          entityId: data.restaurantId,
+          detail: JSON.stringify({
+            status: result.status,
+            impsRrn: result.impsRrn,
+            beneficiaryName: result.beneficiaryName,
+            bankName: result.bankName,
+            nameMatchScore: result.nameMatchScore,
+          }),
+        });
+      } catch (e) {
+        // Audit is best-effort
+      }
+    }
+
+    return result;
+  });
+
 

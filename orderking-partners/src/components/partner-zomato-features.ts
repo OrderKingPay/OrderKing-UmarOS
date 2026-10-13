@@ -7,3 +7,4 @@ export * from "./partner-live-chat-support";
 export * from "./dietary-allergen-editor";
 export * from "./kitchen-display-station";
 export * from "./review-reply-manager";
+export * from "./in-store-marketing-kit";

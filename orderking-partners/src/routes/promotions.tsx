@@ -20,6 +20,7 @@ import { computeRestaurantPayable, formatINR, mulBps, rupeesToPaise } from "@/li
 import { can } from "@/lib/rbac";
 import { platformConfig } from "@/lib/platform-config";
 import type { PromotionKind } from "@/lib/contracts";
+import { InStoreMarketingKit } from "@/components/in-store-marketing-kit";
 import {
   Calculator,
   Camera,
@@ -81,6 +82,7 @@ function PromotionsPage() {
   // Interactive Self-Service Discount Margin Calculator State
   const [simOrderRupees, setSimOrderRupees] = useState("300");
   const [simPackingRupees, setSimPackingRupees] = useState("20");
+  const [activeMarketingSection, setActiveMarketingSection] = useState<"digital_promos" | "in_store_qr">("digital_promos");
 
   const rest = q.data?.promotions.filter((p) => p.funder === "RESTAURANT" && p.name !== "SPONSORED_BOOST") ?? [];
   const plat = q.data?.promotions.filter((p) => p.funder === "PLATFORM") ?? [];
@@ -209,8 +211,46 @@ function PromotionsPage() {
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="space-y-5">
-        {/* Spark AI Restaurant Growth & Strategic Playbook Panel */}
-        <Card className="space-y-5 border-amber-500/30 bg-slate-900/90 p-5">
+        {/* Marketing Engine Navigation Tabs */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setActiveMarketingSection("digital_promos")}
+              className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
+                activeMarketingSection === "digital_promos"
+                  ? "bg-amber-500 text-slate-950 shadow-sm"
+                  : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+              }`}
+            >
+              🏷️ Digital Promotions &amp; AI Playbook
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveMarketingSection("in_store_qr")}
+              className={`rounded-xl px-4 py-2 text-xs font-bold transition flex items-center gap-2 ${
+                activeMarketingSection === "in_store_qr"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+              }`}
+            >
+              <span>🍽️ Table QR Dine-In Ordering &amp; Viral Marketing Kit</span>
+              <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-mono text-emerald-300">
+                0% Comm. Dine-In
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {activeMarketingSection === "in_store_qr" ? (
+          <InStoreMarketingKit
+            restaurantId={vendor.restaurantId}
+            restaurantName={vendor.selected?.restaurantName}
+          />
+        ) : (
+          <>
+            {/* Spark AI Restaurant Growth & Strategic Playbook Panel */}
+            <Card className="space-y-5 border-amber-500/30 bg-slate-900/90 p-5">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
             <div className="flex items-start gap-3">
               <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-2.5 text-amber-400 shrink-0">
@@ -830,6 +870,12 @@ function PromotionsPage() {
           ) : null}
         </Card>
 
+        {/* Viral Dine-In Table QR & Customer Acquisition Kit */}
+        <InStoreMarketingKit
+          restaurantId={vendor.restaurantId}
+          restaurantName={vendor.selected?.restaurantName}
+        />
+
         {/* Active Offers & Discounts Grid */}
         <div className="grid gap-4 md:grid-cols-2">
           <section className="space-y-2.5">
@@ -906,6 +952,8 @@ function PromotionsPage() {
             )}
           </section>
         </div>
+        </>
+        )}
       </div>
     </VendorShell>
   );

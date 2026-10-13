@@ -102,7 +102,10 @@ export function assertSameOrg(ctx: AccessContext, orgId: string): void {
 }
 
 export function cityScopeSql(ctx: AccessContext, alias = ""): { clause: string; params: string[] } {
-  const col = alias ? `${alias}.city_id` : "city_id";
+  if (alias && !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(alias)) {
+    throw new Error("Invalid SQL table alias identifier");
+  }
+  const col = alias ? `"${alias}".city_id` : "city_id";
   if (!ctx.cityId) return { clause: "", params: [] };
   return { clause: ` and ${col} = $city`, params: [ctx.cityId] };
 }

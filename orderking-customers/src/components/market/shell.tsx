@@ -28,6 +28,7 @@ const LazyLanguageSelectorModal = lazy(() =>
   import("@/components/common/language-selector-modal").then((m) => ({ default: m.LanguageSelectorModal }))
 );
 import { CustomerConciergeDrawer } from "@/components/ai/customer-concierge-drawer";
+import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
 import { useBrand, useT } from "@/components/providers";
 import { cartCount, useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
@@ -191,18 +192,18 @@ export function CustomerShell({
         {children}
       </main>
 
-      {/* Floating View Cart Bar */}
+      {/* Floating View Cart Bar positioned safely above the floating luxury dock */}
       {isDeliveryActive && count > 0 && path !== "/cart" && path !== "/checkout" ? (
-        <div className="pointer-events-none fixed inset-x-0 bottom-16 z-40 flex justify-center px-4">
+        <div className="pointer-events-none fixed inset-x-0 bottom-20 z-40 flex justify-center px-4">
           <Link
             to="/cart"
-            className="pointer-events-auto flex min-h-12 w-full max-w-lg items-center justify-between rounded-xl bg-[#E23744] hover:bg-[#c92f3b] px-4 py-3 text-white no-underline shadow-xl transition-all active:scale-98 md:max-w-2xl font-bold"
+            className="pointer-events-auto flex min-h-12 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-r from-[#E23744] to-[#C92F3B] px-4 py-3 text-white no-underline shadow-[0_12px_30px_rgba(226,55,68,0.35)] transition-all active:scale-98 font-bold border border-white/20"
           >
             <div className="flex items-center gap-2">
               <span className="flex size-6 items-center justify-center rounded-full bg-white/20 text-xs font-extrabold">
                 {count}
               </span>
-              <span className="text-xs font-semibold uppercase tracking-wider text-white/90">
+              <span className="text-xs font-semibold uppercase tracking-wider text-white/95">
                 {count === 1 ? t("cart.item") : t("cart.items")} added
               </span>
             </div>
@@ -214,42 +215,8 @@ export function CustomerShell({
         </div>
       ) : null}
 
-      {/* ULTRA-LUXURIOUS STICKY BOTTOM NAVIGATION BAR */}
-      <nav
-        aria-label={brand.appName}
-        className="fixed bottom-0 left-0 right-0 w-full z-50 bg-white/95 backdrop-blur-2xl border-t border-slate-200/80 shadow-[0_-12px_40px_rgba(0,0,0,0.08)] pb-[max(0.5rem,env(safe-area-inset-bottom))]"
-      >
-        {/* Subtle Luxury Top Accent Beam */}
-        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent pointer-events-none" />
-
-        <ul className="mx-auto grid max-w-lg grid-cols-5 items-end justify-items-center relative px-2 pt-2">
-          {/* 1. OrderKing — food ordering is the primary destination */}
-          <NavItem to="/" icon={House} label="OrderKing" active={path === "/"} />
-
-          {/* 2. LearnKing — Tutor & Language Courses */}
-          <NavItem to="/tutor" icon={GraduationCap} label="LearnKing" active={path.startsWith("/tutor")} />
-
-          {/* 3. King Pay / OrderKing */}
-          <KingPayCenterItem
-            active={path.startsWith("/king-pay")}
-            isKingPayPage={false}
-          />
-
-          {/* 4. TravelKing — Stays & Flights */}
-          <NavItem to="/travel" icon={Plane} label="TravelKing" active={path.startsWith("/travel")} />
-
-          {/* 5. Contextual action: show food orders in Delivery, JobKing in Tutor, Trips in Travel, AI Support in Support */}
-          {path.startsWith("/tutor") ? (
-            <NavItem to="/tutor" hash="jobs" icon={Briefcase} label="JobKing" active={currentHash.replace(/^#/, "") === "jobs"} />
-          ) : path.startsWith("/travel") ? (
-            <NavItem to="/travel/trips" icon={Luggage} label="My Trips" active={path.startsWith("/travel/trips")} />
-          ) : path.startsWith("/support") ? (
-            <NavItem to="/support" icon={ClipboardList} label="AI Support" active={path.startsWith("/support")} />
-          ) : (
-            <NavItem to="/orders" icon={ClipboardList} label="Orders" active={path.startsWith("/orders")} />
-          )}
-        </ul>
-      </nav>
+      {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
+      <CustomerFloatingBottomNav />
 
       {conciergeOpen && (
         <CustomerConciergeDrawer open={conciergeOpen} onClose={() => setConciergeOpen(false)} area="food" />

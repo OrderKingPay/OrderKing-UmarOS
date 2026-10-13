@@ -16,6 +16,7 @@ import { can } from "@/lib/rbac";
 import { useClientState } from "@/lib/client-state";
 import { platformConfig, type AppLanguage } from "@/lib/platform-config";
 import type { DietFlag } from "@/lib/contracts";
+import { orderKingSpark } from "@/lib/ai/order-king-spark";
 
 export const Route = createFileRoute("/assistant")({ component: AssistantPage });
 
@@ -389,6 +390,27 @@ function AssistantPage() {
   const [confirmPrepSlaFix, setConfirmPrepSlaFix] = useState(false);
   const [applyingPrepSlaFix, setApplyingPrepSlaFix] = useState(false);
   const [actionBanner, setActionBanner] = useState<string | null>(null);
+
+  // King AI (Spark AI Parity) Interactive Assistant State
+  const defaultDisputes = useMemo(() => orderKingSpark.getActiveDisputes(), []);
+  const [selectedDisputeId, setSelectedDisputeId] = useState<string>(defaultDisputes[0]?.disputeId ?? "dsp-spill-101");
+  const selectedDispute = useMemo(
+    () => defaultDisputes.find((d) => d.disputeId === selectedDisputeId) ?? defaultDisputes[0],
+    [defaultDisputes, selectedDisputeId]
+  );
+  const [disputeDecision, setDisputeDecision] = useState(() =>
+    selectedDispute ? orderKingSpark.arbitrateDispute(selectedDispute) : null
+  );
+
+  const [intelDishName, setIntelDishName] = useState<string>("Special Mutton Dum Biryani");
+  const [intelResult, setIntelResult] = useState(() =>
+    orderKingSpark.suggestMenuIntelligence("Special Mutton Dum Biryani")
+  );
+
+  const [shiftReconDate, setShiftReconDate] = useState<string>("Today");
+  const [shiftRecon, setShiftRecon] = useState(() =>
+    orderKingSpark.generateDailyShiftRecon("Today")
+  );
 
   const dash = useQuery({
     queryKey: ["dashboard", vendor.restaurantId],
@@ -916,21 +938,44 @@ function AssistantPage() {
         typeof res === "object" && res !== null && "text" in res
           ? String(res.text)
           : t("assistant.unavailable");
-      const finalReply = isOk
+      let finalReply = isOk
         ? serverReply
         : `${serverReply}\n\n${buildLocalizedLiveReport(userQuestion, activeLang)}`;
+
+      const qLower = userQuestion.toLowerCase();
+      if (
+        qLower.includes("dispute") ||
+        qLower.includes("spill") ||
+        qLower.includes("missing") ||
+        qLower.includes("arbitrat") ||
+        qLower.includes("liability") ||
+        qLower.includes("description") ||
+        qLower.includes("pricing") ||
+        qLower.includes("margin") ||
+        qLower.includes("portion") ||
+        qLower.includes("shift") ||
+        qLower.includes("recon") ||
+        qLower.includes("gst 9(5)")
+      ) {
+        const sparkResp = orderKingSpark.handleRestaurantQuery(userQuestion);
+        if (!isOk || serverReply.includes("unavailable")) {
+          finalReply = sparkResp.text;
+        } else if (!serverReply.includes("Arbitrator") && !serverReply.includes("Pricing") && !serverReply.includes("Recon")) {
+          finalReply = `${serverReply}\n\n${sparkResp.text}`;
+        }
+      }
+
       setLog((l) => [
         ...l,
         { role: "assistant", text: finalReply, langCode: activeLang.code },
       ]);
     } catch (e) {
+      const sparkResp = orderKingSpark.handleRestaurantQuery(userQuestion);
       setLog((l) => [
         ...l,
         {
           role: "assistant",
-          text: `${
-            e instanceof Error ? e.message : t("assistant.unavailable")
-          }\n\n${buildLocalizedLiveReport(userQuestion, activeLang)}`,
+          text: `${sparkResp.text}\n\n${buildLocalizedLiveReport(userQuestion, activeLang)}`,
           langCode: activeLang.code,
         },
       ]);
@@ -1924,6 +1969,225 @@ function AssistantPage() {
               </Link>
             </div>
           </div>
+
+          {/* MODULE 7: Automated Customer Dispute & Refund Arbitrator */}
+          <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
+                7. Spark AI Customer Dispute &amp; Refund Arbitrator
+              </h3>
+              <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
+                MERCHANT vs LOGISTICS LIABILITY
+              </span>
+            </div>
+            <p className="text-[11px] text-muted">
+              Autonomous arbitrator assessing missing item vs food spill complaints in transit. Merchant payouts are 100% protected against 3rd-party delivery fleet mishandling.
+            </p>
+
+            {/* Dispute Case Selector */}
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono uppercase text-muted">Select Active Customer Complaint:</span>
+              <div className="grid grid-cols-2 gap-1.5">
+                {defaultDisputes.map((d) => (
+                  <button
+                    key={d.disputeId}
+                    type="button"
+                    onClick={() => {
+                      setSelectedDisputeId(d.disputeId);
+                      setDisputeDecision(orderKingSpark.arbitrateDispute(d));
+                    }}
+                    className={`rounded-lg border p-2 text-left text-xs transition ${
+                      selectedDisputeId === d.disputeId
+                        ? "border-emerald-500 bg-emerald-500/10 font-bold text-emerald-300"
+                        : "border-line bg-surface text-muted hover:text-ink"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-[10px] uppercase">{d.complaintType.replace(/_/g, " ")}</span>
+                      <span className="font-mono text-[10px] text-ink font-bold">₹{(d.claimAmountPaise / 100).toFixed(0)}</span>
+                    </div>
+                    <div className="truncate text-[11px] mt-0.5 font-sans">{d.customerName} (#{d.orderId})</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Selected Dispute Evidence Card */}
+            {selectedDispute && (
+              <div className="rounded-lg border border-line bg-surface p-2.5 space-y-2 text-xs">
+                <div className="italic text-ink text-[11px] bg-surface-2 p-2 rounded border border-line">
+                  &ldquo;{selectedDispute.complaintText}&rdquo;
+                </div>
+                <div className="grid grid-cols-3 gap-1.5 text-[10px] font-mono">
+                  <div className="rounded bg-surface-2 p-1.5 border border-line">
+                    <span className="text-muted block">Prep SLA:</span>
+                    <span className="font-bold text-ink">{selectedDispute.prepTimeMinutes} mins (On-Time)</span>
+                  </div>
+                  <div className="rounded bg-surface-2 p-1.5 border border-line">
+                    <span className="text-muted block">Rider Transit:</span>
+                    <span className={`font-bold ${selectedDispute.transitTimeMinutes > 30 ? "text-rose-400" : "text-emerald-400"}`}>
+                      {selectedDispute.transitTimeMinutes} mins
+                    </span>
+                  </div>
+                  <div className="rounded bg-surface-2 p-1.5 border border-line">
+                    <span className="text-muted block">Tamper Tape:</span>
+                    <span className="font-bold text-emerald-400">Intact / Verified</span>
+                  </div>
+                </div>
+
+                {disputeDecision && (
+                  <div className="mt-2 rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-2.5 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold font-mono text-[11px] text-emerald-300 flex items-center gap-1">
+                        🛡️ ARBITRATION DECISION: {disputeDecision.liability} LIABLE
+                      </span>
+                      <span className="font-mono text-[11px] font-bold text-ink">
+                        Merchant Loss: ₹{(disputeDecision.merchantLiabilityPaise / 100).toFixed(2)}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                      {disputeDecision.legalSenseRationale}
+                    </p>
+                    {disputeDecision.gstReversalPaise > 0 && (
+                      <div className="text-[10px] font-mono text-amber-300">
+                        CGST Sec 9(5) Tax Adjustment: -₹{(disputeDecision.gstReversalPaise / 100).toFixed(2)} credited back to merchant tax ledger.
+                      </div>
+                    )}
+                    <div className="text-[10px] text-muted italic">
+                      Action: {disputeDecision.suggestedMerchantAction}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* MODULE 8: Menu Description & Pricing Intelligence Studio */}
+          <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
+                8. Spark AI Menu Description &amp; Pricing Intelligence Studio
+              </h3>
+              <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300">
+                HIGH-MARGIN CONVERSION
+              </span>
+            </div>
+            <p className="text-[11px] text-muted">
+              Algorithmic culinary copywriting, dietary tagging, and portion architecture to lift Average Order Value while protecting net merchant margins.
+            </p>
+
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono uppercase text-muted">Quick Dish Presets:</span>
+              <div className="flex flex-wrap gap-1">
+                {[
+                  "Special Mutton Dum Biryani",
+                  "Murgh Tikka Butter Masala",
+                  "Garlic Butter Naan",
+                  "Paneer Lababdar Handi",
+                ].map((name) => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => {
+                      setIntelDishName(name);
+                      setIntelResult(orderKingSpark.suggestMenuIntelligence(name));
+                    }}
+                    className={`rounded-full border px-2.5 py-0.5 text-[10px] font-semibold transition ${
+                      intelDishName === name
+                        ? "border-amber-500 bg-amber-500/20 text-amber-300"
+                        : "border-line bg-surface text-muted hover:text-ink"
+                    }`}
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {intelResult && (
+              <div className="rounded-lg border border-line bg-surface p-2.5 space-y-2 text-xs">
+                <div>
+                  <span className="text-[10px] font-mono uppercase text-amber-400 font-bold block">
+                    ✨ High-Converting Sensory Copy:
+                  </span>
+                  <p className="text-[11px] text-ink italic leading-relaxed mt-0.5">
+                    &ldquo;{intelResult.highConvertingDescription}&rdquo;
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+                  <span className="rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-emerald-300 font-bold">
+                    {intelResult.dietaryClassification}
+                  </span>
+                  {intelResult.dietaryBadges.map((b) => (
+                    <span key={b} className="rounded bg-surface-2 border border-line px-1.5 py-0.5 text-muted font-medium">
+                      {b}
+                    </span>
+                  ))}
+                  <span className="rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-amber-300 font-mono">
+                    Allergens: {intelResult.allergens.join(", ")}
+                  </span>
+                </div>
+
+                <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-2 space-y-1">
+                  <div className="flex items-center justify-between text-[11px] font-mono">
+                    <span className="font-bold text-amber-200">Portion: {intelResult.portionStrategy.portionName}</span>
+                    <span className="font-bold text-emerald-400">Target Margin: {intelResult.portionStrategy.marginTargetPercent}%</span>
+                  </div>
+                  <p className="text-[10px] text-muted">
+                    {intelResult.portionStrategy.commercialRationale}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* MODULE 9: Daily Shift & Statutory 9(5) GST Recon Report */}
+          <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3 lg:col-span-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
+                9. Daily Shift &amp; Statutory 9(5) GST Financial Recon Report
+              </h3>
+              <span className="rounded-full border border-sky-500/40 bg-sky-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-sky-300">
+                100% INTEGER-PAISE AUDIT
+              </span>
+            </div>
+            <p className="text-[11px] text-muted">
+              Conversational shift reconciliation: food &amp; packaging gross revenues, zero platform commission deductions, 5% CGST Sec 9(5) remitted directly by OrderKing on your behalf, and net bank payout.
+            </p>
+
+            <div className="grid gap-2 sm:grid-cols-4 font-mono text-xs">
+              <div className="rounded-lg border border-line bg-surface p-2.5">
+                <span className="text-[10px] text-muted uppercase block">Delivered Orders</span>
+                <span className="text-sm font-bold text-ink">{shiftRecon.totalDeliveredOrders} orders</span>
+                <span className="text-[10px] text-muted block mt-0.5">({shiftRecon.cancelledOrders} cancelled)</span>
+              </div>
+              <div className="rounded-lg border border-line bg-surface p-2.5">
+                <span className="text-[10px] text-muted uppercase block">Gross Sales &amp; Packaging</span>
+                <span className="text-sm font-bold text-ink">₹{(shiftRecon.grossCustomerSpendPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                <span className="text-[10px] text-emerald-400 block mt-0.5">0% OrderKing Commission</span>
+              </div>
+              <div className="rounded-lg border border-line bg-surface p-2.5">
+                <span className="text-[10px] text-muted uppercase block">CGST Sec 9(5) Remitted</span>
+                <span className="text-sm font-bold text-sky-400">₹{(shiftRecon.gst95RemittedByPlatformPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                <span className="text-[10px] text-muted block mt-0.5">5% Food GST by Platform</span>
+              </div>
+              <div className="rounded-lg border border-line bg-surface p-2.5">
+                <span className="text-[10px] text-muted uppercase block">Net Payout Accrued</span>
+                <span className="text-sm font-bold text-emerald-400">₹{(shiftRecon.netPayoutAccruedPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                <span className="text-[10px] text-muted block mt-0.5">{shiftRecon.bankSettlementAccount}</span>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-sky-500/30 bg-sky-950/20 p-3 space-y-1.5">
+              <span className="text-[11px] font-bold text-sky-200 font-mono block">
+                🎙️ Conversational Human Recon Summary:
+              </span>
+              <p className="whitespace-pre-wrap text-[11px] text-slate-300 leading-relaxed font-sans">
+                {shiftRecon.conversationalSummary}
+              </p>
+            </div>
+          </div>
         </div>
       </Card>
 
@@ -2012,6 +2276,15 @@ function AssistantPage() {
 
       {/* Quick Prompt Chips */}
       <div className="flex flex-wrap gap-2">
+        <Button variant="primary" size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold" onClick={() => void send("Arbitrate customer dispute: Food container spilled during transit vs missing items. Determine merchant vs logistics liability.")}>
+          ⚖️ Dispute Arbitrator (Spill vs Missing)
+        </Button>
+        <Button variant="primary" size="sm" className="bg-amber-600 hover:bg-amber-500 text-white font-bold" onClick={() => void send("Suggest high-margin dish descriptions, dietary allergen tags, and portion adjustments for signature dishes.")}>
+          ✨ Menu Description &amp; Pricing Intelligence
+        </Button>
+        <Button variant="primary" size="sm" className="bg-sky-600 hover:bg-sky-500 text-white font-bold" onClick={() => void send("Generate today's daily shift recon report with gross sales, 0% commission savings, and CGST Sec 9(5) remitted.")}>
+          📊 Daily Shift &amp; 9(5) GST Recon Report
+        </Button>
         <Button variant="secondary" size="sm" onClick={() => void send("How do I use 1-click AI auto-setup to connect, configure and test my thermal printers and POS?")}>
           🛠️ 1-Click AI Auto-Connect Hardware &amp; POS
         </Button>

@@ -57,13 +57,32 @@ export const getMenu = createServerFn({ method: "GET" })
         join items i on i.id = ia.item_id
         where i.restaurant_id = ${ctx.restaurantId}
       `;
+      // Automated reset for temporary 86 stock where next_available_at (e.g. 06:00 AM next-day) has passed
+      await sql`
+        update item_availability
+        set status = 'available', next_available_at = null, updated_at = now()
+        where restaurant_id = ${ctx.restaurantId}
+          and status <> 'available'
+          and next_available_at is not null
+          and next_available_at <= now()
+      `;
+
       const availability = await sql<{
         item_id: string;
         status: string;
         next_available_at: string | null;
         note: string;
       }>`
-        select item_id, status, next_available_at::text as next_available_at, note
+        select item_id,
+               case
+                 when next_available_at is not null and next_available_at <= now() then 'available'
+                 else status
+               end as status,
+               case
+                 when next_available_at is not null and next_available_at <= now() then null
+                 else next_available_at::text
+               end as next_available_at,
+               note
         from item_availability where restaurant_id = ${ctx.restaurantId}
       `;
       const lockState = getMenuLockState(ctx.verificationStatus);

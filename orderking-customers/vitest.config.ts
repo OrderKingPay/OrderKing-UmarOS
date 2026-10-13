@@ -9,6 +9,8 @@ export default defineConfig({
       "src/test/support-safety.test.ts",
       "src/test/offline-resilience.test.ts",
       "src/test/payment-security.test.ts",
+      "src/test/sovereign-travel-engine.test.ts",
+      "src/test/crypto-security.test.ts",
     ],
     environment: "node",
   },

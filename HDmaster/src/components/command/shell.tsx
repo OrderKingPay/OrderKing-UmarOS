@@ -1456,12 +1456,12 @@ export function CommandShell() {
         </div>
       ) : null}
 
-      {/* 10-Tab Sticky Bottom Navigation Bar (UMAR_OS_10_WORLDS) */}
+      {/* LUXURY FLOATING COMMAND CONSOLE DOCK (10 WORLDS) */}
       <nav
         aria-label="UMAR OS 10-World Bottom Command Navigation"
-        className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-surface/95 px-2 py-1.5 shadow-2xl backdrop-blur md:px-3"
+        className="fixed bottom-3 inset-x-0 z-40 pointer-events-none mx-auto max-w-7xl px-3 sm:px-4"
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-1 overflow-x-auto">
+        <div className="pointer-events-auto relative rounded-3xl bg-surface/90 backdrop-blur-2xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_1px_1px_0_rgba(255,255,255,0.1)] px-3 py-2 flex items-center justify-between gap-1.5 overflow-x-auto scrollbar-none">
           {UMAR_OS_10_WORLDS.map((world) => {
             const isDrawerOpen = activeWorldId === world.id;
             const isRouteActive = currentRouteWorld.id === world.id;
@@ -1474,14 +1474,14 @@ export function CommandShell() {
                 aria-expanded={isDrawerOpen}
                 title={`${world.label} — ${world.shortTitle}`}
                 className={cn(
-                  "flex shrink-0 items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-left transition",
+                  "flex shrink-0 items-center gap-1.5 rounded-2xl border px-3 py-1.5 text-left transition-all duration-200 active:scale-95",
                   isPrimary
                     ? isDrawerOpen || isRouteActive
-                      ? "border-amber-400 bg-amber-500/25 text-fg shadow-md ring-1 ring-amber-400/30"
-                      : "border-amber-400/60 bg-amber-500/15 text-fg hover:bg-amber-500/25"
+                      ? "border-amber-400 bg-amber-500/25 text-fg shadow-[0_0_15px_rgba(245,158,11,0.35)] ring-1 ring-amber-400/40"
+                      : "border-amber-400/50 bg-amber-500/15 text-fg hover:bg-amber-500/25"
                     : isDrawerOpen || isRouteActive
-                      ? "border-primary bg-elevated text-fg shadow-xs"
-                      : "border-border bg-bg/60 text-muted hover:border-border hover:bg-elevated hover:text-fg"
+                      ? "border-primary bg-elevated text-fg shadow-xs ring-1 ring-primary/30"
+                      : "border-border/60 bg-bg/60 text-muted hover:border-border hover:bg-elevated hover:text-fg"
                 )}
               >
                 <span className="text-sm leading-none" aria-hidden="true">

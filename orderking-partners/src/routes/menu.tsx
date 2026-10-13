@@ -22,6 +22,7 @@ import {
 } from "@/lib/server/api-menu";
 import { OneTapStockToggle } from "@/components/one-tap-stock-toggle";
 import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
+import { orderKingSpark } from "@/lib/ai/order-king-spark";
 import {
   Search,
   Flame,
@@ -99,10 +100,20 @@ const PORTION_PORTFOLIO_TAG_PILLS = [
   "Serves 1-2 (350g)",
   "Serves 2-3 (500g)",
   "Family Pack (Serves 4)",
-  "Jain Option Available",
-  "Medium Spicy",
-  "Contains Dairy / Ghee",
-  "Contains Cashew / Nuts",
+  "🌱 Pure Veg",
+  "🥑 Vegan",
+  "🕉️ Jain Friendly",
+  "🌙 Halal Certified",
+  "🌾 Gluten-Free",
+  "🥛 Contains Dairy / Ghee",
+  "🥜 Contains Peanuts",
+  "🌰 Contains Cashew / Tree Nuts",
+  "🥚 Contains Egg",
+  "🟡 Contains Mustard",
+  "🌱 Contains Soy",
+  "🌶️ Mild Spicy",
+  "🌶️🌶️ Medium Spicy",
+  "🌶️🌶️🌶️ Extra Spicy",
 ] as const;
 
 /**
@@ -996,9 +1007,25 @@ function MenuPage() {
                             </span>
                           ) : null}
                           {item.tags ? (
-                            <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-muted">
-                              {item.tags}
-                            </span>
+                            <div className="flex flex-wrap items-center gap-1">
+                              {item.tags.split("·").map((t, idx) => {
+                                const cleanTag = t.trim();
+                                if (!cleanTag) return null;
+                                const isAllergen = cleanTag.includes("Contains") || cleanTag.includes("Dairy") || cleanTag.includes("Nuts") || cleanTag.includes("Gluten");
+                                return (
+                                  <span
+                                    key={idx}
+                                    className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                                      isAllergen
+                                        ? "bg-amber-950/40 border border-amber-500/30 text-amber-300 font-mono"
+                                        : "bg-surface-2 border border-border/50 text-muted"
+                                    }`}
+                                  >
+                                    {cleanTag}
+                                  </span>
+                                );
+                              })}
+                            </div>
                           ) : null}
                         </div>
                         {item.description ? (
@@ -1348,10 +1375,33 @@ function MenuPage() {
                 </div>
 
                 {/* Quick Portion & Allergen Tag Pills */}
-                <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/80">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 mr-1">
+                <div className="flex flex-wrap items-center justify-between gap-1.5 pt-2 border-t border-slate-800/80">
+                  <span className="text-[10px] font-mono uppercase text-slate-400">
                     1-Tap Portion &amp; Allergen Tags:
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const intel = orderKingSpark.suggestMenuIntelligence(editor.name || "Special Dish");
+                      const currentTags = editor.servingSize.split("·").map((s) => s.trim()).filter(Boolean);
+                      const combined = Array.from(new Set([
+                        ...currentTags,
+                        intel.portionStrategy.portionName,
+                        ...intel.dietaryBadges,
+                        ...intel.allergens.map((a) => `Contains ${a}`),
+                      ]));
+                      setEditor({
+                        ...editor,
+                        description: editor.description.trim() ? editor.description : intel.highConvertingDescription,
+                        servingSize: combined.join(" · "),
+                      });
+                    }}
+                    className="inline-flex items-center gap-1 text-[10px] text-amber-400 font-bold hover:underline cursor-pointer"
+                  >
+                    <Sparkles className="size-3" /> Auto-Suggest AI Tags &amp; Description
+                  </button>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
                   {PORTION_PORTFOLIO_TAG_PILLS.map((tag) => {
                     const active = editor.servingSize.includes(tag);
                     return (

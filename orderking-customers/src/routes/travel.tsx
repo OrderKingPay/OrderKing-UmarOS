@@ -2,6 +2,7 @@ import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CustomerShell } from "@/components/market/shell";
 import { FlightBookingEngine } from "@/components/fintech/flight-booking-engine";
+import { SovereignTravelConcierge } from "@/components/fintech/sovereign-travel-concierge";
 import { TravelCategoryDeck } from "@/components/fintech/travel-category-deck";
 import {
   Plane,
@@ -479,6 +480,9 @@ export function TravelPage() {
             })}
           </div>
         </div>
+
+        {/* SOVEREIGN TRAVEL ENGINE CONCIERGE (0% FEE GUARANTEE & DIRECT TICKETING) */}
+        <SovereignTravelConcierge />
 
         {/* =====================================================================
             CATEGORY 1: FLIGHTS

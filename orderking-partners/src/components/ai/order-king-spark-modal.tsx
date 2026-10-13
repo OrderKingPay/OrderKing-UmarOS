@@ -962,6 +962,9 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
         {/* Quick Query Pills */}
         <div className="flex items-center gap-2 overflow-x-auto border-b border-zinc-800/80 bg-zinc-900/60 px-4 py-2">
           {[
+            ["⚖️ Dispute Arbitrator", "Arbitrate customer dispute: Food container spilled during transit vs missing items. Determine merchant vs logistics liability."],
+            ["✨ Menu Intelligence", "Suggest high-margin dish descriptions, dietary allergen tags, and portion adjustments for signature dishes."],
+            ["📊 Daily Shift Recon", "Generate today's shift report and 9(5) GST financial recon with net payout."],
             ["Why No Orders?", "Why am I not receiving orders right now? Check my storefront status."],
             ["AOV & Growth Playbook", "How can I increase my Average Order Value and fix out-of-stock revenue leakage?"],
             ["5-Daypart Geo Strategy", "How do I capture more Breakfast, Lunch, Snacks, Dinner and Late-Night orders in my neighborhood?"],

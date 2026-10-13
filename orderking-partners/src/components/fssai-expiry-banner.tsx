@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { 
   AlertTriangle, 
@@ -13,6 +13,7 @@ import {
   Building2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { calculateFssaiExpiry, parseFssai } from "@/lib/merchant-kyc";
 
 export interface FssaiLicenseInfo {
   licenseNumber: string;
@@ -35,41 +36,44 @@ export function FssaiExpiryBanner({
   compact?: boolean;
 }) {
   const [snoozed, setSnoozed] = useState(false);
-  const [licenseInfo, setLicenseInfo] = useState<FssaiLicenseInfo | null>(() => {
-    if (!fssaiNumber?.trim()) {
-      return {
-        licenseNumber: "",
-        registeredName: "Kitchen Partner",
-        expiryDate: "",
-        daysRemaining: 0,
-        status: "MISSING",
-        category: "State License",
-      };
+
+  const licenseInfo = useMemo<FssaiLicenseInfo | null>(() => {
+    const cleanNum = (fssaiNumber ?? "").trim();
+    if (!cleanNum && !expiryDate?.trim()) {
+      return null;
     }
 
-    const calculatedDays =
-      daysRemaining != null
-        ? daysRemaining
-        : expiryDate
-          ? Math.ceil((new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-          : 365;
+    const parsed = cleanNum ? parseFssai(cleanNum) : null;
+    let category: FssaiLicenseInfo["category"] = "State License";
+    if (parsed?.registrationType === 1) category = "Petty FBO Registration";
+    else if (parsed?.registrationType === 2) category = "State License";
+    else if (parsed?.registrationType === 3) category = "Central License";
 
+    let calculatedDays = 365;
     let status: FssaiLicenseInfo["status"] = "VALID";
-    if (calculatedDays <= 0) {
-      status = "EXPIRED";
-    } else if (calculatedDays <= 30) {
-      status = "EXPIRING_SOON";
+
+    if (daysRemaining != null) {
+      calculatedDays = daysRemaining;
+      if (calculatedDays <= 0) status = "EXPIRED";
+      else if (calculatedDays <= 30) status = "EXPIRING_SOON";
+    } else if (expiryDate) {
+      const expRes = calculateFssaiExpiry(expiryDate);
+      calculatedDays = expRes.daysRemaining;
+      if (expRes.isExpired) status = "EXPIRED";
+      else if (expRes.isExpiringSoon) status = "EXPIRING_SOON";
+    } else if (!cleanNum) {
+      status = "MISSING";
     }
 
     return {
-      licenseNumber: fssaiNumber.trim(),
+      licenseNumber: cleanNum,
       registeredName: "Kitchen Partner",
       expiryDate: expiryDate || "",
       daysRemaining: calculatedDays,
       status,
-      category: "State License",
+      category,
     };
-  });
+  }, [fssaiNumber, expiryDate, daysRemaining]);
 
   // Check local storage snooze
   useEffect(() => {
@@ -92,6 +96,62 @@ export function FssaiExpiryBanner({
   if (!licenseInfo || licenseInfo.status === "VALID") {
     return null;
   }
+
+  // Compact alert mode for inline forms (e.g. Station 3)
+  if (compact) {
+    const isExpired = licenseInfo.status === "EXPIRED";
+    return (
+      <div
+        className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-lg border text-xs ${
+          isExpired
+            ? "bg-rose-950/40 border-rose-500/50 text-rose-200"
+            : "bg-amber-950/40 border-amber-500/50 text-amber-200"
+        }`}
+      >
+        <div className="flex items-start sm:items-center gap-2">
+          {isExpired ? (
+            <ShieldAlert className="size-4 text-rose-400 shrink-0 mt-0.5 sm:mt-0 animate-pulse" />
+          ) : (
+            <AlertTriangle className="size-4 text-amber-400 shrink-0 mt-0.5 sm:mt-0 animate-pulse" />
+          )}
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className={`text-[10px] font-mono font-bold uppercase px-1.5 py-0.2 rounded ${
+                isExpired ? "bg-rose-500 text-black" : "bg-amber-500 text-black"
+              }`}>
+                {isExpired ? "FSSAI EXPIRED" : `RENEWAL DUE IN ${licenseInfo.daysRemaining} DAYS`}
+              </span>
+              <span className="font-semibold text-white">
+                {licenseInfo.category} {licenseInfo.licenseNumber ? `#${licenseInfo.licenseNumber}` : ""}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-300">
+              {isExpired
+                ? "Statutory compliance violation: restaurant operations halted under Section 31 of FSS Act, 2006 until renewed."
+                : `License expires soon (${licenseInfo.expiryDate || "within 30 days"}). Apply for FoSCoS renewal to prevent order suspension.`}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+          <a
+            href="https://foscos.fssai.gov.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-bold tracking-wide transition uppercase ${
+              isExpired
+                ? "bg-rose-500 hover:bg-rose-400 text-black"
+                : "bg-amber-500 hover:bg-amber-400 text-black"
+            }`}
+          >
+            <span>FoSCoS Portal</span>
+            <ExternalLink className="size-3" />
+          </a>
+        </div>
+      </div>
+    );
+  }
+
 
   // If snoozed, display a compact high-contrast sticky pill instead of full banner
   if (snoozed) {

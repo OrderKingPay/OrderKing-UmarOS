@@ -45,12 +45,13 @@ export const Route = createFileRoute("/api/search")({
     handlers: {
       GET: async ({ request }) => {
         const url = new URL(request.url);
-        const q = url.searchParams.get("q") || "";
+        const rawQ = url.searchParams.get("q") || "";
+        const q = rawQ.trim().slice(0, 80);
         const lat = parseFloat(url.searchParams.get("lat") || "0");
         const lng = parseFloat(url.searchParams.get("lng") || "0");
         const veg = url.searchParams.get("veg") === "true";
         const openNow = url.searchParams.get("openNow") === "true";
-        const category = url.searchParams.get("category") || "";
+        const category = (url.searchParams.get("category") || "").slice(0, 50);
 
         const unavailable = (reason: string) => new Response(JSON.stringify({
           restaurants: [], deliveryAvailable: false, reason,

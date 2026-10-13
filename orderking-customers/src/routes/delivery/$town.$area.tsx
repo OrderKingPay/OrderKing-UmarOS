@@ -39,7 +39,7 @@ export type HyperlocalTownAreaResult = {
     canonicalUrl: string;
     ogImage: string;
   };
-  jsonLd: Record<string, unknown>;
+  jsonLd: string;
 };
 
 // ============================================================================
@@ -323,7 +323,7 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
         canonicalUrl,
         ogImage: "https://orderking.in/og.jpg",
       },
-      jsonLd,
+      jsonLd: JSON.stringify(jsonLd),
     };
   });
 
@@ -331,7 +331,7 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
 // TanStack Router Route Definition
 // ============================================================================
 
-export const Route = createFileRoute("/delivery/$town/$area")({
+export const Route = createFileRoute("/delivery/$town/$area" as any)({
   loader: async ({ params }: any) => {
     return await getDeliveryAreaCatalog({
       data: {
@@ -363,7 +363,7 @@ export const Route = createFileRoute("/delivery/$town/$area")({
       scripts: [
         {
           type: "application/ld+json",
-          children: JSON.stringify(jsonLd),
+          children: jsonLd,
         },
       ],
     };
@@ -376,7 +376,7 @@ export const Route = createFileRoute("/delivery/$town/$area")({
 // ============================================================================
 
 function DeliveryTownAreaPage() {
-  const data = Route.useLoaderData();
+  const data = Route.useLoaderData() as HyperlocalTownAreaResult;
   const { town, area, restaurants, cuisines, jsonLd } = data;
   const [filterVeg, setFilterVeg] = useState(false);
   const [activeCuisine, setActiveCuisine] = useState<string | null>(null);
@@ -404,7 +404,7 @@ function DeliveryTownAreaPage() {
   return (
     <CustomerShell onSearch={() => undefined}>
       {/* Fallback inline JSON-LD for crawlers */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
 
       <main className="mx-auto max-w-5xl px-4 py-6">
         {/* Breadcrumb Navigation */}
@@ -473,7 +473,7 @@ function DeliveryTownAreaPage() {
         {/* Filter Pills */}
         <div className="mt-6 flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
           <Button
-            variant={filterVeg ? "default" : "outline"}
+            variant={filterVeg ? "primary" : "outline"}
             size="sm"
             onClick={() => setFilterVeg(!filterVeg)}
             className={`rounded-xl text-xs font-semibold ${
@@ -486,7 +486,7 @@ function DeliveryTownAreaPage() {
           {cuisines.map((c) => (
             <Button
               key={c}
-              variant={activeCuisine === c ? "default" : "outline"}
+              variant={activeCuisine === c ? "primary" : "outline"}
               size="sm"
               onClick={() => setActiveCuisine(activeCuisine === c ? null : c)}
               className={`rounded-xl text-xs font-semibold whitespace-nowrap ${

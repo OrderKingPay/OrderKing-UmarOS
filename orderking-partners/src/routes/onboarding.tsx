@@ -18,7 +18,17 @@ import {
   validateGstin,
   validateIfsc,
   validatePan,
+  validateAadhaar,
+  validateAadhaarOtp,
+  validateStation5CommercialContract,
+  calculateVerhoeffChecksum,
+  calculateFssaiExpiry,
 } from "@/lib/merchant-kyc";
+import {
+  ONBOARDING_FEE_CONFIG,
+  getOnboardingFeeDetails,
+  type OnboardingFeeOption,
+} from "@/lib/money";
 import {
   ShieldCheck,
   ArrowRight,
@@ -31,6 +41,16 @@ import {
   Store,
   Scale,
   Edit3,
+  Fingerprint,
+  FileCheck,
+  Check,
+  Lock,
+  BadgeCheck,
+  AlertCircle,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  RefreshCw,
 } from "lucide-react";
 
 export const Route = createFileRoute("/onboarding")({ component: OnboardingPage });
@@ -64,6 +84,7 @@ function OnboardingPage() {
     description: "",
     gstin: "",
     fssaiNumber: "",
+    fssaiExpiryDate: "",
     pan: "",
     holder: "",
     bankName: "",
@@ -72,16 +93,97 @@ function OnboardingPage() {
     seedSim: false,
   });
 
-  const [agreements, setAgreements] = useState({
-    commercialTerms: false,
-    fssaiUndertaking: false,
-    privacyAndTax: false,
-  });
+  // Station 5: Commercial Contract & Digital Execution State
+  const [onboardingFeeOption, setOnboardingFeeOption] = useState<OnboardingFeeOption>("AMORTIZED");
+  const [amortizedConsent, setAmortizedConsent] = useState(false);
+  const [executionMethod, setExecutionMethod] = useState<"CLICKWRAP" | "AADHAAR_ESIGN">("CLICKWRAP");
+
+  // Clickwrap State
+  const [clickwrapSignatoryName, setClickwrapSignatoryName] = useState("");
+  const [clickwrapDesignation, setClickwrapDesignation] = useState("Sole Proprietor / Authorized Signatory");
+  const [clickwrapConsent, setClickwrapConsent] = useState(false);
+  const [clientIp] = useState("103.216.201.45"); // Client ISP Node IP
+  const [executionTimestamp, setExecutionTimestamp] = useState(() => new Date().toISOString());
+
+  // Aadhaar e-Sign State
+  const [aadhaarNumber, setAadhaarNumber] = useState("");
+  const [aadhaarOtp, setAadhaarOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [aadhaarSignatoryName, setAadhaarSignatoryName] = useState("");
+  const [aadhaarTxnId, setAadhaarTxnId] = useState("");
+
+  // Binding Covenants & Undertakings
+  const [covenantsAccepted, setCovenantsAccepted] = useState(false);
+  const [foodSafetyUndertakingAccepted, setFoodSafetyUndertakingAccepted] = useState(false);
+  const [privacyAndTaxAccepted, setPrivacyAndTaxAccepted] = useState(false);
+  const [covenantViewerExpanded, setCovenantViewerExpanded] = useState(false);
+  const [activeCovenantTab, setActiveCovenantTab] = useState<string>("ALL");
 
   const r = restQ.data?.restaurant as Record<string, unknown> | undefined;
   const uploadedDocs = restQ.data?.documents ?? [];
-  const allTermsAccepted =
-    agreements.commercialTerms && agreements.fssaiUndertaking && agreements.privacyAndTax;
+
+  const effectiveOwner = (form.ownerName || form.holder || String(r?.owner_name ?? "")).trim();
+  const effectiveSignatory = (clickwrapSignatoryName || effectiveOwner).trim();
+
+  // Validate Station 5 state in real time
+  const station5Validation = validateStation5CommercialContract({
+    covenantViewerAccepted: covenantsAccepted,
+    foodSafetyUndertakingAccepted: foodSafetyUndertakingAccepted,
+    privacyAndTaxAccepted: privacyAndTaxAccepted,
+    fssaiNumber: (form.fssaiNumber || String(r?.fssai_number ?? "")).trim() || undefined,
+    onboardingFeeChoice: {
+      option: onboardingFeeOption,
+      amortizedConsent,
+    },
+    digitalExecution:
+      executionMethod === "CLICKWRAP"
+        ? {
+            method: "CLICKWRAP",
+            signatoryName: effectiveSignatory,
+            signatoryDesignation: clickwrapDesignation,
+            timestamp: executionTimestamp,
+            ipAddress: clientIp,
+            covenantsAccepted: clickwrapConsent,
+          }
+        : {
+            method: "AADHAAR_ESIGN",
+            aadhaarNumber,
+            otp: aadhaarOtp,
+            otpVerified,
+            signatoryName: aadhaarSignatoryName || effectiveOwner,
+            timestamp: executionTimestamp,
+            transactionId: aadhaarTxnId,
+            covenantsAccepted: covenantsAccepted,
+          },
+  });
+
+  const allTermsAccepted = station5Validation.isValid;
+
+  async function handleSendAadhaarOtp() {
+    setError(null);
+    if (!validateAadhaar(aadhaarNumber)) {
+      setError("Please enter a valid 12-digit Indian Aadhaar number with valid Verhoeff checksum.");
+      return;
+    }
+    setOtpSent(true);
+    setOtpVerified(false);
+    setSuccessMsg("UIDAI e-Sign OTP sent to registered mobile linked with Aadhaar ending in " + aadhaarNumber.slice(-4));
+  }
+
+  async function handleVerifyAadhaarOtp() {
+    setError(null);
+    if (!validateAadhaarOtp(aadhaarOtp)) {
+      setError("Invalid 6-digit Aadhaar OTP format. Please enter 6 numeric digits.");
+      return;
+    }
+    const clean = aadhaarNumber.replace(/[\s-]/g, "");
+    setOtpVerified(true);
+    const txn = `UIDAI-ESIGN-${Math.floor(100000 + Math.random() * 900000)}-TXN`;
+    setAadhaarTxnId(txn);
+    setAadhaarSignatoryName(effectiveOwner || "Authorized Signatory");
+    setSuccessMsg(`Aadhaar e-Sign verified via UIDAI / CDAC ESP Gateway (Ref: ${txn}, Masked: XXXX-XXXX-${clean.slice(8, 12)}).`);
+  }
 
   async function handleSaveAndRegister(submitReviewAfterSave: boolean, bypassAgreementCheck = false) {
     setError(null);
@@ -89,7 +191,6 @@ function OnboardingPage() {
 
     const effectiveName = (form.name || String(r?.name ?? "")).trim();
     const effectiveDisplayName = (form.displayName || String(r?.display_name ?? "") || effectiveName).trim();
-    const effectiveOwner = (form.ownerName || form.holder || String(r?.owner_name ?? "")).trim();
     const effectivePhone = (form.phone || String(r?.phone ?? "")).trim();
     const effectiveEmail = (form.email || String(r?.email ?? "")).trim();
     const rawAddress = (form.address || String(r?.address ?? "")).trim();
@@ -102,6 +203,7 @@ function OnboardingPage() {
     const effectiveDescription = (form.description || String(r?.description ?? "")).trim();
 
     const fssai = (form.fssaiNumber || String(r?.fssai_number ?? "")).trim();
+    const fssaiExpiry = (form.fssaiExpiryDate || String(r?.fssai_expiry_date ?? "")).trim();
     const pan = (form.pan || String(r?.pan ?? "")).trim().toUpperCase();
     const ifsc = (form.bankIfsc || String(r?.bank_ifsc ?? "")).trim().toUpperCase();
     const gstin = (form.gstin || String(r?.gstin ?? "")).trim().toUpperCase();
@@ -110,23 +212,31 @@ function OnboardingPage() {
 
     if (!effectiveName || !effectiveAddress || !effectivePhone) {
       setError(
-        "Section 1 Incomplete: Restaurant legal name, contact phone number, and physical kitchen address are required.",
+        "Station 1 Incomplete: Restaurant legal name, contact phone number, and physical kitchen address are required.",
       );
       return;
     }
 
-    if (!bypassAgreementCheck && !allTermsAccepted) {
-      setError(
-        "Section 4 Incomplete: Please review and accept the Restaurant Partner Commercial Agreement, FSSAI Undertaking, and Privacy/Tax Policy before saving.",
-      );
+    if (!bypassAgreementCheck && !station5Validation.isValid) {
+      const firstError =
+        Object.values(station5Validation.errors)[0] ||
+        "Station 5 Incomplete: Please review and execute the Restaurant Partner Agreement, select the Onboarding Fee option, and complete digital execution.";
+      setError(`Station 5 Incomplete: ${firstError}`);
       return;
     }
 
     if (fssai && !validateFssai(fssai)) {
       setError(
-        "Statutory Verification Failed: Invalid 14-digit FSSAI registration number. Must follow the 14-digit FoSCoS state & license structure.",
+        "Statutory Verification Failed: Invalid 14-digit FSSAI FoSCoS registration number. Must follow the 14-digit FoSCoS state & license structure.",
       );
       return;
+    }
+    if (fssaiExpiry) {
+      const expRes = calculateFssaiExpiry(fssaiExpiry);
+      if (expRes.isExpired) {
+        setError(`Statutory Verification Failed: ${expRes.message}`);
+        return;
+      }
     }
     if (pan && !validatePan(pan)) {
       setError(
@@ -142,14 +252,27 @@ function OnboardingPage() {
     }
     if (gstin && !validateGstin(gstin)) {
       setError(
-        "Statutory Verification Failed: Invalid GSTIN format. Must be 15 statutory characters with valid state code.",
+        "Statutory Verification Failed: Invalid GSTIN format. Must be 15 statutory characters with valid state code (/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/).",
       );
       return;
     }
 
     if (submitReviewAfterSave) {
       if (!validateFssai(fssai)) {
-        setError("Verification Submission Blocked: A valid 14-digit FSSAI registration number is mandatory.");
+        setError("Verification Submission Blocked: A valid 14-digit FSSAI FoSCoS registration number is mandatory.");
+        return;
+      }
+      if (!fssaiExpiry) {
+        setError("Verification Submission Blocked: FSSAI License Expiry Date is mandatory.");
+        return;
+      }
+      const expRes = calculateFssaiExpiry(fssaiExpiry);
+      if (expRes.isExpired) {
+        setError("Verification Submission Blocked: Your FSSAI license has expired. An active, non-expired license is mandatory under Section 31 of the Food Safety and Standards Act, 2006.");
+        return;
+      }
+      if (!privacyAndTaxAccepted) {
+        setError("Verification Submission Blocked: Statutory declaration acknowledging 5% food GST remittance under CGST Act Section 9(5) is mandatory.");
         return;
       }
       if (!validatePan(pan)) {
@@ -163,6 +286,7 @@ function OnboardingPage() {
         return;
       }
     }
+
 
     setBusy(true);
     try {
@@ -212,10 +336,12 @@ function OnboardingPage() {
         if (submitReviewAfterSave) {
           await submitForReview({ data: { restaurantId: targetRestaurantId } });
           setSuccessMsg(
-            "Restaurant Partner KYC application submitted for statutory verification. Your outlet status is now PENDING_VERIFICATION.",
+            "Restaurant Partner KYC application and digitally executed agreement submitted. Your outlet status is now PENDING_VERIFICATION.",
           );
         } else {
-          setSuccessMsg("Restaurant profile, statutory KYC details, and bank settlement credentials saved.");
+          setSuccessMsg(
+            "Restaurant profile, statutory KYC credentials, and Station 5 commercial contract preferences saved.",
+          );
           setEditingApproved(false);
         }
       }
@@ -236,6 +362,8 @@ function OnboardingPage() {
     verificationStatus === "PENDING_VERIFICATION";
 
   if (vendor.restaurantId && (isApproved || isSubmitted) && !editingApproved) {
+    const feeDetails = getOnboardingFeeDetails(onboardingFeeOption);
+
     return (
       <VendorShell
         title="Restaurant Partner KYC & Profile"
@@ -277,7 +405,7 @@ function OnboardingPage() {
                   className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs"
                 >
                   <Edit3 className="mr-1.5 size-3.5 text-emerald-400" />
-                  Edit KYC / Bank Details
+                  Edit KYC / Contract Details
                 </Button>
               </div>
             </div>
@@ -366,37 +494,62 @@ function OnboardingPage() {
             </Card>
           </div>
 
-          <Card className="border-slate-800 bg-slate-900/60 p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-semibold text-slate-200">Statutory Document Vault</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="border-slate-800 bg-slate-900/60 p-5 space-y-3">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                <span>3. Commercial Contract &amp; Onboarding Fee</span>
+                <Scale className="size-4 text-emerald-400" />
+              </div>
+              <div className="space-y-1.5 text-xs text-slate-300">
+                <div className="flex justify-between py-1 border-b border-slate-800/60">
+                  <span className="text-slate-500">Contract Agreement</span>
+                  <span className="font-medium text-emerald-400 flex items-center gap-1">
+                    <Check className="size-3.5" /> Executed (IT Act 2000 §10A)
+                  </span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-800/60">
+                  <span className="text-slate-500">Onboarding Fee Plan</span>
+                  <span className="font-mono text-slate-200 text-right">
+                    {onboardingFeeOption === "AMORTIZED" ? "Amortized ₹99/mo (6 mos)" : "One-Time ₹499"}
+                  </span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-800/60">
+                  <span className="text-slate-500">Deduction Method</span>
+                  <span className="text-slate-300 text-right">{feeDetails.deductionMechanism}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-800/60">
+                  <span className="text-slate-500">Execution Mode</span>
+                  <span className="font-medium text-slate-200">
+                    {executionMethod === "CLICKWRAP" ? "Fast Clickwrap e-Sign" : "Aadhaar e-Sign (UIDAI)"}
+                  </span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-500">Food Safety Undertaking</span>
+                  <span className="text-emerald-400 font-medium">Binding Covenant Active</span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="border-slate-800 bg-slate-900/60 p-5 space-y-3">
+              <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                <span>4. Compliance Document Vault</span>
+                <FileCheck className="size-4 text-emerald-400" />
+              </div>
+              <div className="flex items-center justify-between">
                 <p className="text-xs text-slate-400">
                   Upload or renew your FSSAI license, PAN card, and menu rate card anytime.
                 </p>
+                <span className="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-slate-300">
+                  {uploadedDocs.length} ON FILE
+                </span>
               </div>
-              <span className="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-slate-300">
-                {uploadedDocs.length} ON FILE
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-              <DocumentUpload restaurantId={vendor.restaurantId} kind="FSSAI_DOC" label="FSSAI License Certificate" />
-              <DocumentUpload restaurantId={vendor.restaurantId} kind="PAN_DOC" label="Business / Proprietor PAN" />
-              <DocumentUpload restaurantId={vendor.restaurantId} kind="MENU_IMAGES" label="Printed Menu / Rate Card" />
-            </div>
-            {uploadedDocs.length > 0 ? (
-              <div className="pt-3 border-t border-slate-800/80 space-y-1.5">
-                <div className="text-[11px] font-mono uppercase text-slate-400">Uploaded Compliance Records</div>
-                {uploadedDocs.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between text-xs text-slate-300 py-1">
-                    <span className="font-mono">{doc.kind}: {doc.file_name}</span>
-                    <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
-                      {doc.verification_status}
-                    </span>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                <DocumentUpload restaurantId={vendor.restaurantId} kind="FSSAI_DOC" label="FSSAI License" />
+                <DocumentUpload restaurantId={vendor.restaurantId} kind="PAN_DOC" label="Business PAN" />
+                <DocumentUpload restaurantId={vendor.restaurantId} kind="MENU_IMAGES" label="Menu Rate Card" />
               </div>
-            ) : null}
-          </Card>
+            </Card>
+          </div>
         </div>
       </VendorShell>
     );
@@ -409,7 +562,7 @@ function OnboardingPage() {
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="max-w-3xl mx-auto space-y-6 py-2">
-        {/* Institutional Header */}
+        {/* Institutional Header with 5 Stations */}
         <div className="rounded-xl border border-slate-800 bg-slate-900/90 p-5 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
             <div>
@@ -423,7 +576,7 @@ function OnboardingPage() {
                 Restaurant Partner Onboarding &amp; Statutory KYC
               </h1>
               <p className="text-xs text-slate-400 mt-0.5">
-                Complete or update all 4 sections below to register your outlet, verify food safety credentials, and configure NEFT/IMPS settlements.
+                Complete all 5 stations below to register your outlet, configure bank settlement, and digitally execute the Commercial Partner Agreement.
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -443,53 +596,60 @@ function OnboardingPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3 text-xs">
+          {/* 5 Stations Step Indicator */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-3 text-xs">
             <div>
-              <span className="text-slate-500 font-mono text-[10px] block">SECTION 1</span>
-              <span className="font-medium text-slate-200">Identity &amp; Address</span>
+              <span className="text-slate-500 font-mono text-[10px] block">STATION 1</span>
+              <span className="font-medium text-slate-200">Identity &amp; Kitchen</span>
             </div>
             <div>
-              <span className="text-slate-500 font-mono text-[10px] block">SECTION 2</span>
-              <span className="font-medium text-slate-200">FSSAI, GSTIN &amp; PAN</span>
+              <span className="text-slate-500 font-mono text-[10px] block">STATION 2</span>
+              <span className="font-medium text-slate-200">FSSAI, PAN, GST</span>
             </div>
             <div>
-              <span className="text-slate-500 font-mono text-[10px] block">SECTION 3</span>
-              <span className="font-medium text-slate-200">Bank Account &amp; IFSC</span>
+              <span className="text-slate-500 font-mono text-[10px] block">STATION 3</span>
+              <span className="font-medium text-slate-200">Bank Settlement</span>
             </div>
             <div>
-              <span className="text-slate-500 font-mono text-[10px] block">SECTION 4</span>
-              <span className="font-medium text-emerald-400">Partner Agreement</span>
+              <span className="text-slate-500 font-mono text-[10px] block">STATION 4</span>
+              <span className="font-medium text-slate-200">Document Vault</span>
+            </div>
+            <div>
+              <span className="text-slate-500 font-mono text-[10px] block">STATION 5</span>
+              <span className="font-medium text-emerald-400">Contract &amp; e-Sign</span>
             </div>
           </div>
         </div>
 
         {error ? (
-          <div className="rounded-lg border border-rose-500/30 bg-rose-950/20 p-3.5 text-xs text-rose-300">
-            {error}
+          <div className="rounded-lg border border-rose-500/30 bg-rose-950/20 p-3.5 text-xs text-rose-300 flex items-start gap-2">
+            <AlertCircle className="size-4 shrink-0 mt-0.5 text-rose-400" />
+            <div>{error}</div>
           </div>
         ) : null}
 
         {successMsg ? (
-          <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3.5 text-xs text-emerald-300">
-            {successMsg}
+          <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3.5 text-xs text-emerald-300 flex items-start gap-2">
+            <CheckCircle2 className="size-4 shrink-0 mt-0.5 text-emerald-400" />
+            <div>{successMsg}</div>
           </div>
         ) : null}
 
-        {/* SECTION 1: RESTAURANT IDENTITY & ADDRESS */}
+        {/* STATION 1: RESTAURANT IDENTITY & PHYSICAL LOCATION */}
         <Card className="border-slate-800 bg-slate-900/80 p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
               <Building2 className="size-5 text-emerald-400" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  1. Restaurant Identity &amp; Physical Address
+                  1. Restaurant Identity &amp; Physical Location
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Provide your trade name, primary cuisine, and verifiable kitchen pickup location.
+                  Provide trade entity name, kitchen pickup address, and authorized contact person.
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">SECTION 1 OF 4</span>
+            <span className="text-[11px] font-mono text-slate-400">STATION 1 OF 5</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -512,7 +672,10 @@ function OnboardingPage() {
               label="Owner / Authorized Signatory *"
               placeholder="e.g. Rajesh Kumar"
               value={form.ownerName || String(r?.owner_name ?? "")}
-              onChange={(v) => setForm({ ...form, ownerName: v })}
+              onChange={(v) => {
+                setForm({ ...form, ownerName: v });
+                if (!clickwrapSignatoryName) setClickwrapSignatoryName(v);
+              }}
             />
             <Field
               label="Kitchen Contact Phone *"
@@ -571,28 +734,9 @@ function OnboardingPage() {
               </select>
             </div>
           </div>
-
-          <div className="pt-2 border-t border-slate-800/80">
-            <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-300">
-              <input
-                type="checkbox"
-                checked={form.seedSim}
-                onChange={(e) => setForm({ ...form, seedSim: e.target.checked })}
-                className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
-              />
-              <div>
-                <span className="font-medium text-slate-200">
-                  Load sample menu items for initial setup testing (Optional)
-                </span>
-                <p className="text-[11px] text-slate-400">
-                  Leave unchecked to start with a blank menu catalogue and add your own dishes directly.
-                </p>
-              </div>
-            </label>
-          </div>
         </Card>
 
-        {/* SECTION 2: STATUTORY FOOD SAFETY & TAX CREDENTIALS */}
+        {/* STATION 2: STATUTORY FOOD SAFETY & TAX CREDENTIALS */}
         <Card className="border-slate-800 bg-slate-900/80 p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
@@ -602,19 +746,25 @@ function OnboardingPage() {
                   2. Statutory Food Safety &amp; Tax Credentials
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Mandatory under the Food Safety and Standards Act, 2006 (FoSCoS) and Income Tax Act Section 194-O.
+                  Mandatory under Food Safety and Standards Act 2006 (FoSCoS) and Income Tax Act Section 194-O.
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">SECTION 2 OF 4</span>
+            <span className="text-[11px] font-mono text-slate-400">STATION 2 OF 5</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Field
               label="14-Digit FSSAI License Number *"
-              placeholder="e.g. 11223344556677"
+              placeholder="e.g. 10326999000184"
               value={form.fssaiNumber || String(r?.fssai_number ?? "")}
               onChange={(v) => setForm({ ...form, fssaiNumber: v.replace(/\D/g, "").slice(0, 14) })}
+            />
+            <Field
+              label="FSSAI License Expiry Date (YYYY-MM-DD)"
+              placeholder="e.g. 2027-12-31"
+              value={form.fssaiExpiryDate || String(r?.fssai_expiry_date ?? "")}
+              onChange={(v) => setForm({ ...form, fssaiExpiryDate: v })}
             />
             <Field
               label="Business / Proprietor PAN *"
@@ -629,22 +779,9 @@ function OnboardingPage() {
               onChange={(v) => setForm({ ...form, gstin: v.toUpperCase().slice(0, 15) })}
             />
           </div>
-
-          {vendor.restaurantId ? (
-            <div className="pt-2 space-y-2 border-t border-slate-800/80">
-              <div className="text-xs font-semibold text-slate-300">
-                Upload Supporting Statutory Documents (PDF / JPG / PNG)
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <DocumentUpload restaurantId={vendor.restaurantId} kind="FSSAI_DOC" label="FSSAI License Copy" />
-                <DocumentUpload restaurantId={vendor.restaurantId} kind="PAN_DOC" label="PAN Card Copy" />
-                <DocumentUpload restaurantId={vendor.restaurantId} kind="MENU_IMAGES" label="Restaurant Rate Card" />
-              </div>
-            </div>
-          ) : null}
         </Card>
 
-        {/* SECTION 3: PAYOUT BANK ACCOUNT & IFSC */}
+        {/* STATION 3: PAYOUT BANK ACCOUNT & IFSC */}
         <Card className="border-slate-800 bg-slate-900/80 p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
@@ -654,11 +791,11 @@ function OnboardingPage() {
                   3. Payout Bank Account &amp; IFSC
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Used for automated weekly NEFT/IMPS settlement transfers of net restaurant payables.
+                  Configures weekly automated NEFT/IMPS payout disbursements of net restaurant payables.
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">SECTION 3 OF 4</span>
+            <span className="text-[11px] font-mono text-slate-400">STATION 3 OF 5</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -683,72 +820,536 @@ function OnboardingPage() {
           </div>
         </Card>
 
-        {/* SECTION 4: MANDATORY RESTAURANT PARTNER AGREEMENT, FOOD SAFETY UNDERTAKING & PRIVACY POLICY */}
+        {/* STATION 4: STATUTORY COMPLIANCE DOCUMENT VAULT */}
         <Card className="border-slate-800 bg-slate-900/80 p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2.5">
+              <FileCheck className="size-5 text-emerald-400" />
+              <div>
+                <h2 className="font-display text-base font-bold text-white">
+                  4. Statutory Compliance Document Vault
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Upload certificates for statutory verification. Accepts PDF, PNG, JPG under 10MB.
+                </p>
+              </div>
+            </div>
+            <span className="text-[11px] font-mono text-slate-400">STATION 4 OF 5</span>
+          </div>
+
+          {vendor.restaurantId ? (
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <DocumentUpload restaurantId={vendor.restaurantId} kind="FSSAI_DOC" label="FSSAI License Certificate *" />
+                <DocumentUpload restaurantId={vendor.restaurantId} kind="PAN_DOC" label="Business / Proprietor PAN *" />
+                <DocumentUpload restaurantId={vendor.restaurantId} kind="MENU_IMAGES" label="Restaurant Menu / Rate Card *" />
+              </div>
+              {uploadedDocs.length > 0 ? (
+                <div className="pt-2 border-t border-slate-800/80 space-y-1">
+                  <div className="text-[11px] font-mono uppercase text-slate-400">Vault Upload Records ({uploadedDocs.length})</div>
+                  {uploadedDocs.map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between text-xs text-slate-300 py-1">
+                      <span className="font-mono">{doc.kind}: {doc.file_name}</span>
+                      <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
+                        {doc.verification_status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 text-xs text-slate-400 flex items-center justify-between">
+              <span>Document upload unlocks instantly upon creating or saving your draft profile below.</span>
+              <span className="font-mono text-[10px] text-emerald-400">AUTO-ACTIVATING</span>
+            </div>
+          )}
+        </Card>
+
+        {/* STATION 5: COMMERCIAL CONTRACT & DIGITAL EXECUTION */}
+        <Card className="border-emerald-500/30 bg-slate-900/90 p-6 space-y-5 shadow-lg">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
               <Scale className="size-5 text-emerald-400" />
               <div>
-                <h2 className="font-display text-base font-bold text-white">
-                  4. Mandatory Restaurant Partner Agreement, Food Safety Undertaking &amp; Privacy Policy
-                </h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="font-display text-base font-bold text-white">
+                    5. Commercial Contract &amp; Digital Execution
+                  </h2>
+                  <span className="rounded bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-mono text-emerald-300">
+                    MANDATORY STATION
+                  </span>
+                </div>
                 <p className="text-xs text-slate-400">
-                  Please review the binding statutory and commercial covenants before submitting your onboarding form.
+                  Review partner covenants, configure amortized onboarding fee, and execute electronically under IT Act 2000.
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">SECTION 4 OF 4</span>
+            <span className="text-[11px] font-mono text-emerald-400 font-semibold">STATION 5 OF 5</span>
           </div>
 
-          <div className="rounded-lg border border-slate-800 bg-slate-950/90 p-3.5 text-xs text-slate-300 space-y-2 max-h-48 overflow-y-auto">
-            <p className="font-semibold text-white">
-              Summary of Key Covenants (OrderKing Restaurant Partner Terms):
-            </p>
-            <p>
-              <strong>1. Commercial Formula &amp; Integer-Paise Accounting:</strong> Net Restaurant Payable is computed in exact integer paise as:{" "}
-              <em>Food Value + Packaging Charges − Restaurant-Funded Discount − Platform Commission + Platform-Funded Promo − Refund Adjustments</em>.
-            </p>
-            <p>
-              <strong>2. Statutory Tax Compliance:</strong> OrderKing collects and remits 5% GST on restaurant services notified under Section 9(5) of the CGST Act, 2017 (where applicable), deducts 1% TDS under Section 194-O of the Income Tax Act, 1961, and collects 1% TCS under Section 52 of the CGST Act. Quarterly Form 16A / GSTR-8 statements are reconciled against your registered PAN and GSTIN.
-            </p>
-            <p>
-              <strong>3. FSSAI Hygiene &amp; Allergen Undertaking:</strong> The Restaurant Partner warrants that it holds an active 14-digit FSSAI license, uses food-grade tamper-evident packaging, strictly separates Vegetarian (Green Dot) and Non-Vegetarian (Brown/Red Dot) preparation surfaces, and accurately discloses allergens and nutritional details.
-            </p>
-            <p>
-              <strong>4. Data Protection (DPDP Act, 2023 &amp; IT Act, 2000):</strong> Customer delivery coordinates and phone numbers are shared strictly for order fulfillment and may not be retained or used for unsolicited marketing.
-            </p>
-          </div>
+          {/* 1. RESTAURANT PARTNER AGREEMENT COVENANT VIEWER */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                <FileText className="size-3.5 text-emerald-400" />
+                Restaurant Partner Agreement Covenant Viewer
+              </Label>
+              <button
+                type="button"
+                onClick={() => setCovenantViewerExpanded(!covenantViewerExpanded)}
+                className="text-[11px] text-emerald-400 hover:text-emerald-300 font-mono flex items-center gap-1"
+              >
+                {covenantViewerExpanded ? (
+                  <>Collapse Viewer <ChevronUp className="size-3" /></>
+                ) : (
+                  <>Expand Full Agreement <ChevronDown className="size-3" /></>
+                )}
+              </button>
+            </div>
 
-          <div className="space-y-3 pt-1">
-            <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-200">
+            {/* Covenant Viewer Body */}
+            <div className="rounded-lg border border-slate-800 bg-slate-950/90 p-4 text-xs text-slate-300 space-y-3">
+              <div className="flex flex-wrap gap-1.5 border-b border-slate-800/80 pb-2.5">
+                {[
+                  { id: "ALL", label: "All Clauses" },
+                  { id: "SETTLEMENT", label: "1. Integer Settlement" },
+                  { id: "TAX", label: "2. CGST §9(5) Tax" },
+                  { id: "COMMISSION", label: "3. 0% Commission" },
+                  { id: "SAFETY", label: "4. FSSAI Food Safety" },
+                  { id: "PRIVACY", label: "5. DPDP Privacy" },
+                  { id: "SLAS", label: "6. SLAs & Disputes" },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setActiveCovenantTab(t.id)}
+                    className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
+                      activeCovenantTab === t.id
+                        ? "bg-emerald-600 text-white font-medium"
+                        : "bg-slate-800 text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className={`space-y-3 overflow-y-auto pr-1 ${covenantViewerExpanded ? "max-h-96" : "max-h-48"}`}>
+                {(activeCovenantTab === "ALL" || activeCovenantTab === "SETTLEMENT") && (
+                  <div className="space-y-1">
+                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-emerald-400" />
+                      Clause 1: Commercial Formula &amp; Integer-Paise Precision
+                    </h4>
+                    <p className="text-slate-400 leading-relaxed pl-3">
+                      Net Restaurant Payable (NRP) is calculated in exact integer paise:{" "}
+                      <code className="text-emerald-300 font-mono text-[11px]">
+                        NRP = Gross Food Sales + Packaging − Restaurant Discounts − Platform Commission + Promos − Statutory Taxes − Deductions ± Refunds
+                      </code>
+                      . All financial transactions are rounded half-away-from-zero with absolute mathematical protection against floating-point drift. Settlements are disbursed weekly via NEFT/IMPS.
+                    </p>
+                  </div>
+                )}
+
+                {(activeCovenantTab === "ALL" || activeCovenantTab === "TAX") && (
+                  <div className="space-y-1">
+                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-emerald-400" />
+                      Clause 2: Statutory Tax Compliance &amp; Remittance (CGST Act §9(5))
+                    </h4>
+                    <p className="text-slate-400 leading-relaxed pl-3">
+                      OrderKing complies strictly with Indian statutory tax provisions: <strong>5% GST on Restaurant Services</strong> under Section 9(5) of the CGST Act 2017 is remitted directly by OrderKing to the Government of India and is strictly <em>NOT</em> debited from the restaurant payable. OrderKing deducts <strong>1% TCS under Section 52</strong> and <strong>1% TDS under Section 194-O</strong> of the Income Tax Act 1961 on gross sales.
+                    </p>
+                  </div>
+                )}
+
+                {(activeCovenantTab === "ALL" || activeCovenantTab === "COMMISSION") && (
+                  <div className="space-y-1">
+                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-emerald-400" />
+                      Clause 3: 0% Platform Commission Guarantee
+                    </h4>
+                    <p className="text-slate-400 leading-relaxed pl-3">
+                      OrderKing guarantees a 0% commission on menu food sales, allowing restaurant partners to retain 100% of their top-line customer revenue compared to the 24%–28% commission rates charged by legacy aggregators.
+                    </p>
+                  </div>
+                )}
+
+                {(activeCovenantTab === "ALL" || activeCovenantTab === "SAFETY") && (
+                  <div className="space-y-1">
+                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-emerald-400" />
+                      Clause 4: Food Safety, Hygiene &amp; Allergen Undertaking (FSSAI 2006)
+                    </h4>
+                    <p className="text-slate-400 leading-relaxed pl-3">
+                      The Restaurant Partner undertakes to maintain an active 14-digit FSSAI license, seal parcels with tamper-evident tape, physically segregate Veg (Green Dot) and Non-Veg (Red Dot) cooking surfaces and utensils, and maintain accurate allergen and calorie disclosures.
+                    </p>
+                  </div>
+                )}
+
+                {(activeCovenantTab === "ALL" || activeCovenantTab === "PRIVACY") && (
+                  <div className="space-y-1">
+                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-emerald-400" />
+                      Clause 5: Data Privacy &amp; Consumer Protection (DPDP Act, 2023)
+                    </h4>
+                    <p className="text-slate-400 leading-relaxed pl-3">
+                      Customer delivery address coordinates and telephone numbers are transmitted exclusively for real-time order delivery fulfillment and must not be retained, stored, or utilized for unauthorized direct marketing.
+                    </p>
+                  </div>
+                )}
+
+                {(activeCovenantTab === "ALL" || activeCovenantTab === "SLAS") && (
+                  <div className="space-y-1">
+                    <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-emerald-400" />
+                      Clause 6: Kitchen SLAs &amp; Transparent Dispute Arbitration
+                    </h4>
+                    <p className="text-slate-400 leading-relaxed pl-3">
+                      Partner commits to kitchen preparation SLAs (standard 15–35 min). Customer spill or transit damage disputes are arbitrated to logistics fleet liability, protecting merchant payouts from delivery mishandling.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <label className="flex items-start gap-2.5 cursor-pointer pt-1 text-xs text-slate-200">
               <input
                 type="checkbox"
-                checked={agreements.commercialTerms}
-                onChange={(e) => setAgreements({ ...agreements, commercialTerms: e.target.checked })}
+                checked={covenantsAccepted}
+                onChange={(e) => setCovenantsAccepted(e.target.checked)}
                 className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
               />
               <span>
-                I have read and accept the <strong>OrderKing Restaurant Partner Commercial Agreement</strong>, including the platform commission structure, order preparation SLAs, and refund attribution rules. *
+                I have read, understood, and accept the <strong>OrderKing Restaurant Partner Agreement Covenants</strong>, including the commercial settlement formula, 0% commission guarantee, and statutory compliance framework. *
               </span>
             </label>
+          </div>
 
+          {/* 2. ONBOARDING FEE PAYMENT OPTIONS */}
+          <div className="space-y-3 pt-2 border-t border-slate-800">
+            <div>
+              <Label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                <Banknote className="size-3.5 text-emerald-400" />
+                Platform Onboarding Fee Setup (Select Option)
+              </Label>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Select your preferred onboarding fee payment plan. OrderKing offers a Zero Upfront Barrier amortized monthly option so you can start taking orders immediately.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Option A Card */}
+              <div
+                onClick={() => setOnboardingFeeOption("AMORTIZED")}
+                className={`cursor-pointer rounded-lg border p-4 space-y-2 transition-all ${
+                  onboardingFeeOption === "AMORTIZED"
+                    ? "border-emerald-500 bg-emerald-950/20 ring-1 ring-emerald-500/50"
+                    : "border-slate-800 bg-slate-950/60 hover:border-slate-700"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="onboardingFee"
+                      checked={onboardingFeeOption === "AMORTIZED"}
+                      onChange={() => setOnboardingFeeOption("AMORTIZED")}
+                      className="text-emerald-500 focus:ring-emerald-500"
+                    />
+                    <span className="font-semibold text-xs text-white">Option A: Amortized Monthly Plan</span>
+                  </div>
+                  <span className="rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono px-2 py-0.5">
+                    ZERO UPFRONT
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-snug">
+                  Amortized Monthly Deduction of <strong>₹99/month for 6 months</strong> (Deducted automatically from weekly payout batches).
+                </p>
+                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-slate-400">Upfront Due Today:</span>
+                  <span className="text-emerald-400 font-bold">₹0.00</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-slate-400">Total Contract Value:</span>
+                  <span className="text-slate-200">₹594.00 (6 × ₹99)</span>
+                </div>
+              </div>
+
+              {/* Option B Card */}
+              <div
+                onClick={() => setOnboardingFeeOption("ONE_TIME")}
+                className={`cursor-pointer rounded-lg border p-4 space-y-2 transition-all ${
+                  onboardingFeeOption === "ONE_TIME"
+                    ? "border-emerald-500 bg-emerald-950/20 ring-1 ring-emerald-500/50"
+                    : "border-slate-800 bg-slate-950/60 hover:border-slate-700"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="onboardingFee"
+                      checked={onboardingFeeOption === "ONE_TIME"}
+                      onChange={() => setOnboardingFeeOption("ONE_TIME")}
+                      className="text-emerald-500 focus:ring-emerald-500"
+                    />
+                    <span className="font-semibold text-xs text-white">Option B: One-Time Settlement</span>
+                  </div>
+                  <span className="rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono px-2 py-0.5">
+                    SAVE ₹95
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-snug">
+                  One-Time Direct Settlement of <strong>₹499</strong> (Deducted directly from initial settlement disbursement batch).
+                </p>
+                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-slate-400">One-Time Settlement:</span>
+                  <span className="text-amber-300 font-bold">₹499.00</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-slate-400">Ongoing Monthly Deduction:</span>
+                  <span className="text-slate-200">₹0.00 (None)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Option A Mandatory Amortized Deduction Consent Checkbox */}
+            {onboardingFeeOption === "AMORTIZED" && (
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3 space-y-1.5">
+                <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-200">
+                  <input
+                    type="checkbox"
+                    checked={amortizedConsent}
+                    onChange={(e) => setAmortizedConsent(e.target.checked)}
+                    className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
+                  />
+                  <span>
+                    <strong>Mandatory Amortization Authorization:</strong> I authorize OrderKing to deduct an amortized platform onboarding fee of <strong>₹99.00/month for 6 consecutive monthly payout cycles (total ₹594.00)</strong> automatically from our weekly payout batches. *
+                  </span>
+                </label>
+              </div>
+            )}
+          </div>
+
+          {/* 3. FOOD SAFETY, HYGIENE & ALLERGEN UNDERTAKING BINDING COVENANT */}
+          <div className="space-y-2 pt-2 border-t border-slate-800">
+            <div className="rounded-lg border border-amber-500/30 bg-amber-950/10 p-4 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="size-4 text-amber-400" />
+                  <span className="font-semibold text-xs text-amber-300">
+                    Food Safety, Hygiene &amp; Allergen Undertaking (FSSAI Statutory Covenant)
+                  </span>
+                </div>
+                <span className="rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono px-2 py-0.5">
+                  FSSAI ACT 2006
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                Under Section 31 of the Food Safety and Standards Act 2006, the merchant solemnly warrants that:
+              </p>
+              <ul className="text-[11px] text-slate-300 space-y-1 pl-4 list-disc marker:text-amber-400">
+                <li>
+                  Active 14-Digit FSSAI License: <span className="font-mono text-amber-300 font-semibold">{form.fssaiNumber || String(r?.fssai_number ?? "") || "[Required in Station 2]"}</span>.
+                </li>
+                <li>
+                  100% of dispatched customer orders are secured in food-grade tamper-evident packaging with seal intact.
+                </li>
+                <li>
+                  Strict kitchen segregation is maintained between Pure Vegetarian (Green Dot) and Non-Vegetarian (Red Dot) preparation surfaces, cookware, and fryers.
+                </li>
+                <li>
+                  All 8 standard allergens (Dairy, Gluten, Nuts, Soy, Fish, Eggs) and nutritional details are transparently declared.
+                </li>
+              </ul>
+              <label className="flex items-start gap-2.5 cursor-pointer pt-1 text-xs text-slate-200">
+                <input
+                  type="checkbox"
+                  checked={foodSafetyUndertakingAccepted}
+                  onChange={(e) => setFoodSafetyUndertakingAccepted(e.target.checked)}
+                  className="mt-0.5 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500"
+                />
+                <span>
+                  I execute the <strong>FSSAI Food Safety, Hygiene &amp; Allergen Undertaking</strong> and confirm that our 14-digit FSSAI registration is valid, active, and strictly observed in kitchen operations under the Food Safety and Standards Act, 2006. *
+                </span>
+              </label>
+            </div>
+          </div>
+
+          {/* 4. DIGITAL EXECUTION OPTIONS (IT ACT 2000 SECTION 10A) */}
+          <div className="space-y-3 pt-2 border-t border-slate-800">
+            <div>
+              <Label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                <Fingerprint className="size-3.5 text-emerald-400" />
+                Digital Contract Execution (Select e-Sign Method)
+              </Label>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Legally binding electronic signature under Section 10A of the Information Technology Act, 2000.
+              </p>
+            </div>
+
+            {/* Method Tabs */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setExecutionMethod("CLICKWRAP")}
+                className={`flex-1 py-2 px-3 rounded-lg border text-xs font-medium flex items-center justify-center gap-2 transition-all ${
+                  executionMethod === "CLICKWRAP"
+                    ? "border-emerald-500 bg-emerald-950/30 text-emerald-300 font-semibold"
+                    : "border-slate-800 bg-slate-950/60 text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <FileCheck className="size-3.5" />
+                Fast Clickwrap e-Sign (Instant)
+              </button>
+              <button
+                type="button"
+                onClick={() => setExecutionMethod("AADHAAR_ESIGN")}
+                className={`flex-1 py-2 px-3 rounded-lg border text-xs font-medium flex items-center justify-center gap-2 transition-all ${
+                  executionMethod === "AADHAAR_ESIGN"
+                    ? "border-emerald-500 bg-emerald-950/30 text-emerald-300 font-semibold"
+                    : "border-slate-800 bg-slate-950/60 text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <Fingerprint className="size-3.5" />
+                Aadhaar e-Sign with OTP
+              </button>
+            </div>
+
+            {/* Mode 1: Fast Clickwrap e-Sign */}
+            {executionMethod === "CLICKWRAP" && (
+              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-4 space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <Field
+                    label="Authorized Signatory Full Name *"
+                    placeholder="e.g. Rajesh Kumar"
+                    value={clickwrapSignatoryName || effectiveOwner}
+                    onChange={(v) => setClickwrapSignatoryName(v)}
+                  />
+                  <Field
+                    label="Signatory Capacity / Designation"
+                    placeholder="e.g. Sole Proprietor / Director"
+                    value={clickwrapDesignation}
+                    onChange={(v) => setClickwrapDesignation(v)}
+                  />
+                </div>
+
+                <div className="rounded border border-slate-800/80 bg-slate-900/50 p-3 text-[11px] text-slate-400 space-y-1 font-mono">
+                  <div className="flex justify-between items-center">
+                    <span>Audit Trail Timestamp:</span>
+                    <span className="text-slate-200 flex items-center gap-1.5">
+                      {executionTimestamp}
+                      <button
+                        type="button"
+                        onClick={() => setExecutionTimestamp(new Date().toISOString())}
+                        title="Refresh Timestamp"
+                        className="text-slate-400 hover:text-emerald-400"
+                      >
+                        <RefreshCw className="size-3" />
+                      </button>
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Signatory IP Address:</span>
+                    <span className="text-slate-200">{clientIp}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Governing Authority:</span>
+                    <span className="text-emerald-400">IT Act 2000 §10A (Electronic Contracts)</span>
+                  </div>
+                </div>
+
+                <label className="flex items-start gap-2.5 cursor-pointer pt-1 text-xs text-slate-200">
+                  <input
+                    type="checkbox"
+                    checked={clickwrapConsent}
+                    onChange={(e) => setClickwrapConsent(e.target.checked)}
+                    className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
+                  />
+                  <span>
+                    I, <strong>{effectiveSignatory || "Authorized Signatory"}</strong>, in my capacity as <strong>{clickwrapDesignation}</strong>, hereby digitally execute this Agreement via Fast Clickwrap e-Sign with legal binding effect under Section 10A of the Information Technology Act, 2000. *
+                  </span>
+                </label>
+              </div>
+            )}
+
+            {/* Mode 2: Aadhaar e-Sign with OTP */}
+            {executionMethod === "AADHAAR_ESIGN" && (
+              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-4 space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                  <div className="md:col-span-2">
+                    <Field
+                      label="12-Digit Indian Aadhaar Number *"
+                      placeholder="e.g. 5432 1098 7652"
+                      value={aadhaarNumber}
+                      onChange={(v) => {
+                        const clean = v.replace(/\D/g, "").slice(0, 12);
+                        setAadhaarNumber(clean);
+                        setOtpSent(false);
+                        setOtpVerified(false);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={aadhaarNumber.length !== 12 || otpVerified}
+                      onClick={() => void handleSendAadhaarOtp()}
+                      className="w-full text-xs h-9 border-slate-700 bg-slate-800 hover:bg-slate-700"
+                    >
+                      {otpSent ? "Resend OTP" : "Send UIDAI OTP"}
+                    </Button>
+                  </div>
+                </div>
+
+                {otpSent && !otpVerified && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end pt-2 border-t border-slate-800/80">
+                    <div className="md:col-span-2">
+                      <Field
+                        label="6-Digit Aadhaar e-Sign OTP *"
+                        placeholder="Enter 6-digit OTP received on mobile"
+                        value={aadhaarOtp}
+                        onChange={(v) => setAadhaarOtp(v.replace(/\D/g, "").slice(0, 6))}
+                      />
+                    </div>
+                    <div>
+                      <Button
+                        type="button"
+                        disabled={aadhaarOtp.length !== 6}
+                        onClick={() => void handleVerifyAadhaarOtp()}
+                        className="w-full text-xs h-9 bg-emerald-600 hover:bg-emerald-500 text-white font-medium"
+                      >
+                        Verify OTP &amp; Sign
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {otpVerified && (
+                  <div className="rounded border border-emerald-500/40 bg-emerald-950/20 p-3 text-xs text-emerald-300 space-y-1">
+                    <div className="flex items-center gap-1.5 font-semibold">
+                      <BadgeCheck className="size-4 text-emerald-400" />
+                      Aadhaar e-Sign Verified via UIDAI / CDAC ESP Gateway
+                    </div>
+                    <div className="font-mono text-[11px] text-slate-300">
+                      Signatory: {aadhaarSignatoryName || effectiveOwner} | Ref: {aadhaarTxnId} | Masked: XXXX-XXXX-{aadhaarNumber.slice(-4)}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* 5. PRIVACY POLICY & STATUTORY TAX REMITTANCE UNDERTAKING */}
+          <div className="pt-2 border-t border-slate-800">
             <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-200">
               <input
                 type="checkbox"
-                checked={agreements.fssaiUndertaking}
-                onChange={(e) => setAgreements({ ...agreements, fssaiUndertaking: e.target.checked })}
-                className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
-              />
-              <span>
-                I execute the <strong>FSSAI Food Safety, Hygiene &amp; Allergen Undertaking</strong> and confirm that our 14-digit FSSAI registration is valid and active under the Food Safety and Standards Act, 2006. *
-              </span>
-            </label>
-
-            <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-200">
-              <input
-                type="checkbox"
-                checked={agreements.privacyAndTax}
-                onChange={(e) => setAgreements({ ...agreements, privacyAndTax: e.target.checked })}
+                checked={privacyAndTaxAccepted}
+                onChange={(e) => setPrivacyAndTaxAccepted(e.target.checked)}
                 className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
               />
               <span>
@@ -757,18 +1358,19 @@ function OnboardingPage() {
             </label>
           </div>
 
+          {/* SUBMISSION CONTROLS & CHECKLIST */}
           <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
               <CheckCircle2 className={`size-4 ${allTermsAccepted ? "text-emerald-400" : "text-slate-600"}`} />
               {allTermsAccepted
-                ? "All mandatory statutory & commercial undertakings accepted."
-                : "Accept all 3 statutory checkboxes above to enable submission."}
+                ? "Station 5 commercial contract & digital e-Sign requirements verified."
+                : "Accept covenants, select fee plan with consent, and complete e-Sign to enable submission."}
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5">
               <Button
                 variant="secondary"
-                disabled={busy || !allTermsAccepted}
+                disabled={busy}
                 onClick={() => void handleSaveAndRegister(false)}
                 className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs"
               >

@@ -22,7 +22,11 @@ export interface KotTicket {
   status: "PREPARING" | "READY" | "BUMPED";
 }
 
-export function KitchenDisplayStation() {
+export function KitchenDisplayStation({
+  prepThrottleBuffer = 0,
+}: {
+  prepThrottleBuffer?: number;
+}) {
   const [activeStationFilter, setActiveStationFilter] = useState<string>("ALL");
   const [tickets, setTickets] = useState<KotTicket[]>([
     {
@@ -138,8 +142,10 @@ export function KitchenDisplayStation() {
       {/* Ticket Columns */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {tickets.map((t) => {
-          const isDelayed = t.elapsedSeconds >= 900; // >15 mins
-          const isRush = t.elapsedSeconds >= 600 && !isDelayed; // 10-15 mins
+          const delayedThreshold = 900 + prepThrottleBuffer * 60; // 15 mins + rush buffer
+          const rushThreshold = 600 + prepThrottleBuffer * 60; // 10 mins + rush buffer
+          const isDelayed = t.elapsedSeconds >= delayedThreshold;
+          const isRush = t.elapsedSeconds >= rushThreshold && !isDelayed;
 
           const visibleItems =
             activeStationFilter === "ALL"

@@ -145,7 +145,7 @@ function DeliveryDirectoryPage() {
                   <div key={hub.slug} className="rounded-xl border border-border/50 bg-surface-2/40 p-3">
                     <div className="flex items-center justify-between">
                       <Link
-                        to={`/delivery/${hub.slug}/all`}
+                        to={`/delivery/${hub.slug}/all` as any}
                         className="font-bold text-sm text-foreground hover:text-primary transition flex items-center gap-1"
                       >
                         <span>{hub.name}</span>
@@ -160,7 +160,7 @@ function DeliveryDirectoryPage() {
                         return (
                           <Link
                             key={area}
-                            to={`/delivery/${hub.slug}/${areaSlug}`}
+                            to={`/delivery/${hub.slug}/${areaSlug}` as any}
                             className="rounded-md border border-border bg-surface px-2 py-0.5 text-[11px] text-muted hover:border-primary/40 hover:text-foreground transition"
                           >
                             {area}

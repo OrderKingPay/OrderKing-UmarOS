@@ -22,19 +22,26 @@ export const Route = createFileRoute("/api/razorpay/verify")({
             });
           }
 
-          const hmac = crypto.createHmac("sha256", secret);
-          hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
-          const generatedSignature = hmac.digest("hex");
-
-          let isValid = false;
-          try {
-            isValid = crypto.timingSafeEqual(
-              Buffer.from(generatedSignature, "hex"),
-              Buffer.from(razorpay_signature, "hex")
-            );
-          } catch (e) {
-            isValid = false;
+          if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+            return new Response(JSON.stringify({ error: "Missing required verification parameters" }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            });
           }
+
+          if (!/^[a-zA-Z0-9_]{6,64}$/.test(razorpay_order_id) || !/^[a-zA-Z0-9_]{6,64}$/.test(razorpay_payment_id)) {
+            return new Response(JSON.stringify({ error: "Invalid payment identifier format" }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          const hmac = crypto.createHmac("sha256", secret);
+          hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
+          const expectedDigest = hmac.digest();
+          const receivedDigest = Buffer.from(razorpay_signature, "hex");
+
+          const isValid = receivedDigest.length === 32 && crypto.timingSafeEqual(expectedDigest, receivedDigest);
 
           if (isValid) {
             const user = await getSessionUser();

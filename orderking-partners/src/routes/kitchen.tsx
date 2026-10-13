@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
 import { OrderCard, type OrderView } from "@/components/order-card";
@@ -13,8 +13,23 @@ import { getSoundboxStatus, activateSoundbox } from "@/lib/server/api-finance";
 import { isFeatureEnabled, type AppLanguage } from "@/lib/platform-config";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
 import { supabaseCloud } from "@/lib/db-cloud";
-import { BellOff, BellRing, ChefHat, Volume2, VolumeX } from "lucide-react";
+import {
+  BellOff,
+  BellRing,
+  ChefHat,
+  Volume2,
+  VolumeX,
+  Flame,
+  PauseCircle,
+  PlayCircle,
+  LayoutGrid,
+  Monitor,
+  Printer,
+} from "lucide-react";
 import { KingPaySoundboxEngine } from "@/components/KingPaySoundboxEngine";
+import { KitchenDisplayStation } from "@/components/kitchen-display-station";
+import { UniversalPosHardwareManager } from "@/components/universal-pos-hardware";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/kitchen")({ component: KitchenPage });
 
@@ -30,26 +45,21 @@ function getVoiceBcp47(lang: AppLanguage): string {
   return INDIAN_LANGUAGE_CATALOG.find((item) => item.code === lang)?.bcp47 ?? "en-IN";
 }
 
-function buildLocalizedVoiceAlert(lang: AppLanguage, shortId: string, amountRs: number): string {
+/**
+ * 22 Recognized 8th Schedule Indian Languages + English Speech Alert Builder
+ */
+export function buildLocalizedVoiceAlert(lang: AppLanguage, shortId: string, amountRs: number): string {
   switch (lang) {
     case "hi":
-    case "mai":
-    case "ne":
-    case "kok":
-    case "doi":
-    case "brx":
-    case "sa":
-    case "sd":
       return `ऑर्डर किंग किचन अलर्ट: नया ऑर्डर नंबर ${shortId} प्राप्त हुआ है। कुल राशि ${amountRs} रुपये।`;
     case "bn":
-    case "mni":
       return `অর্ডার কিং কিচেন অ্যালার্ট: নতুন অর্ডার নম্বর ${shortId} এসেছে। মোট মূল্য ${amountRs} টাকা।`;
     case "te":
       return `ఆర్డర్ కింగ్ కిచెన్ అలర్ట్: కొత్త ఆర్డర్ నంబర్ ${shortId} వచ్చింది. మొత్తం విలువ ${amountRs} రూపాయలు.`;
     case "ta":
       return `ஆர்டர் கிங் கிச்சன் அலர்ட்: புதிய ஆர்டர் எண் ${shortId} வந்துள்ளது. மொத்த தொகை ${amountRs} ரூபாய்.`;
     case "mr":
-      return `ऑर्डर किंग किचन अलर्ट: नवीन ऑर्डर क्रमांक ${shortId} प्राप्त झाली आहे. एकूण रक्कम ${amountRs} रुपये.`;
+      return `ऑर्डर किंग किचन अलर्ट: नवीन ऑर्डर क्रमांक ${shortId} प्राप्त झाली आहे. एकूण रक्कम ${amountRs} रुपये।`;
     case "gu":
       return `ઓર્ડર કિંગ કિચન એલર્ટ: નવો ઓર્ડર નંબર ${shortId} મળ્યો છે. કુલ રકમ ${amountRs} રૂપિયા.`;
     case "kn":
@@ -63,8 +73,27 @@ function buildLocalizedVoiceAlert(lang: AppLanguage, shortId: string, amountRs: 
     case "as":
       return `অৰ্ডাৰ কিং কিচেন এলাৰ্ট: নতুন অৰ্ডাৰ নম্বৰ ${shortId} লাভ কৰা হৈছে। মুঠ মূল্য ${amountRs} টকা।`;
     case "ur":
-    case "ks":
       return `آرڈر کنگ کچن الرٹ: نیا آرڈر نمبر ${shortId} موصول ہوا ہے۔ کل رقم ${amountRs} روپے۔`;
+    case "mai":
+      return `अर्डर किंग भानस घर सूचना: नवका अर्डर नम्बर ${shortId} प्राप्त भेल अछि। कुल राशि ${amountRs} टाका।`;
+    case "sat":
+      return `ᱚᱨᱰᱟᱨ ᱠᱤᱝ ᱠᱤᱪᱮᱱ ᱠᱷᱚᱵᱚᱨ: ᱱᱟᱣᱟ ᱚᱨᱰᱟᱨ ᱱᱚᱢᱵᱚᱨ ${shortId} ᱧᱟᱢ ᱟᱠᱟᱱᱟ᱾ ᱢᱩᱴ ᱴᱟᱠᱟ ${amountRs} ᱴᱟᱠᱟ᱾`;
+    case "ks":
+      return `آرڈر کنگ وژھن الرٹ: نوو آرڈر نمبر ${shortId} موصول گوو۔ کُل رقم ${amountRs} روپیہ۔`;
+    case "ne":
+      return `अर्डर किङ भान्छा सूचना: नयाँ अर्डर नम्बर ${shortId} प्राप्त भएको छ। जम्मा रकम ${amountRs} रुपैयाँ।`;
+    case "sd":
+      return `آرڊر ڪنگ باورچي خاني الرٽ: نئون آرڊر نمبر ${shortId} مليو آهي. ڪل رقم ${amountRs} رپيا.`;
+    case "kok":
+      return `ऑर्डर किंग कुजनातली सूचना: नवो ऑर्डर नंबर ${shortId} आयला। एकूण रक्कम ${amountRs} रुपया।`;
+    case "doi":
+      return `ऑर्डर किंग रसोई सूचना: नमां ऑर्डर नंबर ${shortId} आया ऐ। कुल रकम ${amountRs} रपे।`;
+    case "mni":
+      return `ওর্ডর কিং চানাপোৎ শেম্ফম পাউ: অনৌবা ওর্ডর নম্বর ${shortId} ফংলে। অপুনবা লুপা ${amountRs}।`;
+    case "brx":
+      return `अर्डर किनि संनाय न'नि खौरां: गोदान अर्डर नम्बर ${shortId} फैबाय। गासै रां ${amountRs} रां।`;
+    case "sa":
+      return `आर्डर-किङ्ग-पाकशाला-सूचना: नूतन-आदेश-क्रमाङ्कः ${shortId} प्राप्तः। कुल-मूल्यम् ${amountRs} रूप्यकाणि।`;
     default:
       return `OrderKing Kitchen Alert: New order #${shortId} received. Order value ₹${amountRs}.`;
   }
@@ -177,6 +206,53 @@ function KitchenPage() {
   const soundOn = useClientState((s) => s.soundOn);
   const setSoundOn = useClientState((s) => s.setSoundOn);
 
+  // Active view tab: Live Kanban vs KDS Cook Station vs POS Gateway
+  const [activeTab, setActiveTab] = useState<"BOARD" | "KDS" | "HARDWARE">("BOARD");
+  const [testVoiceLang, setTestVoiceLang] = useState<AppLanguage>(lang);
+
+  // Kitchen Throttling (+15m / +30m rush prep buffer) state
+  const [throttleBuffer, setThrottleBuffer] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("ok_kitchen_throttle_buffer");
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
+
+  const [kitchenPaused, setKitchenPaused] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("ok_kitchen_paused") === "true";
+    }
+    return false;
+  });
+
+  const handleSetThrottle = (buffer: number) => {
+    setThrottleBuffer(buffer);
+    setKitchenPaused(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ok_kitchen_throttle_buffer", buffer.toString());
+      localStorage.setItem("ok_kitchen_paused", "false");
+    }
+    if (buffer > 0) {
+      toast.warning(`🔥 Kitchen Rush Buffer: +${buffer} mins prep buffer applied! Riders and customers notified.`);
+    } else {
+      toast.success("Standard Kitchen SLA Restored (+0 mins).");
+    }
+  };
+
+  const handleToggleKitchenPause = () => {
+    const nextPaused = !kitchenPaused;
+    setKitchenPaused(nextPaused);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ok_kitchen_paused", nextPaused.toString());
+    }
+    if (nextPaused) {
+      toast.error("🛑 Kitchen Paused: Inbound orders temporarily suspended for 15 mins rush relief.");
+    } else {
+      toast.success("✅ Kitchen Resumed: Ready for new incoming orders!");
+    }
+  };
+
   const soundboxQuery = useQuery({
     queryKey: ["soundbox", vendor.restaurantId],
     queryFn: () => getSoundboxStatus({ data: { restaurantId: vendor.restaurantId } }),
@@ -241,6 +317,133 @@ function KitchenPage() {
       stale={q.isError}
       restaurantName={vendor.selected?.restaurantName}
     >
+      {/* View Switcher Tabs & Throttle Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-2 p-2 rounded-2xl border border-line">
+        <div className="flex items-center gap-1.5 overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => setActiveTab("BOARD")}
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+              activeTab === "BOARD"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "bg-surface text-muted hover:text-foreground"
+            }`}
+          >
+            <LayoutGrid className="size-3.5" />
+            <span>5-Stage Live Board</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("KDS")}
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+              activeTab === "KDS"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "bg-surface text-muted hover:text-foreground"
+            }`}
+          >
+            <Monitor className="size-3.5" />
+            <span>Station Cook Tickets (KDS)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("HARDWARE")}
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+              activeTab === "HARDWARE"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "bg-surface text-muted hover:text-foreground"
+            }`}
+          >
+            <Printer className="size-3.5" />
+            <span>Universal POS &amp; Hardware</span>
+          </button>
+        </div>
+
+        {/* Kitchen Throttling Quick Toggles */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-[11px] font-bold text-muted uppercase tracking-wider flex items-center gap-1">
+            <Flame className="size-3 text-amber-500" /> Throttling:
+          </span>
+          <button
+            type="button"
+            onClick={() => handleSetThrottle(0)}
+            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
+              throttleBuffer === 0 && !kitchenPaused
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "bg-surface border border-line text-muted hover:text-foreground"
+            }`}
+          >
+            Normal (+0m)
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSetThrottle(15)}
+            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
+              throttleBuffer === 15 && !kitchenPaused
+                ? "bg-amber-600 text-white shadow-xs"
+                : "bg-surface border border-line text-muted hover:text-foreground"
+            }`}
+          >
+            Rush (+15m)
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSetThrottle(30)}
+            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${
+              throttleBuffer === 30 && !kitchenPaused
+                ? "bg-rose-600 text-white shadow-xs"
+                : "bg-surface border border-line text-muted hover:text-foreground"
+            }`}
+          >
+            Surge (+30m)
+          </button>
+          <button
+            type="button"
+            onClick={handleToggleKitchenPause}
+            className={`rounded-lg px-2.5 py-1 text-xs font-bold transition flex items-center gap-1 ${
+              kitchenPaused
+                ? "bg-rose-700 text-white shadow-xs animate-pulse"
+                : "bg-surface border border-line text-muted hover:text-rose-500"
+            }`}
+          >
+            {kitchenPaused ? <PlayCircle className="size-3" /> : <PauseCircle className="size-3" />}
+            <span>{kitchenPaused ? "Resume Kitchen" : "Pause Kitchen"}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Throttle Alert Banner */}
+      {(throttleBuffer > 0 || kitchenPaused) && (
+        <div
+          className={`rounded-xl border p-3 flex items-center justify-between gap-3 text-xs font-bold ${
+            kitchenPaused
+              ? "border-rose-500 bg-rose-500/10 text-rose-800 dark:text-rose-200"
+              : "border-amber-500 bg-amber-500/10 text-amber-800 dark:text-amber-200"
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{kitchenPaused ? "🛑" : "🔥"}</span>
+            <div>
+              <div>
+                {kitchenPaused
+                  ? "EMERGENCY KITCHEN PAUSE ACTIVE: New incoming orders temporarily halted to clear backlog."
+                  : `KITCHEN RUSH PREP BUFFER ACTIVE (+${throttleBuffer} MINS): Prep SLA extended by ${throttleBuffer} mins to prevent premature rider arrivals.`}
+              </div>
+              <p className="text-[10px] font-normal opacity-90 mt-0.5">
+                Riders, customers, and KDS station queues automatically calibrated to extended cooking times.
+              </p>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleSetThrottle(0)}
+            className="text-xs shrink-0 font-bold"
+          >
+            Reset SLA to Normal
+          </Button>
+        </div>
+      )}
+
       {/* KDS Operational Summary Bar */}
       <Card className="border-slate-800 bg-slate-900/90 p-4 space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
@@ -255,16 +458,30 @@ function KitchenPage() {
                   {q.data ? `SYNCED ${new Date(q.data.serverTime).toLocaleTimeString()}` : "SYNCING"}
                 </span>
                 <span className="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-slate-300">
-                  VOICE: {getVoiceBcp47(lang)}
+                  VOICE: {getVoiceBcp47(testVoiceLang)}
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Self-service audio hardware diagnostics, 23-language voice alerts, real-time stage counters, and 1-tap order progression.
+                Self-service audio hardware diagnostics, 22-language voice alerts, real-time stage counters, and 120s order SLA enforcement.
               </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            {/* Language Selector for Test Speaker */}
+            <select
+              value={testVoiceLang}
+              onChange={(e) => setTestVoiceLang(e.target.value as AppLanguage)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-200"
+              aria-label="Voice Alert Language"
+            >
+              {INDIAN_LANGUAGE_CATALOG.map((item) => (
+                <option key={item.code} value={item.code}>
+                  {item.native} ({item.label})
+                </option>
+              ))}
+            </select>
+
             <Button
               size="sm"
               variant="secondary"
@@ -279,12 +496,13 @@ function KitchenPage() {
               variant="secondary"
               onClick={() => {
                 playKitchenBell();
-                speakKitchenOrder("KOT-8421", 45000, lang);
+                speakKitchenOrder("KOT-8421", 45000, testVoiceLang);
+                toast.info(`Voice alert played in ${testVoiceLang.toUpperCase()} (${getVoiceBcp47(testVoiceLang)})`);
               }}
               className="text-xs border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200"
             >
               <BellRing className="mr-1.5 size-3.5 text-emerald-400" />
-              Test Speaker ({lang.toUpperCase()})
+              Test Speaker ({testVoiceLang.toUpperCase()})
             </Button>
             <Button
               size="sm"
@@ -337,13 +555,13 @@ function KitchenPage() {
               {soundboxQuery.data?.active ? (
                 <>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-sm text-foreground">King Pay Voice Soundbox Active</h3>
+                    <h3 className="font-semibold text-sm text-foreground">King Pay Virtual Soundbox Active</h3>
                     <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                      Enterprise Active
+                      WebSocket Live &amp; Connected
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Zero physical hardware cost. Announces incoming orders and UPI payments aloud across all 23 supported Indian languages.
+                    Zero physical hardware cost. Announces incoming orders and UPI payments aloud across all 22 scheduled Indian languages.
                   </p>
                 </>
               ) : (
@@ -352,7 +570,7 @@ function KitchenPage() {
                     <h3 className="font-semibold text-sm text-foreground">King Pay Voice Soundbox</h3>
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Activate to announce incoming orders and UPI payments aloud across all 23 supported Indian languages.
+                    Activate to announce incoming orders and UPI payments aloud across all 22 scheduled Indian languages.
                   </p>
                 </>
               )}
@@ -376,51 +594,70 @@ function KitchenPage() {
               variant="outline"
               onClick={() => {
                 playKitchenBell();
-                speakKitchenOrder("KOT-8421", 45000, lang);
+                speakKitchenOrder("KOT-8421", 45000, testVoiceLang);
               }}
               className="shrink-0 text-xs font-medium"
             >
-              🔊 Test Voice Announcement
+              🔊 Test Soundbox Voice
             </Button>
           </div>
         </div>
         {soundboxQuery.data?.active && (
           <div className="mt-4 pt-3 border-t border-emerald-500/20">
-            <KingPaySoundboxEngine merchantId={vendor.restaurantId} />
+            <KingPaySoundboxEngine merchantId={vendor.restaurantId || "demo-merchant"} defaultLang={lang} />
           </div>
         )}
       </Card>
 
-      <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0">
-        {COLS.map((col) => {
-          const items = allOrders.filter((o: any) => matchesColumn(String(o.state), col.state));
-          return (
-            <section
-              key={col.state}
-              className="w-[min(86vw,22rem)] shrink-0 snap-start space-y-2 lg:w-auto lg:min-w-0"
-            >
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold tracking-wide">{t(col.key)}</h2>
-                <span className="tabular text-sm text-slate-400">{items.length}</span>
-              </div>
-              {items.length === 0 ? (
-                <Card className="text-sm text-slate-400">{t("kitchen.empty")}</Card>
-              ) : (
-                items.map((o: any) => (
-                  <OrderCard
-                    key={o.id}
-                    large
-                    order={o as unknown as OrderView}
-                    restaurantId={vendor.restaurantId}
-                    dataLabel={q.data?.dataLabel}
-                    onChanged={() => void qc.invalidateQueries({ queryKey: ["orders"] })}
-                  />
-                ))
-              )}
-            </section>
-          );
-        })}
-      </div>
+      {/* MAIN CONTENT BASED ON SELECTED TAB */}
+      {activeTab === "BOARD" && (
+        <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0">
+          {COLS.map((col) => {
+            const items = allOrders.filter((o: any) => matchesColumn(String(o.state), col.state));
+            return (
+              <section
+                key={col.state}
+                className="w-[min(86vw,22rem)] shrink-0 snap-start space-y-2 lg:w-auto lg:min-w-0"
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-semibold tracking-wide">{t(col.key)}</h2>
+                  <span className="tabular text-sm text-slate-400">{items.length}</span>
+                </div>
+                {items.length === 0 ? (
+                  <Card className="text-sm text-slate-400">{t("kitchen.empty")}</Card>
+                ) : (
+                  items.map((o: any) => (
+                    <OrderCard
+                      key={o.id}
+                      large
+                      order={o as unknown as OrderView}
+                      restaurantId={vendor.restaurantId}
+                      dataLabel={q.data?.dataLabel}
+                      prepThrottleBuffer={throttleBuffer}
+                      onChanged={() => void qc.invalidateQueries({ queryKey: ["orders"] })}
+                    />
+                  ))
+                )}
+              </section>
+            );
+          })}
+        </div>
+      )}
+
+      {activeTab === "KDS" && (
+        <div className="pt-2">
+          <KitchenDisplayStation prepThrottleBuffer={throttleBuffer} />
+        </div>
+      )}
+
+      {activeTab === "HARDWARE" && (
+        <div className="pt-2">
+          <UniversalPosHardwareManager
+            restaurantId={vendor.restaurantId}
+            restaurantName={vendor.selected?.restaurantName}
+          />
+        </div>
+      )}
     </VendorShell>
   );
 }

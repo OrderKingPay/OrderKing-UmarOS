@@ -8,7 +8,14 @@ import { Input, Label } from "@/components/ui/input";
 import { useT } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
 import { useClientState } from "@/lib/client-state";
-import { addStaff, listStaff } from "@/lib/server/api-more";
+import {
+  addStaff,
+  listStaff,
+  getUmarOsNotificationConfig,
+  updateUmarOsNotificationConfig,
+  sendUmarOsTestNotification,
+  type UmarOsNotificationSettings,
+} from "@/lib/server/api-more";
 import { getRestaurant, updateRestaurantProfile } from "@/lib/server/api-bootstrap";
 import { quickThrottleKitchen } from "@/lib/server/api-orders";
 import { can } from "@/lib/rbac";
@@ -17,15 +24,23 @@ import { platformConfig } from "@/lib/platform-config";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
 import { UniversalPosHardwareManager } from "@/components/universal-pos-hardware";
 import {
+  AlertTriangle,
+  ArrowRightLeft,
+  Building2,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
   Cpu,
   FileText,
   Globe,
+  Mail,
+  MessageSquare,
+  RefreshCw,
   Scale,
+  Send,
   ShieldCheck,
   Sliders,
+  Store,
   Users,
   Volume2,
   VolumeX,
@@ -112,6 +127,15 @@ function SettingsPage() {
     enabled: Boolean(vendor.restaurantId) && Boolean(vendor.role && can(vendor.role, "settings.staff")),
   });
 
+  const setRestaurantId = useClientState((s) => s.setRestaurantId);
+  const memberships = vendor.memberships;
+
+  const notifQ = useQuery({
+    queryKey: ["umaros-notif-config", vendor.restaurantId],
+    queryFn: () => getUmarOsNotificationConfig({ data: { restaurantId: vendor.restaurantId } }),
+    enabled: Boolean(vendor.restaurantId),
+  });
+
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("STAFF");
   const [msg, setMsg] = useState<string | null>(null);
@@ -125,7 +149,128 @@ function SettingsPage() {
   const [opsMsg, setOpsMsg] = useState<string | null>(null);
   const [diagMsg, setDiagMsg] = useState<string | null>(null);
 
+  // UmarOS Communications Engine State
+  const [waEnabled, setWaEnabled] = useState<boolean | null>(null);
+  const [waConsent, setWaConsent] = useState<boolean | null>(null);
+  const [waPhone, setWaPhone] = useState<string | null>(null);
+
+  const [smsEnabled, setSmsEnabled] = useState<boolean | null>(null);
+  const [smsConsent, setSmsConsent] = useState<boolean | null>(null);
+  const [smsPhone, setSmsPhone] = useState<string | null>(null);
+
+  const [emailEnabled, setEmailEnabled] = useState<boolean | null>(null);
+  const [emailConsent, setEmailConsent] = useState<boolean | null>(null);
+  const [emailAddress, setEmailAddress] = useState<string | null>(null);
+
+  const [notifSaving, setNotifSaving] = useState(false);
+  const [notifMsg, setNotifMsg] = useState<string | null>(null);
+  const [testDispatchMsg, setTestDispatchMsg] = useState<{ channel: string; text: string } | null>(null);
+  const [testingChannel, setTestingChannel] = useState<string | null>(null);
+  const [outletSwitchMsg, setOutletSwitchMsg] = useState<string | null>(null);
+
   const r = restQ.data?.restaurant;
+
+  const cfg = notifQ.data?.config;
+  const currentWaEnabled = waEnabled ?? cfg?.whatsappShiftReport.enabled ?? true;
+  const currentWaConsent = waConsent ?? cfg?.whatsappShiftReport.consent ?? true;
+  const currentWaPhone = waPhone !== null ? waPhone : (cfg?.whatsappShiftReport.destinationPhone || r?.phone || "");
+
+  const currentSmsEnabled = smsEnabled ?? cfg?.smsKitchenEmergency.enabled ?? true;
+  const currentSmsConsent = smsConsent ?? cfg?.smsKitchenEmergency.consent ?? true;
+  const currentSmsPhone = smsPhone !== null ? smsPhone : (cfg?.smsKitchenEmergency.destinationPhone || r?.phone || "");
+
+  const currentEmailEnabled = emailEnabled ?? cfg?.emailTaxDocuments.enabled ?? true;
+  const currentEmailConsent = emailConsent ?? cfg?.emailTaxDocuments.consent ?? true;
+  const currentEmailAddress = emailAddress !== null ? emailAddress : (cfg?.emailTaxDocuments.destinationEmail || r?.email || "");
+
+  async function handleSaveUmarOsNotifications() {
+    if (!vendor.restaurantId) return;
+    setNotifSaving(true);
+    setNotifMsg(null);
+    try {
+      const payload: UmarOsNotificationSettings = {
+        whatsappShiftReport: {
+          enabled: currentWaEnabled,
+          consent: currentWaConsent,
+          destinationPhone: currentWaPhone.trim(),
+          dailyPl: true,
+          gst95Remitted: true,
+          netPayout: true,
+          orderCount: true,
+        },
+        smsKitchenEmergency: {
+          enabled: currentSmsEnabled,
+          consent: currentSmsConsent,
+          destinationPhone: currentSmsPhone.trim(),
+          throttleAlert: true,
+          criticalStockout: true,
+        },
+        emailTaxDocuments: {
+          enabled: currentEmailEnabled,
+          consent: currentEmailConsent,
+          destinationEmail: currentEmailAddress.trim(),
+          taxInvoices: true,
+          form16AStatements: true,
+        },
+      };
+
+      await updateUmarOsNotificationConfig({
+        data: {
+          restaurantId: vendor.restaurantId,
+          config: payload,
+        },
+      });
+      await qc.invalidateQueries({ queryKey: ["umaros-notif-config", vendor.restaurantId] });
+      setNotifMsg("UmarOS notification channels and statutory consent preferences saved successfully.");
+    } catch (err) {
+      setNotifMsg(err instanceof Error ? err.message : "Failed to save notification preferences");
+    } finally {
+      setNotifSaving(false);
+    }
+  }
+
+  async function handleTestNotification(channel: "whatsapp" | "sms" | "email") {
+    if (!vendor.restaurantId) return;
+    setTestingChannel(channel);
+    setTestDispatchMsg(null);
+    try {
+      const dest =
+        channel === "whatsapp"
+          ? currentWaPhone
+          : channel === "sms"
+            ? currentSmsPhone
+            : currentEmailAddress;
+      if (!dest.trim()) {
+        throw new Error(`Please provide a destination ${channel === "email" ? "email" : "phone number"} first.`);
+      }
+      const res = await sendUmarOsTestNotification({
+        data: {
+          restaurantId: vendor.restaurantId,
+          channel,
+          destination: dest.trim(),
+        },
+      });
+      setTestDispatchMsg({
+        channel,
+        text: res.message,
+      });
+      await qc.invalidateQueries({ queryKey: ["ntf"] });
+    } catch (err) {
+      setTestDispatchMsg({
+        channel,
+        text: err instanceof Error ? err.message : `Failed to dispatch ${channel} test alert`,
+      });
+    } finally {
+      setTestingChannel(null);
+    }
+  }
+
+  function handleSwitchOutlet(targetRestaurantId: string, name: string) {
+    if (targetRestaurantId === vendor.restaurantId) return;
+    setRestaurantId(targetRestaurantId);
+    void qc.invalidateQueries();
+    setOutletSwitchMsg(`Active branch profile instantly switched to: ${name} (${targetRestaurantId}).`);
+  }
 
   async function handleSaveOutletOps() {
     if (!vendor.restaurantId) return;
@@ -200,6 +345,132 @@ function SettingsPage() {
           restaurantId={vendor.restaurantId}
           restaurantName={vendor.selected?.restaurantName}
         />
+
+        {/* UmarOS Multi-Outlet Profile Router & Instant Branch Switcher */}
+        <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2.5">
+              <Building2 className="size-5 text-emerald-400" />
+              <div>
+                <h2 className="font-display text-base font-bold text-white">
+                  UmarOS Multi-Outlet Profile Router &amp; Instant Branch Switcher
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Instant profile routing between authorized restaurant locations across India without re-authenticating.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-center">
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
+                {memberships.length} AUTHORIZED {memberships.length === 1 ? "BRANCH" : "BRANCHES"}
+              </span>
+            </div>
+          </div>
+
+          {outletSwitchMsg ? (
+            <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/40 p-3 text-xs text-emerald-300 flex items-center gap-2">
+              <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
+              <span>{outletSwitchMsg}</span>
+            </div>
+          ) : null}
+
+          {/* Quick Select Router Bar */}
+          {memberships.length > 1 ? (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-slate-800 bg-slate-950/70">
+              <div className="flex items-center gap-2">
+                <Store className="size-4 text-emerald-400" />
+                <span className="text-xs font-semibold text-slate-200">Quick Profile Switcher:</span>
+              </div>
+              <select
+                className="h-9 rounded-lg border border-slate-800 bg-slate-900 px-3 text-xs font-semibold text-emerald-300 outline-none focus:border-emerald-500"
+                value={vendor.restaurantId ?? ""}
+                onChange={(e) => {
+                  const m = memberships.find((x) => x.restaurantId === e.target.value);
+                  if (m) handleSwitchOutlet(m.restaurantId, m.restaurantName);
+                }}
+              >
+                {memberships.map((m) => (
+                  <option key={m.restaurantId} value={m.restaurantId}>
+                    {m.restaurantName} ({m.role}) — {m.restaurantId}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
+
+          {/* Detailed Branch Matrix */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {memberships.map((m) => {
+              const isActive = m.restaurantId === vendor.restaurantId;
+              return (
+                <div
+                  key={m.restaurantId}
+                  className={`rounded-xl border p-4 space-y-3 transition ${
+                    isActive
+                      ? "border-emerald-500/50 bg-emerald-950/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                      : "border-slate-800 bg-slate-950/60 hover:border-slate-700"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="font-bold text-sm text-white flex items-center gap-1.5">
+                        <Store className="size-4 text-slate-400" />
+                        <span>{m.restaurantName}</span>
+                      </div>
+                      <div className="text-[11px] font-mono text-slate-400 mt-0.5">
+                        ID: {m.restaurantId}
+                        {m.outletId ? ` · Outlet: ${m.outletId}` : ""}
+                      </div>
+                    </div>
+                    {isActive ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                        <CheckCircle2 className="size-3" /> ACTIVE
+                      </span>
+                    ) : (
+                      <span className="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-mono text-slate-400">
+                        {m.role}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-[11px] border-t border-slate-800/80 pt-2">
+                    <div>
+                      <span className="text-slate-400">Role: </span>
+                      <span className="font-mono text-slate-200">{m.role}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Status: </span>
+                      <span className="font-mono text-emerald-400">{m.verificationStatus}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Fee Rate: </span>
+                      <span className="font-mono text-slate-200">{m.commissionBps / 100}%</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Ledger: </span>
+                      <span className="font-mono text-emerald-400">{m.dataLabel}</span>
+                    </div>
+                  </div>
+
+                  {!isActive ? (
+                    <Button
+                      size="sm"
+                      onClick={() => handleSwitchOutlet(m.restaurantId, m.restaurantName)}
+                      className="w-full h-8 text-xs bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-200 transition"
+                    >
+                      <ArrowRightLeft className="mr-1.5 size-3.5" />
+                      Switch to This Branch
+                    </Button>
+                  ) : (
+                    <div className="text-[11px] text-center font-medium text-emerald-400 py-1 bg-emerald-500/10 rounded-lg">
+                      Currently Operating This Branch
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
 
         {/* OMR OS Autonomous Ecosystem & Self-Healing Diagnostics */}
         {vendor.restaurantId ? (
@@ -348,6 +619,243 @@ function SettingsPage() {
                 className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs"
               >
                 {opsSaving ? "Saving Outlet Settings..." : "Save Outlet Parameters"}
+              </Button>
+            </div>
+          </Card>
+        ) : null}
+
+        {/* UmarOS Communications Engine: Automated Multi-Channel Dispatch */}
+        {vendor.restaurantId ? (
+          <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <MessageSquare className="size-5 text-emerald-400" />
+                <div>
+                  <h2 className="font-display text-base font-bold text-white">
+                    UmarOS Communications Engine &amp; Automated Multi-Channel Dispatch
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Configure real-time WhatsApp shift reports, SMS kitchen emergency alerts, and statutory email tax invoices with DPDP Act compliant consent.
+                  </p>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
+                UMAROS COMM-ENGINE v2.5
+              </span>
+            </div>
+
+            {/* Test Dispatch Feedback */}
+            {testDispatchMsg ? (
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/40 p-3 text-xs text-emerald-300 flex items-start gap-2">
+                <CheckCircle2 className="size-4 shrink-0 text-emerald-400 mt-0.5" />
+                <div>
+                  <div className="font-bold uppercase tracking-wider text-[10px] text-emerald-400">
+                    {testDispatchMsg.channel} Test Dispatch Result
+                  </div>
+                  <div className="mt-0.5">{testDispatchMsg.text}</div>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Channel 1: WhatsApp Shift Report */}
+              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="size-4 text-emerald-400" />
+                      <span className="font-bold text-sm text-white">WhatsApp Shift Recon</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                      DAILY 23:00 IST
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Daily shift closing reconciliation directly to WhatsApp: Daily P&amp;L, statutory CGST Sec 9(5) remitted (5%), zero platform fees saved, Delivered Order Count, and Accrued Net Payout.
+                  </p>
+
+                  <div className="space-y-1.5 pt-1">
+                    <Label className="text-xs text-slate-300">Destination WhatsApp Phone</Label>
+                    <Input
+                      type="tel"
+                      value={currentWaPhone}
+                      onChange={(e) => setWaPhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="h-9 text-xs bg-slate-900 border-slate-800 font-mono"
+                    />
+                  </div>
+
+                  {/* Statutory Consent Checkbox */}
+                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={currentWaConsent}
+                      onChange={(e) => setWaConsent(e.target.checked)}
+                      className="mt-1 size-3.5 rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500"
+                    />
+                    <span className="text-[11px] text-slate-300 leading-tight">
+                      I consent to receive automated operational shift reports via OrderKing WhatsApp Business API pursuant to the DPDP Act 2023.
+                    </span>
+                  </label>
+
+                  {/* Shift Report Inclusions */}
+                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/60">
+                    <div className="text-emerald-400">✓ Daily P&amp;L Breakdown</div>
+                    <div className="text-emerald-400">✓ 9(5) GST Remitted</div>
+                    <div className="text-emerald-400">✓ Accrued Net Payout</div>
+                    <div className="text-emerald-400">✓ Delivered Order Count</div>
+                  </div>
+                </div>
+
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={testingChannel === "whatsapp"}
+                  onClick={() => void handleTestNotification("whatsapp")}
+                  className="w-full text-xs border-slate-700 hover:border-emerald-500/50 hover:bg-emerald-950/40"
+                >
+                  <Send className="mr-1.5 size-3.5 text-emerald-400" />
+                  {testingChannel === "whatsapp" ? "Dispatching WhatsApp..." : "Send Test WhatsApp Report"}
+                </Button>
+              </div>
+
+              {/* Channel 2: SMS Kitchen Emergency Alerts */}
+              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="size-4 text-amber-400" />
+                      <span className="font-bold text-sm text-white">SMS Kitchen Emergency</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+                      PRIORITY DLT
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    High-priority transactional SMS alerts for critical kitchen events: Kitchen Throttle alert (SLA surge buffer / emergency pause), and critical stockout (86 dish item stockout).
+                  </p>
+
+                  <div className="space-y-1.5 pt-1">
+                    <Label className="text-xs text-slate-300">Destination SMS Mobile Number</Label>
+                    <Input
+                      type="tel"
+                      value={currentSmsPhone}
+                      onChange={(e) => setSmsPhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="h-9 text-xs bg-slate-900 border-slate-800 font-mono"
+                    />
+                  </div>
+
+                  {/* Statutory Consent Checkbox */}
+                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={currentSmsConsent}
+                      onChange={(e) => setSmsConsent(e.target.checked)}
+                      className="mt-1 size-3.5 rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-500"
+                    />
+                    <span className="text-[11px] text-slate-300 leading-tight">
+                      I consent to receive high-priority transactional SMS emergency alerts for kitchen throttles and critical dish stockouts.
+                    </span>
+                  </label>
+
+                  {/* SMS Inclusions */}
+                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/60">
+                    <div className="text-amber-400">✓ Kitchen Throttle Alert</div>
+                    <div className="text-amber-400">✓ Critical 86 Stockout</div>
+                    <div className="text-amber-400">✓ Surge SLA Extension</div>
+                    <div className="text-amber-400">✓ Emergency Closure</div>
+                  </div>
+                </div>
+
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={testingChannel === "sms"}
+                  onClick={() => void handleTestNotification("sms")}
+                  className="w-full text-xs border-slate-700 hover:border-amber-500/50 hover:bg-amber-950/40"
+                >
+                  <Send className="mr-1.5 size-3.5 text-amber-400" />
+                  {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Emergency Alert"}
+                </Button>
+              </div>
+
+              {/* Channel 3: Email Tax Invoices & Form 16A */}
+              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <Mail className="size-4 text-sky-400" />
+                      <span className="font-bold text-sm text-white">Email Tax &amp; Invoices</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded">
+                      STATUTORY TAX
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Automated monthly email dispatch of statutory CGST Sec 9(5) tax invoices, monthly settlement reconciliation ledgers, and quarterly Form 16A TDS certificates.
+                  </p>
+
+                  <div className="space-y-1.5 pt-1">
+                    <Label className="text-xs text-slate-300">Destination Accounts / CA Email</Label>
+                    <Input
+                      type="email"
+                      value={currentEmailAddress}
+                      onChange={(e) => setEmailAddress(e.target.value)}
+                      placeholder="accounts@restaurant.in"
+                      className="h-9 text-xs bg-slate-900 border-slate-800 font-mono"
+                    />
+                  </div>
+
+                  {/* Statutory Consent Checkbox */}
+                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={currentEmailConsent}
+                      onChange={(e) => setEmailConsent(e.target.checked)}
+                      className="mt-1 size-3.5 rounded border-slate-700 bg-slate-900 text-sky-500 focus:ring-sky-500"
+                    />
+                    <span className="text-[11px] text-slate-300 leading-tight">
+                      I consent to receive official monthly tax invoices, GSTR-8 statements, and Form 16A certificates via email.
+                    </span>
+                  </label>
+
+                  {/* Email Inclusions */}
+                  <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/60">
+                    <div className="text-sky-400">✓ Monthly Tax Invoices</div>
+                    <div className="text-sky-400">✓ Form 16A (TDS §194-O)</div>
+                    <div className="text-sky-400">✓ GSTR-8 Credit Ledgers</div>
+                    <div className="text-sky-400">✓ Sec 9(5) GST Filing</div>
+                  </div>
+                </div>
+
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={testingChannel === "email"}
+                  onClick={() => void handleTestNotification("email")}
+                  className="w-full text-xs border-slate-700 hover:border-sky-500/50 hover:bg-sky-950/40"
+                >
+                  <Send className="mr-1.5 size-3.5 text-sky-400" />
+                  {testingChannel === "email" ? "Dispatching Email..." : "Send Test Tax Statement Email"}
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800">
+              <div className="text-xs text-emerald-400 font-medium">
+                {notifMsg ?? ""}
+              </div>
+              <Button
+                size="sm"
+                disabled={notifSaving}
+                onClick={() => void handleSaveUmarOsNotifications()}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4"
+              >
+                {notifSaving ? "Saving Notification Preferences..." : "Save UmarOS Notification Preferences"}
               </Button>
             </div>
           </Card>
