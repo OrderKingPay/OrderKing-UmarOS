@@ -1216,7 +1216,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
             </button>
           );
         })}
-      </div>
+      </div>)}
 
       {loading ? (
         <div className="flex h-64 items-center justify-center rounded-xl border border-border bg-card">
