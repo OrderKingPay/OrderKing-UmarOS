@@ -1298,7 +1298,7 @@ function OnboardingPage() {
                     <span className="text-slate-200">{clientIp}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Governing Authority:</span>
+                    <span>Legal Framework:</span>
                     <span className="text-emerald-400">IT Act 2000 §10A (Electronic Contracts)</span>
                   </div>
                 </div>
@@ -1385,7 +1385,7 @@ function OnboardingPage() {
             )}
           </div>
 
-          {/* 5. PRIVACY POLICY & STATUTORY TAX REMITTANCE UNDERTAKING */}
+          {/* 5. PRIVACY POLICY & TAX REMITTANCE CONFIRMATION */}
           <div className="pt-2 border-t border-slate-800">
             <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-200">
               <input
@@ -1395,7 +1395,7 @@ function OnboardingPage() {
                 className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
               />
               <span>
-                I agree to the <strong>Merchant Privacy Policy (DPDP Act, 2023)</strong> and authorize statutory tax deductions and remittances under <strong>CGST Act §9(5), TCS §52, and Income Tax Act §194-O</strong>. *
+                I agree to the <strong>Partner Privacy Policy (DPDP Act, 2023)</strong> and authorize standard tax remittances under <strong>CGST Act §9(5), TCS §52, and Income Tax Act §194-O</strong>. *
               </span>
             </label>
           </div>
@@ -1405,8 +1405,8 @@ function OnboardingPage() {
             <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
               <CheckCircle2 className={`size-4 ${allTermsAccepted ? "text-emerald-400" : "text-slate-600"}`} />
               {allTermsAccepted
-                ? "Station 5 commercial contract & digital e-Sign requirements verified."
-                : "Accept covenants, select fee plan with consent, and complete e-Sign to enable submission."}
+                ? "Partner agreement & digital execution completed."
+                : "Please review the agreement, select an onboarding option, and complete digital signature."}
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5">
@@ -1416,14 +1416,14 @@ function OnboardingPage() {
                 onClick={() => void handleSaveAndRegister(false)}
                 className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs"
               >
-                {busy ? "Saving..." : "Save KYC Profile"}
+                {busy ? "Saving..." : "Save Draft Profile"}
               </Button>
               <Button
                 disabled={busy || !allTermsAccepted}
                 onClick={() => void handleSaveAndRegister(true)}
                 className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-5"
               >
-                {busy ? "Submitting KYC..." : "Submit Restaurant Partner KYC"}
+                {busy ? "Submitting..." : "Submit Partner Application"}
                 <ArrowRight className="ml-1.5 size-4" />
               </Button>
             </div>
