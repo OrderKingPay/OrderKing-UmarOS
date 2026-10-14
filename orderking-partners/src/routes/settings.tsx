@@ -68,54 +68,54 @@ export const ALL_INDIAN_LANGUAGES = INDIAN_LANGUAGE_CATALOG;
 const LEGAL_SECTIONS = [
   {
     id: "commercial-terms",
-    title: "1. Restaurant Partner Terms & Commercial Agreement",
-    badge: "Indian Contract Act, 1872",
+    title: "1. Culinary Partner Terms & Commercial Standards",
+    badge: "Commercial Standards",
     body: [
-      "Electronic Execution & Intermediary Role: OrderKing operates as an electronic marketplace intermediary under Section 79 of the Information Technology Act, 2000. The Restaurant Partner remains the principal seller and manufacturer/packer of all food and beverage items listed on its digital storefront.",
-      "Order Acceptance & Preparation SLA: Upon receiving a customer order, the Restaurant Partner agrees to acknowledge acceptance within the configured SLA window and prepare items within the published preparation time (Standard 20m or Rush 35m).",
-      "Menu Pricing Parity & Packaging Charges: Menu prices and item-level packaging fees are configured directly by the Restaurant Partner in integer paise. Unexplained surcharges or off-ledger fees are strictly prohibited.",
-      "Refund Attribution: Customer refunds triggered by missing items, spilled packaging due to faulty sealing, or foreign objects in food are attributed to the Restaurant Partner ledger with an explicit audit reason code. Rider transit delays or delivery mishaps are borne by the logistics network.",
+      "Order King Marketplace Role: Order King operates as a premier culinary marketplace platform under Section 79 of the Information Technology Act, 2000. The Restaurant Partner remains the master culinary creator, seller, and packager of all food and beverage creations listed on its digital storefront.",
+      "Order Acceptance & Kitchen Preparation: Upon receiving a customer order, the Restaurant Partner acknowledges acceptance within the prep window and prepares items with care within the published preparation time (Standard 20m or Rush 35m).",
+      "Menu Pricing Integrity & Packaging: Menu prices and dish packaging fees are configured directly by the Restaurant Partner in integer paise. Unexplained surcharges or off-ledger fees are strictly prohibited.",
+      "Fair Refund Attribution: Customer refunds triggered by missing items, packaging spills, or food quality issues are attributed to the Restaurant Partner ledger with a transparent reason code. Transit delays and delivery mishaps are fully protected and borne by the logistics network.",
     ],
   },
   {
     id: "privacy-dpdp",
-    title: "2. Merchant Privacy Policy & Data Protection Notice (DPDP Act 2023)",
+    title: "2. Partner Privacy & Guest Data Protection",
     badge: "DPDP Act, 2023",
     body: [
-      "Lawful Purpose Limitation: In accordance with the Digital Personal Data Protection Act, 2023 (DPDP Act), OrderKing collects merchant KYC records (PAN, GSTIN, FSSAI license, bank account & IFSC, authorized signatory contact details) strictly for statutory tax reporting, food safety verification, and NEFT/IMPS settlement disbursement.",
-      "Customer Personal Data Protection: Customer names, delivery instructions, and masked contact numbers shared on Kitchen Order Tickets (KOT) are provided solely for order preparation and statutory invoice generation. Retaining customer phone numbers for external promotional SMS/WhatsApp campaigns is a material breach of the DPDP Act, 2023.",
-      "Security & Audit Retention: Financial ledgers, settlement batches, and tax invoices are retained for 8 financial years as mandated under the Income Tax Act, 1961 and CGST Act, 2017.",
+      "Lawful & Respectful Data Handling: Under the Digital Personal Data Protection Act, 2023 (DPDP Act), Order King collects merchant KYC records (PAN, optional GSTIN if registered [turnover < ₹20L exempt], 14-digit FSSAI license, bank account & IFSC, authorized signatory details) solely to verify your kitchen, process fast direct bank payouts, and fulfill tax requirements.",
+      "Guest Privacy on Kitchen Tickets: Guest names, delivery notes, and masked contact numbers shared on Kitchen Order Tickets (KOT) are provided exclusively for order preparation and statutory receipts. Preserving guest privacy is paramount; phone numbers may not be extracted for external promotional messaging.",
+      "Secure Record Retention: Financial ledgers, settlement batches, and tax invoices are securely archived for 8 financial years in accordance with Indian financial reporting standards.",
     ],
   },
   {
     id: "fssai-undertaking",
-    title: "3. FSSAI Hygiene, Allergen & Food Safety Undertaking",
-    badge: "FSSAI Act, 2006",
+    title: "3. FSSAI Food Safety, Hygiene & Packaging Standards",
+    badge: "Food Safety",
     body: [
-      "Mandatory 14-Digit FoSCoS Licensing: The Restaurant Partner warrants that it holds a valid, unexpired 14-digit FSSAI License or Registration Certificate displayed prominently on its storefront and printed on customer KOT receipts.",
-      "Vegetarian & Non-Vegetarian Segregation: Kitchens must maintain strict physical separation of vegetarian and non-vegetarian utensils, prep surfaces, and storage, and accurately tag every dish with the statutory Green (Veg) or Brown/Red (Non-Veg) symbol.",
-      "Tamper-Evident Food-Grade Packaging: All delivery orders must be sealed in food-grade, tamper-evident containers prior to handover to the delivery partner, displaying preparation timestamps and allergen advisories (nuts, dairy, gluten, soy, shellfish).",
+      "14-Digit FoSCoS License: The Restaurant Partner warrants that it maintains an active, valid 14-digit FSSAI License or Registration Certificate displayed on its storefront and printed on customer receipts.",
+      "Dedicated Prep & Dietary Labeling: Kitchens maintain dedicated prep surfaces, utensils, and storage for vegetarian and non-vegetarian dishes, clearly labeling every culinary creation with the official Green (Veg) or Red (Non-Veg) symbol.",
+      "Fresh & Tamper-Evident Packaging: All delivery orders must be packed in food-grade, tamper-evident containers before handover to our delivery partners, ensuring meals arrive in pristine condition.",
     ],
   },
   {
     id: "tax-settlement-policy",
-    title: "4. Statutory Tax & Settlement Policy (CGST Sec 9(5), TCS Sec 52, TDS Sec 194-O)",
-    badge: "CGST & IT Act",
+    title: "4. Settlement Transparency & Tax Guidelines",
+    badge: "Tax & Settlements",
     body: [
       "Integer-Paise Settlement Formula: Net Restaurant Payable = (Food Value + Packaging Charges − Restaurant Discount) − Platform Commission + Platform-Funded Promo − Refund Adjustments.",
-      "GST on Restaurant Services (Section 9(5) CGST Act, 2017): For notified restaurant services supplied through an e-commerce operator, 5% GST is collected from the customer and remitted directly to the Government by the platform under Section 9(5).",
-      "Tax Collected at Source (Section 52 CGST Act): Where applicable on net taxable supplies, 1% TCS (0.5% CGST + 0.5% SGST or 1% IGST) is deposited and reflected in your GSTR-8 credit ledger.",
-      "Tax Deducted at Source (Section 194-O Income Tax Act, 1961): Statutory TDS of 1% is deducted on gross sales facilitated through the digital platform and deposited against your registered PAN, with quarterly Form 16A certificates issued.",
+      "GST on Restaurant Services (Section 9(5) CGST Act, 2017): For notified restaurant dining and delivery services, 5% GST is collected from the customer and remitted directly to the Government by Order King under Section 9(5) without debiting your payout.",
+      "Tax Collected at Source (Section 52 CGST Act): Where applicable on net taxable supplies, 1% TCS (0.5% CGST + 0.5% SGST or 1% IGST) is deposited with the Government and credited to your GSTR-8 ledger.",
+      "Tax Deducted at Source (Section 194-O Income Tax Act, 1961): TDS of 1% under Section 194-O is credited directly against your registered PAN, backed by quarterly Form 16A certificates.",
     ],
   },
   {
     id: "grievance-redressal",
-    title: "5. Grievance Redressal Officer & Partner Support Escalation",
-    badge: "IT Rules, 2021",
+    title: "5. Partner Concierge & Dedicated Support",
+    badge: "Dedicated Support",
     body: [
-      `Nodal Merchant Grievance Officer: Designated pursuant to the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021.`,
-      `Official Escalation Email: ${platformConfig.support.email} (Include your Restaurant ID, Order Number, or Settlement Batch ID for priority tracking).`,
-      "Resolution SLA: All commercial, settlement, or menu compliance grievances are acknowledged within 24 hours and resolved within 15 calendar days of receipt.",
+      `Dedicated Partner Escalation: Designated pursuant to the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021.`,
+      `Official Partner Support Email: ${platformConfig.support.email} (Include your Restaurant ID, Order Number, or Settlement Batch ID for immediate priority assistance).`,
+      "Prompt Care Commitment: All commercial, settlement, and operational inquiries are acknowledged within 24 hours with dedicated follow-through.",
     ],
   },
 ] as const;
@@ -206,7 +206,7 @@ function SettingsPage() {
         qc.invalidateQueries({ queryKey: ["restaurant"] }),
         qc.invalidateQueries({ queryKey: ["vendor"] }),
       ]);
-      setCommissionMsg(`Commercial delivery commission negotiated at ${(effectiveBps / 100).toFixed(1)}% (${effectiveBps} bps) successfully saved.`);
+      setCommissionMsg(`Delivery commission rate of ${(effectiveBps / 100).toFixed(1)}% (${effectiveBps} bps) successfully saved for this outlet.`);
     } catch (err) {
       setCommissionMsg(err instanceof Error ? err.message : "Failed to update commission rate");
     } finally {
@@ -275,7 +275,7 @@ function SettingsPage() {
         },
       });
       await qc.invalidateQueries({ queryKey: ["kingai-notif-config", vendor.restaurantId] });
-      setNotifMsg("King AI notification channels and statutory consent preferences saved successfully.");
+      setNotifMsg("King AI notification channels and dispatch preferences saved successfully.");
     } catch (err) {
       setNotifMsg(err instanceof Error ? err.message : "Failed to save notification preferences");
     } finally {
@@ -323,7 +323,7 @@ function SettingsPage() {
     if (targetRestaurantId === vendor.restaurantId) return;
     setRestaurantId(targetRestaurantId);
     void qc.invalidateQueries();
-    setOutletSwitchMsg(`Active branch profile instantly switched to: ${name} (${targetRestaurantId}).`);
+    setOutletSwitchMsg(`Active kitchen switched to: ${name} (${targetRestaurantId}).`);
   }
 
 
@@ -339,7 +339,7 @@ function SettingsPage() {
         qc.invalidateQueries({ queryKey: ["dashboard"] }),
       ]);
       setDiagMsg(
-        "Self-healing complete: Emergency closure cleared, prep SLA normalized to 20m, and kitchen audio siren enabled.",
+        "Kitchen restored: Emergency pause cleared, prep time set to standard 20m, and kitchen alerts enabled.",
       );
     } catch (err) {
       setDiagMsg(err instanceof Error ? err.message : "Self-service recovery failed");
@@ -369,23 +369,23 @@ function SettingsPage() {
           restaurantName={vendor.selected?.restaurantName}
         />
 
-        {/* King AI Multi-Outlet Profile Router & Instant Branch Switcher */}
+        {/* Multi-Outlet Locations & Switcher */}
         <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
               <Building2 className="size-5 text-emerald-400" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  King AI Multi-Outlet Profile Router &amp; Instant Branch Switcher
+                  Multi-Outlet Locations &amp; Switcher
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Instant profile routing between authorized restaurant locations across India without re-authenticating.
+                  Seamlessly switch between your dining rooms, bistros, and cloud kitchens across India without logging out.
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-center">
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
-                {memberships.length} AUTHORIZED {memberships.length === 1 ? "BRANCH" : "BRANCHES"}
+                {memberships.length} {memberships.length === 1 ? "OUTLET" : "OUTLETS"}
               </span>
             </div>
           </div>
@@ -402,7 +402,7 @@ function SettingsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-slate-800 bg-slate-950/70">
               <div className="flex items-center gap-2">
                 <Store className="size-4 text-emerald-400" />
-                <span className="text-xs font-semibold text-slate-200">Quick Profile Switcher:</span>
+                <span className="text-xs font-semibold text-slate-200">Quick Location Switcher:</span>
               </div>
               <select
                 className="h-9 rounded-lg border border-slate-800 bg-slate-900 px-3 text-xs font-semibold text-emerald-300 outline-none focus:border-emerald-500"
@@ -466,7 +466,7 @@ function SettingsPage() {
                       <span className="font-mono text-emerald-400">{m.verificationStatus}</span>
                     </div>
                     <div>
-                      <span className="text-slate-400">Fee Rate: </span>
+                      <span className="text-slate-400">Delivery Commission: </span>
                       <span className="font-mono text-slate-200">{m.commissionBps / 100}%</span>
                     </div>
                     <div>
@@ -482,11 +482,11 @@ function SettingsPage() {
                       className="w-full h-8 text-xs bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-200 transition"
                     >
                       <ArrowRightLeft className="mr-1.5 size-3.5" />
-                      Switch to This Branch
+                      Switch to This Location
                     </Button>
                   ) : (
                     <div className="text-[11px] text-center font-medium text-emerald-400 py-1 bg-emerald-500/10 rounded-lg">
-                      Currently Operating This Branch
+                      Currently Managing This Location
                     </div>
                   )}
                 </div>
@@ -495,7 +495,7 @@ function SettingsPage() {
           </div>
         </Card>
 
-        {/* OMR OS Autonomous Ecosystem & Self-Healing Diagnostics */}
+        {/* King AI Kitchen Health & Instant Recovery */}
         {vendor.restaurantId ? (
           <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
@@ -503,10 +503,10 @@ function SettingsPage() {
                 <Cpu className="size-5 text-emerald-400" />
                 <div>
                   <h2 className="font-display text-base font-bold text-white">
-                    OMR OS Autonomous Partner Diagnostics &amp; Self-Healing Control
+                    King AI Kitchen Health &amp; Instant Recovery
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Zero-ticket self-service diagnostics for order ingestion, payout readiness, and kitchen SLA recovery.
+                    Real-time readiness checks for your food safety license, payout bank account, and kitchen status. Reset order flow and restore kitchen bells with a single tap.
                   </p>
                 </div>
               </div>
@@ -516,33 +516,33 @@ function SettingsPage() {
                 className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs shrink-0"
               >
                 <Wrench className="mr-1.5 size-3.5" />
-                1-Tap Restore Online &amp; Reset SLA
+                Restore Online &amp; Reset Prep Time
               </Button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
               <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-                <div className="text-[10px] font-mono text-slate-400">14-DIGIT FSSAI</div>
+                <div className="text-[10px] font-mono text-slate-400">14-DIGIT FSSAI LICENSE</div>
                 <div className={`font-bold mt-1 ${fssaiReady ? "text-emerald-400" : "text-amber-400"}`}>
                   {fssaiReady ? `Verified (${r?.fssai_number})` : "Action Needed in KYC"}
                 </div>
               </div>
               <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-                <div className="text-[10px] font-mono text-slate-400">PAYOUT BANK &amp; IFSC</div>
+                <div className="text-[10px] font-mono text-slate-400">PAYOUT BANK ACCOUNT</div>
                 <div className={`font-bold mt-1 ${bankReady ? "text-emerald-400" : "text-amber-400"}`}>
                   {bankReady ? `Ready (${r?.bank_ifsc})` : "Action Needed in KYC"}
                 </div>
               </div>
               <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-                <div className="text-[10px] font-mono text-slate-400">TAX PAN (§194-O)</div>
+                <div className="text-[10px] font-mono text-slate-400">PAN (TDS §194-O)</div>
                 <div className={`font-bold mt-1 ${panReady ? "text-emerald-400" : "text-amber-400"}`}>
                   {panReady ? `Linked (${r?.pan})` : "Action Needed in KYC"}
                 </div>
               </div>
               <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-                <div className="text-[10px] font-mono text-slate-400">EMERGENCY CLOSURE</div>
+                <div className="text-[10px] font-mono text-slate-400">KITCHEN STATUS</div>
                 <div className={`font-bold mt-1 ${r?.emergency_closed ? "text-rose-400" : "text-emerald-400"}`}>
-                  {r?.emergency_closed ? "Paused (Tap Restore)" : "Clear — Normal Dispatch"}
+                  {r?.emergency_closed ? "Paused (Tap to Restore)" : "Active & Accepting Orders"}
                 </div>
               </div>
             </div>
@@ -581,7 +581,7 @@ function SettingsPage() {
           />
         ) : null}
 
-        {/* King AI Communications Engine: Automated Multi-Channel Dispatch */}
+        {/* King AI Daily Reports & Kitchen Alerts */}
         {vendor.restaurantId ? (
           <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
@@ -589,15 +589,15 @@ function SettingsPage() {
                 <MessageSquare className="size-5 text-emerald-400" />
                 <div>
                   <h2 className="font-display text-base font-bold text-white">
-                    King AI Communications Engine &amp; Automated Multi-Channel Dispatch
+                    King AI Daily Reports &amp; Kitchen Alerts
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Configure real-time WhatsApp shift reports, SMS kitchen emergency alerts, and statutory email tax invoices with DPDP Act compliant consent.
+                    Configure evening WhatsApp summaries, critical SMS kitchen alerts, and monthly tax statements with ease.
                   </p>
                 </div>
               </div>
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
-                KING AI COMM-ENGINE v2.5
+                REAL-TIME DISPATCH
               </span>
             </div>
 
@@ -621,19 +621,19 @@ function SettingsPage() {
                   <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
                     <div className="flex items-center gap-2">
                       <MessageSquare className="size-4 text-emerald-400" />
-                      <span className="font-bold text-sm text-white">WhatsApp Shift Recon</span>
+                      <span className="font-bold text-sm text-white">WhatsApp Shift Summary</span>
                     </div>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
-                      DAILY 23:00 IST
+                      NIGHTLY 23:00 IST
                     </span>
                   </div>
 
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Daily shift closing reconciliation directly to WhatsApp: Daily P&amp;L, statutory CGST Sec 9(5) remitted (5%), zero platform fees saved, Delivered Order Count, and Accrued Net Payout.
+                    Nightly closing summary sent directly to WhatsApp: gross food revenue, 5% food GST remitted by Order King, delivered order count, and estimated net payouts.
                   </p>
 
                   <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-slate-300">Destination WhatsApp Phone</Label>
+                    <Label className="text-xs text-slate-300">Destination WhatsApp Number</Label>
                     <Input
                       type="tel"
                       value={currentWaPhone}
@@ -643,7 +643,7 @@ function SettingsPage() {
                     />
                   </div>
 
-                  {/* Statutory Consent Checkbox */}
+                  {/* Consent Checkbox */}
                   <label className="flex items-start gap-2 pt-1 cursor-pointer">
                     <input
                       type="checkbox"
@@ -652,15 +652,15 @@ function SettingsPage() {
                       className="mt-1 size-3.5 rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500"
                     />
                     <span className="text-[11px] text-slate-300 leading-tight">
-                      I consent to receive automated operational shift reports via OrderKing WhatsApp Business API pursuant to the DPDP Act 2023.
+                      I consent to receive automated evening shift reports via Order King WhatsApp Business API in accordance with the DPDP Act 2023.
                     </span>
                   </label>
 
                   {/* Shift Report Inclusions */}
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/60">
-                    <div className="text-emerald-400">✓ Daily P&amp;L Breakdown</div>
-                    <div className="text-emerald-400">✓ 9(5) GST Remitted</div>
-                    <div className="text-emerald-400">✓ Accrued Net Payout</div>
+                    <div className="text-emerald-400">✓ Net Sales &amp; Revenue</div>
+                    <div className="text-emerald-400">✓ 5% Food GST Remitted</div>
+                    <div className="text-emerald-400">✓ Estimated Net Payout</div>
                     <div className="text-emerald-400">✓ Delivered Order Count</div>
                   </div>
                 </div>
@@ -677,25 +677,25 @@ function SettingsPage() {
                 </Button>
               </div>
 
-              {/* Channel 2: SMS Kitchen Emergency Alerts */}
+              {/* Channel 2: SMS Kitchen Alerts */}
               <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 flex flex-col justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="size-4 text-amber-400" />
-                      <span className="font-bold text-sm text-white">SMS Kitchen Emergency</span>
+                      <span className="font-bold text-sm text-white">SMS Rush &amp; Kitchen Alerts</span>
                     </div>
                     <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
-                      PRIORITY DLT
+                      PRIORITY SMS
                     </span>
                   </div>
 
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    High-priority transactional SMS alerts for critical kitchen events: Kitchen Throttle alert (SLA surge buffer / emergency pause), and critical stockout (86 dish item stockout).
+                    Immediate transactional SMS alerts for critical kitchen events: rush surge buffers, emergency pauses, and 86 dish stockouts.
                   </p>
 
                   <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-slate-300">Destination SMS Mobile Number</Label>
+                    <Label className="text-xs text-slate-300">Destination Mobile Number</Label>
                     <Input
                       type="tel"
                       value={currentSmsPhone}
@@ -705,7 +705,7 @@ function SettingsPage() {
                     />
                   </div>
 
-                  {/* Statutory Consent Checkbox */}
+                  {/* Consent Checkbox */}
                   <label className="flex items-start gap-2 pt-1 cursor-pointer">
                     <input
                       type="checkbox"
@@ -714,16 +714,16 @@ function SettingsPage() {
                       className="mt-1 size-3.5 rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-500"
                     />
                     <span className="text-[11px] text-slate-300 leading-tight">
-                      I consent to receive high-priority transactional SMS emergency alerts for kitchen throttles and critical dish stockouts.
+                      I consent to receive priority transactional SMS alerts for kitchen throttles and dish stockouts.
                     </span>
                   </label>
 
                   {/* SMS Inclusions */}
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/60">
-                    <div className="text-amber-400">✓ Kitchen Throttle Alert</div>
-                    <div className="text-amber-400">✓ Critical 86 Stockout</div>
-                    <div className="text-amber-400">✓ Surge SLA Extension</div>
-                    <div className="text-amber-400">✓ Emergency Closure</div>
+                    <div className="text-amber-400">✓ Kitchen Rush Surge Alert</div>
+                    <div className="text-amber-400">✓ Sold-Out (86) Dish Alert</div>
+                    <div className="text-amber-400">✓ Prep Buffer Adjustments</div>
+                    <div className="text-amber-400">✓ Emergency Pause Alert</div>
                   </div>
                 </div>
 
@@ -735,29 +735,29 @@ function SettingsPage() {
                   className="w-full text-xs border-slate-700 hover:border-amber-500/50 hover:bg-amber-950/40"
                 >
                   <Send className="mr-1.5 size-3.5 text-amber-400" />
-                  {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Emergency Alert"}
+                  {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Alert"}
                 </Button>
               </div>
 
-              {/* Channel 3: Email Tax Invoices & Form 16A */}
+              {/* Channel 3: Email Tax Invoices & Statements */}
               <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3 flex flex-col justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
                     <div className="flex items-center gap-2">
                       <Mail className="size-4 text-sky-400" />
-                      <span className="font-bold text-sm text-white">Email Tax &amp; Invoices</span>
+                      <span className="font-bold text-sm text-white">Email Tax &amp; Statements</span>
                     </div>
                     <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded">
-                      STATUTORY TAX
+                      MONTHLY STATEMENTS
                     </span>
                   </div>
 
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Automated monthly email dispatch of statutory CGST Sec 9(5) tax invoices, monthly settlement reconciliation ledgers, and quarterly Form 16A TDS certificates.
+                    Automated monthly email delivery of GST Sec 9(5) tax invoices, settlement reconciliation ledgers, and quarterly Form 16A TDS certificates.
                   </p>
 
                   <div className="space-y-1.5 pt-1">
-                    <Label className="text-xs text-slate-300">Destination Accounts / CA Email</Label>
+                    <Label className="text-xs text-slate-300">Destination Accounts / Finance Email</Label>
                     <Input
                       type="email"
                       value={currentEmailAddress}
@@ -767,7 +767,7 @@ function SettingsPage() {
                     />
                   </div>
 
-                  {/* Statutory Consent Checkbox */}
+                  {/* Consent Checkbox */}
                   <label className="flex items-start gap-2 pt-1 cursor-pointer">
                     <input
                       type="checkbox"
@@ -776,7 +776,7 @@ function SettingsPage() {
                       className="mt-1 size-3.5 rounded border-slate-700 bg-slate-900 text-sky-500 focus:ring-sky-500"
                     />
                     <span className="text-[11px] text-slate-300 leading-tight">
-                      I consent to receive official monthly tax invoices, GSTR-8 statements, and Form 16A certificates via email.
+                      I consent to receive monthly tax invoices, GSTR-8 statements, and Form 16A certificates via email.
                     </span>
                   </label>
 
@@ -785,7 +785,7 @@ function SettingsPage() {
                     <div className="text-sky-400">✓ Monthly Tax Invoices</div>
                     <div className="text-sky-400">✓ Form 16A (TDS §194-O)</div>
                     <div className="text-sky-400">✓ GSTR-8 Credit Ledgers</div>
-                    <div className="text-sky-400">✓ Sec 9(5) GST Filing</div>
+                    <div className="text-sky-400">✓ Sec 9(5) GST Statements</div>
                   </div>
                 </div>
 
@@ -812,7 +812,7 @@ function SettingsPage() {
                 onClick={() => void handleSaveKingAiNotifications()}
                 className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4"
               >
-                {notifSaving ? "Saving Notification Preferences..." : "Save King AI Notification Preferences"}
+                {notifSaving ? "Saving Notification Preferences..." : "Save Notification Preferences"}
               </Button>
             </div>
           </Card>
@@ -828,7 +828,7 @@ function SettingsPage() {
                   All 22 Scheduled Languages of India + English ({ALL_INDIAN_LANGUAGES.length} Languages)
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Switch your partner console, KOT voice announcements, and AI assistant into any official Indian language:
+                  Switch your partner portal, kitchen voice announcements, and King AI assistant into your preferred language:
                 </p>
               </div>
             </div>
@@ -840,11 +840,11 @@ function SettingsPage() {
             >
               {soundOn ? (
                 <>
-                  <Volume2 className="mr-1.5 size-4" /> Kitchen Siren Active
+                  <Volume2 className="mr-1.5 size-4" /> Kitchen Alert Bell Active
                 </>
               ) : (
                 <>
-                  <VolumeX className="mr-1.5 size-4" /> Kitchen Siren Muted
+                  <VolumeX className="mr-1.5 size-4" /> Kitchen Alert Bell Muted
                 </>
               )}
             </Button>
@@ -875,23 +875,23 @@ function SettingsPage() {
           </div>
         </Card>
 
-        {/* Commercial Commission Schedule & Outlet Take-Rate Negotiation */}
+        {/* Partner Commission & Revenue Rates */}
         <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
               <Scale className="size-5 text-emerald-400" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  Commercial Commission Schedule &amp; Outlet Take-Rate Negotiation
+                  Partner Commission &amp; Revenue Rates
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Customizable per-outlet commercial commission. Standard industry delivery is 28% to sustainably fund rider delivery payouts. Dine-in remains 0% sovereign take-rate.
+                  Transparent, restaurateur-friendly commission structure. Our standard delivery take-rate is 28%, funding dedicated logistics, rider fleet payouts, and live order tracking. Dine-in and takeaway orders always enjoy 0% commission. Per-outlet negotiation is supported from 0% to 35%.
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-center">
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
-                CONTRACTED: {(contractedBps / 100).toFixed(1)}% ({contractedBps} BPS)
+                STANDARD: 28.0% (2800 BPS) · OUTLET: {(effectiveBps / 100).toFixed(1)}%
               </span>
             </div>
           </div>
@@ -899,37 +899,37 @@ function SettingsPage() {
           {/* Key Rates Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Contracted Rate</div>
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Standard Delivery Rate</div>
               <div className="text-2xl font-bold font-display text-emerald-400">
-                {(contractedBps / 100).toFixed(1)}%
+                28.0%
               </div>
               <div className="text-[11px] text-slate-400">
-                Standard delivery settlement tier for this outlet
+                Standard full-service delivery tier funding rider logistics
               </div>
             </div>
 
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 space-y-1">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-300">Active Negotiated Rate</div>
+              <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-300">Active Outlet Rate</div>
               <div className="text-2xl font-bold font-display text-white flex items-baseline gap-1.5">
                 <span>{(effectiveBps / 100).toFixed(1)}%</span>
                 <span className="text-xs font-mono text-emerald-400 font-normal">({effectiveBps} bps)</span>
               </div>
               <div className="text-[11px] text-slate-300">
                 {effectiveBps === 0
-                  ? "0% Sovereign Dine-In"
+                  ? "0% Dine-In Sovereign"
                   : effectiveBps === 2800
-                    ? "28% Full Service Delivery (Default)"
-                    : `${(effectiveBps / 100).toFixed(1)}% Negotiated Delivery Tier`}
+                    ? "28% Standard Delivery (Default)"
+                    : `${(effectiveBps / 100).toFixed(1)}% Negotiated Tier for this Outlet`}
               </div>
             </div>
 
             <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Dine-In Take-Rate</div>
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Dine-In Commission</div>
               <div className="text-2xl font-bold font-display text-emerald-400">
                 0.0%
               </div>
               <div className="text-[11px] text-slate-400">
-                0% Sovereign Dine-In &amp; Customer Direct Pickup
+                Always 0% commission on in-house dining and guest takeaway
               </div>
             </div>
           </div>
@@ -938,13 +938,14 @@ function SettingsPage() {
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <Label className="text-xs font-semibold text-slate-200">
-                Select Pre-Configured Commercial Delivery Tier:
+                Select Delivery Tier for This Outlet:
               </Label>
-              <span className="text-[10px] font-mono text-slate-400">5 PRESET TIERS</span>
+              <span className="text-[10px] font-mono text-slate-400">5 CURATED TIERS</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
               {DELIVERY_COMMISSION_TIER_LIST.map((tier) => {
                 const isSelected = effectiveBps === tier.bps;
+                const isDefault = tier.bps === 2800;
                 return (
                   <button
                     key={tier.key}
@@ -964,6 +965,8 @@ function SettingsPage() {
                           <span className="text-[10px] font-mono text-emerald-400 font-semibold flex items-center gap-0.5">
                             <Check className="size-3" /> ACTIVE
                           </span>
+                        ) : isDefault ? (
+                          <span className="text-[10px] font-mono text-amber-400 font-semibold">DEFAULT</span>
                         ) : (
                           <span className="text-[10px] font-mono text-slate-500">{tier.bps} bps</span>
                         )}
@@ -1014,7 +1017,7 @@ function SettingsPage() {
                   <div className="flex justify-between text-[11px] font-mono text-slate-400">
                     <span>0% (Dine-In)</span>
                     <span>18% (Enterprise)</span>
-                    <span className="text-emerald-400 font-bold">28% (Default)</span>
+                    <span className="text-emerald-400 font-bold">28% (Standard Default)</span>
                     <span>35% (Max)</span>
                   </div>
                   <input
@@ -1053,7 +1056,7 @@ function SettingsPage() {
             </div>
           ) : (
             <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-3 text-xs text-slate-400">
-              {t("settings.financialLocked")} Contact your restaurant owner to adjust contracted take-rates.
+              {t("settings.financialLocked")} Contact your restaurant owner or manager to adjust delivery commission tiers.
             </div>
           )}
 
@@ -1063,7 +1066,7 @@ function SettingsPage() {
               <div className="flex items-center gap-2">
                 <Calculator className="size-4 text-emerald-400" />
                 <span className="font-bold text-xs text-white">
-                  Live Itemized Integer-Paise Settlement Preview ({(effectiveBps / 100).toFixed(1)}% Commission):
+                  Live Settlement Breakdown Preview ({(effectiveBps / 100).toFixed(1)}% Commission):
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -1098,7 +1101,7 @@ function SettingsPage() {
               <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
                 <div className="flex items-center gap-1.5">
                   <span className="text-slate-300">
-                    Platform Delivery Commission ({(effectiveBps / 100).toFixed(1)}%)
+                    Delivery Commission ({(effectiveBps / 100).toFixed(1)}%)
                   </span>
                   <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-1.5 rounded">
                     {effectiveBps} BPS
@@ -1112,7 +1115,7 @@ function SettingsPage() {
               {/* 18% GST on Commission */}
               <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-slate-300">18% GST on Platform Commission (SAC 9985)</span>
+                  <span className="text-slate-300">18% GST on Delivery Commission (SAC 9985)</span>
                   <span className="text-[10px] font-mono text-slate-400">
                     ({formatINR(previewBreakdown.commissionCgstPaise)} CGST + {formatINR(previewBreakdown.commissionSgstPaise)} SGST)
                   </span>
@@ -1127,7 +1130,7 @@ function SettingsPage() {
                 <div className="flex items-center gap-1.5">
                   <span className="text-emerald-300 font-medium">5% §9(5) Food GST (CGST Act 2017)</span>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
-                    PLATFORM REMITTED / NON-DEBITED
+                    REMITTED BY ORDER KING / NOT DEBITED
                   </span>
                 </div>
                 <span className="font-mono font-semibold text-emerald-400">
@@ -1140,7 +1143,7 @@ function SettingsPage() {
                 <div className="flex items-center gap-1.5">
                   <span className="text-slate-300">1% TCS under Section 52 of CGST Act 2017</span>
                   <span className="text-[10px] font-mono text-slate-400">
-                    ({formatINR(previewBreakdown.tcsCgstPaise)} CGST + {formatINR(previewBreakdown.tcsSgstPaise)} SGST)
+                    ({formatINR(previewBreakdown.tcsCgstPaise)} CGST + {formatINR(previewBreakdown.tcsSgstPaise)} SGST credited in GSTR-8)
                   </span>
                 </div>
                 <span className="font-mono font-semibold text-rose-400">
@@ -1152,7 +1155,7 @@ function SettingsPage() {
               <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
                 <div className="flex items-center gap-1.5">
                   <span className="text-slate-300">1% TDS under Section 194-O Income Tax Act 1961</span>
-                  <span className="text-[10px] font-mono text-slate-400">(Deposited to your PAN)</span>
+                  <span className="text-[10px] font-mono text-slate-400">(Deposited against your registered PAN)</span>
                 </div>
                 <span className="font-mono font-semibold text-rose-400">
                   - {formatINR(previewBreakdown.tdsSec194OPaise)}
@@ -1161,7 +1164,7 @@ function SettingsPage() {
 
               {/* Total Deductions */}
               <div className="flex items-center justify-between py-1.5 border-b border-slate-800 font-semibold text-slate-300">
-                <span>Total Debited Deductions (Excl. 9(5) Platform Remittance)</span>
+                <span>Total Deductions (Excl. 9(5) Remitted by Order King)</span>
                 <span className="font-mono text-rose-400">
                   - {formatINR(previewBreakdown.totalDeductionsPaise)}
                 </span>
@@ -1170,11 +1173,11 @@ function SettingsPage() {
               {/* Net Restaurant Payable */}
               <div className="flex items-center justify-between pt-2.5">
                 <div>
-                  <div className="text-xs uppercase tracking-wider font-bold text-slate-300">
-                    Net Restaurant Payable (NRP)
+                  <div className="text-xs uppercase tracking-wider font-bold text-emerald-300">
+                    Net Restaurant Payout (NRP)
                   </div>
                   <div className="text-[10px] font-mono text-slate-400">
-                    Exact integer-paise formula (zero floating-point drift)
+                    Exact integer-paise settlement formula (zero floating-point drift)
                   </div>
                 </div>
                 <div className="text-2xl font-bold font-display text-emerald-400 font-mono">
@@ -1185,7 +1188,7 @@ function SettingsPage() {
           </div>
 
           <p className="text-xs text-slate-400">
-            {t("settings.snapshotHint")} Snapshot per order. Applied strictly on net taxable food and packaging value in integer paise.
+            Applied transparently on net food and packaging order value in integer paise. Every delivery order locks this exact snapshot at order acceptance.
           </p>
         </Card>
 
@@ -1197,7 +1200,7 @@ function SettingsPage() {
                 <Users className="size-4 text-emerald-400" />
                 <h2 className="font-display text-base font-bold text-white">{t("settings.staff")}</h2>
               </div>
-              <span className="text-[11px] font-mono text-slate-400">RBAC ACCESS CONTROL</span>
+              <span className="text-[11px] font-mono text-slate-400">STAFF ACCESS CONTROL</span>
             </div>
             <ul className="text-xs divide-y divide-slate-800">
               {staffQ.data?.staff.map((s) => (
@@ -1255,22 +1258,22 @@ function SettingsPage() {
           </Card>
         ) : null}
 
-        {/* Restaurant Partner Legal, Privacy & Compliance Center */}
-        <Card id="legal-compliance" className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
+        {/* Restaurant Partner Standards & Charter */}
+        <Card id="partner-charter" className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
               <ShieldCheck className="size-5 text-emerald-400" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  Restaurant Partner Legal, Privacy &amp; Compliance Center
+                  Restaurant Partner Charter &amp; Standards
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Statutory agreements, merchant privacy disclosures, FSSAI hygiene undertakings, and grievance escalation.
+                  Commercial transparency, guest privacy protection, culinary safety guidelines, and dedicated partner care.
                 </p>
               </div>
             </div>
             <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
-              STATUTORY CHARTER
+              PARTNER CHARTER
             </span>
           </div>
 
