@@ -165,7 +165,7 @@ function OnboardingPage() {
   async function handleSendAadhaarOtp() {
     setError(null);
     if (!validateAadhaar(aadhaarNumber)) {
-      setError("Please enter a valid 12-digit Indian Aadhaar number with valid Verhoeff checksum.");
+      setError("Please enter a valid 12-digit Indian Aadhaar number.");
       return;
     }
     setOtpSent(true);
@@ -176,7 +176,7 @@ function OnboardingPage() {
   async function handleVerifyAadhaarOtp() {
     setError(null);
     if (!validateAadhaarOtp(aadhaarOtp)) {
-      setError("Invalid 6-digit Aadhaar OTP format. Please enter 6 numeric digits.");
+      setError("Please enter the 6-digit OTP sent to your Aadhaar-registered mobile number.");
       return;
     }
     const clean = aadhaarNumber.replace(/[\s-]/g, "");
@@ -205,11 +205,12 @@ function OnboardingPage() {
     const effectiveDescription = (form.description || String(r?.description ?? "")).trim();
 
     const fssai = (form.fssaiNumber || String(r?.fssai_number ?? "")).trim();
+    const defaultExp = new Date();
+    defaultExp.setFullYear(defaultExp.getFullYear() + 1);
+    const defaultExpiryStr = defaultExp.toISOString().slice(0, 10);
     let fssaiExpiry = (form.fssaiExpiryDate || String(r?.fssai_expiry_date ?? "")).trim();
     if (!fssaiExpiry && fssai) {
-      const defaultExp = new Date();
-      defaultExp.setFullYear(defaultExp.getFullYear() + 1);
-      fssaiExpiry = defaultExp.toISOString().slice(0, 10);
+      fssaiExpiry = defaultExpiryStr;
     }
     const pan = (form.pan || String(r?.pan ?? "")).trim().toUpperCase();
     const ifsc = (form.bankIfsc || String(r?.bank_ifsc ?? "")).trim().toUpperCase();
@@ -219,7 +220,7 @@ function OnboardingPage() {
 
     if (!effectiveName || !effectiveAddress || !effectivePhone) {
       setError(
-        "Station 1 Incomplete: Restaurant legal name, contact phone number, and physical kitchen address are required.",
+        "Please provide your restaurant trade name, contact phone number, and kitchen pickup address in Station 1.",
       );
       return;
     }
@@ -227,14 +228,14 @@ function OnboardingPage() {
     if (!bypassAgreementCheck && !station5Validation.isValid) {
       const firstError =
         Object.values(station5Validation.errors)[0] ||
-        "Station 5 Incomplete: Please review and execute the Restaurant Partner Agreement, select the Onboarding Fee option, and complete digital execution.";
-      setError(`Station 5 Incomplete: ${firstError}`);
+        "Please review the Restaurant Partner Agreement, select an onboarding fee plan, and complete the digital signature.";
+      setError(`Partner Agreement: ${firstError}`);
       return;
     }
 
     if (fssai && !validateFssai(fssai)) {
       setError(
-        "Partner Verification: Invalid 14-digit FSSAI FoSCoS registration number. Must follow the 14-digit FoSCoS state & license structure.",
+        "Partner Verification: Please enter a valid 14-digit FSSAI registration number.",
       );
       return;
     }
@@ -247,35 +248,35 @@ function OnboardingPage() {
     }
     if (pan && !validatePan(pan)) {
       setError(
-        "Partner Verification: Invalid PAN format. Must be 10 alphanumeric characters (e.g. ABCDE1234F).",
+        "Partner Verification: Please enter a valid 10-character PAN (e.g. ABCDE1234F).",
       );
       return;
     }
     if (ifsc && !validateIfsc(ifsc)) {
       setError(
-        "Partner Verification: Invalid Bank IFSC code. Must be 4 letters + '0' + 6 alphanumeric characters (e.g. HDFC0001234).",
+        "Partner Verification: Please enter a valid Bank IFSC code (e.g. HDFC0001234).",
       );
       return;
     }
     if (!exemptFromGst && gstin && !validateGstin(gstin)) {
       setError(
-        "Partner Verification: Invalid GSTIN format. Must be 15 statutory characters, or check the 'Turnover under ₹20 Lakhs (GST Exempt)' box if exempt.",
+        "Partner Verification: Please enter a valid 15-character GSTIN, or check 'Turnover under ₹20 Lakhs (GST Exempt)' if exempt.",
       );
       return;
     }
 
     if (submitReviewAfterSave) {
       if (!validateFssai(fssai)) {
-        setError("Partner Verification: A valid 14-digit FSSAI FoSCoS registration number is required to receive online orders.");
+        setError("Partner Verification: A valid 14-digit FSSAI registration number is required to receive online orders.");
         return;
       }
       const expRes = calculateFssaiExpiry(fssaiExpiry);
       if (expRes.isExpired) {
-        setError("Partner Verification: Your FSSAI license has expired. Please provide an active license or renewal acknowledgment under the Food Safety and Standards Act, 2006.");
+        setError("Partner Verification: Your FSSAI license appears expired. Please provide an active license or renewal acknowledgment.");
         return;
       }
       if (!privacyAndTaxAccepted) {
-        setError("Partner Verification: Statutory declaration acknowledging 5% food GST remittance under CGST Act Section 9(5) is mandatory.");
+        setError("Partner Verification: Please confirm the tax remittance acknowledgment under CGST Act Section 9(5).");
         return;
       }
       if (!validatePan(pan)) {
@@ -327,7 +328,7 @@ function OnboardingPage() {
             cuisine: effectiveCuisine,
             diet: form.diet,
             description: effectiveDescription,
-            gstin: gstin || undefined,
+            gstin: exemptFromGst ? "" : (gstin || undefined),
             fssaiNumber: fssai || undefined,
             pan: pan || undefined,
             bankAccount: bankAccount || undefined,
@@ -339,11 +340,11 @@ function OnboardingPage() {
         if (submitReviewAfterSave) {
           await submitForReview({ data: { restaurantId: targetRestaurantId } });
           setSuccessMsg(
-            "Restaurant Partner KYC application and digitally executed agreement submitted. Your outlet status is now PENDING_VERIFICATION.",
+            "Restaurant partner application and agreement submitted successfully. Your outlet is now under verification review.",
           );
         } else {
           setSuccessMsg(
-            "Restaurant profile, statutory KYC credentials, and Station 5 commercial contract preferences saved.",
+            "Restaurant profile, verification credentials, and partnership preferences saved successfully.",
           );
           setEditingApproved(false);
         }
@@ -369,7 +370,7 @@ function OnboardingPage() {
 
     return (
       <VendorShell
-        title="Restaurant Partner KYC & Profile"
+        title="Partner Profile"
         dataLabel={vendor.dataLabel}
         restaurantName={vendor.selected?.restaurantName}
       >
@@ -390,14 +391,14 @@ function OnboardingPage() {
                     }`}
                   />
                   <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">
-                    VERIFICATION STATUS: {isApproved ? "VERIFIED PARTNER" : "PENDING STATUTORY REVIEW"}
+                    VERIFICATION STATUS: {isApproved ? "VERIFIED PARTNER" : "UNDER VERIFICATION REVIEW"}
                   </span>
                 </div>
                 <h1 className="mt-1 font-display text-2xl font-bold text-white">
                   {(r?.name as string) || vendor.selected?.restaurantName || "Registered Restaurant"}
                 </h1>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Governed by the OrderKing Restaurant Partner Agreement, FSSAI Food Safety Act 2006, and CGST Act §9(5).
+                  Governed by the Order King Restaurant Partner Agreement, FSSAI Food Safety Act 2006, and CGST Act §9(5).
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -408,7 +409,7 @@ function OnboardingPage() {
                   className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs"
                 >
                   <Edit3 className="mr-1.5 size-3.5 text-emerald-400" />
-                  Edit KYC / Contract Details
+                  Edit Partner Profile &amp; Agreement
                 </Button>
               </div>
             </div>
@@ -469,7 +470,7 @@ function OnboardingPage() {
 
             <Card className="border-slate-800 bg-slate-900/60 p-5 space-y-3">
               <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                <span>2. Statutory KYC &amp; Bank Settlement</span>
+                <span>2. Business Credentials &amp; Bank Settlement</span>
                 <Banknote className="size-4 text-emerald-400" />
               </div>
               <div className="space-y-1.5 text-xs text-slate-300">
@@ -535,7 +536,7 @@ function OnboardingPage() {
 
             <Card className="border-slate-800 bg-slate-900/60 p-5 space-y-3">
               <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                <span>4. Compliance Document Vault</span>
+                <span>4. Partner Verification Documents</span>
                 <FileCheck className="size-4 text-emerald-400" />
               </div>
               <div className="flex items-center justify-between">
@@ -560,19 +561,19 @@ function OnboardingPage() {
 
   return (
     <VendorShell
-      title="Restaurant Partner Onboarding & KYC"
+      title="Partner Onboarding"
       dataLabel={vendor.dataLabel}
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="max-w-3xl mx-auto space-y-6 py-2">
-        {/* Institutional Header with 5 Stations */}
+        {/* Partner Onboarding Header with 5 Stations */}
         <div className="rounded-xl border border-slate-800 bg-slate-900/90 p-5 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
             <div>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="size-4 text-emerald-400" />
                 <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400">
-                  Order King Restaurant Partner Empanelment
+                  Order King Restaurant Partner Registration
                 </span>
               </div>
               <h1 className="mt-1 font-display text-xl sm:text-2xl font-bold text-white">
@@ -607,15 +608,15 @@ function OnboardingPage() {
             </div>
             <div>
               <span className="text-slate-500 font-mono text-[10px] block">STATION 2</span>
-              <span className="font-medium text-slate-200">FSSAI &amp; Tax Info</span>
+              <span className="font-medium text-slate-200">Food Safety &amp; Tax</span>
             </div>
             <div>
               <span className="text-slate-500 font-mono text-[10px] block">STATION 3</span>
-              <span className="font-medium text-slate-200">Bank Settlement</span>
+              <span className="font-medium text-slate-200">Direct Payouts</span>
             </div>
             <div>
               <span className="text-slate-500 font-mono text-[10px] block">STATION 4</span>
-              <span className="font-medium text-slate-200">Documents</span>
+              <span className="font-medium text-slate-200">Verification Documents</span>
             </div>
             <div>
               <span className="text-slate-500 font-mono text-[10px] block">STATION 5</span>
@@ -739,7 +740,7 @@ function OnboardingPage() {
           </div>
         </Card>
 
-        {/* STATION 2: STATUTORY FOOD SAFETY & TAX CREDENTIALS */}
+        {/* STATION 2: FOOD SAFETY & BUSINESS CREDENTIALS */}
         <Card className="border-slate-800 bg-slate-900/80 p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
@@ -749,7 +750,7 @@ function OnboardingPage() {
                   2. Food Safety &amp; Business Credentials
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Compliant with FSSAI FoSCoS standards. GSTIN is 100% optional for restaurants with annual turnover under ₹20 Lakhs.
+                  Compliant with FSSAI standards. GSTIN is 100% optional for restaurants with annual turnover under ₹20 Lakhs.
                 </p>
               </div>
             </div>
@@ -774,7 +775,11 @@ function OnboardingPage() {
             />
             <Field
               label="FSSAI License Expiry Date"
-              placeholder="e.g. 2027-12-31 (Auto-set)"
+              placeholder={`e.g. ${(() => {
+                const d = new Date();
+                d.setFullYear(d.getFullYear() + 1);
+                return d.toISOString().slice(0, 10);
+              })()} (Auto-defaults to 1 year)`}
               value={form.fssaiExpiryDate || String(r?.fssai_expiry_date ?? "")}
               onChange={(v) => setForm({ ...form, fssaiExpiryDate: v })}
             />
@@ -786,9 +791,10 @@ function OnboardingPage() {
             />
             <div className="space-y-1">
               <Field
-                label="15-Digit GSTIN (Optional)"
-                placeholder={exemptFromGst ? "Turnover < ₹20L (Exempt)" : "e.g. 29ABCDE1234F1Z5"}
+                label="15-Digit GSTIN (100% Optional)"
+                placeholder={exemptFromGst ? "Turnover < ₹20L (GST Exempt)" : "e.g. 29ABCDE1234F1Z5"}
                 value={exemptFromGst ? "" : (form.gstin || String(r?.gstin ?? ""))}
+                disabled={exemptFromGst}
                 onChange={(v) => {
                   if (exemptFromGst) setExemptFromGst(false);
                   setForm({ ...form, gstin: v.toUpperCase().slice(0, 15) });
@@ -827,7 +833,7 @@ function OnboardingPage() {
                   3. Settlement Bank Account &amp; Direct Payouts
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Configures automated NEFT/IMPS payout disbursements of your net restaurant payables.
+                  Configures automated direct payouts of your weekly restaurant earnings via NEFT/IMPS.
                 </p>
               </div>
             </div>
@@ -856,7 +862,7 @@ function OnboardingPage() {
           </div>
         </Card>
 
-        {/* STATION 4: STATUTORY COMPLIANCE DOCUMENT VAULT */}
+        {/* STATION 4: PARTNER VERIFICATION DOCUMENTS */}
         <Card className="border-slate-800 bg-slate-900/80 p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
@@ -882,7 +888,7 @@ function OnboardingPage() {
               </div>
               {uploadedDocs.length > 0 ? (
                 <div className="pt-2 border-t border-slate-800/80 space-y-1">
-                  <div className="text-[11px] font-mono uppercase text-slate-400">Vault Upload Records ({uploadedDocs.length})</div>
+                  <div className="text-[11px] font-mono uppercase text-slate-400">Uploaded Documents ({uploadedDocs.length})</div>
                   {uploadedDocs.map((doc) => (
                     <div key={doc.id} className="flex items-center justify-between text-xs text-slate-300 py-1">
                       <span className="font-mono">{doc.kind}: {doc.file_name}</span>
@@ -897,12 +903,12 @@ function OnboardingPage() {
           ) : (
             <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 text-xs text-slate-400 flex items-center justify-between">
               <span>Document upload unlocks instantly upon creating or saving your draft profile below.</span>
-              <span className="font-mono text-[10px] text-emerald-400">AUTO-ACTIVATING</span>
+              <span className="font-mono text-[10px] text-emerald-400">READY UPON SAVE</span>
             </div>
           )}
         </Card>
 
-        {/* STATION 5: COMMERCIAL CONTRACT & DIGITAL EXECUTION */}
+        {/* STATION 5: COMMERCIAL AGREEMENT & DIGITAL EXECUTION */}
         <Card className="border-emerald-500/30 bg-slate-900/90 p-6 space-y-5 shadow-lg">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
@@ -910,14 +916,14 @@ function OnboardingPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="font-display text-base font-bold text-white">
-                    5. Commercial Contract &amp; Digital Execution
+                    5. Partner Agreement &amp; Commercial Terms
                   </h2>
                   <span className="rounded bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 text-[10px] font-mono text-emerald-300">
-                    MANDATORY STATION
+                    FINAL STEP
                   </span>
                 </div>
                 <p className="text-xs text-slate-400">
-                  Review partner covenants, configure amortized onboarding fee, and execute electronically under IT Act 2000.
+                  Review partner covenants, choose an onboarding plan, and confirm electronically under the IT Act 2000.
                 </p>
               </div>
             </div>
@@ -929,7 +935,7 @@ function OnboardingPage() {
             <div className="flex items-center justify-between">
               <Label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
                 <FileText className="size-3.5 text-emerald-400" />
-                Restaurant Partner Agreement Covenant Viewer
+                Restaurant Partner Agreement
               </Label>
               <button
                 type="button"
@@ -981,7 +987,7 @@ function OnboardingPage() {
                     <p className="text-slate-400 leading-relaxed pl-3">
                       Net Restaurant Payable (NRP) is calculated in exact integer paise:{" "}
                       <code className="text-emerald-300 font-mono text-[11px]">
-                        NRP = Gross Food Sales + Packaging − Restaurant Discounts − Platform Commission + Promos − Statutory Taxes − Deductions ± Refunds
+                        NRP = Gross Food Sales + Packaging − Restaurant Discounts − Platform Commission + Promos − Standard Taxes − Deductions ± Refunds
                       </code>
                       . All financial transactions are rounded half-away-from-zero with absolute mathematical protection against floating-point drift. Settlements are disbursed weekly via NEFT/IMPS.
                     </p>
@@ -992,10 +998,10 @@ function OnboardingPage() {
                   <div className="space-y-1">
                     <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
                       <span className="size-1.5 rounded-full bg-emerald-400" />
-                      Clause 2: Statutory Tax Compliance &amp; Remittance (CGST Act §9(5))
+                      Clause 2: Tax Handling &amp; Government Remittance (CGST Act §9(5))
                     </h4>
                     <p className="text-slate-400 leading-relaxed pl-3">
-                      OrderKing complies strictly with Indian statutory tax provisions: <strong>5% GST on Restaurant Services</strong> under Section 9(5) of the CGST Act 2017 is remitted directly by OrderKing to the Government of India and is strictly <em>NOT</em> debited from the restaurant payable. OrderKing deducts <strong>1% TCS under Section 52</strong> and <strong>1% TDS under Section 194-O</strong> of the Income Tax Act 1961 on gross sales.
+                      Order King complies strictly with applicable Indian tax provisions: <strong>5% GST on Restaurant Services</strong> under Section 9(5) of the CGST Act 2017 is remitted directly by Order King to the Government of India and is strictly <em>NOT</em> debited from your restaurant payable. Order King remits <strong>1% TCS under Section 52</strong> and <strong>1% TDS under Section 194-O</strong> of the Income Tax Act 1961 on gross sales as required by law.
                     </p>
                   </div>
                 )}
@@ -1058,7 +1064,7 @@ function OnboardingPage() {
                 className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
               />
               <span>
-                I have read, understood, and accept the <strong>Order King Restaurant Partner Agreement Covenants</strong>, including the commercial settlement formula, delivery fulfillment schedule, and statutory compliance framework. *
+                I have read, understood, and accept the <strong>Order King Restaurant Partner Agreement Covenants</strong>, including the commercial settlement formula, delivery fulfillment schedule, and food safety standards. *
               </span>
             </label>
           </div>
@@ -1071,7 +1077,7 @@ function OnboardingPage() {
                 Platform Onboarding Fee Setup (Select Option)
               </Label>
               <p className="text-xs text-slate-400 mt-0.5">
-                Select your preferred onboarding fee payment plan. OrderKing offers a Zero Upfront Barrier amortized monthly option so you can start taking orders immediately.
+                Select your preferred onboarding fee payment plan. Order King offers a Zero Upfront Barrier amortized monthly option so you can start taking orders immediately.
               </p>
             </div>
 
@@ -1151,7 +1157,7 @@ function OnboardingPage() {
               </div>
             </div>
 
-            {/* Option A Mandatory Amortized Deduction Consent Checkbox */}
+            {/* Option A Amortized Deduction Consent Checkbox */}
             {onboardingFeeOption === "AMORTIZED" && (
               <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3 space-y-1.5">
                 <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-200">
@@ -1162,21 +1168,21 @@ function OnboardingPage() {
                     className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
                   />
                   <span>
-                    <strong>Mandatory Amortization Authorization:</strong> I authorize OrderKing to deduct an amortized platform onboarding fee of <strong>₹99.00/month for 6 consecutive monthly payout cycles (total ₹594.00)</strong> automatically from our weekly payout batches. *
+                    <strong>Amortized Deduction Authorization:</strong> I authorize Order King to deduct an onboarding fee of <strong>₹99.00/month for 6 consecutive monthly payout cycles (total ₹594.00)</strong> automatically from weekly payout batches. *
                   </span>
                 </label>
               </div>
             )}
           </div>
 
-          {/* 3. FOOD SAFETY, HYGIENE & ALLERGEN UNDERTAKING BINDING COVENANT */}
+          {/* 3. FOOD SAFETY, HYGIENE & ALLERGEN UNDERTAKING */}
           <div className="space-y-2 pt-2 border-t border-slate-800">
             <div className="rounded-lg border border-amber-500/30 bg-amber-950/10 p-4 space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="size-4 text-amber-400" />
                   <span className="font-semibold text-xs text-amber-300">
-                    Food Safety, Hygiene &amp; Allergen Undertaking (FSSAI Statutory Covenant)
+                    Food Safety, Hygiene &amp; Allergen Undertaking (FSSAI Standards)
                   </span>
                 </div>
                 <span className="rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono px-2 py-0.5">
@@ -1184,7 +1190,7 @@ function OnboardingPage() {
                 </span>
               </div>
               <p className="text-[11px] text-slate-300 leading-relaxed">
-                Under Section 31 of the Food Safety and Standards Act 2006, the merchant solemnly warrants that:
+                Under Section 31 of the Food Safety and Standards Act 2006, the restaurant partner affirms that:
               </p>
               <ul className="text-[11px] text-slate-300 space-y-1 pl-4 list-disc marker:text-amber-400">
                 <li>
@@ -1197,7 +1203,7 @@ function OnboardingPage() {
                   Strict kitchen segregation is maintained between Pure Vegetarian (Green Dot) and Non-Vegetarian (Red Dot) preparation surfaces, cookware, and fryers.
                 </li>
                 <li>
-                  All 8 standard allergens (Dairy, Gluten, Nuts, Soy, Fish, Eggs) and nutritional details are transparently declared.
+                  All standard allergens (Dairy, Gluten, Nuts, Soy, Fish, Eggs) and nutritional details are transparently declared.
                 </li>
               </ul>
               <label className="flex items-start gap-2.5 cursor-pointer pt-1 text-xs text-slate-200">
@@ -1208,7 +1214,7 @@ function OnboardingPage() {
                   className="mt-0.5 rounded border-slate-700 bg-slate-950 text-amber-500 focus:ring-amber-500"
                 />
                 <span>
-                  I execute the <strong>FSSAI Food Safety, Hygiene &amp; Allergen Undertaking</strong> and confirm that our 14-digit FSSAI registration is valid, active, and strictly observed in kitchen operations under the Food Safety and Standards Act, 2006. *
+                  I confirm the <strong>FSSAI Food Safety, Hygiene &amp; Allergen Undertaking</strong> and affirm that our 14-digit FSSAI registration is valid, active, and strictly observed in kitchen operations under the Food Safety and Standards Act, 2006. *
                 </span>
               </label>
             </div>
@@ -1432,11 +1438,13 @@ function Field({
   label,
   value,
   placeholder,
+  disabled,
   onChange,
 }: {
   label: string;
   value: string;
   placeholder?: string;
+  disabled?: boolean;
   onChange: (v: string) => void;
 }) {
   return (
@@ -1445,8 +1453,9 @@ function Field({
       <Input
         value={value}
         placeholder={placeholder}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-        className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 text-xs h-9"
+        className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 text-xs h-9 disabled:opacity-50"
       />
     </div>
   );

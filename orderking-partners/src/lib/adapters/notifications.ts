@@ -30,7 +30,7 @@ export function notificationChannelStatus(): ChannelStatus[] {
     {
       channel: "email",
       connected: true,
-      provider: "KingAI-Statutory-Tax-Mailer",
+      provider: "KingAI-Tax-Mailer",
     },
     {
       channel: "push",
@@ -99,11 +99,11 @@ export function buildWhatsappShiftReportMessage(data: WhatsappShiftReportPayload
     `────────────────────`,
     `📦 Orders Delivered: ${data.orderCount} orders`,
     `💰 Daily Gross Sales: ${gross}`,
-    `🏛️ Statutory CGST Sec 9(5) Remitted: ${gst} (5%)`,
-    `🤝 OrderKing Commission (0%): ${comm}`,
+    `🏛️ Food GST Remitted (Sec 9(5)): ${gst} (5%)`,
+    `🤝 Order King Commission: ${comm}`,
     `💵 Accrued Net Payout: ${net}`,
     `────────────────────`,
-    `✅ Shift closed automatically. Net payout scheduled for direct NEFT/IMPS transfer.`,
+    `✅ Shift closed smoothly. Net payout scheduled for direct NEFT/IMPS bank transfer.`,
   ].join("\n");
 }
 
@@ -114,7 +114,7 @@ export function buildSmsKitchenEmergencyMessage(data: SmsKitchenEmergencyPayload
 export function buildEmailTaxInvoiceMessage(data: EmailTaxDocumentPayload): { subject: string; body: string } {
   const docTitle =
     data.documentType === "TAX_INVOICE"
-      ? "Monthly Statutory Tax Invoice & Sec 9(5) GST Statement"
+      ? "Monthly GST Tax Invoice & Sec 9(5) Statement"
       : data.documentType === "FORM_16A"
         ? "Quarterly TDS Certificate (Form 16A - Sec 194-O)"
         : "Monthly Settlement & Reconciliation Statement";
@@ -124,15 +124,15 @@ export function buildEmailTaxInvoiceMessage(data: EmailTaxDocumentPayload): { su
   const tds = formatINR(data.tdsPaise ?? 0);
   const tcs = formatINR(data.tcsPaise ?? 0);
 
-  const subject = `[OrderKing Tax & Finance] ${docTitle} - ${data.restaurantName} (${data.period})`;
+  const subject = `[Order King Finance] ${docTitle} - ${data.restaurantName} (${data.period})`;
   const body = [
-    `Dear ${data.restaurantName} Finance & Accounts Team,`,
+    `Dear ${data.restaurantName} Hospitality & Accounts Team,`,
     ``,
-    `Your statutory ${docTitle} for the period ${data.period} is ready.`,
+    `Your ${docTitle} for the period ${data.period} is ready.`,
     ``,
     `Restaurant: ${data.restaurantName}`,
     `PAN: ${data.pan ?? "Recorded on file"}`,
-    `GSTIN: ${data.gstin ?? "Recorded on file"}`,
+    `GSTIN: ${data.gstin ?? "Recorded on file (optional for turnover < ₹20L)"}`,
     `Period: ${data.period}`,
     `Gross Order Value: ${gross}`,
     `TDS Deducted (Sec 194-O): ${tds}`,
@@ -144,7 +144,7 @@ export function buildEmailTaxInvoiceMessage(data: EmailTaxDocumentPayload): { su
     `View and download your official statement: https://${platformConfig.brand.domain}/settlements`,
     ``,
     `Warm regards,`,
-    `Order King Tax Compliance & Finance Automation`,
+    `Order King Finance & Partner Relations`,
   ].join("\n");
 
   return { subject, body };
@@ -188,7 +188,7 @@ export async function dispatchKingAiSmsEmergency(
 export const dispatchUmarOsSmsEmergency = dispatchKingAiSmsEmergency;
 
 /**
- * Dispatch a statutory Email Tax Invoice or Form 16A Statement via King AI mailer.
+ * Dispatch an Email Tax Invoice or Form 16A Statement via King AI mailer.
  */
 export async function dispatchKingAiEmailTaxDocument(
   payload: EmailTaxDocumentPayload,
@@ -200,7 +200,7 @@ export async function dispatchKingAiEmailTaxDocument(
   return {
     success: true,
     channel: "email",
-    summary: `Statutory ${payload.documentType} emailed to ${payload.destinationEmail} for period ${payload.period}.`,
+    summary: `${payload.documentType === "TAX_INVOICE" ? "Tax invoice" : payload.documentType === "FORM_16A" ? "Form 16A TDS certificate" : "Monthly statement"} emailed to ${payload.destinationEmail} for period ${payload.period}.`,
   };
 }
 export const dispatchUmarOsEmailTaxDocument = dispatchKingAiEmailTaxDocument;

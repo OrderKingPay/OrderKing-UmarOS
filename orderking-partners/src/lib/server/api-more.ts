@@ -116,7 +116,7 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
   if (q.includes("dispute") || q.includes("refund") || q.includes("spill") || q.includes("missing") || q.includes("arbitrat") || q.includes("liability") || q.includes("complaint")) {
     lines.push(
       `1. Automated Customer Dispute & Refund Arbitrator (${snap.restaurantName}):`,
-      `   • Liability Policy: OrderKing protects merchant payouts against 3rd-party logistics failures.`,
+      `   • Liability Policy: Order King protects merchant payouts against 3rd-party logistics failures.`,
       `   • Food Spill / Transit Damage: When food spills or containers leak in bike transit (or transit > 30 mins), liability is assigned 100% to LOGISTICS. Your restaurant payout is fully protected with ₹0 deduction.`,
       `   • Missing / Mispacked Items: If kitchen dispatch omits an item (e.g., missing bread/drink), liability is MERCHANT for that item's value only. Remaining items and packaging remain credited, and CGST Sec 9(5) is reversed.`,
       `   • Subjective Taste / Non-Defect Claims: Subjective complaints without food defects are rejected; platform funds token loyalty coins without affecting restaurant settlements.`,
@@ -139,8 +139,8 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
       `1. Daily Shift & Financial Recon Report (${snap.restaurantName}):`,
       `   • Delivered Orders Completed: ${snap.today.delivered} delivered (${snap.today.orders} total placed today).`,
       `   • Delivered Gross Sales: ${deliveredSales} · Accrued Net Payable: ${payable}`,
-      `   • OrderKing 0% Platform Commission: ₹0.00 commission deducted. You saved ${commAvoided} compared to standard aggregator fees (24%).`,
-      `   • Statutory CGST Sec 9(5) Remitted: ${gst95} (5% food GST remitted directly to the government by Order King on your behalf).`,
+      `   • Order King Commission: ${formatINR(snap.today.commission_paise)} deducted (0% on Dine-In / standard 28% delivery take-rate or negotiated rate).`,
+      `   • Food GST Remitted (Sec 9(5)): ${gst95} (5% food GST remitted directly to the government by Order King on your behalf).`,
       `   • Withholding Taxes: TCS Sec 52 (0.5%) and TDS Sec 194-O (0.1%) are accounted in exact integer paise.`,
       `   • Settlement Batch: Scheduled for automatic NEFT/IMPS transfer to your verified bank account.`
     );
@@ -308,7 +308,7 @@ export const askAssistant = createServerFn({ method: "POST" })
                 {
                   role: "system",
                   content:
-                    "You are OrderKing Restaurant AI. Answer only from the authorized restaurant snapshot supplied by the server. Never invent metrics, prices, policies, integrations, refunds, payouts, or actions. You may recommend actions, but do not claim an action was executed unless the platform confirms it. Protect other restaurants and customer privacy. Amounts ending in _paise are integer paise; convert to INR only when useful. **CRITICAL:** Output exact, precise, and respectful local languages flawlessly. If the restaurant asks in Hindi, Assamese, Bengali, or any Indian constitutional language, reply perfectly and completely in that exact language.",
+                    "You are Order King Restaurant AI (powered by King AI). Answer only from the authorized restaurant snapshot supplied by the server. Never invent metrics, prices, policies, integrations, refunds, payouts, or actions. You may recommend actions, but do not claim an action was executed unless the platform confirms it. Protect other restaurants and customer privacy. Amounts ending in _paise are integer paise; convert to INR only when useful. **CRITICAL:** Output exact, precise, and respectful local languages flawlessly. If the restaurant asks in Hindi, Assamese, Bengali, or any Indian constitutional language, reply perfectly and completely in that exact language.",
                 },
                 {
                   role: "user",
@@ -519,8 +519,8 @@ export const sendKingAiTestNotification = createServerFn({ method: "POST" })
           destinationEmail: destination,
           documentType: "TAX_INVOICE" as const,
           period: new Date().toLocaleString("en-IN", { month: "long", year: "numeric", timeZone: "Asia/Kolkata" }),
-          gstin: rest[0]?.gstin || "18AABCO1234F1Z5",
-          pan: rest[0]?.pan || "AABCO1234F",
+          gstin: rest[0]?.gstin?.trim() || undefined,
+          pan: rest[0]?.pan?.trim() || undefined,
           totalGrossPaise: s.sales_paise > 0 ? s.sales_paise : 845000,
           netPayablePaise: s.payable_paise > 0 ? s.payable_paise : 802750,
           tdsPaise: Math.round((s.sales_paise > 0 ? s.sales_paise : 845000) * 0.01),
