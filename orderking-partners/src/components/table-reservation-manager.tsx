@@ -82,11 +82,37 @@ export interface ReservationBooking {
   platformFeePercent: number; // Platform fee percentage (5%)
   platformFeeAmount: number; // 5% fee in INR
   netRestaurantPayable: number; // Net payable to restaurant in INR
+  merchantCommissionPercent?: number; // Order King 0% merchant commission on dine-in
   seatedAt?: string;
   completedAt?: string;
   billAmount?: number;
   notes?: string;
   isWalkIn?: boolean;
+}
+
+/**
+ * Strict integer paise financial calculation with zero floating-point drift.
+ * 1 INR = 100 paise. Platform fee = 500 bps (5.00%). Merchant dine-in commission = 0 bps (0.00%).
+ */
+export function calculateReservationFinancesPaise(
+  depositRupees: number,
+  platformFeeBps = 500
+) {
+  const depositPaise = Math.round(depositRupees * 100);
+  const platformFeePaise = Math.round((depositPaise * platformFeeBps) / 10000);
+  const netRestaurantPayablePaise = depositPaise - platformFeePaise;
+
+  return {
+    depositRupees,
+    depositPaise,
+    platformFeeBps,
+    platformFeePercent: platformFeeBps / 100,
+    platformFeePaise,
+    netRestaurantPayablePaise,
+    platformFeeAmount: Math.round(platformFeePaise / 100),
+    netRestaurantPayable: Math.round(netRestaurantPayablePaise / 100),
+    merchantCommissionPercent: 0,
+  };
 }
 
 export const INITIAL_TABLES: DiningTable[] = [
@@ -249,23 +275,27 @@ export function useTableReservations(): TableReservationHookState {
   const [selectedZoneFilter, setSelectedZoneFilter] = useState<DiningAreaZone | "ALL">("ALL");
   const [autoAcceptBookings, setAutoAcceptBookings] = useState<boolean>(true);
 
-  // Financial calculations
+  // Financial calculations using exact integer paise arithmetic to prevent floating-point drift
   const nonCancelled = useMemo(
     () => reservations.filter((r) => r.status !== "CANCELLED"),
     [reservations]
   );
-  const totalDeposits = useMemo(
-    () => nonCancelled.reduce((acc, r) => acc + r.depositAmount, 0),
+  const totalDepositsPaise = useMemo(
+    () => nonCancelled.reduce((acc, r) => acc + Math.round(r.depositAmount * 100), 0),
     [nonCancelled]
   );
-  const totalPlatformFee = useMemo(
-    () => nonCancelled.reduce((acc, r) => acc + r.platformFeeAmount, 0),
+  const totalPlatformFeePaise = useMemo(
+    () => nonCancelled.reduce((acc, r) => acc + Math.round(r.platformFeeAmount * 100), 0),
     [nonCancelled]
   );
-  const totalNetPayable = useMemo(
-    () => nonCancelled.reduce((acc, r) => acc + r.netRestaurantPayable, 0),
+  const totalNetPayablePaise = useMemo(
+    () => nonCancelled.reduce((acc, r) => acc + Math.round(r.netRestaurantPayable * 100), 0),
     [nonCancelled]
   );
+
+  const totalDeposits = Math.round(totalDepositsPaise / 100);
+  const totalPlatformFee = Math.round(totalPlatformFeePaise / 100);
+  const totalNetPayable = Math.round(totalNetPayablePaise / 100);
 
   const activeBookingsCount = useMemo(
     () => reservations.filter((r) => r.status === "PENDING" || r.status === "CONFIRMED" || r.status === "SEATED").length,
@@ -429,7 +459,7 @@ export function useTableReservations(): TableReservationHookState {
   }) => {
     const ref = "WI-" + Math.floor(10000 + Math.random() * 90000);
     const deposit = walkInData.depositAmount ?? 500;
-    const fee = Math.round(deposit * 0.05);
+    const finances = calculateReservationFinancesPaise(deposit, 500);
     const timeNow = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
     const newBooking: ReservationBooking = {
@@ -441,14 +471,15 @@ export function useTableReservations(): TableReservationHookState {
       timeSlot: timeNow,
       date: "Today",
       areaPreference: walkInData.zone,
-      occasion: walkInData.occasion || "Walk-In Dine",
+      occasion: walkInData.occasion || "Walk-In Dining",
       status: "SEATED",
       assignedTable: walkInData.tableNumber,
       createdAgo: "Just now",
-      depositAmount: deposit,
-      platformFeePercent: 5,
-      platformFeeAmount: fee,
-      netRestaurantPayable: deposit - fee,
+      depositAmount: finances.depositRupees,
+      platformFeePercent: finances.platformFeePercent,
+      platformFeeAmount: finances.platformFeeAmount,
+      netRestaurantPayable: finances.netRestaurantPayable,
+      merchantCommissionPercent: 0,
       seatedAt: timeNow,
       isWalkIn: true,
     };
@@ -626,7 +657,7 @@ export function TableReservationManager({
             )}
           >
             <Armchair className="size-4" />
-            <span>Floor Plan & Inventory</span>
+            <span>Floor Plan &amp; Seating (AC, Rooftop, Patio, Cabana)</span>
             <span className="rounded-full bg-slate-950/20 px-1.5 py-0.5 text-[11px] font-black">
               {tables.length}
             </span>
@@ -643,7 +674,7 @@ export function TableReservationManager({
             )}
           >
             <Receipt className="size-4" />
-            <span>Cover Charge Ledger (5% Fee)</span>
+            <span>Dining Settlement Ledger (0% Commission)</span>
             <span className="rounded-full bg-slate-950/20 px-1.5 py-0.5 text-[11px] font-black">
               ₹{totalDeposits.toLocaleString("en-IN")}
             </span>
@@ -677,15 +708,15 @@ export function TableReservationManager({
       {/* SECTION 1: RESERVATIONS TABBED MANAGER */}
       {activeSection === "BOOKINGS" && (
         <div className="space-y-4">
-          {/* Status Filter Tabs (All 5 mandatory statuses) */}
+          {/* Status Filter Tabs */}
           <div className="flex flex-wrap items-center gap-2 border-b border-slate-800/70 pb-3">
             {(
               [
-                { id: "PENDING", label: "Pending Approval", emoji: "⏳", color: "text-amber-400" },
+                { id: "PENDING", label: "Pending Reservations", emoji: "⏳", color: "text-amber-400" },
                 { id: "CONFIRMED", label: "Confirmed Tables", emoji: "✅", color: "text-emerald-400" },
-                { id: "SEATED", label: "Currently Seated", emoji: "🍽️", color: "text-indigo-400" },
+                { id: "SEATED", label: "Seated Diners", emoji: "🍽️", color: "text-indigo-400" },
                 { id: "COMPLETED", label: "Completed & Billed", emoji: "🧾", color: "text-blue-400" },
-                { id: "CANCELLED", label: "Cancelled / No-Show", emoji: "❌", color: "text-rose-400" },
+                { id: "CANCELLED", label: "Released / No-Show", emoji: "❌", color: "text-rose-400" },
               ] as const
             ).map((tab) => {
               const count = reservations.filter((r) => r.status === tab.id).length;
@@ -802,11 +833,11 @@ export function TableReservationManager({
                     </div>
 
                     {/* Pre-Booking Cover Charge Pill */}
-                    <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-1 text-xs">
+                    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-1 text-xs">
                       <span className="text-slate-400">Cover Deposit:</span>
                       <span className="font-bold text-emerald-400">₹{res.depositAmount}</span>
                       <span className="text-slate-500 text-[10px]">
-                        (Platform 5%: ₹{res.platformFeeAmount} | Net: ₹{res.netRestaurantPayable})
+                        (5% Guest Platform Fee: ₹{res.platformFeeAmount} · Net Restaurant Credit: ₹{res.netRestaurantPayable} · 0% Dine-In Commission)
                       </span>
                     </div>
                   </div>
@@ -814,9 +845,9 @@ export function TableReservationManager({
                   {/* Action Buttons Row */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-slate-800/60">
                     <div className="text-xs text-slate-400">
-                      {res.status === "PENDING" && "Assign an available table and confirm booking"}
-                      {res.status === "CONFIRMED" && "Table locked. Mark guest seated when party arrives"}
-                      {res.status === "SEATED" && "Party currently dining. Complete & bill when finished"}
+                      {res.status === "PENDING" && "Assign an available table and confirm reservation"}
+                      {res.status === "CONFIRMED" && "Table reserved & ready. Seat party upon arrival"}
+                      {res.status === "SEATED" && "Guests currently dining. Complete & apply bill credit when finished"}
                       {res.status === "COMPLETED" && (
                         <span className="text-blue-400 font-semibold flex items-center gap-1">
                           <CheckCircle2 className="size-3.5" /> Total Bill: ₹{res.billAmount ?? 3500} (₹{res.depositAmount} cover credit applied)
@@ -824,7 +855,7 @@ export function TableReservationManager({
                       )}
                       {res.status === "CANCELLED" && (
                         <span className="text-rose-400 font-semibold flex items-center gap-1">
-                          <XCircle className="size-3.5" /> Cancelled / Released
+                          <XCircle className="size-3.5" /> Table Released
                         </span>
                       )}
                     </div>
@@ -861,10 +892,10 @@ export function TableReservationManager({
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => handleCancelOrNoShow(res.id, "Declined by restaurant")}
+                            onClick={() => handleCancelOrNoShow(res.id, "Unable to accommodate party")}
                             className="text-xs text-rose-400 hover:bg-rose-500/10 hover:text-rose-300"
                           >
-                            <X className="size-3.5" /> Cancel / No-Show
+                            <X className="size-3.5" /> Decline Party
                           </Button>
                         </>
                       )}
@@ -883,10 +914,10 @@ export function TableReservationManager({
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => handleCancelOrNoShow(res.id, "Customer No-Show")}
+                            onClick={() => handleCancelOrNoShow(res.id, "Guest No-Show / Released")}
                             className="text-xs text-rose-400 hover:bg-rose-500/10 hover:text-rose-300"
                           >
-                            <X className="size-3.5" /> Cancel / No-Show
+                            <X className="size-3.5" /> Release Table (No-Show)
                           </Button>
                         </>
                       )}
@@ -898,7 +929,7 @@ export function TableReservationManager({
                           onClick={() => handleCompleteAndBill(res.id)}
                           className="gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold"
                         >
-                          <Receipt className="size-3.5" /> Complete & Bill
+                          <Receipt className="size-3.5" /> Complete &amp; Bill
                         </Button>
                       )}
                     </div>
@@ -925,7 +956,7 @@ export function TableReservationManager({
               </p>
             </div>
 
-            {/* Zone Filter Tabs */}
+            {/* Zone Filter Tabs (AC, Rooftop, Patio, Cabana) */}
             <div className="flex flex-wrap items-center gap-1.5">
               <button
                 type="button"
@@ -933,7 +964,7 @@ export function TableReservationManager({
                 className={cn(
                   "rounded-lg px-2.5 py-1 text-xs font-semibold transition",
                   selectedZoneFilter === "ALL"
-                    ? "bg-slate-100 text-slate-950"
+                    ? "bg-slate-100 text-slate-950 font-bold"
                     : "bg-slate-800 text-slate-300 hover:bg-slate-700"
                 )}
               >
@@ -941,19 +972,28 @@ export function TableReservationManager({
               </button>
               {ZONES.map((zone) => {
                 const count = tables.filter((t) => t.zone === zone).length;
+                const zoneBadge =
+                  zone === "AC Indoor Main Hall"
+                    ? "❄️ AC Indoor"
+                    : zone === "Rooftop Open Air"
+                    ? "🌆 Rooftop"
+                    : zone === "Outdoor Patio"
+                    ? "🌿 Patio"
+                    : "👑 Cabana / VIP";
                 return (
                   <button
                     key={zone}
                     type="button"
                     onClick={() => setSelectedZoneFilter(zone)}
                     className={cn(
-                      "rounded-lg px-2.5 py-1 text-xs font-semibold transition",
+                      "rounded-lg px-2.5 py-1 text-xs font-semibold transition flex items-center gap-1",
                       selectedZoneFilter === zone
                         ? "bg-emerald-500 text-slate-950 font-bold"
                         : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
                     )}
                   >
-                    {zone} ({count})
+                    <span>{zoneBadge}</span>
+                    <span className="opacity-70 text-[10px]">({count})</span>
                   </button>
                 );
               })}
@@ -1024,7 +1064,7 @@ export function TableReservationManager({
                       </>
                     ) : (
                       <div className="text-slate-500 text-[11px] italic">
-                        {isBlk ? "Table temporarily maintenance locked" : "Ready for immediate walk-in / booking"}
+                        {isBlk ? "Table temporarily held for private hosting" : "Ready for immediate walk-in / booking"}
                       </div>
                     )}
                   </div>
@@ -1040,7 +1080,7 @@ export function TableReservationManager({
                       onClick={() => handleToggleTableStatus(tbl.id)}
                       className="text-[11px] font-bold text-slate-400 hover:text-slate-200 underline decoration-dotted"
                     >
-                      {tbl.status === "BLOCKED" ? "Unblock" : tbl.status === "AVAILABLE" ? "Block" : "Locked"}
+                      {tbl.status === "BLOCKED" ? "Release Table" : tbl.status === "AVAILABLE" ? "Hold Table" : "In Service"}
                     </button>
                   </div>
                 </Card>
@@ -1053,12 +1093,34 @@ export function TableReservationManager({
       {/* SECTION 3: COVER CHARGE & PRE-BOOKING DEPOSIT FINANCIAL LEDGER */}
       {activeSection === "FINANCIAL_LEDGER" && (
         <div className="space-y-5">
+          {/* Order King 0% Merchant Commission Guarantee Banner */}
+          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/25 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <ShieldCheck className="size-5 text-emerald-400 shrink-0" />
+                <h4 className="font-bold text-sm text-slate-100">
+                  Order King 0% Merchant Dine-In Commission Guarantee
+                </h4>
+                <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-300">
+                  KEEP 100% OF FOOD SALES
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Order King charges your restaurant <strong className="text-emerald-400">0% merchant commission</strong> on dine-in service. Guests pay a modest 5% platform convenience fee on advance reservations for instant table hold and automated SMS concierge. 100% of your net cover deposit is credited directly to the diner&apos;s food &amp; beverage bill.
+              </p>
+            </div>
+            <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1 shrink-0 border-t sm:border-t-0 sm:border-l border-slate-800 pt-3 sm:pt-0 sm:pl-5">
+              <span className="text-[11px] text-slate-400">Restaurant Commission</span>
+              <span className="font-display text-2xl font-black text-emerald-400">0% DINE-IN</span>
+            </div>
+          </div>
+
           {/* Financial KPI Banner */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             <Card className="border-emerald-500/30 bg-emerald-950/20 p-4 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-emerald-400 uppercase tracking-wide">
-                  Total Pre-Booking Deposits
+                  Total Cover Deposits
                 </span>
                 <DollarSign className="size-4 text-emerald-400" />
               </div>
@@ -1066,14 +1128,14 @@ export function TableReservationManager({
                 ₹{totalDeposits.toLocaleString("en-IN")}
               </div>
               <p className="text-[11px] text-emerald-400/80">
-                Guaranteed advance reservations revenue
+                Advance reservations revenue held for dining
               </p>
             </Card>
 
             <Card className="border-amber-500/30 bg-amber-950/20 p-4 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-amber-400 uppercase tracking-wide">
-                  Platform Convenience Fee (5%)
+                  5% Guest Platform Fee
                 </span>
                 <Sparkles className="size-4 text-amber-400" />
               </div>
@@ -1081,14 +1143,14 @@ export function TableReservationManager({
                 ₹{totalPlatformFee.toLocaleString("en-IN")}
               </div>
               <p className="text-[11px] text-amber-400/80">
-                Platform founder revenue stream (5% pre-booking fee)
+                Guest concierge fee (0% restaurant cut)
               </p>
             </Card>
 
             <Card className="border-indigo-500/30 bg-indigo-950/20 p-4 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-indigo-400 uppercase tracking-wide">
-                  Net Restaurant Payable
+                  Net Restaurant Credit
                 </span>
                 <Receipt className="size-4 text-indigo-400" />
               </div>
@@ -1096,7 +1158,22 @@ export function TableReservationManager({
                 ₹{totalNetPayable.toLocaleString("en-IN")}
               </div>
               <p className="text-[11px] text-indigo-300/80">
-                Credited directly to restaurant settlement ledger
+                100% credited against dine-in table bills
+              </p>
+            </Card>
+
+            <Card className="border-emerald-500/30 bg-emerald-950/20 p-4 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-emerald-300 uppercase tracking-wide">
+                  Merchant Commission
+                </span>
+                <ShieldCheck className="size-4 text-emerald-400" />
+              </div>
+              <div className="font-display text-2xl font-black text-emerald-400">
+                0%
+              </div>
+              <p className="text-[11px] text-emerald-300/80">
+                Order King charges ₹0 on dine-in meals
               </p>
             </Card>
           </div>
@@ -1110,7 +1187,7 @@ export function TableReservationManager({
                   Pre-Booking Cover Charges Settlement Statement
                 </h4>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Itemized ledger of table deposits collected, 5% platform fee deductions, and dine-in bill credits.
+                  Itemized ledger of table deposits collected, 5% guest platform fee, 0% restaurant commission, and dine-in bill credits.
                 </p>
               </div>
             </div>
@@ -1121,10 +1198,11 @@ export function TableReservationManager({
                   <tr>
                     <th className="py-2.5 px-3">Booking Ref</th>
                     <th className="py-2.5 px-3">Guest Details</th>
-                    <th className="py-2.5 px-3">Zone & Table</th>
+                    <th className="py-2.5 px-3">Zone &amp; Table</th>
                     <th className="py-2.5 px-3 text-right">Deposit Collected</th>
                     <th className="py-2.5 px-3 text-right">Platform Fee (5%)</th>
-                    <th className="py-2.5 px-3 text-right">Net Payable</th>
+                    <th className="py-2.5 px-3 text-right">Net Credit</th>
+                    <th className="py-2.5 px-3 text-center">Commission</th>
                     <th className="py-2.5 px-3 text-center">Settlement Status</th>
                   </tr>
                 </thead>
@@ -1158,6 +1236,9 @@ export function TableReservationManager({
                       <td className="py-3 px-3 text-right font-black text-emerald-400">
                         ₹{r.netRestaurantPayable}
                       </td>
+                      <td className="py-3 px-3 text-center font-bold text-emerald-400">
+                        0%
+                      </td>
                       <td className="py-3 px-3 text-center font-sans">
                         {r.status === "COMPLETED" && (
                           <span className="rounded-full bg-blue-500/15 border border-blue-500/30 px-2 py-0.5 text-[10px] font-bold text-blue-300">
@@ -1176,12 +1257,12 @@ export function TableReservationManager({
                         )}
                         {r.status === "PENDING" && (
                           <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-300">
-                            Deposit In Escrow
+                            Cover Reserved
                           </span>
                         )}
                         {r.status === "CANCELLED" && (
                           <span className="rounded-full bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 text-[10px] font-bold text-rose-300">
-                            Cancelled
+                            Released
                           </span>
                         )}
                       </td>
@@ -1269,11 +1350,12 @@ export function TableReservationManager({
                   }}
                   className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
                 >
-                  {ZONES.map((z) => (
-                    <option key={z} value={z}>
-                      {z}
-                    </option>
-                  ))}
+                  <option value="AC Indoor Main Hall">AC Indoor Main Hall (AC)</option>
+                  <option value="Rooftop Open Air">Rooftop Open Air (Rooftop)</option>
+                  <option value="Outdoor Patio">Outdoor Patio (Patio)</option>
+                  <option value="Private Cabana / VIP Lounge">
+                    Private Cabana / VIP Lounge (Cabana)
+                  </option>
                 </select>
               </div>
 
@@ -1305,9 +1387,9 @@ export function TableReservationManager({
                     onChange={(e) => setWiDeposit(Number(e.target.value))}
                     className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
                   >
-                    <option value={500}>₹500 (Standard Table)</option>
-                    <option value={1000}>₹1,000 (VIP / Cabana)</option>
-                    <option value={0}>₹0 (No Deposit Required)</option>
+                    <option value={500}>₹500 (Standard Table Deposit)</option>
+                    <option value={1000}>₹1,000 (VIP / Cabana Deposit)</option>
+                    <option value={0}>₹0 (Direct Walk-In - No Deposit)</option>
                   </select>
                 </div>
               </div>
@@ -1340,7 +1422,7 @@ export function TableReservationManager({
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="font-bold text-base text-slate-100 flex items-center gap-2">
                 <SlidersHorizontal className="size-4 text-amber-400" />
-                Floor Plan & Reservation Settings
+                Floor Plan &amp; Reservation Settings
               </h3>
               <button
                 type="button"
@@ -1371,29 +1453,36 @@ export function TableReservationManager({
                 <label className="font-bold text-slate-300">
                   Target Table Turn Duration
                 </label>
-                <select className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:outline-none">
+                <select
+                  defaultValue="90"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:outline-none"
+                >
                   <option value="60">60 Minutes (Fast Casual)</option>
-                  <option value="90" selected>90 Minutes (Standard Fine Dine)</option>
+                  <option value="90">90 Minutes (Standard Fine Dine)</option>
                   <option value="120">120 Minutes (Cabana / Leisure)</option>
                 </select>
               </div>
 
               <div className="space-y-1">
                 <label className="font-bold text-slate-300">
-                  No-Show Auto-Release Window
+                  No-Show Grace Period
                 </label>
-                <select className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:outline-none">
-                  <option value="15" selected>15 Minutes past reservation time</option>
+                <select
+                  defaultValue="15"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:outline-none"
+                >
+                  <option value="15">15 Minutes past reservation time</option>
                   <option value="30">30 Minutes past reservation time</option>
                 </select>
               </div>
 
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] text-amber-300 space-y-1">
-                <div className="font-bold flex items-center gap-1.5">
-                  <ShieldCheck className="size-3.5" /> 5% Pre-Booking Platform Revenue
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-[11px] text-amber-300 space-y-1.5">
+                <div className="font-bold flex items-center gap-1.5 text-amber-200">
+                  <ShieldCheck className="size-3.5 text-amber-400" />
+                  Order King 0% Dine-In Commission Guarantee
                 </div>
-                <p>
-                  Every table reservation collects a pre-booking cover charge. 5% is retained as a platform service fee, and 95% is credited to your restaurant settlement to be redeemed against the guest&apos;s food bill.
+                <p className="text-slate-300 leading-relaxed">
+                  Every advance table reservation collects a modest cover deposit. Order King proudly operates on <strong className="text-emerald-400">0% merchant commission</strong> for dine-in service. Guests pay a 5% platform convenience fee for instant table hold and automated SMS concierge updates, while 100% of your net deposit (95% of total cover) is credited directly to the guest&apos;s food &amp; beverage bill.
                 </p>
               </div>
             </div>

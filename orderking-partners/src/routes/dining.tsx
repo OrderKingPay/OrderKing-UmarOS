@@ -109,14 +109,17 @@ function DiningPage() {
                   <UtensilsCrossed className="size-5" />
                 </div>
                 <div>
-                  <h1 className="font-display text-xl sm:text-2xl font-bold text-slate-100 flex items-center gap-2">
-                    Dining & Table Reservations Station
-                    <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-mono font-bold text-emerald-300">
-                      ZOMATO DINING PARITY
+                  <h1 className="font-display text-xl sm:text-2xl font-bold text-slate-100 flex flex-wrap items-center gap-2">
+                    Order King Dining &amp; Table Reservations
+                    <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                      0% MERCHANT COMMISSION
+                    </span>
+                    <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+                      5% GUEST CONVENIENCE FEE
                     </span>
                   </h1>
                   <p className="text-xs text-slate-400">
-                    Live guest seating inventory, automated table turns & 5% platform cover charge revenue ledger.
+                    Live guest seating orchestration across AC, Rooftop, Patio &amp; Cabana zones with 0% merchant commission on all dine-in covers.
                   </p>
                 </div>
               </div>
@@ -174,20 +177,20 @@ function DiningPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {/* 1. Active Bookings Counter */}
             <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-3.5 space-y-1">
-              <div className="flex items-center justify-between text-slate-400 text-xs">
-                <span>Active Bookings</span>
+              <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+                <span>Active Reservations</span>
                 <CalendarDays className="size-4 text-amber-400" />
               </div>
               <div className="font-display text-2xl font-black text-slate-100 flex items-baseline gap-1.5">
                 {activeBookingsCount}
                 <span className="text-[11px] font-mono text-slate-400 font-normal">
-                  ({seatedGuestsCount} seated guests)
+                  ({seatedGuestsCount} seated diners)
                 </span>
               </div>
               <div className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
                 <span>{availableTablesCount} of {tables.length} tables free</span>
                 <span className="text-slate-600">•</span>
-                <span>{occupancyRate}% turn</span>
+                <span>{occupancyRate}% occupancy</span>
               </div>
             </div>
 
@@ -201,36 +204,56 @@ function DiningPage() {
                 ₹{totalDeposits.toLocaleString("en-IN")}
               </div>
               <div className="text-[11px] text-emerald-300/80">
-                Pre-booking deposits in escrow
+                Advance deposits held for guest arrival
               </div>
             </div>
 
             {/* 3. Live Platform Revenue Ledger (5% Platform Fee) */}
             <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-3.5 space-y-1">
               <div className="flex items-center justify-between text-amber-400 text-xs font-semibold">
-                <span>5% Platform Service Fee</span>
+                <span>5% Guest Platform Fee</span>
                 <Sparkles className="size-4 text-amber-400" />
               </div>
               <div className="font-display text-2xl font-black text-amber-400">
                 ₹{totalPlatformFee.toLocaleString("en-IN")}
               </div>
               <div className="text-[11px] text-amber-300/80">
-                Founder recurring platform commission
+                Guest booking concierge (0% restaurant fee)
               </div>
             </div>
 
             {/* 4. Net Restaurant Settlement Payable */}
             <div className="rounded-2xl border border-indigo-500/30 bg-indigo-950/20 p-3.5 space-y-1">
               <div className="flex items-center justify-between text-indigo-400 text-xs font-semibold">
-                <span>Net Restaurant Payable</span>
+                <span>Net Restaurant Credit</span>
                 <Receipt className="size-4 text-indigo-400" />
               </div>
               <div className="font-display text-2xl font-black text-indigo-300">
                 ₹{totalNetPayable.toLocaleString("en-IN")}
               </div>
               <div className="text-[11px] text-indigo-300/80">
-                Applied against dine-in table bills
+                100% credited against dine-in table bills
               </div>
+            </div>
+          </div>
+
+          {/* ORDER KING RESTAURATEUR COMMITMENT STRIP */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-950/30 px-4 py-3 text-xs text-slate-300">
+            <div className="flex items-center gap-2.5">
+              <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
+              <span>
+                <strong className="text-emerald-300">Order King Hospitality Promise:</strong> 0% merchant commission on all dine-in reservations. You retain 100% of guest food &amp; beverage bills.
+              </span>
+            </div>
+            <div className="flex items-center gap-3 text-[11px] font-medium text-slate-400 shrink-0">
+              <span className="flex items-center gap-1.5">
+                <span className="size-1.5 rounded-full bg-emerald-400" />
+                0% Dine-In Commission
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="size-1.5 rounded-full bg-amber-400" />
+                5% Guest Platform Fee
+              </span>
             </div>
           </div>
         </div>
@@ -323,11 +346,11 @@ function DiningPage() {
                     }}
                     className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
                   >
-                    <option value="AC Indoor Main Hall">AC Indoor Main Hall</option>
-                    <option value="Rooftop Open Air">Rooftop Open Air</option>
-                    <option value="Outdoor Patio">Outdoor Patio</option>
+                    <option value="AC Indoor Main Hall">AC Indoor Main Hall (AC)</option>
+                    <option value="Rooftop Open Air">Rooftop Open Air (Rooftop)</option>
+                    <option value="Outdoor Patio">Outdoor Patio (Patio)</option>
                     <option value="Private Cabana / VIP Lounge">
-                      Private Cabana / VIP Lounge
+                      Private Cabana / VIP Lounge (Cabana)
                     </option>
                   </select>
                 </div>
@@ -360,9 +383,9 @@ function DiningPage() {
                       onChange={(e) => setDeposit(Number(e.target.value))}
                       className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 focus:border-emerald-400 focus:outline-none"
                     >
-                      <option value={500}>₹500 (Standard)</option>
-                      <option value={1000}>₹1,000 (VIP)</option>
-                      <option value={0}>₹0 (Walk-In Free)</option>
+                      <option value={500}>₹500 (Standard Table Deposit)</option>
+                      <option value={1000}>₹1,000 (VIP / Cabana Deposit)</option>
+                      <option value={0}>₹0 (Walk-In Direct - No Deposit)</option>
                     </select>
                   </div>
                 </div>
@@ -395,7 +418,7 @@ function DiningPage() {
               <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                 <h3 className="font-bold text-base text-slate-100 flex items-center gap-2">
                   <SlidersHorizontal className="size-4 text-amber-400" />
-                  Floor Plan & Table Settings
+                  Floor Plan &amp; Table Settings
                 </h3>
                 <button
                   type="button"
@@ -424,12 +447,12 @@ function DiningPage() {
                   />
                 </div>
 
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] text-amber-300 space-y-1">
-                  <div className="font-bold flex items-center gap-1.5">
-                    <ShieldCheck className="size-3.5" /> 5% Platform Cover Fee Mechanism
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-[11px] text-amber-300 space-y-1.5">
+                  <div className="font-bold flex items-center gap-1.5 text-amber-200">
+                    <ShieldCheck className="size-3.5 text-amber-400" /> Order King 0% Dine-In Commission Guarantee
                   </div>
-                  <p>
-                    Every confirmed advance booking charges ₹500 or ₹1,000 cover deposit. 5% platform service convenience fee generates recurring revenue for the platform founder, while 95% net restaurant payable is credited to your food bill settlement.
+                  <p className="text-slate-300 leading-relaxed">
+                    Order King proudly offers <strong className="text-emerald-400">0% merchant commission</strong> on all dine-in reservations. Guests pay a nominal 5% platform convenience fee for instant table confirmation and automated concierge SMS. 100% of your net cover deposit (95% of total cover charge) is credited straight into the guest&apos;s food &amp; beverage bill settlement.
                   </p>
                 </div>
               </div>
@@ -440,7 +463,7 @@ function DiningPage() {
                   onClick={() => setFloorSettingsModalOpen(false)}
                   className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs"
                 >
-                  Close & Save
+                  Close &amp; Save
                 </Button>
               </div>
             </div>
