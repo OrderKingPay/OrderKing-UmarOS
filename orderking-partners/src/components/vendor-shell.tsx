@@ -15,6 +15,7 @@ import {
   Wallet,
   Star,
   Tag,
+  CalendarDays,
 } from "lucide-react";
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -38,6 +39,7 @@ export const PRIMARY_NAV = [
   { to: "/dashboard", key: "nav.home", icon: Home, perm: "dashboard.view" as Permission },
   { to: "/orders", key: "nav.orders", icon: ClipboardList, perm: "orders.view" as Permission },
   { to: "/kitchen", key: "nav.kitchen", icon: ChefHat, perm: "kitchen.view" as Permission },
+  { to: "/dining", key: "nav.dining", icon: CalendarDays, perm: "orders.view" as Permission },
   { to: "/menu", key: "nav.menu", icon: UtensilsCrossed, perm: "menu.view" as Permission },
   { to: "/settlements", key: "nav.settlements", icon: Wallet, perm: "settlements.view" as Permission },
 ] as const;
@@ -138,7 +140,7 @@ export function VendorShell({
               <h1 className="hidden font-display text-2xl md:block">{title}</h1>
             </div>
             <div className="flex items-center gap-2">
-              {/* UmarOS Multi-Outlet Profile Router (Instant Branch Switcher) */}
+              {/* King AI Multi-Outlet Profile Router (Instant Branch Switcher) */}
               {vendor.memberships.length > 0 && (
                 <div className="relative">
                   <select
@@ -151,7 +153,7 @@ export function VendorShell({
                         void qc.invalidateQueries();
                       }
                     }}
-                    title="UmarOS Multi-Outlet Profile Router (Instant Branch Switcher)"
+                    title="King AI Multi-Outlet Profile Router (Instant Branch Switcher)"
                     aria-label="Switch Restaurant Outlet Branch"
                   >
                     {vendor.memberships.map((m) => (

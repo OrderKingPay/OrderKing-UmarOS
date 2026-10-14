@@ -103,45 +103,114 @@ export function KingPayCategoryHub({
       ? activeSection : "pay") as Section
   );
   return (
-    <div className="mx-auto max-w-5xl space-y-4 px-4 py-5">
-      <header className="rounded-3xl border border-amber-400/30 bg-gradient-to-r from-emerald-950 via-slate-950 to-slate-900 p-5">
-        <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-amber-300"><Crown className="size-5" /> King Pay</p>
-        <h1 className="mt-2 text-2xl font-extrabold text-white">Everything in its place</h1>
-        <p className="mt-2 text-sm text-slate-300">Open a category to see available tools and clear provider status. No unverified payments or balance claims.</p>
+    <div className="mx-auto max-w-5xl space-y-5 px-4 py-6">
+      {/* 24K PURE GOLD SOVEREIGN SUITE HERO */}
+      <header className="relative overflow-hidden rounded-3xl border border-amber-400/50 bg-gradient-to-r from-amber-950/80 via-slate-950 to-[#2A1D07] p-6 sm:p-7 shadow-[0_0_35px_rgba(245,158,11,0.25)] text-white">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-400/10 via-transparent to-transparent pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-2.5">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/50 px-3 py-1 text-xs font-black text-amber-300 shadow-sm">
+                <Crown className="size-3.5" />
+                <span>24K Sovereign FinTech Suite</span>
+              </span>
+              <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2.5 py-0.5 text-[10px] font-extrabold">
+                RBI &amp; NPCI Verified Standards
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              OrderKing <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200">KingPay 24K</span>
+            </h1>
+            <p className="mt-1 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              Sovereign wealth calculators, transparent utility bills, instant EMI estimators, and direct RBI-authorized partner gateways with zero unverified ledger claims.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-amber-400/40 bg-black/50 p-4 text-right backdrop-blur-xl shrink-0">
+            <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">
+              24K Hallmarked Security
+            </span>
+            <span className="text-lg font-black text-white font-mono block mt-0.5">
+              Zero Unverified Debits
+            </span>
+            <span className="text-[10px] text-slate-400 block">
+              Bank-grade 256-bit AES Vault
+            </span>
+          </div>
+        </div>
       </header>
-      <div className="grid gap-3">
-        {KINGPAY_CATEGORIES.map((category,i) => {
-          const Icon=icons[category.id];
-          const isOpen=expanded===category.id;
+
+      {/* 24K Gold Styled Accordion Categories */}
+      <div className="grid gap-3.5">
+        {KINGPAY_CATEGORIES.map((category, i) => {
+          const Icon = icons[category.id];
+          const isOpen = expanded === category.id;
           return (
-            <section key={category.id} className="overflow-hidden rounded-2xl border border-amber-400/20 bg-slate-900 shadow-sm">
-              <button type="button" aria-expanded={isOpen}
-                onClick={()=>{setExpanded(isOpen ? null:category.id);onSelectSection(category.id);}}
-                className="flex w-full items-center gap-3 px-4 py-4 text-left transition hover:bg-slate-800">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-amber-300/40 bg-amber-300/10 text-amber-300"><Icon className="size-5" /></span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold text-white">{i+1}. {category.label}</span>
-                  <span className="mt-1 block text-xs text-slate-400">{category.intro}</span>
+            <section
+              key={category.id}
+              className={`overflow-hidden rounded-2xl border transition-all duration-300 shadow-lg ${
+                isOpen
+                  ? "border-amber-400/60 bg-gradient-to-b from-slate-900/95 to-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.15)] ring-1 ring-amber-400/30"
+                  : "border-amber-400/25 bg-slate-900/80 hover:border-amber-400/50 hover:bg-slate-900"
+              }`}
+            >
+              <button
+                type="button"
+                aria-expanded={isOpen}
+                onClick={() => {
+                  setExpanded(isOpen ? null : category.id);
+                  onSelectSection(category.id);
+                }}
+                className="flex w-full items-center gap-3.5 px-5 py-4 text-left transition"
+              >
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-amber-400/50 bg-gradient-to-br from-amber-400/20 to-yellow-600/10 text-amber-300 shadow-md shadow-amber-500/20">
+                  <Icon className="size-5" />
                 </span>
-                {isOpen ? <ChevronUp className="size-4 text-amber-300" /> : <ChevronDown className="size-4 text-amber-300" />}
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm sm:text-base font-black text-white">
+                    {i + 1}. {category.label}
+                  </span>
+                  <span className="mt-0.5 block text-xs text-slate-400 font-medium">{category.intro}</span>
+                </span>
+                <span className="flex size-8 items-center justify-center rounded-lg bg-amber-400/10 text-amber-400 border border-amber-400/20">
+                  {isOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+                </span>
               </button>
+
               {isOpen && (
-                <div className="space-y-3 border-t border-slate-700/70 p-4">
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {category.features.map(feature=>(
-                      <div key={feature.label} className="flex items-center justify-between gap-2 rounded-xl border border-slate-700 bg-slate-950/80 p-3">
-                        <span className="text-xs font-semibold text-slate-200">{feature.label}</span>
-                        <span className={"shrink-0 rounded-full px-2 py-1 text-[10px] font-semibold "+
-                          (feature.status===READY ? "bg-emerald-800 text-emerald-100":"bg-slate-800 text-slate-400")}>{feature.status}</span>
+                <div className="space-y-4 border-t border-amber-400/20 p-5 bg-black/30 backdrop-blur-md">
+                  <div className="grid gap-2.5 sm:grid-cols-2">
+                    {category.features.map((feature) => (
+                      <div
+                        key={feature.label}
+                        className="flex items-center justify-between gap-2.5 rounded-xl border border-amber-400/20 bg-slate-950/80 p-3 hover:border-amber-400/40 transition"
+                      >
+                        <span className="text-xs font-bold text-slate-200">{feature.label}</span>
+                        <span
+                          className={
+                            "shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black border " +
+                            (feature.status === READY
+                              ? "bg-emerald-500/15 border-emerald-400/40 text-emerald-300"
+                              : "bg-slate-800/80 border-slate-700 text-slate-400")
+                          }
+                        >
+                          {feature.status}
+                        </span>
                       </div>
                     ))}
                   </div>
-                  {category.id==="wealth" && <GST />}
-                  {category.id==="loan" && <EMI />}
-                  {category.id==="passbook" && (
-                    <p className="flex items-start gap-2 text-xs text-slate-300"><ShieldCheck className="size-4 shrink-0 text-amber-300" />
-                      Your verified transaction history requires an authorized account ledger. No sample receipts will be shown.
-                    </p>
+
+                  {category.id === "wealth" && <GST />}
+                  {category.id === "loan" && <EMI />}
+                  {category.id === "passbook" && (
+                    <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 p-3.5 text-xs text-amber-200/90 flex items-start gap-2.5">
+                      <ShieldCheck className="size-4 shrink-0 text-amber-400 mt-0.5" />
+                      <span>
+                        Verified account ledger entries require an authorized banking partner connection. No sample or mock transaction receipts are asserted.
+                      </span>
+                    </div>
                   )}
                 </div>
               )}
@@ -149,8 +218,14 @@ export function KingPayCategoryHub({
           );
         })}
       </div>
-      <Link to="/king-pay/assist" className="block rounded-2xl border border-amber-400/50 bg-gradient-to-r from-emerald-900 to-slate-900 p-4 text-center text-sm font-bold text-amber-200 no-underline">
-        <Crown className="mr-2 inline size-5" /> Ask King Assist about any service
+
+      {/* 24K Gold Sovereign King Assist Banner */}
+      <Link
+        to="/king-pay/assist"
+        className="block rounded-2xl border border-amber-400/60 bg-gradient-to-r from-amber-950/90 via-slate-950 to-amber-900/90 p-4 text-center text-sm font-black text-amber-200 no-underline shadow-[0_0_25px_rgba(245,158,11,0.25)] hover:border-amber-300 hover:text-amber-100 transition group"
+      >
+        <Crown className="mr-2 inline size-5 text-amber-400 group-hover:scale-110 transition-transform" />
+        Consult 24K King Assist Concierge for Any Payment or Wealth Desk ➔
       </Link>
     </div>
   );

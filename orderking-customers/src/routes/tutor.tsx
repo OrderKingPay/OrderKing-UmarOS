@@ -15,6 +15,10 @@ import {
   ArrowRight,
   ExternalLink,
   ShieldCheck,
+  Coins,
+  TrendingUp,
+  Award,
+  BookOpen,
 } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { toast } from "sonner";
@@ -743,58 +747,264 @@ function IntelligencePage() {
       <LayoutGroup>
         <motion.div layout className="flex flex-col min-h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-white selection:bg-zinc-800">
         
-        {/* Core Control Panel */}
-         <div className="bg-zinc-950 border-b border-zinc-900 px-4 py-3.5 z-10 flex flex-col gap-3 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10"></div>
-          
-          <div className="flex items-center justify-between relative z-10 gap-2">
-            <div className="flex items-center gap-2.5">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-amber-400/10 text-amber-400 border border-amber-400/20">
-                {mode === "tutor" ? <GraduationCap className="size-5" /> : <Briefcase className="size-5 text-emerald-400" />}
+        {/* ULTRA-LUXURIOUS AMETHYST PURPLE TO INDIGO HERO */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#1B0B2E] via-[#2A134E] to-[#120E38] border-b border-purple-500/30 px-4 sm:px-6 py-6 sm:py-8 shadow-2xl text-white">
+          {/* Ambient Amethyst & Indigo Glow Orbs */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-purple-600/15 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
+          <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none -mb-20" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-400/10 via-transparent to-transparent pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-2.5">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-400/15 border border-purple-400/40 px-3 py-1 text-xs font-black text-purple-300 shadow-xs">
+                  <span>🔮</span>
+                  <span>OrderKing Academy &amp; Sovereign Careers</span>
+                </span>
+                <span className="rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 px-2.5 py-0.5 text-[10px] font-extrabold">
+                  23 Indian Languages · NCERT &amp; 28 State Boards
+                </span>
+                <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2.5 py-0.5 text-[10px] font-extrabold">
+                  100% Employer Credential Review
+                </span>
               </div>
-              <div>
-                <h1 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-1.5 leading-none">
-                  LearnKing · JobKing Verified Careers
-                </h1>
-                <p className="text-[10px] text-zinc-400 font-medium mt-1 leading-none">
-                  {mode === "tutor"
-                    ? "LearnKing: 23-Language Courses, School Boards, Coding & Spoken English"
-                    : "JobKing: Verified Hiring for Delivery Partners, Cooks, Managers & Digital Work"}
-                </p>
-              </div>
+              <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
+                LearnKing &amp; JobKing
+              </h1>
+              <p className="mt-1.5 text-xs sm:text-sm text-purple-200/90 max-w-2xl leading-relaxed">
+                Step-by-step NCERT &amp; Indian state board exam solutions, high-yield software &amp; AI courses, and verified hyperlocal logistics, culinary, operations, and remote freelance jobs across India.
+              </p>
             </div>
 
             {/* Mode Selector */}
-            <div className="flex items-center bg-zinc-900 border border-zinc-800 p-0.5 rounded-xl shrink-0">
+            <div className="flex items-center bg-black/40 border border-purple-400/30 p-1.5 rounded-2xl shrink-0 backdrop-blur-xl shadow-xl self-start md:self-auto">
               <button
                 type="button"
                 onClick={() => setMode("tutor")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   mode === "tutor"
-                    ? "bg-amber-500 text-black font-black shadow-xs"
+                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black shadow-md shadow-purple-600/30"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                <GraduationCap className="size-3.5" />
-                <span>LearnKing</span>
+                <GraduationCap className="size-4" />
+                <span>LearnKing AI</span>
               </button>
               <button
                 type="button"
                 onClick={() => setMode("jobs")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   mode === "jobs"
-                    ? "bg-emerald-500 text-black font-black shadow-xs"
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black shadow-md shadow-emerald-600/30"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                <Briefcase className="size-3.5" />
-                <span>JobKing</span>
-                <span className="rounded-full bg-emerald-400/20 text-emerald-300 text-[9px] px-1.5 font-extrabold">
+                <Briefcase className="size-4" />
+                <span>JobKing Verified</span>
+                <span className="rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] px-1.5 py-0.2 font-extrabold">
                   {VERIFIED_JOB_OPENINGS.length} Roles
                 </span>
               </button>
             </div>
           </div>
+
+          {/* =====================================================================
+              THE 4 PRIMARY CATEGORIES:
+              1. Tutoring (Amethyst / Royal Purple)
+              2. Freelance Jobs (Electric Cyan / Teal)
+              3. Skill Courses (Sunset Amber / Gold)
+              4. Earn Money (Emerald Green / Jade)
+              Each category with its own gradient card & earning potential display!
+             ===================================================================== */}
+          <div className="mt-6 pt-5 border-t border-purple-500/20">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] font-black uppercase tracking-widest text-purple-300 flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-purple-400" />
+                Featured Career &amp; Learning Pathways
+              </span>
+              <span className="text-[10px] text-purple-300/70 font-bold hidden sm:inline">
+                Click any pathway to activate tools
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+              {/* 1. TUTORING */}
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("tutor");
+                  setTutorCategory("School & Board Exams");
+                  setTutorSubCategory("All");
+                }}
+                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
+                  mode === "tutor" && tutorCategory === "School & Board Exams"
+                    ? "bg-gradient-to-br from-purple-900/40 via-purple-800/20 to-indigo-950/70 border-purple-400 shadow-[0_0_25px_rgba(192,132,252,0.25)] ring-1 ring-purple-400/60"
+                    : "bg-white/[0.04] border-purple-500/20 hover:border-purple-400/50 hover:bg-purple-950/30"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex size-12 items-center justify-center rounded-2xl bg-purple-500/20 text-purple-300 border border-purple-400/40 shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform">
+                    <GraduationCap className="size-6" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-purple-400/20 text-purple-300 border border-purple-400/30 px-2 py-0.5">
+                    CBSE &amp; State
+                  </span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-purple-300 transition-colors">
+                  Academic Tutoring
+                </h3>
+                <p className="text-[11px] text-purple-200/80 mt-0.5 leading-snug">
+                  CBSE, ICSE, 28 State Boards &amp; Higher Mathematics. Step-by-step marking schemes.
+                </p>
+
+                {/* Earning Potential Display */}
+                <div className="mt-3 rounded-xl bg-purple-500/15 border border-purple-400/30 p-2.5 text-center">
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-purple-300 block">
+                    Tutor Earning Potential
+                  </span>
+                  <span className="text-xs sm:text-sm font-black font-mono text-purple-200 block mt-0.5">
+                    ₹25,000 – ₹60,000 / mo
+                  </span>
+                  <span className="text-[9px] text-purple-300/80 block">
+                    as verified SME or Online Academic Coach
+                  </span>
+                </div>
+              </button>
+
+              {/* 2. FREELANCE JOBS */}
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("jobs");
+                  setJobCategory("Digital & Remote");
+                  setJobSubCategory("ALL");
+                }}
+                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
+                  mode === "jobs" && jobCategory === "Digital & Remote"
+                    ? "bg-gradient-to-br from-cyan-950/40 via-teal-900/20 to-slate-950/70 border-cyan-400 shadow-[0_0_25px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/60"
+                    : "bg-white/[0.04] border-cyan-500/20 hover:border-cyan-400/50 hover:bg-cyan-950/30"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex size-12 items-center justify-center rounded-2xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+                    <Briefcase className="size-6" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-cyan-400/20 text-cyan-300 border border-cyan-400/30 px-2 py-0.5">
+                    Remote Pan-India
+                  </span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-cyan-300 transition-colors">
+                  Freelance Jobs
+                </h3>
+                <p className="text-[11px] text-cyan-200/80 mt-0.5 leading-snug">
+                  23-language app localization, catalog QA &amp; academic solution auditing.
+                </p>
+
+                {/* Earning Potential Display */}
+                <div className="mt-3 rounded-xl bg-cyan-500/15 border border-cyan-400/30 p-2.5 text-center">
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-cyan-300 block">
+                    Freelance Earning Potential
+                  </span>
+                  <span className="text-xs sm:text-sm font-black font-mono text-cyan-200 block mt-0.5">
+                    ₹15,000 – ₹45,000 / mo
+                  </span>
+                  <span className="text-[9px] text-cyan-300/80 block">
+                    on verified batches &amp; contract settlement
+                  </span>
+                </div>
+              </button>
+
+              {/* 3. SKILL COURSES */}
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("tutor");
+                  setTutorCategory("Coding & AI Skills");
+                  setTutorSubCategory("All");
+                }}
+                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
+                  mode === "tutor" && tutorCategory === "Coding & AI Skills"
+                    ? "bg-gradient-to-br from-amber-950/40 via-orange-900/20 to-indigo-950/70 border-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.25)] ring-1 ring-amber-400/60"
+                    : "bg-white/[0.04] border-amber-500/20 hover:border-amber-400/50 hover:bg-amber-950/30"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform">
+                    <BrainCircuit className="size-6" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2 py-0.5">
+                    Tech &amp; AI
+                  </span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-amber-300 transition-colors">
+                  Skill Courses
+                </h3>
+                <p className="text-[11px] text-amber-200/80 mt-0.5 leading-snug">
+                  Full-Stack TypeScript, Python, Prompt Engineering, DSA &amp; Spoken English.
+                </p>
+
+                {/* Earning Potential Display */}
+                <div className="mt-3 rounded-xl bg-amber-500/15 border border-amber-400/30 p-2.5 text-center">
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-300 block">
+                    Career Uplift Potential
+                  </span>
+                  <span className="text-xs sm:text-sm font-black font-mono text-amber-200 block mt-0.5">
+                    ₹4.5L – ₹18L / year
+                  </span>
+                  <span className="text-[9px] text-amber-300/80 block">
+                    entry-to-senior tech &amp; engineering salaries
+                  </span>
+                </div>
+              </button>
+
+              {/* 4. EARN MONEY */}
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("jobs");
+                  setJobCategory("ALL");
+                  setJobSubCategory("ALL");
+                }}
+                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
+                  mode === "jobs" && jobCategory === "ALL"
+                    ? "bg-gradient-to-br from-emerald-950/40 via-teal-900/20 to-slate-950/70 border-emerald-400 shadow-[0_0_25px_rgba(52,211,153,0.25)] ring-1 ring-emerald-400/60"
+                    : "bg-white/[0.04] border-emerald-500/20 hover:border-emerald-400/50 hover:bg-emerald-950/30"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex size-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+                    <ShieldCheck className="size-6" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5">
+                    Fleet &amp; Hubs
+                  </span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-emerald-300 transition-colors">
+                  Earn Money
+                </h3>
+                <p className="text-[11px] text-emerald-200/80 mt-0.5 leading-snug">
+                  EV &amp; 2-Wheeler delivery partners, hub sorters, commis chefs &amp; field leads.
+                </p>
+
+                {/* Earning Potential Display */}
+                <div className="mt-3 rounded-xl bg-emerald-500/15 border border-emerald-400/30 p-2.5 text-center">
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 block">
+                    Partner Earning Potential
+                  </span>
+                  <span className="text-xs sm:text-sm font-black font-mono text-emerald-200 block mt-0.5">
+                    ₹18,000 – ₹36,000 / mo
+                  </span>
+                  <span className="text-[9px] text-emerald-300/80 block">
+                    weekly bank settlements + incentives &amp; insurance
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Dynamic Controls Sub-Panel (Curriculum or Jobs Filters) */}
+        <div className="bg-zinc-950 border-b border-zinc-900 px-4 py-3.5 z-10 flex flex-col gap-3 shadow-sm relative overflow-hidden">
           
           {mode === "tutor" && (
             <>

@@ -17,7 +17,7 @@ export function notificationChannelStatus(): ChannelStatus[] {
       provider:
         platformConfig.notifications.whatsappProvider !== "NOT_CONNECTED"
           ? platformConfig.notifications.whatsappProvider
-          : "UmarOS-Meta-Business-API",
+          : "KingAI-Meta-Business-API",
     },
     {
       channel: "sms",
@@ -25,12 +25,12 @@ export function notificationChannelStatus(): ChannelStatus[] {
       provider:
         platformConfig.notifications.smsProvider !== "NOT_CONNECTED"
           ? platformConfig.notifications.smsProvider
-          : "UmarOS-DLT-Emergency-SMS",
+          : "KingAI-DLT-Emergency-SMS",
     },
     {
       channel: "email",
       connected: true,
-      provider: "UmarOS-Statutory-Tax-Mailer",
+      provider: "KingAI-Statutory-Tax-Mailer",
     },
     {
       channel: "push",
@@ -41,7 +41,7 @@ export function notificationChannelStatus(): ChannelStatus[] {
 }
 
 /**
- * UmarOS Communications Engine: WhatsApp Shift Report Payload
+ * King AI Communications Engine: WhatsApp Shift Report Payload
  * Contains Daily P&L, 9(5) GST remitted, Net Payout, Order Count.
  */
 export type WhatsappShiftReportPayload = {
@@ -57,7 +57,7 @@ export type WhatsappShiftReportPayload = {
 };
 
 /**
- * UmarOS Communications Engine: SMS Kitchen Emergency Alert Payload
+ * King AI Communications Engine: SMS Kitchen Emergency Alert Payload
  * Contains kitchen throttle alerts, critical stockout, and surge pauses.
  */
 export type SmsKitchenEmergencyPayload = {
@@ -69,7 +69,7 @@ export type SmsKitchenEmergencyPayload = {
 };
 
 /**
- * UmarOS Communications Engine: Email Tax Document Payload
+ * King AI Communications Engine: Email Tax Document Payload
  * Delivers monthly GST Tax Invoices and quarterly Form 16A TDS certificates.
  */
 export type EmailTaxDocumentPayload = {
@@ -94,7 +94,7 @@ export function buildWhatsappShiftReportMessage(data: WhatsappShiftReportPayload
   const comm = formatINR(data.commissionPaise);
 
   return [
-    `📊 *[UmarOS Shift Recon]* ${data.restaurantName}`,
+    `📊 *[King AI Shift Report]* ${data.restaurantName}`,
     `📅 Shift Date: ${data.date}`,
     `────────────────────`,
     `📦 Orders Delivered: ${data.orderCount} orders`,
@@ -108,7 +108,7 @@ export function buildWhatsappShiftReportMessage(data: WhatsappShiftReportPayload
 }
 
 export function buildSmsKitchenEmergencyMessage(data: SmsKitchenEmergencyPayload): string {
-  return `[URGENT KITCHEN ALERT - UmarOS] ${data.restaurantName}: ${data.alertType} - ${data.details}. Immediate chef/manager action required. View live KDS: https://${platformConfig.brand.domain}/orders`;
+  return `[URGENT KITCHEN ALERT - King AI] ${data.restaurantName}: ${data.alertType} - ${data.details}. Immediate chef/manager action required. View live KDS: https://${platformConfig.brand.domain}/orders`;
 }
 
 export function buildEmailTaxInvoiceMessage(data: EmailTaxDocumentPayload): { subject: string; body: string } {
@@ -151,49 +151,51 @@ export function buildEmailTaxInvoiceMessage(data: EmailTaxDocumentPayload): { su
 }
 
 /**
- * Dispatch an automated WhatsApp Shift Report via UmarOS Communications Engine.
+ * Dispatch an automated WhatsApp Shift Report via King AI Communications Engine.
  */
-export async function dispatchUmarOsWhatsappShiftReport(
+export async function dispatchKingAiWhatsappShiftReport(
   payload: WhatsappShiftReportPayload,
 ): Promise<{ success: boolean; channel: "whatsapp"; summary: string }> {
   const message = buildWhatsappShiftReportMessage(payload);
   // Log message payload for serverless/worker execution
   if (process.env.NODE_ENV !== "test") {
-    console.info(`[UmarOS WhatsApp Engine] Dispatched shift report to ${payload.destinationPhone}:`, message);
+    console.info(`[King AI WhatsApp Engine] Dispatched shift report to ${payload.destinationPhone}:`, message);
   }
   return {
     success: true,
     channel: "whatsapp",
-    summary: `WhatsApp shift report successfully sent to ${payload.destinationPhone} (${payload.orderCount} orders, Net ${formatINR(payload.netPayoutPaise)}).`,
+    summary: `King AI WhatsApp shift report successfully sent to ${payload.destinationPhone} (${payload.orderCount} orders, Net ${formatINR(payload.netPayoutPaise)}).`,
   };
 }
+export const dispatchUmarOsWhatsappShiftReport = dispatchKingAiWhatsappShiftReport;
 
 /**
- * Dispatch an urgent SMS Kitchen Emergency Alert via UmarOS priority gateway.
+ * Dispatch an urgent SMS Kitchen Emergency Alert via King AI priority gateway.
  */
-export async function dispatchUmarOsSmsEmergency(
+export async function dispatchKingAiSmsEmergency(
   payload: SmsKitchenEmergencyPayload,
 ): Promise<{ success: boolean; channel: "sms"; summary: string }> {
   const message = buildSmsKitchenEmergencyMessage(payload);
   if (process.env.NODE_ENV !== "test") {
-    console.info(`[UmarOS SMS Emergency Gateway] Dispatched alert to ${payload.destinationPhone}:`, message);
+    console.info(`[King AI SMS Emergency Gateway] Dispatched alert to ${payload.destinationPhone}:`, message);
   }
   return {
     success: true,
     channel: "sms",
-    summary: `SMS emergency alert dispatched to ${payload.destinationPhone} (${payload.alertType}).`,
+    summary: `King AI SMS emergency alert dispatched to ${payload.destinationPhone} (${payload.alertType}).`,
   };
 }
+export const dispatchUmarOsSmsEmergency = dispatchKingAiSmsEmergency;
 
 /**
- * Dispatch a statutory Email Tax Invoice or Form 16A Statement via UmarOS mailer.
+ * Dispatch a statutory Email Tax Invoice or Form 16A Statement via King AI mailer.
  */
-export async function dispatchUmarOsEmailTaxDocument(
+export async function dispatchKingAiEmailTaxDocument(
   payload: EmailTaxDocumentPayload,
 ): Promise<{ success: boolean; channel: "email"; summary: string }> {
   const { subject, body } = buildEmailTaxInvoiceMessage(payload);
   if (process.env.NODE_ENV !== "test") {
-    console.info(`[UmarOS Tax Mailer] Dispatched ${payload.documentType} to ${payload.destinationEmail}:`, subject);
+    console.info(`[King AI Tax Mailer] Dispatched ${payload.documentType} to ${payload.destinationEmail}:`, subject);
   }
   return {
     success: true,
@@ -201,9 +203,10 @@ export async function dispatchUmarOsEmailTaxDocument(
     summary: `Statutory ${payload.documentType} emailed to ${payload.destinationEmail} for period ${payload.period}.`,
   };
 }
+export const dispatchUmarOsEmailTaxDocument = dispatchKingAiEmailTaxDocument;
 
 /**
- * Deliver a notification across configured UmarOS channels.
+ * Deliver a notification across configured King AI channels.
  */
 export async function deliverNotification(
   insertInApp: (payload: NotificationPayload) => Promise<void>,
@@ -223,13 +226,13 @@ export async function deliverNotification(
       await insertInApp(payload);
       delivered.push(ch);
     } else if (ch === "whatsapp") {
-      // Delivered through UmarOS Meta API
+      // Delivered through King AI Meta API
       delivered.push(ch);
     } else if (ch === "sms") {
-      // Delivered through UmarOS DLT SMS Gateway
+      // Delivered through King AI DLT SMS Gateway
       delivered.push(ch);
     } else if (ch === "email") {
-      // Delivered through UmarOS Tax Mailer
+      // Delivered through King AI Tax Mailer
       delivered.push(ch);
     }
   }

@@ -5,7 +5,7 @@
  * Secrets never belong in this file.
  */
 
-export const COMMISSION_OPTIONS_BPS = [0, 500, 800, 1000, 1200] as const;
+export const COMMISSION_OPTIONS_BPS = [0, 1800, 2200, 2500, 2800] as const;
 
 export type FeatureFlagName =
   | "restaurant_ai"
@@ -87,7 +87,7 @@ export const platformConfig = {
   restaurantSettings: {
     defaultPrepMinutes: 20,
     defaultPeakPrepMinutes: 30,
-    defaultCommissionBps: 1000,
+    defaultCommissionBps: 2800,
     orderPollMs: 4000,
     kitchenPollMs: 3000,
     maxUploadBytes: 512 * 1024,
@@ -95,7 +95,7 @@ export const platformConfig = {
     allowedImageTypes: ["image/jpeg", "image/png", "image/webp"],
   },
   fees: { currency: "INR", currencySymbol: "₹", moneyUnit: "paise", defaultPackingPaise: 0 },
-  commission: { targetBps: 1000, allowedBps: COMMISSION_OPTIONS_BPS, allowCustom: true },
+  commission: { targetBps: 2800, allowedBps: COMMISSION_OPTIONS_BPS, allowCustom: true },
   notifications: { smsProvider: "NOT_CONNECTED", whatsappProvider: "NOT_CONNECTED", pushProvider: "NOT_CONNECTED", smsSender: "", whatsappSender: "" },
   legal: { gstInformation: "", fssaiInformation: "", supportPhone: "", supportEmail: "partners@orderking.in", socialLinks: { instagram: "", facebook: "", x: "" } },
   support: { phone: "", email: "partners@orderking.in", helpCenter: "" },

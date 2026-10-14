@@ -69,7 +69,7 @@ function RestaurantPage() {
   const [custom, setCustom] = useState<MenuItemView | null>(null);
   const [replaceWith, setReplaceWith] = useState<{ name: string; line: CartItem } | null>(null);
   const [menuQ, setMenuQ] = useState("");
-  const [dietFilter, setDietFilter] = useState<"ALL" | "VEG" | "NON_VEG" | "BESTSELLER">("ALL");
+  const [dietFilter, setDietFilter] = useState<"ALL" | "VEG" | "BESTSELLER">("ALL");
 
   const detail = useQuery({
     queryKey: ["restaurant", slug, location.lat, location.lng, lang],
@@ -239,7 +239,6 @@ function RestaurantPage() {
             const filteredItems = c.items.filter((it: any) => {
               if (menuQ && !it.name.toLowerCase().includes(menuQ.toLowerCase())) return false;
               if (dietFilter === "VEG" && !it.veg) return false;
-              if (dietFilter === "NON_VEG" && it.veg) return false;
               if (dietFilter === "BESTSELLER" && !it.bestseller) return false;
               return true;
             });

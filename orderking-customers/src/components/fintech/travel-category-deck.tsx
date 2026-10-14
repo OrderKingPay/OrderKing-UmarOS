@@ -52,7 +52,7 @@ const OPTIONS: TravelGroup[] = [
   ]},
 ];
 
-export function TravelCategoryDeck({ onChoose }: { onChoose: (id: "flights" | "trains" | "hotels" | "cabs") => void }) {
+export function TravelCategoryDeck({ onChoose }: { onChoose: (id: "flights" | "trains" | "hotels" | "cabs" | "buses") => void }) {
   const [selected,setSelected]=useState<Category>("flights");
   const [sub,setSub]=useState<string>("");
   const current=OPTIONS.find(v=>v.id===selected)!;
@@ -72,7 +72,7 @@ export function TravelCategoryDeck({ onChoose }: { onChoose: (id: "flights" | "t
         {OPTIONS.map(v=>{
           const Icon=v.icon;return (
           <button key={v.id} type="button" aria-pressed={selected===v.id}
-            onClick={()=>{setSelected(v.id);setSub(""); if(v.id==="flights"||v.id==="trains"||v.id==="hotels"||v.id==="cabs")onChoose(v.id);}}
+            onClick={()=>{setSelected(v.id);setSub(""); if(v.id==="flights"||v.id==="trains"||v.id==="hotels"||v.id==="cabs"||v.id==="buses")onChoose(v.id);}}
             className={"flex min-h-20 flex-col items-center justify-center gap-2 rounded-xl border p-2 text-center text-[11px] font-bold transition " +
               (selected===v.id?"border-emerald-700 bg-emerald-900 text-white":"border-slate-200 bg-slate-50 text-slate-700 hover:border-emerald-400")}>
             <Icon className="size-5" /> {v.name}

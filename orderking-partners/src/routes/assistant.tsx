@@ -42,7 +42,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "English",
     nativeName: "English",
     region: "Pan-India",
-    greeting: "OrderKing Autonomous Kitchen & UMAR OS Diagnostic Desk",
+    greeting: "OrderKing Autonomous Kitchen & King AI Diagnostic Desk",
     statusHeader: "Live Kitchen & Storefront Status",
     payoutHeader: "Verified Integer-Paise Settlement Ledger",
     menuHeader: "Menu Catalog & FSSAI Compliance",
@@ -53,7 +53,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Hindi",
     nativeName: "हिन्दी",
     region: "North & Central India",
-    greeting: "ऑर्डरकिंग स्वायत्त किचन और UMAR OS डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डरकिंग स्वायत्त किचन और King AI डायग्नोस्टिक डेस्क",
     statusHeader: "लाइव किचन और स्टोरफ्रंट स्थिति",
     payoutHeader: "सत्यापित पैसे (Paise) सेटलमेंट लेजर",
     menuHeader: "मेनू कैटलॉग और FSSAI अनुपालन",
@@ -64,7 +64,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Bengali",
     nativeName: "বাংলা",
     region: "West Bengal & Tripura",
-    greeting: "অর্ডারকিং স্বয়ংক্রিয় কিচেন ও UMAR OS ডায়াগনস্টিক ডেস্ক",
+    greeting: "অর্ডারকিং স্বয়ংক্রিয় কিচেন ও King AI Diagnostic Desk",
     statusHeader: "লাইভ কিচেন ও স্টোরফ্রন্ট স্থিতি",
     payoutHeader: "যাচাইকৃত পয়সা সেটেলমেন্ট লেজার",
     menuHeader: "মেনু ক্যাটালগ ও FSSAI কমপ্লায়েন্স",
@@ -75,7 +75,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Telugu",
     nativeName: "తెలుగు",
     region: "Andhra Pradesh & Telangana",
-    greeting: "ఆర్డర్ కింగ్ స్వయంప్రతిపత్తి కిచెన్ & UMAR OS డయాగ్నస్టిక్ డెస్క్",
+    greeting: "ఆర్డర్ కింగ్ స్వయంప్రతిపత్తి కిచెన్ & King AI Diagnostic Desk",
     statusHeader: "లైవ్ కిచెన్ & స్టోర్‌ఫ్రంట్ స్థితి",
     payoutHeader: "ధృవీకరించబడిన పైసా సెటిల్మెంట్ లెడ్జర్",
     menuHeader: "మెనూ కాటలాగ్ & FSSAI నిబంధనలు",
@@ -86,7 +86,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Marathi",
     nativeName: "मराठी",
     region: "Maharashtra & Goa",
-    greeting: "ऑर्डरकिंग स्वायत्त किचन आणि UMAR OS डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डरकिंग स्वायत्त किचन आणि King AI डायग्नोस्टिक डेस्क",
     statusHeader: "थेट किचन आणि स्टोअरफ्रंट स्थिती",
     payoutHeader: "सत्यापित पैसे सेटलमेंट लेजर",
     menuHeader: "मेनू कॅटलॉग आणि FSSAI अनुपालन",
@@ -97,7 +97,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Tamil",
     nativeName: "தமிழ்",
     region: "Tamil Nadu & Puducherry",
-    greeting: "ஆர்டர்கிங் தன்னாட்சி கிச்சன் & UMAR OS கண்டறியும் தளம்",
+    greeting: "ஆர்டர்கிங் தன்னாட்சி கிச்சன் & King AI Diagnostic Desk",
     statusHeader: "நேரடி சமையலறை மற்றும் கடை நிலை",
     payoutHeader: "சரிபார்க்கப்பட்ட பைசா செட்டில்மென்ட் கணக்கு",
     menuHeader: "மெனு பட்டியல் மற்றும் FSSAI இணக்கம்",
@@ -108,7 +108,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Urdu",
     nativeName: "اردو",
     region: "Jammu & Kashmir, Telangana, UP",
-    greeting: "آرڈر کنگ خودکار کچن اور UMAR OS ڈائیگنوسٹک ڈیسک",
+    greeting: "آرڈر کنگ خودکار کچن اور King AI Diagnostic Desk",
     statusHeader: "لائیو کچن اور اسٹور فرنٹ کی صورتحال",
     payoutHeader: "تصدیق شدہ پیسہ سیٹلمنٹ لیجر",
     menuHeader: "مینو کیٹلاگ اور FSSAI تعمیل",
@@ -119,7 +119,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Gujarati",
     nativeName: "ગુજરાતી",
     region: "Gujarat & DNHDD",
-    greeting: "ઓર્ડરકિંગ સ્વયંસંચાલિત કિચન અને UMAR OS ડાયગ્નોસ્ટિક ડેસ્ક",
+    greeting: "ઓર્ડરકિંગ સ્વયંસંચાલિત કિચન અને King AI Diagnostic Desk",
     statusHeader: "લાઇવ કિચન અને સ્ટોરફ્રન્ટ સ્થિતિ",
     payoutHeader: "ચકાસાયેલ પૈસા સેટલમેન્ટ ખાતાવહી",
     menuHeader: "મેનુ કેટલોગ અને FSSAI પાલન",
@@ -130,7 +130,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Kannada",
     nativeName: "ಕನ್ನಡ",
     region: "Karnataka",
-    greeting: "ಆರ್ಡರ್‌ಕಿಂಗ್ ಸ್ವಯಂಚಾಲಿತ ಕಿಚನ್ ಮತ್ತು UMAR OS ಡಯಾಗ್ನೋಸ್ಟಿಕ್ ಡೆಸ್ಕ್",
+    greeting: "ಆರ್ಡರ್‌ಕಿಂಗ್ ಸ್ವಯಂಚಾಲಿತ ಕಿಚನ್ ಮತ್ತು King AI Diagnostic Desk",
     statusHeader: "ಲೈವ್ ಕಿಚನ್ ಮತ್ತು ಸ್ಟೋರ್‌ಫ್ರಂಟ್ ಸ್ಥಿತಿ",
     payoutHeader: "ಪರಿಶೀಲಿಸಿದ ಪೈಸೆ ಸೆಟಲ್ಮೆಂಟ್ ಲೆಡ್ಜರ್",
     menuHeader: "ಮೆನು ಕ್ಯಾಟಲಾಗ್ ಮತ್ತು FSSAI ಅನುಸರಣೆ",
@@ -141,7 +141,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Odia",
     nativeName: "ଓଡ଼ିଆ",
     region: "Odisha",
-    greeting: "ଅର୍ଡରକିଙ୍ଗ ସ୍ୱୟଂଚାଳିତ କିଚେନ୍ ଏବଂ UMAR OS ଡାଏଗ୍ନୋଷ୍ଟିକ୍ ଡେସ୍କ",
+    greeting: "ଅର୍ଡରକିଙ୍ଗ ସ୍ୱୟଂଚାଳିତ କିଚେନ୍ ଏବଂ King AI Diagnostic Desk",
     statusHeader: "ଲାଇଭ୍ କିଚେନ୍ ଓ ଷ୍ଟୋରଫ୍ରଣ୍ଟ ସ୍ଥିତି",
     payoutHeader: "ଯାଞ୍ଚ ହୋଇଥିବା ପଇସା ସେଟଲମେଣ୍ଟ ଲେଜର",
     menuHeader: "ମେନୁ କ୍ୟାଟାଲଗ୍ ଓ FSSAI ନିୟମାବଳୀ",
@@ -152,9 +152,9 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Malayalam",
     nativeName: "മലയാളം",
     region: "Kerala & Lakshadweep",
-    greeting: "ഓർഡർകിംഗ് സ്വയംഭരണ കിച്ചൺ & UMAR OS ഡയഗ്നോസ്റ്റിക് ഡെസ്ക്",
+    greeting: "ഓർഡർകിംഗ് സ്വയംഭരണ കിച്ചൺ & King AI Diagnostic Desk",
     statusHeader: "ലൈവ് കിച്ചൺ & സ്റ്റോർഫ്രണ്ട് നില",
-    payoutHeader: "പരിശോധിച്ച പൈസ സെറ്റിൽമെന്റ് ലെഡ്ജർ",
+    payoutHeader: "പരിശോധിച്ച പൈസ സെറ്റിൽമെന്റ് ലെഡ്జర్",
     menuHeader: "മെനു കാറ്റലോഗും FSSAI പാലിക്കലും",
   },
   {
@@ -163,7 +163,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Punjabi",
     nativeName: "ਪੰਜਾਬੀ",
     region: "Punjab & Chandigarh",
-    greeting: "ਆਰਡਰਕਿੰਗ ਸਵੈ-ਚਾਲਿਤ ਕਿਚਨ ਅਤੇ UMAR OS ਡਾਇਗਨੌਸਟਿਕ ਡੈਸਕ",
+    greeting: "ਆਰਡਰਕਿੰਗ ਸਵੈ-ਚਾਲਿਤ ਕਿਚਨ ਅਤੇ King AI Diagnostic Desk",
     statusHeader: "ਲਾਈਵ ਕਿਚਨ ਅਤੇ ਸਟੋਰਫਰੰਟ ਸਥਿਤੀ",
     payoutHeader: "ਪ੍ਰਮਾਣਿਤ ਪੈਸਾ ਸੈਟਲਮੈਂਟ ਖਾਤਾ",
     menuHeader: "ਮੀਨੂ ਕੈਟਾਲਾਗ ਅਤੇ FSSAI ਪਾਲਣਾ",
@@ -174,7 +174,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Assamese",
     nativeName: "অসমীয়া",
     region: "Assam & Northeast",
-    greeting: "অৰ্ডাৰকিং স্বয়ংক্ৰিয় কিচেন আৰু UMAR OS ডায়াগনষ্টিক ডেস্ক",
+    greeting: "অৰ্ডাৰকিং স্বয়ংক্ৰিয় কিচেন আৰু King AI Diagnostic Desk",
     statusHeader: "লাইভ কিচেন আৰু ষ্ট’ৰফ্ৰণ্ট স্থিতি",
     payoutHeader: "সত্যাপিত পইচা ছেটেলমেণ্ট লেজাৰ",
     menuHeader: "মেনু কেটালগ আৰু FSSAI অনুপালন",
@@ -185,7 +185,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Maithili",
     nativeName: "मैथिली",
     region: "Bihar & Jharkhand",
-    greeting: "ऑर्डरकिंग स्वायत्त भनसाघर आ UMAR OS डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डरकिंग स्वायत्त भनसाघर आ King AI डायग्नोस्टिक डेस्क",
     statusHeader: "लाइव भनसाघर आ स्टोरफ्रंट स्थिति",
     payoutHeader: "सत्यापित पाइ सेटलमेंट खाता",
     menuHeader: "मेनू सूची आ FSSAI अनुपालन",
@@ -196,7 +196,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Santali",
     nativeName: "ᱥᱟᱱᱛᱟᱲᱤ",
     region: "Jharkhand, Odisha, WB",
-    greeting: "OrderKing UMAR OS ᱫᱟᱠᱟ ᱚᱲᱟᱜ ᱰᱟᱭᱜᱽᱱᱚᱥᱴᱤᱠ ᱰᱮᱥᱠ",
+    greeting: "OrderKing King AI Diagnostic Desk ᱫᱟᱠᱟ ᱚᱲᱟᱜ",
     statusHeader: "ᱞᱟᱭᱤᱵᱽ ᱫᱟᱠᱟ ᱚᱲᱟᱜ ᱟᱨ ᱫᱚᱠᱟᱱ ᱚᱵᱚᱥᱛᱟ",
     payoutHeader: "ᱯᱩᱭᱥᱟᱹ ᱥᱮᱴᱮᱞᱢᱮᱱᱴ ᱦᱤᱥᱟᱹᱵᱽ",
     menuHeader: "ᱢᱮᱱᱩ ᱛᱟᱹᱞᱠᱟᱹ ᱟᱨ FSSAI നിയᱢ",
@@ -207,7 +207,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Kashmiri",
     nativeName: "कॉशुर / کٲشُر",
     region: "Jammu & Kashmir",
-    greeting: "ऑर्डरकिंग UMAR OS वाज़वान त किचन डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डरकिंग King AI डायग्नोस्टिक डेस्क वाज़वान त किचन",
     statusHeader: "लाइव किचन त दुकान स्थिति",
     payoutHeader: "सत्यापित पोंस सेटलमेंट हिसाब",
     menuHeader: "मेनू फेहरिस्त त FSSAI नियम",
@@ -218,7 +218,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Nepali",
     nativeName: "नेपाली",
     region: "Sikkim & Darjeeling",
-    greeting: "अर्डरकिङ स्वायत्त भान्सा र UMAR OS डायग्नोस्टिक डेस्क",
+    greeting: "अर्डरकिङ स्वायत्त भान्सा र King AI डायग्नोस्टिक डेस्क",
     statusHeader: "लाइभ भान्सा र स्टोरफ्रन्ट अवस्था",
     payoutHeader: "प्रमाणित पैसा सेटलमेन्ट लेजर",
     menuHeader: "मेनु क्याटलग र FSSAI अनुपालन",
@@ -229,7 +229,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Sindhi",
     nativeName: "सिन्धी / سنڌي",
     region: "Gujarat, Maharashtra, Rajasthan",
-    greeting: "ऑर्डरकिंग स्वायत्त रसोई ऐं UMAR OS डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डरकिंग स्वायत्त रसोई ऐं King AI डायग्नोस्टिक डेस्क",
     statusHeader: "लाइव रसोई ऐं दुकान जी हालत",
     payoutHeader: "तसदीक थियल पैसा सेटलमेंट खातो",
     menuHeader: "मेनू फेहरिस्त ऐं FSSAI कायदा",
@@ -240,7 +240,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Dogri",
     nativeName: "डोगरी",
     region: "Jammu Region",
-    greeting: "ऑर्डरकिंग स्वायत्त रसोई ते UMAR OS डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डरकिंग स्वायत्त रसोई ते King AI डायग्नोस्टिक डेस्क",
     statusHeader: "लाइव रसोई ते दुकान दी स्थिति",
     payoutHeader: "सत्यापित पैसे सेटलमेंट खाता",
     menuHeader: "मेनू सूची ते FSSAI नियम",
@@ -251,7 +251,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Konkani",
     nativeName: "कोंकणी",
     region: "Goa & Coastal Karnataka",
-    greeting: "ऑर्डरकिंग स्वायत्त रांदचीकूड आनी UMAR OS डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डरकिंग स्वायत्त रांदचीकूड आनी King AI डायग्नोस्टिक डेस्क",
     statusHeader: "थेट रांदचीकूड आनी दुकान स्थिती",
     payoutHeader: "सत्यापित पयशे सेटलमेंट हिशोब",
     menuHeader: "मेनू वळेरी आनी FSSAI नेम",
@@ -262,7 +262,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Manipuri (Meitei)",
     nativeName: "মৈতৈলোন্",
     region: "Manipur",
-    greeting: "অর্ডারকিং স্বয়ংক্রিয় চাকশঙ অমসুং UMAR OS ডায়াগনস্টিক ডেস্ক",
+    greeting: "অর্ডারকিং স্বয়ংক্রিয় চাকশঙ অমসুং King AI Diagnostic Desk",
     statusHeader: "লাইভ চাকশঙ অমসুং দুকানগী ফীভম",
     payoutHeader: "চুম্নবা পৈশা সেটেলমেন্ট হিসাব",
     menuHeader: "মেনু পরিং অমসুং FSSAI চৎনবী",
@@ -273,7 +273,7 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Bodo",
     nativeName: "बर'",
     region: "Bodoland, Assam",
-    greeting: "अरदारकिं गावस्रायारि आदार बानायग्रा आरो UMAR OS डेस्क",
+    greeting: "अरदारकिं गावस्रायारि आदार बानायग्रा आरो King AI डायग्नोस्टिक डेस्क",
     statusHeader: "लाइभ आदार बानायग्रा आरो फालांगि थासारि",
     payoutHeader: "थार फैसा सेतेलमेन्त हिसाब",
     menuHeader: "मेनु फारिलाइ आरो FSSAI नेम",
@@ -284,12 +284,12 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Sanskrit",
     nativeName: "संस्कृतम्",
     region: "Classical & Pan-India",
-    greeting: "ऑर्डरकिंग स्वायत्त महानसः तथा UMAR OS निदानपटलम्",
+    greeting: "ऑर्डरकिंग स्वायत्त महानसः तथा King AI Diagnostic Desk",
     statusHeader: "प्रत्यक्ष महानस-विपणन-स्थितिः",
     payoutHeader: "सत्यापित-पण-निष्पादन-लेखा",
     menuHeader: "भोजनसूची तथा FSSAI नियमानुपालनम्",
   },
-] as const;
+];
 
 export const GROWTH_FOCUS_TOPICS = [
   "Increase Daily Order Volume",
@@ -823,7 +823,7 @@ function AssistantPage() {
   function handleExportOmrOsTelemetry() {
     const payload = {
       exportedAt: new Date().toISOString(),
-      ecosystem: "OrderKing Autonomous UMAR OS v1",
+      ecosystem: "OrderKing Autonomous King AI v1",
       restaurantId: vendor.restaurantId,
       restaurantName: dash.data?.restaurantName ?? null,
       language: activeLang,
@@ -871,12 +871,12 @@ function AssistantPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `orderking-umar-os-telemetry-${vendor.restaurantId ?? "outlet"}-${new Date()
+    a.download = `orderking-king-ai-telemetry-${vendor.restaurantId ?? "outlet"}-${new Date()
       .toISOString()
       .slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    setActionBanner("Exported verified UMAR OS JSON telemetry snapshot from live restaurant database.");
+    setActionBanner("Exported verified King AI JSON telemetry snapshot from live restaurant database.");
   }
 
   function handleSpeakMessage(text: string, idx: number) {
@@ -987,13 +987,13 @@ function AssistantPage() {
 
   return (
     <VendorShell title={t("nav.assistant")} dataLabel={vendor.dataLabel}>
-      {/* UMAR OS Employee-Less Ecosystem Sync Banner */}
+      {/* King AI Employee-Less Ecosystem Sync Banner */}
       <Card className="border-leaf/40 bg-leaf-soft/30 p-3.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-leaf animate-pulse" />
             <span className="text-xs font-extrabold uppercase tracking-wider text-ink">
-              🤖 UMAR OS EMPLOYEE-LESS ECOSYSTEM SYNC — 100% AUTONOMOUS RESTAURANT CONTROL
+              🤖 KING AI EMPLOYEE-LESS ECOSYSTEM SYNC — 100% AUTONOMOUS RESTAURANT CONTROL
             </span>
           </div>
           <span className="font-mono text-[11px] font-semibold text-leaf">
@@ -1486,7 +1486,7 @@ function AssistantPage() {
               🔄 Refresh Live Checks
             </Button>
             <Button variant="secondary" size="sm" onClick={handleExportOmrOsTelemetry}>
-              📥 Export UMAR OS JSON Telemetry
+              📥 Export King AI Telemetry
             </Button>
           </div>
         </div>
@@ -1915,11 +1915,11 @@ function AssistantPage() {
             ) : null}
           </div>
 
-          {/* MODULE 6: Autonomous Zero-Employee UMAR OS Ecosystem Bridge */}
+          {/* MODULE 6: Autonomous Zero-Employee King AI Ecosystem Bridge */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                6. Autonomous Zero-Employee UMAR OS Ecosystem Bridge
+                6. Autonomous Zero-Employee King AI Ecosystem Bridge
               </h3>
               <span className="rounded-full border border-leaf/40 bg-leaf-soft px-2 py-0.5 font-mono text-[10px] font-bold text-leaf">
                 100% SELF-SERVICE

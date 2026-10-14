@@ -49,17 +49,22 @@ export function DishReviewModal({
     );
   };
 
-  const handleSimulatePhotoUpload = () => {
-    // Add dummy photo preview
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
     if (photos.length >= 3) {
       toast.error("Maximum 3 photos allowed");
       return;
     }
-    setPhotos((prev) => [
-      ...prev,
-      `https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=300&q=80`,
-    ]);
-    toast.success("Photo attached!");
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setPhotos((prev) => [...prev, reader.result as string]);
+        toast.success("Photo attached!");
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
   };
 
   const handleSubmit = () => {
@@ -223,7 +228,7 @@ export function DishReviewModal({
             <div className="flex items-center gap-2">
               {photos.map((src, idx) => (
                 <div key={idx} className="relative size-16 rounded-lg border border-border overflow-hidden">
-                  <img src={src} alt="" className="size-full object-cover" />
+                  <img src={src} alt="" className="size-full object-cover" loading="lazy" decoding="async" />
                   <button
                     type="button"
                     onClick={() => setPhotos((prev) => prev.filter((_, i) => i !== idx))}
@@ -234,14 +239,16 @@ export function DishReviewModal({
                 </div>
               ))}
               {photos.length < 3 && (
-                <button
-                  type="button"
-                  onClick={handleSimulatePhotoUpload}
-                  className="flex size-16 flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface-2 text-muted hover:border-primary hover:text-primary transition"
-                >
+                <label className="flex size-16 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface-2 text-muted hover:border-primary hover:text-primary transition">
                   <Camera className="size-4" />
                   <span className="text-[10px] mt-0.5">Upload</span>
-                </button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoSelect}
+                  />
+                </label>
               )}
             </div>
             <p className="text-[10px] text-muted mt-1">Get verified Foodie badge by sharing photos</p>

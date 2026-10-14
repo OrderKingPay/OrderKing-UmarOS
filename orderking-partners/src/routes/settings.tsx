@@ -11,22 +11,34 @@ import { useClientState } from "@/lib/client-state";
 import {
   addStaff,
   listStaff,
-  getUmarOsNotificationConfig,
-  updateUmarOsNotificationConfig,
-  sendUmarOsTestNotification,
-  type UmarOsNotificationSettings,
+  getKingAiNotificationConfig,
+  updateKingAiNotificationConfig,
+  sendKingAiTestNotification,
+  type KingAiNotificationSettings,
 } from "@/lib/server/api-more";
 import { getRestaurant, updateRestaurantProfile } from "@/lib/server/api-bootstrap";
 import { quickThrottleKitchen } from "@/lib/server/api-orders";
 import { can } from "@/lib/rbac";
-import { formatINR, rupeesToPaise } from "@/lib/money";
+import {
+  formatINR,
+  rupeesToPaise,
+  computeRestaurantPayable,
+  DELIVERY_COMMISSION_TIER_LIST,
+  DELIVERY_COMMISSION_TIERS,
+} from "@/lib/money";
 import { platformConfig } from "@/lib/platform-config";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
 import { UniversalPosHardwareManager } from "@/components/universal-pos-hardware";
+import { KitchenKdsOperationsPanel } from "@/components/settings/kitchen-kds-operations-panel";
+import { CatalogueStockControlsPanel } from "@/components/settings/catalogue-stock-controls-panel";
+import { ThermalPrinterHardwarePanel } from "@/components/settings/thermal-printer-hardware-panel";
+import { KingpaySoundboxSettingsPanel } from "@/components/settings/kingpay-soundbox-settings-panel";
 import {
   AlertTriangle,
   ArrowRightLeft,
   Building2,
+  Calculator,
+  Check,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
@@ -35,12 +47,14 @@ import {
   Globe,
   Mail,
   MessageSquare,
+  Percent,
   RefreshCw,
   Scale,
   Send,
   ShieldCheck,
   Sliders,
   Store,
+  TrendingUp,
   Users,
   Volume2,
   VolumeX,
@@ -131,8 +145,8 @@ function SettingsPage() {
   const memberships = vendor.memberships;
 
   const notifQ = useQuery({
-    queryKey: ["umaros-notif-config", vendor.restaurantId],
-    queryFn: () => getUmarOsNotificationConfig({ data: { restaurantId: vendor.restaurantId } }),
+    queryKey: ["kingai-notif-config", vendor.restaurantId],
+    queryFn: () => getKingAiNotificationConfig({ data: { restaurantId: vendor.restaurantId } }),
     enabled: Boolean(vendor.restaurantId),
   });
 
@@ -141,15 +155,9 @@ function SettingsPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [openPolicyId, setOpenPolicyId] = useState<string | null>("commercial-terms");
 
-  const [packingInr, setPackingInr] = useState("");
-  const [minOrderInr, setMinOrderInr] = useState("");
-  const [prepMins, setPrepMins] = useState("");
-  const [peakPrepMins, setPeakPrepMins] = useState("");
-  const [opsSaving, setOpsSaving] = useState(false);
-  const [opsMsg, setOpsMsg] = useState<string | null>(null);
   const [diagMsg, setDiagMsg] = useState<string | null>(null);
 
-  // UmarOS Communications Engine State
+  // King AI Communications Engine State
   const [waEnabled, setWaEnabled] = useState<boolean | null>(null);
   const [waConsent, setWaConsent] = useState<boolean | null>(null);
   const [waPhone, setWaPhone] = useState<string | null>(null);
@@ -167,8 +175,54 @@ function SettingsPage() {
   const [testDispatchMsg, setTestDispatchMsg] = useState<{ channel: string; text: string } | null>(null);
   const [testingChannel, setTestingChannel] = useState<string | null>(null);
   const [outletSwitchMsg, setOutletSwitchMsg] = useState<string | null>(null);
-
   const r = restQ.data?.restaurant;
+
+  // Commercial Commission Schedule & Negotiation State
+  const contractedBps = r?.commission_bps ?? vendor.selected?.commissionBps ?? platformConfig.commission.targetBps;
+  const [negotiatedBps, setNegotiatedBps] = useState<number | null>(null);
+  const [previewBasketInr, setPreviewBasketInr] = useState<number>(500);
+  const [commissionSaving, setCommissionSaving] = useState(false);
+  const [commissionMsg, setCommissionMsg] = useState<string | null>(null);
+
+  const effectiveBps = negotiatedBps !== null ? negotiatedBps : contractedBps;
+  const isAuthorizedToNegotiate =
+    vendor.role === "OWNER" ||
+    vendor.role === "MANAGER" ||
+    vendor.role === "MULTI_OUTLET_MANAGER" ||
+    Boolean(vendor.role && can(vendor.role, "settings.financial"));
+
+  async function handleSaveNegotiatedCommission() {
+    if (!vendor.restaurantId) return;
+    setCommissionSaving(true);
+    setCommissionMsg(null);
+    try {
+      await updateRestaurantProfile({
+        data: {
+          restaurantId: vendor.restaurantId,
+          commissionBps: effectiveBps,
+        },
+      });
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["restaurant"] }),
+        qc.invalidateQueries({ queryKey: ["vendor"] }),
+      ]);
+      setCommissionMsg(`Commercial delivery commission negotiated at ${(effectiveBps / 100).toFixed(1)}% (${effectiveBps} bps) successfully saved.`);
+    } catch (err) {
+      setCommissionMsg(err instanceof Error ? err.message : "Failed to update commission rate");
+    } finally {
+      setCommissionSaving(false);
+    }
+  }
+
+  // Live itemized integer-paise calculation preview
+  const previewGrossFoodPaise = rupeesToPaise(Math.max(1, previewBasketInr));
+  const previewBreakdown = computeRestaurantPayable({
+    foodValuePaise: previewGrossFoodPaise,
+    packingPaise: 0,
+    restaurantDiscountPaise: 0,
+    platformFundedDiscountPaise: 0,
+    commissionBps: effectiveBps,
+  });
 
   const cfg = notifQ.data?.config;
   const currentWaEnabled = waEnabled ?? cfg?.whatsappShiftReport.enabled ?? true;
@@ -183,12 +237,12 @@ function SettingsPage() {
   const currentEmailConsent = emailConsent ?? cfg?.emailTaxDocuments.consent ?? true;
   const currentEmailAddress = emailAddress !== null ? emailAddress : (cfg?.emailTaxDocuments.destinationEmail || r?.email || "");
 
-  async function handleSaveUmarOsNotifications() {
+  async function handleSaveKingAiNotifications() {
     if (!vendor.restaurantId) return;
     setNotifSaving(true);
     setNotifMsg(null);
     try {
-      const payload: UmarOsNotificationSettings = {
+      const payload: KingAiNotificationSettings = {
         whatsappShiftReport: {
           enabled: currentWaEnabled,
           consent: currentWaConsent,
@@ -214,14 +268,14 @@ function SettingsPage() {
         },
       };
 
-      await updateUmarOsNotificationConfig({
+      await updateKingAiNotificationConfig({
         data: {
           restaurantId: vendor.restaurantId,
           config: payload,
         },
       });
-      await qc.invalidateQueries({ queryKey: ["umaros-notif-config", vendor.restaurantId] });
-      setNotifMsg("UmarOS notification channels and statutory consent preferences saved successfully.");
+      await qc.invalidateQueries({ queryKey: ["kingai-notif-config", vendor.restaurantId] });
+      setNotifMsg("King AI notification channels and statutory consent preferences saved successfully.");
     } catch (err) {
       setNotifMsg(err instanceof Error ? err.message : "Failed to save notification preferences");
     } finally {
@@ -243,7 +297,7 @@ function SettingsPage() {
       if (!dest.trim()) {
         throw new Error(`Please provide a destination ${channel === "email" ? "email" : "phone number"} first.`);
       }
-      const res = await sendUmarOsTestNotification({
+      const res = await sendKingAiTestNotification({
         data: {
           restaurantId: vendor.restaurantId,
           channel,
@@ -272,43 +326,6 @@ function SettingsPage() {
     setOutletSwitchMsg(`Active branch profile instantly switched to: ${name} (${targetRestaurantId}).`);
   }
 
-  async function handleSaveOutletOps() {
-    if (!vendor.restaurantId) return;
-    setOpsSaving(true);
-    setOpsMsg(null);
-    try {
-      const nextPackingPaise =
-        packingInr.trim() !== ""
-          ? rupeesToPaise(Math.max(0, Number(packingInr)))
-          : (r?.packing_paise ?? 0);
-      const nextMinOrderPaise =
-        minOrderInr.trim() !== ""
-          ? rupeesToPaise(Math.max(0, Number(minOrderInr)))
-          : (r?.min_order_paise ?? 0);
-      const nextPrep =
-        prepMins.trim() !== "" ? Math.max(5, Math.round(Number(prepMins))) : (r?.prep_minutes ?? 20);
-      const nextPeak =
-        peakPrepMins.trim() !== ""
-          ? Math.max(10, Math.round(Number(peakPrepMins)))
-          : (r?.peak_prep_minutes ?? 35);
-
-      await updateRestaurantProfile({
-        data: {
-          restaurantId: vendor.restaurantId,
-          packingPaise: nextPackingPaise,
-          minOrderPaise: nextMinOrderPaise,
-          prepMinutes: nextPrep,
-          peakPrepMinutes: nextPeak,
-        },
-      });
-      await qc.invalidateQueries({ queryKey: ["restaurant"] });
-      setOpsMsg("Outlet packaging charges, minimum order value, and preparation SLAs saved.");
-    } catch (err) {
-      setOpsMsg(err instanceof Error ? err.message : "Could not save outlet parameters");
-    } finally {
-      setOpsSaving(false);
-    }
-  }
 
   async function handleSelfHealOutlet() {
     if (!vendor.restaurantId) return;
@@ -340,20 +357,26 @@ function SettingsPage() {
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="space-y-4">
+        {/* Thermal POS Printer & Hardware Customization Panel */}
+        <ThermalPrinterHardwarePanel
+          restaurantId={vendor.restaurantId}
+          restaurantName={vendor.selected?.restaurantName}
+        />
+
         {/* Universal POS & Thermal Printer Hardware Manager */}
         <UniversalPosHardwareManager
           restaurantId={vendor.restaurantId}
           restaurantName={vendor.selected?.restaurantName}
         />
 
-        {/* UmarOS Multi-Outlet Profile Router & Instant Branch Switcher */}
+        {/* King AI Multi-Outlet Profile Router & Instant Branch Switcher */}
         <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
               <Building2 className="size-5 text-emerald-400" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  UmarOS Multi-Outlet Profile Router &amp; Instant Branch Switcher
+                  King AI Multi-Outlet Profile Router &amp; Instant Branch Switcher
                 </h2>
                 <p className="text-xs text-slate-400">
                   Instant profile routing between authorized restaurant locations across India without re-authenticating.
@@ -533,98 +556,32 @@ function SettingsPage() {
           </Card>
         ) : null}
 
-        {/* Self-Service Outlet Operational & Commercial Parameters */}
+        {/* Kitchen & KDS Operations Customization Panel */}
         {vendor.restaurantId ? (
-          <Card className="border-slate-800 bg-slate-900/70 p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2">
-                <Sliders className="size-4 text-emerald-400" />
-                <div>
-                  <h2 className="font-display text-base font-bold text-white">
-                    Self-Service Outlet Packaging, Minimum Order &amp; Prep SLA
-                  </h2>
-                  <p className="text-xs text-slate-400">
-                    Configure your default packaging fee, minimum basket value, and standard vs. rush preparation times directly.
-                  </p>
-                </div>
-              </div>
-              <span className="text-[10px] font-mono text-emerald-400">SELF-SERVICE</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <div>
-                <Label className="text-xs text-slate-300">
-                  Default Packaging Fee (₹) — Current: {formatINR(r?.packing_paise ?? 0)}
-                </Label>
-                <Input
-                  type="number"
-                  min={0}
-                  step="1"
-                  value={packingInr}
-                  onChange={(e) => setPackingInr(e.target.value)}
-                  placeholder={String(Math.round((r?.packing_paise ?? 0) / 100))}
-                  className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
-                />
-              </div>
-              <div>
-                <Label className="text-xs text-slate-300">
-                  Minimum Order Value (₹) — Current: {formatINR(r?.min_order_paise ?? 0)}
-                </Label>
-                <Input
-                  type="number"
-                  min={0}
-                  step="10"
-                  value={minOrderInr}
-                  onChange={(e) => setMinOrderInr(e.target.value)}
-                  placeholder={String(Math.round((r?.min_order_paise ?? 0) / 100))}
-                  className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
-                />
-              </div>
-              <div>
-                <Label className="text-xs text-slate-300">
-                  Standard Prep SLA (Mins) — Current: {r?.prep_minutes ?? 20}m
-                </Label>
-                <Input
-                  type="number"
-                  min={5}
-                  max={90}
-                  value={prepMins}
-                  onChange={(e) => setPrepMins(e.target.value)}
-                  placeholder={String(r?.prep_minutes ?? 20)}
-                  className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
-                />
-              </div>
-              <div>
-                <Label className="text-xs text-slate-300">
-                  Peak Rush SLA (Mins) — Current: {r?.peak_prep_minutes ?? 35}m
-                </Label>
-                <Input
-                  type="number"
-                  min={10}
-                  max={120}
-                  value={peakPrepMins}
-                  onChange={(e) => setPeakPrepMins(e.target.value)}
-                  placeholder={String(r?.peak_prep_minutes ?? 35)}
-                  className="mt-1 h-9 text-xs bg-slate-950 border-slate-800"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800">
-              <div className="text-xs text-emerald-400">{opsMsg ?? ""}</div>
-              <Button
-                size="sm"
-                disabled={opsSaving}
-                onClick={() => void handleSaveOutletOps()}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs"
-              >
-                {opsSaving ? "Saving Outlet Settings..." : "Save Outlet Parameters"}
-              </Button>
-            </div>
-          </Card>
+          <KitchenKdsOperationsPanel
+            restaurantId={vendor.restaurantId}
+            initialPrepMinutes={r?.prep_minutes}
+            initialPeakPrepMinutes={r?.peak_prep_minutes}
+            initialPackingPaise={r?.packing_paise}
+            initialMinOrderPaise={r?.min_order_paise}
+          />
         ) : null}
 
-        {/* UmarOS Communications Engine: Automated Multi-Channel Dispatch */}
+        {/* Catalogue & King AI Autonomous Stock Controls */}
+        {vendor.restaurantId ? (
+          <CatalogueStockControlsPanel
+            restaurantId={vendor.restaurantId}
+          />
+        ) : null}
+
+        {/* KingPay Soundbox Audio Announcement Engine */}
+        {vendor.restaurantId ? (
+          <KingpaySoundboxSettingsPanel
+            restaurantId={vendor.restaurantId}
+          />
+        ) : null}
+
+        {/* King AI Communications Engine: Automated Multi-Channel Dispatch */}
         {vendor.restaurantId ? (
           <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
@@ -632,7 +589,7 @@ function SettingsPage() {
                 <MessageSquare className="size-5 text-emerald-400" />
                 <div>
                   <h2 className="font-display text-base font-bold text-white">
-                    UmarOS Communications Engine &amp; Automated Multi-Channel Dispatch
+                    King AI Communications Engine &amp; Automated Multi-Channel Dispatch
                   </h2>
                   <p className="text-xs text-slate-400">
                     Configure real-time WhatsApp shift reports, SMS kitchen emergency alerts, and statutory email tax invoices with DPDP Act compliant consent.
@@ -640,7 +597,7 @@ function SettingsPage() {
                 </div>
               </div>
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded self-start sm:self-center">
-                UMAROS COMM-ENGINE v2.5
+                KING AI COMM-ENGINE v2.5
               </span>
             </div>
 
@@ -852,10 +809,10 @@ function SettingsPage() {
               <Button
                 size="sm"
                 disabled={notifSaving}
-                onClick={() => void handleSaveUmarOsNotifications()}
+                onClick={() => void handleSaveKingAiNotifications()}
                 className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4"
               >
-                {notifSaving ? "Saving Notification Preferences..." : "Save UmarOS Notification Preferences"}
+                {notifSaving ? "Saving Notification Preferences..." : "Save King AI Notification Preferences"}
               </Button>
             </div>
           </Card>
@@ -918,24 +875,317 @@ function SettingsPage() {
           </div>
         </Card>
 
-        {/* Commercial Commission Schedule */}
-        <Card className="space-y-2 border-slate-800 bg-slate-900/70 p-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Scale className="size-4 text-emerald-400" />
-              <h2 className="font-display text-base font-bold text-white">{t("settings.commission")}</h2>
+        {/* Commercial Commission Schedule & Outlet Take-Rate Negotiation */}
+        <Card className="border-slate-800 bg-slate-900/80 p-5 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2.5">
+              <Scale className="size-5 text-emerald-400" />
+              <div>
+                <h2 className="font-display text-base font-bold text-white">
+                  Commercial Commission Schedule &amp; Outlet Take-Rate Negotiation
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Customizable per-outlet commercial commission. Standard industry delivery is 28% to sustainably fund rider delivery payouts. Dine-in remains 0% sovereign take-rate.
+                </p>
+              </div>
             </div>
-            <span className="text-[11px] font-mono text-emerald-400">CONTRACTED RATE</span>
+            <div className="flex items-center gap-2 self-start sm:self-center">
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded">
+                CONTRACTED: {(contractedBps / 100).toFixed(1)}% ({contractedBps} BPS)
+              </span>
+            </div>
           </div>
-          {vendor.role && can(vendor.role, "settings.financial") ? (
-            <p className="tabular font-display text-2xl font-bold text-emerald-400">
-              {(vendor.selected?.commissionBps ?? platformConfig.commission.targetBps) / 100}%
-            </p>
+
+          {/* Key Rates Overview */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Contracted Rate</div>
+              <div className="text-2xl font-bold font-display text-emerald-400">
+                {(contractedBps / 100).toFixed(1)}%
+              </div>
+              <div className="text-[11px] text-slate-400">
+                Standard delivery settlement tier for this outlet
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 space-y-1">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-300">Active Negotiated Rate</div>
+              <div className="text-2xl font-bold font-display text-white flex items-baseline gap-1.5">
+                <span>{(effectiveBps / 100).toFixed(1)}%</span>
+                <span className="text-xs font-mono text-emerald-400 font-normal">({effectiveBps} bps)</span>
+              </div>
+              <div className="text-[11px] text-slate-300">
+                {effectiveBps === 0
+                  ? "0% Sovereign Dine-In"
+                  : effectiveBps === 2800
+                    ? "28% Full Service Delivery (Default)"
+                    : `${(effectiveBps / 100).toFixed(1)}% Negotiated Delivery Tier`}
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-1">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Dine-In Take-Rate</div>
+              <div className="text-2xl font-bold font-display text-emerald-400">
+                0.0%
+              </div>
+              <div className="text-[11px] text-slate-400">
+                0% Sovereign Dine-In &amp; Customer Direct Pickup
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Tier Selector */}
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-semibold text-slate-200">
+                Select Pre-Configured Commercial Delivery Tier:
+              </Label>
+              <span className="text-[10px] font-mono text-slate-400">5 PRESET TIERS</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+              {DELIVERY_COMMISSION_TIER_LIST.map((tier) => {
+                const isSelected = effectiveBps === tier.bps;
+                return (
+                  <button
+                    key={tier.key}
+                    type="button"
+                    disabled={!isAuthorizedToNegotiate}
+                    onClick={() => setNegotiatedBps(tier.bps)}
+                    className={`rounded-xl border p-3 text-left transition flex flex-col justify-between ${
+                      isSelected
+                        ? "border-emerald-500 bg-emerald-500/15 text-white shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+                        : "border-slate-800 bg-slate-950/70 text-slate-300 hover:border-slate-700"
+                    } ${!isAuthorizedToNegotiate ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-bold text-xs">{tier.percentage}%</span>
+                        {isSelected ? (
+                          <span className="text-[10px] font-mono text-emerald-400 font-semibold flex items-center gap-0.5">
+                            <Check className="size-3" /> ACTIVE
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-mono text-slate-500">{tier.bps} bps</span>
+                        )}
+                      </div>
+                      <div className="text-xs font-semibold text-slate-100 mt-1">{tier.label}</div>
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-2 leading-relaxed">{tier.description}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Negotiated Rate Input (Slider & Number) */}
+          {isAuthorizedToNegotiate ? (
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <Sliders className="size-4 text-emerald-400" />
+                  <span className="font-bold text-xs text-white">
+                    Custom Negotiated Rate (0% to 35%):
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {negotiatedBps !== null && negotiatedBps !== contractedBps ? (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => setNegotiatedBps(null)}
+                      className="h-7 text-[10px] text-slate-300 border-slate-700 hover:text-white"
+                    >
+                      Reset to Contracted ({(contractedBps / 100).toFixed(1)}%)
+                    </Button>
+                  ) : null}
+                  <Button
+                    size="sm"
+                    disabled={commissionSaving || !vendor.restaurantId}
+                    onClick={() => void handleSaveNegotiatedCommission()}
+                    className="h-8 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3"
+                  >
+                    {commissionSaving ? "Saving Rate..." : "Save Negotiated Commission Rate"}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_120px] gap-4 items-center pt-1">
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] font-mono text-slate-400">
+                    <span>0% (Dine-In)</span>
+                    <span>18% (Enterprise)</span>
+                    <span className="text-emerald-400 font-bold">28% (Default)</span>
+                    <span>35% (Max)</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={35}
+                    step={0.5}
+                    value={effectiveBps / 100}
+                    onChange={(e) => setNegotiatedBps(Math.round(Number(e.target.value) * 100))}
+                    className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Input
+                    type="number"
+                    min={0}
+                    max={35}
+                    step={0.1}
+                    value={(effectiveBps / 100).toFixed(1)}
+                    onChange={(e) => {
+                      const val = Math.min(35, Math.max(0, Number(e.target.value)));
+                      setNegotiatedBps(Math.round(val * 100));
+                    }}
+                    className="h-9 text-xs bg-slate-900 border-slate-800 font-mono text-center text-emerald-400 font-bold"
+                  />
+                  <span className="text-xs font-bold text-slate-400">%</span>
+                </div>
+              </div>
+
+              {commissionMsg ? (
+                <div className="text-xs text-emerald-400 flex items-center gap-1.5 pt-1">
+                  <CheckCircle2 className="size-4 shrink-0" />
+                  <span>{commissionMsg}</span>
+                </div>
+              ) : null}
+            </div>
           ) : (
-            <p className="text-sm text-muted">{t("settings.financialLocked")}</p>
+            <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-3 text-xs text-slate-400">
+              {t("settings.financialLocked")} Contact your restaurant owner to adjust contracted take-rates.
+            </div>
           )}
+
+          {/* Live Itemized Integer-Paise Calculation Preview */}
+          <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+              <div className="flex items-center gap-2">
+                <Calculator className="size-4 text-emerald-400" />
+                <span className="font-bold text-xs text-white">
+                  Live Itemized Integer-Paise Settlement Preview ({(effectiveBps / 100).toFixed(1)}% Commission):
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-slate-400">Test Basket:</span>
+                {[250, 500, 1000, 2000].map((amt) => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => setPreviewBasketInr(amt)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold transition ${
+                      previewBasketInr === amt
+                        ? "bg-emerald-500 text-white"
+                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                    }`}
+                  >
+                    ₹{amt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5 text-xs">
+              {/* Gross Food */}
+              <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
+                <span className="text-slate-300">Gross Food Value (Customer Order Total)</span>
+                <span className="font-mono font-semibold text-white">
+                  + {formatINR(previewBreakdown.foodValuePaise)}
+                </span>
+              </div>
+
+              {/* Commission */}
+              <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-slate-300">
+                    Platform Delivery Commission ({(effectiveBps / 100).toFixed(1)}%)
+                  </span>
+                  <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-1.5 rounded">
+                    {effectiveBps} BPS
+                  </span>
+                </div>
+                <span className="font-mono font-semibold text-rose-400">
+                  - {formatINR(previewBreakdown.commissionPaise)}
+                </span>
+              </div>
+
+              {/* 18% GST on Commission */}
+              <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-slate-300">18% GST on Platform Commission (SAC 9985)</span>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    ({formatINR(previewBreakdown.commissionCgstPaise)} CGST + {formatINR(previewBreakdown.commissionSgstPaise)} SGST)
+                  </span>
+                </div>
+                <span className="font-mono font-semibold text-rose-400">
+                  - {formatINR(previewBreakdown.commissionGstPaise)}
+                </span>
+              </div>
+
+              {/* 5% §9(5) Food GST */}
+              <div className="flex items-center justify-between py-1 border-b border-slate-800/60 bg-emerald-950/20 px-2 rounded">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-emerald-300 font-medium">5% §9(5) Food GST (CGST Act 2017)</span>
+                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
+                    PLATFORM REMITTED / NON-DEBITED
+                  </span>
+                </div>
+                <span className="font-mono font-semibold text-emerald-400">
+                  {formatINR(previewBreakdown.sec9_5GstPaise)}
+                </span>
+              </div>
+
+              {/* 1% TCS */}
+              <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-slate-300">1% TCS under Section 52 of CGST Act 2017</span>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    ({formatINR(previewBreakdown.tcsCgstPaise)} CGST + {formatINR(previewBreakdown.tcsSgstPaise)} SGST)
+                  </span>
+                </div>
+                <span className="font-mono font-semibold text-rose-400">
+                  - {formatINR(previewBreakdown.tcsSec52Paise)}
+                </span>
+              </div>
+
+              {/* 1% TDS */}
+              <div className="flex items-center justify-between py-1 border-b border-slate-800/60">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-slate-300">1% TDS under Section 194-O Income Tax Act 1961</span>
+                  <span className="text-[10px] font-mono text-slate-400">(Deposited to your PAN)</span>
+                </div>
+                <span className="font-mono font-semibold text-rose-400">
+                  - {formatINR(previewBreakdown.tdsSec194OPaise)}
+                </span>
+              </div>
+
+              {/* Total Deductions */}
+              <div className="flex items-center justify-between py-1.5 border-b border-slate-800 font-semibold text-slate-300">
+                <span>Total Debited Deductions (Excl. 9(5) Platform Remittance)</span>
+                <span className="font-mono text-rose-400">
+                  - {formatINR(previewBreakdown.totalDeductionsPaise)}
+                </span>
+              </div>
+
+              {/* Net Restaurant Payable */}
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <div className="text-xs uppercase tracking-wider font-bold text-slate-300">
+                    Net Restaurant Payable (NRP)
+                  </div>
+                  <div className="text-[10px] font-mono text-slate-400">
+                    Exact integer-paise formula (zero floating-point drift)
+                  </div>
+                </div>
+                <div className="text-2xl font-bold font-display text-emerald-400 font-mono">
+                  {formatINR(previewBreakdown.netRestaurantPayablePaise)}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <p className="text-xs text-slate-400">
-            {t("settings.snapshotHint")} {platformConfig.commission.targetBps / 100}%. Applied strictly on net taxable food and packaging value in integer paise.
+            {t("settings.snapshotHint")} Snapshot per order. Applied strictly on net taxable food and packaging value in integer paise.
           </p>
         </Card>
 

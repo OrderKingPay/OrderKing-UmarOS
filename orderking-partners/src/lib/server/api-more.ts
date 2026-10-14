@@ -4,6 +4,9 @@ import { asInt, asIso, newId } from "@/lib/utils";
 import { formatINR } from "@/lib/money";
 import {
   notificationChannelStatus,
+  dispatchKingAiWhatsappShiftReport,
+  dispatchKingAiSmsEmergency,
+  dispatchKingAiEmailTaxDocument,
   dispatchUmarOsWhatsappShiftReport,
   dispatchUmarOsSmsEmergency,
   dispatchUmarOsEmailTaxDocument,
@@ -335,7 +338,7 @@ export const askAssistant = createServerFn({ method: "POST" })
     });
   });
 
-export type UmarOsNotificationSettings = {
+export type KingAiNotificationSettings = {
   whatsappShiftReport: {
     enabled: boolean;
     consent: boolean;
@@ -361,7 +364,9 @@ export type UmarOsNotificationSettings = {
   };
 };
 
-export const getUmarOsNotificationConfig = createServerFn({ method: "GET" })
+export type UmarOsNotificationSettings = KingAiNotificationSettings;
+
+export const getKingAiNotificationConfig = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .validator((d: { restaurantId?: string }) => d)
   .handler(async ({ context, data }) => {
@@ -376,7 +381,7 @@ export const getUmarOsNotificationConfig = createServerFn({ method: "GET" })
       const fallbackPhone = rest[0]?.phone ?? "";
       const fallbackEmail = rest[0]?.email ?? "";
 
-      let saved: Partial<UmarOsNotificationSettings> = {};
+      let saved: Partial<KingAiNotificationSettings> = {};
       if (rows[0]?.value_json) {
         try {
           saved = JSON.parse(rows[0].value_json);
@@ -385,7 +390,7 @@ export const getUmarOsNotificationConfig = createServerFn({ method: "GET" })
         }
       }
 
-      const config: UmarOsNotificationSettings = {
+      const config: KingAiNotificationSettings = {
         whatsappShiftReport: {
           enabled: saved.whatsappShiftReport?.enabled ?? true,
           consent: saved.whatsappShiftReport?.consent ?? true,
@@ -419,9 +424,11 @@ export const getUmarOsNotificationConfig = createServerFn({ method: "GET" })
     });
   });
 
-export const updateUmarOsNotificationConfig = createServerFn({ method: "POST" })
+export const getUmarOsNotificationConfig = getKingAiNotificationConfig;
+
+export const updateKingAiNotificationConfig = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((d: { restaurantId?: string; config: UmarOsNotificationSettings }) => d)
+  .validator((d: { restaurantId?: string; config: KingAiNotificationSettings }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "settings.view", async (sql, ctx) => {
       const key = `notif_config:${ctx.restaurantId}`;
@@ -434,16 +441,18 @@ export const updateUmarOsNotificationConfig = createServerFn({ method: "POST" })
       await writeAudit(sql, {
         restaurantId: ctx.restaurantId,
         actorUserId: context.userId,
-        action: "update_umaros_notifications",
+        action: "update_kingai_notifications",
         entityType: "notification_config",
         entityId: ctx.restaurantId,
-        detail: `UmarOS channels: WhatsApp(${data.config.whatsappShiftReport.enabled}), SMS(${data.config.smsKitchenEmergency.enabled}), Email(${data.config.emailTaxDocuments.enabled})`,
+        detail: `King AI channels: WhatsApp(${data.config.whatsappShiftReport.enabled}), SMS(${data.config.smsKitchenEmergency.enabled}), Email(${data.config.emailTaxDocuments.enabled})`,
       });
       return { ok: true as const };
     });
   });
 
-export const sendUmarOsTestNotification = createServerFn({ method: "POST" })
+export const updateUmarOsNotificationConfig = updateKingAiNotificationConfig;
+
+export const sendKingAiTestNotification = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((d: {
     restaurantId?: string;
@@ -491,7 +500,7 @@ export const sendUmarOsTestNotification = createServerFn({ method: "POST" })
           gst95Paise: Math.round((s.sales_paise > 0 ? s.sales_paise : 845000) * 0.05),
           commissionPaise: s.commission_paise,
         };
-        const res = await dispatchUmarOsWhatsappShiftReport(payload);
+        const res = await dispatchKingAiWhatsappShiftReport(payload);
         messageSummary = res.summary;
       } else if (data.channel === "sms") {
         const payload = {
@@ -501,7 +510,7 @@ export const sendUmarOsTestNotification = createServerFn({ method: "POST" })
           alertType: "KITCHEN_THROTTLE" as const,
           details: "Kitchen surge throttle alert active: SLA adjusted to 35m due to high live order volume.",
         };
-        const res = await dispatchUmarOsSmsEmergency(payload);
+        const res = await dispatchKingAiSmsEmergency(payload);
         messageSummary = res.summary;
       } else if (data.channel === "email") {
         const payload = {
@@ -517,7 +526,7 @@ export const sendUmarOsTestNotification = createServerFn({ method: "POST" })
           tdsPaise: Math.round((s.sales_paise > 0 ? s.sales_paise : 845000) * 0.01),
           tcsPaise: Math.round((s.sales_paise > 0 ? s.sales_paise : 845000) * 0.005),
         };
-        const res = await dispatchUmarOsEmailTaxDocument(payload);
+        const res = await dispatchKingAiEmailTaxDocument(payload);
         messageSummary = res.summary;
       }
 
@@ -526,8 +535,8 @@ export const sendUmarOsTestNotification = createServerFn({ method: "POST" })
         values (
           ${newId("ntf")},
           ${ctx.restaurantId},
-          ${`umaros_${data.channel}`},
-          ${`UmarOS ${data.channel.toUpperCase()} Dispatch Verified`},
+          ${`kingai_${data.channel}`},
+          ${`King AI ${data.channel.toUpperCase()} Dispatch Verified`},
           ${messageSummary}
         )
       `;
@@ -549,4 +558,6 @@ export const sendUmarOsTestNotification = createServerFn({ method: "POST" })
       };
     });
   });
+
+export const sendUmarOsTestNotification = sendKingAiTestNotification;
 

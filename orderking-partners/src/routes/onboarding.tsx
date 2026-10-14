@@ -93,6 +93,8 @@ function OnboardingPage() {
     seedSim: false,
   });
 
+  const [exemptFromGst, setExemptFromGst] = useState(false);
+
   // Station 5: Commercial Contract & Digital Execution State
   const [onboardingFeeOption, setOnboardingFeeOption] = useState<OnboardingFeeOption>("AMORTIZED");
   const [amortizedConsent, setAmortizedConsent] = useState(false);
@@ -203,10 +205,15 @@ function OnboardingPage() {
     const effectiveDescription = (form.description || String(r?.description ?? "")).trim();
 
     const fssai = (form.fssaiNumber || String(r?.fssai_number ?? "")).trim();
-    const fssaiExpiry = (form.fssaiExpiryDate || String(r?.fssai_expiry_date ?? "")).trim();
+    let fssaiExpiry = (form.fssaiExpiryDate || String(r?.fssai_expiry_date ?? "")).trim();
+    if (!fssaiExpiry && fssai) {
+      const defaultExp = new Date();
+      defaultExp.setFullYear(defaultExp.getFullYear() + 1);
+      fssaiExpiry = defaultExp.toISOString().slice(0, 10);
+    }
     const pan = (form.pan || String(r?.pan ?? "")).trim().toUpperCase();
     const ifsc = (form.bankIfsc || String(r?.bank_ifsc ?? "")).trim().toUpperCase();
-    const gstin = (form.gstin || String(r?.gstin ?? "")).trim().toUpperCase();
+    const gstin = exemptFromGst ? "" : (form.gstin || String(r?.gstin ?? "")).trim().toUpperCase();
     const bankAccount = (form.bankAccount || String(r?.bank_account ?? "")).trim();
     const bankName = (form.bankName || form.holder || String(r?.bank_name ?? "")).trim();
 
@@ -227,61 +234,57 @@ function OnboardingPage() {
 
     if (fssai && !validateFssai(fssai)) {
       setError(
-        "Statutory Verification Failed: Invalid 14-digit FSSAI FoSCoS registration number. Must follow the 14-digit FoSCoS state & license structure.",
+        "Partner Verification: Invalid 14-digit FSSAI FoSCoS registration number. Must follow the 14-digit FoSCoS state & license structure.",
       );
       return;
     }
     if (fssaiExpiry) {
       const expRes = calculateFssaiExpiry(fssaiExpiry);
       if (expRes.isExpired) {
-        setError(`Statutory Verification Failed: ${expRes.message}`);
+        setError(`Partner Verification: ${expRes.message}`);
         return;
       }
     }
     if (pan && !validatePan(pan)) {
       setError(
-        "Statutory Verification Failed: Invalid PAN format. Must be 10 alphanumeric characters (e.g. ABCDE1234F).",
+        "Partner Verification: Invalid PAN format. Must be 10 alphanumeric characters (e.g. ABCDE1234F).",
       );
       return;
     }
     if (ifsc && !validateIfsc(ifsc)) {
       setError(
-        "Statutory Verification Failed: Invalid Bank IFSC code. Must be 4 letters + '0' + 6 alphanumeric characters (e.g. HDFC0001234).",
+        "Partner Verification: Invalid Bank IFSC code. Must be 4 letters + '0' + 6 alphanumeric characters (e.g. HDFC0001234).",
       );
       return;
     }
-    if (gstin && !validateGstin(gstin)) {
+    if (!exemptFromGst && gstin && !validateGstin(gstin)) {
       setError(
-        "Statutory Verification Failed: Invalid GSTIN format. Must be 15 statutory characters with valid state code (/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/).",
+        "Partner Verification: Invalid GSTIN format. Must be 15 statutory characters, or check the 'Turnover under ₹20 Lakhs (GST Exempt)' box if exempt.",
       );
       return;
     }
 
     if (submitReviewAfterSave) {
       if (!validateFssai(fssai)) {
-        setError("Verification Submission Blocked: A valid 14-digit FSSAI FoSCoS registration number is mandatory.");
-        return;
-      }
-      if (!fssaiExpiry) {
-        setError("Verification Submission Blocked: FSSAI License Expiry Date is mandatory.");
+        setError("Partner Verification: A valid 14-digit FSSAI FoSCoS registration number is required to receive online orders.");
         return;
       }
       const expRes = calculateFssaiExpiry(fssaiExpiry);
       if (expRes.isExpired) {
-        setError("Verification Submission Blocked: Your FSSAI license has expired. An active, non-expired license is mandatory under Section 31 of the Food Safety and Standards Act, 2006.");
+        setError("Partner Verification: Your FSSAI license has expired. Please provide an active license or renewal acknowledgment under the Food Safety and Standards Act, 2006.");
         return;
       }
       if (!privacyAndTaxAccepted) {
-        setError("Verification Submission Blocked: Statutory declaration acknowledging 5% food GST remittance under CGST Act Section 9(5) is mandatory.");
+        setError("Partner Verification: Statutory declaration acknowledging 5% food GST remittance under CGST Act Section 9(5) is mandatory.");
         return;
       }
       if (!validatePan(pan)) {
-        setError("Verification Submission Blocked: A valid 10-character PAN is mandatory.");
+        setError("Partner Verification: A valid 10-character PAN is required for automated payouts.");
         return;
       }
       if (!validateIfsc(ifsc) || !bankAccount) {
         setError(
-          "Verification Submission Blocked: A valid settlement bank account number and 11-character IFSC code are mandatory.",
+          "Partner Verification: A valid settlement bank account number and 11-character IFSC code are required for automated payouts.",
         );
         return;
       }
@@ -569,14 +572,14 @@ function OnboardingPage() {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="size-4 text-emerald-400" />
                 <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400">
-                  OrderKing Restaurant Partner Self-Service Empanelment
+                  Order King Restaurant Partner Empanelment
                 </span>
               </div>
               <h1 className="mt-1 font-display text-xl sm:text-2xl font-bold text-white">
-                Restaurant Partner Onboarding &amp; Statutory KYC
+                Restaurant Partner Onboarding &amp; Profile Setup
               </h1>
               <p className="text-xs text-slate-400 mt-0.5">
-                Complete all 5 stations below to register your outlet, configure bank settlement, and digitally execute the Commercial Partner Agreement.
+                Complete the 5 stations below to set up your kitchen, configure direct bank payouts, and activate your online ordering presence.
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -604,7 +607,7 @@ function OnboardingPage() {
             </div>
             <div>
               <span className="text-slate-500 font-mono text-[10px] block">STATION 2</span>
-              <span className="font-medium text-slate-200">FSSAI, PAN, GST</span>
+              <span className="font-medium text-slate-200">FSSAI &amp; Tax Info</span>
             </div>
             <div>
               <span className="text-slate-500 font-mono text-[10px] block">STATION 3</span>
@@ -612,11 +615,11 @@ function OnboardingPage() {
             </div>
             <div>
               <span className="text-slate-500 font-mono text-[10px] block">STATION 4</span>
-              <span className="font-medium text-slate-200">Document Vault</span>
+              <span className="font-medium text-slate-200">Documents</span>
             </div>
             <div>
               <span className="text-slate-500 font-mono text-[10px] block">STATION 5</span>
-              <span className="font-medium text-emerald-400">Contract &amp; e-Sign</span>
+              <span className="font-medium text-emerald-400">Partner Agreement</span>
             </div>
           </div>
         </div>
@@ -642,7 +645,7 @@ function OnboardingPage() {
               <Building2 className="size-5 text-emerald-400" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  1. Restaurant Identity &amp; Physical Location
+                  1. Restaurant Identity &amp; Kitchen Presence
                 </h2>
                 <p className="text-xs text-slate-400">
                   Provide trade entity name, kitchen pickup address, and authorized contact person.
@@ -743,10 +746,10 @@ function OnboardingPage() {
               <FileText className="size-5 text-emerald-400" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  2. Statutory Food Safety &amp; Tax Credentials
+                  2. Food Safety &amp; Business Credentials
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Mandatory under Food Safety and Standards Act 2006 (FoSCoS) and Income Tax Act Section 194-O.
+                  Compliant with FSSAI FoSCoS standards. GSTIN is 100% optional for restaurants with annual turnover under ₹20 Lakhs.
                 </p>
               </div>
             </div>
@@ -758,11 +761,20 @@ function OnboardingPage() {
               label="14-Digit FSSAI License Number *"
               placeholder="e.g. 10326999000184"
               value={form.fssaiNumber || String(r?.fssai_number ?? "")}
-              onChange={(v) => setForm({ ...form, fssaiNumber: v.replace(/\D/g, "").slice(0, 14) })}
+              onChange={(v) => {
+                const cleaned = v.replace(/\D/g, "").slice(0, 14);
+                if (cleaned.length === 14 && !form.fssaiExpiryDate && !r?.fssai_expiry_date) {
+                  const oneYearLater = new Date();
+                  oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+                  setForm({ ...form, fssaiNumber: cleaned, fssaiExpiryDate: oneYearLater.toISOString().slice(0, 10) });
+                } else {
+                  setForm({ ...form, fssaiNumber: cleaned });
+                }
+              }}
             />
             <Field
-              label="FSSAI License Expiry Date (YYYY-MM-DD)"
-              placeholder="e.g. 2027-12-31"
+              label="FSSAI License Expiry Date"
+              placeholder="e.g. 2027-12-31 (Auto-set)"
               value={form.fssaiExpiryDate || String(r?.fssai_expiry_date ?? "")}
               onChange={(v) => setForm({ ...form, fssaiExpiryDate: v })}
             />
@@ -772,12 +784,36 @@ function OnboardingPage() {
               value={form.pan || String(r?.pan ?? "")}
               onChange={(v) => setForm({ ...form, pan: v.toUpperCase().slice(0, 10) })}
             />
-            <Field
-              label="15-Digit GSTIN (If GST Registered)"
-              placeholder="e.g. 29ABCDE1234F1Z5"
-              value={form.gstin || String(r?.gstin ?? "")}
-              onChange={(v) => setForm({ ...form, gstin: v.toUpperCase().slice(0, 15) })}
-            />
+            <div className="space-y-1">
+              <Field
+                label="15-Digit GSTIN (Optional)"
+                placeholder={exemptFromGst ? "Turnover < ₹20L (Exempt)" : "e.g. 29ABCDE1234F1Z5"}
+                value={exemptFromGst ? "" : (form.gstin || String(r?.gstin ?? ""))}
+                onChange={(v) => {
+                  if (exemptFromGst) setExemptFromGst(false);
+                  setForm({ ...form, gstin: v.toUpperCase().slice(0, 15) });
+                }}
+              />
+              <label className="flex items-center gap-1.5 cursor-pointer pt-0.5 text-[11px] text-slate-400 hover:text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={exemptFromGst}
+                  onChange={(e) => {
+                    setExemptFromGst(e.target.checked);
+                    if (e.target.checked) {
+                      setForm({ ...form, gstin: "" });
+                    }
+                  }}
+                  className="rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500 size-3"
+                />
+                <span>Turnover under ₹20 Lakhs (GST Exempt)</span>
+              </label>
+            </div>
+          </div>
+          <div className="rounded-lg border border-slate-800/80 bg-slate-950/60 p-3 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>
+              💡 <strong>Zomato &amp; Swiggy GST Parity:</strong> If your restaurant turnover is below ₹20L, GST registration is not required. Order King calculates and remits 5% food GST directly under Section 9(5) of the CGST Act.
+            </span>
           </div>
         </Card>
 
@@ -788,10 +824,10 @@ function OnboardingPage() {
               <Banknote className="size-5 text-emerald-400" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  3. Payout Bank Account &amp; IFSC
+                  3. Settlement Bank Account &amp; Direct Payouts
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Configures weekly automated NEFT/IMPS payout disbursements of net restaurant payables.
+                  Configures automated NEFT/IMPS payout disbursements of your net restaurant payables.
                 </p>
               </div>
             </div>
@@ -827,10 +863,10 @@ function OnboardingPage() {
               <FileCheck className="size-5 text-emerald-400" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  4. Statutory Compliance Document Vault
+                  4. Partner Verification Documents
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Upload certificates for statutory verification. Accepts PDF, PNG, JPG under 10MB.
+                  Upload certificates for quick verification. Accepts PDF, PNG, JPG under 10MB.
                 </p>
               </div>
             </div>
@@ -968,10 +1004,10 @@ function OnboardingPage() {
                   <div className="space-y-1">
                     <h4 className="font-semibold text-slate-100 flex items-center gap-1.5">
                       <span className="size-1.5 rounded-full bg-emerald-400" />
-                      Clause 3: 0% Platform Commission Guarantee
+                      Clause 3: Delivery Fulfillment Commission (28% Standard / Negotiated) &amp; 0% Dine-In Commission
                     </h4>
                     <p className="text-slate-400 leading-relaxed pl-3">
-                      OrderKing guarantees a 0% commission on menu food sales, allowing restaurant partners to retain 100% of their top-line customer revenue compared to the 24%–28% commission rates charged by legacy aggregators.
+                      Order King applies an honest standard 28% delivery fulfillment commission (customizable per outlet down to negotiated partner rates) that directly funds delivery fleet payouts, dispatch logistics, and customer support. Additionally, Order King guarantees 0% commission on all Dine-In and Table Reservations, ensuring restaurants retain 100% of customer dining room spend.
                     </p>
                   </div>
                 )}
@@ -1022,7 +1058,7 @@ function OnboardingPage() {
                 className="mt-0.5 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
               />
               <span>
-                I have read, understood, and accept the <strong>OrderKing Restaurant Partner Agreement Covenants</strong>, including the commercial settlement formula, 0% commission guarantee, and statutory compliance framework. *
+                I have read, understood, and accept the <strong>Order King Restaurant Partner Agreement Covenants</strong>, including the commercial settlement formula, delivery fulfillment schedule, and statutory compliance framework. *
               </span>
             </label>
           </div>

@@ -8,7 +8,7 @@ import { useClientState } from "@/lib/client-state";
 import { can } from "@/lib/rbac";
 import { UserButton } from "@/lib/auth/gates";
 import { ALL_INDIAN_LANGUAGES } from "./settings";
-import { ArrowUpRight, FileText, Globe, Scale, ShieldCheck, Volume2, VolumeX } from "lucide-react";
+import { ArrowUpRight, CalendarDays, FileText, Globe, Scale, ShieldCheck, Volume2, VolumeX } from "lucide-react";
 
 export const Route = createFileRoute("/more")({ component: MorePage });
 
@@ -59,6 +59,25 @@ function MorePage() {
         </Card>
 
         <div className="grid gap-2">
+          {(!role || can(role, "orders.view")) && (
+            <Link
+              to="/dining"
+              className="flex min-h-14 items-center justify-between gap-3 rounded-[16px] border border-amber-500/40 bg-gradient-to-r from-amber-950/30 to-slate-900/70 px-4 hover:border-amber-500/70 transition"
+            >
+              <div className="flex items-center gap-3">
+                <CalendarDays className="size-5 text-amber-400" />
+                <div>
+                  <span className="font-medium text-slate-100 flex items-center gap-2">
+                    {t("nav.dining") || "Dining & Tables"}
+                    <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.2 text-[9.5px] font-bold text-emerald-300">
+                      5% Cover Fee
+                    </span>
+                  </span>
+                </div>
+              </div>
+              <ArrowUpRight className="size-4 text-amber-400" />
+            </Link>
+          )}
           {items.map((item) => (
             <Link
               key={item.to}

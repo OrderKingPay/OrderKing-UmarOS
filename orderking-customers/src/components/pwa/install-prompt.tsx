@@ -76,6 +76,8 @@ export function PwaInstallPrompt() {
           <img
             src="/icon-192.png"
             alt="OrderKing"
+            loading="lazy"
+            decoding="async"
             className="h-11 w-11 shrink-0 rounded-xl object-cover shadow-sm"
           />
           <div className="min-w-0 flex-1">
@@ -107,6 +109,8 @@ export function PwaInstallPrompt() {
         <img
           src="/icon-192.png"
           alt="OrderKing"
+          loading="lazy"
+          decoding="async"
           className="h-11 w-11 rounded-xl object-cover shadow-sm"
         />
         <div className="min-w-0 flex-1">

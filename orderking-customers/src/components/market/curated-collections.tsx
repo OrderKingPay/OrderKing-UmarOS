@@ -111,6 +111,8 @@ export function CuratedCollections({
             <img
               src={col.coverImage}
               alt={col.title}
+              loading="lazy"
+              decoding="async"
               className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
             {/* Gradient Overlay */}

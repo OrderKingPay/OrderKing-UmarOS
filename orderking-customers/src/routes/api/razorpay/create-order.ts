@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSessionUser } from "@/lib/auth/verify.server";
+import { paymentLimiter } from "@/lib/security/rate-limiter";
 
 export const Route = createFileRoute("/api/razorpay/create-order")({
   server: {
@@ -12,6 +13,21 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
               status: 401,
               headers: { "Content-Type": "application/json" },
             });
+          }
+
+          // Rate limiting protection
+          const rateCheck = paymentLimiter.isAllowed(user.id);
+          if (!rateCheck.allowed) {
+            return new Response(
+              JSON.stringify({ error: "Too many payment requests. Please wait a moment." }),
+              {
+                status: 429,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Retry-After": String(Math.ceil(rateCheck.resetMs / 1000)),
+                },
+              }
+            );
           }
 
           const body = await request.json();

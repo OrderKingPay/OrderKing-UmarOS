@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 export type DietaryType =
   | "ALL"
   | "PURE_VEG"
-  | "NON_VEG"
   | "VEGAN"
   | "JAIN"
   | "HALAL"
@@ -38,13 +37,6 @@ export const DIETARY_OPTIONS: DietaryOption[] = [
     badge: "100% Segregated",
     description: "Prepared in 100% vegetarian kitchens with dedicated cookware and green tamper seals",
     colorClass: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/30",
-  },
-  {
-    id: "NON_VEG",
-    label: "Non-Veg",
-    icon: "🍗",
-    description: "Fresh poultry, mutton, seafood, and egg specialties",
-    colorClass: "bg-rose-500/10 text-rose-800 dark:text-rose-300 border-rose-500/30",
   },
   {
     id: "VEGAN",

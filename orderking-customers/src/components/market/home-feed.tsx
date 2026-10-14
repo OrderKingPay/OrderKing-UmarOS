@@ -23,60 +23,81 @@ import { listMyOrders, reorderItems } from "@/lib/server/orders";
 import { formatPaise } from "@/lib/money";
 import { useLocationStore } from "@/lib/stores/location";
 import { useCartStore } from "@/lib/stores/cart";
+import { useDietStore } from "@/lib/stores/diet";
 import type { RestaurantCard } from "@/lib/market-types";
 import { cn } from "@/lib/utils";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
 
-// Curated high-resolution categories for Zomato-parity "Inspiration for your first order"
+// Curated high-resolution categories with distinct gradient colors
 const CURATED_FOOD_CATEGORIES = [
   {
     name: "Biryani",
     slug: "biryani",
+    emoji: "🍚",
+    gradient: "from-orange-400 to-amber-500",
     imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Pizza",
     slug: "pizza",
+    emoji: "🍕",
+    gradient: "from-red-400 to-rose-500",
     imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Thali",
     slug: "thali",
+    emoji: "🍽️",
+    gradient: "from-amber-400 to-yellow-500",
     imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Burgers",
     slug: "burger",
+    emoji: "🍔",
+    gradient: "from-yellow-400 to-orange-500",
     imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Curry",
     slug: "north-indian",
+    emoji: "🍛",
+    gradient: "from-emerald-400 to-green-500",
     imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Rolls",
     slug: "rolls",
+    emoji: "🌯",
+    gradient: "from-teal-400 to-cyan-500",
     imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Chinese",
     slug: "chinese",
+    emoji: "🥡",
+    gradient: "from-sky-400 to-blue-500",
     imageUrl: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "South Indian",
     slug: "south-indian",
+    emoji: "🫓",
+    gradient: "from-purple-400 to-violet-500",
     imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Desserts",
     slug: "desserts",
+    emoji: "🍰",
+    gradient: "from-pink-400 to-rose-500",
     imageUrl: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Cakes",
     slug: "cake",
+    emoji: "🎂",
+    gradient: "from-fuchsia-400 to-pink-500",
     imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=240&auto=format&fit=crop&q=80",
   },
 ];
@@ -99,9 +120,8 @@ export function HomeFeed({
   const cart = useCartStore();
   const navigate = useNavigate();
 
-  // Diet switch state: "all" | "veg" | "non-veg"
-  const [dietFilter, setDietFilter] = useState<"all" | "veg" | "non-veg">(veg ? "veg" : "all");
-  const [aiAssistOpen, setAiAssistOpen] = useState(false);
+  // Global reactive diet preference: "all" | "veg"
+  const { dietFilter, setDietFilter } = useDietStore();
 
   // Secondary quick filter tags
   const [filterFast, setFilterFast] = useState(false);
@@ -123,25 +143,33 @@ export function HomeFeed({
     queryFn: () => listCategories({ data: { lang } }),
   });
 
-  // Display categories: DB categories merged with curated fallback items
+  // Display categories: DB categories merged with curated fallback items with distinct gradient and emoji
   const displayCategories = useMemo(() => {
     const dbCats = cats.data?.categories ?? [];
     if (dbCats.length > 0) {
-      return dbCats.map((c) => ({
-        id: c.id,
-        slug: c.slug,
-        name: c.name,
-        imageUrl:
-          c.imageUrl ||
-          CURATED_FOOD_CATEGORIES.find((cc) => cc.slug.toLowerCase().includes(c.slug.toLowerCase()))
-            ?.imageUrl ||
-          CURATED_FOOD_CATEGORIES[0].imageUrl,
-      }));
+      return dbCats.map((c, i) => {
+        const curated =
+          CURATED_FOOD_CATEGORIES.find(
+            (cc) =>
+              cc.slug.toLowerCase().includes(c.slug.toLowerCase()) ||
+              c.slug.toLowerCase().includes(cc.slug.toLowerCase())
+          ) || CURATED_FOOD_CATEGORIES[i % CURATED_FOOD_CATEGORIES.length];
+        return {
+          id: c.id,
+          slug: c.slug,
+          name: c.name,
+          emoji: curated.emoji,
+          gradient: curated.gradient,
+          imageUrl: c.imageUrl || curated.imageUrl,
+        };
+      });
     }
     return CURATED_FOOD_CATEGORIES.map((c, i) => ({
       id: `cat-${i}`,
       slug: c.slug,
       name: c.name,
+      emoji: c.emoji,
+      gradient: c.gradient,
       imageUrl: c.imageUrl,
     }));
   }, [cats.data?.categories]);
@@ -200,7 +228,6 @@ export function HomeFeed({
     return raw
       .filter((r) => {
         if (dietFilter === "veg" && !r.vegOnly) return false;
-        if (dietFilter === "non-veg" && r.vegOnly) return false;
         if (filterRating && (r.ratingAvg ?? 0) < 4.0) return false;
         if (filterOffers && !r.hasOffer) return false;
         if (filterBudget && (r.minOrderPaise ?? 0) > 20000) return false;
@@ -217,262 +244,26 @@ export function HomeFeed({
   }, [list.data?.restaurants, dietFilter, filterRating, filterOffers, filterBudget, filterFast]);
 
   return (
-    <div className="space-y-5 px-3 py-3 sm:px-4 sm:py-4 bg-white text-gray-900">
-      {/* 0. BRAND LOGO + AI ASSISTANCE SWITCH (Section 3 Mandate) */}
-      <div className="flex flex-col gap-2.5 rounded-2xl border border-gray-200/80 bg-gradient-to-r from-red-50/60 via-white to-amber-50/50 p-3 shadow-2xs">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-[#E23744] text-white font-black text-sm shadow-xs">
-              OK
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-sm sm:text-base tracking-tight text-gray-900">
-                  OrderKing Delivery
-                </span>
-                <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.2 text-[10px] font-bold text-emerald-700">
-                  Direct Kitchens
-                </span>
-              </div>
-              <p className="text-[11px] text-gray-500 font-medium">
-                {location.cityName || "Your City"} · Fresh food &amp; local kitchens
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setAiAssistOpen((prev) => !prev)}
-            aria-pressed={aiAssistOpen}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-extrabold transition shadow-xs border",
-              aiAssistOpen
-                ? "bg-slate-950 text-amber-300 border-amber-400"
-                : "bg-white text-slate-900 border-amber-300 hover:bg-amber-50"
-            )}
-          >
-            <span>✨</span>
-            <span>AI Assistance</span>
-            <span
-              className={cn(
-                "rounded-full px-1.5 py-0.2 text-[9px] font-black uppercase",
-                aiAssistOpen ? "bg-amber-400 text-slate-950" : "bg-slate-100 text-slate-600"
-              )}
-            >
-              {aiAssistOpen ? "ON" : "OFF"}
-            </span>
-          </button>
-        </div>
-
-        {aiAssistOpen && (
-          <div className="rounded-xl border border-amber-200/80 bg-white p-3 text-xs space-y-2.5 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="font-extrabold text-slate-900">
-                🤖 OrderKing AI Food &amp; Service Concierge
-              </span>
-              <Link
-                to="/support"
-                className="text-[11px] font-bold text-[#E23744] hover:underline no-underline"
-              >
-                Open Full 24×7 AI Chat ➔
-              </Link>
-            </div>
-            <p className="text-gray-600 leading-relaxed">
-              Tap a smart filter below to match live kitchens in {location.cityName || "your area"} or jump to any OrderKing service:
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setFilterFast(true);
-                  setFilterBudget(false);
-                }}
-                className="rounded-lg border border-gray-200 bg-gray-50 hover:bg-red-50 hover:border-red-200 px-2.5 py-1.5 font-bold text-gray-800 transition"
-              >
-                ⚡ Fastest Under 30m
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setFilterBudget(true);
-                  setFilterFast(false);
-                }}
-                className="rounded-lg border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-200 px-2.5 py-1.5 font-bold text-gray-800 transition"
-              >
-                🍱 Meal Under ₹200
-              </button>
-              <button
-                type="button"
-                onClick={() => setDietFilter("veg")}
-                className="rounded-lg border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-200 px-2.5 py-1.5 font-bold text-emerald-800 transition"
-              >
-                🌿 Pure Veg Kitchens
-              </button>
-              <Link
-                to="/support"
-                className="rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 font-bold text-indigo-900 no-underline transition"
-              >
-                💬 Ask AI About My Order
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* 1. SLIDING VEG / NON-VEG SWITCH & QUICK FILTER BAR */}
-      <div className="sticky top-[4.5rem] z-30 bg-white/95 backdrop-blur-md -mx-3 px-3 py-2 border-b border-gray-100 flex flex-col gap-2.5 sm:-mx-4 sm:px-4">
-        <div className="flex items-center justify-between gap-2">
-          {/* Sliding Segmented Pill Switch */}
-          <div className="inline-flex items-center rounded-full bg-gray-100 p-1 border border-gray-200 shadow-xs relative">
-            {/* Option: All */}
-            <button
-              type="button"
-              onClick={() => setDietFilter("all")}
-              className={cn(
-                "relative z-10 px-3 py-1.5 rounded-full text-xs font-bold transition-colors select-none",
-                dietFilter === "all" ? "text-gray-900" : "text-gray-500 hover:text-gray-800"
-              )}
-            >
-              {dietFilter === "all" && (
-                <motion.div
-                  layoutId="diet-pill-active"
-                  className="absolute inset-0 rounded-full bg-white shadow-sm border border-gray-200/80 -z-10"
-                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                />
-              )}
-              All
-            </button>
-
-            {/* Option: Veg Only */}
-            <button
-              type="button"
-              onClick={() => setDietFilter("veg")}
-              className={cn(
-                "relative z-10 px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 select-none",
-                dietFilter === "veg" ? "text-emerald-700" : "text-gray-500 hover:text-gray-800"
-              )}
-            >
-              {dietFilter === "veg" && (
-                <motion.div
-                  layoutId="diet-pill-active"
-                  className="absolute inset-0 rounded-full bg-white shadow-sm border border-emerald-200 -z-10"
-                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                />
-              )}
-              <span className="size-3.5 rounded-xs border border-emerald-600 flex items-center justify-center p-0.5 bg-white">
-                <span className="size-1.5 rounded-full bg-emerald-600" />
-              </span>
-              <span>Veg</span>
-            </button>
-
-            {/* Option: Non-Veg */}
-            <button
-              type="button"
-              onClick={() => setDietFilter("non-veg")}
-              className={cn(
-                "relative z-10 px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 select-none",
-                dietFilter === "non-veg" ? "text-rose-700" : "text-gray-500 hover:text-gray-800"
-              )}
-            >
-              {dietFilter === "non-veg" && (
-                <motion.div
-                  layoutId="diet-pill-active"
-                  className="absolute inset-0 rounded-full bg-white shadow-sm border border-rose-200 -z-10"
-                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                />
-              )}
-              <span className="size-3.5 rounded-xs border border-rose-600 flex items-center justify-center p-0.5 bg-white">
-                <span className="size-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-b-[5px] border-b-rose-600" />
-              </span>
-              <span>Non-Veg</span>
-            </button>
-          </div>
-
-          {/* Result Count Indicator */}
-          <span className="text-[11px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
-            {filteredRestaurants.length} places
-          </span>
-        </div>
-
-        {/* Secondary Quick Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
-          <button
-            type="button"
-            onClick={() => setFilterFast(!filterFast)}
-            className={cn(
-              "flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border shadow-xs select-none",
-              filterFast
-                ? "bg-[#E23744] text-white border-[#E23744]"
-                : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
-            )}
-          >
-            <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-[#E23744]")} />
-            <span>Fast Delivery</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setFilterRating(!filterRating)}
-            className={cn(
-              "flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border shadow-xs select-none",
-              filterRating
-                ? "bg-emerald-700 text-white border-emerald-700"
-                : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
-            )}
-          >
-            <Star className={cn("size-3.5", filterRating ? "fill-white text-white" : "text-amber-500 fill-amber-500")} />
-            <span>Rating 4.0+</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setFilterOffers(!filterOffers)}
-            className={cn(
-              "flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border shadow-xs select-none",
-              filterOffers
-                ? "bg-blue-600 text-white border-blue-600"
-                : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
-            )}
-          >
-            <Percent className={cn("size-3.5", filterOffers ? "text-white" : "text-blue-600")} />
-            <span>Great Offers</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setFilterBudget(!filterBudget)}
-            className={cn(
-              "flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border shadow-xs select-none",
-              filterBudget
-                ? "bg-gray-900 text-white border-gray-900"
-                : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
-            )}
-          >
-            <Coins className={cn("size-3.5", filterBudget ? "text-white" : "text-gray-600")} />
-            <span>Under ₹200</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 2. ZOMATO HORIZONTAL CIRCULAR FOOD CATEGORIES ("Eat what makes you happy") */}
-      {!q && list.data?.deliveryAvailable && (
+    <div className="space-y-5 px-3 py-3 sm:px-4 sm:py-4 bg-[#FCFAF7] text-gray-900">
+      {/* 1. ULTRA-LUXURY HORIZONTAL CIRCULAR FOOD CATEGORIES (Distinct Gradient Border & Emoji Labels) */}
+      {!q && (
         <section aria-label="Food Categories" className="pt-1">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2.5">
             <div>
-              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight">
-                Explore dishes and cuisines
+              <h2 className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
+                Inspiration for your order
               </h2>
-              <p className="text-xs text-gray-500 font-medium">Choose a category to find food you like</p>
+              <p className="text-xs text-gray-500 font-medium">Explore top dishes &amp; restaurants</p>
             </div>
             <Link
               to="/search"
-              className="text-xs font-bold text-[#E23744] hover:underline flex items-center gap-0.5"
+              className="text-xs font-black text-[#E23744] hover:underline flex items-center gap-0.5"
             >
               See all <ChevronRight className="size-3.5" />
             </Link>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none pt-1">
+          <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 scrollbar-none pt-1">
             {displayCategories.map((c) => {
               const isSelected = selectedCategory === c.id || selectedCategory === c.slug;
               return (
@@ -480,30 +271,41 @@ export function HomeFeed({
                   type="button"
                   key={c.slug}
                   onClick={() => setSelectedCategory(isSelected ? null : c.id || c.slug)}
-                  className="group flex flex-col items-center shrink-0 w-18 sm:w-20 text-center select-none focus:outline-none"
+                  className="group flex flex-col items-center shrink-0 w-16 sm:w-20 text-center select-none focus:outline-none transition-transform active:scale-95"
                 >
+                  {/* Distinct gradient colored ring around image */}
                   <div
                     className={cn(
-                      "size-18 sm:size-20 rounded-full overflow-hidden border-2 p-0.5 transition-all duration-300 shadow-sm",
+                      "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr transition-all duration-300 shadow-sm relative",
+                      c.gradient,
                       isSelected
-                        ? "border-[#E23744] ring-2 ring-[#E23744]/20 scale-105"
-                        : "border-gray-200 group-hover:border-gray-300 group-hover:scale-105"
+                        ? "scale-105 ring-3 ring-amber-400 shadow-[0_4px_16px_rgba(245,158,11,0.35)]"
+                        : "group-hover:scale-105 group-hover:shadow-md"
                     )}
                   >
-                    <img
-                      src={c.imageUrl}
-                      alt={c.name}
-                      className="size-full object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
+                    <div className="size-full rounded-full p-0.5 bg-white overflow-hidden shadow-inner">
+                      <img
+                        src={c.imageUrl}
+                        alt={c.name}
+                        className="size-full object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    </div>
                   </div>
+
+                  {/* Category Name */}
                   <span
                     className={cn(
-                      "mt-1.5 text-xs font-bold truncate w-full transition-colors",
-                      isSelected ? "text-[#E23744]" : "text-gray-800 group-hover:text-black"
+                      "mt-1.5 text-xs font-black truncate w-full transition-colors leading-tight",
+                      isSelected ? "text-[#E23744]" : "text-gray-900 group-hover:text-black"
                     )}
                   >
                     {c.name}
+                  </span>
+
+                  {/* Emoji Label below name */}
+                  <span className="text-[11px] leading-none mt-0.5 transition-transform group-hover:scale-125" aria-hidden>
+                    {c.emoji}
                   </span>
                 </button>
               );
@@ -511,6 +313,76 @@ export function HomeFeed({
           </div>
         </section>
       )}
+
+      {/* 2. SECONDARY QUICK FILTER PILLS (Distinct Color Background when active) & RESULT COUNT */}
+      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Fast Delivery: Amber / Orange */}
+          <button
+            type="button"
+            onClick={() => setFilterFast(!filterFast)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              filterFast
+                ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border-amber-500 shadow-[0_2px_10px_rgba(245,158,11,0.3)] ring-1 ring-amber-400"
+                : "bg-white hover:bg-amber-50/60 text-gray-700 border-gray-200 hover:border-amber-300"
+            )}
+          >
+            <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-amber-500")} />
+            <span>Fast Delivery</span>
+          </button>
+
+          {/* Rating 4.0+: Emerald / Teal */}
+          <button
+            type="button"
+            onClick={() => setFilterRating(!filterRating)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              filterRating
+                ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
+                : "bg-white hover:bg-emerald-50/60 text-gray-700 border-gray-200 hover:border-emerald-300"
+            )}
+          >
+            <Star className={cn("size-3.5", filterRating ? "fill-white text-white" : "text-emerald-600 fill-emerald-600/30")} />
+            <span>Rating 4.0+</span>
+          </button>
+
+          {/* Great Offers: Rose / Crimson */}
+          <button
+            type="button"
+            onClick={() => setFilterOffers(!filterOffers)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              filterOffers
+                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white border-rose-600 shadow-[0_2px_10px_rgba(225,29,72,0.3)] ring-1 ring-rose-500"
+                : "bg-white hover:bg-rose-50/60 text-gray-700 border-gray-200 hover:border-rose-300"
+            )}
+          >
+            <Percent className={cn("size-3.5", filterOffers ? "text-white" : "text-rose-600")} />
+            <span>Great Offers</span>
+          </button>
+
+          {/* Under ₹200: Indigo / Purple */}
+          <button
+            type="button"
+            onClick={() => setFilterBudget(!filterBudget)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              filterBudget
+                ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 text-white border-indigo-600 shadow-[0_2px_10px_rgba(79,70,229,0.3)] ring-1 ring-indigo-400"
+                : "bg-white hover:bg-purple-50/60 text-gray-700 border-gray-200 hover:border-purple-300"
+            )}
+          >
+            <Coins className={cn("size-3.5", filterBudget ? "text-white" : "text-indigo-600")} />
+            <span>Under ₹200</span>
+          </button>
+        </div>
+
+        {/* Place Count */}
+        <span className="text-[11px] font-black text-amber-950 bg-amber-100/70 border border-amber-200/60 px-2.5 py-1 rounded-full shrink-0 shadow-2xs">
+          {filteredRestaurants.length} places
+        </span>
+      </div>
 
       {/* 3. ACTIVE ORDER BANNER (Real Data Only) */}
       {activeOrder && !q && (
@@ -544,13 +416,11 @@ export function HomeFeed({
       <section aria-label="Restaurants Grid" className="pt-2">
         <div className="flex items-center justify-between mb-3.5">
           <div>
-            <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">
+            <h2 className="text-lg sm:text-xl font-extrabold text-gray-950 tracking-tight">
               {selectedCategory
                 ? "Explore this category"
                 : dietFilter === "veg"
-                ? "Vegetarian restaurants"
-                : dietFilter === "non-veg"
-                ? "Non-vegetarian restaurants"
+                ? "Pure vegetarian restaurants"
                 : `Restaurants in ${location.cityName || "Your Area"}`}
             </h2>
             <p className="text-xs text-gray-500 font-medium">
@@ -560,18 +430,27 @@ export function HomeFeed({
         </div>
 
         {list.isPending ? (
-          /* High-Contrast Light Mode Skeletons */
+          /* Warm Ivory/Amber Gradient Shimmer Skeletons */
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2" aria-busy="true" aria-label="Loading restaurants">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="overflow-hidden rounded-2xl sm:rounded-3xl border border-gray-200 bg-white shadow-sm flex flex-col"
+                className="overflow-hidden rounded-2xl sm:rounded-3xl border border-amber-900/10 bg-white shadow-sm flex flex-col relative"
               >
-                <div className="aspect-[16/10] sm:aspect-[16/9] w-full bg-gray-200 animate-pulse" />
-                <div className="p-4 space-y-2.5">
-                  <div className="h-5 w-2/3 bg-gray-200 rounded-md animate-pulse" />
-                  <div className="h-4 w-1/3 bg-gray-100 rounded-md animate-pulse" />
-                  <div className="h-3 w-1/2 bg-gray-100 rounded-md animate-pulse pt-2" />
+                <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-gradient-to-r from-amber-100/70 via-amber-50 to-amber-100/70 animate-pulse">
+                  <div className="absolute top-3 left-3 h-5 w-24 rounded-full bg-amber-200/60" />
+                  <div className="absolute bottom-3 right-3 h-6 w-16 rounded-xl bg-amber-200/70" />
+                </div>
+                <div className="p-4 space-y-3 bg-gradient-to-b from-white to-amber-50/30">
+                  <div className="flex items-center justify-between">
+                    <div className="h-5 w-3/5 rounded-lg bg-gradient-to-r from-amber-200/80 to-amber-100 animate-pulse" />
+                    <div className="h-5 w-12 rounded-md bg-amber-200/60 animate-pulse" />
+                  </div>
+                  <div className="h-3.5 w-2/5 rounded-md bg-amber-100/80 animate-pulse" />
+                  <div className="pt-2 flex items-center justify-between border-t border-amber-900/5">
+                    <div className="h-3 w-28 rounded-md bg-amber-100/70 animate-pulse" />
+                    <div className="h-4 w-16 rounded-full bg-amber-200/50 animate-pulse" />
+                  </div>
                 </div>
               </div>
             ))}
@@ -583,37 +462,88 @@ export function HomeFeed({
               type="button"
               variant="outline"
               size="sm"
-              className="mt-3 bg-white text-gray-900"
+              className="mt-3 bg-white text-gray-900 border-red-200 hover:bg-red-100"
               onClick={() => void list.refetch()}
             >
               Try Again
             </Button>
           </div>
         ) : filteredRestaurants.length === 0 ? (
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 sm:p-8 text-center space-y-4">
-            <div className="flex size-14 items-center justify-center rounded-full bg-white shadow-sm text-2xl mx-auto">
-              🍽️
+          <div className="rounded-3xl border border-amber-200/80 bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-white p-6 sm:p-8 text-center space-y-5 shadow-[0_4px_24px_rgba(245,158,11,0.06)]">
+            <div className="relative mx-auto flex size-20 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 shadow-[0_6px_20px_rgba(245,158,11,0.3)]">
+              <div className="flex size-[72px] items-center justify-center rounded-[14px] bg-slate-950 text-amber-300">
+                <Utensils className="size-8 text-amber-300 animate-pulse" />
+              </div>
             </div>
-            <div className="space-y-1">
-              <h3 className="font-extrabold text-base text-gray-900">
+
+            <div className="space-y-1.5">
+              <h3 className="font-black text-lg sm:text-xl text-gray-950 tracking-tight">
                 {(list.data?.restaurants?.length ?? 0) === 0
-                  ? `No live partner kitchens in ${location.cityName || "this zone"} yet`
-                  : "No restaurants match your active filters"}
+                  ? location.cityName && location.cityName !== "Locating..."
+                    ? `Restaurants in ${location.cityName} are preparing for upcoming service`
+                    : "Select your delivery location to explore menus"
+                  : "No restaurants match your active filter"}
               </h3>
-              <p className="text-xs text-gray-500 max-w-md mx-auto">
+              <p className="text-xs sm:text-sm text-gray-600 max-w-md mx-auto leading-relaxed">
                 {(list.data?.restaurants?.length ?? 0) === 0
-                  ? "We only show verified kitchens that can actually fulfill your order. Switch to an active delivery zone or explore nationwide OrderKing services below."
-                  : "Try switching back to 'All' or clearing your filter selection to view available kitchens."}
+                  ? "Switch to a popular food zone below to browse verified restaurant menus and order immediately."
+                  : "Try resetting filters to explore all available dining destinations in your area."}
               </p>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-2">
+
+            {/* Quick 1-Tap Active Culinary Hub City Chips */}
+            <div className="space-y-2.5 pt-2">
+              <span className="text-[11px] font-black uppercase tracking-wider text-amber-800/80 bg-amber-100/60 px-3 py-1 rounded-full border border-amber-200/60">
+                📍 Popular Culinary Hubs
+              </span>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                {[
+                  { city: "Kolkata", area: "Park Street", tag: "Biryani & Kathi Rolls", lat: 22.55, lng: 88.35, cityId: "kolkata", zoneId: "kol-park" },
+                  { city: "Bengaluru", area: "Koramangala", tag: "Craft Burgers & Cafes", lat: 12.93, lng: 77.62, cityId: "blr", zoneId: "blr-kor" },
+                  { city: "New Delhi", area: "Connaught Place", tag: "Mughlai & Chaat", lat: 28.63, lng: 77.22, cityId: "del", zoneId: "del-cp" },
+                  { city: "Mumbai", area: "Bandra West", tag: "Coastal & Street Food", lat: 19.06, lng: 72.83, cityId: "mum", zoneId: "mum-bandra" },
+                  { city: "Silchar", area: "Central Silchar", tag: "Bengali & Thalis", lat: 24.83, lng: 92.77, cityId: "silchar", zoneId: "sil-central" },
+                ].map((hub) => (
+                  <button
+                    key={hub.city}
+                    type="button"
+                    onClick={() => {
+                      useLocationStore.getState().setLocation({
+                        cityId: hub.cityId,
+                        cityName: hub.city,
+                        zoneId: hub.zoneId,
+                        zoneName: hub.area,
+                        label: `${hub.area}, ${hub.city}`,
+                        line1: hub.area,
+                        lat: hub.lat,
+                        lng: hub.lng,
+                      });
+                      toast.success(`Location set to ${hub.area}, ${hub.city}`);
+                    }}
+                    className="group flex flex-col items-start px-3.5 py-2 rounded-2xl border border-amber-200/80 bg-white hover:border-amber-500 hover:bg-amber-50/60 transition-all shadow-2xs hover:shadow-xs active:scale-95 text-left"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="size-3 text-[#E23744] shrink-0" />
+                      <span className="text-xs font-black text-gray-900 group-hover:text-[#E23744]">
+                        {hub.city}
+                      </span>
+                      <span className="text-[10px] text-gray-500 font-medium">({hub.area})</span>
+                    </div>
+                    <span className="text-[10px] text-amber-800 font-semibold mt-0.5">
+                      {hub.tag}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-2.5 pt-3 border-t border-amber-900/10">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="bg-white border-gray-300 font-bold"
+                className="bg-white border-amber-300 font-black text-xs hover:bg-amber-50 text-gray-900 shadow-2xs"
                 onClick={() => {
-                  setDietFilter("all");
                   setFilterFast(false);
                   setFilterRating(false);
                   setFilterOffers(false);
@@ -624,22 +554,16 @@ export function HomeFeed({
                 Reset Filters
               </Button>
               <Link
-                to="/tutor"
-                className="inline-flex items-center gap-1 rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-900 no-underline hover:bg-blue-100"
-              >
-                🎓 Tutor &amp; Jobs
-              </Link>
-              <Link
                 to="/travel"
-                className="inline-flex items-center gap-1 rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-900 no-underline hover:bg-amber-100"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50/80 px-3.5 py-2 text-xs font-black text-blue-950 no-underline hover:bg-blue-100 transition shadow-2xs"
               >
-                ✈️ Travel &amp; Stays
+                ✈️ Travel 0% Fee
               </Link>
               <Link
-                to="/king-pay"
-                className="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-900 no-underline hover:bg-emerald-100"
+                to="/earn"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-amber-300 bg-gradient-to-r from-amber-100/80 to-yellow-100/80 px-3.5 py-2 text-xs font-black text-amber-950 no-underline hover:bg-amber-200 transition shadow-2xs"
               >
-                👑 King Pay
+                👑 24K Gold Crown Rewards
               </Link>
             </div>
           </div>

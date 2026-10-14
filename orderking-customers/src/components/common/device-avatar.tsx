@@ -37,7 +37,7 @@ export function DeviceAvatar({ userId, name, editor = false }: {
   return (
     <div className={editor?"flex flex-wrap items-center gap-4":"inline-flex items-center"}>
       <div className={editor?"flex size-20 items-center justify-center overflow-hidden rounded-3xl border-2 border-amber-400 bg-emerald-950 shadow-lg":"flex size-8 items-center justify-center overflow-hidden rounded-full border border-amber-400 bg-emerald-950 shadow-sm"}>
-        {image?<img src={image} alt="Your selected avatar" className="size-full object-cover" />: name?
+        {image?<img src={image} alt="Your selected avatar" className="size-full object-cover" loading="lazy" decoding="async" />: name?
           <span className="font-extrabold text-amber-300">{name.charAt(0).toUpperCase()}</span>:
           <UserRound className="size-4 text-amber-300" aria-hidden />}
       </div>

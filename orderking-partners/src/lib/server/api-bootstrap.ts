@@ -153,6 +153,7 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
     openingTime?: string;
     closingTime?: string;
     businessStructure?: string;
+    commissionBps?: number;
   }) => d)
   .handler(async ({ context, data }) => {
     const { withVendor } = await import("./helpers");
@@ -240,6 +241,17 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         if (data.bankName !== undefined) {
           await sql`update restaurants set bank_name = ${String(data.bankName)}, updated_at = now() where id = ${ctx.restaurantId}`;
         }
+      }
+      if (data.commissionBps !== undefined) {
+        if (ctx.role !== "OWNER" && ctx.role !== "MANAGER" && ctx.role !== "MULTI_OUTLET_MANAGER") {
+          const { assertCan } = await import("@/lib/rbac");
+          assertCan(ctx.role, "settings.financial");
+        }
+        const bps = Math.round(Number(data.commissionBps));
+        if (bps < 0 || bps > 10000) {
+          throw new Error("Commission rate must be between 0% and 100%");
+        }
+        await sql`update restaurants set commission_bps = ${bps}, updated_at = now() where id = ${ctx.restaurantId}`;
       }
       if (data.openingTime && data.closingTime) {
         const { hmToMinutes } = await import("@/lib/hours");

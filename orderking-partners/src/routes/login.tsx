@@ -7,7 +7,20 @@ import { Input, Label } from "@/components/ui/input";
 import { OrderKingMark } from "@/components/mark";
 import { useT } from "@/components/use-t";
 import { platformConfig } from "@/lib/platform-config";
-import { ShieldCheck, ArrowRight, Phone, Mail, Building2, Globe } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  ShieldCheck,
+  ArrowRight,
+  Phone,
+  Mail,
+  Building2,
+  Globe,
+  LogIn,
+  UserPlus,
+  Lock,
+  Sparkles,
+  CheckCircle2,
+} from "lucide-react";
 
 export const Route = createFileRoute("/login")({ component: Login });
 
@@ -42,6 +55,7 @@ function Login() {
     }
     return "in";
   });
+
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -49,6 +63,15 @@ function Login() {
   const [working, setWorking] = useState(false);
 
   if (user) return <Navigate to="/dashboard" />;
+
+  function handleSwitchMode(targetMode: "in" | "up") {
+    setError(null);
+    setMode(targetMode);
+    if (typeof window !== "undefined") {
+      const url = targetMode === "up" ? "/login?mode=up" : "/login";
+      window.history.replaceState(null, "", url);
+    }
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -90,112 +113,150 @@ function Login() {
   }
 
   return (
-    <main className="min-h-dvh bg-slate-950 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 px-4 py-10 text-slate-100">
+    <main className="min-h-dvh bg-slate-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 px-4 py-8 sm:py-12 text-slate-100 flex flex-col justify-center">
       <div className="mx-auto w-full max-w-md space-y-6">
-        <Link to="/" className="flex items-center gap-3 text-white">
-          <OrderKingMark className="size-10 text-chili" />
+        {/* Brand Header */}
+        <Link to="/" className="flex items-center justify-center gap-3 text-white group">
+          <OrderKingMark className="size-10 text-chili transition-transform duration-200 group-hover:scale-105" />
           <div>
-            <div className="font-display text-2xl font-bold tracking-tight">{platformConfig.brand.appName}</div>
+            <div className="font-display text-2xl font-bold tracking-tight flex items-center gap-2">
+              <span>{platformConfig.brand.appName}</span>
+              <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
+                PORTAL
+              </span>
+            </div>
             <div className="text-xs text-slate-400">
-              Restaurant Partner Operations, KDS &amp; Statutory Settlement Portal
+              Kitchen Operations, KDS &amp; Direct Bank Settlement
             </div>
           </div>
         </Link>
 
-        {/* Institutional Trust & Compliance Summary */}
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 shadow-sm">
-          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
-            <ShieldCheck className="size-4 shrink-0" />
-            <span>Direct Partner Onboarding • FSSAI &amp; GST Compliant</span>
+        {/* Value Proposition Strip */}
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-3.5 py-2.5 shadow-sm text-center">
+          <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-300">
+            <Sparkles className="size-3.5 text-emerald-400 shrink-0" />
+            <span>0% Dine-In Fees • 28% Delivery Take-Rate • 24h Express Live</span>
           </div>
-          <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
-            Manage live KDS orders, menu availability, preparation SLAs, and automated bank settlements with full CGST
-            Sec 9(5), TCS Sec 52, and Income Tax Sec 194-O ledger transparency.
-          </p>
         </div>
 
-        <div className="rounded-[24px] border border-slate-800 bg-slate-900/80 p-6 shadow-2xl backdrop-blur-sm">
-          <div className="flex items-center justify-between pb-2">
-            <h1 className="font-display text-2xl font-bold text-white">
-              {mode === "in" ? "Partner Sign In" : "Restaurant Partner Registration"}
-            </h1>
-            <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-400">
-              23 LANGUAGES
-            </span>
+        {/* Main Card with Seamless Tab Switcher */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 sm:p-7 shadow-2xl backdrop-blur-md">
+          {/* Segmented Tab Switcher */}
+          <div className="grid grid-cols-2 rounded-xl bg-slate-950/90 p-1 border border-slate-800 mb-6">
+            <button
+              type="button"
+              onClick={() => handleSwitchMode("in")}
+              className={cn(
+                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold transition-all duration-150",
+                mode === "in"
+                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-950/50"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/50",
+              )}
+            >
+              <LogIn className="size-3.5" />
+              <span>Partner Sign In</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSwitchMode("up")}
+              className={cn(
+                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold transition-all duration-150",
+                mode === "up"
+                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-950/50"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/50",
+              )}
+            >
+              <UserPlus className="size-3.5" />
+              <span>Register Restaurant</span>
+            </button>
           </div>
-          <p className="text-xs text-slate-400">
-            {mode === "in"
-              ? "Sign in with your 10-digit registered mobile number or restaurant email address."
-              : "Create your partner account to complete FSSAI, GSTIN, and bank payout verification."}
-          </p>
 
-          <form className="mt-5 space-y-3.5" onSubmit={onSubmit}>
+          <div className="pb-4">
+            <h1 className="font-display text-xl sm:text-2xl font-bold text-white">
+              {mode === "in" ? "Welcome Back, Partner" : "Register Your Kitchen"}
+            </h1>
+            <p className="mt-1 text-xs text-slate-400">
+              {mode === "in"
+                ? "Enter your 10-digit mobile number or business email to manage orders & payouts."
+                : "Join the Order King network. Fast-track KYC, FoSCoS registration, and 24-hour go-live."}
+            </p>
+          </div>
+
+          <form className="space-y-4" onSubmit={onSubmit}>
             {mode === "up" ? (
               <div>
                 <Label htmlFor="name" className="text-xs text-slate-300">
                   Authorized Signatory / Owner Name
                 </Label>
-                <Input
-                  id="name"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                  placeholder="e.g. Rajeshwari Iyer"
-                  className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600"
-                />
+                <div className="relative mt-1">
+                  <Input
+                    id="name"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    autoComplete="name"
+                    placeholder="e.g. Rajeshwari Iyer"
+                    className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 h-11"
+                  />
+                </div>
               </div>
             ) : null}
 
             <div>
               <Label htmlFor="identifier" className="flex items-center justify-between text-xs text-slate-300">
-                <span>10-Digit Mobile Number or Business Email</span>
+                <span>10-Digit Mobile or Business Email</span>
                 <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
                   <Phone className="size-3" /> / <Mail className="size-3" />
                 </span>
               </Label>
-              <Input
-                id="identifier"
-                type="text"
-                required
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                autoComplete="username"
-                placeholder="9876543210 or partner@restaurant.in"
-                className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600"
-              />
+              <div className="relative mt-1">
+                <Input
+                  id="identifier"
+                  type="text"
+                  required
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  autoComplete="username"
+                  placeholder="9876543210 or partner@restaurant.in"
+                  className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 h-11"
+                />
+              </div>
               <p className="mt-1 text-[11px] text-slate-500">
-                Enter your 10-digit Indian mobile number (no @ needed) or your registered email ID.
+                Indian 10-digit mobile number (starts with 6–9) or registered business email.
               </p>
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-xs text-slate-300">
-                {t("auth.password")}
+              <Label htmlFor="password" className="flex items-center justify-between text-xs text-slate-300">
+                <span>{t("auth.password")}</span>
+                <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                  <Lock className="size-3" /> Minimum 8 characters
+                </span>
               </Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete={mode === "up" ? "new-password" : "current-password"}
-                placeholder="••••••••"
-                className="border-slate-800 bg-slate-950 text-slate-100"
-              />
-              <p className="mt-1 text-[11px] text-slate-500">{t("auth.passwordHint")}</p>
+              <div className="relative mt-1">
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete={mode === "up" ? "new-password" : "current-password"}
+                  placeholder="••••••••"
+                  className="border-slate-800 bg-slate-950 text-slate-100 focus:border-emerald-500 h-11"
+                />
+              </div>
             </div>
 
             {error ? (
-              <div className="rounded-lg border border-rose-500/30 bg-rose-950/30 px-3 py-2 text-xs text-rose-300">
+              <div className="rounded-lg border border-rose-500/30 bg-rose-950/40 px-3.5 py-2.5 text-xs text-rose-300">
                 {error}
               </div>
             ) : null}
 
             <Button
               type="submit"
-              className="h-11 w-full bg-emerald-600 font-medium text-white shadow-md shadow-emerald-950 hover:bg-emerald-500"
+              className="h-12 w-full bg-emerald-600 font-semibold text-white shadow-lg shadow-emerald-950 hover:bg-emerald-500 text-sm rounded-xl transition-all"
               size="lg"
               disabled={working}
             >
@@ -207,41 +268,49 @@ function Login() {
             </Button>
           </form>
 
-          <button
-            type="button"
-            className="mt-4 inline-flex items-center gap-1 text-xs text-emerald-400 hover:underline"
-            onClick={() => {
-              setError(null);
-              setMode(mode === "in" ? "up" : "in");
-            }}
-          >
-            {mode === "in"
-              ? "New restaurant partner? Register for onboarding"
-              : "Already have a partner account? Sign in here"}
-            <ArrowRight className="size-3" />
-          </button>
+          {/* Bottom Switch Link */}
+          <div className="mt-5 pt-4 border-t border-slate-800/80 text-center">
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition-colors"
+              onClick={() => handleSwitchMode(mode === "in" ? "up" : "in")}
+            >
+              <span>
+                {mode === "in"
+                  ? "New restaurant partner? Register for onboarding"
+                  : "Already have a partner account? Sign in here"}
+              </span>
+              <ArrowRight className="size-3 text-emerald-400" />
+            </button>
+          </div>
         </div>
 
-        {/* Institutional Partner Highlights */}
-        <div className="grid grid-cols-2 gap-2.5 text-xs text-slate-400">
+        {/* Key Partner Highlights */}
+        <div className="grid grid-cols-2 gap-3 text-xs text-slate-400">
           <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-3">
             <div className="flex items-center gap-1.5 font-medium text-slate-200">
-              <Building2 className="size-3.5 text-emerald-400" />
-              <span>Self-Service Control</span>
+              <CheckCircle2 className="size-3.5 text-emerald-400" />
+              <span>Instant T+1 Settlements</span>
             </div>
-            <p className="mt-1 text-[11px] text-slate-400">
-              Manage menu stock, rush prep SLAs, tax invoices, and bank accounts directly.
+            <p className="mt-1 text-[11px] text-slate-400 leading-snug">
+              Penny-drop verified bank transfers directly to your current account.
             </p>
           </div>
           <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-3">
             <div className="flex items-center gap-1.5 font-medium text-slate-200">
               <Globe className="size-3.5 text-emerald-400" />
-              <span>All 22 Indian Languages</span>
+              <span>23 Indian Languages</span>
             </div>
-            <p className="mt-1 text-[11px] text-slate-400">
-              Native script UI &amp; voice KDS alerts across all 22 Eighth Schedule languages + English.
+            <p className="mt-1 text-[11px] text-slate-400 leading-snug">
+              Full vernacular portal &amp; KingPay Soundbox audio order alerts.
             </p>
           </div>
+        </div>
+
+        {/* Security & Statutory Footnote */}
+        <div className="text-center text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
+          <ShieldCheck className="size-3.5 text-emerald-400" />
+          <span>FSSAI FoSCoS Compliant • CGST §9(5) Certified • Bank-Grade Security</span>
         </div>
       </div>
     </main>

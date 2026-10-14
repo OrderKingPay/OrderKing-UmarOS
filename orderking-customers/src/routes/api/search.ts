@@ -5,6 +5,7 @@ import { distanceKm, travelMinutes } from "@/lib/geo";
 import { isOpenNow, type HourWindow } from "@/lib/hours";
 import { getMarketContext } from "@/lib/server/dynamic-sort";
 import type { RestaurantCard } from "@/lib/market-types";
+import { searchLimiter } from "@/lib/security/rate-limiter";
 
 // Helper functions (same logic as catalog.ts)
 function num(v: string | number | null | undefined): number | null {
@@ -44,6 +45,21 @@ export const Route = createFileRoute("/api/search")({
   server: {
     handlers: {
       GET: async ({ request }) => {
+        const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+        const rateCheck = searchLimiter.isAllowed(clientIp);
+        if (!rateCheck.allowed) {
+          return new Response(
+            JSON.stringify({ error: "Too many search requests. Please slow down." }),
+            {
+              status: 429,
+              headers: {
+                "content-type": "application/json",
+                "Retry-After": String(Math.ceil(rateCheck.resetMs / 1000)),
+              },
+            }
+          );
+        }
+
         const url = new URL(request.url);
         const rawQ = url.searchParams.get("q") || "";
         const q = rawQ.trim().slice(0, 80);

@@ -74,6 +74,68 @@ export function percentOf(amount: Paise, percent: number): Paise {
   return mulBps(amount, percent * 100);
 }
 
+/**
+ * Standard delivery commission tiers & negotiated take-rates.
+ * Standard delivery is 28% (2800 bps) to properly fund delivery partner logistics.
+ * Dine-in commission remains 0% (sovereign ordering).
+ * Enterprise/growth tiers allow negotiated commission between 18% and 35%.
+ */
+export const DELIVERY_COMMISSION_TIERS = {
+  DINE_IN: 0,
+  ENTERPRISE: 1800,
+  GROWTH: 2200,
+  STANDARD: 2500,
+  FULL_SERVICE: 2800,
+} as const;
+
+export type DeliveryCommissionTierKey = keyof typeof DELIVERY_COMMISSION_TIERS;
+
+export interface DeliveryCommissionTierMeta {
+  key: DeliveryCommissionTierKey;
+  bps: number;
+  percentage: number;
+  label: string;
+  description: string;
+}
+
+export const DELIVERY_COMMISSION_TIER_LIST: readonly DeliveryCommissionTierMeta[] = [
+  {
+    key: "DINE_IN",
+    bps: DELIVERY_COMMISSION_TIERS.DINE_IN,
+    percentage: 0,
+    label: "0% Dine-In Sovereign",
+    description: "0% commission for dine-in & customer pickup (self-fulfillment)",
+  },
+  {
+    key: "ENTERPRISE",
+    bps: DELIVERY_COMMISSION_TIERS.ENTERPRISE,
+    percentage: 18,
+    label: "18% Enterprise Tier",
+    description: "18% negotiated high-volume brand commission",
+  },
+  {
+    key: "GROWTH",
+    bps: DELIVERY_COMMISSION_TIERS.GROWTH,
+    percentage: 22,
+    label: "22% Growth Partner",
+    description: "22% multi-outlet growth partner commission",
+  },
+  {
+    key: "STANDARD",
+    bps: DELIVERY_COMMISSION_TIERS.STANDARD,
+    percentage: 25,
+    label: "25% Standard Delivery",
+    description: "25% standard marketplace delivery commission",
+  },
+  {
+    key: "FULL_SERVICE",
+    bps: DELIVERY_COMMISSION_TIERS.FULL_SERVICE,
+    percentage: 28,
+    label: "28% Full Service (Default)",
+    description: "28% standard industry full-service delivery with dedicated rider fleet",
+  },
+] as const;
+
 export const STATUTORY_TAX_RATES = {
   /** 18% GST on Platform Commission (SAC 9985 / Section 9(1) CGST Act 2017) */
   COMMISSION_GST_BPS: 1800,
@@ -267,6 +329,15 @@ export function computeRestaurantPayable(input: ComputeRestaurantPayableInput): 
   const taxableBase = netTaxableSupply < 0 ? 0 : netTaxableSupply;
 
   // 3. Platform Commission (- debit)
+  if (input.commissionBps !== undefined) {
+    if (!Number.isInteger(input.commissionBps)) {
+      throw new MoneyError("commissionBps must be an integer");
+    }
+    if (input.commissionBps < 0) {
+      throw new MoneyError("commissionBps cannot be negative");
+    }
+  }
+
   const commission = input.commissionPaise !== undefined
     ? assertPaise(input.commissionPaise, "commissionPaise")
     : mulBps(taxableBase, input.commissionBps ?? 0);

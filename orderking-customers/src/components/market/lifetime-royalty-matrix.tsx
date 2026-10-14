@@ -695,6 +695,8 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareUrl)}`}
                 alt="Referral QR Code"
+                loading="lazy"
+                decoding="async"
                 className="size-48 mx-auto"
               />
             </div>

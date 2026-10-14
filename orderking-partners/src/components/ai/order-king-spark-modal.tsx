@@ -189,7 +189,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     {
       id: "init",
       sender: "spark",
-      text: "OrderKing Spark Autonomous UMAR OS Advisory is ready across all 22 Indian Constitutional Languages + English. Inspect your 5-point live storefront status, Meituan/DoorDash 5-daypart & AOV growth recommendations, restore out-of-stock dishes, switch between Standard (20m) and Peak Rush (35m) prep times, or review your integer-paise settlement math. All recommendations are advisory only—no changes are applied without your explicit confirmation.",
+      text: "OrderKing Spark Autonomous King AI Advisory is ready across all 22 Indian Constitutional Languages + English. Inspect your 5-point live storefront status, Meituan/DoorDash 5-daypart & AOV growth recommendations, restore out-of-stock dishes, switch between Standard (20m) and Peak Rush (35m) prep times, or review your integer-paise settlement math. All recommendations are advisory only—no changes are applied without your explicit confirmation.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       provenanceNote:
         "Derived from your restaurant's current menu catalog, configured prep times, live dashboard state, analytics, and settlement ledger.",
@@ -351,7 +351,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     }
 
     return [
-      `[${activeLang.nativeName} · ${activeLang.name}] Verified UMAR OS Catalog & Growth Diagnostic (${totalCategories} Categories · ${totalItems} Dishes · Conversion Score: ${storefrontConversionScore}%):`,
+      `[${activeLang.nativeName} · ${activeLang.name}] Verified King AI Catalog & Growth Diagnostic (${totalCategories} Categories · ${totalItems} Dishes · Conversion Score: ${storefrontConversionScore}%):`,
       `• Storefront Status: ${dashQuery.data?.isOpen ? "OPEN" : "PAUSED"} · KYC: ${dashQuery.data?.verificationStatus ?? "PENDING"} · Pending Orders: ${dashQuery.data?.today.pending ?? 0}`,
       `• In-Stock Dishes: ${inStock.length} of ${totalItems} · Sold-Out: ${outOfStock.length} (Est. Daily Leakage: ${formatINR(estimatedDailyLeakagePaise)})`,
       `• AOV Growth Playbook: Current AOV ${formatINR(liveAovPaise)} → Recommended ₹${recommendedThresholdRupees} Min-Order Offer (+25% AOV lift)`,
@@ -560,7 +560,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                   Order King Spark
                 </span>
                 <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                  UMAR OS · 22 INDIAN LANGUAGES + ENGLISH
+                  KING AI · 22 INDIAN LANGUAGES + ENGLISH
                 </span>
               </div>
               <span className="mt-0.5 block text-[11px] text-zinc-400">
@@ -738,7 +738,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           <div className="border-b border-zinc-800 bg-zinc-900/50 px-4 py-3 space-y-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400">
-                UMAR OS Self-Service Diagnostics &amp; Growth Playbook ({catalogRecommendations.totalItems} Dishes · Conversion Score: {catalogRecommendations.storefrontConversionScore}%)
+                King AI Self-Service Diagnostics &amp; Growth Playbook ({catalogRecommendations.totalItems} Dishes · Conversion Score: {catalogRecommendations.storefrontConversionScore}%)
               </span>
               <span className="rounded-md border border-zinc-700 bg-zinc-800/80 px-2 py-0.5 text-[10px] font-mono text-zinc-300">
                 5-Daypart 7d Orders: {catalogRecommendations.dayparts.map((d) => `${d.label}: ${d.orders}`).join(" · ")}

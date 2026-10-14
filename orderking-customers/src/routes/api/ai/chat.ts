@@ -2,6 +2,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSessionUser } from "@/lib/auth/verify.server";
 import { executeFounderAiChat, type AiChatRequest, type StreamEvent } from "@/lib/server/ai-chat-service.server";
+import { aiChatLimiter } from "@/lib/security/rate-limiter";
 
 export const Route = createFileRoute("/api/ai/chat")({
   
@@ -14,6 +15,20 @@ export const Route = createFileRoute("/api/ai/chat")({
             return new Response(
               JSON.stringify({ error: "Unauthorized" }),
               { status: 401, headers: { "content-type": "application/json" } }
+            );
+          }
+
+          const rateCheck = aiChatLimiter.isAllowed(sessionUser.id);
+          if (!rateCheck.allowed) {
+            return new Response(
+              JSON.stringify({ error: "AI assistant rate limit reached. Please wait a moment." }),
+              {
+                status: 429,
+                headers: {
+                  "content-type": "application/json",
+                  "Retry-After": String(Math.ceil(rateCheck.resetMs / 1000)),
+                },
+              }
             );
           }
 

@@ -24,7 +24,7 @@ export function PartnerFloatingBottomNav({
   const isHome = pathname.startsWith("/dashboard");
   const isOrders = pathname.startsWith("/orders");
   const isKitchen = pathname.startsWith("/kitchen");
-  const isMore = pathname === "/more" || ["/settlements", "/menu", "/analytics", "/settings", "/reviews"].some((p) => pathname.startsWith(p));
+  const isMore = pathname === "/more" || ["/settlements", "/menu", "/analytics", "/settings", "/reviews", "/dining"].some((p) => pathname.startsWith(p));
 
   return (
     <nav

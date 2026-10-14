@@ -7,6 +7,7 @@ import { TravelCategoryDeck } from "@/components/fintech/travel-category-deck";
 import {
   Plane,
   Train,
+  Bus,
   Building2,
   Car,
   CreditCard,
@@ -19,15 +20,23 @@ import {
   CheckCircle2,
   Clock,
   Compass,
+  TrendingDown,
+  Users,
+  Percent,
+  Check,
+  ArrowUpRight,
+  Tag,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { formatPaise } from "@/lib/money";
 
 export const Route = createFileRoute("/travel")({
   component: TravelPage,
 });
 
-type TravelTab = "flights" | "trains" | "hotels" | "cabs" | "fastag" | "trips";
+export type TravelTab = "flights" | "trains" | "buses" | "hotels" | "cabs" | "fastag" | "trips";
 
 interface TravelCategoryConfig {
   id: TravelTab;
@@ -36,6 +45,136 @@ interface TravelCategoryConfig {
   keywords: string;
   subCategories: readonly string[];
 }
+
+export interface PopularRoute {
+  id: string;
+  type: "flight" | "train" | "bus";
+  fromCity: string;
+  fromCode: string;
+  toCity: string;
+  toCode: string;
+  tag: string;
+  duration: string;
+  frequency: string;
+  farePaise: number;
+  partnerUrl: string;
+  highlight: string;
+}
+
+export const POPULAR_ROUTES: readonly PopularRoute[] = [
+  {
+    id: "route-del-bom",
+    type: "flight",
+    fromCity: "New Delhi",
+    fromCode: "DEL",
+    toCity: "Mumbai",
+    toCode: "BOM",
+    tag: "Aviation Corridor",
+    duration: "2h 15m",
+    frequency: "48 Flights Daily",
+    farePaise: 419900,
+    partnerUrl: "https://www.skyscanner.co.in/transport/flights/del/bom/",
+    highlight: "Save ₹399 convenience fee vs MakeMyTrip",
+  },
+  {
+    id: "route-ccu-blr",
+    type: "flight",
+    fromCity: "Kolkata",
+    fromCode: "CCU",
+    toCity: "Bengaluru",
+    toCode: "BLR",
+    tag: "Business Sector",
+    duration: "2h 45m",
+    frequency: "22 Flights Daily",
+    farePaise: 545000,
+    partnerUrl: "https://www.skyscanner.co.in/transport/flights/ccu/blr/",
+    highlight: "0% OrderKing Platform Markup",
+  },
+  {
+    id: "route-bom-goi",
+    type: "flight",
+    fromCity: "Mumbai",
+    fromCode: "BOM",
+    toCity: "Goa (Dabolim/Mopa)",
+    toCode: "GOI",
+    tag: "Holiday Gateway",
+    duration: "1h 15m",
+    frequency: "32 Flights Daily",
+    farePaise: 289000,
+    partnerUrl: "https://www.skyscanner.co.in/transport/flights/bom/goi/",
+    highlight: "Direct Boarding Pass Web Check-In",
+  },
+  {
+    id: "route-blr-del",
+    type: "flight",
+    fromCity: "Bengaluru",
+    fromCode: "BLR",
+    toCity: "New Delhi",
+    toCode: "DEL",
+    tag: "Metro Express",
+    duration: "2h 40m",
+    frequency: "40 Flights Daily",
+    farePaise: 480000,
+    partnerUrl: "https://www.skyscanner.co.in/transport/flights/blr/del/",
+    highlight: "Save ₹399 convenience fee vs OTAs",
+  },
+  {
+    id: "route-maa-hyd",
+    type: "flight",
+    fromCity: "Chennai",
+    fromCode: "MAA",
+    toCity: "Hyderabad",
+    toCode: "HYD",
+    tag: "Fast Hopper",
+    duration: "1h 10m",
+    frequency: "26 Flights Daily",
+    farePaise: 249900,
+    partnerUrl: "https://www.skyscanner.co.in/transport/flights/maa/hyd/",
+    highlight: "Student & Armed Forces Fares",
+  },
+  {
+    id: "route-ndls-bsb-vb",
+    type: "train",
+    fromCity: "New Delhi",
+    fromCode: "NDLS",
+    toCity: "Varanasi Jn",
+    toCode: "BSB",
+    tag: "Vande Bharat Express",
+    duration: "8h 00m",
+    frequency: "Daily (ex. Thu)",
+    farePaise: 175000,
+    partnerUrl: "https://www.confirmtkt.com/rbooking/trains-between-stations?from=NDLS&to=BSB",
+    highlight: "Official IRCTC Booking Handoff",
+  },
+  {
+    id: "route-sbc-mys-vb",
+    type: "train",
+    fromCity: "Bengaluru",
+    fromCode: "SBC",
+    toCity: "Mysuru",
+    toCode: "MYS",
+    tag: "Superfast Rail",
+    duration: "1h 45m",
+    frequency: "18 Trains Daily",
+    farePaise: 36000,
+    partnerUrl: "https://www.confirmtkt.com/rbooking/trains-between-stations?from=SBC&to=MYS",
+    highlight: "Live Charting & Seat Availability",
+  },
+  {
+    id: "route-blr-goa-bus",
+    type: "bus",
+    fromCity: "Bengaluru",
+    fromCode: "Kempegowda",
+    toCity: "Goa (Panaji)",
+    toCode: "Kadamba",
+    tag: "KSRTC Airavat AC",
+    duration: "10h 30m",
+    frequency: "Overnight Sleeper",
+    farePaise: 125000,
+    partnerUrl: "https://www.redbus.in/bus-tickets/bangalore-to-goa",
+    highlight: "Clean AC Sleeper 2+1 Berths",
+  },
+];
 
 export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
   {
@@ -60,6 +199,18 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
       "IRCTC Authorised Ticket Handoff",
       "Live PNR Enquiry",
       "Tatkal & Coach Position Guide",
+    ],
+  },
+  {
+    id: "buses",
+    label: "Buses & Sleepers",
+    badge: "RedBus / RTC",
+    keywords: "bus interstate sleeper ac ksrtc msrtc upsrtc zingbus luxury seater volvo",
+    subCategories: [
+      "Intercity AC Sleepers",
+      "State RTCs (KSRTC, MSRTC, UPSRTC)",
+      "Volvo & Bharat Benz Multi-Axle",
+      "Overnight Tourist Corridors",
     ],
   },
   {
@@ -100,7 +251,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
     id: "trips",
     label: "My Trips & Bookings",
     badge: "Organizer",
-    keywords: "my trips bookings itinerary pnr reference saved flight train hotel",
+    keywords: "my trips bookings itinerary pnr reference saved flight train hotel bus",
     subCategories: [
       "Saved Trip Itineraries",
       "PNR & Booking Reference Organizer",
@@ -111,7 +262,7 @@ export const TRAVEL_CATEGORIES: readonly TravelCategoryConfig[] = [
 
 export interface SavedTripReference {
   id: string;
-  bookingType: "Flight" | "Train" | "Hotel" | "Cab";
+  bookingType: "Flight" | "Train" | "Bus" | "Hotel" | "Cab";
   providerName: string;
   bookingRef: string;
   travelDate: string;
@@ -140,6 +291,7 @@ export function TravelPage() {
   const [activeSubCategory, setActiveSubCategory] = useState<Record<TravelTab, string>>({
     flights: "Domestic Flights",
     trains: "Search Trains Between Stations",
+    buses: "Intercity AC Sleepers",
     hotels: "Luxury 5-Star & Resorts",
     cabs: "Airport Pickup & Drop",
     fastag: "NETC FASTag Bank Directory",
@@ -148,12 +300,17 @@ export function TravelPage() {
   const [serviceQuery, setServiceQuery] = useState("");
   const sectionHash = useRouterState({ select: (s) => s.location.hash });
 
+  // Price comparison real math interactive state
+  const [comparisonPassengers, setComparisonPassengers] = useState<number>(1);
+  const [comparisonIsRoundTrip, setComparisonIsRoundTrip] = useState<boolean>(false);
+
   useEffect(() => {
     const cleanHash = sectionHash.replace(/^#/, "").toLowerCase();
     if (cleanHash === "hotels") setActiveTab("hotels");
     else if (cleanHash === "trips") setActiveTab("trips");
     else if (cleanHash === "flights") setActiveTab("flights");
     else if (cleanHash === "trains") setActiveTab("trains");
+    else if (cleanHash === "buses") setActiveTab("buses");
     else if (cleanHash === "cabs") setActiveTab("cabs");
     else if (cleanHash === "fastag") setActiveTab("fastag");
   }, [sectionHash]);
@@ -170,6 +327,13 @@ export function TravelPage() {
   const [trainTo, setTrainTo] = useState("Mumbai Central (MMCT)");
   const [trainDate, setTrainDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [trainQuota, setTrainQuota] = useState("GENERAL (GN)");
+
+  // Bus search state
+  const [busFrom, setBusFrom] = useState("Bengaluru (Kempegowda)");
+  const [busTo, setBusTo] = useState("Goa (Panaji)");
+  const [busDate, setBusDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [busClass, setBusClass] = useState("AC Sleeper (2+1)");
+  const [busOperator, setBusOperator] = useState("All Operators");
 
   // Hotel search state
   const [hotelCity, setHotelCity] = useState("Goa, India");
@@ -276,6 +440,13 @@ export function TravelPage() {
       window.open(targetUrl, "_blank", "noopener,noreferrer");
       return;
     }
+    if (trip.bookingType === "Bus") {
+      const targetUrl = buildPartnerUrl("https://www.redbus.in/", {
+        ticket: trip.bookingRef,
+      });
+      window.open(targetUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
     const targetUrl = buildPartnerUrl("https://www.uber.com/in/en/");
     window.open(targetUrl, "_blank", "noopener,noreferrer");
   };
@@ -325,45 +496,59 @@ export function TravelPage() {
   return (
     <CustomerShell>
       <div className="mx-auto max-w-5xl px-4 py-6 sm:py-8 space-y-6">
-        <TravelCategoryDeck onChoose={setActiveTab} />
+        <TravelCategoryDeck
+          onChoose={(id) => {
+            setActiveTab(id);
+          }}
+        />
 
-        {/* OrderKing Travel & Stays Header Hero */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-amber-500/30">
-          <div className="absolute top-0 right-0 -mr-12 -mt-12 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        {/* ULTRA-LUXURIOUS TRAVELSTATION SKY GRADIENT HERO */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#050D24] via-[#0E1A40] to-[#1E0F3D] text-white p-6 sm:p-8 shadow-2xl border border-sky-400/30">
+          {/* Celestial Cosmic Lighting & Ambient Sky Orbs */}
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-80 h-80 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-1/3 -mb-20 w-72 h-72 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400/10 via-transparent to-transparent pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div>
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 border border-amber-400/40 px-3 py-1 text-xs font-black text-amber-300 mb-3 shadow-xs">
-                <span>✈️</span>
-                <span>TravelKing · Stays &amp; Flights Hub</span>
-                <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 text-[10px] font-extrabold ml-1">
-                  Direct Partner Handoff
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-400/15 border border-sky-400/40 px-3 py-1 text-xs font-black text-sky-300 shadow-xs">
+                  <span>✈️</span>
+                  <span>TravelStation · Zero-Markup Travel Concierge</span>
+                </span>
+                <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-2 py-0.5 text-[10px] font-extrabold">
+                  0% Convenience Fee Guaranteed
+                </span>
+                <span className="rounded-full bg-indigo-500/20 border border-indigo-400/40 text-indigo-300 px-2 py-0.5 text-[10px] font-extrabold">
+                  CRIS &amp; GDS Partner Handoff
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                TravelKing · Flights, Stays &amp; Trips
+              <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
+                OrderKing TravelStation
               </h1>
-              <p className="mt-1 text-xs sm:text-sm text-slate-300 max-w-xl">
-                Compare flights, Indian Railways trains, verified stays, airport transfers, and NETC highway tools, or organize your live PNR and booking references in one place.
+              <p className="mt-1.5 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                Compare live fares across domestic airlines, Indian Railways IRCTC, intercity AC sleeper buses, verified luxury stays, and airport chauffeurs. Never pay hidden convenience markups added at OTA checkout.
               </p>
             </div>
 
-            <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-3.5 backdrop-blur-md self-start md:self-auto">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 font-black text-lg">
+            {/* Platform Desk Fee Guarantee Callout */}
+            <div className="flex items-center gap-3.5 bg-white/[0.07] border border-white/15 rounded-2xl p-4 backdrop-blur-xl shadow-xl self-start md:self-auto shrink-0">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-black text-xl shadow-inner">
                 ₹0
               </div>
               <div>
-                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Platform Desk Fee</p>
-                <p className="text-xs font-black text-emerald-400">Zero OrderKing Convenience Markup</p>
+                <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Platform Desk Fee</p>
+                <p className="text-xs sm:text-sm font-black text-emerald-300">Zero OrderKing Markup</p>
+                <p className="text-[10px] font-bold text-sky-300">You Save ₹399 / ticket vs OTAs</p>
               </div>
             </div>
           </div>
 
-          {/* Search across all 6 primary categories and sub-categories */}
-          <div className="relative mt-5 space-y-2">
+          {/* Search across all categories, sub-categories, routes & PNR tools */}
+          <div className="relative mt-6 space-y-2 z-10">
             <label htmlFor="travel-service-search" className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-              <Search className="size-3.5 text-amber-400" />
-              Search Travel Categories, Sub-Categories &amp; PNR Tools
+              <Search className="size-3.5 text-sky-400" />
+              Search Indian Flights, Trains, Buses, Hotels, Cabs &amp; PNR Tools
             </label>
             <input
               id="travel-service-search"
@@ -371,11 +556,11 @@ export function TravelPage() {
               autoComplete="off"
               value={serviceQuery}
               onChange={(e) => setServiceQuery(e.target.value)}
-              placeholder="Search Domestic Flights, Live PNR Enquiry, Luxury 5-Star, My Trips..."
-              className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-slate-400 outline-none focus:border-amber-400"
+              placeholder="Search Flights (DEL➔BOM), IRCTC Trains, AC Sleeper Buses, Luxury Stays, PNR Enquiry..."
+              className="w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-slate-400 outline-none focus:border-sky-400 focus:bg-white/15 transition backdrop-blur-md"
             />
             {serviceQuery.trim() && (
-              <div className="max-h-56 space-y-1 overflow-y-auto rounded-xl border border-white/20 bg-slate-900 p-1.5 shadow-xl">
+              <div className="max-h-56 space-y-1 overflow-y-auto rounded-2xl border border-white/20 bg-slate-950 p-2 shadow-2xl">
                 {TRAVEL_CATEGORIES.flatMap((cat) =>
                   cat.subCategories
                     .filter((sub) =>
@@ -393,10 +578,10 @@ export function TravelPage() {
                       setActiveSubCategory((prev) => ({ ...prev, [cat.id]: sub }));
                       setServiceQuery("");
                     }}
-                    className="flex items-center justify-between w-full rounded-lg px-3 py-2 text-left text-xs sm:text-sm text-slate-100 hover:bg-white/10 transition"
+                    className="flex items-center justify-between w-full rounded-xl px-3 py-2 text-left text-xs sm:text-sm text-slate-100 hover:bg-white/10 transition"
                   >
                     <span className="font-bold">{sub}</span>
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-amber-400/20 text-amber-300 px-2 py-0.5">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-sky-400/20 text-sky-300 px-2 py-0.5 border border-sky-400/30">
                       {cat.label}
                     </span>
                   </button>
@@ -405,79 +590,463 @@ export function TravelPage() {
             )}
           </div>
 
-          {/* 6 Primary Travel Category Tabs */}
-          <div className="mt-6 flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar border-t border-white/10 pt-4">
-            <TabButton
-              active={activeTab === "flights"}
-              onClick={() => setActiveTab("flights")}
-              icon={Plane}
-              label="Flights"
-              badge="Skyscanner"
-            />
-            <TabButton
-              active={activeTab === "trains"}
-              onClick={() => setActiveTab("trains")}
-              icon={Train}
-              label="Trains & IRCTC"
-              badge="IRCTC"
-            />
-            <TabButton
-              active={activeTab === "hotels"}
-              onClick={() => setActiveTab("hotels")}
-              icon={Building2}
-              label="Hotels & Stays"
-              badge="Stays"
-            />
-            <TabButton
-              active={activeTab === "cabs"}
-              onClick={() => setActiveTab("cabs")}
-              icon={Car}
-              label="Cabs & Airport"
-              badge="Transfers"
-            />
-            <TabButton
-              active={activeTab === "fastag"}
-              onClick={() => setActiveTab("fastag")}
-              icon={CreditCard}
-              label="FASTag & Highway"
-              badge="NETC"
-            />
-            <TabButton
-              active={activeTab === "trips"}
-              onClick={() => setActiveTab("trips")}
-              icon={Compass}
-              label="My Trips & Bookings"
-              badge={savedTrips.length > 0 ? `${savedTrips.length} Saved` : "Organizer"}
-            />
+          {/* =====================================================================
+              5 BOOKING CARDS IN LUXURY GRID:
+              Flight (Sky Blue) · Train (Emerald) · Bus (Orange) · Hotel (Royal Purple) · Cab (Yellow)
+             ===================================================================== */}
+          <div className="mt-7 pt-6 border-t border-white/10">
+            <div className="flex items-center justify-between mb-3.5">
+              <span className="text-[11px] font-black uppercase tracking-widest text-sky-300 flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-sky-400" />
+                Select Travel Mode (0% Platform Markup Guaranteed)
+              </span>
+              <span className="text-[10px] text-slate-400 font-bold hidden sm:inline">
+                Click any category to load verified desk
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              {/* 1. FLIGHT (Sky Blue) */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("flights")}
+                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
+                  activeTab === "flights"
+                    ? "bg-gradient-to-br from-sky-500/25 via-sky-600/15 to-blue-950/70 border-sky-400 shadow-[0_0_25px_rgba(56,189,248,0.3)] ring-1 ring-sky-400/60"
+                    : "bg-white/[0.04] border-white/10 hover:border-sky-400/50 hover:bg-sky-950/30"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-400 border border-sky-400/40 shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
+                    <Plane className="size-6 sm:size-7" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-sky-400/20 text-sky-300 border border-sky-400/40 px-2 py-0.5">
+                    Save ₹399
+                  </span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-sky-300 transition-colors">
+                  Flights
+                </h3>
+                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
+                  Domestic &amp; International Fares
+                </p>
+                <div className="mt-2.5 flex items-center justify-between border-t border-sky-400/20 pt-2 text-[10px] font-bold text-sky-300">
+                  <span>Skyscanner Direct</span>
+                  <span>0% Markup ➔</span>
+                </div>
+              </button>
+
+              {/* 2. TRAIN (Emerald) */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("trains")}
+                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
+                  activeTab === "trains"
+                    ? "bg-gradient-to-br from-emerald-500/25 via-emerald-600/15 to-teal-950/70 border-emerald-400 shadow-[0_0_25px_rgba(52,211,153,0.3)] ring-1 ring-emerald-400/60"
+                    : "bg-white/[0.04] border-white/10 hover:border-emerald-400/50 hover:bg-emerald-950/30"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+                    <Train className="size-6 sm:size-7" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 px-2 py-0.5">
+                    CRIS / PNR
+                  </span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-emerald-300 transition-colors">
+                  Trains &amp; IRCTC
+                </h3>
+                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
+                  Live 10-Digit PNR · Vande Bharat
+                </p>
+                <div className="mt-2.5 flex items-center justify-between border-t border-emerald-400/20 pt-2 text-[10px] font-bold text-emerald-300">
+                  <span>ConfirmTkt / IRCTC</span>
+                  <span>Official Tariff ➔</span>
+                </div>
+              </button>
+
+              {/* 3. BUS (Orange) */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("buses")}
+                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
+                  activeTab === "buses"
+                    ? "bg-gradient-to-br from-orange-500/25 via-amber-600/15 to-rose-950/70 border-orange-400 shadow-[0_0_25px_rgba(251,146,60,0.3)] ring-1 ring-orange-400/60"
+                    : "bg-white/[0.04] border-white/10 hover:border-orange-400/50 hover:bg-orange-950/30"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl bg-orange-500/20 text-orange-400 border border-orange-400/40 shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
+                    <Bus className="size-6 sm:size-7" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-orange-400/20 text-orange-300 border border-orange-400/40 px-2 py-0.5">
+                    RedBus / RTC
+                  </span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-orange-300 transition-colors">
+                  Buses &amp; Sleepers
+                </h3>
+                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
+                  Intercity AC Sleeper · State RTCs
+                </p>
+                <div className="mt-2.5 flex items-center justify-between border-t border-orange-400/20 pt-2 text-[10px] font-bold text-orange-300">
+                  <span>KSRTC / MSRTC</span>
+                  <span>Zero Agent Fee ➔</span>
+                </div>
+              </button>
+
+              {/* 4. HOTEL (Royal Purple) */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("hotels")}
+                className={`rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
+                  activeTab === "hotels"
+                    ? "bg-gradient-to-br from-purple-500/25 via-indigo-600/15 to-slate-950/70 border-purple-400 shadow-[0_0_25px_rgba(192,132,252,0.3)] ring-1 ring-purple-400/60"
+                    : "bg-white/[0.04] border-white/10 hover:border-purple-400/50 hover:bg-purple-950/30"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl bg-purple-500/20 text-purple-300 border border-purple-400/40 shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform">
+                    <Building2 className="size-6 sm:size-7" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-purple-400/20 text-purple-300 border border-purple-400/40 px-2 py-0.5">
+                    5-Star Luxury
+                  </span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-purple-300 transition-colors">
+                  Hotels &amp; Stays
+                </h3>
+                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
+                  Luxury Resorts &amp; Business GST
+                </p>
+                <div className="mt-2.5 flex items-center justify-between border-t border-purple-400/20 pt-2 text-[10px] font-bold text-purple-300">
+                  <span>Verified Stays</span>
+                  <span>GST Invoice ➔</span>
+                </div>
+              </button>
+
+              {/* 5. CAB (Yellow) */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("cabs")}
+                className={`col-span-2 sm:col-span-1 rounded-2xl p-4 text-left transition-all duration-300 relative overflow-hidden group cursor-pointer backdrop-blur-xl border ${
+                  activeTab === "cabs"
+                    ? "bg-gradient-to-br from-amber-400/25 via-yellow-500/15 to-slate-950/70 border-yellow-300 shadow-[0_0_25px_rgba(253,224,71,0.3)] ring-1 ring-yellow-300/60"
+                    : "bg-white/[0.04] border-white/10 hover:border-yellow-300/50 hover:bg-amber-950/30"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl bg-amber-400/20 text-yellow-300 border border-yellow-300/40 shadow-md shadow-yellow-500/20 group-hover:scale-105 transition-transform">
+                    <Car className="size-6 sm:size-7" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider rounded-full bg-yellow-400/20 text-yellow-300 border border-yellow-300/40 px-2 py-0.5">
+                    Flat Rates
+                  </span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white group-hover:text-yellow-300 transition-colors">
+                  Cabs &amp; Airport
+                </h3>
+                <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">
+                  Airport Chauffeur &amp; Outstation
+                </p>
+                <div className="mt-2.5 flex items-center justify-between border-t border-yellow-300/20 pt-2 text-[10px] font-bold text-yellow-300">
+                  <span>Doorstep Pickup</span>
+                  <span>Metered Fare ➔</span>
+                </div>
+              </button>
+            </div>
+
+            {/* Secondary navigation for FASTag & My Trips */}
+            <div className="mt-3.5 flex flex-wrap items-center gap-2 pt-3 border-t border-white/10">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">
+                More Travel Utilities:
+              </span>
+              <button
+                type="button"
+                onClick={() => setActiveTab("fastag")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
+                  activeTab === "fastag"
+                    ? "bg-purple-600 text-white border-purple-400 shadow-sm"
+                    : "bg-white/10 text-slate-200 border-white/10 hover:bg-white/20"
+                }`}
+              >
+                <CreditCard className="size-3.5 text-purple-300" />
+                <span>FASTag &amp; Highway Toll</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("trips")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
+                  activeTab === "trips"
+                    ? "bg-sky-600 text-white border-sky-400 shadow-sm"
+                    : "bg-white/10 text-slate-200 border-white/10 hover:bg-white/20"
+                }`}
+              >
+                <Compass className="size-3.5 text-sky-300" />
+                <span>My Trips &amp; Bookings</span>
+                {savedTrips.length > 0 && (
+                  <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 text-[10px] font-black">
+                    {savedTrips.length}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Sub-Category Strip for Active Primary Category */}
+            <div className="mt-3 flex flex-wrap items-center gap-2 pt-3 border-t border-white/10">
+              <span className="text-[10px] font-black uppercase tracking-widest text-sky-300 mr-1">
+                {currentCategory.label} Sub-Categories:
+              </span>
+              {currentCategory.subCategories.map((sub) => {
+                const isSelected = currentSub === sub;
+                return (
+                  <button
+                    key={sub}
+                    type="button"
+                    onClick={() =>
+                      setActiveSubCategory((prev) => ({
+                        ...prev,
+                        [activeTab]: sub,
+                      }))
+                    }
+                    className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
+                      isSelected
+                        ? "bg-sky-400 text-slate-950 font-black shadow-xs"
+                        : "bg-white/10 text-slate-200 hover:bg-white/20"
+                    }`}
+                  >
+                    {sub}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* =====================================================================
+            PRICE COMPARISON ENGINE: "YOU SAVE ₹399 VS MAKEMYTRIP" (REAL MATH)
+            MakeMyTrip Convenience Fee: ₹399/pax/sector vs OrderKing Platform Desk Fee: ₹0
+           ===================================================================== */}
+        {(() => {
+          const OTA_CONVENIENCE_FEE_PAISE = 39900; // ₹399.00 per passenger per sector
+          const ORDERKING_CONVENIENCE_FEE_PAISE = 0; // ₹0.00
+          const TYPICAL_BASE_PLUS_TAX_PAISE = 505000; // ₹5,050.00
+          const comparisonSectors = comparisonIsRoundTrip ? 2 : 1;
+          const totalPaxSectors = comparisonPassengers * comparisonSectors;
+          const totalSavingsPaise = OTA_CONVENIENCE_FEE_PAISE * totalPaxSectors;
+          const otaTotalCostPaise = (TYPICAL_BASE_PLUS_TAX_PAISE + OTA_CONVENIENCE_FEE_PAISE) * totalPaxSectors;
+          const orderKingTotalCostPaise = (TYPICAL_BASE_PLUS_TAX_PAISE + ORDERKING_CONVENIENCE_FEE_PAISE) * totalPaxSectors;
+
+          return (
+            <div className="relative overflow-hidden rounded-3xl border border-sky-400/40 bg-gradient-to-br from-[#06102A] via-[#0B1A40] to-[#120E33] p-5 sm:p-7 text-white shadow-2xl">
+              <div className="absolute top-0 right-0 w-72 h-72 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 border border-emerald-400/40 px-3 py-1 text-xs font-black text-emerald-300 mb-2">
+                    <TrendingDown className="size-3.5" />
+                    <span>Real Math · Pure Passenger Savings</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                    You Save {formatPaise(totalSavingsPaise)} vs MakeMyTrip &amp; EaseMyTrip
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
+                    Commercial OTAs quietly charge ₹399 to ₹599 convenience fees per passenger per sector. OrderKing has a strict 0% platform desk fee policy.
+                  </p>
+                </div>
+
+                {/* Interactive Passenger & Trip Slabs */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex items-center bg-slate-900/90 border border-white/15 p-1 rounded-xl">
+                    <span className="text-[10px] font-bold uppercase text-slate-400 px-2">Passengers:</span>
+                    {([1, 2, 4] as const).map((count) => (
+                      <button
+                        key={count}
+                        type="button"
+                        onClick={() => setComparisonPassengers(count)}
+                        className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                          comparisonPassengers === count
+                            ? "bg-sky-400 text-slate-950 font-black shadow-xs"
+                            : "text-slate-300 hover:text-white"
+                        }`}
+                      >
+                        {count === 4 ? "4 (Family)" : `${count} Pax`}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center bg-slate-900/90 border border-white/15 p-1 rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setComparisonIsRoundTrip(false)}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                        !comparisonIsRoundTrip
+                          ? "bg-sky-400 text-slate-950 font-black shadow-xs"
+                          : "text-slate-300 hover:text-white"
+                      }`}
+                    >
+                      One-Way
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setComparisonIsRoundTrip(true)}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                        comparisonIsRoundTrip
+                          ? "bg-sky-400 text-slate-950 font-black shadow-xs"
+                          : "text-slate-300 hover:text-white"
+                      }`}
+                    >
+                      Round-Trip (2 Sectors)
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Side-by-side Comparative Ledger Cards */}
+              <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Competitor OTA Card */}
+                <div className="rounded-2xl border border-rose-500/30 bg-rose-950/20 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-rose-400 block">
+                        Commercial OTAs (MakeMyTrip / EaseMyTrip)
+                      </span>
+                      <h3 className="text-sm font-black text-white">Standard Online Booking</h3>
+                    </div>
+                    <span className="text-xs font-black text-rose-400 bg-rose-500/20 border border-rose-500/30 px-2.5 py-1 rounded-lg">
+                      +₹399 / pax fee
+                    </span>
+                  </div>
+
+                  <div className="space-y-1.5 text-xs text-slate-300 pt-1 border-t border-rose-500/20">
+                    <div className="flex justify-between">
+                      <span>Carrier Base Fare + Airport Tax ({totalPaxSectors} tickets)</span>
+                      <span className="font-mono">{formatPaise(TYPICAL_BASE_PLUS_TAX_PAISE * totalPaxSectors)}</span>
+                    </div>
+                    <div className="flex justify-between text-rose-300 font-bold">
+                      <span>OTA "Convenience Fee" (₹399 × {totalPaxSectors})</span>
+                      <span className="font-mono">+{formatPaise(OTA_CONVENIENCE_FEE_PAISE * totalPaxSectors)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-black text-white pt-2 border-t border-rose-500/30">
+                      <span>Total Billed at Checkout</span>
+                      <span className="font-mono text-rose-300">{formatPaise(otaTotalCostPaise)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* OrderKing Sovereign Travel Card */}
+                <div className="rounded-2xl border border-emerald-500/40 bg-emerald-950/25 p-4 space-y-3 shadow-lg shadow-emerald-500/10">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block">
+                        OrderKing TravelStation
+                      </span>
+                      <h3 className="text-sm font-black text-white">Direct Sovereign Partner Handoff</h3>
+                    </div>
+                    <span className="text-xs font-black text-emerald-300 bg-emerald-500/20 border border-emerald-400/40 px-2.5 py-1 rounded-lg">
+                      ₹0 Desk Markup
+                    </span>
+                  </div>
+
+                  <div className="space-y-1.5 text-xs text-slate-300 pt-1 border-t border-emerald-500/20">
+                    <div className="flex justify-between">
+                      <span>Carrier Base Fare + Airport Tax ({totalPaxSectors} tickets)</span>
+                      <span className="font-mono">{formatPaise(TYPICAL_BASE_PLUS_TAX_PAISE * totalPaxSectors)}</span>
+                    </div>
+                    <div className="flex justify-between text-emerald-300 font-bold">
+                      <span>OrderKing Platform Convenience Markup</span>
+                      <span className="font-mono font-black text-emerald-300">₹0.00 (Zero Fee)</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-black text-white pt-2 border-t border-emerald-500/30">
+                      <span>Total Billed at Checkout</span>
+                      <span className="font-mono text-emerald-300">{formatPaise(orderKingTotalCostPaise)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* =====================================================================
+            POPULAR HIGH-FREQUENCY INDIAN ROUTES CAROUSEL
+            Delhi ⇄ Mumbai · Kolkata ⇄ Bengaluru · Mumbai ⇄ Goa · etc.
+           ===================================================================== */}
+        <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <span className="text-[11px] font-black uppercase tracking-wider text-sky-600 flex items-center gap-1.5">
+                <Compass className="size-3.5" /> High-Density Indian Corridors
+              </span>
+              <h2 className="text-lg font-black text-slate-900 mt-0.5">
+                Popular Domestic Routes · Compare Live Fares
+              </h2>
+            </div>
+            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full self-start sm:self-auto">
+              Live Partner Tariff Guaranteed
+            </span>
           </div>
 
-          {/* Sub-Category Strip for Active Primary Category */}
-          <div className="mt-3 flex flex-wrap items-center gap-2 pt-3 border-t border-white/10">
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-300 mr-1">
-              {currentCategory.label} Sub-Categories:
-            </span>
-            {currentCategory.subCategories.map((sub) => {
-              const isSelected = currentSub === sub;
-              return (
-                <button
-                  key={sub}
-                  type="button"
-                  onClick={() =>
-                    setActiveSubCategory((prev) => ({
-                      ...prev,
-                      [activeTab]: sub,
-                    }))
-                  }
-                  className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
-                    isSelected
-                      ? "bg-amber-400 text-slate-950 font-black shadow-xs"
-                      : "bg-white/10 text-slate-200 hover:bg-white/20"
-                  }`}
-                >
-                  {sub}
-                </button>
-              );
-            })}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {POPULAR_ROUTES.map((route) => (
+              <div
+                key={route.id}
+                className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-sky-50/60 hover:border-sky-300 p-4 transition-all duration-200 flex flex-col justify-between gap-3 group"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-100 px-2 py-0.5 rounded-md">
+                      {route.type === "flight" && <Plane className="size-3" />}
+                      {route.type === "train" && <Train className="size-3" />}
+                      {route.type === "bus" && <Bus className="size-3" />}
+                      {route.tag}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-slate-500">
+                      {route.duration}
+                    </span>
+                  </div>
+
+                  <h3 className="text-sm font-black text-slate-900 group-hover:text-sky-700 transition-colors">
+                    {route.fromCity} ({route.fromCode}) ➔ {route.toCity} ({route.toCode})
+                  </h3>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    {route.frequency}
+                  </p>
+                </div>
+
+                <div className="border-t border-slate-200/80 pt-2.5">
+                  <div className="flex items-baseline justify-between mb-2">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Starting From</span>
+                    <span className="text-sm font-black font-mono text-slate-900">
+                      {formatPaise(route.farePaise)}
+                    </span>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      if (route.type === "flight") {
+                        setActiveTab("flights");
+                        window.open(buildPartnerUrl(route.partnerUrl), "_blank", "noopener,noreferrer");
+                      } else if (route.type === "train") {
+                        setActiveTab("trains");
+                        setTrainFrom(`${route.fromCity} (${route.fromCode})`);
+                        setTrainTo(`${route.toCity} (${route.toCode})`);
+                        window.open(buildPartnerUrl(route.partnerUrl), "_blank", "noopener,noreferrer");
+                      } else {
+                        setActiveTab("buses");
+                        setBusFrom(route.fromCity);
+                        setBusTo(route.toCity);
+                        window.open(buildPartnerUrl(route.partnerUrl), "_blank", "noopener,noreferrer");
+                      }
+                    }}
+                    className="w-full h-9 rounded-xl bg-slate-900 hover:bg-sky-600 text-white font-black text-xs transition"
+                  >
+                    Compare Live Fares ➔
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -849,6 +1418,211 @@ export function TravelPage() {
                     <strong>H1:</strong> First AC · <strong>A1–A3:</strong> 2-Tier AC · <strong>B1–B8:</strong> 3-Tier AC · <strong>M1–M3:</strong> 3E Economy · <strong>S1–S12:</strong> Sleeper.
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =====================================================================
+            CATEGORY: BUSES & SLEEPERS
+            Sub-categories: Intercity AC Sleepers, State RTCs (KSRTC, MSRTC, UPSRTC),
+            Volvo & Bharat Benz Multi-Axle, Overnight Tourist Corridors
+           ===================================================================== */}
+        {activeTab === "buses" && (
+          <div className="space-y-6">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                <div>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-orange-600 flex items-center gap-1.5">
+                    <Bus className="size-3.5" /> Intercity Road Mobility · {currentSub}
+                  </span>
+                  <h2 className="text-lg font-black text-slate-900 tracking-tight mt-0.5">
+                    Intercity AC Sleepers, Volvo &amp; State RTC Handoff
+                  </h2>
+                </div>
+                <span className="text-[11px] font-bold text-orange-800 bg-orange-100 px-3 py-1 rounded-full self-start sm:self-auto">
+                  RedBus &amp; State RTC Attribution
+                </span>
+              </div>
+
+              {/* Bus Search Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                  <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
+                    <MapPin className="size-3 text-orange-600" /> Origin City / Boarding Point
+                  </label>
+                  <input
+                    type="text"
+                    value={busFrom}
+                    onChange={(e) => setBusFrom(e.target.value)}
+                    className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
+                    placeholder="e.g. Bengaluru (Kempegowda)"
+                  />
+                </div>
+
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                  <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
+                    <MapPin className="size-3 text-orange-600" /> Destination City / Drop Point
+                  </label>
+                  <input
+                    type="text"
+                    value={busTo}
+                    onChange={(e) => setBusTo(e.target.value)}
+                    className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
+                    placeholder="e.g. Goa (Panaji / Mapusa)"
+                  />
+                </div>
+
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                  <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
+                    <Calendar className="size-3 text-orange-600" /> Travel Date
+                  </label>
+                  <input
+                    type="date"
+                    value={busDate}
+                    onChange={(e) => setBusDate(e.target.value)}
+                    className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
+                  />
+                </div>
+
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                  <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
+                    <Bus className="size-3 text-orange-600" /> Bus Class &amp; Berth
+                  </label>
+                  <select
+                    value={busClass}
+                    onChange={(e) => setBusClass(e.target.value)}
+                    className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
+                  >
+                    <option value="AC Sleeper (2+1)">AC Sleeper (2+1)</option>
+                    <option value="Multi-Axle Volvo AC">Multi-Axle Volvo AC</option>
+                    <option value="BharatBenz Premium Sleeper">BharatBenz Premium Sleeper</option>
+                    <option value="Non-AC Seater / Sleeper">Non-AC Seater / Sleeper</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Operator & RTC Filter */}
+              <div className="flex flex-wrap items-center gap-2 pt-2">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">
+                  Preferred Operator:
+                </span>
+                {[
+                  "All Operators",
+                  "KSRTC Airavat",
+                  "MSRTC Shivshahi",
+                  "UPSRTC Janrath",
+                  "IntrCity SmartBus",
+                  "Zingbus Electric",
+                ].map((op) => (
+                  <button
+                    key={op}
+                    type="button"
+                    onClick={() => setBusOperator(op)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
+                      busOperator === op
+                        ? "bg-orange-600 text-white border-orange-600"
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:border-orange-300"
+                    }`}
+                  >
+                    {op}
+                  </button>
+                ))}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Button
+                  onClick={() => {
+                    const cleanFrom = encodeURIComponent(busFrom.split("(")[0].trim().toLowerCase());
+                    const cleanTo = encodeURIComponent(busTo.split("(")[0].trim().toLowerCase());
+                    window.open(
+                      buildPartnerUrl(`https://www.redbus.in/bus-tickets/${cleanFrom}-to-${cleanTo}`, {
+                        date: busDate,
+                        operator: busOperator,
+                      }),
+                      "_blank",
+                      "noopener,noreferrer"
+                    );
+                  }}
+                  className="flex-1 h-12 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-sm transition shadow-md shadow-orange-600/20"
+                >
+                  Search AC Sleeper Buses on RedBus (0% OrderKing Markup) ➔
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const rtcUrl =
+                      busOperator === "MSRTC Shivshahi"
+                        ? "https://msrtc.maharashtra.gov.in/"
+                        : busOperator === "UPSRTC Janrath"
+                        ? "https://www.upsrtc.up.gov.in/"
+                        : "https://ksrtc.in/";
+                    window.open(buildPartnerUrl(rtcUrl), "_blank", "noopener,noreferrer");
+                  }}
+                  className="h-12 rounded-xl border-slate-200 text-slate-800 font-bold text-sm"
+                >
+                  Official State RTC Direct Portal
+                </Button>
+              </div>
+            </div>
+
+            {/* Popular Overnight Bus Corridors */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Clock className="size-4 text-orange-600" />
+                Popular High-Density Overnight Bus Corridors
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                {[
+                  {
+                    sector: "Bengaluru ➔ Goa (Panaji)",
+                    time: "10h 30m · Overnight",
+                    price: "From ₹1,250",
+                    bus: "KSRTC Airavat AC Sleeper",
+                  },
+                  {
+                    sector: "Delhi ➔ Manali / Shimla",
+                    time: "12h 00m · Evening",
+                    price: "From ₹1,400",
+                    bus: "Volvo 9600 Multi-Axle",
+                  },
+                  {
+                    sector: "Mumbai ➔ Pune (Expressway)",
+                    time: "3h 15m · Every 30m",
+                    price: "From ₹390",
+                    bus: "MSRTC Shivshahi / Electric",
+                  },
+                  {
+                    sector: "Hyderabad ➔ Vijayawada",
+                    time: "5h 00m · Frequent",
+                    price: "From ₹650",
+                    bus: "Garuda Plus AC Sleeper",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.sector}
+                    className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3.5 space-y-1.5"
+                  >
+                    <span className="font-black text-slate-900 block">{item.sector}</span>
+                    <p className="text-slate-500 text-[11px]">{item.bus} · {item.time}</p>
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="font-mono font-black text-orange-600">{item.price}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const parts = item.sector.split("➔");
+                          setBusFrom(parts[0].trim());
+                          setBusTo(parts[1].trim());
+                          toast.info(`Updated bus route to ${item.sector}`);
+                        }}
+                        className="text-[10px] font-black text-slate-700 hover:text-orange-600"
+                      >
+                        Select Route ➔
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -1289,6 +2063,7 @@ export function TravelPage() {
                     >
                       <option value="Flight">Flight (Airline PNR)</option>
                       <option value="Train">Train (10-Digit IRCTC PNR)</option>
+                      <option value="Bus">Bus (RedBus / RTC Ticket ID)</option>
                       <option value="Hotel">Hotel / Resort Reservation</option>
                       <option value="Cab">Airport / Outstation Cab</option>
                     </select>
@@ -1381,7 +2156,7 @@ export function TravelPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">
-                  {(["ALL", "Flight", "Train", "Hotel", "Cab"] as const).map((filterType) => (
+                  {(["ALL", "Flight", "Train", "Bus", "Hotel", "Cab"] as const).map((filterType) => (
                     <button
                       key={filterType}
                       type="button"
@@ -1477,7 +2252,7 @@ function TabButton({
 }: {
   active: boolean;
   onClick: () => void;
-  icon: typeof Plane;
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
   badge?: string;
 }) {

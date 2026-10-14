@@ -3,6 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import crypto from "crypto";
 import { getSql } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth/verify.server";
+import { timingSafeHexCompare } from "@/lib/security/crypto-safe";
+import { paymentLimiter } from "@/lib/security/rate-limiter";
 
 export const Route = createFileRoute("/api/razorpay/verify")({
   
@@ -10,6 +12,21 @@ export const Route = createFileRoute("/api/razorpay/verify")({
     handlers: {
       POST: async ({ request }: any) => {
         try {
+          const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+          const rateCheck = paymentLimiter.isAllowed(clientIp);
+          if (!rateCheck.allowed) {
+            return new Response(
+              JSON.stringify({ error: "Too many payment verification requests. Please wait a moment." }),
+              {
+                status: 429,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Retry-After": String(Math.ceil(rateCheck.resetMs / 1000)),
+                },
+              }
+            );
+          }
+
           const body = await request.json();
           const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount } = body;
 
@@ -36,12 +53,12 @@ export const Route = createFileRoute("/api/razorpay/verify")({
             });
           }
 
-          const hmac = crypto.createHmac("sha256", secret);
-          hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
-          const expectedDigest = hmac.digest();
-          const receivedDigest = Buffer.from(razorpay_signature, "hex");
+          const expectedHex = crypto
+            .createHmac("sha256", secret)
+            .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+            .digest("hex");
 
-          const isValid = receivedDigest.length === 32 && crypto.timingSafeEqual(expectedDigest, receivedDigest);
+          const isValid = timingSafeHexCompare(expectedHex, razorpay_signature);
 
           if (isValid) {
             const user = await getSessionUser();

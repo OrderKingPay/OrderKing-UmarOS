@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSql } from "@/lib/db";
 import { GoogleGenAI } from "@google/genai/web";
+import crypto from "node:crypto";
+import { timingSafeStringCompare, timingSafeHexCompare } from "@/lib/security/crypto-safe";
 
 export const Route = createFileRoute("/api/whatsapp")({
   server: {
@@ -12,7 +14,12 @@ export const Route = createFileRoute("/api/whatsapp")({
         const token = url.searchParams.get("hub.verify_token");
         const challenge = url.searchParams.get("hub.challenge");
 
-        if (mode === "subscribe" && token === process.env.WHATSAPP_VERIFY_TOKEN) {
+        if (
+          mode === "subscribe" &&
+          token &&
+          process.env.WHATSAPP_VERIFY_TOKEN &&
+          timingSafeStringCompare(token, process.env.WHATSAPP_VERIFY_TOKEN)
+        ) {
           return new Response(challenge, { status: 200 });
         }
         return new Response("Forbidden", { status: 403 });
@@ -21,7 +28,21 @@ export const Route = createFileRoute("/api/whatsapp")({
       // Handle incoming WhatsApp messages
       POST: async ({ request }) => {
         try {
-          const body = await request.json();
+          const rawBody = await request.text();
+          const signatureHeader = request.headers.get("x-hub-signature-256");
+
+          if (process.env.WHATSAPP_APP_SECRET && signatureHeader) {
+            const expectedHex = crypto
+              .createHmac("sha256", process.env.WHATSAPP_APP_SECRET)
+              .update(rawBody)
+              .digest("hex");
+            const receivedHex = signatureHeader.replace(/^sha256=/, "");
+            if (!timingSafeHexCompare(expectedHex, receivedHex)) {
+              return new Response("Unauthorized", { status: 401 });
+            }
+          }
+
+          const body = JSON.parse(rawBody || "{}");
           const sql = await getSql();
 
           // Extract message details (Meta Graph API structure)
