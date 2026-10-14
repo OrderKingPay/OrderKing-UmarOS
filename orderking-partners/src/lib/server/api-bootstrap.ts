@@ -80,7 +80,7 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const name = data.name.trim();
     const displayName = data.displayName.trim() || name;
-    if (!name) throw new Error("Restaurant name is required");
+    if (!name) throw new Error("Please enter your restaurant name to get started.");
     const sql = await getSql();
     const restaurantId = newId("rst");
     const outletId = newId("out");
@@ -205,17 +205,17 @@ export const updateRestaurantProfile = createServerFn({ method: "POST" })
         weeklyHolidays: "weekly_holidays",
       };
       const { validateFssai, validatePan, validateIfsc, validateGstin } = await import("@/lib/merchant-kyc");
-      if (data.fssaiNumber && !validateFssai(data.fssaiNumber)) {
-        throw new Error("Invalid 14-digit FSSAI registration number");
+      if (data.fssaiNumber && data.fssaiNumber.trim() && !validateFssai(data.fssaiNumber.trim())) {
+        throw new Error("Please enter a valid 14-digit FSSAI registration or license number.");
       }
-      if (data.pan && !validatePan(data.pan)) {
-        throw new Error("Invalid PAN card format");
+      if (data.pan && data.pan.trim() && !validatePan(data.pan.trim())) {
+        throw new Error("Please enter a valid 10-character PAN number (e.g. ABCDE1234F).");
       }
-      if (data.bankIfsc && !validateIfsc(data.bankIfsc)) {
-        throw new Error("Invalid Bank IFSC code format");
+      if (data.bankIfsc && data.bankIfsc.trim() && !validateIfsc(data.bankIfsc.trim())) {
+        throw new Error("Please enter a valid 11-character Bank IFSC code (e.g. HDFC0001234).");
       }
-      if (data.gstin && !validateGstin(data.gstin)) {
-        throw new Error("Invalid GSTIN statutory format");
+      if (data.gstin && data.gstin.trim() && !validateGstin(data.gstin.trim())) {
+        throw new Error("Please enter a valid 15-character GSTIN, or leave blank if turnover is under ₹20 Lakhs.");
       }
 
       for (const [k, col] of Object.entries(map)) {
@@ -276,26 +276,27 @@ export const submitForReview = createServerFn({ method: "POST" })
     const { withVendor } = await import("./helpers");
     return withVendor(context.userId, data.restaurantId, "onboarding.edit", async (sql, ctx) => {
       if (ctx.dataLabel === "SIMULATED") {
-        throw new Error("A simulated kitchen cannot be submitted for verification.");
+        throw new Error("Simulated test kitchens cannot be submitted for live onboarding.");
       }
       const rows = await sql<{ fssai_number: string; pan: string; bank_ifsc: string; gstin: string }>`
         select fssai_number, pan, bank_ifsc, gstin from restaurants where id = ${ctx.restaurantId}
       `;
       const rest = rows[0];
+      if (!rest) {
+        throw new Error("Restaurant profile could not be found. Please refresh and try again.");
+      }
       const { validateFssai, validatePan, validateIfsc, validateGstin } = await import("@/lib/merchant-kyc");
-      if (rest) {
-        if (!validateFssai(rest.fssai_number)) {
-          throw new Error("Cannot submit for review: Valid 14-digit FSSAI registration number is required.");
-        }
-        if (!validatePan(rest.pan)) {
-          throw new Error("Cannot submit for review: Valid 10-character PAN card is required.");
-        }
-        if (!validateIfsc(rest.bank_ifsc)) {
-          throw new Error("Cannot submit for review: Valid 11-character Bank IFSC code is required.");
-        }
-        if (rest.gstin && !validateGstin(rest.gstin)) {
-          throw new Error("Cannot submit for review: Invalid GSTIN format.");
-        }
+      if (!validateFssai(rest.fssai_number)) {
+        throw new Error("A valid 14-digit FSSAI registration or license number is required to submit your restaurant for verification.");
+      }
+      if (!validatePan(rest.pan)) {
+        throw new Error("A valid 10-character PAN card number is required to submit your restaurant for verification.");
+      }
+      if (!validateIfsc(rest.bank_ifsc)) {
+        throw new Error("A valid 11-character Bank IFSC code is required to ensure seamless payouts for your restaurant.");
+      }
+      if (rest.gstin && rest.gstin.trim() && !validateGstin(rest.gstin.trim())) {
+        throw new Error("The GSTIN format provided is invalid. Please enter a valid 15-character GSTIN, or leave it blank if turnover is under ₹20 Lakhs.");
       }
       await sql`
         update restaurants
@@ -378,7 +379,7 @@ export const getRestaurant = createServerFn({ method: "GET" })
         order by created_at desc
       `;
       const r = rows[0];
-      if (!r) throw new Error("Restaurant not found");
+      if (!r) throw new Error("Restaurant profile could not be found.");
       return {
         membership: ctx,
         restaurant: r,

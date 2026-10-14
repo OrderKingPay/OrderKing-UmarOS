@@ -38,37 +38,112 @@ function AccountPage() {
 
   return (
     <CustomerShell>
-      <div className="px-4 py-5">
-        <h1 className="font-display text-3xl">{t("account.title")}</h1>
+      <div className="min-h-[calc(100vh-80px)] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-5 pb-28">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-display text-3xl font-black text-stone-900 tracking-tight">
+              {t("account.title")}
+            </h1>
+            <p className="mt-0.5 text-xs font-bold text-amber-800">
+              VIP Profile &amp; Royal Privileges
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 px-3 py-1 text-xs font-black text-amber-950 shadow-2xs">
+            <span>👑</span>
+            <span>Prestige Member</span>
+          </span>
+        </div>
+
         {isPending ? (
-          <p className="mt-4 text-muted">{t("common.loading")}</p>
+          <div className="mt-6 space-y-3 animate-pulse">
+            <div className="h-32 bg-gradient-to-r from-amber-100 via-amber-200/60 to-amber-100 rounded-3xl" />
+            <div className="h-24 bg-gradient-to-r from-amber-100 via-amber-200/60 to-amber-100 rounded-3xl" />
+          </div>
         ) : !user ? (
-          <div className="mt-6">
-            <p>{t("account.guest")}</p>
-            <p className="text-sm text-muted">{t("account.guestHint")}</p>
-            <Button className="mt-4" asChild>
-              <Link to="/login">{t("common.signIn")}</Link>
-            </Button>
+          <div className="mt-6 rounded-3xl border border-amber-300/50 bg-white/95 backdrop-blur-md p-8 text-center shadow-[0_12px_40px_rgba(245,158,11,0.08)]">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-800 shadow-inner">
+              <span className="text-3xl">👑</span>
+            </div>
+            <h2 className="mt-4 font-display text-2xl font-black text-stone-900">{t("account.guest")}</h2>
+            <p className="mt-1 text-sm text-stone-600 max-w-xs mx-auto">{t("account.guestHint")}</p>
+            <div className="mt-6">
+              <Button className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black px-7 py-3 rounded-2xl shadow-lg shadow-orange-500/25 hover:from-amber-600 hover:to-orange-600 transition-all" asChild>
+                <Link to="/login">{t("common.signIn")}</Link>
+              </Button>
+            </div>
           </div>
         ) : (
-          <form
-            className="mt-6 space-y-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void updateProfile({ data: { name, phone, language: lang } }).then(() => toast.success(t("account.saved")));
-            }}
-          >
-            <label className="block text-sm">
-              {t("account.name")}
-              <Input className="mt-1" value={name} onChange={(e) => setName(e.target.value)} />
-            </label>
-            <label className="block text-sm">
-              {t("account.phone")}
-              <Input className="mt-1" value={phone} onChange={(e) => setPhone(e.target.value)} inputMode="tel" />
-            </label>
-            <p className="text-sm text-muted">{user.primaryEmail}</p>
-            <Button type="submit">{t("common.save")}</Button>
-          </form>
+          <>
+            {/* Crown VIP Profile Card */}
+            <div className="mt-5 relative overflow-hidden rounded-3xl border-2 border-amber-400/60 bg-gradient-to-br from-stone-950 via-stone-900 to-amber-950 p-6 text-white shadow-2xl">
+              <div className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-gradient-to-br from-amber-400/25 to-yellow-300/15 blur-2xl" />
+              <div className="relative flex items-center gap-4">
+                <div className="relative size-16 shrink-0 rounded-2xl ring-2 ring-amber-400/80 p-0.5 bg-gradient-to-tr from-amber-400 to-yellow-300 shadow-md shadow-amber-400/30 flex items-center justify-center">
+                  <DeviceAvatar userId={user.id} name={user.displayName} />
+                  <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-amber-400 text-stone-950 text-[10px] font-black shadow-xs">
+                    👑
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-display text-lg font-black text-white truncate">
+                      {name || user.displayName || "OrderKing Royalty"}
+                    </h2>
+                    <span className="rounded-full bg-amber-400/20 border border-amber-400/50 px-2 py-0.2 text-[9px] font-black uppercase tracking-wider text-amber-300">
+                      VIP Gold
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-300 truncate mt-0.5">{user.primaryEmail}</p>
+                  {phone && <p className="text-[11px] font-mono text-amber-200 mt-0.5">📞 {phone}</p>}
+                </div>
+              </div>
+            </div>
+
+            {/* Profile Edit Form */}
+            <form
+              className="mt-4 rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-3.5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void updateProfile({ data: { name, phone, language: lang } }).then(() => toast.success(t("account.saved")));
+              }}
+            >
+              <div className="flex items-center gap-2 pb-2 border-b border-amber-900/10">
+                <span className="text-amber-600 text-sm">✏️</span>
+                <h3 className="text-xs font-black uppercase tracking-wider text-amber-800">
+                  Personal Profile Details
+                </h3>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="block text-xs font-bold text-stone-700">
+                  {t("account.name")}
+                  <Input
+                    className="mt-1 rounded-xl border-amber-200 bg-amber-50/30 text-stone-900 font-medium h-10 text-xs focus:bg-white focus:border-amber-500"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </label>
+                <label className="block text-xs font-bold text-stone-700">
+                  {t("account.phone")}
+                  <Input
+                    className="mt-1 rounded-xl border-amber-200 bg-amber-50/30 text-stone-900 font-medium h-10 text-xs focus:bg-white focus:border-amber-500"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    inputMode="tel"
+                  />
+                </label>
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-xs text-stone-500 font-medium">Primary: {user.primaryEmail}</span>
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-extrabold px-5 rounded-xl shadow-md shadow-orange-500/20 active:scale-95 transition-all text-xs h-9"
+                >
+                  {t("common.save")}
+                </Button>
+              </div>
+            </form>
+          </>
         )}
 
         {/* KINGPAY WALLET & VEHICLE GARAGE */}
@@ -235,39 +310,149 @@ function AccountPage() {
           </section>
         ) : null}
 
-        <nav className="mt-8 space-y-2 text-sm">
-          <Link className="flex min-h-11 items-center justify-between rounded-[var(--radius-md)] bg-surface px-3 py-3 text-fg no-underline border border-border/80 hover:bg-surface-2 transition" to="/settings">
-            <div className="flex items-center gap-2">
-              <span>⚙️</span>
-              <span className="font-medium">App Settings &amp; Language Preferences</span>
+        {/* VIP Navigation Menu */}
+        <nav className="mt-8 space-y-2.5 text-sm">
+          <Link
+            className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-3.5 shadow-xs hover:shadow-md hover:border-amber-300 transition-all no-underline group"
+            to="/settings"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-xs">
+                ⚙️
+              </div>
+              <span className="font-extrabold text-stone-900 group-hover:text-amber-800 transition-colors">
+                App Settings &amp; Language Preferences
+              </span>
             </div>
-            <span className="rounded bg-primary/15 px-2 py-0.5 text-[11px] font-bold text-primary">Language settings</span>
+            <span className="rounded-full bg-blue-50 border border-blue-200 px-2.5 py-0.5 text-[10px] font-bold text-blue-700">
+              12 Languages ➔
+            </span>
           </Link>
-          <Link className="flex min-h-11 items-center justify-between rounded-[var(--radius-md)] bg-surface px-3 py-3 text-fg no-underline" to="/king-pay">
-            <span className="font-medium">💳 KingPay (Wallet, Bills & Travel)</span>
-            <span className="rounded bg-primary/20 px-2 py-0.5 text-[11px] font-bold text-primary">Fintech Hub</span>
+
+          <Link
+            className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-3.5 shadow-xs hover:shadow-md hover:border-amber-300 transition-all no-underline group"
+            to="/king-pay"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-xs">
+                💳
+              </div>
+              <span className="font-extrabold text-stone-900 group-hover:text-amber-800 transition-colors">
+                KingPay (Wallet, Bills &amp; Travel)
+              </span>
+            </div>
+            <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
+              Fintech Hub ➔
+            </span>
           </Link>
-          <Link className="flex min-h-11 items-center justify-between rounded-[var(--radius-md)] bg-surface px-3 py-3 text-fg no-underline" to="/rewards">
-            <span className="font-medium">🎁 King Club Rewards Vault</span>
-            <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300">Fuel & Alliances</span>
+
+          <Link
+            className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-3.5 shadow-xs hover:shadow-md hover:border-amber-300 transition-all no-underline group"
+            to="/rewards"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-xs">
+                🎁
+              </div>
+              <span className="font-extrabold text-stone-900 group-hover:text-amber-800 transition-colors">
+                King Club Rewards Vault
+              </span>
+            </div>
+            <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-[10px] font-bold text-amber-800">
+              Fuel &amp; Alliances ➔
+            </span>
           </Link>
-          <Link className="block min-h-11 rounded-[var(--radius-md)] bg-surface px-3 py-3 text-fg no-underline" to="/offers">
-            {t("account.offers")}
+
+          <Link
+            className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-3.5 shadow-xs hover:shadow-md hover:border-amber-300 transition-all no-underline group"
+            to="/offers"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-rose-500 text-white shadow-xs">
+                🎟️
+              </div>
+              <span className="font-extrabold text-stone-900 group-hover:text-amber-800 transition-colors">
+                {t("account.offers")}
+              </span>
+            </div>
+            <span className="text-xs font-bold text-stone-400 group-hover:text-amber-800">➔</span>
           </Link>
-          <Link className="block min-h-11 rounded-[var(--radius-md)] bg-surface px-3 py-3 text-fg no-underline" to="/support">
-            {t("common.support")}
+
+          <Link
+            className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-3.5 shadow-xs hover:shadow-md hover:border-amber-300 transition-all no-underline group"
+            to="/support"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xs">
+                💬
+              </div>
+              <span className="font-extrabold text-stone-900 group-hover:text-amber-800 transition-colors">
+                {t("common.support")}
+              </span>
+            </div>
+            <span className="rounded-full bg-violet-50 border border-violet-200 px-2.5 py-0.5 text-[10px] font-bold text-violet-700">
+              24x7 AI Bot ➔
+            </span>
           </Link>
-          <Link className="block min-h-11 rounded-[var(--radius-md)] bg-surface px-3 py-3 text-fg no-underline" to="/legal/privacy">
-            {t("account.privacy")}
+
+          <Link
+            className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-3.5 shadow-xs hover:shadow-md hover:border-amber-300 transition-all no-underline group"
+            to="/legal/privacy"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-stone-400 to-stone-600 text-white shadow-xs">
+                🛡️
+              </div>
+              <span className="font-extrabold text-stone-900 group-hover:text-amber-800 transition-colors">
+                {t("account.privacy")}
+              </span>
+            </div>
+            <span className="text-xs font-bold text-stone-400 group-hover:text-amber-800">➔</span>
           </Link>
-          <Link className="block min-h-11 rounded-[var(--radius-md)] bg-surface px-3 py-3 text-fg no-underline" to="/legal/terms">
-            {t("account.terms")}
+
+          <Link
+            className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-3.5 shadow-xs hover:shadow-md hover:border-amber-300 transition-all no-underline group"
+            to="/legal/terms"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-stone-400 to-stone-600 text-white shadow-xs">
+                ⚖️
+              </div>
+              <span className="font-extrabold text-stone-900 group-hover:text-amber-800 transition-colors">
+                {t("account.terms")}
+              </span>
+            </div>
+            <span className="text-xs font-bold text-stone-400 group-hover:text-amber-800">➔</span>
           </Link>
-          <Link className="block min-h-11 rounded-[var(--radius-md)] bg-surface px-3 py-3 text-fg no-underline" to="/legal/refunds">
-            {t("account.refunds")}
+
+          <Link
+            className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-3.5 shadow-xs hover:shadow-md hover:border-amber-300 transition-all no-underline group"
+            to="/legal/refunds"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-stone-400 to-stone-600 text-white shadow-xs">
+                ↩️
+              </div>
+              <span className="font-extrabold text-stone-900 group-hover:text-amber-800 transition-colors">
+                {t("account.refunds")}
+              </span>
+            </div>
+            <span className="text-xs font-bold text-stone-400 group-hover:text-amber-800">➔</span>
           </Link>
-          <Link className="block min-h-11 rounded-[var(--radius-md)] bg-surface px-3 py-3 text-fg no-underline" to="/about">
-            {t("account.about", { name: brand.appName })}
+
+          <Link
+            className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-3.5 shadow-xs hover:shadow-md hover:border-amber-300 transition-all no-underline group"
+            to="/about"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-white shadow-xs">
+                👑
+              </div>
+              <span className="font-extrabold text-stone-900 group-hover:text-amber-800 transition-colors">
+                {t("account.about", { name: brand.appName })}
+              </span>
+            </div>
+            <span className="text-xs font-bold text-stone-400 group-hover:text-amber-800">➔</span>
           </Link>
         </nav>
 

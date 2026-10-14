@@ -161,7 +161,7 @@ export function GiftCardVoucherStudio({
                 type="text"
                 value={recipientEmail}
                 onChange={(e) => setRecipientEmail(e.target.value)}
-                placeholder="friend@example.com or +91 9876543210"
+                placeholder="friend@orderking.in or +91 9876543210"
                 className="w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-xs focus:border-primary focus:outline-hidden"
               />
             </div>

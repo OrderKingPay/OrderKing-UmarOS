@@ -1,9 +1,29 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import {
+  MapPin,
+  ShieldCheck,
+  Check,
+  Clock,
+  Bike,
+  Lock,
+  Sparkles,
+  Crown,
+  CreditCard,
+  Wallet,
+  Banknote,
+  Gift,
+  Leaf,
+  Heart,
+  ArrowLeft,
+  ChevronRight,
+  Edit3,
+} from "lucide-react";
 import { toast } from "sonner";
 import { QuoteLines } from "@/components/market/quote-lines";
 import { CheckoutUpsellEngine } from "@/components/market/checkout-upsell-engine";
+import { LocationDialog } from "@/components/market/location-dialog";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +64,7 @@ function CheckoutPage() {
   const [tipPaise, setTipPaise] = useState<number>(0);
   const [noCutlery, setNoCutlery] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [locationPickerOpen, setLocationPickerOpen] = useState(false);
   const navigate = useNavigate();
 
   const DELIVERY_INSTRUCTIONS = [
@@ -96,10 +117,10 @@ function CheckoutPage() {
   if (isPending) {
     return (
       <CustomerShell>
-        <div className="p-6 space-y-4 animate-pulse">
-          <div className="h-8 w-1/3 bg-neutral-200 dark:bg-neutral-800 rounded-xl" />
-          <div className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-2xl" />
-          <div className="h-24 bg-neutral-200 dark:bg-neutral-800 rounded-2xl" />
+        <div className="p-6 max-w-3xl mx-auto space-y-4 animate-pulse">
+          <div className="h-10 w-1/3 bg-amber-500/20 rounded-2xl" />
+          <div className="h-40 bg-zinc-200 dark:bg-zinc-800 rounded-3xl" />
+          <div className="h-32 bg-zinc-200 dark:bg-zinc-800 rounded-3xl" />
         </div>
       </CustomerShell>
     );
@@ -128,7 +149,7 @@ function CheckoutPage() {
       return;
     }
     if (!location.line1.trim()) {
-      toast.error(t("checkout.needAddress"));
+      toast.error(t("checkout.needAddress") || "Please select a valid delivery address.");
       return;
     }
     if (!location.zoneId || !Number.isFinite(location.lat) || !Number.isFinite(location.lng)) {
@@ -198,16 +219,23 @@ function CheckoutPage() {
                 },
               });
         clear();
-        toast.success(t("orders.placed"));
+        toast.success(t("orders.placed") || "Order successfully placed! 👑");
         void navigate({ to: "/orders/$id", params: { id: result.orderId } });
       };
 
       if (method === "RAZORPAY_ONLINE") {
         const rzpOrder = await createRazorpayOrder({
           data: {
-            restaurantId, zoneId: location.zoneId, lat: location.lat, lng: location.lng,
-            lines: items, coupon, tipPaise: safeTipPaise,
-            amountPaise: totalPayable, currency: "INR", receipt: idempotencyKey,
+            restaurantId,
+            zoneId: location.zoneId,
+            lat: location.lat,
+            lng: location.lng,
+            lines: items,
+            coupon,
+            tipPaise: safeTipPaise,
+            amountPaise: totalPayable,
+            currency: "INR",
+            receipt: idempotencyKey,
           },
         });
         if (rzpOrder.amountPaise !== totalPayable) {
@@ -257,7 +285,7 @@ function CheckoutPage() {
             contact: (user as any).phone ?? "",
           },
           theme: {
-            color: cfg.brand.primaryColor,
+            color: "#F59E0B",
           },
         };
         const RazorpayCtor = (window as unknown as { Razorpay?: new (opts: unknown) => any }).Razorpay;
@@ -282,432 +310,600 @@ function CheckoutPage() {
 
   return (
     <CustomerShell>
-      <div className="px-4 py-5">
-        <h1 className="font-display text-3xl">{t("checkout.title")}</h1>
-        {!items.length ? (
-          <p className="mt-6 text-muted">{t("cart.empty")}</p>
-        ) : (
-          <>
-            <section className="mt-6">
-              <h2 className="text-sm font-medium text-muted">{t("checkout.address")}</h2>
-              <p className="mt-1 font-medium">{location.label}</p>
-              <p className="text-sm text-muted">{location.line1}</p>
-            </section>
+      <div className="min-h-[85vh] bg-gradient-to-b from-amber-500/10 via-white to-amber-50/20 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-32 px-3 sm:px-6 py-6">
+        <div className="max-w-3xl mx-auto space-y-6">
 
-            {/* Factual Restaurant & Zone Availability Banner */}
-            {!restaurantOpen ? (
-              <div className="mt-4 flex items-center gap-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3.5 shadow-sm">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-600 text-xl">
-                  ⛔
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-sm font-bold tracking-tight text-rose-700 dark:text-rose-400">
-                    Restaurant Currently Closed
-                  </h3>
-                  <p className="mt-0.5 text-xs font-medium text-rose-600/80 dark:text-rose-300/80">
-                    {restaurantName || "This kitchen"} is outside operating hours or temporarily unavailable for checkout.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="mt-4 flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3.5 shadow-sm">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 text-xl">
-                  ✓
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-sm font-bold tracking-tight text-emerald-800 dark:text-emerald-300">
-                    Verified Delivery Zone &amp; Kitchen Availability
-                  </h3>
-                  <p className="mt-0.5 text-xs font-medium text-muted">
-                    {restaurantName || "Kitchen"} is open and accepting orders for {location.zoneName || location.label}. All prices are calculated in server-authoritative integer paise.
-                  </p>
-                </div>
-              </div>
-            )}
+          {/* Luxury Breadcrumb / Step Indicator */}
+          <div className="flex items-center justify-between px-2">
+            <Link
+              to="/cart"
+              className="flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-amber-600 transition"
+            >
+              <ArrowLeft className="size-3.5" />
+              <span>Back to Cart</span>
+            </Link>
 
-            {/* WhatsApp Deep-Link Sharing Component */}
-            <WhatsAppShare variant="checkout" orderTotalPaise={totalPayable} className="mt-4" />
+            <div className="flex items-center gap-2 text-xs font-black">
+              <span className="text-zinc-400">Cart ✓</span>
+              <span className="text-amber-500">──</span>
+              <span className="rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 px-2.5 py-0.5 shadow-xs">
+                2. Royal Checkout
+              </span>
+              <span className="text-zinc-300">──</span>
+              <span className="text-zinc-400">3. Feast</span>
+            </div>
+          </div>
 
-            {/* Ordering for someone else? (Zomato-style) */}
-            <section className="mt-4 rounded-[var(--radius-xl)] border border-border bg-surface p-4">
-              <label className="flex cursor-pointer items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-xl">🎁</span>
-                  <div>
-                    <span className="block text-sm font-semibold">Ordering for someone else?</span>
-                    <span className="block text-xs text-muted">Delivery partner will call the recipient</span>
-                  </div>
+          {/* Top Royal Banner */}
+          <div className="rounded-3xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 via-yellow-400/25 to-amber-600/15 p-4 sm:p-5 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-md text-xl">
+                  👑
                 </div>
-                <input
-                  type="checkbox"
-                  className="size-4 rounded border-border text-primary focus:ring-primary"
-                  checked={forSomeoneElse}
-                  onChange={(e) => setForSomeoneElse(e.target.checked)}
-                />
-              </label>
-              {forSomeoneElse && (
-                <div className="mt-3 grid gap-3 border-t border-border/60 pt-3 sm:grid-cols-2">
-                  <div>
-                    <label className="block text-xs font-medium text-muted">Recipient Name</label>
-                    <Input
-                      className="mt-1 text-sm"
-                      placeholder="e.g. Rahul Sharma"
-                      value={recipientName}
-                      onChange={(e) => setRecipientName(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-muted">Recipient Phone</label>
-                    <Input
-                      className="mt-1 text-sm"
-                      placeholder="e.g. 9876543210"
-                      type="tel"
-                      value={recipientPhone}
-                      onChange={(e) => setRecipientPhone(e.target.value)}
-                    />
-                  </div>
-                </div>
-              )}
-            </section>
-
-            {/* Eco-friendly Cutlery Option (Zomato-style) */}
-            <section className="mt-4 rounded-[var(--radius-xl)] border border-emerald-500/20 bg-emerald-500/5 p-4">
-              <label className="flex cursor-pointer items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-xl">🌱</span>
-                  <div>
-                    <span className="block text-sm font-semibold text-emerald-900 dark:text-emerald-300">
-                      Don&apos;t send cutlery
-                    </span>
-                    <span className="block text-xs text-muted">
-                      Help reduce plastic waste. Thank you for caring for nature!
-                    </span>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  className="size-4 rounded border-emerald-500 text-emerald-600 focus:ring-emerald-500"
-                  checked={noCutlery}
-                  onChange={(e) => setNoCutlery(e.target.checked)}
-                />
-              </label>
-            </section>
-
-            {/* Delivery Instructions (Zomato-style chips) */}
-            <section className="mt-6">
-              <h2 className="text-sm font-medium text-muted">Delivery instructions for rider</h2>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {DELIVERY_INSTRUCTIONS.map((chip) => {
-                  const active = notes.includes(chip);
-                  return (
-                    <button
-                      key={chip}
-                      type="button"
-                      onClick={() => toggleInstruction(chip)}
-                      className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
-                        active
-                          ? "border-primary bg-primary text-fg"
-                          : "border-border bg-surface text-muted hover:border-primary/50"
-                      }`}
-                    >
-                      {active ? "✓ " : "+ "}
-                      {chip}
-                    </button>
-                  );
-                })}
-              </div>
-              <Input
-                className="mt-2 text-sm"
-                placeholder="Add more details (e.g. Landmark, directions)..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </section>
-
-            {/* Delivery Partner Tip (Zomato-style) */}
-            <section className="mt-6 rounded-[var(--radius-xl)] border border-primary/15 bg-primary/5 p-4">
-              <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm font-semibold text-primary">Tip your delivery partner</h2>
-                  <p className="text-xs text-muted">100% of your tip goes directly to the partner</p>
+                  <h1 className="font-display text-xl sm:text-2xl font-black text-zinc-950 dark:text-amber-100 tracking-tight">
+                    {t("checkout.title") || "Secure Royal Checkout"}
+                  </h1>
+                  <p className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                    Delivering fresh from <span className="text-amber-800 dark:text-amber-300 font-extrabold">{restaurantName || "Kitchen"}</span>
+                  </p>
                 </div>
-                <span className="text-xl">🛵</span>
               </div>
-              <div className="mt-3 grid grid-cols-5 gap-2">
-                {TIP_OPTIONS.map((opt) => {
-                  const selected = safeTipPaise === opt.value;
-                  return (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => setTipPaise(opt.value)}
-                      className={`flex flex-col items-center justify-center rounded-[var(--radius-lg)] border py-2 text-center transition ${
-                        selected
-                          ? "border-primary bg-primary font-bold text-fg shadow-sm"
-                          : "border-border bg-surface text-sm font-medium hover:bg-surface/80"
-                      }`}
-                    >
-                      {opt.emoji && <span className="text-xs">{opt.emoji}</span>}
-                      <span className="text-xs">{opt.label}</span>
-                    </button>
-                  );
-                })}
+
+              <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                <Lock className="size-3.5 text-emerald-600" />
+                <span>256-bit SSL</span>
               </div>
-              {safeTipPaise > 0 && (
-                <p className="mt-2 text-center text-xs font-medium text-primary">
-                  Added {formatPaise(safeTipPaise, { locale })} tip for your delivery partner! ❤️
-                </p>
-              )}
-            </section>
+            </div>
+          </div>
 
-            {restaurantId && items.length > 0 && (
-              <CheckoutUpsellEngine
-                restaurantId={restaurantId}
-                restaurantName={restaurantName}
-                locale={locale}
-                deliveryFeePaise={quote.data?.quote.deliveryFeePaise}
-                currentSubtotalPaise={quote.data?.quote.foodSubtotalPaise}
-              />
-            )}
+          {!items.length ? (
+            <div className="p-8 text-center rounded-3xl bg-surface border border-zinc-200">
+              <p className="text-muted">{t("cart.empty")}</p>
+              <Button asChild className="mt-4 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-bold">
+                <Link to="/">Browse Restaurants</Link>
+              </Button>
+            </div>
+          ) : (
+            <>
+              {/* 1. ADDRESS SELECTION WITH MAP PREVIEW */}
+              <section className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-5 shadow-md space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600">
+                      <MapPin className="size-5" />
+                    </div>
+                    <div>
+                      <h2 className="font-display text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-50">
+                        {t("checkout.address") || "Delivery Address"}
+                      </h2>
+                      <p className="text-xs text-zinc-400">Where should we deliver your feast?</p>
+                    </div>
+                  </div>
 
-            <section className="mt-6">
-              <h2 className="text-sm font-medium text-muted">{t("checkout.pay")}</h2>
+                  <button
+                    type="button"
+                    onClick={() => setLocationPickerOpen(true)}
+                    className="flex items-center gap-1.5 rounded-xl border border-amber-400/40 bg-amber-50 dark:bg-zinc-800 px-3 py-1.5 text-xs font-black text-amber-900 dark:text-amber-200 hover:bg-amber-100 transition shadow-xs cursor-pointer"
+                  >
+                    <Edit3 className="size-3.5" />
+                    <span>Change</span>
+                  </button>
+                </div>
 
-              {/* KingPay Wallet (Database-verified balance) */}
-              <div
-                className={`mt-2 rounded-[var(--radius-lg)] border-2 transition ${
-                  method === "KING_PAY" ? "border-primary bg-primary/5 p-3.5" : "border-border bg-surface p-3"
-                }`}
-              >
-                <label className="flex cursor-pointer items-start gap-3">
-                  <input
-                    type="radio"
-                    name="pay"
-                    className="mt-1 size-4 text-primary focus:ring-primary"
-                    checked={method === "KING_PAY"}
-                    onChange={() => setMethod("KING_PAY")}
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="block font-semibold text-foreground">💳 KingPay Wallet</span>
-                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-                          Ledger Verified
-                        </span>
+                <div className="rounded-2xl border border-amber-400/25 bg-white dark:bg-zinc-900 p-4 shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase px-2 py-0.5">
+                      {location.label || "HOME"}
+                    </span>
+                    <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                      {location.zoneName || location.cityName || "Verified Operational Hub"}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-relaxed">
+                    {location.line1 || "Please provide your detailed street address & landmark"}
+                  </p>
+                </div>
+
+                {/* Interactive Route Map Preview Visualization */}
+                <div className="rounded-2xl border border-zinc-900/10 dark:border-zinc-800 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-4 text-white shadow-inner relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-3 opacity-10">
+                    <Bike className="size-28" />
+                  </div>
+
+                  <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-xs text-amber-400 font-extrabold uppercase tracking-wider">
+                        <Sparkles className="size-3.5" />
+                        <span>Live Delivery Route Preview</span>
                       </div>
-                      <span
-                        className={`text-xs font-bold ${
-                          isKingPaySufficient
-                            ? "text-emerald-600 dark:text-emerald-400"
-                            : "text-amber-600 dark:text-amber-400"
+                      <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
+                        <span>🍳 {restaurantName || "Kitchen"}</span>
+                        <span className="text-amber-400">┈┈┈ 🛵 ┈┈┈</span>
+                        <span>📍 {location.label || "Your Location"}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-xl bg-amber-400/20 border border-amber-400/40 px-2.5 py-1 text-xs font-black text-amber-300">
+                        ⚡ ~25-30 Mins
+                      </span>
+                      <span className="text-[11px] font-mono text-zinc-400">
+                        [{location.lat.toFixed(2)}, {location.lng.toFixed(2)}]
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Kitchen & Zone Availability Banner */}
+              {!restaurantOpen ? (
+                <div className="flex items-center gap-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 shadow-sm">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 text-xl font-bold">
+                    ⛔
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-rose-700 dark:text-rose-400">
+                      Restaurant Outside Operating Hours
+                    </h3>
+                    <p className="text-xs text-rose-600/80 dark:text-rose-300/80 mt-0.5">
+                      {restaurantName || "This kitchen"} is currently closed and not accepting new checkout requests.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-4 shadow-sm">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 font-black">
+                    ✓
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                      <span>Verified Kitchen &amp; Delivery Zone</span>
+                      <span className="text-[10px] rounded-full bg-emerald-500/20 px-2 py-0.2 font-black">
+                        LIVE
+                      </span>
+                    </h3>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                      OrderKing connects with {restaurantName || "kitchen"} via active dispatch network. Real-time integer-paise quote guaranteed.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Ordering for someone else (Zomato-style) */}
+              <section className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
+                <label className="flex cursor-pointer items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-700">
+                      <Gift className="size-5" />
+                    </div>
+                    <div>
+                      <span className="block font-display text-sm font-bold text-zinc-900 dark:text-zinc-50">
+                        Ordering for someone else?
+                      </span>
+                      <span className="block text-xs text-zinc-500">Delivery partner will call the recipient directly</span>
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="size-5 rounded-lg border-amber-400 text-amber-500 focus:ring-amber-400"
+                    checked={forSomeoneElse}
+                    onChange={(e) => setForSomeoneElse(e.target.checked)}
+                  />
+                </label>
+
+                {forSomeoneElse && (
+                  <div className="mt-4 grid gap-3 border-t border-amber-400/20 pt-4 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                        Recipient Name
+                      </label>
+                      <Input
+                        className="mt-1 text-sm rounded-xl border-amber-400/40 focus:border-amber-500"
+                        placeholder="e.g. Priya Sharma"
+                        value={recipientName}
+                        onChange={(e) => setRecipientName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                        Recipient Phone Number
+                      </label>
+                      <Input
+                        className="mt-1 text-sm rounded-xl border-amber-400/40 focus:border-amber-500"
+                        placeholder="e.g. 9876543210"
+                        type="tel"
+                        value={recipientPhone}
+                        onChange={(e) => setRecipientPhone(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+              </section>
+
+              {/* Eco-Friendly Cutlery Option */}
+              <section className="rounded-3xl border border-emerald-400/30 bg-gradient-to-r from-emerald-500/10 via-white to-emerald-500/5 dark:from-emerald-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
+                <label className="flex cursor-pointer items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600">
+                      <Leaf className="size-5" />
+                    </div>
+                    <div>
+                      <span className="block font-display text-sm font-bold text-emerald-950 dark:text-emerald-200">
+                        Don&apos;t send plastic cutlery
+                      </span>
+                      <span className="block text-xs text-zinc-500">
+                        Help reduce single-use plastic waste. Thank you for protecting nature! 🌱
+                      </span>
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="size-5 rounded-lg border-emerald-500 text-emerald-600 focus:ring-emerald-500"
+                    checked={noCutlery}
+                    onChange={(e) => setNoCutlery(e.target.checked)}
+                  />
+                </label>
+              </section>
+
+              {/* Delivery Instructions Chips */}
+              <section className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm space-y-3">
+                <h2 className="font-display text-sm font-extrabold text-zinc-900 dark:text-zinc-50">
+                  Delivery instructions for rider
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {DELIVERY_INSTRUCTIONS.map((chip) => {
+                    const active = notes.includes(chip);
+                    return (
+                      <button
+                        key={chip}
+                        type="button"
+                        onClick={() => toggleInstruction(chip)}
+                        className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition shadow-2xs ${
+                          active
+                            ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 shadow-xs"
+                            : "bg-surface border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100"
                         }`}
                       >
-                        Balance:{" "}
-                        {checkoutCtx.isPending
-                          ? "Checking..."
-                          : formatPaise(walletBalancePaise, { locale })}
-                      </span>
-                    </div>
-                    <span className="block text-xs text-muted mt-0.5">
-                      Atomic wallet debit with row-level lock verification.
-                    </span>
-                  </div>
-                </label>
+                        {active ? "✓ " : "+ "}
+                        {chip}
+                      </button>
+                    );
+                  })}
+                </div>
+                <Input
+                  className="text-sm rounded-xl border-amber-400/40 focus:border-amber-500"
+                  placeholder="Add specific landmark, gate code, or floor directions..."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+              </section>
 
-                {method === "KING_PAY" && (
-                  <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs">
-                    <span className="text-muted">
-                      Available Wallet:{" "}
-                      <strong className="text-foreground">
-                        {formatPaise(walletBalancePaise, { locale })}
-                      </strong>
-                      {!isKingPaySufficient && totalPayable > 0 && (
-                        <span className="ml-2 text-rose-600 dark:text-rose-400 font-medium">
-                          (Short by {formatPaise(totalPayable - walletBalancePaise, { locale })})
-                        </span>
-                      )}
-                    </span>
-                    <Link to="/king-pay" className="font-semibold text-primary hover:underline">
-                      + Add Money / Recharges
-                    </Link>
+              {/* Delivery Partner Tip (Zomato-style) */}
+              <section className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="font-display text-sm font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-1.5">
+                      <Heart className="size-4 text-rose-500 fill-rose-500" />
+                      <span>Tip your delivery partner</span>
+                    </h2>
+                    <p className="text-xs text-zinc-500">100% of your generous tip goes straight to the rider</p>
                   </div>
+                  <span className="text-2xl">🛵</span>
+                </div>
+
+                <div className="grid grid-cols-5 gap-2">
+                  {TIP_OPTIONS.map((opt) => {
+                    const selected = safeTipPaise === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setTipPaise(opt.value)}
+                        className={`flex flex-col items-center justify-center rounded-2xl py-2.5 transition active:scale-95 cursor-pointer ${
+                          selected
+                            ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black shadow-md border-transparent"
+                            : "bg-surface border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100"
+                        }`}
+                      >
+                        {opt.emoji && <span className="text-xs">{opt.emoji}</span>}
+                        <span className="text-xs font-bold">{opt.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {safeTipPaise > 0 && (
+                  <p className="text-center text-xs font-bold text-amber-700 dark:text-amber-300">
+                    🎉 Added {formatPaise(safeTipPaise, { locale })} tip for your delivery partner! Thank you!
+                  </p>
                 )}
-              </div>
+              </section>
 
-              {/* Verified Online UPI / Cards via Razorpay Gateway */}
-              <div
-                className={`mt-3 overflow-hidden rounded-2xl border transition-all duration-300 ${
-                  method === "RAZORPAY_ONLINE"
-                    ? "border-black dark:border-white shadow-xl bg-gradient-to-br from-zinc-50 to-zinc-100/50 dark:from-zinc-900 dark:to-black"
-                    : "border-border bg-surface hover:border-zinc-300 dark:hover:border-zinc-700"
-                }`}
-              >
-                <label className="flex cursor-pointer items-start gap-4 p-4">
+              {/* Checkout Upsell Engine */}
+              {restaurantId && items.length > 0 && (
+                <CheckoutUpsellEngine
+                  restaurantId={restaurantId}
+                  restaurantName={restaurantName}
+                  locale={locale}
+                  deliveryFeePaise={quote.data?.quote.deliveryFeePaise}
+                  currentSubtotalPaise={quote.data?.quote.foodSubtotalPaise}
+                />
+              )}
+
+              {/* 2. PAYMENT METHOD SELECTION WITH KINGPAY GOLD HIGHLIGHT */}
+              <section className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-5 shadow-md space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-display text-base font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                    <CreditCard className="size-4 text-amber-600" />
+                    <span>Select Payment Method</span>
+                  </h2>
+                  <span className="text-xs text-emerald-600 font-bold flex items-center gap-1">
+                    <ShieldCheck className="size-3.5" />
+                    Zero Extra Fees
+                  </span>
+                </div>
+
+                {/* KingPay Wallet: Royal 24k Gold Highlight Card */}
+                <div
+                  className={`rounded-2xl border-2 transition-all p-4 duration-300 ${
+                    method === "KING_PAY"
+                      ? "border-amber-400 bg-gradient-to-br from-amber-500/20 via-yellow-400/15 to-amber-600/20 shadow-[0_8px_25px_rgba(245,158,11,0.25)]"
+                      : "border-amber-400/30 bg-amber-500/5 hover:border-amber-400/60"
+                  }`}
+                >
+                  <label className="flex cursor-pointer items-start gap-3.5">
+                    <input
+                      type="radio"
+                      name="pay"
+                      className="mt-1 size-5 text-amber-500 focus:ring-amber-400"
+                      checked={method === "KING_PAY"}
+                      onChange={() => setMethod("KING_PAY")}
+                    />
+                    <div className="flex-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-xs">
+                            👑
+                          </span>
+                          <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
+                            KingPay Royal Wallet
+                          </span>
+                          <span className="rounded-full bg-amber-500/30 border border-amber-500/40 px-2 py-0.2 text-[9px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                            Instant 1-Click
+                          </span>
+                        </div>
+
+                        <span
+                          className={`text-xs font-black tabular-nums ${
+                            isKingPaySufficient
+                              ? "text-emerald-700 dark:text-emerald-400"
+                              : "text-amber-800 dark:text-amber-300"
+                          }`}
+                        >
+                          Balance: {checkoutCtx.isPending ? "Checking..." : formatPaise(walletBalancePaise, { locale })}
+                        </span>
+                      </div>
+
+                      <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                        Atomic ledger debit with row-level transaction safety. 0% gateway drop rate.
+                      </p>
+                    </div>
+                  </label>
+
+                  {method === "KING_PAY" && (
+                    <div className="mt-3 flex items-center justify-between border-t border-amber-400/30 pt-3 text-xs">
+                      <span className="text-zinc-600 dark:text-zinc-400">
+                        Available:{" "}
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">
+                          {formatPaise(walletBalancePaise, { locale })}
+                        </strong>
+                        {!isKingPaySufficient && totalPayable > 0 && (
+                          <span className="ml-2 font-bold text-rose-600 dark:text-rose-400">
+                            (Short by {formatPaise(totalPayable - walletBalancePaise, { locale })})
+                          </span>
+                        )}
+                      </span>
+                      <Link to="/king-pay" className="font-black text-amber-800 dark:text-amber-300 hover:underline">
+                        + Add Money / Recharges
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Razorpay Online Checkout (UPI / Cards) */}
+                <div
+                  className={`rounded-2xl border-2 transition-all p-4 duration-300 ${
+                    method === "RAZORPAY_ONLINE"
+                      ? "border-zinc-950 dark:border-white bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 shadow-lg"
+                      : "border-zinc-200 dark:border-zinc-800 bg-surface hover:border-zinc-400"
+                  }`}
+                >
+                  <label className="flex cursor-pointer items-start gap-3.5">
+                    <input
+                      type="radio"
+                      name="pay"
+                      className="mt-1 size-5 accent-zinc-950 dark:accent-white"
+                      checked={method === "RAZORPAY_ONLINE"}
+                      onChange={() => setMethod("RAZORPAY_ONLINE")}
+                    />
+                    <div className="flex-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                        <span className="font-display font-black text-sm sm:text-base text-zinc-900 dark:text-zinc-50">
+                          UPI / Cards / NetBanking
+                        </span>
+                        <span className="rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider self-start sm:self-auto">
+                          HMAC-SHA256 Verified
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-zinc-500">
+                        Instant gateway verification via GPay, PhonePe, Paytm, or Credit/Debit Cards
+                      </p>
+                    </div>
+                  </label>
+
+                  {method === "RAZORPAY_ONLINE" && (
+                    <div className="mt-3 border-t border-zinc-200 dark:border-zinc-800 pt-3">
+                      <p className="text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-2">
+                        Preferred Payment App ({preferredUpiApp})
+                      </p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {(["GPay", "PhonePe", "Paytm", "Cards"] as const).map((appLabel) => {
+                          const isSelected = preferredUpiApp === appLabel;
+                          const icon =
+                            appLabel === "GPay" ? "🟢" : appLabel === "PhonePe" ? "🟣" : appLabel === "Paytm" ? "🔵" : "💳";
+                          return (
+                            <button
+                              key={appLabel}
+                              type="button"
+                              onClick={() => {
+                                setMethod("RAZORPAY_ONLINE");
+                                setPreferredUpiApp(appLabel);
+                                toast.info(`${appLabel} selected. Tap "Place Order" to pay.`);
+                              }}
+                              className={`flex flex-col items-center justify-center rounded-xl border p-2.5 transition active:scale-95 cursor-pointer ${
+                                isSelected
+                                  ? "border-amber-400 bg-amber-500/15 text-zinc-950 dark:text-amber-100 font-black shadow-xs"
+                                  : "border-zinc-200 dark:border-zinc-800 bg-surface text-zinc-700 dark:text-zinc-300"
+                              }`}
+                            >
+                              <span className="text-xl">{icon}</span>
+                              <span className="text-[11px] font-bold mt-1">{appLabel}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Cash on Delivery (COD) */}
+                <label
+                  className={`flex cursor-pointer items-start gap-3.5 rounded-2xl border-2 p-4 transition-all ${
+                    method === "COD"
+                      ? "border-amber-400 bg-amber-500/15"
+                      : "border-zinc-200 dark:border-zinc-800 bg-surface"
+                  } ${!isCodEligible ? "opacity-50" : ""}`}
+                >
                   <input
                     type="radio"
                     name="pay"
-                    className="mt-1.5 size-4 accent-black dark:accent-white focus:ring-black dark:focus:ring-white"
-                    checked={method === "RAZORPAY_ONLINE"}
-                    onChange={() => setMethod("RAZORPAY_ONLINE")}
+                    className="mt-1 size-5 text-amber-500"
+                    checked={method === "COD"}
+                    disabled={!isCodEligible}
+                    onChange={() => setMethod("COD")}
                   />
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="block font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                        UPI / Cards Online Checkout
+                      <span className="font-display font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-50">
+                        {t("checkout.cod") || "Cash on Delivery"}
                       </span>
-                      <span className="flex items-center gap-1 rounded-full bg-zinc-900 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm dark:bg-white dark:text-black">
-                        HMAC-SHA256 Verified
+                      <span className="text-xs font-semibold text-zinc-500">
+                        Max {formatPaise(codMaxPaise, { locale })}
                       </span>
                     </div>
-                    <span className="mt-1 block text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
-                      Cryptographic gateway order &amp; signature verification before order placement
-                    </span>
+                    <p className="mt-1 text-xs text-zinc-500">
+                      {isCodEligible
+                        ? "Pay cash or scan rider's QR code upon delivery"
+                        : `Cash on Delivery is unavailable for orders above ${formatPaise(codMaxPaise, { locale })}.`}
+                    </p>
                   </div>
                 </label>
+              </section>
 
-                {method === "RAZORPAY_ONLINE" && (
-                  <div className="border-t border-black/5 bg-white/50 px-4 pb-4 pt-3 backdrop-blur-sm dark:border-white/5 dark:bg-zinc-900/50">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                      Preferred Payment Instrument ({preferredUpiApp})
-                    </p>
-                    <div className="mt-3 grid grid-cols-4 gap-2.5">
-                      {(["GPay", "PhonePe", "Paytm", "Cards/NetBanking"] as const).map((appLabel) => {
-                        const isSelected = preferredUpiApp === appLabel;
-                        const icon =
-                          appLabel === "GPay"
-                            ? "🟢"
-                            : appLabel === "PhonePe"
-                              ? "🟣"
-                              : appLabel === "Paytm"
-                                ? "🔵"
-                                : "💳";
-                        return (
-                          <button
-                            key={appLabel}
-                            type="button"
-                            onClick={() => {
-                              setMethod("RAZORPAY_ONLINE");
-                              setPreferredUpiApp(appLabel);
-                              toast.info(`${appLabel} selected. Click 'Place Order' below to complete verified payment.`);
-                            }}
-                            className={`group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border p-3 text-center shadow-sm transition-all ${
-                              isSelected
-                                ? "border-black bg-zinc-100 dark:border-white dark:bg-zinc-800"
-                                : "border-zinc-200 bg-white hover:border-black dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-white"
-                            }`}
-                          >
-                            <span className="relative z-10 text-2xl drop-shadow-sm">{icon}</span>
-                            <span className="relative z-10 mt-1.5 text-[10px] font-bold tracking-tight text-zinc-700 dark:text-zinc-300">
-                              {appLabel === "Cards/NetBanking" ? "Cards" : appLabel}
-                            </span>
-                          </button>
-                        );
-                      })}
+              {/* 3. ORDER SUMMARY WITH PREMIUM TYPOGRAPHY */}
+              <div className="rounded-3xl border border-amber-400/30 bg-gradient-to-b from-white via-zinc-50/50 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-900 p-5 sm:p-6 shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                  <h3 className="font-display text-base font-extrabold text-zinc-900 dark:text-zinc-50">
+                    Final Bill Summary
+                  </h3>
+                  <span className="text-xs font-bold text-emerald-600">FSSAI &amp; GST Tax Compliant</span>
+                </div>
+
+                {quote.data ? (
+                  <>
+                    <QuoteLines lines={quote.data.quote.lines} locale={locale} />
+
+                    <div className="rounded-xl border border-dashed border-amber-400/30 p-3 bg-amber-500/5 text-xs text-zinc-600 dark:text-zinc-400 space-y-1">
+                      <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400">
+                        <span>CGST Sec 9(5) Platform Facilitator</span>
+                        <span>FSSAI Verified Commercial Kitchen</span>
+                      </div>
+                      <div className="flex justify-between font-medium">
+                        <span>Statutory Restaurant GST (2.5% + 2.5%)</span>
+                        <span>
+                          {quote.data.quote.taxPaise > 0
+                            ? formatPaise(quote.data.quote.taxPaise, { locale })
+                            : "Inclusive"}
+                        </span>
+                      </div>
                     </div>
-                  </div>
+
+                    {safeTipPaise > 0 && (
+                      <div className="flex justify-between border-t border-zinc-200 dark:border-zinc-800 pt-2 text-sm font-bold">
+                        <span className="text-zinc-600 dark:text-zinc-300">Delivery Partner Tip</span>
+                        <span className="text-amber-600">+{formatPaise(safeTipPaise, { locale })}</span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-sm text-zinc-400">{t("common.loading") || "Calculating bill..."}</p>
                 )}
               </div>
 
-              {/* Cash on Delivery (COD) with Statutory Eligibility Limit */}
-              <label
-                className={`mt-2 flex min-h-14 cursor-pointer items-start gap-3 rounded-[var(--radius-lg)] border transition ${
-                  method === "COD" ? "border-primary bg-primary/5 p-3.5" : "border-border bg-surface p-3"
-                } ${!isCodEligible ? "opacity-60" : ""}`}
-              >
-                <input
-                  type="radio"
-                  name="pay"
-                  className="mt-1 size-4 text-primary focus:ring-primary"
-                  checked={method === "COD"}
-                  disabled={!isCodEligible}
-                  onChange={() => setMethod("COD")}
-                />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="block font-medium">{t("checkout.cod")}</span>
-                    <span className="text-[11px] font-medium text-muted">
-                      Max {formatPaise(codMaxPaise, { locale })}
+              {/* Gamified Referral Loop */}
+              <ReferralGamifiedLoop source="checkout" className="my-6" />
+
+              {/* 4. PROMINENT GOLDEN PLACE ORDER BUTTON */}
+              <div className="sticky bottom-4 z-40">
+                <button
+                  type="button"
+                  disabled={
+                    busy ||
+                    !quote.data ||
+                    !quote.data.isDeliverable ||
+                    !restaurantOpen ||
+                    (method === "KING_PAY" && !isKingPaySufficient) ||
+                    (method === "COD" && !isCodEligible)
+                  }
+                  onClick={() => void submit()}
+                  className="w-full h-16 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-lg sm:text-xl shadow-[0_12px_40px_rgba(245,158,11,0.55)] hover:shadow-[0_16px_50px_rgba(245,158,11,0.7)] flex items-center justify-center gap-3 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                  aria-label="Place Order"
+                >
+                  {busy ? (
+                    <span className="flex items-center gap-2">
+                      <span className="size-5 border-3 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin" />
+                      <span>Processing Royal Order...</span>
                     </span>
-                  </div>
-                  <span className="block text-xs text-muted mt-0.5">
-                    {isCodEligible
-                      ? `${t("checkout.codHint")} (Cash or verified rider UPI collection upon delivery)`
-                      : `Cash on Delivery is unavailable for orders above ${formatPaise(codMaxPaise, { locale })}.`}
-                  </span>
-                </div>
-              </label>
-            </section>
-
-            <div className="mt-6 rounded-[var(--radius-xl)] bg-surface p-4">
-              {quote.data ? (
-                <>
-                  <QuoteLines lines={quote.data.quote.lines} locale={locale} />
-                  <div className="mt-3 rounded-lg border border-dashed border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50">
-                    <div className="flex justify-between items-center text-[10px] text-zinc-500 font-mono mb-1">
-                      <span>CGST Act Sec 9(5) ECO Compliance</span>
-                      <span>FSSAI Verified Kitchen</span>
-                    </div>
-                    <div className="flex justify-between text-xs text-zinc-600 dark:text-zinc-400">
-                      <span>Restaurant GST (2.5% CGST + 2.5% SGST)</span>
-                      <span>
-                        {quote.data.quote.taxPaise > 0
-                          ? formatPaise(quote.data.quote.taxPaise, { locale })
-                          : "Tax-inclusive menu pricing"}
-                      </span>
-                    </div>
-                  </div>
-                  {safeTipPaise > 0 && (
-                    <div className="mt-2 flex justify-between border-t border-border pt-2 text-sm">
-                      <span className="text-muted">Delivery partner tip</span>
-                      <span className="font-medium text-primary">+{formatPaise(safeTipPaise, { locale })}</span>
-                    </div>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <Lock className="size-5 stroke-[2.5]" />
+                      <span>Place Order • {formatPaise(totalPayable, { locale })}</span>
+                    </span>
                   )}
-                </>
-              ) : (
-                <p>{t("common.loading")}</p>
-              )}
-            </div>
+                </button>
+              </div>
 
-            {/* 'Refer a Friend, Get ₹500' Gamified Viral Loop */}
-            <ReferralGamifiedLoop source="checkout" className="mt-6" />
-
-            {quote.data?.quote.blockers.length ? (
-              <p className="mt-3 text-sm text-warn">
-                {quote.data.quote.blockers.includes("MIN_ORDER")
-                  ? t("cart.minOrder", { amount: formatPaise(quote.data.quote.minOrderPaise, { locale }) })
-                  : t("checkout.blocked")}
-              </p>
-            ) : null}
-
-            <Button
-              className="mt-6 w-full h-14 text-lg font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all active:scale-95"
-              aria-label="Place Order"
-              disabled={
-                busy ||
-                !quote.data ||
-                !quote.data.isDeliverable ||
-                !restaurantOpen ||
-                (method === "KING_PAY" && !isKingPaySufficient) ||
-                (method === "COD" && !isCodEligible)
-              }
-              onClick={() => void submit()}
-            >
-              {busy ? (
-                <span className="flex items-center gap-2">
-                  <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Processing Securely...
+              {/* Security Trust Microcopy */}
+              <div className="flex items-center justify-center gap-4 text-[11px] text-zinc-500 font-medium pt-2">
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="size-3.5 text-emerald-600" />
+                  RBI &amp; NPCI Compliant
                 </span>
-              ) : (
-                "Place Order • " + formatPaise(totalPayable, { locale })
-              )}
-            </Button>
-          </>
-        )}
-        <p className="mt-6 text-sm">
-          <Link to="/cart" className="text-muted">
-            ← {t("cart.title")}
-          </Link>
-        </p>
+                <span>•</span>
+                <span>100% Refund on Kitchen Cancellation</span>
+              </div>
+            </>
+          )}
+
+          {/* Location Dialog for Address Picker */}
+          <LocationDialog
+            open={locationPickerOpen}
+            onOpenChange={setLocationPickerOpen}
+          />
+
+        </div>
       </div>
     </CustomerShell>
   );

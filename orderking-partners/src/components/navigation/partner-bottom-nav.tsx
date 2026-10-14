@@ -29,7 +29,7 @@ export function PartnerFloatingBottomNav({
   return (
     <nav
       role="navigation"
-      aria-label="OrderKing Merchant Navigation"
+      aria-label="Order King Partner Navigation"
       className="fixed inset-x-0 bottom-3 sm:bottom-4 z-40 pointer-events-none mx-auto max-w-lg px-3 sm:px-4 md:hidden"
     >
       <div className="pointer-events-auto relative rounded-[28px] bg-slate-900/90 backdrop-blur-2xl border border-slate-700/60 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5),inset_0_1px_1px_0_rgba(255,255,255,0.15)] px-2 pt-1 pb-1.5 transition-all">
@@ -41,6 +41,8 @@ export function PartnerFloatingBottomNav({
           <li className="w-full flex justify-center">
             <Link
               to="/dashboard"
+              title={t("nav.home") || "Home"}
+              aria-label={t("nav.home") || "Home"}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isHome ? "text-amber-400 font-extrabold" : "text-slate-400 hover:text-slate-200 font-semibold"
@@ -63,6 +65,8 @@ export function PartnerFloatingBottomNav({
           <li className="w-full flex justify-center">
             <Link
               to="/orders"
+              title={pendingOrdersCount > 0 ? `${pendingOrdersCount} orders waiting` : (t("nav.orders") || "Orders")}
+              aria-label={t("nav.orders") || "Live Orders"}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isOrders ? "text-rose-400 font-extrabold" : "text-slate-400 hover:text-slate-200 font-semibold"
@@ -88,13 +92,14 @@ export function PartnerFloatingBottomNav({
             </Link>
           </li>
 
-          {/* 3. SPARK AI CENTERPIECE (RESTAURANT CO-PILOT) - GOLD GLOW */}
+          {/* 3. KING AI CENTERPIECE (RESTAURANT CO-PILOT) - GOLD GLOW */}
           <li className="w-full flex justify-center">
             <button
               type="button"
               onClick={onOpenSpark}
               className="group relative -mt-5 sm:-mt-6 flex flex-col items-center justify-center transition-all duration-300 active:scale-92 cursor-pointer"
-              title="Open Spark Restaurant AI"
+              title="King AI — Restaurant Culinary & Growth Co-Pilot"
+              aria-label="Open King AI Assistant"
             >
               <div className="relative p-[2.5px] rounded-[22px] bg-gradient-to-tr from-amber-500 via-amber-300 to-yellow-200 shadow-[0_8px_25px_rgba(245,158,11,0.45)] group-hover:scale-105 transition-all duration-300">
                 <div className="flex size-12 items-center justify-center rounded-[19.5px] bg-gradient-to-b from-gray-950 via-slate-900 to-black text-amber-300 shadow-inner">
@@ -102,7 +107,7 @@ export function PartnerFloatingBottomNav({
                 </div>
               </div>
               <span className="mt-1 text-[10.5px] font-black tracking-tight text-amber-300 leading-none">
-                Spark AI
+                King AI
               </span>
             </button>
           </li>
@@ -111,6 +116,8 @@ export function PartnerFloatingBottomNav({
           <li className="w-full flex justify-center">
             <Link
               to="/kitchen"
+              title="Kitchen Display Station (KDS)"
+              aria-label={t("nav.kitchen") || "Kitchen"}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isKitchen ? "text-emerald-400 font-extrabold" : "text-slate-400 hover:text-slate-200 font-semibold"
@@ -129,10 +136,12 @@ export function PartnerFloatingBottomNav({
             </Link>
           </li>
 
-          {/* 5. MORE STORE MANAGEMENT */}
+          {/* 5. MORE RESTAURANT FEATURES */}
           <li className="w-full flex justify-center">
             <Link
               to="/more"
+              title="More Restaurant Features"
+              aria-label={t("nav.more") || "More Features"}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isMore ? "text-indigo-400 font-extrabold" : "text-slate-400 hover:text-slate-200 font-semibold"

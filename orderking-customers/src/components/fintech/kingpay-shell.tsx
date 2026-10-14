@@ -1,13 +1,13 @@
 
 import { type ReactNode, useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import { motion, LayoutGroup } from "framer-motion";
-import { Bell, Car, CreditCard, History, Plane, QrCode, ShieldCheck, Search, Sparkles, User, UtilityPole, Wallet, Zap, House, ClipboardList, GraduationCap, UserRound, Crown } from "lucide-react";
+import { Bell, Car, CreditCard, Crown, History, Plane, QrCode, ShieldCheck, Search, Sparkles, User, UtilityPole, Wallet, Zap } from "lucide-react";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { DeviceAvatar } from "@/components/common/device-avatar";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bottom-nav";
 
 export type KingPaySection = "pay" | "garage" | "loan" | "travel" | "bills" | "passbook" | "account" | "wealth";
 
@@ -48,8 +48,7 @@ export function KingPayShell({
       .includes(serviceQuery.trim().toLocaleLowerCase())
   );
   return (
-    <LayoutGroup>
-    <motion.div layout className="min-h-screen bg-gradient-to-tr from-slate-950 via-[#0a0a0f] to-indigo-950 text-slate-50 flex flex-col antialiased selection:bg-amber-400 selection:text-black">
+    <div className="min-h-screen bg-gradient-to-tr from-slate-950 via-[#0a0a0f] to-indigo-950 text-slate-50 flex flex-col antialiased selection:bg-amber-400 selection:text-black pb-24">
       {/* PURE FINTECH DEDICATED KINGPAY TOP APP BAR */}
       <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur-3xl shadow-2xl">
         <div className="mx-auto flex max-w-lg flex-wrap items-center justify-between gap-3 md:max-w-5xl">
@@ -185,80 +184,8 @@ export function KingPayShell({
       {/* MAIN FINTECH CONTENT AREA */}
       <main className="flex-1 pb-24">{children}</main>
 
-      {/* ULTRA-LUXURIOUS STICKY BOTTOM NAVIGATION BAR */}
-      <nav
-        aria-label="App Navigation"
-        className="fixed bottom-0 left-0 right-0 w-full z-50 bg-slate-950/95 backdrop-blur-2xl border-t border-amber-500/30 shadow-[0_-12px_40px_rgba(0,0,0,0.6)] pb-[max(0.5rem,env(safe-area-inset-bottom))]"
-      >
-        {/* Subtle Gold Ambient Sheen Beam */}
-        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/60 to-transparent pointer-events-none" />
-
-        <ul className="mx-auto grid max-w-lg grid-cols-5 items-end justify-items-center relative px-2 pt-2">
-          {/* 1. Delivery */}
-          <NavItem to="/" icon={House} label="Delivery" active={false} />
-
-          {/* 2. Tutor & Jobs */}
-          <NavItem to="/tutor" icon={GraduationCap} label="Tutor & Jobs" active={false} />
-
-          {/* 3. King Pay is the active product destination */}
-          <li className="w-full flex justify-center">
-            <Link
-              to="/king-pay"
-              className="flex flex-col items-center justify-center no-underline relative transition-all -mt-4 sm:-mt-5 group"
-              title="King Pay Home"
-            >
-              <div className="relative p-[2.5px] rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-300 to-yellow-200 shadow-[0_6px_20px_rgba(245,158,11,0.45)] transition-all duration-300 group-hover:scale-105 group-active:scale-95">
-                <div className="flex size-11 sm:size-12 items-center justify-center rounded-[13px] bg-gradient-to-b from-gray-950 via-slate-900 to-black text-amber-300 shadow-inner">
-                  <span className="text-xl sm:text-2xl filter drop-shadow-[0_2px_6px_rgba(245,158,11,0.6)]">
-                    👑
-                  </span>
-                </div>
-              </div>
-              <div className="flex flex-col items-center mt-1">
-                <span className="text-[10px] sm:text-[11px] font-black tracking-tight text-amber-400 group-hover:text-amber-200 flex items-center gap-0.5">
-                  King Pay
-                </span>
-              </div>
-            </Link>
-          </li>
-
-          {/* 4. Travel */}
-          <NavItem to="/travel" icon={Plane} label="Travel" active={activeSection === "travel"} />
-
-          {/* 5. Payment support rather than unrelated food orders. */}
-          <NavItem to="/king-pay/assist" icon={Sparkles} label="King Assist" active={false} />
-        </ul>
-      </nav>
-    </motion.div>
-    </LayoutGroup>
-  );
-}
-
-function NavItem({
-  to,
-  icon: Icon,
-  label,
-  active,
-}: {
-  to: string;
-  icon: typeof House;
-  label: string;
-  active: boolean;
-}) {
-  return (
-    <li className="w-full flex justify-center py-2">
-      <Link
-        to={to}
-        className={cn(
-          "flex flex-col items-center justify-center gap-1 text-[10px] sm:text-xs no-underline relative transition-colors",
-          active ? "text-amber-400 font-bold" : "text-slate-400 hover:text-slate-200 font-medium",
-        )}
-      >
-        <div className="relative flex items-center justify-center h-6 w-6">
-          <Icon className={cn("size-5 sm:size-5.5 transition-transform", active && "scale-110")} aria-hidden />
-        </div>
-        <span className="text-center truncate w-full px-0.5">{label}</span>
-      </Link>
-    </li>
+      {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
+      <CustomerFloatingBottomNav />
+    </div>
   );
 }

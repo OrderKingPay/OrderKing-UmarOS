@@ -143,10 +143,20 @@ function OrderDetailPage() {
     },
   });
 
-  if (isPending) return <CustomerShell><div className="p-6">{t("common.loading")}</div></CustomerShell>;
+  if (isPending || detail.isPending) {
+    return (
+      <CustomerShell>
+        <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] p-6 space-y-4 animate-pulse">
+          <div className="h-6 w-1/4 bg-gradient-to-r from-amber-100 via-amber-200/70 to-amber-100 rounded-xl" />
+          <div className="h-9 w-2/3 bg-gradient-to-r from-amber-100 via-amber-200/70 to-amber-100 rounded-2xl" />
+          <div className="h-44 bg-gradient-to-r from-amber-100/80 via-amber-200/50 to-amber-100/80 rounded-3xl border border-amber-200/50" />
+          <div className="h-40 bg-gradient-to-r from-amber-100/80 via-amber-200/50 to-amber-100/80 rounded-3xl border border-amber-200/50" />
+        </div>
+      </CustomerShell>
+    );
+  }
   if (!user) return <RedirectToSignIn />;
   const order = detail.data?.order;
-  if (detail.isPending) return <CustomerShell><div className="p-6">{t("common.loading")}</div></CustomerShell>;
   if (!order) return <CustomerShell><p className="p-6">{t("common.empty")}</p></CustomerShell>;
 
   const idx = CUSTOMER_TRACK_STEPS.indexOf(order.status as (typeof CUSTOMER_TRACK_STEPS)[number]);
@@ -154,25 +164,84 @@ function OrderDetailPage() {
 
   return (
     <CustomerShell>
-      <div className="px-4 py-5">
-        <p className="text-sm text-muted">{t("orders.copyId", { id: order.summary.publicId })}</p>
-        <h1 className="font-display text-3xl">{order.summary.restaurantName}</h1>
-        <ol className="mt-6 space-y-3">{CUSTOMER_TRACK_STEPS.map((step, i) => <li key={step} className={i <= idx || order.status === step ? "text-fg" : "text-subtle"}><span className="font-medium">{labels[step]}</span></li>)}</ol>
+      <div className="min-h-[calc(100vh-80px)] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-5 pb-28">
+        <div className="flex items-center justify-between">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 border border-amber-300 px-3 py-1 text-xs font-mono font-black text-amber-900 shadow-2xs">
+            👑 #{order.summary.publicId}
+          </span>
+          <span className="text-xs font-black text-stone-900 tabular-nums bg-white border border-amber-200 px-2.5 py-1 rounded-lg">
+            {formatPaise(order.summary.totalPaise, { locale })}
+          </span>
+        </div>
+
+        <h1 className="font-display text-2xl sm:text-3xl font-black text-stone-900 mt-2 tracking-tight">
+          {order.summary.restaurantName}
+        </h1>
+
+        {/* Live Order Timeline Card */}
+        <div className="mt-4 rounded-3xl border border-amber-300/80 bg-gradient-to-br from-white via-amber-50/40 to-yellow-50/20 p-5 shadow-[0_8px_30px_rgba(245,158,11,0.1)]">
+          <div className="flex items-center justify-between pb-3 mb-4 border-b border-amber-900/10">
+            <div className="flex items-center gap-2">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xs shadow-xs">
+                🛵
+              </span>
+              <h2 className="font-display font-extrabold text-stone-900 text-base">
+                Live Order Journey
+              </h2>
+            </div>
+            <span className="rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-0.5 text-[10px] font-black text-white uppercase tracking-wider shadow-2xs">
+              {labels[order.status] || order.status}
+            </span>
+          </div>
+
+          <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-gradient-to-b before:from-amber-400 before:via-orange-400 before:to-emerald-400">
+            {CUSTOMER_TRACK_STEPS.map((step, i) => {
+              const isPastStep = i < idx;
+              const isCurrent = order.status === step;
+              return (
+                <div key={step} className="relative flex items-center justify-between">
+                  <span
+                    className={`absolute -left-6 flex size-5 items-center justify-center rounded-full text-[10px] font-black transition-all ${
+                      isPastStep
+                        ? "bg-gradient-to-tr from-emerald-500 to-teal-500 text-white shadow-xs"
+                        : isCurrent
+                          ? "bg-gradient-to-tr from-amber-500 to-orange-500 text-white shadow-md shadow-orange-500/30 ring-4 ring-amber-300/50 animate-pulse"
+                          : "bg-amber-100 text-amber-500 border border-amber-200"
+                    }`}
+                  >
+                    {isPastStep ? "✓" : isCurrent ? "●" : i + 1}
+                  </span>
+                  <div className="pl-2">
+                    <p className={`text-xs font-bold ${isCurrent ? "text-amber-950 font-black text-sm" : isPastStep ? "text-stone-700" : "text-stone-400"}`}>
+                      {labels[step]}
+                    </p>
+                  </div>
+                  {isCurrent && (
+                    <span className="text-[10px] font-extrabold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-md animate-pulse">
+                      In Progress
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
         
         {/* Zomato-style Instant Cancellation Grace Alert for New Orders */}
         {order.status === "PLACED" ? (
-          <div className="mt-4 flex items-center justify-between rounded-[var(--radius-lg)] border border-amber-500/30 bg-amber-500/10 p-3 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="text-base">⚡</span>
+          <div className="mt-4 flex items-center justify-between rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl">⚡</span>
               <div>
-                <p className="font-semibold text-amber-900 dark:text-amber-300">Order Placed & Sent to Kitchen</p>
-                <p className="text-muted">Instant free cancellation available before kitchen accepts</p>
+                <p className="font-extrabold text-amber-950">Order Placed &amp; Sent to Kitchen</p>
+                <p className="text-stone-600 mt-0.5">Instant free cancellation available before kitchen accepts</p>
               </div>
             </div>
             {order.canCancel ? (
               <Button
                 variant="danger"
                 size="sm"
+                className="rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white font-bold shadow-md shadow-rose-500/20"
                 disabled={cancel.isPending}
                 onClick={() => cancel.mutate()}
               >
@@ -182,14 +251,30 @@ function OrderDetailPage() {
           </div>
         ) : null}
 
-        {order.status === "CANCELLED" ? <p className="mt-4 text-danger">{t("orders.cancelled")}</p> : null}
+        {order.status === "CANCELLED" ? (
+          <p className="mt-4 text-center text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-3">
+            ⚠️ {t("orders.cancelled")}
+          </p>
+        ) : null}
+
         {order.deliveryOtp && !["DELIVERED", "CANCELLED"].includes(order.status) ? (
-          <div className="mt-4 flex items-center justify-between rounded-[var(--radius-lg)] border border-primary/30 bg-primary/5 p-3">
-            <div>
-              <p className="text-xs text-muted font-medium">Delivery Verification OTP</p>
-              <p className="font-mono text-2xl font-bold tracking-widest text-primary">{order.deliveryOtp}</p>
+          <div className="mt-4 rounded-2xl border-2 border-amber-400/90 bg-gradient-to-r from-amber-500/15 via-yellow-400/20 to-amber-500/10 p-4 shadow-[0_8px_25px_rgba(245,158,11,0.18)] flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-white shadow-xs text-xl">
+                🛡️
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-wider text-amber-900">
+                  Delivery Verification OTP
+                </p>
+                <p className="font-mono text-3xl font-black tracking-widest text-stone-900 mt-0.5">
+                  {order.deliveryOtp}
+                </p>
+              </div>
             </div>
-            <p className="max-w-[180px] text-right text-[11px] text-muted">Share this OTP with your delivery partner at door</p>
+            <p className="max-w-[140px] text-right text-[11px] font-medium text-amber-950 leading-tight">
+              Share this OTP only when delivery partner reaches door
+            </p>
           </div>
         ) : null}
 
@@ -709,17 +794,57 @@ function OrderDetailPage() {
           </Button>
         </div>
 
-        {order.summary.dataLabel === "REAL" ? <p className="mt-4 text-sm text-muted">Live status is synchronized from OrderKing Command.</p> : null}
-        <div className="mt-6 rounded-[var(--radius-xl)] bg-surface p-4">
-          <h2 className="mb-3 font-medium">{t("orders.invoice")}</h2>
-          <ul className="mb-3 space-y-1 text-sm">{order.items.map((it: any) => <li key={it.name} className="flex justify-between gap-3"><span>{it.quantity} × {it.name}</span><span className="tabular-nums">{formatPaise(it.lineTotalPaise, { locale })}</span></li>)}</ul>
+        {order.summary.dataLabel === "REAL" ? (
+          <p className="mt-4 text-center text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/80 rounded-xl p-2.5">
+            ✓ Live status synchronized in real-time from OrderKing Command
+          </p>
+        ) : null}
+
+        {/* Detailed Royal Invoice */}
+        <div className="mt-6 rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-amber-900/10">
+            <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xs shadow-xs">
+              🧾
+            </span>
+            <h2 className="font-display font-extrabold text-stone-900 text-base">{t("orders.invoice")}</h2>
+          </div>
+          <ul className="mb-3 space-y-1.5 text-sm">
+            {order.items.map((it: any) => (
+              <li key={it.name} className="flex justify-between gap-3 text-stone-800 font-medium">
+                <span>{it.quantity} × {it.name}</span>
+                <span className="tabular-nums font-bold text-stone-900">{formatPaise(it.lineTotalPaise, { locale })}</span>
+              </li>
+            ))}
+          </ul>
           <QuoteLines lines={order.lines} locale={locale} />
         </div>
-        {order.restaurantSimulated && !["DELIVERED", "CANCELLED", "REJECTED"].includes(order.status) ? <div className="mt-4 rounded-[var(--radius-lg)] border border-border p-3"><p className="text-sm text-muted">{t("orders.simulateHint")}</p><Button className="mt-2" variant="outline" disabled={advance.isPending} onClick={() => advance.mutate()}>{t("orders.simulate")}</Button></div> : null}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {order.canCancel ? <Button variant="danger" disabled={cancel.isPending} onClick={() => cancel.mutate()}>{t("orders.cancelOrder")}</Button> : null}
+
+        {order.restaurantSimulated && !["DELIVERED", "CANCELLED", "REJECTED"].includes(order.status) ? (
+          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
+            <p className="text-xs text-amber-950 font-medium">{t("orders.simulateHint")}</p>
+            <Button
+              className="mt-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-xs"
+              disabled={advance.isPending}
+              onClick={() => advance.mutate()}
+            >
+              {t("orders.simulate")} ⚡
+            </Button>
+          </div>
+        ) : null}
+
+        <div className="mt-6 flex flex-wrap gap-2.5">
+          {order.canCancel ? (
+            <Button
+              variant="danger"
+              className="rounded-2xl bg-gradient-to-r from-rose-500 to-red-600 text-white font-extrabold shadow-md shadow-rose-500/20 px-5 py-2.5"
+              disabled={cancel.isPending}
+              onClick={() => cancel.mutate()}
+            >
+              {t("orders.cancelOrder")}
+            </Button>
+          ) : null}
           <Button
-            variant="outline"
+            className="flex-1 min-w-[140px] rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black shadow-lg shadow-orange-500/25 px-5 py-2.5 hover:from-amber-600 hover:to-orange-600 transition-all active:scale-95"
             onClick={async () => {
               try {
                 const res = await reorderItems({ data: { orderId: order.summary.id } });
@@ -731,9 +856,16 @@ function OrderDetailPage() {
               }
             }}
           >
-            {t("orders.reorder")}
+            <span>{t("orders.reorder")}</span>
+            <span>🍽️</span>
           </Button>
-          <Button variant="ghost" asChild><Link to="/support">{t("orders.help")}</Link></Button>
+          <Button
+            variant="outline"
+            className="rounded-2xl border border-amber-200 bg-white hover:bg-amber-50 text-amber-950 font-bold px-4 py-2.5"
+            asChild
+          >
+            <Link to="/support">💬 {t("orders.help")}</Link>
+          </Button>
         </div>
       </div>
     </CustomerShell>

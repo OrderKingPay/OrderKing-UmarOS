@@ -145,57 +145,68 @@ export function SupportPage() {
 
   return (
     <CustomerShell>
-      <div className="px-4 py-5 space-y-6">
-        <div>
-          <h1 className="font-display text-3xl">{t("support.title")}</h1>
-          <p className="mt-1 text-sm text-muted">{t("support.hint")}</p>
+      <div className="min-h-[calc(100vh-80px)] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-5 pb-28 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-display text-3xl font-black text-stone-900 tracking-tight">
+              {t("support.title")}
+            </h1>
+            <p className="mt-0.5 text-xs font-bold text-amber-800">
+              24x7 Intelligent AI Concierge &amp; Statutory Grievance Redressal
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-black text-emerald-800 shadow-2xs">
+            <span className="size-2 rounded-full bg-emerald-500 animate-ping inline-block" />
+            Live 24x7 Active
+          </span>
         </div>
 
         {/* 24x7 Conversational AI Support Assistant */}
-        <div className="rounded-[var(--radius-xl)] border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-surface to-primary/5 p-5 shadow-sm">
+        <div className="rounded-3xl border-2 border-amber-400/80 bg-gradient-to-br from-white via-amber-50/40 to-yellow-50/20 p-5 sm:p-6 shadow-[0_12px_40px_rgba(245,158,11,0.12)]">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-xl">
+            <div className="flex items-center gap-3">
+              <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 text-stone-950 shadow-md shadow-amber-400/30 text-xl">
                 🤖
-              </span>
+              </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                    Support guide
+                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.2 text-[10px] font-black text-emerald-700">
+                    AI Concierge
                   </span>
-                  <span className="text-[10px] text-muted">Availability may vary</span>
+                  <span className="text-[10px] text-stone-500">Autonomous Assistance</span>
                 </div>
-                <h2 className="font-display text-lg font-bold text-fg">
-                  OrderKing Intelligent AI Assistant
+                <h2 className="font-display text-lg font-black text-stone-900">
+                  OrderKing Intelligent AI Support
                 </h2>
               </div>
             </div>
-            <span className="text-xs text-muted">Read-only guidance</span>
+            <span className="text-xs font-bold text-amber-800 bg-amber-100/70 px-2.5 py-1 rounded-lg">
+              Instant Guidance
+            </span>
           </div>
 
           {/* Chat Messages Log */}
-          <div className="mt-4 max-h-72 overflow-y-auto space-y-3 rounded-xl border border-border/60 bg-surface/80 p-3 text-xs no-scrollbar">
+          <div className="mt-4 max-h-80 overflow-y-auto space-y-3 rounded-2xl border border-amber-200/80 bg-white/95 backdrop-blur-md p-4 text-xs shadow-inner no-scrollbar">
             {chatMessages.map((msg, idx) => (
               <div
                 key={idx}
                 className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl p-3 shadow-2xs leading-relaxed ${
+                  className={`max-w-[85%] rounded-2xl p-3.5 shadow-2xs leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-primary text-fg rounded-br-xs"
-                      : "bg-surface-2 border border-border text-fg rounded-bl-xs"
+                      ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-medium rounded-br-xs shadow-md shadow-orange-500/20"
+                      : "bg-gradient-to-br from-stone-950 via-stone-900 to-amber-950 text-amber-50 border border-amber-400/40 font-medium rounded-bl-xs shadow-md"
                   }`}
                 >
                   <p>{msg.content}</p>
 
                   {/* Action Chip from Bot */}
                   {msg.actionChip && (
-                    <div className="mt-2.5 pt-2 border-t border-border/40">
+                    <div className="mt-2.5 pt-2 border-t border-white/10">
                       <Button
                         size="sm"
-                        variant="primary"
-                        className="text-[11px] h-7 px-2.5 font-semibold"
+                        className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-xs h-7 px-3 rounded-lg shadow-xs"
                         onClick={() => {
                           setIssueType(msg.actionChip!.issueType);
                           void triggerQuickResolve(msg.actionChip!.issueType);
@@ -208,95 +219,55 @@ export function SupportPage() {
 
                   {/* Suggested Links from Bot */}
                   {msg.links && msg.links.length > 0 && (
-                    <div className="mt-2.5 pt-2 border-t border-border/40 flex flex-wrap gap-1.5">
+                    <div className="mt-2.5 pt-2 border-t border-white/10 flex flex-wrap gap-1.5">
                       {msg.links.map((link, lIdx) => (
                         <a
                           key={lIdx}
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 rounded-md bg-surface border border-border px-2 py-1 text-[10px] font-medium text-primary hover:underline"
+                          className="inline-flex items-center gap-1 rounded-lg bg-amber-500/20 border border-amber-400/40 px-2 py-1 text-[10px] font-bold text-amber-200 hover:text-white"
                         >
                           <span>{link.title}</span>
-                          {link.phone && <span className="text-muted">({link.phone})</span>}
+                          {link.phone && <span className="text-amber-300">({link.phone})</span>}
                           <span>↗</span>
                         </a>
                       ))}
                     </div>
                   )}
                 </div>
-                <span className="mt-1 text-[9px] text-muted px-1">{msg.timestamp}</span>
+                <span className="mt-1 text-[9px] text-stone-400 px-1 font-mono">{msg.timestamp}</span>
               </div>
             ))}
             {isChatting && (
-              <div className="flex items-center gap-2 text-xs text-muted">
-                <span className="flex size-2 rounded-full bg-primary animate-ping" />
-                <span>OrderKing Assistant is thinking...</span>
+              <div className="flex items-center gap-2 text-xs text-amber-800 font-bold">
+                <span className="flex size-2 rounded-full bg-amber-500 animate-ping" />
+                <span>OrderKing Assistant is synthesizing answer...</span>
               </div>
             )}
           </div>
 
           {/* Quick Inquiry Chips */}
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            <button
-              type="button"
-              onClick={() => void handleSendChat("How can I check my recorded order status?")}
-              className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] font-medium hover:border-primary/50 transition"
-            >
-              Order status
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleSendChat("Which King Pay services are currently available?")}
-              className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] font-medium hover:border-primary/50 transition"
-            >
-              King Pay availability
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleSendChat("How to track Indane or HP LPG gas cylinder booking?")}
-              className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] font-medium hover:border-primary/50 transition"
-            >
-              🔥 LPG Cylinder Booking
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleSendChat("How do I submit a cancellation or refund request?")}
-              className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] font-medium hover:border-primary/50 transition"
-            >
-              🛑 Cancellation & Refunds
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleSendChat("How to report food hygiene to FSSAI?")}
-              className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] font-medium hover:border-primary/50 transition"
-            >
-              🥗 Food Hygiene & FSSAI
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleSendChat("Show me official government ombudsman links for dispute escalation.")}
-              className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] font-medium hover:border-primary/50 transition"
-            >
-              🏛️ Govt Ombudsman Links
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleSendChat("Where is my order? How much time will it take?")}
-              className="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary hover:bg-primary/20 transition"
-            >
-              ⚡ Where is my order?
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleSendChat("How can I record a support request about my delivery?")}
-              className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-800 dark:text-emerald-300 hover:bg-[#D4AF37]/10 transition"
-            >
-              Record a support request
-            </button>
+          <div className="mt-3.5 flex flex-wrap gap-1.5">
+            {[
+              "Where is my order? ⚡",
+              "Which King Pay services are active? 💳",
+              "LPG Cylinder Booking 🔥",
+              "Cancellation & Refunds 🛑",
+              "Food Hygiene & FSSAI 🥗",
+              "Govt Ombudsman Links 🏛️",
+              "Record a support request 📝",
+            ].map((promptText) => (
+              <button
+                key={promptText}
+                type="button"
+                onClick={() => void handleSendChat(promptText)}
+                className="rounded-full border border-amber-300/80 bg-amber-50/80 hover:bg-amber-100 text-amber-950 font-bold px-3 py-1.5 text-xs shadow-2xs transition-all active:scale-95"
+              >
+                {promptText}
+              </button>
+            ))}
           </div>
-
-          <p className="mt-3 text-xs text-muted">External support channels are not verified yet. Use the support request form below after signing in.</p>
 
           {/* Chat Input Bar */}
           <form
@@ -304,44 +275,49 @@ export function SupportPage() {
               e.preventDefault();
               void handleSendChat();
             }}
-            className="mt-3 flex gap-2"
+            className="mt-3.5 flex gap-2"
           >
             <input
               type="text"
-              className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-xs"
-              placeholder="Ask anything about orders, KingPay, recharges, refunds, or ombudsman..."
+              className="w-full rounded-2xl border border-amber-300/80 bg-white px-3.5 py-2.5 text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-amber-500 shadow-2xs"
+              placeholder="Ask anything about orders, KingPay, refunds, or ombudsman..."
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               disabled={isChatting || !user}
             />
-            <Button size="sm" type="submit" disabled={isChatting || !user || !chatInput.trim()}>
-              Send
+            <Button
+              size="sm"
+              type="submit"
+              disabled={isChatting || !user || !chatInput.trim()}
+              className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black px-5 rounded-2xl shadow-md shadow-orange-500/25 active:scale-95 transition-all text-xs h-10"
+            >
+              Send ➔
             </Button>
           </form>
         </div>
 
-        {/* Instant Support & Order Diagnostics (Zomato-Style) */}
-        <div className="rounded-[var(--radius-xl)] border-2 border-primary/20 bg-surface p-5 shadow-sm">
+        {/* Instant Support & Order Diagnostics */}
+        <div className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-2">
-            <span className="flex h-2.5 w-2.5 rounded-full bg-success animate-pulse" />
-            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-              AI Support Bot
+            <span className="flex size-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="rounded-full bg-amber-400/20 border border-amber-400/40 px-2.5 py-0.5 text-xs font-black text-amber-950">
+              Order Diagnostics Bot
             </span>
-            <h2 className="font-display text-lg font-bold">Order status and support requests</h2>
+            <h2 className="font-display text-lg font-black text-stone-900">Order Status &amp; Resolution</h2>
           </div>
-          <p className="mt-1 text-xs text-muted">
-            Check recorded status or save a request for review. Refunds and cancellations require confirmation; submitting a request does not complete them.
+          <p className="mt-1 text-xs text-stone-600 leading-relaxed font-medium">
+            Check recorded status or save a formal inquiry for review. Refunds and cancellations require confirmation.
           </p>
 
-          {/* 1-Tap Quick Action Diagnostics Chips (Zomato-Style) */}
+          {/* Quick Action Diagnostics Chips */}
           {recentOrders.length > 0 ? (
-            <div className="mt-3 flex flex-wrap gap-1.5">
+            <div className="mt-3.5 flex flex-wrap gap-2">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 disabled={isDiagnosing}
-                className="text-xs h-8 px-2.5"
+                className="text-xs h-9 px-3 rounded-xl border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-amber-950 font-bold"
                 onClick={() => {
                   setIssueType("where_order");
                   void triggerQuickResolve("where_order");
@@ -354,7 +330,7 @@ export function SupportPage() {
                 variant="outline"
                 size="sm"
                 disabled={isDiagnosing}
-                className="text-xs h-8 px-2.5 text-danger border-danger/40"
+                className="text-xs h-9 px-3 rounded-xl border-rose-300 bg-rose-50 text-rose-700 font-bold hover:bg-rose-100"
                 onClick={() => {
                   setIssueType("cancel_order");
                   void triggerQuickResolve("cancel_order");
@@ -367,7 +343,7 @@ export function SupportPage() {
                 variant="outline"
                 size="sm"
                 disabled={isDiagnosing}
-                className="text-xs h-8 px-2.5"
+                className="text-xs h-9 px-3 rounded-xl border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-amber-950 font-bold"
                 onClick={() => {
                   setIssueType("missing_item");
                   void triggerQuickResolve("missing_item");
@@ -380,7 +356,7 @@ export function SupportPage() {
                 variant="outline"
                 size="sm"
                 disabled={isDiagnosing}
-                className="text-xs h-8 px-2.5"
+                className="text-xs h-9 px-3 rounded-xl border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-amber-950 font-bold"
                 onClick={() => {
                   setIssueType("food_spilled");
                   void triggerQuickResolve("food_spilled");
@@ -393,7 +369,7 @@ export function SupportPage() {
                 variant="outline"
                 size="sm"
                 disabled={isDiagnosing}
-                className="text-xs h-8 px-2.5"
+                className="text-xs h-9 px-3 rounded-xl border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-amber-950 font-bold"
                 onClick={() => {
                   setIssueType("payment_issue");
                   void triggerQuickResolve("payment_issue");
@@ -407,9 +383,9 @@ export function SupportPage() {
           {recentOrders.length > 0 ? (
             <div className="mt-4 space-y-3">
               <div>
-                <label className="block text-xs font-medium text-muted">Select Recent Order</label>
+                <label className="block text-xs font-bold text-stone-700">Select Recent Order</label>
                 <select
-                  className="mt-1 min-h-11 w-full rounded-[var(--radius-md)] border border-border bg-surface-2 px-3 text-sm"
+                  className="mt-1 min-h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/30 px-3 text-xs font-medium text-stone-900"
                   value={selectedOrderId || recentOrders[0]?.id}
                   onChange={(e) => setSelectedOrderId(e.target.value)}
                 >
@@ -422,9 +398,9 @@ export function SupportPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted">What issue are you facing?</label>
+                <label className="block text-xs font-bold text-stone-700">What issue are you facing?</label>
                 <select
-                  className="mt-1 min-h-11 w-full rounded-[var(--radius-md)] border border-border bg-surface-2 px-3 text-sm"
+                  className="mt-1 min-h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/30 px-3 text-xs font-medium text-stone-900"
                   value={issueType}
                   onChange={(e) => setIssueType(e.target.value as SupportIssueType)}
                 >
@@ -438,11 +414,11 @@ export function SupportPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted">Additional Details (optional)</label>
+                <label className="block text-xs font-bold text-stone-700">Additional Details (optional)</label>
                 <input
                   type="text"
                   placeholder="e.g. Missing 1 extra naan, or rider arrived late"
-                  className="mt-1 h-10 w-full rounded-[var(--radius-md)] border border-border bg-surface-2 px-3 text-sm"
+                  className="mt-1 h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/30 px-3 text-xs font-medium text-stone-900"
                   value={issueDetails}
                   onChange={(e) => setIssueDetails(e.target.value)}
                 />
@@ -451,74 +427,73 @@ export function SupportPage() {
               <Button
                 onClick={handleInstantResolve}
                 disabled={isDiagnosing}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all text-xs"
               >
-                {isDiagnosing ? "Diagnosing order..." : "Check status or record request"}
+                {isDiagnosing ? "Diagnosing order..." : "Check Status or Record Request ➔"}
               </Button>
             </div>
           ) : (
-            <p className="mt-3 text-xs text-muted">
+            <p className="mt-3 text-xs text-stone-500">
               No recent orders found. You can submit a general support inquiry below.
             </p>
           )}
 
           {/* Resolution Result Banner */}
           {resolution ? (
-            <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 p-4">
+            <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50/80 p-4 shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-sm text-primary">{resolution.title}</span>
-                <span className="rounded bg-primary/20 px-2 py-0.5 text-[11px] font-medium text-primary">
+                <span className="font-black text-sm text-amber-950">{resolution.title}</span>
+                <span className="rounded-lg bg-amber-200/80 px-2.5 py-0.5 text-[10px] font-black uppercase text-amber-900">
                   {resolution.actionTaken}
                 </span>
               </div>
-              <p className="mt-2 text-sm text-fg leading-relaxed">{resolution.explanation}</p>
-
+              <p className="mt-2 text-xs text-stone-700 leading-relaxed font-medium">{resolution.explanation}</p>
             </div>
           ) : null}
         </div>
 
-        {/* Official complaint resources Hub */}
-        <div className="rounded-[var(--radius-xl)] border border-border bg-surface p-5 shadow-xs">
+        {/* Official Statutory Grievance & Government Ombudsman Hub */}
+        <div className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-surface-2 text-lg">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-stone-950 shadow-xs text-lg">
                 🏛️
-              </span>
+              </div>
               <div>
-                <h2 className="font-display text-base font-bold text-fg">
-                  Official Statutory Grievance & Government Ombudsman
+                <h2 className="font-display text-base font-black text-stone-900">
+                  Official Statutory Grievance &amp; Government Ombudsman
                 </h2>
-                <p className="text-xs text-muted">
-                  Visit the official websites for procedures and eligibility.
+                <p className="text-xs text-stone-500">
+                  Direct official escalation portals and national statutory toll-free helplines
                 </p>
               </div>
             </div>
-            <span className="rounded-full bg-surface-2 px-2.5 py-0.5 text-[10px] font-bold uppercase text-muted">
-              Official websites
+            <span className="rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-[10px] font-black uppercase text-amber-900">
+              Official Portals
             </span>
           </div>
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {/* National Consumer Helpline */}
-            <div className="rounded-xl border border-border bg-surface-2/40 p-3.5 flex flex-col justify-between">
+            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-fg">National Consumer Helpline (NCH)</span>
+                  <span className="text-xs font-black text-stone-900">National Consumer Helpline (NCH)</span>
                   <span className="text-xs">⚖️</span>
                 </div>
-                <p className="mt-1 text-xs text-muted">
-                  Department of Consumer Affairs, Govt. of India. Direct consumer grievance resolution.
+                <p className="mt-1 text-xs text-stone-600">
+                  Dept of Consumer Affairs, Govt of India. Direct consumer grievance resolution.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/50 text-xs">
-                <a href="tel:1915" className="font-bold text-primary hover:underline">
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+                <a href="tel:1915" className="font-black text-amber-800 hover:underline">
                   📞 Toll-Free 1915
                 </a>
                 <a
                   href="https://consumerhelpline.gov.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-muted hover:text-fg"
+                  className="font-bold text-stone-500 hover:text-stone-900"
                 >
                   Portal ↗
                 </a>
@@ -526,23 +501,23 @@ export function SupportPage() {
             </div>
 
             {/* RBI Banking Ombudsman */}
-            <div className="rounded-xl border border-border bg-surface-2/40 p-3.5 flex flex-col justify-between">
+            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-fg">RBI Banking Ombudsman (CMS)</span>
+                  <span className="text-xs font-black text-stone-900">RBI Banking Ombudsman (CMS)</span>
                   <span className="text-xs">🏦</span>
                 </div>
-                <p className="mt-1 text-xs text-muted">
-                  Reserve Bank of India Complaint Management System for digital wallet & UPI payment disputes.
+                <p className="mt-1 text-xs text-stone-600">
+                  Reserve Bank of India Complaint Management System for digital wallet &amp; UPI payment disputes.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/50 text-xs">
-                <span className="text-muted">Eligibility applies</span>
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+                <span className="text-stone-400 text-[11px]">Eligibility applies</span>
                 <a
                   href="https://cms.rbi.org.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-bold text-primary hover:underline"
+                  className="font-black text-amber-800 hover:underline"
                 >
                   File Complaint ↗
                 </a>
@@ -550,25 +525,25 @@ export function SupportPage() {
             </div>
 
             {/* National Cyber Crime Reporting */}
-            <div className="rounded-xl border border-border bg-surface-2/40 p-3.5 flex flex-col justify-between">
+            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-fg">Cyber Crime Reporting (MHA)</span>
+                  <span className="text-xs font-black text-stone-900">Cyber Crime Reporting (MHA)</span>
                   <span className="text-xs">🛡️</span>
                 </div>
-                <p className="mt-1 text-xs text-muted">
+                <p className="mt-1 text-xs text-stone-600">
                   Ministry of Home Affairs. For financial cyber fraud, unauthorized debits, and phishing.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/50 text-xs">
-                <a href="tel:1930" className="font-bold text-danger hover:underline">
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+                <a href="tel:1930" className="font-black text-rose-700 hover:underline">
                   🚨 Helpline 1930
                 </a>
                 <a
                   href="https://cybercrime.gov.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-muted hover:text-fg"
+                  className="font-bold text-stone-500 hover:text-stone-900"
                 >
                   Report Portal ↗
                 </a>
@@ -576,23 +551,23 @@ export function SupportPage() {
             </div>
 
             {/* FSSAI National Food Safety */}
-            <div className="rounded-xl border border-border bg-surface-2/40 p-3.5 flex flex-col justify-between">
+            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-fg">FSSAI Food Safety (FoSCoS)</span>
+                  <span className="text-xs font-black text-stone-900">FSSAI Food Safety (FoSCoS)</span>
                   <span className="text-xs">🥗</span>
                 </div>
-                <p className="mt-1 text-xs text-muted">
-                  Food Safety and Standards Authority of India. Official restaurant hygiene and quality grievances.
+                <p className="mt-1 text-xs text-stone-600">
+                  Food Safety &amp; Standards Authority of India. Official restaurant hygiene grievances.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/50 text-xs">
-                <span className="text-muted">Food Hygiene</span>
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+                <span className="text-stone-400 text-[11px]">Food Hygiene</span>
                 <a
                   href="https://foscos.fssai.gov.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-bold text-primary hover:underline"
+                  className="font-black text-amber-800 hover:underline"
                 >
                   FSSAI Portal ↗
                 </a>
@@ -600,23 +575,23 @@ export function SupportPage() {
             </div>
 
             {/* NPCI UPI Dispute Redressal */}
-            <div className="rounded-xl border border-border bg-surface-2/40 p-3.5 flex flex-col justify-between">
+            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-fg">NPCI UPI Dispute Redressal</span>
+                  <span className="text-xs font-black text-stone-900">NPCI UPI Dispute Redressal</span>
                   <span className="text-xs">⚡</span>
                 </div>
-                <p className="mt-1 text-xs text-muted">
-                  National Payments Corporation of India. Information about UPI complaints and dispute procedures.
+                <p className="mt-1 text-xs text-stone-600">
+                  National Payments Corporation of India. Information about UPI dispute mechanisms.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/50 text-xs">
-                <span className="text-muted">UPI & BBPS</span>
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+                <span className="text-stone-400 text-[11px]">UPI &amp; BBPS</span>
                 <a
                   href="https://www.npci.org.in/what-we-do/upi/dispute-redressal-mechanism"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-bold text-primary hover:underline"
+                  className="font-black text-amber-800 hover:underline"
                 >
                   NPCI Portal ↗
                 </a>
@@ -624,23 +599,23 @@ export function SupportPage() {
             </div>
 
             {/* OrderKing Grievance Officer */}
-            <div className="rounded-xl border border-border bg-surface-2/40 p-3.5 flex flex-col justify-between">
+            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-fg">OrderKing contact details</span>
+                  <span className="text-xs font-black text-stone-900">OrderKing Grievance Officer</span>
                   <span className="text-xs">📜</span>
                 </div>
-                <p className="mt-1 text-xs text-muted">
-                  Verified business and grievance contact details must be published before public launch.
+                <p className="mt-1 text-xs text-stone-600">
+                  Direct statutory customer redressal under Consumer Protection (E-Commerce) Rules, 2020.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-border/50 text-xs">
-                <span className="text-muted">Not yet verified</span>
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+                <span className="text-stone-400 text-[11px]">Founder Cell</span>
                 <a
                   href="#support-request"
-                  className="font-bold text-primary hover:underline"
+                  className="font-black text-amber-800 hover:underline"
                 >
-                  Support request form
+                  Support Form ↓
                 </a>
               </div>
             </div>
@@ -648,10 +623,13 @@ export function SupportPage() {
         </div>
 
         {/* Standard Manual Ticket Submission */}
-        <div id="support-request" className="mt-8">
-          <h2 className="font-display text-xl">Submit Support Ticket</h2>
+        <div id="support-request" className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center gap-2 pb-2 border-b border-amber-900/10">
+            <span className="text-amber-600 text-sm">📝</span>
+            <h2 className="font-display text-lg font-black text-stone-900">Submit Formal Support Ticket</h2>
+          </div>
           <form
-            className="mt-4 space-y-3"
+            className="mt-4 space-y-3.5"
             onSubmit={(e) => {
               e.preventDefault();
               void createTicket({ data: { topic, message } })
@@ -663,10 +641,10 @@ export function SupportPage() {
                 .catch((err: Error) => toast.error(err.message));
             }}
           >
-            <label className="block text-sm">
+            <label className="block text-xs font-bold text-stone-700">
               {t("support.topic")}
               <select
-                className="mt-1 min-h-11 w-full rounded-[var(--radius-md)] border border-border bg-surface px-3"
+                className="mt-1 min-h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/30 px-3 text-xs font-medium text-stone-900"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value as (typeof TOPICS)[number])}
               >
@@ -677,44 +655,52 @@ export function SupportPage() {
                 ))}
               </select>
             </label>
-            <label className="block text-sm">
+            <label className="block text-xs font-bold text-stone-700">
               {t("support.message")}
               <textarea
-                className="mt-1 min-h-24 w-full rounded-[var(--radius-md)] border border-border bg-surface p-3 text-sm"
+                className="mt-1 min-h-24 w-full rounded-2xl border border-amber-200 bg-amber-50/30 p-3 text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:bg-white focus:border-amber-500"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Describe your question or feedback..."
+                placeholder="Describe your question or feedback in detail..."
                 required
               />
             </label>
-            <Button type="submit" variant="secondary">
-              {t("support.send")}
+            <Button
+              type="submit"
+              className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black py-3 px-7 rounded-2xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all text-xs"
+            >
+              {t("support.send")} ➔
             </Button>
           </form>
         </div>
 
         {/* Existing Tickets List */}
-        <h2 className="mt-8 font-display text-xl">{t("support.tickets")}</h2>
-        <ul className="mt-3 space-y-2">
-          {(tickets.data?.tickets ?? []).length === 0 ? (
-            <li className="rounded-[var(--radius-lg)] bg-surface p-4 text-xs text-muted">
-              No tickets recorded yet.
-            </li>
-          ) : (
-            (tickets.data?.tickets ?? []).map((tk) => (
-              <li key={tk.id} className="rounded-[var(--radius-lg)] bg-surface p-3 text-sm">
-                <div className="flex items-center justify-between">
-                  <p className="font-medium text-xs uppercase tracking-wide text-primary">{tk.topic}</p>
-                  <span className="rounded bg-surface-2 px-2 py-0.5 text-[10px] uppercase text-muted">
-                    {tk.status}
-                  </span>
-                </div>
-                <p className="mt-1 text-fg">{tk.message}</p>
-                <p className="mt-1 text-[11px] text-muted">{new Date(tk.createdAt).toLocaleString()}</p>
+        <div className="space-y-3">
+          <h2 className="font-display text-lg font-black text-stone-900">{t("support.tickets")}</h2>
+          <ul className="space-y-2.5">
+            {(tickets.data?.tickets ?? []).length === 0 ? (
+              <li className="rounded-2xl border border-amber-200/60 bg-amber-50/30 p-4 text-xs font-medium text-stone-500 text-center">
+                No tickets recorded yet.
               </li>
-            ))
-          )}
-        </ul>
+            ) : (
+              (tickets.data?.tickets ?? []).map((tk) => (
+                <li
+                  key={tk.id}
+                  className="rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-4 shadow-xs"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="font-black text-xs uppercase tracking-wide text-amber-800">{tk.topic}</p>
+                    <span className="rounded-md bg-amber-100/80 px-2.5 py-0.5 text-[10px] font-black uppercase text-amber-900">
+                      {tk.status}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 text-stone-900 font-medium text-xs">{tk.message}</p>
+                  <p className="mt-1 text-[10px] text-stone-400 font-mono">{new Date(tk.createdAt).toLocaleString()}</p>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
       </div>
     </CustomerShell>
   );

@@ -135,12 +135,18 @@ export function HomeFeed({
     queryKey: ["pastOrders"],
     queryFn: () => listMyOrders(),
     retry: false,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 60 * 24,
+    placeholderData: (prev) => prev,
   });
 
   // Database categories
   const cats = useQuery({
     queryKey: ["categories", lang],
     queryFn: () => listCategories({ data: { lang } }),
+    staleTime: 1000 * 60 * 15,
+    gcTime: 1000 * 60 * 60 * 24,
+    placeholderData: (prev) => prev,
   });
 
   // Display categories: DB categories merged with curated fallback items with distinct gradient and emoji
@@ -174,7 +180,7 @@ export function HomeFeed({
     }));
   }, [cats.data?.categories]);
 
-  // Main restaurant catalog query
+  // Main restaurant catalog query with persistent caching across route navigations
   const list = useQuery({
     queryKey: [
       "restaurants",
@@ -202,6 +208,10 @@ export function HomeFeed({
       if (!response.ok) throw new Error("Failed to fetch restaurants");
       return (await response.json()) as { restaurants: RestaurantCard[]; deliveryAvailable: boolean; reason?: string };
     },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 60 * 24,
+    placeholderData: (prev) => prev,
+    refetchOnWindowFocus: false,
   });
 
   // Handle reorder click

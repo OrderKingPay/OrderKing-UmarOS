@@ -13,7 +13,6 @@ import {
   ArrowRight,
   Phone,
   Mail,
-  Building2,
   Globe,
   LogIn,
   UserPlus,
@@ -126,7 +125,7 @@ function Login() {
               </span>
             </div>
             <div className="text-xs text-slate-400">
-              Kitchen Operations, KDS &amp; Direct Bank Settlement
+              Premier Dining, Kitchen Command &amp; Direct Daily Settlements
             </div>
           </div>
         </Link>
@@ -135,7 +134,7 @@ function Login() {
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-3.5 py-2.5 shadow-sm text-center">
           <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-300">
             <Sparkles className="size-3.5 text-emerald-400 shrink-0" />
-            <span>0% Dine-In Fees • 28% Delivery Take-Rate • 24h Express Live</span>
+            <span>0% Commission on Dine-In • 28% Delivery • 24h Express Go-Live</span>
           </div>
         </div>
 
@@ -173,12 +172,12 @@ function Login() {
 
           <div className="pb-4">
             <h1 className="font-display text-xl sm:text-2xl font-bold text-white">
-              {mode === "in" ? "Welcome Back, Partner" : "Register Your Kitchen"}
+              {mode === "in" ? "Welcome Back to Your Kitchen" : "Partner With Order King"}
             </h1>
             <p className="mt-1 text-xs text-slate-400">
               {mode === "in"
-                ? "Enter your 10-digit mobile number or business email to manage orders & payouts."
-                : "Join the Order King network. Fast-track KYC, FoSCoS registration, and 24-hour go-live."}
+                ? "Enter your 10-digit mobile number or business email to access live dining, orders, and settlements."
+                : "Join India's premier culinary collective. Simple paperless setup, dedicated partner support, and 24-hour express go-live."}
             </p>
           </div>
 
@@ -186,7 +185,7 @@ function Login() {
             {mode === "up" ? (
               <div>
                 <Label htmlFor="name" className="text-xs text-slate-300">
-                  Authorized Signatory / Owner Name
+                  Restaurateur or Owner Full Name
                 </Label>
                 <div className="relative mt-1">
                   <Input
@@ -195,7 +194,7 @@ function Login() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     autoComplete="name"
-                    placeholder="e.g. Rajeshwari Iyer"
+                    placeholder="e.g. Chef Rajeshwari Iyer"
                     className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 h-11"
                   />
                 </div>
@@ -217,12 +216,12 @@ function Login() {
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   autoComplete="username"
-                  placeholder="9876543210 or partner@restaurant.in"
+                  placeholder="9876543210 or chef@restaurant.in"
                   className="border-slate-800 bg-slate-950 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 h-11"
                 />
               </div>
               <p className="mt-1 text-[11px] text-slate-500">
-                Indian 10-digit mobile number (starts with 6–9) or registered business email.
+                Indian 10-digit mobile number (starts with 6–9) or registered restaurant email.
               </p>
             </div>
 
@@ -264,7 +263,7 @@ function Login() {
                 ? t("auth.working")
                 : mode === "in"
                   ? "Sign In to Partner Portal"
-                  : "Continue to FSSAI & KYC Onboarding"}
+                  : "Begin Partner Onboarding"}
             </Button>
           </form>
 
@@ -277,8 +276,8 @@ function Login() {
             >
               <span>
                 {mode === "in"
-                  ? "New restaurant partner? Register for onboarding"
-                  : "Already have a partner account? Sign in here"}
+                  ? "New to Order King? Join our restaurant network"
+                  : "Already registered with Order King? Sign in to your portal"}
               </span>
               <ArrowRight className="size-3 text-emerald-400" />
             </button>
@@ -290,27 +289,27 @@ function Login() {
           <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-3">
             <div className="flex items-center gap-1.5 font-medium text-slate-200">
               <CheckCircle2 className="size-3.5 text-emerald-400" />
-              <span>Instant T+1 Settlements</span>
+              <span>Direct Daily Settlements</span>
             </div>
             <p className="mt-1 text-[11px] text-slate-400 leading-snug">
-              Penny-drop verified bank transfers directly to your current account.
+              Automated daily payouts directly to your bank account with complete transparency.
             </p>
           </div>
           <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-3">
             <div className="flex items-center gap-1.5 font-medium text-slate-200">
               <Globe className="size-3.5 text-emerald-400" />
-              <span>23 Indian Languages</span>
+              <span>23 Indian Languages &amp; Audio</span>
             </div>
             <p className="mt-1 text-[11px] text-slate-400 leading-snug">
-              Full vernacular portal &amp; KingPay Soundbox audio order alerts.
+              Full vernacular kitchen controls with real-time King AI and Soundbox order chimes.
             </p>
           </div>
         </div>
 
-        {/* Security & Statutory Footnote */}
+        {/* Security & Hospitality Guarantee */}
         <div className="text-center text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
           <ShieldCheck className="size-3.5 text-emerald-400" />
-          <span>FSSAI FoSCoS Compliant • CGST §9(5) Certified • Bank-Grade Security</span>
+          <span>Bank-Grade 256-Bit Encryption • FSSAI Food Safety Partner • Zero Hidden Platform Fees</span>
         </div>
       </div>
     </main>

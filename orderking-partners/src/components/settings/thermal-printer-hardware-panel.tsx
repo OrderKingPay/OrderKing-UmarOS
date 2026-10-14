@@ -11,7 +11,6 @@ import {
   Utensils,
   User,
   Bike,
-  Sparkles,
   Eye,
   X,
 } from "lucide-react";
@@ -108,7 +107,7 @@ export function ThermalPrinterHardwarePanel({
         restaurantName,
         orderNumber: "OK-8942",
         orderType: "DELIVERY",
-        tableOrArea: "Station Pass / Swiggy-OrderKing Delivery",
+        tableOrArea: "Station Pass / Order King Delivery",
         timestamp: new Date().toLocaleString("en-IN"),
         prepMinutes: 20,
         items: [
@@ -162,13 +161,13 @@ export function ThermalPrinterHardwarePanel({
           </div>
           <div>
             <h2 className="font-display text-base font-bold text-white flex items-center gap-2">
-              Thermal POS Printer &amp; Hardware Customization Panel
+              Thermal POS Printer &amp; Kitchen Ticket Settings
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">
-                HARDWARE LEVEL ESC/POS
+                ESC/POS HARDWARE
               </span>
             </h2>
             <p className="text-xs text-slate-400">
-              Configure paper roll width, autonomous KOT trigger on order acceptance, and multi-copy routing distribution.
+              Configure receipt roll dimensions, automated KOT printing upon order acceptance, and multi-station ticket routing.
             </p>
           </div>
         </div>
@@ -275,7 +274,7 @@ export function ThermalPrinterHardwarePanel({
             </div>
 
             <p className="text-xs text-slate-400 leading-relaxed">
-              When toggled ON, clicking &quot;Accept Order&quot; on the Live Board or KDS instantly dispatches the ESC/POS print job over USB, Bluetooth, or TCP socket without waiting for manual print taps.
+              When enabled, clicking &quot;Accept Order&quot; on the Live Board or KDS instantly dispatches print jobs to your thermal printers with zero manual taps.
             </p>
 
             <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3 space-y-1.5 text-xs">
@@ -358,7 +357,7 @@ export function ThermalPrinterHardwarePanel({
                   <User className="size-3.5 text-sky-400" />
                   <div>
                     <div className="text-xs font-semibold text-slate-200">2. Customer Copy</div>
-                    <div className="text-[10px] text-slate-400">Bill &amp; Section 9(5) Tax invoice</div>
+                    <div className="text-[10px] text-slate-400">Guest invoice &amp; statutory tax receipt</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -393,7 +392,7 @@ export function ThermalPrinterHardwarePanel({
                   <Bike className="size-3.5 text-amber-400" />
                   <div>
                     <div className="text-xs font-semibold text-slate-200">3. Rider Copy</div>
-                    <div className="text-[10px] text-slate-400">Bag token &amp; Handover check</div>
+                    <div className="text-[10px] text-slate-400">Bag token &amp; rider delivery handover</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">

@@ -38,17 +38,23 @@ function SearchPage() {
   if (!isDeliveryActive) {
     return (
       <CustomerShell onSearch={() => undefined}>
-        <div className="px-4 py-12 text-center space-y-4 bg-white text-gray-900">
-          <span className="text-4xl block animate-bounce">👑</span>
-          <h1 className="font-extrabold text-2xl text-gray-900">
-            Food Search is not active in {location.cityName || "your region"}
-          </h1>
-          <p className="text-sm text-gray-500 max-w-sm mx-auto">
-            Order King food catalog is strictly geofenced. You can explore utilities, bills, and payments on King Pay!
-          </p>
-          <Button asChild className="bg-[#E23744] hover:bg-[#c92f3b] text-white font-bold px-6 py-2 rounded-xl">
-            <Link to="/king-pay">Search on King Pay 👑</Link>
-          </Button>
+        <div className="min-h-[calc(100vh-80px)] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-12 text-center">
+          <div className="mx-auto max-w-md rounded-3xl border border-amber-300/60 bg-white/95 backdrop-blur-md p-8 shadow-[0_12px_40px_rgba(245,158,11,0.12)]">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-400 to-amber-500 shadow-md shadow-amber-400/30">
+              <span className="text-3xl">👑</span>
+            </div>
+            <h1 className="mt-4 font-display text-2xl font-black text-stone-900">
+              Food Search is not active in {location.cityName || "your region"}
+            </h1>
+            <p className="mt-2 text-sm text-stone-600 leading-relaxed">
+              Order King food catalog is strictly geofenced to operational kitchens. You can explore utilities, bills, and payments on King Pay!
+            </p>
+            <div className="mt-6">
+              <Button asChild className="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black py-3 rounded-2xl shadow-lg shadow-orange-500/25 hover:from-amber-600 hover:to-orange-600 transition-all">
+                <Link to="/king-pay">Search on King Pay 👑</Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </CustomerShell>
     );
@@ -56,74 +62,110 @@ function SearchPage() {
 
   return (
     <CustomerShell onSearch={() => undefined}>
-      <div className="px-3 pt-3 sm:px-4 sm:pt-4 bg-white">
+      <div className="bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] border-b border-amber-900/10 px-3 pt-3 sm:px-4 sm:pt-4 pb-3 shadow-2xs">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             commit({ ...search, q: draft });
           }}
+          className="relative flex items-center rounded-2xl border border-amber-300/80 bg-white/95 p-1.5 shadow-[0_4px_20px_rgba(245,158,11,0.08)]"
         >
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-white text-xs shadow-xs ml-1">
+            🔍
+          </div>
           <Input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder={t("home.searchPlaceholder")}
             aria-label={t("common.search")}
-            className="bg-gray-50 border-gray-200 text-gray-900 focus:bg-white focus:border-[#E23744] rounded-xl h-11 text-sm font-medium"
+            className="border-none bg-transparent shadow-none text-stone-900 placeholder:text-stone-400 focus-visible:ring-0 h-10 text-sm font-semibold px-2.5"
             autoFocus
           />
+          {draft && (
+            <button
+              type="button"
+              onClick={() => {
+                setDraft("");
+                commit({ ...search, q: "" });
+              }}
+              className="mr-2 flex size-6 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-900 hover:bg-amber-200"
+            >
+              ✕
+            </button>
+          )}
         </form>
+
         <div className="mt-2.5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
           <FilterChip
             active={Boolean(search.veg)}
             onClick={() => commit({ ...search, veg: !search.veg })}
             label={t("home.vegOnly")}
+            badge="🌱"
           />
           <FilterChip
             active={Boolean(search.openNow)}
             onClick={() => commit({ ...search, openNow: !search.openNow })}
             label={t("home.openNow")}
+            badge="⚡"
           />
           <FilterChip
             active={search.category === "Biryani"}
             onClick={() => commit({ ...search, category: search.category === "Biryani" ? undefined : "Biryani" })}
-            label="🍗 Biryani"
+            label="Biryani"
+            badge="🍗"
           />
           <FilterChip
             active={search.category === "Pizza"}
             onClick={() => commit({ ...search, category: search.category === "Pizza" ? undefined : "Pizza" })}
-            label="🍕 Pizza"
+            label="Pizza"
+            badge="🍕"
           />
           <FilterChip
             active={search.category === "Rolls"}
             onClick={() => commit({ ...search, category: search.category === "Rolls" ? undefined : "Rolls" })}
-            label="🌯 Rolls"
+            label="Rolls"
+            badge="🌯"
           />
           <FilterChip
             active={search.category === "Cafe"}
             onClick={() => commit({ ...search, category: search.category === "Cafe" ? undefined : "Cafe" })}
-            label="☕ Cafe"
+            label="Cafe"
+            badge="☕"
           />
         </div>
       </div>
 
-      {/* Restaurants Only Feed (Exact Clean Zomato Style) */}
-      <HomeFeed q={search.q} veg={search.veg} openNow={search.openNow} category={search.category} />
+      {/* Luxury Ambient Feed Wrapper */}
+      <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] pb-24">
+        <HomeFeed q={search.q} veg={search.veg} openNow={search.openNow} category={search.category} />
+      </div>
     </CustomerShell>
   );
 }
 
-function FilterChip({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+function FilterChip({
+  active,
+  onClick,
+  label,
+  badge,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  badge?: string;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-9 shrink-0 rounded-full px-3.5 text-xs font-bold transition-all border ${
+      className={`min-h-9 shrink-0 rounded-full px-3.5 py-1 text-xs font-extrabold transition-all flex items-center gap-1.5 shadow-2xs ${
         active
-          ? "bg-[#E23744] text-white border-[#E23744] shadow-xs"
-          : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
+          ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/25 scale-105"
+          : "border border-amber-200/80 bg-white/90 text-amber-950 hover:bg-amber-100/70"
       }`}
     >
-      {label}
+      {badge && <span>{badge}</span>}
+      <span>{label}</span>
     </button>
   );
 }

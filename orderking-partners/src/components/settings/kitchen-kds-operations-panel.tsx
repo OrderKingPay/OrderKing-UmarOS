@@ -8,13 +8,11 @@ import {
   Flame,
   Clock,
   Volume2,
-  VolumeX,
   AlertTriangle,
   CheckCircle2,
   Sliders,
   Play,
   Square,
-  Sparkles,
 } from "lucide-react";
 
 export type SoundLoopDuration = "10s" | "30s" | "60s" | "continuous";
@@ -243,13 +241,13 @@ export function KitchenKdsOperationsPanel({
           </div>
           <div>
             <h2 className="font-display text-base font-bold text-white flex items-center gap-2">
-              Kitchen &amp; KDS Operations Customization Panel
+              Kitchen &amp; KDS Operations Control
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">
-                DEEP GRANULAR CONTROL
+                CHEF &amp; DISPATCH CONTROLS
               </span>
             </h2>
             <p className="text-xs text-slate-400">
-              Configure prep buffer timelines, autonomous rush-hour queue surge thresholds, and KDS auditory alert loops.
+              Fine-tune food preparation timelines, automated rush-hour queue surge protection, and kitchen display alert chimes.
             </p>
           </div>
         </div>
@@ -277,7 +275,7 @@ export function KitchenKdsOperationsPanel({
           </div>
 
           <p className="text-[11px] text-slate-400 leading-relaxed">
-            Standard customer SLA promise and rider dispatch timing under normal kitchen load.
+            Standard guest delivery promise and rider dispatch timing during regular kitchen service.
           </p>
 
           <div className="space-y-2 pt-1">
@@ -294,7 +292,7 @@ export function KitchenKdsOperationsPanel({
               <span>5m (Quick Snack)</span>
               <span>20m (Default)</span>
               <span>40m</span>
-              <span>60m (Slow Dine)</span>
+              <span>60m (Slow Cook &amp; Dine)</span>
             </div>
           </div>
 
@@ -333,7 +331,7 @@ export function KitchenKdsOperationsPanel({
           </div>
 
           <p className="text-[11px] text-slate-400 leading-relaxed">
-            Extended prep SLA activated during heavy dinner/lunch rushes to protect kitchen staff from SLA penalties.
+            Extended prep SLA automatically engaged during high-volume lunch and dinner rushes to protect culinary quality and kitchen pacing.
           </p>
 
           <div className="space-y-2 pt-1">
@@ -350,7 +348,7 @@ export function KitchenKdsOperationsPanel({
               <span>10m</span>
               <span>35m (Default)</span>
               <span>60m</span>
-              <span>90m (Heavy Feast)</span>
+              <span>90m (Grand Feast / Banquet)</span>
             </div>
           </div>
 
@@ -389,7 +387,7 @@ export function KitchenKdsOperationsPanel({
           </div>
 
           <p className="text-[11px] text-slate-400 leading-relaxed">
-            When active live orders in queue equal or exceed this threshold, King AI automatically engages the Peak Rush SLA (+{surgeDeltaMins}m) and notifies dispatch algorithms.
+            When active live orders in the kitchen queue equal or exceed this threshold, King AI automatically engages the Peak Rush SLA (+{surgeDeltaMins}m) to pace rider dispatches smoothly.
           </p>
 
           <div className="space-y-2 pt-1">
@@ -406,7 +404,7 @@ export function KitchenKdsOperationsPanel({
               <span>5 orders (Boutique)</span>
               <span>15 (Medium)</span>
               <span>30 (High)</span>
-              <span>50 orders (Mega Kitchen)</span>
+              <span>50 orders (High Capacity)</span>
             </div>
           </div>
 
@@ -453,7 +451,7 @@ export function KitchenKdsOperationsPanel({
                   </>
                 ) : (
                   <>
-                    <Play className="mr-1 size-3 text-emerald-400" /> Test Siren
+                    <Play className="mr-1 size-3 text-emerald-400" /> Test Chime
                   </>
                 )}
               </Button>
@@ -463,7 +461,7 @@ export function KitchenKdsOperationsPanel({
           {/* Volume Slider */}
           <div className="space-y-1.5 pt-1">
             <div className="flex justify-between text-xs text-slate-300">
-              <span>Siren / Chime Volume:</span>
+              <span>Kitchen Alert Chime Volume:</span>
               <span className="font-mono font-bold text-emerald-400">{soundVolume}%</span>
             </div>
             <input
@@ -518,7 +516,7 @@ export function KitchenKdsOperationsPanel({
       {/* Packaging & Minimum Order Secondary Fields */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800/80">
         <div>
-          <Label className="text-xs text-slate-300">Default Packaging Charge (₹ per order)</Label>
+          <Label className="text-xs text-slate-300">Packaging Charge per Delivery Order (₹)</Label>
           <Input
             type="number"
             min={0}
@@ -530,7 +528,7 @@ export function KitchenKdsOperationsPanel({
           />
         </div>
         <div>
-          <Label className="text-xs text-slate-300">Minimum Order Value (₹ threshold)</Label>
+          <Label className="text-xs text-slate-300">Minimum Delivery Order Value (₹)</Label>
           <Input
             type="number"
             min={0}

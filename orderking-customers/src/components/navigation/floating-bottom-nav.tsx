@@ -102,6 +102,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
           <li className="w-full flex justify-center">
             <Link
               to="/"
+              preload="intent"
               onClick={onTap}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-transform duration-200",
@@ -154,6 +155,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
           <li className="w-full flex justify-center">
             <Link
               to="/tutor"
+              preload="intent"
               onClick={onTap}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-transform duration-200",
@@ -205,6 +207,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
           <li className="w-full flex justify-center">
             <Link
               to="/king-pay"
+              preload="intent"
               onClick={onTap}
               className="group relative -mt-6 sm:-mt-7 flex flex-col items-center justify-center no-underline transition-all duration-300 active:scale-[0.92]"
               title="KingPay UPI & 24K Digital Gold"
@@ -266,6 +269,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
           <li className="w-full flex justify-center">
             <Link
               to="/travel"
+              preload="intent"
               onClick={onTap}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-transform duration-200",
@@ -317,6 +321,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
           <li className="w-full flex justify-center">
             <Link
               to={isTravel ? "/travel/trips" : "/orders"}
+              preload="intent"
               onClick={onTap}
               className={cn(
                 "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-transform duration-200",

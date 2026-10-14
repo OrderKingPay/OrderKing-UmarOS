@@ -148,7 +148,7 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       orderKingHeadline: "Order King",
       orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis at 0% menu markup. Save ₹150–₹300 on every meal!",
       orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍱 25-Min Delivery · 0% Price Markup · Pure Veg & Non-Veg",
+      orderKingHighlight: "🍱 25-Min Delivery · 0% Price Markup · Hot Gourmet Specials",
       kingPayHeadline: "King Pay",
       kingPayTagline: "Pay for lunch at any cafe or stall with 1-tap QR scan. Completely zero convenience fee & instant cashback.",
       kingPayCta: "Open King Pay",

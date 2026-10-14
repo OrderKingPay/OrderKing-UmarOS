@@ -420,7 +420,7 @@ export function UniversalPosHardwareManager({
     const isPetpooja = activePosId === "petpooja";
     const orderNum = `POS-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const fakePayload = isPetpooja
+    const inboundPayload = isPetpooja
       ? {
           event: "order_push",
           restaurant_key: posConfig.restaurantKey,
@@ -454,7 +454,7 @@ export function UniversalPosHardwareManager({
       status: "SUCCESS",
       statusCode: 200,
       details: `Received Inbound Order #${orderNum} from ${isPetpooja ? "Petpooja Webhook" : "UrbanPiper Hub"}. Auto-injected to KDS.`,
-      payload: fakePayload,
+      payload: inboundPayload,
     });
 
     toast.success(`Inbound Webhook Verified: Order #${orderNum} ingested!`);

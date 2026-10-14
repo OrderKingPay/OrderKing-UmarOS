@@ -55,42 +55,61 @@ function OffersPage() {
 
   return (
     <CustomerShell>
-      <div className="px-4 py-5">
-        <h1 className="font-display text-3xl">{t("offers.title")}</h1>
-        <p className="mt-1 text-sm text-muted">Apply coupons directly for instant cart savings & free delivery</p>
+      <div className="min-h-[calc(100vh-80px)] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-5 pb-28">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-display text-3xl font-black text-stone-900 tracking-tight">
+              {t("offers.title")}
+            </h1>
+            <p className="mt-0.5 text-xs font-bold text-amber-800">
+              Royal Coupons, Instant Savings &amp; VIP Passes
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 px-3 py-1 text-xs font-black text-amber-950 shadow-2xs">
+            <span>🎟️</span>
+            <span>{FEATURED_OFFERS.length + serverPromos.length} Deals</span>
+          </span>
+        </div>
 
-        {/* Featured Zomato-Style Promo Cards */}
-        <div className="mt-4 space-y-3">
+        {/* Featured Luxury Deal Cards */}
+        <div className="mt-5 space-y-3.5">
           {FEATURED_OFFERS.map((f) => (
             <div
               key={f.id}
-              className="relative overflow-hidden rounded-[var(--radius-xl)] border border-primary/20 bg-surface p-4 shadow-xs transition hover:shadow-sm"
+              className="relative overflow-hidden rounded-3xl border border-amber-300/80 bg-gradient-to-br from-white via-amber-50/50 to-yellow-50/30 p-5 shadow-[0_8px_30px_rgba(245,158,11,0.1)] hover:shadow-[0_12px_40px_rgba(245,158,11,0.2)] transition-all group"
             >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <span className="inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">
-                    {f.badge}
-                  </span>
-                  <h2 className="mt-1 font-semibold text-base">{f.name}</h2>
-                  <p className="mt-0.5 text-xs text-muted">{f.description}</p>
-                  <p className="mt-1 text-[11px] text-muted">
-                    Min order: {formatPaise(f.minOrderPaise, { locale })}
-                  </p>
+              {/* Subtle ambient radial shimmer */}
+              <div className="pointer-events-none absolute -right-12 -top-12 size-36 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-400/10 blur-2xl" />
+
+              <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/20 border border-amber-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-950 shadow-2xs">
+                      {f.badge}
+                    </span>
+                    <span className="text-[10px] font-bold text-stone-500">
+                      Min order: {formatPaise(f.minOrderPaise, { locale })}
+                    </span>
+                  </div>
+                  <h2 className="mt-2 font-display text-lg font-black text-stone-900 leading-snug">
+                    {f.name}
+                  </h2>
+                  <p className="mt-0.5 text-xs text-stone-600 leading-relaxed">{f.description}</p>
                 </div>
-                <div className="text-right">
-                  <span className="inline-block rounded border border-dashed border-primary/40 bg-primary/5 px-2.5 py-1 font-mono text-xs font-bold text-primary">
+
+                <div className="flex sm:flex-col items-center justify-between sm:justify-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 sm:border-l border-amber-900/10 sm:pl-4">
+                  <span className="inline-block rounded-xl border border-amber-400/80 bg-gradient-to-r from-amber-400/20 via-yellow-300/30 to-amber-400/20 px-3 py-1 font-mono text-xs font-black tracking-widest text-amber-950 shadow-2xs">
                     {f.code}
                   </span>
                   <Button
-                    className="mt-2 block w-full text-xs"
                     size="sm"
-                    variant="primary"
+                    className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black text-xs px-5 py-2 rounded-xl shadow-md shadow-orange-500/25 hover:from-amber-600 hover:to-orange-600 active:scale-95 transition-all h-9"
                     onClick={() => {
                       setCoupon(f.code);
-                      toast.success(`Coupon ${f.code} applied!`);
+                      toast.success(`Coupon ${f.code} applied to cart!`);
                     }}
                   >
-                    {t("cart.apply")}
+                    {t("cart.apply")} ➔
                   </Button>
                 </div>
               </div>
@@ -99,33 +118,46 @@ function OffersPage() {
         </div>
 
         {serverPromos.length > 0 && (
-          <div className="mt-6 space-y-3">
-            <h2 className="font-display text-lg font-bold">Partner Restaurant Deals</h2>
+          <div className="mt-8 space-y-3.5">
+            <div className="flex items-center gap-2">
+              <span className="text-amber-600 text-base">🍽️</span>
+              <h2 className="font-display text-lg font-black text-stone-900">Partner Kitchen Deals</h2>
+            </div>
             <ul className="space-y-3">
               {serverPromos.map((p) => (
-                <li key={p.id} className="rounded-[var(--radius-lg)] bg-surface p-4">
-                  <p className="font-medium">{p.name}</p>
-                  {p.code ? <p className="font-mono text-sm">{p.code}</p> : null}
-                  <p className="text-xs text-muted">
-                    {p.fundedBy === "RESTAURANT"
-                      ? t("offers.fundedByRestaurant")
-                      : p.fundedBy === "PLATFORM"
-                        ? t("offers.fundedByPlatform")
-                        : t("offers.fundedByShared")}
-                  </p>
-                  <p className="text-xs text-muted">{t("offers.min", { amount: formatPaise(p.minOrderPaise, { locale }) })}</p>
+                <li
+                  key={p.id}
+                  className="rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-4 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(212,175,55,0.12)] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div>
+                    <p className="font-extrabold text-stone-900 text-sm">{p.name}</p>
+                    <p className="text-xs text-stone-500 mt-0.5">
+                      {p.fundedBy === "RESTAURANT"
+                        ? t("offers.fundedByRestaurant")
+                        : p.fundedBy === "PLATFORM"
+                          ? t("offers.fundedByPlatform")
+                          : t("offers.fundedByShared")}
+                    </p>
+                    <p className="text-[11px] font-bold text-amber-800 mt-1">
+                      {t("offers.min", { amount: formatPaise(p.minOrderPaise, { locale }) })}
+                    </p>
+                  </div>
                   {p.code ? (
-                    <Button
-                      className="mt-2"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setCoupon(p.code!);
-                        toast.success(t("cart.applied"));
-                      }}
-                    >
-                      {t("cart.apply")}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-lg border border-dashed border-amber-300 bg-amber-50 px-2 py-1 font-mono text-xs font-bold text-amber-900">
+                        {p.code}
+                      </span>
+                      <Button
+                        size="sm"
+                        className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-xs rounded-xl shadow-xs"
+                        onClick={() => {
+                          setCoupon(p.code!);
+                          toast.success(t("cart.applied"));
+                        }}
+                      >
+                        {t("cart.apply")}
+                      </Button>
+                    </div>
                   ) : null}
                 </li>
               ))}

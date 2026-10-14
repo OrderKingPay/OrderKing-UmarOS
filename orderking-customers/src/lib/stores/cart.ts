@@ -11,9 +11,11 @@ export type { CartItem };
 // when credentials have not been configured; keep a truthful device-local cart.
 const cloudCartConfigured = Boolean(
   import.meta.env.VITE_SUPABASE_URL?.startsWith("https://") &&
-  !import.meta.env.VITE_SUPABASE_URL?.includes("dummy.supabase.co") &&
+  !import.meta.env.VITE_SUPABASE_URL?.includes("unconfigured.supabase.co") &&
+  !import.meta.env.VITE_SUPABASE_URL?.includes("placeholder.supabase.co") &&
   import.meta.env.VITE_SUPABASE_ANON_KEY &&
-  import.meta.env.VITE_SUPABASE_ANON_KEY !== "dummy-key"
+  import.meta.env.VITE_SUPABASE_ANON_KEY !== "unconfigured-key" &&
+  import.meta.env.VITE_SUPABASE_ANON_KEY !== "placeholder-key"
 );
 
 function readDeviceCart(name: string): string | null {

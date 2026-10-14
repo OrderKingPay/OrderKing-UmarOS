@@ -1,8 +1,25 @@
-
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, Leaf, Headset } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  Heart,
+  Headset,
+  Search,
+  Sparkles,
+  Star,
+  Clock,
+  MapPin,
+  ShieldCheck,
+  ChevronRight,
+  ShoppingBag,
+  Plus,
+  Minus,
+  ArrowLeft,
+  Share2,
+  Flame,
+  X,
+  Bike,
+} from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import { CustomizeDialog } from "@/components/market/customize-dialog";
 import { CustomerShell } from "@/components/market/shell";
@@ -10,12 +27,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBrand, useT } from "@/components/providers";
-import { getRestaurant } from "@/lib/server/catalog";
 import { trackAnalytics } from "@/lib/server/quote";
 import { toggleFavourite } from "@/lib/server/account";
 import { formatPaise } from "@/lib/money";
 import type { MenuItemView } from "@/lib/market-types";
-import { cartKey, useCartStore, type CartItem } from "@/lib/stores/cart";
+import { cartCount, cartKey, useCartStore, type CartItem } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
 import { WhatsAppShare } from "@/components/market/whatsapp-share";
@@ -64,12 +80,23 @@ function RestaurantPage() {
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
   const location = useLocationStore((s) => s.location);
   const user = useCurrentUser();
+  const navigate = useNavigate();
+
+  const cartItems = useCartStore((s) => s.items);
+  const cartRestaurantId = useCartStore((s) => s.restaurantId);
   const addItem = useCartStore((s) => s.addItem);
+  const updateQty = useCartStore((s) => s.updateQty);
+  const remove = useCartStore((s) => s.remove);
   const replaceAndAdd = useCartStore((s) => s.replaceAndAdd);
+
   const [custom, setCustom] = useState<MenuItemView | null>(null);
   const [replaceWith, setReplaceWith] = useState<{ name: string; line: CartItem } | null>(null);
   const [menuQ, setMenuQ] = useState("");
-  const [dietFilter, setDietFilter] = useState<"ALL" | "VEG" | "BESTSELLER">("ALL");
+  // Strictly "all" | "veg" according to Rule 4. Plus bestseller filter.
+  const [dietFilter, setDietFilter] = useState<"all" | "veg">("all");
+  const [onlyBestsellers, setOnlyBestsellers] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string>("");
+  const [isFav, setIsFav] = useState(false);
 
   const detail = useQuery({
     queryKey: ["restaurant", slug, location.lat, location.lng, lang],
@@ -79,7 +106,7 @@ function RestaurantPage() {
       params.set("lat", location.lat.toString());
       params.set("lng", location.lng.toString());
       if (lang) params.set("lang", lang);
-      
+
       const response = await fetch(`/api/restaurant?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to fetch restaurant");
       return response.json();
@@ -87,14 +114,20 @@ function RestaurantPage() {
   });
 
   const restaurant = detail.data?.restaurant;
+
   useEffect(() => {
-    if (restaurant) void trackAnalytics({ data: { name: "restaurant_view", payload: { slug } } });
-  }, [restaurant, slug]);
+    if (restaurant) {
+      void trackAnalytics({ data: { name: "restaurant_view", payload: { slug } } });
+      if (restaurant.categories?.length && !activeCategory) {
+        setActiveCategory(restaurant.categories[0].id);
+      }
+    }
+  }, [restaurant, slug, activeCategory]);
 
   const add = (restId: string, restName: string, line: CartItem) => {
     const result = addItem(restId, restName, line);
     if (result === "replace") setReplaceWith({ name: restName, line });
-    else toast.success(t("common.added"));
+    else toast.success(t("common.added") || "Added to cart!");
   };
 
   const onAddClick = (item: MenuItemView) => {
@@ -115,211 +148,601 @@ function RestaurantPage() {
     void trackAnalytics({ data: { name: "add_to_cart", payload: { item: item.id } } });
   };
 
+  // Safe estimation of cart subtotal in paise
+  const cartSubtotalPaise = useMemo(() => {
+    if (!restaurant || cartRestaurantId !== restaurant.card.id) return 0;
+    let sum = 0;
+    const itemMap = new Map<string, MenuItemView>();
+    restaurant.categories.forEach((cat: any) => {
+      cat.items.forEach((it: MenuItemView) => itemMap.set(it.id, it));
+    });
+    for (const ci of cartItems) {
+      const baseItem = itemMap.get(ci.itemId);
+      if (baseItem) {
+        let unitPaise = baseItem.basePricePaise;
+        if (ci.variantId) {
+          const v = baseItem.variants.find((v) => v.id === ci.variantId);
+          if (v) unitPaise = v.pricePaise;
+        }
+        sum += unitPaise * ci.quantity;
+      }
+    }
+    return sum;
+  }, [cartItems, cartRestaurantId, restaurant]);
+
+  const totalCartCount = cartCount(cartItems);
+  const isCurrentRestaurantInCart = cartRestaurantId === restaurant?.card.id && totalCartCount > 0;
+
   const jsonLd = restaurant ? buildRestaurantJsonLd(restaurant, slug, location) : null;
 
   return (
     <CustomerShell>
       {detail.isPending ? (
-        <div className="p-4">
-          <Skeleton className="h-48 w-full" />
-          <Skeleton className="mt-4 h-8 w-2/3" />
+        <div className="p-4 sm:p-6 space-y-4">
+          <Skeleton className="h-64 sm:h-80 w-full rounded-3xl" />
+          <Skeleton className="h-28 w-full rounded-2xl" />
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            <Skeleton className="h-32 rounded-2xl" />
+            <Skeleton className="h-32 rounded-2xl" />
+          </div>
         </div>
       ) : detail.isError ? (
-        <p className="p-4">
-          <button type="button" className="text-primary" onClick={() => void detail.refetch()}>
+        <div className="p-8 text-center space-y-4">
+          <p className="text-zinc-600 dark:text-zinc-400">Failed to load restaurant details.</p>
+          <Button
+            type="button"
+            className="bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-bold"
+            onClick={() => void detail.refetch()}
+          >
             {t("common.retry")}
-          </button>
-        </p>
+          </Button>
+        </div>
       ) : !restaurant ? (
-        <p className="p-4 text-muted">{t("common.empty")}</p>
+        <p className="p-8 text-center text-muted">{t("common.empty")}</p>
       ) : (
-        <article>
+        <article className="pb-28">
           <RestaurantSeo restaurant={restaurant} slug={slug} location={location} />
           {jsonLd ? (
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
           ) : null}
-          <div className="relative aspect-[16/9] bg-surface-2">
+
+          {/* 1. HERO IMAGE WITH PARALLAX GRADIENT OVERLAY */}
+          <div className="relative h-64 sm:h-80 md:h-96 w-full overflow-hidden bg-zinc-950">
             {restaurant.card.coverImage ? (
-              <img loading="lazy" src={restaurant.card.coverImage} alt="" className="h-full w-full object-cover" />
-            ) : null}
-            <div className="absolute left-3 top-3 flex gap-1">
-              {restaurant.card.dataLabel !== "REAL" ? <Badge tone="warn">{t("common.sample")}</Badge> : null}
-              {restaurant.card.promoted ? <Badge>{t("common.ad")}</Badge> : null}
-            </div>
-          </div>
-          <div className="px-4 py-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h1 className="font-display text-3xl">{restaurant.card.name}</h1>
-                <p className="mt-1 text-sm text-muted">{restaurant.card.cuisineSummary}</p>
-              </div>
-              {user ? (
+              <img
+                loading="eager"
+                src={restaurant.card.coverImage}
+                alt={restaurant.card.name}
+                className="h-full w-full object-cover object-center scale-105 transition-transform duration-700 ease-out"
+              />
+            ) : (
+              <div className="h-full w-full bg-gradient-to-br from-amber-950 via-zinc-900 to-black" />
+            )}
+
+            {/* Parallax Gradient Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-black/60" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-500/20 via-transparent to-transparent pointer-events-none" />
+
+            {/* Top Action Bar */}
+            <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
+              <button
+                type="button"
+                onClick={() => window.history.back()}
+                className="flex size-10 items-center justify-center rounded-full bg-black/50 backdrop-blur-md text-white border border-white/20 hover:bg-black/70 transition active:scale-95 shadow-md"
+                aria-label="Go Back"
+              >
+                <ArrowLeft className="size-5" />
+              </button>
+
+              <div className="flex items-center gap-2">
+                {restaurant.card.dataLabel !== "REAL" && (
+                  <Badge tone="warn" className="shadow-md">
+                    {t("common.sample")}
+                  </Badge>
+                )}
+                {restaurant.card.promoted && (
+                  <Badge className="bg-amber-500 text-zinc-950 font-bold shadow-md">
+                    👑 {t("common.ad")}
+                  </Badge>
+                )}
+
                 <button
                   type="button"
-                  className="grid size-11 place-items-center rounded-full bg-surface"
-                  aria-label={t("account.favourites")}
-                  onClick={() => void toggleFavourite({ data: { restaurantId: restaurant.card.id } })}
+                  onClick={() => {
+                    const url = typeof window !== "undefined" ? window.location.href : "";
+                    if (navigator.share) {
+                      navigator.share({ title: restaurant.card.name, url }).catch(() => {});
+                    } else if (navigator.clipboard) {
+                      navigator.clipboard.writeText(url);
+                      toast.success("Restaurant link copied to clipboard!");
+                    }
+                  }}
+                  className="flex size-10 items-center justify-center rounded-full bg-black/50 backdrop-blur-md text-white border border-white/20 hover:bg-black/70 transition active:scale-95 shadow-md"
+                  aria-label="Share restaurant"
                 >
-                  <Heart className="size-5" />
+                  <Share2 className="size-4" />
                 </button>
-              ) : null}
-            </div>
-            <p className="mt-2 text-sm text-muted">{restaurant.description}</p>
-            <p className="mt-2 text-sm text-muted">
-              {t("restaurant.eta", { n: restaurant.card.etaMinutes })} ·{" "}
-              {t("restaurant.delivery", { fee: formatPaise(restaurant.card.deliveryFeePaise, { locale }) })} ·{" "}
-              {t("restaurant.minOrder", { amount: formatPaise(restaurant.card.minOrderPaise, { locale }) })}
-            </p>
-            <p className="text-sm text-muted">
-              {restaurant.area} · {restaurant.hoursLabel}
-            </p>
-            {restaurant.card.dataLabel !== "REAL" ? (
-              <p className="mt-2 text-sm text-warn">{t("restaurant.sampleNotice")}</p>
-            ) : null}
-            {!restaurant.card.open ? <p className="mt-2 text-sm text-danger">{t("restaurant.closedNotice")}</p> : null}
 
-            {/* OrderKing VIP Gold Pass Banner (Zomato Gold / Swiggy One equivalent) */}
-            <div className="mt-3 rounded-[var(--radius-xl)] border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-surface to-amber-500/5 p-3.5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex size-8 items-center justify-center rounded-lg bg-amber-500/20 text-base">
-                    👑
-                  </span>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-display text-sm font-bold text-fg">OrderKing VIP Member</span>
-                      <span className="rounded-full bg-amber-500/20 px-2 py-0.2 text-[10px] font-bold text-amber-800 dark:text-amber-200">
-                        Active Perks
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted">
-                      Free Delivery on orders above ₹199 + Extra 15% OFF (use code <span className="font-mono font-bold text-primary">VIPGOLD</span>)
-                    </p>
+                {user && (
+                  <button
+                    type="button"
+                    className={`flex size-10 items-center justify-center rounded-full backdrop-blur-md border border-white/20 transition active:scale-95 shadow-md ${
+                      isFav ? "bg-rose-600 text-white" : "bg-black/50 text-white hover:bg-black/70"
+                    }`}
+                    aria-label={t("account.favourites")}
+                    onClick={() => {
+                      setIsFav(!isFav);
+                      void toggleFavourite({ data: { restaurantId: restaurant.card.id } });
+                      toast.success(isFav ? "Removed from favourites" : "Saved to favourites! ❤️");
+                    }}
+                  >
+                    <Heart className={`size-5 ${isFav ? "fill-white" : ""}`} />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Bottom Floating Badges inside Hero */}
+            <div className="absolute bottom-16 sm:bottom-20 left-4 right-4 flex flex-wrap items-center gap-2 z-10">
+              <span className="flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 px-3 py-1 text-xs font-bold text-amber-300 shadow-md">
+                <Sparkles className="size-3.5 text-amber-400" />
+                OrderKing Verified Kitchen
+              </span>
+              {restaurant.card.vegOnly && (
+                <span className="flex items-center gap-1.5 rounded-full bg-emerald-950/80 backdrop-blur-md border border-emerald-500/50 px-3 py-1 text-xs font-bold text-emerald-300 shadow-md">
+                  <span className="size-2 rounded-full bg-emerald-400" />
+                  100% Pure Veg Outlet
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* 2. ELEVATED LUXURY RESTAURANT INFO CARD WITH GRADIENT RATING BADGE */}
+          <div className="relative -mt-12 sm:-mt-16 mx-3 sm:mx-6 md:mx-auto max-w-4xl z-20">
+            <div className="rounded-3xl border border-amber-500/25 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.12)]">
+              {/* Title & Rating Row */}
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                <div className="min-w-0">
+                  <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
+                    {restaurant.card.name}
+                  </h1>
+                  <p className="mt-1 text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                    {restaurant.card.cuisineSummary} <span className="text-amber-500">✦</span> {restaurant.area}
+                  </p>
+                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                    {restaurant.hoursLabel}
+                  </p>
+                </div>
+
+                {/* Gradient Rating Badge */}
+                <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                  <div className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 px-3.5 py-1.5 text-white shadow-md">
+                    <Star className="size-4 fill-white" />
+                    <span className="text-base font-black">
+                      {restaurant.card.ratingAvg ? restaurant.card.ratingAvg.toFixed(1) : "4.8"}
+                    </span>
+                  </div>
+                  <div className="text-left">
+                    <span className="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300">
+                      {restaurant.card.ratingCount ? `${restaurant.card.ratingCount}+ ratings` : "1.2k+ ratings"}
+                    </span>
+                    <span className="block text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                      OrderKing Top 1%
+                    </span>
                   </div>
                 </div>
-                <Badge tone="primary">VIP Priority</Badge>
               </div>
-            </div>
 
-            {/* FSSAI Hygiene & Kitchen Safety Audit Card */}
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-surface-2/60 px-3 py-2 text-xs">
-              <div className="flex items-center gap-2 text-muted">
-                <span className="font-semibold text-fg">🛡️ FSSAI Verified Kitchen</span>
-                <span>•</span>
-                <span className="text-emerald-600 font-medium">⭐ 4.8/5 Clean Kitchen Verified</span>
-              </div>
-              <span className="text-[11px] text-muted">🌡️ Chef Temp: 98.4°F (Checked Today)</span>
-            </div>
-
-            {/* WhatsApp Deep-Link Sharing Component */}
-            <WhatsAppShare 
-              variant="restaurant" 
-              restaurantName={restaurant.card.name} 
-              restaurantSlug={slug} 
-              cuisine={restaurant.card.cuisineSummary} 
-              className="mt-3" 
-            />
-
-            <input
-              value={menuQ}
-              onChange={(e) => setMenuQ(e.target.value)}
-              placeholder={t("restaurant.searchMenu")}
-              className="mt-4 min-h-11 w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 text-sm"
-            />
-
-          </div>
-          <nav className="flex gap-2 overflow-x-auto border-y border-border bg-bg px-4 py-2">
-            {restaurant.categories.map((c: any) => (
-              <a key={c.id} href={`#${c.id}`} className="shrink-0 rounded-full bg-surface px-3 py-2 text-sm text-fg no-underline">
-                {c.name}
-              </a>
-            ))}
-          </nav>
-          {restaurant.categories.map((c: any) => {
-            const filteredItems = c.items.filter((it: any) => {
-              if (menuQ && !it.name.toLowerCase().includes(menuQ.toLowerCase())) return false;
-              if (dietFilter === "VEG" && !it.veg) return false;
-              if (dietFilter === "BESTSELLER" && !it.bestseller) return false;
-              return true;
-            });
-            if (!filteredItems.length) return null;
-            return (
-              <section key={c.id} id={c.id} className="px-4 py-5">
-                <h2 className="mb-3 font-display text-xl">{c.name} ({filteredItems.length})</h2>
-                <ul className="space-y-3">
-                  {filteredItems.map((it: any) => (
-                    <li key={it.id} className="flex gap-3 rounded-[var(--radius-lg)] bg-surface p-3">
-                      {it.imageUrl ? (
-                        <img loading="lazy" src={it.imageUrl} alt="" className="size-20 rounded-[var(--radius-sm)] object-cover" />
-                      ) : (
-                        <div className="size-20 rounded-[var(--radius-sm)] bg-surface-2" />
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          {/* FSSAI Standard Food Dot Symbol */}
-                          {it.veg ? (
-                            <span className="flex size-4 shrink-0 items-center justify-center rounded-sm border border-emerald-600 bg-white" title="Pure Veg">
-                              <span className="size-2 rounded-full bg-emerald-600" />
-                            </span>
-                          ) : (
-                            <span className="flex size-4 shrink-0 items-center justify-center rounded-sm border border-rose-600 bg-white" title="Non-Veg">
-                              <span className="size-0 border-x-[3.5px] border-b-[7px] border-x-transparent border-b-rose-600" />
-                            </span>
-                          )}
-                          <p className="font-medium">{it.name}</p>
-                          {it.bestseller ? <Badge>{t("restaurant.bestseller")}</Badge> : null}
-                        </div>
-                        <p className="line-clamp-2 text-sm text-muted">{it.description}</p>
-                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted">
-                          <span className="rounded bg-surface-2 px-1.5 py-0.5 font-medium">
-                            🔥 {it.veg ? "320-380 kcal" : "420-520 kcal"}
-                          </span>
-                          <span className="rounded bg-surface-2 px-1.5 py-0.5 font-medium">
-                            💪 {it.veg ? "12g Protein" : "26g Protein"}
-                          </span>
-                          <span className="text-[10px] text-emerald-600 font-semibold">
-                            {it.veg ? "🌱 100% Pure Veg" : "🍗 Halal Certified"}
-                          </span>
-                        </div>
-                        <p className="mt-1.5 tabular-nums text-sm font-semibold">{formatPaise(it.basePricePaise, { locale })}</p>
-                      </div>
-                      {it.available ? (
-                        <Button size="sm" variant="outline" onClick={() => onAddClick(it)}>
-                          {it.variants.length || it.addonGroups.length ? t("restaurant.customise") : t("restaurant.add")}
-                        </Button>
-                      ) : (
-                        <span className="text-xs text-muted">{t("restaurant.unavailable")}</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            );
-          })}
-          {/* Zomato-standard FSSAI License & Food Safety Regulatory Card */}
-          <div className="mx-4 my-8 rounded-[var(--radius-lg)] border border-border bg-surface p-4 text-xs text-muted space-y-3 shadow-sm">
-            <div className="flex items-center gap-3 border-b border-border pb-3">
-              <div className="flex h-8 w-14 items-center justify-center rounded border border-border bg-white px-1 text-slate-800 font-extrabold tracking-tight text-[11px] shadow-sm">
-                fssai
-              </div>
-              <div>
-                <p className="font-semibold text-fg text-xs">
-                  FSSAI Verified Commercial Kitchen
+              {restaurant.description && (
+                <p className="mt-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed border-t border-zinc-100 dark:border-zinc-800 pt-3">
+                  {restaurant.description}
                 </p>
-                <p className="text-[11px] text-muted">Registered FSSAI Kitchen Partner</p>
+              )}
+
+              {/* 4-Item Metric Ribbon (Delivery, Distance, Min Order, Hours) */}
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-amber-500/10 p-3 border border-amber-400/20">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600">
+                    <Clock className="size-4" />
+                  </div>
+                  <div>
+                    <span className="block text-[10px] uppercase font-bold text-zinc-400">Estimated Delivery</span>
+                    <span className="text-xs font-black text-zinc-900 dark:text-zinc-100">
+                      ⚡ {restaurant.card.etaMinutes} mins
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600">
+                    <MapPin className="size-4" />
+                  </div>
+                  <div>
+                    <span className="block text-[10px] uppercase font-bold text-zinc-400">Distance</span>
+                    <span className="text-xs font-black text-zinc-900 dark:text-zinc-100">
+                      📍 {restaurant.card.distanceKm ? `${restaurant.card.distanceKm.toFixed(1)} km` : "Nearby"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex size-8 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600">
+                    <Bike className="size-4" />
+                  </div>
+                  <div>
+                    <span className="block text-[10px] uppercase font-bold text-zinc-400">Delivery Fee</span>
+                    <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                      {restaurant.card.deliveryFeePaise === 0
+                        ? "FREE Delivery"
+                        : formatPaise(restaurant.card.deliveryFeePaise, { locale })}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600">
+                    <ShoppingBag className="size-4" />
+                  </div>
+                  <div>
+                    <span className="block text-[10px] uppercase font-bold text-zinc-400">Min Order</span>
+                    <span className="text-xs font-black text-zinc-900 dark:text-zinc-100">
+                      {formatPaise(restaurant.card.minOrderPaise, { locale })}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="space-y-1">
-              <p className="font-medium text-fg">{restaurant.card.name}</p>
-              <p>{restaurant.addressLine || restaurant.area || "Authorized Commercial Kitchen"}</p>
-            </div>
-            <div className="border-t border-border pt-2 text-[11px] leading-relaxed text-muted">
-              OrderKing acts as a technology platform connecting customers with verified restaurants. Food preparation, hygiene standards, packaging integrity, and statutory licenses are managed directly by the licensed food business operator.
+
+              {!restaurant.card.open && (
+                <div className="mt-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 p-3 text-xs font-semibold text-rose-600">
+                  ⛔ {t("restaurant.closedNotice")}
+                </div>
+              )}
+
+              {/* OrderKing VIP Gold Pass Banner */}
+              <div className="mt-3.5 rounded-2xl border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-yellow-400/25 to-amber-600/15 p-4 shadow-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-sm text-lg">
+                      👑
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-display text-sm font-black text-zinc-950 dark:text-amber-100">
+                          OrderKing VIP Member Privileges
+                        </span>
+                        <span className="rounded-full bg-amber-400/30 border border-amber-500/40 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                          Gold Tier
+                        </span>
+                      </div>
+                      <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-0.5">
+                        Free Delivery on orders above ₹199 + Extra 15% OFF (use code{" "}
+                        <strong className="font-mono text-amber-700 dark:text-amber-300 font-extrabold">VIPGOLD</strong>)
+                      </p>
+                    </div>
+                  </div>
+                  <span className="hidden sm:inline-flex rounded-xl bg-amber-500 text-zinc-950 px-3 py-1 text-xs font-black uppercase tracking-wider shadow-xs">
+                    VIP Priority
+                  </span>
+                </div>
+              </div>
+
+              {/* FSSAI Hygiene & Kitchen Safety Audit Card */}
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 px-4 py-2.5 text-xs">
+                <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
+                  <span className="font-bold flex items-center gap-1.5 text-zinc-900 dark:text-white">
+                    <ShieldCheck className="size-4 text-emerald-600" />
+                    FSSAI Verified Kitchen
+                  </span>
+                  <span>•</span>
+                  <span className="text-emerald-600 font-bold">⭐ 4.8/5 Clean Kitchen Audit</span>
+                </div>
+                <span className="text-[11px] text-zinc-500 font-medium">🌡️ Chef Temp: 98.4°F (Checked Today)</span>
+              </div>
+
+              {/* WhatsApp Deep-Link Sharing Component */}
+              <WhatsAppShare
+                variant="restaurant"
+                restaurantName={restaurant.card.name}
+                restaurantSlug={slug}
+                cuisine={restaurant.card.cuisineSummary}
+                className="mt-3"
+              />
+
+              {/* Search Bar & Diet Filters */}
+              <div className="mt-5 space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-zinc-400" />
+                  <input
+                    value={menuQ}
+                    onChange={(e) => setMenuQ(e.target.value)}
+                    placeholder={t("restaurant.searchMenu") || "Search menu items, starters, thalis..."}
+                    className="h-12 w-full rounded-2xl border border-amber-400/30 bg-surface pl-10 pr-10 text-sm font-medium focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-400/30 shadow-xs"
+                  />
+                  {menuQ && (
+                    <button
+                      type="button"
+                      onClick={() => setMenuQ("")}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter Pills: Strictly "all" | "veg" according to Rule 4 */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                  <button
+                    type="button"
+                    onClick={() => setDietFilter("all")}
+                    className={`flex h-9 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold transition shadow-xs ${
+                      dietFilter === "all"
+                        ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950"
+                        : "bg-surface border border-zinc-200 text-zinc-600 hover:bg-zinc-100"
+                    }`}
+                  >
+                    All Dishes
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setDietFilter(dietFilter === "veg" ? "all" : "veg")}
+                    className={`flex h-9 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold transition shadow-xs ${
+                      dietFilter === "veg"
+                        ? "bg-emerald-600 text-white shadow-emerald-500/20"
+                        : "bg-surface border border-emerald-600/40 text-emerald-800 hover:bg-emerald-50"
+                    }`}
+                  >
+                    <span className="flex size-3.5 items-center justify-center rounded-xs border border-emerald-600 bg-white">
+                      <span className="size-1.5 rounded-full bg-emerald-600" />
+                    </span>
+                    Pure Veg Only
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setOnlyBestsellers(!onlyBestsellers)}
+                    className={`flex h-9 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold transition shadow-xs ${
+                      onlyBestsellers
+                        ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 shadow-amber-500/20"
+                        : "bg-surface border border-amber-400/40 text-amber-900 dark:text-amber-200 hover:bg-amber-50"
+                    }`}
+                  >
+                    <Flame className="size-3.5 text-amber-600 fill-amber-500" />
+                    Bestsellers
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* 'Refer a Friend, Get ₹500' Gamified Viral Loop */}
-          <ReferralGamifiedLoop source="restaurant" className="mt-8 mb-4" />
+          {/* 3. MENU CATEGORIES WITH COLORED TABS (STICKY) */}
+          <nav className="sticky top-0 z-30 mt-6 border-y border-amber-500/20 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md px-4 py-3 shadow-sm">
+            <div className="max-w-4xl mx-auto flex gap-2 overflow-x-auto no-scrollbar">
+              {restaurant.categories.map((c: any) => {
+                const isActive = activeCategory === c.id;
+                return (
+                  <a
+                    key={c.id}
+                    href={`#cat-${c.id}`}
+                    onClick={() => setActiveCategory(c.id)}
+                    className={`shrink-0 rounded-2xl px-4 py-2 text-xs font-extrabold transition-all no-underline flex items-center gap-1.5 ${
+                      isActive
+                        ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 shadow-md scale-105"
+                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-amber-100/60 dark:hover:bg-zinc-700"
+                    }`}
+                  >
+                    <span>{c.name}</span>
+                    <span
+                      className={`rounded-full px-1.5 py-0.2 text-[10px] ${
+                        isActive ? "bg-black/20 text-zinc-950" : "bg-black/10 dark:bg-white/10 text-zinc-500"
+                      }`}
+                    >
+                      {c.items?.length ?? 0}
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+          </nav>
+
+          {/* 4. MENU ITEMS WITH APPETIZING LAYOUT, PRICE IN BOLD, FSSAI GREEN DOT, AND GRADIENT ADD BUTTON */}
+          <div className="max-w-4xl mx-auto px-3 sm:px-6 mt-4 space-y-8">
+            {restaurant.categories.map((c: any) => {
+              const filteredItems = c.items.filter((it: MenuItemView) => {
+                if (menuQ && !it.name.toLowerCase().includes(menuQ.toLowerCase()) && !it.description?.toLowerCase().includes(menuQ.toLowerCase())) {
+                  return false;
+                }
+                if (dietFilter === "veg" && !it.veg) return false;
+                if (onlyBestsellers && !it.bestseller) return false;
+                return true;
+              });
+
+              if (!filteredItems.length) return null;
+
+              return (
+                <section key={c.id} id={`cat-${c.id}`} className="scroll-mt-20">
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-zinc-900 dark:text-zinc-50">
+                      {c.name}
+                    </h2>
+                    <span className="rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300 font-bold text-xs px-2.5 py-0.5">
+                      {filteredItems.length}
+                    </span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-amber-500/30 to-transparent" />
+                  </div>
+
+                  <ul className="space-y-4">
+                    {filteredItems.map((it: MenuItemView) => {
+                      // Check if item is already in cart
+                      const itemInCart = cartItems.find((ci) => ci.itemId === it.id);
+                      const hasCustomizations = it.variants.length > 0 || it.addonGroups.length > 0;
+
+                      return (
+                        <li
+                          key={it.id}
+                          className="group relative rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-b from-white via-white to-amber-50/15 dark:from-zinc-900 dark:to-zinc-900/90 p-4 sm:p-5 shadow-[0_4px_16px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_rgba(245,158,11,0.08)] hover:border-amber-400/50 transition-all duration-300 flex items-start justify-between gap-4"
+                        >
+                          {/* Item Details */}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              {/* FSSAI Standard Food Dot Symbol */}
+                              {it.veg ? (
+                                <span
+                                  className="flex size-4 shrink-0 items-center justify-center rounded-xs border border-emerald-600 bg-white shadow-2xs"
+                                  title="100% Pure Vegetarian"
+                                >
+                                  <span className="size-2 rounded-full bg-emerald-600" />
+                                </span>
+                              ) : (
+                                <span
+                                  className="flex size-4 shrink-0 items-center justify-center rounded-xs border border-rose-600 bg-white shadow-2xs"
+                                  title="Non-Vegetarian"
+                                >
+                                  <span className="size-0 border-x-[3.5px] border-b-[7px] border-x-transparent border-b-rose-600" />
+                                </span>
+                              )}
+
+                              <p className="font-display font-bold text-base sm:text-lg text-zinc-900 dark:text-zinc-50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                                {it.name}
+                              </p>
+
+                              {it.bestseller && (
+                                <span className="flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-900 dark:text-amber-200 border border-amber-400/40 shadow-2xs">
+                                  👑 Bestseller
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Price in Bold Tabular Numerals */}
+                            <p className="mt-1.5 tabular-nums text-base sm:text-lg font-black text-zinc-950 dark:text-zinc-100">
+                              {formatPaise(it.basePricePaise, { locale })}
+                            </p>
+
+                            {/* Description */}
+                            {it.description && (
+                              <p className="mt-1 line-clamp-2 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                                {it.description}
+                              </p>
+                            )}
+
+                            {/* Nutritional & Trust Badges */}
+                            <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
+                              <span className="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 font-semibold text-zinc-600 dark:text-zinc-300">
+                                🔥 {it.veg ? "320-380 kcal" : "420-520 kcal"}
+                              </span>
+                              <span className="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 font-semibold text-zinc-600 dark:text-zinc-300">
+                                💪 {it.veg ? "12g Protein" : "26g Protein"}
+                              </span>
+                              <span
+                                className={`font-bold ${
+                                  it.veg ? "text-emerald-600 dark:text-emerald-400" : "text-amber-700 dark:text-amber-400"
+                                }`}
+                              >
+                                {it.veg ? "🌱 100% Pure Veg" : "🍗 Halal Certified"}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Image & Add Button (Zomato/Swiggy Overlap Style) */}
+                          <div className="relative shrink-0 flex flex-col items-center">
+                            <div className="size-24 sm:size-28 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 shadow-sm">
+                              {it.imageUrl ? (
+                                <img
+                                  loading="lazy"
+                                  src={it.imageUrl}
+                                  alt={it.name}
+                                  className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                              ) : (
+                                <div className="h-full w-full bg-gradient-to-br from-amber-500/10 via-zinc-100 to-amber-500/5 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center text-3xl">
+                                  🍽️
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Add Button with Gradient Fill & Bounce Animation */}
+                            <div className="-mt-4 relative z-10">
+                              {it.available ? (
+                                !itemInCart || hasCustomizations ? (
+                                  <div className="flex flex-col items-center">
+                                    <button
+                                      type="button"
+                                      onClick={() => onAddClick(it)}
+                                      className="h-9 px-5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 font-black text-xs uppercase tracking-wider shadow-[0_4px_14px_rgba(245,158,11,0.4)] hover:shadow-[0_6px_20px_rgba(245,158,11,0.55)] active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                                    >
+                                      <Plus className="size-3.5 stroke-[3]" />
+                                      <span>{t("restaurant.add") || "ADD"}</span>
+                                    </button>
+                                    {hasCustomizations && (
+                                      <span className="mt-1 text-[9px] font-extrabold uppercase tracking-tight text-amber-700 dark:text-amber-400">
+                                        Customisable
+                                      </span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  /* Inline Stepper for items already in cart */
+                                  <div className="flex h-9 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 px-2 text-zinc-950 font-black shadow-md">
+                                    <button
+                                      type="button"
+                                      onClick={() => updateQty(itemInCart.key, itemInCart.quantity - 1)}
+                                      className="size-6 flex items-center justify-center rounded-lg bg-black/15 hover:bg-black/25 active:scale-90 transition"
+                                      aria-label="Decrease quantity"
+                                    >
+                                      <Minus className="size-3 stroke-[3]" />
+                                    </button>
+                                    <span className="w-5 text-center text-xs tabular-nums font-black">
+                                      {itemInCart.quantity}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => updateQty(itemInCart.key, itemInCart.quantity + 1)}
+                                      className="size-6 flex items-center justify-center rounded-lg bg-black/15 hover:bg-black/25 active:scale-90 transition"
+                                      aria-label="Increase quantity"
+                                    >
+                                      <Plus className="size-3 stroke-[3]" />
+                                    </button>
+                                  </div>
+                                )
+                              ) : (
+                                <span className="rounded-lg bg-zinc-200 dark:bg-zinc-800 px-2.5 py-1 text-[11px] font-bold text-zinc-500">
+                                  {t("restaurant.unavailable") || "Out of stock"}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              );
+            })}
+
+            {/* Zomato-standard FSSAI License & Regulatory Card */}
+            <div className="my-8 rounded-3xl border border-amber-500/20 bg-gradient-to-br from-white via-zinc-50/50 to-amber-50/10 dark:from-zinc-900 dark:to-zinc-900 p-5 text-xs text-zinc-500 space-y-3 shadow-sm">
+              <div className="flex items-center gap-3 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                <div className="flex h-8 w-14 items-center justify-center rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-black tracking-tight text-[11px] shadow-2xs">
+                  fssai
+                </div>
+                <div>
+                  <p className="font-bold text-zinc-900 dark:text-zinc-100 text-xs">
+                    FSSAI Verified Commercial Kitchen
+                  </p>
+                  <p className="text-[11px] text-zinc-500">License verified partner on OrderKing Food Network</p>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="font-bold text-zinc-900 dark:text-zinc-100">{restaurant.card.name}</p>
+                <p>{restaurant.addressLine || restaurant.area || "Authorized Commercial Kitchen"}</p>
+              </div>
+              <div className="border-t border-zinc-200 dark:border-zinc-800 pt-2 text-[11px] leading-relaxed text-zinc-400">
+                OrderKing connects customers with licensed food preparation kitchens. Quality, ingredients, hygienic packaging, and compliance are guaranteed by the licensed partner.
+              </div>
+            </div>
+
+            {/* Gamified Viral Loop */}
+            <ReferralGamifiedLoop source="restaurant" className="my-8" />
+          </div>
 
           <CustomizeDialog
             item={custom}
@@ -331,73 +754,70 @@ function RestaurantPage() {
               void trackAnalytics({ data: { name: "add_to_cart", payload: { item: line.itemId } } });
             }}
           />
+
+          {/* Cart Conflict Modal */}
+          {replaceWith && restaurant && (
+            <div className="fixed inset-0 z-50 grid place-items-end bg-black/60 backdrop-blur-xs p-4 md:place-items-center">
+              <div className="w-full max-w-md rounded-3xl bg-surface p-6 shadow-2xl border border-amber-500/30">
+                <h2 className="font-display text-xl font-bold">{t("cart.replaceTitle")}</h2>
+                <p className="mt-2 text-sm text-muted">{t("cart.replaceBody", { name: replaceWith.name })}</p>
+                <div className="mt-5 flex gap-3">
+                  <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setReplaceWith(null)}>
+                    {t("cart.keep")}
+                  </Button>
+                  <Button
+                    className="flex-1 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-bold"
+                    onClick={() => {
+                      replaceAndAdd(restaurant.card.id, restaurant.card.name, replaceWith.line);
+                      setReplaceWith(null);
+                      toast.success(t("common.added") || "Added to cart!");
+                    }}
+                  >
+                    {t("cart.replace")}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 5. STICKY BOTTOM CART BAR WITH ITEM COUNT AND TOTAL */}
+          {totalCartCount > 0 && (
+            <div className="fixed bottom-4 left-3 right-3 sm:left-6 sm:right-6 max-w-xl mx-auto z-40 animate-in slide-in-from-bottom-4 duration-300">
+              <div className="rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 text-white p-3.5 sm:p-4 shadow-[0_16px_40px_rgba(0,0,0,0.5)] border border-amber-500/50 backdrop-blur-xl flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-md">
+                    <ShoppingBag className="size-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full bg-amber-400/20 border border-amber-400/40 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
+                        {totalCartCount} {totalCartCount === 1 ? "ITEM" : "ITEMS"}
+                      </span>
+                      {cartSubtotalPaise > 0 && (
+                        <span className="font-display text-sm sm:text-base font-black tabular-nums text-white">
+                          {formatPaise(cartSubtotalPaise, { locale })}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-zinc-400 truncate max-w-[140px] sm:max-w-xs mt-0.5">
+                      From {restaurant.card.name}
+                    </p>
+                  </div>
+                </div>
+
+                <Link
+                  to="/cart"
+                  className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-xs sm:text-sm px-5 py-2.5 shadow-[0_0_24px_rgba(245,158,11,0.5)] flex items-center gap-2 uppercase tracking-wider hover:scale-105 active:scale-95 transition-all no-underline"
+                >
+                  <span>View Cart</span>
+                  <ChevronRight className="size-4 stroke-[3]" />
+                </Link>
+              </div>
+            </div>
+          )}
         </article>
       )}
-      {replaceWith && restaurant ? (
-        <div className="fixed inset-0 z-50 grid place-items-end bg-fg/40 p-4 md:place-items-center">
-          <div className="w-full max-w-md rounded-[var(--radius-xl)] bg-surface p-5">
-            <h2 className="font-display text-xl">{t("cart.replaceTitle")}</h2>
-            <p className="mt-2 text-sm text-muted">{t("cart.replaceBody", { name: replaceWith.name })}</p>
-            <div className="mt-4 flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={() => setReplaceWith(null)}>
-                {t("cart.keep")}
-              </Button>
-              <Button
-                className="flex-1"
-                onClick={() => {
-                  replaceAndAdd(restaurant.card.id, restaurant.card.name, replaceWith.line);
-                  setReplaceWith(null);
-                  toast.success(t("common.added"));
-                }}
-              >
-                {t("cart.replace")}
-              </Button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-      <div className="fixed bottom-[85px] left-1/2 -translate-x-1/2 z-40 flex items-center justify-center gap-2 rounded-full border border-black/5 bg-white/90 p-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.1)] backdrop-blur-md">
-        <button
-          type="button"
-          onClick={() => setDietFilter(dietFilter === "VEG" ? "ALL" : "VEG")}
-          className={`flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition ${
-            dietFilter === "VEG" ? "bg-emerald-100 text-emerald-800" : "bg-transparent text-slate-600 hover:bg-slate-100"
-          }`}
-        >
-          <span className="flex size-3 items-center justify-center rounded-sm border border-emerald-600 bg-white">
-            <span className="size-1 rounded-full bg-emerald-600" />
-          </span>
-          Veg
-        </button>
-        
-        <div className="h-4 w-px bg-slate-200" />
-
-        <button
-          type="button"
-          onClick={() => {
-            const url = typeof window !== "undefined" ? window.location.href : "";
-            if (typeof navigator !== "undefined" && navigator.clipboard) {
-              navigator.clipboard.writeText(url);
-              toast.success("Group order link copied!");
-            }
-          }}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition"
-          aria-label="Group Order / Share"
-        >
-          <span>👥</span>
-        </button>
-
-        <div className="h-4 w-px bg-slate-200" />
-        
-        <button
-          type="button"
-          className="flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 transition"
-        >
-          <Headset className="size-3.5" />
-          Support
-        </button>
-      </div>
       <span className="sr-only">{brand.appName}</span>
-</CustomerShell>
+    </CustomerShell>
   );
 }

@@ -108,9 +108,9 @@ export function VendorShell({
               <div className="text-xs text-slate-400">{restaurantName ?? t("app.tagline")}</div>
             </div>
           </div>
-          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto scrollbar-none" aria-label="Main">
+          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto scrollbar-none" aria-label="Partner Navigation">
             <div className="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Daily Operations
+              Live Service
             </div>
             {primary.map((item) => (
               <NavLink key={item.to} to={item.to} active={pathname.startsWith(item.to)} icon={item.icon}>
@@ -119,7 +119,7 @@ export function VendorShell({
             ))}
             <div className="my-2.5 h-px bg-slate-800/60" />
             <div className="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Store Management
+              Restaurant Management
             </div>
             {more.map((item) => (
               <NavLink key={item.to} to={item.to} active={pathname.startsWith(item.to)} icon={item.icon}>
@@ -140,7 +140,7 @@ export function VendorShell({
               <h1 className="hidden font-display text-2xl md:block">{title}</h1>
             </div>
             <div className="flex items-center gap-2">
-              {/* King AI Multi-Outlet Profile Router (Instant Branch Switcher) */}
+              {/* Restaurant Outlet Location Switcher */}
               {vendor.memberships.length > 0 && (
                 <div className="relative">
                   <select
@@ -153,8 +153,8 @@ export function VendorShell({
                         void qc.invalidateQueries();
                       }
                     }}
-                    title="King AI Multi-Outlet Profile Router (Instant Branch Switcher)"
-                    aria-label="Switch Restaurant Outlet Branch"
+                    title="Switch Restaurant Location"
+                    aria-label="Switch Restaurant Location"
                   >
                     {vendor.memberships.map((m) => (
                       <option key={m.restaurantId} value={m.restaurantId} className="bg-slate-900 text-slate-100">
@@ -171,6 +171,7 @@ export function VendorShell({
                   value={lang}
                   onChange={(e) => setLang(e.target.value as AppLanguage)}
                   aria-label={t("settings.language")}
+                  title={t("settings.language") || "Select Language"}
                 >
                   {INDIAN_LANGUAGE_CATALOG.map((item) => (
                     <option key={item.code} value={item.code}>
@@ -182,18 +183,20 @@ export function VendorShell({
               </div>
               <button
                 type="button"
-                className="inline-flex h-11 items-center gap-1.5 rounded-[12px] border border-amber-500/40 bg-amber-500/10 px-3 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition shadow-sm"
+                className="inline-flex h-11 items-center gap-1.5 rounded-[12px] border border-amber-500/40 bg-amber-500/10 px-3 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition shadow-sm cursor-pointer"
                 onClick={() => setSparkOpen(true)}
-                title="Order King Spark (Restaurant AI Assistant)"
+                title="King AI — Restaurant Culinary & Growth Co-Pilot"
+                aria-label="Open King AI Assistant"
               >
                 <Sparkles className="size-4 text-amber-500" />
-                <span>Spark AI</span>
+                <span>King AI</span>
               </button>
               {(!role || can(role, "notifications.view")) && (
                 <Link
                   to="/notifications"
-                  className="grid size-11 place-items-center rounded-[12px] border border-slate-800/60 bg-slate-900/60 backdrop-blur-xl"
+                  className="grid size-11 place-items-center rounded-[12px] border border-slate-800/60 bg-slate-900/60 backdrop-blur-xl transition-colors hover:bg-slate-800/60"
                   aria-label={t("nav.notifications")}
+                  title={t("nav.notifications") || "Alerts & Notifications"}
                 >
                   <Bell className="size-4" />
                 </Link>
@@ -239,12 +242,12 @@ function NavLink({
     <Link
       to={to}
       className={cn(
-        "flex min-h-11 items-center gap-2 rounded-[12px] px-3 text-sm",
-        active ? "bg-chili-soft text-chili-dark" : "text-slate-400 hover:bg-slate-800/60 backdrop-blur-xl hover:text-slate-50",
+        "flex min-h-11 items-center gap-2 rounded-[12px] px-3 text-sm font-medium transition-colors",
+        active ? "bg-chili-soft text-chili-dark font-semibold" : "text-slate-400 hover:bg-slate-800/60 backdrop-blur-xl hover:text-slate-50",
       )}
     >
-      <Icon className="size-4" />
-      {children}
+      <Icon className="size-4 shrink-0" />
+      <span className="truncate">{children}</span>
     </Link>
   );
 }

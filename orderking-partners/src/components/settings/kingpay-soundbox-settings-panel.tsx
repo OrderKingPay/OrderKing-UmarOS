@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
@@ -6,14 +6,10 @@ import type { AppLanguage } from "@/lib/platform-config";
 import { buildSoundboxSpeechAlert } from "@/components/KingPaySoundboxEngine";
 import {
   Volume2,
-  Volume1,
   Radio,
-  Play,
   Square,
   CheckCircle2,
   Globe,
-  Sliders,
-  Sparkles,
 } from "lucide-react";
 
 export interface KingpaySoundboxSettingsPanelProps {
@@ -174,11 +170,11 @@ export function KingpaySoundboxSettingsPanel({
             <h2 className="font-display text-base font-bold text-white flex items-center gap-2">
               KingPay Soundbox Audio Announcement Engine
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">
-                VOICE BROADCAST ENGINE
+                INSTANT AUDIO ALERTS
               </span>
             </h2>
             <p className="text-xs text-slate-400">
-              Instant voice announcement upon UPI and KingPay order settlement in your kitchen&apos;s preferred regional dialect.
+              Instant, crystal-clear voice announcements upon UPI and KingPay order settlements in your team&apos;s preferred regional language.
             </p>
           </div>
         </div>
@@ -207,7 +203,7 @@ export function KingpaySoundboxSettingsPanel({
             </div>
 
             <p className="text-xs text-slate-400 leading-relaxed">
-              Select the primary voice announcement language broadcasted over the KingPay Soundbox counter terminal:
+              Select the primary voice announcement language broadcast over the KingPay Soundbox counter terminal:
             </p>
 
             {/* Quick Select Buttons for 10 Mandated Languages */}
@@ -239,7 +235,7 @@ export function KingpaySoundboxSettingsPanel({
 
             {/* Comprehensive All-India Language Dropdown */}
             <div className="pt-1 flex items-center justify-between gap-2">
-              <span className="text-xs text-slate-400">All 22 Scheduled Dialects:</span>
+              <span className="text-xs text-slate-400">All 22 Official Indian Languages:</span>
               <select
                 value={selectedLang}
                 onChange={(e) => setSelectedLang(e.target.value as AppLanguage)}
@@ -255,7 +251,7 @@ export function KingpaySoundboxSettingsPanel({
           </div>
 
           <div className="pt-2 border-t border-slate-800/80 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Active Voice Dialect:</span>
+            <span>Active Voice Language:</span>
             <span className="font-mono text-emerald-400 font-bold">
               {currentLangMeta?.native} ({currentLangMeta?.label})
             </span>
@@ -317,7 +313,7 @@ export function KingpaySoundboxSettingsPanel({
                 {volumeLevel === 2 && "Indoor Casual Dining"}
                 {volumeLevel === 3 && "Standard Restaurant Dining Hall"}
                 {volumeLevel === 4 && "Bustling Open Kitchen & Counter (Default)"}
-                {volumeLevel === 5 && "High-Noise Rush Hour / Industrial Kitchen"}
+                {volumeLevel === 5 && "High-Noise Rush Hour / High-Volume Kitchen"}
               </span>
             </div>
 
@@ -385,7 +381,7 @@ export function KingpaySoundboxSettingsPanel({
               Broadcasted: &quot;<span className="text-white font-semibold">{liveAudioConfirm.text}</span>&quot;
             </div>
             <div className="text-[11px] text-emerald-400/80 font-mono">
-              Dialect: {liveAudioConfirm.langName} · Volume: Level {liveAudioConfirm.level}/5
+              Language: {liveAudioConfirm.langName} · Volume: Level {liveAudioConfirm.level}/5
             </div>
           </div>
         </div>

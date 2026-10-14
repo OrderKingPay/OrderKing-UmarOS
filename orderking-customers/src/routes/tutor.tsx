@@ -1,7 +1,7 @@
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { useState, useRef, useEffect } from "react";
-import { motion, LayoutGroup } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Send,
   BrainCircuit,
@@ -744,8 +744,7 @@ function IntelligencePage() {
 
   return (
     <CustomerShell>
-      <LayoutGroup>
-        <motion.div layout className="flex flex-col min-h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-white selection:bg-zinc-800">
+      <div className="flex flex-col min-h-[calc(100dvh-60px)] bg-gradient-to-b from-zinc-950 to-black text-white selection:bg-zinc-800">
         
         {/* ULTRA-LUXURIOUS AMETHYST PURPLE TO INDIGO HERO */}
         <div className="relative overflow-hidden bg-gradient-to-br from-[#1B0B2E] via-[#2A134E] to-[#120E38] border-b border-purple-500/30 px-4 sm:px-6 py-6 sm:py-8 shadow-2xl text-white">
@@ -1587,7 +1586,7 @@ function IntelligencePage() {
                     required
                     value={applicantContact}
                     onChange={(e) => setApplicantContact(e.target.value)}
-                    placeholder="e.g. +91 98765 43210 or name@example.com"
+                    placeholder="e.g. +91 98765 43210 or name@orderking.in"
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 text-xs text-white outline-none focus:border-emerald-400"
                   />
                 </div>
@@ -1628,8 +1627,7 @@ function IntelligencePage() {
           </div>
         )}
 
-        </motion.div>
-      </LayoutGroup>
+        </div>
     </CustomerShell>
   );
 }

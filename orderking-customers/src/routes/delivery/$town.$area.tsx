@@ -434,7 +434,7 @@ function DeliveryTownAreaPage() {
               Best Food Delivery in {area.name}, {town.name}
             </h1>
             <p className="mt-2 text-sm sm:text-base text-gray-600 leading-relaxed">
-              Order fresh food online with 25-minute hyperlocal delivery, live GPS tracking, and genuine restaurant prices.
+              Order authentic meals online with 25-minute hyperlocal delivery, live GPS tracking, and genuine restaurant prices.
             </p>
 
             {area.isTownLevelFallback && (

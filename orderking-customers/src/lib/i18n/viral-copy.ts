@@ -81,7 +81,7 @@ export const VIRAL_COPY_MATRIX: Record<
     en: (ctx, url) => {
       const town = ctx.townName || "Karimganj";
       const area = ctx.areaName || "Local Area";
-      const msg = `👑 *Food Delivery in ${area}, ${town} is LIVE on OrderKing!* ⚡\n\nOrder piping hot meals in 25 mins with ZERO menu markups. Direct kitchen pricing.\n\nClaim your flat ₹500 Food Welcome Bonus on your first meal: ${url}\n\nGuaranteed 24K Digital Gold rewards on every order! 🍔🍕`;
+      const msg = `👑 *Food Delivery in ${area}, ${town} is LIVE on OrderKing!* ⚡\n\nOrder piping hot meals in 25 mins with ZERO menu markups. Restaurant-direct pricing.\n\nClaim your flat ₹500 Food Welcome Bonus on your first meal: ${url}\n\nGuaranteed 24K Digital Gold rewards on every order! 🍔🍕`;
       return {
         title: `Best Food Delivery in ${area}, ${town} - OrderKing`,
         text: msg,
@@ -135,7 +135,7 @@ export const VIRAL_COPY_MATRIX: Record<
     en: (ctx, url) => {
       const rest = ctx.restaurantName || "Favorite Kitchen";
       const cuisine = ctx.cuisine ? ` (${ctx.cuisine})` : "";
-      const msg = `🔥 Check out *${rest}*${cuisine} on OrderKing!\n\nPiping hot delivery in 25 mins with ZERO menu markup. Use my VIP invite link to get flat ₹500 Food Cash: ${url}\n\nAuthentic food, direct kitchen prices! 👑`;
+      const msg = `🔥 Check out *${rest}*${cuisine} on OrderKing!\n\nPiping hot delivery in 25 mins with ZERO menu markup. Use my VIP invite link to get flat ₹500 Food Cash: ${url}\n\nAuthentic food, genuine restaurant prices! 👑`;
       return {
         title: `Order from ${rest} on OrderKing`,
         text: msg,

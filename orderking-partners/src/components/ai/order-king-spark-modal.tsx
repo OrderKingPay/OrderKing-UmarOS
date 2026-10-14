@@ -60,7 +60,7 @@ const FOCUS_TOPICS = [
   "Increase Daily Order Volume",
   "Smart Combo & AOV Engineering",
   "Neighborhood Geo-Radius & Daypart Expansion",
-  "Payout & Statutory Tax Reconciliation",
+  "Earnings & Tax Breakdown Reconciliation",
   "POS & Printer Automation",
 ] as const;
 
@@ -189,10 +189,10 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     {
       id: "init",
       sender: "spark",
-      text: "OrderKing Spark Autonomous King AI Advisory is ready across all 22 Indian Constitutional Languages + English. Inspect your 5-point live storefront status, Meituan/DoorDash 5-daypart & AOV growth recommendations, restore out-of-stock dishes, switch between Standard (20m) and Peak Rush (35m) prep times, or review your integer-paise settlement math. All recommendations are advisory only—no changes are applied without your explicit confirmation.",
+      text: "Order King — King AI Kitchen Partner is ready across all 22 Indian Constitutional Languages + English. Inspect your live storefront status, daypart and AOV growth recommendations, restore out-of-stock dishes, adjust kitchen prep times between Standard (20m) and Peak Rush (35m), or review transparent payout calculations. All recommendations are advisory only—no changes are applied without your explicit confirmation.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       provenanceNote:
-        "Derived from your restaurant's current menu catalog, configured prep times, live dashboard state, analytics, and settlement ledger.",
+        "Source: Your restaurant's live menu catalog, configured prep times, dashboard state, and verified settlement ledger.",
     },
   ]);
   const [inputQuery, setInputQuery] = useState("");
@@ -343,21 +343,21 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     if (q.includes("settlement") || q.includes("tax") || q.includes("gst") || q.includes("tds") || q.includes("payout")) {
       const currentPayable = formatINR(settlementsQuery.data?.currentPayablePaise ?? 0);
       return [
-        `[${activeLang.nativeName} · ${activeLang.name}] Verified Statutory Settlement & Tax Reference (Unsettled Payable: ${currentPayable}):`,
-        "• Formula: Net Payable = (Food Value + Packaging − Restaurant Discount) − Platform Commission + Platform Promo − Refunds − Statutory Taxes.",
+        `[${activeLang.nativeName} · ${activeLang.name}] Verified Payout & Tax Breakdown (Unsettled Balance: ${currentPayable}):`,
+        "• Formula: Net Payable = (Food Value + Packaging − Restaurant Discount) − Platform Commission (28% Delivery / 0% Dine-In) + Platform Promo − Refunds − Withholding Taxes (TCS/TDS).",
         "• CGST Sec 9(5): 5% Restaurant Service GST (2.5% CGST + 2.5% SGST) collected and remitted under e-commerce operator rules.",
         "• Income Tax Sec 194-O: 0.1% TDS and CGST Sec 52: 0.5% TCS accounted in integer paise on your Settlement ledger.",
       ].join("\n");
     }
 
     return [
-      `[${activeLang.nativeName} · ${activeLang.name}] Verified King AI Catalog & Growth Diagnostic (${totalCategories} Categories · ${totalItems} Dishes · Conversion Score: ${storefrontConversionScore}%):`,
+      `[${activeLang.nativeName} · ${activeLang.name}] King AI Kitchen & Menu Overview (${totalCategories} Categories · ${totalItems} Dishes · Menu Score: ${storefrontConversionScore}%):`,
       `• Storefront Status: ${dashQuery.data?.isOpen ? "OPEN" : "PAUSED"} · KYC: ${dashQuery.data?.verificationStatus ?? "PENDING"} · Pending Orders: ${dashQuery.data?.today.pending ?? 0}`,
       `• In-Stock Dishes: ${inStock.length} of ${totalItems} · Sold-Out: ${outOfStock.length} (Est. Daily Leakage: ${formatINR(estimatedDailyLeakagePaise)})`,
       `• AOV Growth Playbook: Current AOV ${formatINR(liveAovPaise)} → Recommended ₹${recommendedThresholdRupees} Min-Order Offer (+25% AOV lift)`,
       `• 5-Daypart 7d Orders: ${dayparts.map((d) => `${d.label}: ${d.orders}`).join(" | ")}`,
-      `• Kitchen Prep SLA: Average ${avgPrepMinutes} mins (${missingPrepTime.length} dish(es) without explicit prep time)`,
-      `• Compliance Audit: ${missingPhoto.length} missing photo · ${missingDesc.length} missing description · Diet: ${vegCount}V / ${nonVegCount}NV / ${eggCount}E`,
+      `• Kitchen Prep Time: Average ${avgPrepMinutes} mins (${missingPrepTime.length} dish(es) without explicit prep time)`,
+      `• Menu Completeness: ${missingPhoto.length} missing photo · ${missingDesc.length} missing description · Diet: ${vegCount}V / ${nonVegCount}NV / ${eggCount}E`,
     ].join("\n");
   }
 
@@ -557,14 +557,14 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
             <div>
               <div className="flex items-center gap-2">
                 <span id="spark-modal-title" className="text-sm font-extrabold tracking-wide text-white">
-                  Order King Spark
+                  Order King · King AI
                 </span>
                 <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
                   KING AI · 22 INDIAN LANGUAGES + ENGLISH
                 </span>
               </div>
               <span className="mt-0.5 block text-[11px] text-zinc-400">
-                Employee-Less Autonomous Sync: Order Dispatch · Settlement Ledger · FSSAI Guard · 5-Daypart Growth
+                Your Kitchen Partner: Live Orders · Transparent Payouts · Menu Quality · Growth Insights
               </span>
             </div>
           </div>
@@ -597,7 +597,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
               type="button"
               onClick={onClose}
               className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-white"
-              aria-label="Close Spark AI Modal"
+              aria-label="Close King AI Assistant"
             >
               <X className="size-5" />
             </button>
@@ -609,7 +609,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           <div className="border-b border-zinc-800 bg-zinc-950 px-4 py-3 text-xs space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="font-bold text-amber-300">
-                🕒 Human-Style Advisory Schedule &amp; Kitchen Rush Quiet-Hours Customizer
+                🕒 Chef Advisory Schedule &amp; Kitchen Rush Quiet Hours
               </span>
               <span className="text-[11px] text-zinc-400">
                 Saved to local kitchen profile · Playable anytime on demand
@@ -706,12 +706,12 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           </div>
         ) : null}
 
-        {/* Mandatory Safeguard & Data Provenance Banner */}
+        {/* Mandatory Safeguard & Data Source Banner */}
         <div className="border-b border-amber-500/30 bg-amber-950/25 px-4 py-2.5 space-y-1">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-amber-300">
             <div className="flex items-center gap-2">
               <ShieldCheck className="size-4 shrink-0 text-amber-400" />
-              <span>Merchant Review Required — No changes are applied without your explicit confirmation</span>
+              <span>Chef Review Required — No changes are applied without your explicit confirmation</span>
             </div>
             <button
               type="button"
@@ -728,17 +728,17 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
           <p className="text-[11px] text-zinc-300 flex items-center gap-1.5">
             <Database className="size-3 shrink-0 text-emerald-400" />
             <span>
-              <strong>Data Provenance:</strong> Recommendations are derived strictly from your restaurant&apos;s current menu catalog, configured preparation times, and verified order &amp; settlement state.
+              <strong>Data Source:</strong> Recommendations are based directly on your live menu catalog, kitchen prep times, and verified order and earnings data.
             </span>
           </p>
         </div>
 
-        {/* Grounded 4-Module Self-Service Diagnostics & DoorDash/Meituan Growth Bar */}
+        {/* Grounded 4-Module Self-Service Diagnostics & Growth Bar */}
         {menuQuery.data ? (
           <div className="border-b border-zinc-800 bg-zinc-900/50 px-4 py-3 space-y-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400">
-                King AI Self-Service Diagnostics &amp; Growth Playbook ({catalogRecommendations.totalItems} Dishes · Conversion Score: {catalogRecommendations.storefrontConversionScore}%)
+                King AI Kitchen Insights &amp; Growth Playbook ({catalogRecommendations.totalItems} Dishes · Menu Score: {catalogRecommendations.storefrontConversionScore}%)
               </span>
               <span className="rounded-md border border-zinc-700 bg-zinc-800/80 px-2 py-0.5 text-[10px] font-mono text-zinc-300">
                 5-Daypart 7d Orders: {catalogRecommendations.dayparts.map((d) => `${d.label}: ${d.orders}`).join(" · ")}
@@ -750,7 +750,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
               <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5 space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-zinc-200 flex items-center gap-1">
-                    <Store className="size-3.5 text-emerald-400" /> Storefront Check
+                    <Store className="size-3.5 text-emerald-400" /> Storefront Status
                   </span>
                   <span
                     className={`font-mono text-[10px] font-bold ${
@@ -796,11 +796,11 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                 ) : null}
               </div>
 
-              {/* 2. Stock Availability & Revenue Leakage Guard */}
+              {/* 2. Stock Availability & Revenue Guard */}
               <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5 space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-zinc-200 flex items-center gap-1">
-                    <AlertCircle className="size-3.5 text-amber-400" /> Stock &amp; Leakage
+                    <AlertCircle className="size-3.5 text-amber-400" /> Stock &amp; Revenue Guard
                   </span>
                   <span className="font-mono text-[11px] text-amber-300">
                     {catalogRecommendations.outOfStock.length} Sold Out
@@ -842,11 +842,11 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                 ) : null}
               </div>
 
-              {/* 3. Prep Time SLA & Peak Rush Guard */}
+              {/* 3. Prep Time SLA & Peak Rush Mode */}
               <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5 space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-zinc-200 flex items-center gap-1">
-                    <Clock className="size-3.5 text-emerald-400" /> Prep &amp; Rush Guard
+                    <Clock className="size-3.5 text-emerald-400" /> Prep Time &amp; Rush Mode
                   </span>
                   <span className="font-mono text-[11px] text-zinc-300">
                     Avg {catalogRecommendations.avgPrepMinutes}m
@@ -927,11 +927,11 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                 ) : null}
               </div>
 
-              {/* 4. DoorDash AOV Smart Combo & Payout Summary */}
+              {/* 4. Order Value & Payout Summary */}
               <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5 space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-zinc-200 flex items-center gap-1">
-                    <TrendingUp className="size-3.5 text-sky-400" /> AOV &amp; Payout
+                    <TrendingUp className="size-3.5 text-sky-400" /> Order Value &amp; Payout
                   </span>
                   <span className="font-mono text-[11px] text-emerald-400">
                     {formatINR(settlementsQuery.data?.currentPayablePaise ?? 0)}
@@ -962,14 +962,14 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
         {/* Quick Query Pills */}
         <div className="flex items-center gap-2 overflow-x-auto border-b border-zinc-800/80 bg-zinc-900/60 px-4 py-2">
           {[
-            ["⚖️ Dispute Arbitrator", "Arbitrate customer dispute: Food container spilled during transit vs missing items. Determine merchant vs logistics liability."],
-            ["✨ Menu Intelligence", "Suggest high-margin dish descriptions, dietary allergen tags, and portion adjustments for signature dishes."],
-            ["📊 Daily Shift Recon", "Generate today's shift report and 9(5) GST financial recon with net payout."],
+            ["⚖️ Dispute Resolution", "Review customer dispute: Food container spilled during transit vs missing items. Protect restaurant earnings from logistics fault."],
+            ["✨ Menu Studio", "Suggest appetizing dish descriptions, dietary allergen tags, and portion adjustments for signature dishes."],
+            ["📊 Daily Shift Summary", "Generate today's shift report and 9(5) GST tax recon with net payout."],
             ["Why No Orders?", "Why am I not receiving orders right now? Check my storefront status."],
-            ["AOV & Growth Playbook", "How can I increase my Average Order Value and fix out-of-stock revenue leakage?"],
-            ["5-Daypart Geo Strategy", "How do I capture more Breakfast, Lunch, Snacks, Dinner and Late-Night orders in my neighborhood?"],
-            ["Settlement & Tax Ledger", "Show my verified settlement, GST Sec 9(5), and TDS Sec 194-O breakdown"],
-            ["Catalog Audit", "Which dishes in my current menu catalog need prep time or description updates?"],
+            ["Order Value & Growth", "How can I increase my Average Order Value and prevent revenue loss from sold-out items?"],
+            ["Neighborhood Demand", "How do I capture more orders during Breakfast, Lunch, Snacks, Dinner, and Late-Night in my neighborhood?"],
+            ["Payout & Tax Breakdown", "Show my verified payout, GST Sec 9(5), and withholding tax breakdown"],
+            ["Menu Completeness", "Which dishes in my current menu catalog would benefit from prep time or description updates?"],
           ].map(([label, query]) => (
             <button
               key={label}
@@ -999,7 +999,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                   <div className="flex flex-wrap items-center justify-between gap-2 border-t border-zinc-800 pt-2 text-[10px] text-zinc-400">
                     <div className="space-y-0.5">
                       <div className="font-semibold text-amber-400">
-                        Merchant Review Required — No changes are applied without your explicit confirmation
+                        Chef Review Required — No changes are applied without your explicit confirmation
                       </div>
                       {msg.provenanceNote ? <div>{msg.provenanceNote}</div> : null}
                     </div>
@@ -1029,7 +1029,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                 void handleSend(inputQuery);
               }
             }}
-            placeholder={`Ask in ${activeLang.nativeName} (${activeLang.name}) about menu, prep times, or settlement...`}
+            placeholder={`Ask King AI in ${activeLang.nativeName} (${activeLang.name}) about menu, prep times, or payouts...`}
             className="h-10 flex-1 border-zinc-700 bg-zinc-900 text-xs text-white placeholder:text-zinc-500 sm:text-sm"
           />
           <Button

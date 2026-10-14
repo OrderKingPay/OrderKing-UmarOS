@@ -22,39 +22,39 @@ import {
   Wallet,
   Building2,
   BadgeCheck,
-  ArrowUpRight,
   Lock,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({ component: Home });
 
-function formatRupees(amount: number): string {
-  return "₹" + Math.round(amount).toLocaleString("en-IN");
+function formatRupeesFromPaise(amountPaise: number): string {
+  return "₹" + Math.round(amountPaise / 100).toLocaleString("en-IN");
 }
 
 function Home() {
   const { user } = useCurrentUserState();
 
-  // Interactive Profit & Margin Calculator State
+  // Interactive Profit & Margin Calculator State (rupees per order & order count)
   const [aov, setAov] = useState(450);
   const [monthlyOrders, setMonthlyOrders] = useState(1200);
 
   if (user) return <Navigate to="/dashboard" />;
 
-  // Financial Calculations
-  const grossMonthlySales = aov * monthlyOrders;
-  // Traditional aggregators take ~42% effective deduction (28-33% base commission + 3% PG + 6% compulsory ad-boost + deductions)
-  const legacyDeductionRate = 0.42;
-  const legacyDeductions = Math.round(grossMonthlySales * legacyDeductionRate);
-  const legacyNetPayout = grossMonthlySales - legacyDeductions;
+  // Financial Calculations strictly in integer paise (zero floating-point drift)
+  const grossMonthlySalesPaise = aov * 100 * monthlyOrders;
 
-  // Order King: Standard 28% delivery take-rate, 0% dine-in fees, 0% forced advertising tax
-  const orderKingTakeRate = 0.28;
-  const orderKingDeductions = Math.round(grossMonthlySales * orderKingTakeRate);
-  const orderKingNetPayout = grossMonthlySales - orderKingDeductions;
+  // Traditional aggregators: ~4200 bps (42.00% effective deductions: base 28% + 3% payment gateway + 6% forced ads + 5% delivery & adjustment levies)
+  const legacyDeductionBps = 4200;
+  const legacyDeductionsPaise = Math.round((grossMonthlySalesPaise * legacyDeductionBps) / 10000);
+  const legacyNetPayoutPaise = grossMonthlySalesPaise - legacyDeductionsPaise;
 
-  const monthlySavings = orderKingNetPayout - legacyNetPayout;
-  const annualSavings = monthlySavings * 12;
+  // Order King: Standard 2800 bps (28.00% flat delivery take-rate, 0% dine-in fees, zero compulsory ad tax)
+  const orderKingTakeRateBps = 2800;
+  const orderKingDeductionsPaise = Math.round((grossMonthlySalesPaise * orderKingTakeRateBps) / 10000);
+  const orderKingNetPayoutPaise = grossMonthlySalesPaise - orderKingDeductionsPaise;
+
+  const monthlySavingsPaise = orderKingNetPayoutPaise - legacyNetPayoutPaise;
+  const annualSavingsPaise = monthlySavingsPaise * 12;
 
   return (
     <div className="min-h-dvh bg-slate-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
@@ -83,8 +83,8 @@ function Home() {
             <a href="#onboarding" className="hover:text-emerald-400 transition-colors">
               How to Join
             </a>
-            <a href="#compliance" className="hover:text-emerald-400 transition-colors">
-              Trust &amp; Compliance
+            <a href="#trust" className="hover:text-emerald-400 transition-colors">
+              Partner Trust
             </a>
           </nav>
 
@@ -116,22 +116,22 @@ function Home() {
           {/* Eyebrow Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-4 py-1.5 text-xs font-medium text-emerald-300 backdrop-blur-sm shadow-inner">
             <Sparkles className="size-3.5 text-emerald-400 animate-pulse" />
-            <span>Direct Table QR • Fair 28% Delivery Take-Rate • King AI Ops</span>
+            <span>Direct Table QR • Fair 28% Delivery Take-Rate • King AI Intelligence</span>
           </div>
 
           {/* High-Converting Main Headline */}
           <h1 className="mt-6 font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.1]">
             Partner with Order King. <br />
             <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 bg-clip-text text-transparent">
-              Accelerate Kitchen Growth &amp; Profitability
+              Reclaim Your Kitchen Margins &amp; Growth
             </span>
           </h1>
 
           {/* Crisp Subhead */}
           <p className="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Stop losing 40%–50% of your food value to legacy aggregators. Order King empowers Indian restaurateurs with
-            0% dine-in commission, transparent 28% delivery take-rates, autonomous King AI kitchen operations, and
-            universal POS &amp; soundbox bridge.
+            Stop losing 40%–50% of your food earnings to legacy aggregator deductions. Order King invites visionary
+            restaurateurs to thrive with 0% dine-in commission, an honest 28% delivery take-rate, automated King AI kitchen
+            operations, and seamless POS integration.
           </p>
 
           {/* Prominent Dual CTAs */}
@@ -152,9 +152,12 @@ function Home() {
               Partner Sign In
             </Link>
           </div>
+          <p className="mt-3 text-xs text-slate-400">
+            Zero upfront fees • Paperless 2-minute registration • Express 24h go-live
+          </p>
 
           {/* Quick Metrics Bar */}
-          <div className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto">
+          <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto">
             <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-3.5 sm:p-4 backdrop-blur-sm text-center">
               <div className="font-display text-2xl sm:text-3xl font-extrabold text-emerald-400">0%</div>
               <div className="mt-1 text-xs text-slate-400 font-medium">Dine-In Commission</div>
@@ -200,7 +203,7 @@ function Home() {
                   <UtensilsCrossed className="size-6" />
                 </div>
                 <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-mono font-semibold text-emerald-400">
-                  0% FEE
+                  0% COMMISSION
                 </span>
               </div>
               <h3 className="mt-5 font-display text-xl font-bold text-white group-hover:text-emerald-300 transition-colors">
@@ -256,7 +259,7 @@ function Home() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="size-3.5 text-emerald-400 shrink-0" />
-                  <span>Order-level integer-paise financial ledger reconciliation</span>
+                  <span>Audited daily bank settlements in exact integer paise — zero revenue leakage</span>
                 </li>
               </ul>
             </div>
@@ -268,7 +271,7 @@ function Home() {
                   <Bot className="size-6" />
                 </div>
                 <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-mono font-semibold text-emerald-400">
-                  24/7 AUTONOMOUS
+                  24/7 KITCHEN COPILOT
                 </span>
               </div>
               <h3 className="mt-5 font-display text-xl font-bold text-white group-hover:text-emerald-300 transition-colors">
@@ -286,11 +289,11 @@ function Home() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="size-3.5 text-emerald-400 shrink-0" />
-                  <span>Rush-hour prep time throttling to prevent KDS bottlenecks</span>
+                  <span>Rush-hour prep time throttling to prevent kitchen bottlenecks</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="size-3.5 text-emerald-400 shrink-0" />
-                  <span>Instant dispute arbitration protecting your payout from false claims</span>
+                  <span>Instant dispute protection shielding your payouts from false refund claims</span>
                 </li>
               </ul>
             </div>
@@ -387,7 +390,7 @@ function Home() {
                           : "border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700"
                       }`}
                     >
-                      ₹{preset} {preset === 250 ? "(Snacks)" : preset === 450 ? "(Casual)" : "(Multi-Cuisine)"}
+                      ₹{preset} {preset === 250 ? "(Café & Quick Bites)" : preset === 450 ? "(Casual Dining & Cloud)" : "(Multi-Cuisine Fine Dine)"}
                     </button>
                   ))}
                 </div>
@@ -430,7 +433,7 @@ function Home() {
                           : "border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700"
                       }`}
                     >
-                      {preset.toLocaleString()} {preset === 500 ? "(Cloud)" : preset === 1200 ? "(Bistro)" : "(Flagship)"}
+                      {preset.toLocaleString()} {preset === 500 ? "(Boutique Kitchen)" : preset === 1200 ? "(Thriving Bistro)" : "(High-Volume Flagship)"}
                     </button>
                   ))}
                 </div>
@@ -451,20 +454,20 @@ function Home() {
                   </span>
                 </div>
                 <p className="text-xs text-slate-400">
-                  Base commission (28%) + Payment Gateway (3%) + Forced Ad Bidding (6%) + Delivery Adjustments (5%).
+                  Base commission (28%) + Payment Gateway (3%) + Forced Ad Bidding (6%) + Delivery Adjustments &amp; Levies (5%).
                 </p>
                 <div className="space-y-2 pt-2 border-t border-rose-900/30 text-xs">
                   <div className="flex justify-between text-slate-400">
                     <span>Monthly Gross Sales:</span>
-                    <span className="font-mono text-slate-200">{formatRupees(grossMonthlySales)}</span>
+                    <span className="font-mono text-slate-200">{formatRupeesFromPaise(grossMonthlySalesPaise)}</span>
                   </div>
                   <div className="flex justify-between text-rose-400">
                     <span>Platform Deductions (42%):</span>
-                    <span className="font-mono font-medium">-{formatRupees(legacyDeductions)}</span>
+                    <span className="font-mono font-medium">-{formatRupeesFromPaise(legacyDeductionsPaise)}</span>
                   </div>
                   <div className="flex justify-between text-slate-200 font-semibold pt-1 border-t border-rose-900/30 text-sm">
                     <span>Net Kitchen Payout:</span>
-                    <span className="font-mono text-slate-100">{formatRupees(legacyNetPayout)}</span>
+                    <span className="font-mono text-slate-100">{formatRupeesFromPaise(legacyNetPayoutPaise)}</span>
                   </div>
                 </div>
               </div>
@@ -486,15 +489,15 @@ function Home() {
                 <div className="space-y-2 pt-2 border-t border-emerald-900/30 text-xs">
                   <div className="flex justify-between text-slate-400">
                     <span>Monthly Gross Sales:</span>
-                    <span className="font-mono text-slate-200">{formatRupees(grossMonthlySales)}</span>
+                    <span className="font-mono text-slate-200">{formatRupeesFromPaise(grossMonthlySalesPaise)}</span>
                   </div>
                   <div className="flex justify-between text-emerald-400">
                     <span>Platform Take-Rate (28%):</span>
-                    <span className="font-mono font-medium">-{formatRupees(orderKingDeductions)}</span>
+                    <span className="font-mono font-medium">-{formatRupeesFromPaise(orderKingDeductionsPaise)}</span>
                   </div>
                   <div className="flex justify-between text-emerald-300 font-semibold pt-1 border-t border-emerald-900/30 text-sm">
                     <span>Net Kitchen Payout:</span>
-                    <span className="font-mono text-emerald-400">{formatRupees(orderKingNetPayout)}</span>
+                    <span className="font-mono text-emerald-400">{formatRupeesFromPaise(orderKingNetPayoutPaise)}</span>
                   </div>
                 </div>
               </div>
@@ -508,10 +511,10 @@ function Home() {
                   <span>Your Additional Estimated Profit with Order King</span>
                 </div>
                 <div className="font-display text-3xl sm:text-4xl font-black text-white">
-                  +{formatRupees(monthlySavings)} <span className="text-base font-normal text-slate-300">/ month</span>
+                  +{formatRupeesFromPaise(monthlySavingsPaise)} <span className="text-base font-normal text-slate-300">/ month</span>
                 </div>
                 <p className="text-xs text-emerald-300/90 font-medium">
-                  That&apos;s an extra <strong className="text-white">+{formatRupees(annualSavings)}</strong> retained in your bank
+                  That&apos;s an extra <strong className="text-white">+{formatRupeesFromPaise(annualSavingsPaise)}</strong> retained in your bank
                   account annually.
                 </p>
               </div>
@@ -558,13 +561,13 @@ function Home() {
                   ~2 MINS
                 </span>
               </div>
-              <h3 className="mt-5 font-display text-lg font-bold text-white">Register Outlet &amp; Instant KYC</h3>
+              <h3 className="mt-5 font-display text-lg font-bold text-white">Register Outlet &amp; Quick KYC</h3>
               <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-                Sign up with your 10-digit mobile number or business email. Provide your restaurant location, authorized
-                signatory PAN, and Aadhaar OTP for instant statutory identity verification.
+                Sign up with your 10-digit mobile number or business email. Share your restaurant location and authorized
+                signatory details for instant, paperless partner onboarding.
               </p>
               <div className="mt-5 pt-4 border-t border-slate-800/80 text-[11px] text-emerald-400 flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5" /> Instant OTP &amp; identity clearance
+                <CheckCircle2 className="size-3.5" /> Instant OTP &amp; digital partner onboarding
               </div>
             </div>
 
@@ -578,13 +581,13 @@ function Home() {
                   ~5 MINS
                 </span>
               </div>
-              <h3 className="mt-5 font-display text-lg font-bold text-white">Upload FoSCoS &amp; Menu</h3>
+              <h3 className="mt-5 font-display text-lg font-bold text-white">Share Menu &amp; FSSAI Details</h3>
               <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-                Submit your 14-digit FSSAI FoSCoS food safety certificate, GSTIN (optional for composition dealers), and
-                menu copy. King AI auto-digitizes your dishes, prices, and dietary tags.
+                Provide your 14-digit FSSAI food safety certificate, GSTIN (100% optional if annual turnover is under ₹20 Lakhs),
+                and menu copy. King AI instantly digitizes your dishes, prices, and dietary tags.
               </p>
               <div className="mt-5 pt-4 border-t border-slate-800/80 text-[11px] text-emerald-400 flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5" /> AI menu digitization &amp; tag extraction
+                <CheckCircle2 className="size-3.5" /> Instant AI menu digitization &amp; tag extraction
               </div>
             </div>
 
@@ -604,26 +607,27 @@ function Home() {
                 UrbanPiper POS, and activate live orders across your delivery catchment.
               </p>
               <div className="mt-5 pt-4 border-t border-slate-800/80 text-[11px] text-emerald-400 flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5" /> Instant orders &amp; T+1 daily payouts
+                <CheckCircle2 className="size-3.5" /> Live orders &amp; reliable T+1 daily bank payouts
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Trust & Compliance Badges Section */}
-      <section id="compliance" className="py-16 border-t border-slate-800/80 bg-slate-950">
+      {/* Trust & Hospitality Standards Badges Section */}
+      <section id="trust" className="py-16 border-t border-slate-800/80 bg-slate-950 scroll-mt-12">
+        <div id="compliance" className="scroll-mt-20" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-medium text-emerald-400">
               <ShieldCheck className="size-3.5" />
-              STATUTORY TRUST &amp; COMPLIANCE
+              RESTAURATEUR TRUST &amp; TRANSPARENCY
             </div>
             <h2 className="mt-3 font-display text-3xl sm:text-4xl font-extrabold text-white">
-              Institutional Security &amp; Compliance Standards
+              Built with Absolute Care for Your Kitchen &amp; Cashflow
             </h2>
             <p className="mt-3 text-slate-300 text-sm sm:text-base">
-              Built in strict adherence with Indian food safety, taxation, and digital settlement regulations.
+              Rigorous security standards, transparent settlements, and automated tax handling designed to protect your hard-earned restaurant revenue.
             </p>
           </div>
 
@@ -636,21 +640,20 @@ function Home() {
                     <ShieldCheck className="size-5" />
                   </div>
                   <span className="text-[10px] font-mono border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded">
-                    FSSAI ACT 2006
+                    FOOD SAFETY STANDARDS
                   </span>
                 </div>
-                <h4 className="font-display text-lg font-bold text-white">FSSAI FoSCoS Ready</h4>
+                <h4 className="font-display text-lg font-bold text-white">FSSAI 14-Digit Verification</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Direct statutory integration with FoSCoS registry. Validates 14-digit food safety licenses, issues
-                  automated 30-day renewal warnings, and enforces compliance to protect your merchant rating.
+                  Smooth, verified onboarding with your 14-digit FSSAI food safety license. Automated reminders 30 days before expiration ensure your kitchen stays continuously active and diners remain confident.
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-slate-300 font-medium">
-                ✓ 14-digit checksum verified
+                ✓ Verified 14-digit food safety certification
               </div>
             </div>
 
-            {/* Badge 2: CGST §9(5) Certified */}
+            {/* Badge 2: Automated 5% GST Protection */}
             <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -658,17 +661,16 @@ function Home() {
                     <FileText className="size-5" />
                   </div>
                   <span className="text-[10px] font-mono border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded">
-                    CGST ACT §9(5)
+                    TAX CLEARANCE
                   </span>
                 </div>
-                <h4 className="font-display text-lg font-bold text-white">CGST §9(5) Certified</h4>
+                <h4 className="font-display text-lg font-bold text-white">Automated 5% GST Protection</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Compliant with CGST Section 9(5), TCS Section 52, and Income Tax Section 194-O. Platform pays the 5%
-                  restaurant GST directly to the government without debiting from your net food payable.
+                  Order King directly remits the 5% restaurant GST to the government under CGST rules — never debited from your earnings. You receive clear, CA-friendly ledgers with every daily payout.
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-slate-300 font-medium">
-                ✓ CA-ready ledger &amp; GST reports
+                ✓ CA-ready ledger &amp; one-click GST reports
               </div>
             </div>
 
@@ -680,17 +682,16 @@ function Home() {
                     <Building2 className="size-5" />
                   </div>
                   <span className="text-[10px] font-mono border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded">
-                    RBI &amp; NPCI RAILS
+                    BANKING INTEGRATION
                   </span>
                 </div>
                 <h4 className="font-display text-lg font-bold text-white">Penny-Drop Bank Verification</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Real-time ₹1 penny-drop validation confirms bank account active status and exact beneficiary name
-                  matching before go-live, ensuring seamless daily T+1 automated payouts.
+                  Real-time ₹1 penny-drop validation confirms active account status and exact beneficiary name matching before go-live, ensuring seamless daily T+1 automated payouts directly to your bank account.
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-slate-300 font-medium">
-                ✓ 0% payout rejection guarantee
+                ✓ Direct IMPS/NEFT daily bank transfer
               </div>
             </div>
           </div>
@@ -699,13 +700,13 @@ function Home() {
           <div className="mt-8 rounded-xl border border-slate-800/80 bg-slate-900/30 p-4 text-center">
             <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 font-medium">
               <span className="flex items-center gap-1.5">
-                <Lock className="size-3.5 text-emerald-400" /> 100% Restaurant Data Isolation
+                <Lock className="size-3.5 text-emerald-400" /> 100% Restaurant Data Isolation &amp; Privacy
               </span>
               <span className="flex items-center gap-1.5">
-                <Store className="size-3.5 text-emerald-400" /> Zero Competing Private-Label Brands
+                <Store className="size-3.5 text-emerald-400" /> Zero Competing Private-Label Brands (We Never Compete With You)
               </span>
               <span className="flex items-center gap-1.5">
-                <BadgeCheck className="size-3.5 text-emerald-400" /> 23 Indian Languages Supported
+                <BadgeCheck className="size-3.5 text-emerald-400" /> 23 Indian Languages Supported on Soundbox &amp; Portal
               </span>
             </div>
           </div>
@@ -764,11 +765,11 @@ function Home() {
             <a href="#onboarding" className="hover:text-slate-200 transition">
               Onboarding Journey
             </a>
-            <a href="#compliance" className="hover:text-slate-200 transition">
-              Statutory Compliance
+            <a href="#trust" className="hover:text-slate-200 transition">
+              Trust &amp; Security
             </a>
             <Link to="/login" className="hover:text-slate-200 transition">
-              Sign In
+              Partner Sign In
             </Link>
           </div>
         </div>

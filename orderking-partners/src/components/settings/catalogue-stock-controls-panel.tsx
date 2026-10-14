@@ -7,8 +7,6 @@ import {
   RefreshCw,
   AlertTriangle,
   CheckCircle2,
-  Package,
-  Layers,
   Clock,
   ShieldAlert,
 } from "lucide-react";
@@ -85,7 +83,7 @@ export function CatalogueStockControlsPanel({
               </span>
             </h2>
             <p className="text-xs text-slate-400">
-              Zero-human-error stockout prevention, automated dawn availability reset, and proactive low-stock threshold triggers.
+              Restaurateur-grade stockout prevention, automated 06:00 AM breakfast availability reinstatement, and proactive low-stock warning triggers.
             </p>
           </div>
         </div>
@@ -145,7 +143,7 @@ export function CatalogueStockControlsPanel({
               <div className="text-emerald-400">✓ Recovers Breakfast Sales</div>
               <div className="text-emerald-400">✓ Auto-clears Temporary 86</div>
               <div className="text-emerald-400">✓ Syncs with KDS &amp; POS</div>
-              <div className="text-emerald-400">✓ No Staff Manual Action</div>
+              <div className="text-emerald-400">✓ Zero Staff Overhead</div>
             </div>
           </div>
 

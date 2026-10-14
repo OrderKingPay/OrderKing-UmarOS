@@ -42,10 +42,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "English",
     nativeName: "English",
     region: "Pan-India",
-    greeting: "OrderKing Autonomous Kitchen & King AI Diagnostic Desk",
+    greeting: "Order King Kitchen Desk & King AI Partner",
     statusHeader: "Live Kitchen & Storefront Status",
-    payoutHeader: "Verified Integer-Paise Settlement Ledger",
-    menuHeader: "Menu Catalog & FSSAI Compliance",
+    payoutHeader: "Verified Direct Payout & Earnings Ledger",
+    menuHeader: "Menu Studio & Kitchen Quality",
   },
   {
     code: "hi",
@@ -53,10 +53,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Hindi",
     nativeName: "हिन्दी",
     region: "North & Central India",
-    greeting: "ऑर्डरकिंग स्वायत्त किचन और King AI डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डर किंग और King AI किचन साथी",
     statusHeader: "लाइव किचन और स्टोरफ्रंट स्थिति",
-    payoutHeader: "सत्यापित पैसे (Paise) सेटलमेंट लेजर",
-    menuHeader: "मेनू कैटलॉग और FSSAI अनुपालन",
+    payoutHeader: "सत्यापित प्रत्यक्ष पेआउट और आय लेजर",
+    menuHeader: "मेनू स्टूडियो और किचन गुणवत्ता",
   },
   {
     code: "bn",
@@ -64,10 +64,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Bengali",
     nativeName: "বাংলা",
     region: "West Bengal & Tripura",
-    greeting: "অর্ডারকিং স্বয়ংক্রিয় কিচেন ও King AI Diagnostic Desk",
+    greeting: "অর্ডার কিং ও King AI কিচেন পার্টনার",
     statusHeader: "লাইভ কিচেন ও স্টোরফ্রন্ট স্থিতি",
-    payoutHeader: "যাচাইকৃত পয়সা সেটেলমেন্ট লেজার",
-    menuHeader: "মেনু ক্যাটালগ ও FSSAI কমপ্লায়েন্স",
+    payoutHeader: "যাচাইকৃত সরাসরি পেআউট ও আয় লেজার",
+    menuHeader: "মেনু স্টুডিও ও কিচেন মান",
   },
   {
     code: "te",
@@ -75,10 +75,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Telugu",
     nativeName: "తెలుగు",
     region: "Andhra Pradesh & Telangana",
-    greeting: "ఆర్డర్ కింగ్ స్వయంప్రతిపత్తి కిచెన్ & King AI Diagnostic Desk",
+    greeting: "ఆర్డర్ కింగ్ & King AI కిచెన్ పార్ట్‌నర్",
     statusHeader: "లైవ్ కిచెన్ & స్టోర్‌ఫ్రంట్ స్థితి",
-    payoutHeader: "ధృవీకరించబడిన పైసా సెటిల్మెంట్ లెడ్జర్",
-    menuHeader: "మెనూ కాటలాగ్ & FSSAI నిబంధనలు",
+    payoutHeader: "ధృవీకరించబడిన ప్రత్యక్ష చెల్లింపు & ఆదాయం లెడ్జర్",
+    menuHeader: "మెనూ స్టూడియో & కిచెన్ నాణ్యత",
   },
   {
     code: "mr",
@@ -86,10 +86,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Marathi",
     nativeName: "मराठी",
     region: "Maharashtra & Goa",
-    greeting: "ऑर्डरकिंग स्वायत्त किचन आणि King AI डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डर किंग आणि King AI किचन पार्टनर",
     statusHeader: "थेट किचन आणि स्टोअरफ्रंट स्थिती",
-    payoutHeader: "सत्यापित पैसे सेटलमेंट लेजर",
-    menuHeader: "मेनू कॅटलॉग आणि FSSAI अनुपालन",
+    payoutHeader: "सत्यापित थेट पेआउट आणि कमाई लेजर",
+    menuHeader: "मेनू स्टुडिओ आणि किचन गुणवत्ता",
   },
   {
     code: "ta",
@@ -97,10 +97,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Tamil",
     nativeName: "தமிழ்",
     region: "Tamil Nadu & Puducherry",
-    greeting: "ஆர்டர்கிங் தன்னாட்சி கிச்சன் & King AI Diagnostic Desk",
+    greeting: "ஆர்டர் கிங் & King AI கிச்சன் பார்ட்னர்",
     statusHeader: "நேரடி சமையலறை மற்றும் கடை நிலை",
-    payoutHeader: "சரிபார்க்கப்பட்ட பைசா செட்டில்மென்ட் கணக்கு",
-    menuHeader: "மெனு பட்டியல் மற்றும் FSSAI இணக்கம்",
+    payoutHeader: "சரிபார்க்கப்பட்ட நேரடி வருவாய் லெட்ஜர்",
+    menuHeader: "மெனு ஸ்டுடியோ மற்றும் சமையலறை தரம்",
   },
   {
     code: "ur",
@@ -108,10 +108,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Urdu",
     nativeName: "اردو",
     region: "Jammu & Kashmir, Telangana, UP",
-    greeting: "آرڈر کنگ خودکار کچن اور King AI Diagnostic Desk",
+    greeting: "آرڈر کنگ اور King AI کچن پارٹنر",
     statusHeader: "لائیو کچن اور اسٹور فرنٹ کی صورتحال",
-    payoutHeader: "تصدیق شدہ پیسہ سیٹلمنٹ لیجر",
-    menuHeader: "مینو کیٹلاگ اور FSSAI تعمیل",
+    payoutHeader: "تصدیق شدہ براہ راست ادائیگی اور کمائی لیجر",
+    menuHeader: "مینو اسٹوڈیو اور کچن معیار",
   },
   {
     code: "gu",
@@ -119,10 +119,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Gujarati",
     nativeName: "ગુજરાતી",
     region: "Gujarat & DNHDD",
-    greeting: "ઓર્ડરકિંગ સ્વયંસંચાલિત કિચન અને King AI Diagnostic Desk",
+    greeting: "ઓર્ડર કિંગ અને King AI કિચન પાર્ટનર",
     statusHeader: "લાઇવ કિચન અને સ્ટોરફ્રન્ટ સ્થિતિ",
-    payoutHeader: "ચકાસાયેલ પૈસા સેટલમેન્ટ ખાતાવહી",
-    menuHeader: "મેનુ કેટલોગ અને FSSAI પાલન",
+    payoutHeader: "ચકાસાયેલ સીધી ચુકવણી અને કમાણી ખાતાવહી",
+    menuHeader: "મેનુ સ્ટુડિયો અને કિચન ગુણવત્તા",
   },
   {
     code: "kn",
@@ -130,10 +130,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Kannada",
     nativeName: "ಕನ್ನಡ",
     region: "Karnataka",
-    greeting: "ಆರ್ಡರ್‌ಕಿಂಗ್ ಸ್ವಯಂಚಾಲಿತ ಕಿಚನ್ ಮತ್ತು King AI Diagnostic Desk",
+    greeting: "ಆರ್ಡರ್ ಕಿಂಗ್ ಮತ್ತು King AI ಕಿಚನ್ ಪಾರ್ಟ್ನರ್",
     statusHeader: "ಲೈವ್ ಕಿಚನ್ ಮತ್ತು ಸ್ಟೋರ್‌ಫ್ರಂಟ್ ಸ್ಥಿತಿ",
-    payoutHeader: "ಪರಿಶೀಲಿಸಿದ ಪೈಸೆ ಸೆಟಲ್ಮೆಂಟ್ ಲೆಡ್ಜರ್",
-    menuHeader: "ಮೆನು ಕ್ಯಾಟಲಾಗ್ ಮತ್ತು FSSAI ಅನುಸರಣೆ",
+    payoutHeader: "ಪರಿಶೀಲಿಸಿದ ನೇರ ಪಾವತಿ ಮತ್ತು ಗಳಿಕೆ ಲೆಡ್ಜರ್",
+    menuHeader: "ಮೆನು ಸ್ಟುಡಿಯೋ ಮತ್ತು ಕಿಚನ್ ಗುಣಮಟ್ಟ",
   },
   {
     code: "or",
@@ -141,10 +141,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Odia",
     nativeName: "ଓଡ଼ିଆ",
     region: "Odisha",
-    greeting: "ଅର୍ଡରକିଙ୍ଗ ସ୍ୱୟଂଚାଳିତ କିଚେନ୍ ଏବଂ King AI Diagnostic Desk",
+    greeting: "ଅର୍ଡର କିଙ୍ଗ ଏବଂ King AI କିଚେନ୍ ପାର୍ଟନର",
     statusHeader: "ଲାଇଭ୍ କିଚେନ୍ ଓ ଷ୍ଟୋରଫ୍ରଣ୍ଟ ସ୍ଥିତି",
-    payoutHeader: "ଯାଞ୍ଚ ହୋଇଥିବା ପଇସା ସେଟଲମେଣ୍ଟ ଲେଜର",
-    menuHeader: "ମେନୁ କ୍ୟାଟାଲଗ୍ ଓ FSSAI ନିୟମାବଳୀ",
+    payoutHeader: "ଯାଞ୍ଚ ହୋଇଥିବା ପ୍ରତ୍ୟକ୍ଷ ପେଆଉଟ୍ ଏବଂ ରୋଜଗାର ଲେଜର",
+    menuHeader: "ମେନୁ ଷ୍ଟୁଡିଓ ଏବଂ କିଚେନ୍ ଗୁଣବତ୍ତା",
   },
   {
     code: "ml",
@@ -152,10 +152,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Malayalam",
     nativeName: "മലയാളം",
     region: "Kerala & Lakshadweep",
-    greeting: "ഓർഡർകിംഗ് സ്വയംഭരണ കിച്ചൺ & King AI Diagnostic Desk",
+    greeting: "ഓർഡർ കിംഗ് & King AI കിച്ചൺ പാർട്ണർ",
     statusHeader: "ലൈവ് കിച്ചൺ & സ്റ്റോർഫ്രണ്ട് നില",
-    payoutHeader: "പരിശോധിച്ച പൈസ സെറ്റിൽമെന്റ് ലെഡ്జర్",
-    menuHeader: "മെനു കാറ്റലോഗും FSSAI പാലിക്കലും",
+    payoutHeader: "പരിശോധിച്ച നേരിട്ടുള്ള പേഔട്ടും വരുമാന ലെഡ്ജറും",
+    menuHeader: "മെനു സ്റ്റുഡിയോ & കിച്ചൺ ഗുണനിലവാരം",
   },
   {
     code: "pa",
@@ -163,10 +163,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Punjabi",
     nativeName: "ਪੰਜਾਬੀ",
     region: "Punjab & Chandigarh",
-    greeting: "ਆਰਡਰਕਿੰਗ ਸਵੈ-ਚਾਲਿਤ ਕਿਚਨ ਅਤੇ King AI Diagnostic Desk",
+    greeting: "ਆਰਡਰ ਕਿੰਗ ਅਤੇ King AI ਕਿਚਨ ਪਾਰਟਨਰ",
     statusHeader: "ਲਾਈਵ ਕਿਚਨ ਅਤੇ ਸਟੋਰਫਰੰਟ ਸਥਿਤੀ",
-    payoutHeader: "ਪ੍ਰਮਾਣਿਤ ਪੈਸਾ ਸੈਟਲਮੈਂਟ ਖਾਤਾ",
-    menuHeader: "ਮੀਨੂ ਕੈਟਾਲਾਗ ਅਤੇ FSSAI ਪਾਲਣਾ",
+    payoutHeader: "ਪ੍ਰਮਾਣਿਤ ਸਿੱਧੀ ਅਦਾਇਗੀ ਅਤੇ ਕਮਾਈ ਖਾਤਾ",
+    menuHeader: "ਮੀਨੂ ਸਟੂਡੀਓ ਅਤੇ ਕਿਚਨ ਕੁਆਲਿਟੀ",
   },
   {
     code: "as",
@@ -174,10 +174,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Assamese",
     nativeName: "অসমীয়া",
     region: "Assam & Northeast",
-    greeting: "অৰ্ডাৰকিং স্বয়ংক্ৰিয় কিচেন আৰু King AI Diagnostic Desk",
+    greeting: "অৰ্ডাৰ কিং আৰু King AI কিচেন পাৰ্টনাৰ",
     statusHeader: "লাইভ কিচেন আৰু ষ্ট’ৰফ্ৰণ্ট স্থিতি",
-    payoutHeader: "সত্যাপিত পইচা ছেটেলমেণ্ট লেজাৰ",
-    menuHeader: "মেনু কেটালগ আৰু FSSAI অনুপালন",
+    payoutHeader: "সত্যাপিত প্ৰত্যক্ষ পেআউট আৰু উপাৰ্জন লেজাৰ",
+    menuHeader: "মেনু ষ্টুডিঅ' আৰু কিচেন গুণগত মান",
   },
   {
     code: "mai",
@@ -185,10 +185,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Maithili",
     nativeName: "मैथिली",
     region: "Bihar & Jharkhand",
-    greeting: "ऑर्डरकिंग स्वायत्त भनसाघर आ King AI डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डर किंग आ King AI भनसाघर साथी",
     statusHeader: "लाइव भनसाघर आ स्टोरफ्रंट स्थिति",
-    payoutHeader: "सत्यापित पाइ सेटलमेंट खाता",
-    menuHeader: "मेनू सूची आ FSSAI अनुपालन",
+    payoutHeader: "सत्यापित प्रत्यक्ष भुगतान आ कमाई खाता",
+    menuHeader: "मेनू स्टूडियो आ भनसाघर गुणवत्ता",
   },
   {
     code: "sat",
@@ -196,10 +196,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Santali",
     nativeName: "ᱥᱟᱱᱛᱟᱲᱤ",
     region: "Jharkhand, Odisha, WB",
-    greeting: "OrderKing King AI Diagnostic Desk ᱫᱟᱠᱟ ᱚᱲᱟᱜ",
+    greeting: "Order King King AI Kitchen Partner ᱫᱟᱠᱟ ᱚᱲᱟᱜ",
     statusHeader: "ᱞᱟᱭᱤᱵᱽ ᱫᱟᱠᱟ ᱚᱲᱟᱜ ᱟᱨ ᱫᱚᱠᱟᱱ ᱚᱵᱚᱥᱛᱟ",
-    payoutHeader: "ᱯᱩᱭᱥᱟᱹ ᱥᱮᱴᱮᱞᱢᱮᱱᱴ ᱦᱤᱥᱟᱹᱵᱽ",
-    menuHeader: "ᱢᱮᱱᱩ ᱛᱟᱹᱞᱠᱟᱹ ᱟᱨ FSSAI നിയᱢ",
+    payoutHeader: "ᱯᱩᱭᱥᱟᱹ ᱥᱮᱴᱮᱞᱢᱮᱱᱴ ᱟᱨ ᱠᱟᱹᱢᱤ ᱦᱤᱥᱟᱹᱵᱽ",
+    menuHeader: "ᱢᱮᱱᱩ ᱥᱴᱩᱰᱤᱭᱳ ᱟᱨ ᱫᱟᱠᱟ ᱚᱲᱟᱜ ᱜᱩᱱ",
   },
   {
     code: "ks",
@@ -207,10 +207,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Kashmiri",
     nativeName: "कॉशुर / کٲشُر",
     region: "Jammu & Kashmir",
-    greeting: "ऑर्डरकिंग King AI डायग्नोस्टिक डेस्क वाज़वान त किचन",
+    greeting: "ऑर्डर किंग King AI किचन साथी वाज़वान",
     statusHeader: "लाइव किचन त दुकान स्थिति",
-    payoutHeader: "सत्यापित पोंस सेटलमेंट हिसाब",
-    menuHeader: "मेनू फेहरिस्त त FSSAI नियम",
+    payoutHeader: "सत्यापित पोंस पेआउट त कमाई हिसाब",
+    menuHeader: "मेनू स्टूडियो त किचन मयार",
   },
   {
     code: "ne",
@@ -218,10 +218,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Nepali",
     nativeName: "नेपाली",
     region: "Sikkim & Darjeeling",
-    greeting: "अर्डरकिङ स्वायत्त भान्सा र King AI डायग्नोस्टिक डेस्क",
+    greeting: "अर्डर किङ्ग र King AI भान्सा साथी",
     statusHeader: "लाइभ भान्सा र स्टोरफ्रन्ट अवस्था",
-    payoutHeader: "प्रमाणित पैसा सेटलमेन्ट लेजर",
-    menuHeader: "मेनु क्याटलग र FSSAI अनुपालन",
+    payoutHeader: "प्रमाणित प्रत्यक्ष भुक्तानी र आम्दानी लेजर",
+    menuHeader: "मेनु स्टुडियो र भान्सा गुणस्तर",
   },
   {
     code: "sd",
@@ -229,10 +229,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Sindhi",
     nativeName: "सिन्धी / سنڌي",
     region: "Gujarat, Maharashtra, Rajasthan",
-    greeting: "ऑर्डरकिंग स्वायत्त रसोई ऐं King AI डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डर किंग ऐं King AI रसोई साथी",
     statusHeader: "लाइव रसोई ऐं दुकान जी हालत",
-    payoutHeader: "तसदीक थियल पैसा सेटलमेंट खातो",
-    menuHeader: "मेनू फेहरिस्त ऐं FSSAI कायदा",
+    payoutHeader: "तसदीक थियल सिधी अदायगी ऐं कमाई खातो",
+    menuHeader: "मेनू स्टूडियो ऐं रसोई मयार",
   },
   {
     code: "doi",
@@ -240,10 +240,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Dogri",
     nativeName: "डोगरी",
     region: "Jammu Region",
-    greeting: "ऑर्डरकिंग स्वायत्त रसोई ते King AI डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डर किंग ते King AI रसोई साथी",
     statusHeader: "लाइव रसोई ते दुकान दी स्थिति",
-    payoutHeader: "सत्यापित पैसे सेटलमेंट खाता",
-    menuHeader: "मेनू सूची ते FSSAI नियम",
+    payoutHeader: "सत्यापित प्रत्यक्ष भुगतान ते कमाई खाता",
+    menuHeader: "मेनू स्टूडियो ते रसोई गुणवत्ता",
   },
   {
     code: "kok",
@@ -251,10 +251,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Konkani",
     nativeName: "कोंकणी",
     region: "Goa & Coastal Karnataka",
-    greeting: "ऑर्डरकिंग स्वायत्त रांदचीकूड आनी King AI डायग्नोस्टिक डेस्क",
+    greeting: "ऑर्डर किंग आनी King AI रांदचीकूड साथी",
     statusHeader: "थेट रांदचीकूड आनी दुकान स्थिती",
-    payoutHeader: "सत्यापित पयशे सेटलमेंट हिशोब",
-    menuHeader: "मेनू वळेरी आनी FSSAI नेम",
+    payoutHeader: "सत्यापित थेट पेआउट आनी कमाई हिशोब",
+    menuHeader: "मेनू स्टुडिओ आनी रांदचीकूड दर्जो",
   },
   {
     code: "mni",
@@ -262,10 +262,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Manipuri (Meitei)",
     nativeName: "মৈতৈলোন্",
     region: "Manipur",
-    greeting: "অর্ডারকিং স্বয়ংক্রিয় চাকশঙ অমসুং King AI Diagnostic Desk",
+    greeting: "অর্ডার কিং অমসুং King AI চাকশঙ পার্টনার",
     statusHeader: "লাইভ চাকশঙ অমসুং দুকানগী ফীভম",
-    payoutHeader: "চুম্নবা পৈশা সেটেলমেন্ট হিসাব",
-    menuHeader: "মেনু পরিং অমসুং FSSAI চৎনবী",
+    payoutHeader: "চুম্নবা হকথেংননা পীবা অমসুং তানবা হিসাব",
+    menuHeader: "মেনু স্তুদিও অমসুং চাকশঙগী গুন",
   },
   {
     code: "brx",
@@ -273,10 +273,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Bodo",
     nativeName: "बर'",
     region: "Bodoland, Assam",
-    greeting: "अरदारकिं गावस्रायारि आदार बानायग्रा आरो King AI डायग्नोस्टिक डेस्क",
+    greeting: "अरदार किंग आरो King AI आदार बानायग्रा पार्टनार",
     statusHeader: "लाइभ आदार बानायग्रा आरो फालांगि थासारि",
-    payoutHeader: "थार फैसा सेतेलमेन्त हिसाब",
-    menuHeader: "मेनु फारिलाइ आरो FSSAI नेम",
+    payoutHeader: "थार रोख फैसा सेतेलमेन्त हिसाब",
+    menuHeader: "मेनु स्तुदिअ' आरो आदार बानायग्रा गुन",
   },
   {
     code: "sa",
@@ -284,10 +284,10 @@ export const INDIAN_CONSTITUTIONAL_LANGUAGES: readonly IndianLanguageSpec[] = [
     name: "Sanskrit",
     nativeName: "संस्कृतम्",
     region: "Classical & Pan-India",
-    greeting: "ऑर्डरकिंग स्वायत्त महानसः तथा King AI Diagnostic Desk",
+    greeting: "ऑर्डर किंग तथा King AI पाकशाला मित्रः",
     statusHeader: "प्रत्यक्ष महानस-विपणन-स्थितिः",
-    payoutHeader: "सत्यापित-पण-निष्पादन-लेखा",
-    menuHeader: "भोजनसूची तथा FSSAI नियमानुपालनम्",
+    payoutHeader: "सत्यापित-प्रत्यक्ष-वितरण-आय-लेखा",
+    menuHeader: "भोजनसूची-कलाशाला पाकशाला-गुणवत्ता च",
   },
 ];
 
@@ -295,7 +295,7 @@ export const GROWTH_FOCUS_TOPICS = [
   "Increase Daily Order Volume",
   "Smart Combo & AOV Engineering",
   "Neighborhood Geo-Radius & Daypart Expansion",
-  "Payout & Statutory Tax Reconciliation",
+  "Earnings & Tax Breakdown Reconciliation",
   "POS & Printer Automation",
 ] as const;
 
@@ -489,10 +489,10 @@ function AssistantPage() {
           )
         : 0;
 
-    // Dish-Level Net Take-Home & Statutory Tax Matrix (top 6 dishes by base variant price)
+    // Dish-Level Net Take-Home & Tax Breakdown Matrix (top 6 dishes by base variant price)
     const dishMarginMatrix = items.slice(0, 6).map((item) => {
       const basePaise = item.variants?.[0]?.pricePaise ?? 0;
-      const commissionPaise = mulBps(basePaise, 1200); // 12% standard platform commission
+      const commissionPaise = mulBps(basePaise, 2800); // Standard 28% delivery commission (2800 bps), 0% dine-in
       const cgst95Paise = mulBps(basePaise, 500); // 5% CGST Sec 9(5)
       const tcs52Paise = mulBps(basePaise, 50); // 0.5% CGST Sec 52 TCS
       const tds194OPaise = mulBps(basePaise, 10); // 0.1% Income Tax Sec 194-O TDS
@@ -662,7 +662,7 @@ function AssistantPage() {
       `Storefront is currently ${dash.data?.isOpen ? "Open and receiving orders" : "Paused"}.`,
       `Your Storefront Conversion Score is ${menuAudit.storefrontConversionScore} percent across ${menuAudit.total} dishes.`,
       `Current Average Order Value is ${formatINR(growthPlaybook.liveAovPaise)}.`,
-      `To lift Average Order Value by 25 percent while protecting net margin, Spark recommends a minimum order discount threshold of Rupees ${growthPlaybook.recommendedThresholdRupees}.`,
+      `To lift Average Order Value by 25 percent while protecting net margin, King AI recommends a minimum order discount threshold of Rupees ${growthPlaybook.recommendedThresholdRupees}.`,
       menuAudit.outOfStock.length > 0
         ? `Warning: ${menuAudit.outOfStock.length} dishes are currently out of stock, causing an estimated daily revenue leakage of ${formatINR(growthPlaybook.estimatedDailyLeakagePaise)}.`
         : `All ${menuAudit.inStock.length} catalog dishes are in stock with zero stockout leakage.`,
@@ -699,18 +699,18 @@ function AssistantPage() {
       ``,
       `1. ${lang.statusHeader}:`,
       `   • Outlet: ${dash.data?.restaurantName ?? "—"} (${isOpen ? "OPEN / ONLINE" : "PAUSED / OFFLINE"})`,
-      `   • KYC & FSSAI: ${kyc} · FSSAI ${hasValidFssai ? fssaiClean : "Pending 14-digit verification"}`,
+      `   • Verification: ${kyc} · FSSAI ${hasValidFssai ? fssaiClean : "Pending 14-digit verification"}`,
       `   • Today's Orders: ${todayOrders} total · ${pendingOrders} pending acceptance · Gross Sales: ${todaySales}`,
       ``,
       `2. ${lang.payoutHeader}:`,
-      `   • Current Unsettled Payable: ${currentPayable} (Today's Accrued: ${formatINR(dash.data?.today.settlementPaise ?? 0)})`,
+      `   • Current Unsettled Balance: ${currentPayable} (Today's Accrued: ${formatINR(dash.data?.today.settlementPaise ?? 0)})`,
       `   • Latest Batch: ${latestBatch ? `${formatINR(latestBatch.totalPayablePaise)} (${latestBatch.status} · ${(latestBatch.scheduled_for || "").slice(0, 10)})` : "Next scheduled NEFT/IMPS cycle"}`,
-      `   • Formula: (Food + Packing − Restaurant Discount) − Commission + Platform Promo − Refunds − Statutory Taxes (CGST §9(5) 5%, TCS §52 0.5%, TDS §194-O 0.1%)`,
+      `   • Formula: (Food + Packaging − Restaurant Discount) − Commission (28% Delivery / 0% Dine-In) + Platform Promo − Refunds − Withholding Taxes (CGST §9(5) 5%, TCS §52 0.5%, TDS §194-O 0.1%)`,
       ``,
-      `3. ${lang.menuHeader} (Storefront Score: ${menuAudit.storefrontConversionScore}%):`,
-      `   • Catalog: ${menuAudit.inStock.length}/${menuAudit.total} In-Stock · ${menuAudit.outOfStock.length} Out-of-Stock · Avg Prep SLA: ${menuAudit.avgPrepMinutes}m`,
+      `3. ${lang.menuHeader} (Menu Score: ${menuAudit.storefrontConversionScore}%):`,
+      `   • Catalog: ${menuAudit.inStock.length}/${menuAudit.total} In-Stock · ${menuAudit.outOfStock.length} Sold-Out · Avg Prep SLA: ${menuAudit.avgPrepMinutes}m`,
       `   • AOV Growth Advisor: Current AOV ${formatINR(growthPlaybook.liveAovPaise)} → Recommended ₹${growthPlaybook.recommendedThresholdRupees} threshold offer (+25% AOV lift)`,
-      `   • Audit: ${menuAudit.missingPhoto.length} missing photo · ${menuAudit.missingDesc.length} missing description · Diet: ${menuAudit.vegCount} VEG / ${menuAudit.nonVegCount} NON-VEG / ${menuAudit.eggCount} EGG`,
+      `   • Quality Audit: ${menuAudit.missingPhoto.length} missing photo · ${menuAudit.missingDesc.length} missing description · Diet: ${menuAudit.vegCount} VEG / ${menuAudit.nonVegCount} NON-VEG / ${menuAudit.eggCount} EGG`,
       `   • Query Context: "${question}"`,
     ].join("\n");
   }
@@ -820,10 +820,10 @@ function AssistantPage() {
     }
   }
 
-  function handleExportOmrOsTelemetry() {
+  function handleExportKingAiTelemetry() {
     const payload = {
       exportedAt: new Date().toISOString(),
-      ecosystem: "OrderKing Autonomous King AI v1",
+      ecosystem: "Order King · King AI Partner Intelligence",
       restaurantId: vendor.restaurantId,
       restaurantName: dash.data?.restaurantName ?? null,
       language: activeLang,
@@ -871,12 +871,12 @@ function AssistantPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `orderking-king-ai-telemetry-${vendor.restaurantId ?? "outlet"}-${new Date()
+    a.download = `order-king-ai-telemetry-${vendor.restaurantId ?? "outlet"}-${new Date()
       .toISOString()
       .slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    setActionBanner("Exported verified King AI JSON telemetry snapshot from live restaurant database.");
+    setActionBanner("Exported verified King AI JSON summary from live restaurant database.");
   }
 
   function handleSpeakMessage(text: string, idx: number) {
@@ -987,17 +987,17 @@ function AssistantPage() {
 
   return (
     <VendorShell title={t("nav.assistant")} dataLabel={vendor.dataLabel}>
-      {/* King AI Employee-Less Ecosystem Sync Banner */}
+      {/* King AI Kitchen Partner Banner */}
       <Card className="border-leaf/40 bg-leaf-soft/30 p-3.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-leaf animate-pulse" />
             <span className="text-xs font-extrabold uppercase tracking-wider text-ink">
-              🤖 KING AI EMPLOYEE-LESS ECOSYSTEM SYNC — 100% AUTONOMOUS RESTAURANT CONTROL
+              👑 KING AI KITCHEN PARTNER — INTELLIGENT RESTAURANT OPERATIONS
             </span>
           </div>
           <span className="font-mono text-[11px] font-semibold text-leaf">
-            Zero Human Bottlenecks · Direct Database Sync ({activeLang.nativeName})
+            Always-On Kitchen Intelligence · Real-Time Order &amp; Earnings Sync ({activeLang.nativeName})
           </span>
         </div>
         <div className="mt-2.5 grid grid-cols-2 gap-2 sm:grid-cols-4 text-xs">
@@ -1008,15 +1008,15 @@ function AssistantPage() {
             </div>
           </div>
           <div className="rounded-lg border border-line bg-surface p-2">
-            <div className="text-[10px] font-semibold uppercase text-muted">Integer-Paise Ledger</div>
+            <div className="text-[10px] font-semibold uppercase text-muted">Direct Payouts (Paise Precision)</div>
             <div className="mt-0.5 font-mono font-bold text-leaf">
               {formatINR(settlements.data?.currentPayablePaise ?? 0)} Payable
             </div>
           </div>
           <div className="rounded-lg border border-line bg-surface p-2">
-            <div className="text-[10px] font-semibold uppercase text-muted">FSSAI Compliance Guard</div>
+            <div className="text-[10px] font-semibold uppercase text-muted">FSSAI Quality &amp; Standards</div>
             <div className="mt-0.5 font-mono font-bold text-ink">
-              {hasValidFssai ? "14-Digit Verified" : "Update in /kyc"} · {menuAudit.vegCount}V/{menuAudit.nonVegCount}NV
+              {hasValidFssai ? "14-Digit Verified" : "Update in /onboarding"} · {menuAudit.vegCount}V/{menuAudit.nonVegCount}NV
             </div>
           </div>
           <div className="rounded-lg border border-line bg-surface p-2">
@@ -1033,10 +1033,10 @@ function AssistantPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-xs font-bold uppercase tracking-wider text-ink">
-              🇮🇳 ALL 22 INDIAN CONSTITUTIONAL LANGUAGES (8TH SCHEDULE) + ENGLISH — NATIVE KITCHEN AI
+              🇮🇳 ALL 22 INDIAN CONSTITUTIONAL LANGUAGES (8TH SCHEDULE) + ENGLISH — CHEF &amp; KITCHEN AI
             </h2>
             <p className="text-[11px] text-muted">
-              Select any Indian language below. Kitchen diagnostics, voice dictation, read-aloud TTS, and AI growth consulting operate natively in your chosen script.
+              Select your language. Kitchen insights, voice dictation, read-aloud audio, and culinary consulting operate natively in your chosen script.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -1079,15 +1079,15 @@ function AssistantPage() {
         </div>
       </Card>
 
-      {/* 🕒 Human-Style Advisory Schedule & Quiet-Hours Customizer */}
+      {/* 🕒 Chef Advisory Schedule & Quiet-Hours Customizer */}
       <Card className="space-y-3 border-line bg-surface p-4">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-2.5">
           <div>
             <h2 className="text-sm font-bold tracking-tight text-ink">
-              🕒 HUMAN-STYLE ADVISORY SCHEDULE &amp; KITCHEN RUSH QUIET-HOURS CUSTOMIZER
+              🕒 CHEF ADVISORY SCHEDULE &amp; KITCHEN RUSH QUIET HOURS
             </h2>
             <p className="text-xs text-muted">
-              Busy cooking during lunch or dinner rush? Set your Do-Not-Disturb kitchen rush windows and choose when and how Spark AI delivers your spoken or written growth consultation in {activeLang.nativeName}.
+              Busy cooking during the lunch or dinner rush? Set your kitchen quiet hours, and King AI will deliver your consultations during afternoon breaks or after service in {activeLang.nativeName}.
             </p>
           </div>
           {advisoryPrefs.savedAt ? (
@@ -1211,15 +1211,15 @@ function AssistantPage() {
         </div>
       </Card>
 
-      {/* 🚀 DoorDash + Zomato + Meituan Waimai Automated Growth & Margin Playbook */}
+      {/* 🚀 Revenue & Menu Growth Playbook */}
       <Card className="space-y-4 border-line bg-surface p-4">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
           <div>
             <h2 className="text-sm font-bold tracking-tight text-ink">
-              🚀 DOORDASH, MEITUAN WAIMAI &amp; ZOMATO STRATEGIC GROWTH PLAYBOOK (REAL-DATA CONSULTANT)
+              🚀 REVENUE &amp; MENU GROWTH PLAYBOOK — CHEF &amp; RESTAURATEUR ADVISOR
             </h2>
             <p className="mt-0.5 text-xs text-muted">
-              Deterministic menu engineering, AOV smart combo threshold calculation, stockout revenue leakage guard, and 5-daypart neighborhood geo-demand strategy computed directly from your live orders, analytics, and catalog.
+              Smart menu engineering, combo recommendations, stockout protection, and 5-daypart neighborhood demand insights tailored directly to your kitchen.
             </p>
           </div>
           <Button
@@ -1436,14 +1436,14 @@ function AssistantPage() {
         </div>
       </Card>
 
-      {/* Explicit Confirmation & Data Provenance Safeguard */}
+      {/* Explicit Confirmation & Data Source Safeguard */}
       <Card className="border-amber-500/30 bg-amber-500/5 p-3.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="text-xs font-bold text-amber-400">
-            🛡️ Merchant Review Required — No changes are applied without your explicit confirmation
+            🛡️ Chef &amp; Manager Review Required — No changes are applied without your explicit confirmation
           </div>
           <span className="text-[11px] font-mono text-muted">
-            Data Provenance: Live Restaurant Database (Dashboard · Menu · Settlement · Analytics)
+            Data Source: Live Restaurant Database (Dashboard · Menu · Settlement · Analytics)
           </span>
         </div>
         {actionBanner ? (
@@ -1460,15 +1460,15 @@ function AssistantPage() {
         ) : null}
       </Card>
 
-      {/* ⚡ Instant Self-Service Kitchen Diagnostics & Auto-Fix Desk (6 Modules) */}
+      {/* ⚡ Instant Kitchen Readiness & Menu Optimization Desk */}
       <Card className="space-y-4 border-line bg-surface p-4">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
           <div>
             <h2 className="text-sm font-bold tracking-tight text-ink">
-              ⚡ INSTANT SELF-SERVICE KITCHEN DIAGNOSTICS &amp; AUTO-FIX DESK
+              ⚡ INSTANT KITCHEN READINESS &amp; MENU OPTIMIZATION DESK
             </h2>
             <p className="mt-0.5 text-xs text-muted">
-              {activeLang.greeting} — Zero-employee autonomous inspection of your outlet status, menu availability, statutory settlement math, prep time buffers, and dish-level net take-home margins.
+              {activeLang.greeting} — Real-time insights on your outlet status, menu availability, transparent payout math, prep time buffers, and dish margins.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1485,18 +1485,18 @@ function AssistantPage() {
             >
               🔄 Refresh Live Checks
             </Button>
-            <Button variant="secondary" size="sm" onClick={handleExportOmrOsTelemetry}>
+            <Button variant="secondary" size="sm" onClick={handleExportKingAiTelemetry}>
               📥 Export King AI Telemetry
             </Button>
           </div>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          {/* MODULE 1: Why am I not receiving orders? (5-Point Live Storefront Check) */}
+          {/* MODULE 1: Order Flow & Kitchen Readiness Check */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                1. Why Am I Not Receiving Orders? (5-Point Live Check)
+                1. Order Flow &amp; Kitchen Readiness Check
               </h3>
               <span
                 className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
@@ -1644,20 +1644,20 @@ function AssistantPage() {
             </div>
           </div>
 
-          {/* MODULE 2: Where is my payout? / Settlement Math Explainer */}
+          {/* MODULE 2: Where is my payout? / Payout Math Explainer */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                2. Where Is My Payout? / Settlement Math Explainer
+                2. Payout &amp; Earnings Breakdown (Paise Precision)
               </h3>
               <span className="rounded-full bg-leaf-soft px-2 py-0.5 font-mono text-[10px] font-bold text-leaf">
-                INTEGER PAISE LEDGER
+                PAISE PRECISION LEDGER
               </span>
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
               <div className="rounded-lg border border-line bg-surface p-2.5">
-                <div className="text-[11px] text-muted">Current Unsettled Payable</div>
+                <div className="text-[11px] text-muted">Current Unsettled Balance</div>
                 <div className="mt-0.5 font-mono text-base font-bold text-leaf">
                   {formatINR(settlements.data?.currentPayablePaise ?? 0)}
                 </div>
@@ -1679,9 +1679,9 @@ function AssistantPage() {
             </div>
 
             <div className="rounded-lg border border-line bg-surface p-2.5 text-[11px] leading-relaxed text-muted">
-              <div className="font-semibold text-ink">Verified Statutory Payout Formula (Integer Paise):</div>
+              <div className="font-semibold text-ink">Verified Transparent Payout Formula:</div>
               <p className="mt-1 font-mono text-[10px] text-ink">
-                Net Payable = (Food Value + Packaging − Restaurant Discount) − Platform Commission + Platform Promo − Customer Refunds − Statutory Taxes (CGST §9(5) 5% · TCS §52 0.5% · TDS §194-O 0.1%)
+                Net Payable = (Food Value + Packaging − Restaurant Discount) − Platform Commission (28% Delivery / 0% Dine-In) + Platform Promo − Customer Refunds − Withholding Taxes (CGST §9(5) 5% · TCS §52 0.5% · TDS §194-O 0.1%)
               </p>
             </div>
 
@@ -1696,7 +1696,7 @@ function AssistantPage() {
                 size="sm"
                 variant="ghost"
                 onClick={() =>
-                  void send("Explain my Wednesday payout breakdown with 12% commission, GST, TCS and TDS deductions.")
+                  void send("Explain my Wednesday payout breakdown with 28% delivery commission (or 0% dine-in), GST, TCS and TDS deductions.")
                 }
               >
                 Ask AI to Explain Math
@@ -1704,11 +1704,11 @@ function AssistantPage() {
             </div>
           </div>
 
-          {/* MODULE 3: Spark AI Menu Quality & FSSAI Compliance Auditor */}
+          {/* MODULE 3: King AI Menu Studio & Quality Standards */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                3. Spark AI Menu Quality &amp; FSSAI Compliance Auditor
+                3. King AI Menu Studio &amp; Quality Standards
               </h3>
               <span className="rounded-full border border-line bg-surface px-2 py-0.5 font-mono text-[10px] font-semibold text-muted">
                 {menuAudit.total} Dishes Scanned
@@ -1732,7 +1732,7 @@ function AssistantPage() {
                 <div className="font-mono text-sm font-bold text-chili">
                   {menuAudit.outOfStock.length}
                 </div>
-                <div className="text-[10px] text-muted">Out of Stock</div>
+                <div className="text-[10px] text-muted">Sold Out</div>
               </div>
               <div className="rounded-lg border border-line bg-surface p-2">
                 <div className="font-mono text-xs font-bold text-ink">
@@ -1763,11 +1763,11 @@ function AssistantPage() {
             </div>
           </div>
 
-          {/* MODULE 4: Peak Rush & Prep Time Guard */}
+          {/* MODULE 4: Peak Rush & Prep Time Assistant */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                4. Peak Rush &amp; Prep Time Guard
+                4. Peak Rush &amp; Prep Time Assistant
               </h3>
               <span className="rounded-full border border-line bg-surface px-2 py-0.5 font-mono text-[10px] font-semibold text-ink">
                 Avg Prep SLA: {menuAudit.avgPrepMinutes}m
@@ -1845,11 +1845,11 @@ function AssistantPage() {
             )}
           </div>
 
-          {/* MODULE 5: DoorDash-Grade Algorithmic Menu Engineering & Net Take-Home Matrix */}
+          {/* MODULE 5: Dish-Level Earnings & Margin Breakdown */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                5. Dish-Level Net Take-Home &amp; Statutory Tax Matrix
+                5. Dish-Level Earnings &amp; Margin Breakdown
               </h3>
               <span className="rounded-full bg-leaf-soft px-2 py-0.5 font-mono text-[10px] font-bold text-leaf">
                 Conversion Score: {menuAudit.storefrontConversionScore}%
@@ -1863,7 +1863,7 @@ function AssistantPage() {
                     <tr>
                       <th className="px-2 py-1.5">Dish</th>
                       <th className="px-2 py-1.5">Menu Price</th>
-                      <th className="px-2 py-1.5">12% Comm.</th>
+                      <th className="px-2 py-1.5">28% Comm.</th>
                       <th className="px-2 py-1.5">TCS+TDS</th>
                       <th className="px-2 py-1.5 text-leaf">Net Take-Home</th>
                     </tr>
@@ -1915,19 +1915,19 @@ function AssistantPage() {
             ) : null}
           </div>
 
-          {/* MODULE 6: Autonomous Zero-Employee King AI Ecosystem Bridge */}
+          {/* MODULE 6: Order King Partner Tools & Direct Integrations */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                6. Autonomous Zero-Employee King AI Ecosystem Bridge
+                6. Order King Partner Tools &amp; Direct Integrations
               </h3>
               <span className="rounded-full border border-leaf/40 bg-leaf-soft px-2 py-0.5 font-mono text-[10px] font-bold text-leaf">
-                100% SELF-SERVICE
+                DIRECT CONTROL
               </span>
             </div>
 
             <p className="text-[11px] text-muted">
-              Every growth campaign, payout reconciliation, KDS order flow, thermal KOT printer, and FSSAI catalog update is directly controlled by your restaurant team without waiting on human account managers.
+              Every growth campaign, payout reconciliation, KDS order flow, thermal KOT printer, and menu update is directly controlled by your restaurant team without delays.
             </p>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
@@ -1970,18 +1970,18 @@ function AssistantPage() {
             </div>
           </div>
 
-          {/* MODULE 7: Automated Customer Dispute & Refund Arbitrator */}
+          {/* MODULE 7: King AI Order Dispute & Transit Resolution */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                7. Spark AI Customer Dispute &amp; Refund Arbitrator
+                7. King AI Order Dispute &amp; Transit Resolution
               </h3>
               <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-400">
-                MERCHANT vs LOGISTICS LIABILITY
+                FAIR LIABILITY PROTECTION
               </span>
             </div>
             <p className="text-[11px] text-muted">
-              Autonomous arbitrator assessing missing item vs food spill complaints in transit. Merchant payouts are 100% protected against 3rd-party delivery fleet mishandling.
+              Intelligent dispute arbitrator assessing missing items vs delivery transit spills. Your restaurant earnings are 100% protected against delivery rider mishandling.
             </p>
 
             {/* Dispute Case Selector */}
@@ -2039,7 +2039,7 @@ function AssistantPage() {
                   <div className="mt-2 rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-2.5 space-y-1.5">
                     <div className="flex items-center justify-between">
                       <span className="font-bold font-mono text-[11px] text-emerald-300 flex items-center gap-1">
-                        🛡️ ARBITRATION DECISION: {disputeDecision.liability} LIABLE
+                        🛡️ RESOLUTION DECISION: {disputeDecision.liability} LIABLE
                       </span>
                       <span className="font-mono text-[11px] font-bold text-ink">
                         Merchant Loss: ₹{(disputeDecision.merchantLiabilityPaise / 100).toFixed(2)}
@@ -2062,11 +2062,11 @@ function AssistantPage() {
             )}
           </div>
 
-          {/* MODULE 8: Menu Description & Pricing Intelligence Studio */}
+          {/* MODULE 8: King AI Menu Description & Culinary Pricing Studio */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                8. Spark AI Menu Description &amp; Pricing Intelligence Studio
+                8. King AI Menu Description &amp; Culinary Pricing Studio
               </h3>
               <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300">
                 HIGH-MARGIN CONVERSION
@@ -2142,18 +2142,18 @@ function AssistantPage() {
             )}
           </div>
 
-          {/* MODULE 9: Daily Shift & Statutory 9(5) GST Recon Report */}
+          {/* MODULE 9: Daily Shift & Tax Reconciliation Summary */}
           <div className="rounded-xl border border-line bg-surface-2/50 p-3.5 space-y-3 lg:col-span-2">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-ink">
-                9. Daily Shift &amp; Statutory 9(5) GST Financial Recon Report
+                9. Daily Shift &amp; Tax Reconciliation Summary
               </h3>
               <span className="rounded-full border border-sky-500/40 bg-sky-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-sky-300">
-                100% INTEGER-PAISE AUDIT
+                100% PAISE PRECISION AUDIT
               </span>
             </div>
             <p className="text-[11px] text-muted">
-              Conversational shift reconciliation: food &amp; packaging gross revenues, zero platform commission deductions, 5% CGST Sec 9(5) remitted directly by OrderKing on your behalf, and net bank payout.
+              Conversational shift summary: food and packaging revenues, standard 28% delivery commission (0% on dine-in), 5% CGST Sec 9(5) remitted on your behalf, and net bank transfer.
             </p>
 
             <div className="grid gap-2 sm:grid-cols-4 font-mono text-xs">
@@ -2165,7 +2165,7 @@ function AssistantPage() {
               <div className="rounded-lg border border-line bg-surface p-2.5">
                 <span className="text-[10px] text-muted uppercase block">Gross Sales &amp; Packaging</span>
                 <span className="text-sm font-bold text-ink">₹{(shiftRecon.grossCustomerSpendPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
-                <span className="text-[10px] text-emerald-400 block mt-0.5">0% OrderKing Commission</span>
+                <span className="text-[10px] text-emerald-400 block mt-0.5">0% Dine-In / 28% Delivery</span>
               </div>
               <div className="rounded-lg border border-line bg-surface p-2.5">
                 <span className="text-[10px] text-muted uppercase block">CGST Sec 9(5) Remitted</span>
@@ -2181,7 +2181,7 @@ function AssistantPage() {
 
             <div className="rounded-lg border border-sky-500/30 bg-sky-950/20 p-3 space-y-1.5">
               <span className="text-[11px] font-bold text-sky-200 font-mono block">
-                🎙️ Conversational Human Recon Summary:
+                🎙️ Shift Reconciliation Summary:
               </span>
               <p className="whitespace-pre-wrap text-[11px] text-slate-300 leading-relaxed font-sans">
                 {shiftRecon.conversationalSummary}
@@ -2191,14 +2191,14 @@ function AssistantPage() {
         </div>
       </Card>
 
-      {/* ⚖️ Statutory Government & Regulatory Direct Links (Zero Legal Headache) */}
+      {/* ⚖️ Partner Helplines & Restaurateur Support */}
       <Card className="border-amber-500/30 bg-amber-500/5 p-4">
         <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
           <span className="text-lg">⚖️</span>
-          <h2 className="text-sm font-bold tracking-tight">STATUTORY MERCHANT HELPLINES &amp; OMBUDSMAN</h2>
+          <h2 className="text-sm font-bold tracking-tight">PARTNER HELPLINES &amp; RESTAURATEUR SUPPORT</h2>
         </div>
         <p className="mt-1 text-xs text-muted">
-          Direct escalation to official Indian statutory departments and regulatory desks. Ensures compliance under FSSAI, GST &amp; DPIIT rules.
+          Official direct contacts for FSSAI, GST, MSME, and Order King partner care.
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
           <a
@@ -2255,8 +2255,8 @@ function AssistantPage() {
           >
             <span>📩</span>
             <div>
-              <div>Merchant Ombudsman</div>
-              <div className="text-[10px] font-normal text-muted">Statutory Desk</div>
+              <div>Order King Partner Care</div>
+              <div className="text-[10px] font-normal text-muted">Restaurateur Desk</div>
             </div>
           </a>
           <a
@@ -2268,7 +2268,7 @@ function AssistantPage() {
             <span>💬</span>
             <div>
               <div>WhatsApp VIP Care</div>
-              <div className="text-[10px] font-normal text-muted">24x7 Priority Desk</div>
+              <div className="text-[10px] font-normal text-muted">Chef &amp; Partner Priority Desk</div>
             </div>
           </a>
         </div>
@@ -2276,14 +2276,14 @@ function AssistantPage() {
 
       {/* Quick Prompt Chips */}
       <div className="flex flex-wrap gap-2">
-        <Button variant="primary" size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold" onClick={() => void send("Arbitrate customer dispute: Food container spilled during transit vs missing items. Determine merchant vs logistics liability.")}>
-          ⚖️ Dispute Arbitrator (Spill vs Missing)
+        <Button variant="primary" size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold" onClick={() => void send("Review customer dispute: Food container spilled during transit vs missing items. Protect restaurant earnings from logistics fault.")}>
+          ⚖️ Dispute Resolution (Spill vs Missing)
         </Button>
-        <Button variant="primary" size="sm" className="bg-amber-600 hover:bg-amber-500 text-white font-bold" onClick={() => void send("Suggest high-margin dish descriptions, dietary allergen tags, and portion adjustments for signature dishes.")}>
-          ✨ Menu Description &amp; Pricing Intelligence
+        <Button variant="primary" size="sm" className="bg-amber-600 hover:bg-amber-500 text-white font-bold" onClick={() => void send("Suggest appetizing dish descriptions, dietary allergen tags, and portion adjustments for signature dishes.")}>
+          ✨ Culinary Description &amp; Pricing Insights
         </Button>
-        <Button variant="primary" size="sm" className="bg-sky-600 hover:bg-sky-500 text-white font-bold" onClick={() => void send("Generate today's daily shift recon report with gross sales, 0% commission savings, and CGST Sec 9(5) remitted.")}>
-          📊 Daily Shift &amp; 9(5) GST Recon Report
+        <Button variant="primary" size="sm" className="bg-sky-600 hover:bg-sky-500 text-white font-bold" onClick={() => void send("Generate today's shift summary with gross sales, transparent 28% delivery commission (0% dine-in), and CGST Sec 9(5) remitted.")}>
+          📊 Daily Shift &amp; Tax Reconciliation
         </Button>
         <Button variant="secondary" size="sm" onClick={() => void send("How do I use 1-click AI auto-setup to connect, configure and test my thermal printers and POS?")}>
           🛠️ 1-Click AI Auto-Connect Hardware &amp; POS
@@ -2300,7 +2300,7 @@ function AssistantPage() {
         <Button variant="secondary" size="sm" onClick={() => void send("How are my kitchen sales and orders today?")}>
           📊 Today&apos;s Sales &amp; Orders
         </Button>
-        <Button variant="secondary" size="sm" onClick={() => void send("Explain my Wednesday payout breakdown with 12% commission, GST, TCS and TDS deductions.")}>
+        <Button variant="secondary" size="sm" onClick={() => void send("Explain my Wednesday payout breakdown with 28% delivery commission (or 0% dine-in), GST, TCS and TDS deductions.")}>
           💳 Wednesday Payout &amp; Tax Breakdown
         </Button>
         <Button variant="secondary" size="sm" onClick={() => void send("How do I claim 100% food value reimbursement for a customer-cancelled order?")}>
