@@ -177,9 +177,9 @@ const INITIAL_FOUNDER_ALERTS: FounderRemediationAlert[] = [
   {
     id: "flt-low-1",
     tier: "LOW",
-    title: "23-Language Regional Localization & Telemetry Sync",
+    title: "10-Language Benchmark Regional Localization & Telemetry Sync",
     rootCause:
-      "All 22 Scheduled Indian Languages + English dictionaries are active across Command, Partner, and Rider surfaces.",
+      "10 Indian Food Delivery Benchmark Language dictionaries are active across Command, Partner, and Rider surfaces.",
     resolutionSteps:
       "Zero-Harassment Resolution: Refresh localized dictionary cache and verify immutable audit log indexing.",
     autoFixActionLabel: "Refresh Localization Cache",
