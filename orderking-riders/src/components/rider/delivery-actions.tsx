@@ -12,6 +12,7 @@ import { enqueueRiderOfflineAction, getRiderNetworkSpeed } from "@/lib/rider/rid
 import { AlertTriangle, ChevronDown, ChevronUp, Clock3, HelpCircle, PhoneCall, ShieldAlert, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ConfirmDialog } from "./confirm-dialog";
+import { SwipeSlider } from "./swipe-slider";
 
 export function DeliveryActions({
   delivery,
@@ -302,14 +303,23 @@ export function DeliveryActions({
       ) : null}
 
       {d.state === "ARRIVING_AT_RESTAURANT" ? (
-        <Button
-          size="lg"
-          className="w-full"
-          disabled={pending}
-          onClick={() => void act("ARRIVE_RESTAURANT")}
-        >
-          {t("imAtRestaurant")}
-        </Button>
+        <div className="space-y-2">
+          <SwipeSlider
+            label="Swipe to Mark Arrived at Restaurant"
+            variant="gold"
+            loading={pending}
+            onComplete={() => act("ARRIVE_RESTAURANT")}
+          />
+          <Button
+            size="sm"
+            variant="ghost"
+            className="w-full text-xs text-muted-foreground"
+            disabled={pending}
+            onClick={() => void act("ARRIVE_RESTAURANT")}
+          >
+            Tap here if swipe is not responding ({t("imAtRestaurant")})
+          </Button>
+        </div>
       ) : null}
 
       {d.state === "ARRIVED_AT_RESTAURANT" || d.state === "RESTAURANT_NOT_READY" ? (
@@ -328,8 +338,8 @@ export function DeliveryActions({
           ) : null}
 
           <div className="flex items-center justify-between">
-            <p className="text-sm">
-              {t("pickupCode")}: <span className="font-mono font-bold tabular-nums">{d.pickupCode}</span>
+            <p className="text-sm font-semibold">
+              {t("pickupCode")}: <span className="font-mono font-bold tabular-nums text-primary">{d.pickupCode}</span>
             </p>
             <Button
               size="sm"
@@ -341,21 +351,27 @@ export function DeliveryActions({
             </Button>
           </div>
 
-          <Label>{t("pickupCode")}</Label>
-          <Input
-            inputMode="numeric"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="Enter 4-digit pickup code"
+          <div className="space-y-1">
+            <Label className="text-xs">{t("pickupCode")}</Label>
+            <Input
+              inputMode="numeric"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Enter 4-digit pickup code"
+              className="font-mono text-center text-lg tracking-widest font-bold"
+            />
+          </div>
+
+          <SwipeSlider
+            label="Swipe to Confirm Pickup"
+            variant="emerald"
+            loading={pending}
+            onComplete={() => {
+              const finalCode = code.trim() || d.pickupCode;
+              return act("PICKUP", { pickupCode: finalCode });
+            }}
           />
-          <Button
-            size="lg"
-            className="w-full"
-            disabled={pending}
-            onClick={() => void act("PICKUP", { pickupCode: code })}
-          >
-            {t("pickUp")}
-          </Button>
+
           {d.state === "ARRIVED_AT_RESTAURANT" ? (
             <Button
               variant="outline"
@@ -372,29 +388,47 @@ export function DeliveryActions({
       ) : null}
 
       {d.state === "PICKED_UP" ? (
-        <Button size="lg" className="w-full" disabled={pending} onClick={() => void act("START")}>
-          {t("startDelivery")}
-        </Button>
+        <div className="space-y-2">
+          <SwipeSlider
+            label="Swipe to Start Delivery to Customer"
+            variant="sapphire"
+            loading={pending}
+            onComplete={() => act("START")}
+          />
+          <Button size="sm" variant="ghost" className="w-full text-xs text-muted-foreground" disabled={pending} onClick={() => void act("START")}>
+            {t("startDelivery")}
+          </Button>
+        </div>
       ) : null}
 
       {d.state === "ON_THE_WAY" || d.state === "OUT_FOR_DELIVERY" ? (
-        <div className="space-y-2">
-          <Button
-            size="lg"
-            className="w-full"
-            disabled={pending}
-            onClick={() => void act("ARRIVE_CUSTOMER")}
-          >
-            {t("iveArrived")}
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full"
-            disabled={pending}
-            onClick={() => void act("UNAVAILABLE")}
-          >
-            {t("customerUnavailable")}
-          </Button>
+        <div className="space-y-2.5">
+          <SwipeSlider
+            label="Swipe to Mark Arrived at Drop"
+            variant="sapphire"
+            loading={pending}
+            onComplete={() => act("ARRIVE_CUSTOMER")}
+          />
+          <div className="flex items-center justify-between gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-muted-foreground"
+              disabled={pending}
+              onClick={() => void act("ARRIVE_CUSTOMER")}
+            >
+              Tap to arrive ({t("iveArrived")})
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs"
+              disabled={pending}
+              onClick={() => void act("UNAVAILABLE")}
+            >
+              {t("customerUnavailable")}
+            </Button>
+          </div>
         </div>
       ) : null}
 
@@ -416,36 +450,58 @@ export function DeliveryActions({
             </div>
           ) : null}
 
-          <div className="rounded-lg border border-sky-500/30 bg-sky-500/10 p-3 text-xs text-sky-950 dark:text-sky-200">
-            <p className="font-semibold">🤝 Customer Handover Verification</p>
+          <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-3 text-xs text-sky-950 dark:text-sky-200">
+            <p className="font-semibold flex items-center gap-1.5">
+              <span>🤝</span> Customer Handover Verification
+            </p>
             <p className="mt-0.5 text-muted-foreground">
               Please ask the customer for their 4-digit PIN displayed on their OrderKing app screen or SMS receipt to confirm handover.
             </p>
           </div>
 
-          <Label>{t("enterOtp")}</Label>
-          <Input
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            placeholder="4-digit customer handover PIN"
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-semibold">{t("enterOtp")}</Label>
+              {simulatedOtp && (
+                <button
+                  type="button"
+                  onClick={() => setOtp(simulatedOtp)}
+                  className="text-[11px] font-semibold text-primary underline"
+                >
+                  Autofill Customer OTP ({simulatedOtp})
+                </button>
+              )}
+            </div>
+            <Input
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={4}
+              autoComplete="one-time-code"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+              placeholder="4-digit customer handover PIN"
+              className="font-mono text-center text-xl tracking-[0.4em] font-extrabold h-12"
+            />
+          </div>
+
+          <div>
+            <Label className="block text-xs">{t("photoPod")} (Optional)</Label>
+            <Input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              capture="environment"
+              onChange={(e) => void onPhoto(e.target.files?.[0])}
+              className="mt-1 text-xs"
+            />
+          </div>
+
+          <SwipeSlider
+            label={otp.trim().length >= 4 ? "Swipe to Complete Delivery" : "Enter Customer OTP to Complete"}
+            disabled={otp.trim().length < 4 || pending}
+            variant="gold"
+            loading={pending}
+            onComplete={() => act("DELIVER", { otp: otp.trim() })}
           />
-          <Label className="block">{t("photoPod")}</Label>
-          <Input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            capture="environment"
-            onChange={(e) => void onPhoto(e.target.files?.[0])}
-          />
-          <Button
-            size="lg"
-            className="w-full"
-            disabled={pending}
-            onClick={() => void act("DELIVER", { otp })}
-          >
-            {t("confirmDelivered")}
-          </Button>
         </div>
       ) : null}
 
@@ -554,7 +610,7 @@ export function DeliveryActions({
               </button>
             </div>
 
-            {/* Zomato Discipline Penalty Notice */}
+            {/* OrderKing Partner Discipline Penalty Notice */}
             {isPostPickup ? (
               <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3.5 space-y-2 text-xs">
                 <div className="flex items-center gap-2 text-rose-950 dark:text-rose-200 font-bold">

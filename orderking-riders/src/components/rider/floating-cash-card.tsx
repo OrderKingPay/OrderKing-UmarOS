@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -24,12 +24,27 @@ export function FloatingCashCard({
   pocketBalance,
   disciplineConfig,
   onRefresh,
+  externalModalOpen,
+  onExternalModalClose,
 }: {
   pocketBalance: PocketBalanceInfo;
   disciplineConfig?: RiderDisciplineConfig;
   onRefresh?: () => void;
+  externalModalOpen?: boolean;
+  onExternalModalClose?: () => void;
 }) {
   const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (externalModalOpen) {
+      setModalOpen(true);
+    }
+  }, [externalModalOpen]);
+
+  const closeModal = () => {
+    setModalOpen(false);
+    onExternalModalClose?.();
+  };
   const [depositAmountRupees, setDepositAmountRupees] = useState<number>(() =>
     Math.max(100, Math.ceil(pocketBalance.pocketBalancePaise / 100)),
   );
@@ -62,7 +77,7 @@ export function FloatingCashCard({
         },
       });
       toast.success(`Floating cash deposit of ₹${depositAmountRupees} verified! COD orders active.`);
-      setModalOpen(false);
+      closeModal();
       onRefresh?.();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Deposit verification failed";
@@ -204,7 +219,7 @@ export function FloatingCashCard({
               </div>
               <button
                 type="button"
-                onClick={() => setModalOpen(false)}
+                onClick={closeModal}
                 className="rounded-lg p-1 text-muted-foreground hover:bg-muted"
               >
                 <X className="size-5" />

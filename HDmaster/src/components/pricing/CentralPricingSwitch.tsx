@@ -199,6 +199,27 @@ export function CentralPricingSwitch() {
 
   // Load saved custom pricing from localStorage + /api/v1/admin/settings
   useEffect(() => {
+    const fetchLatestRates = () => {
+      fetch(`/api/v1/admin/settings?cb=${Date.now()}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((serverData) => {
+          if (serverData?.central_pricing) {
+            if (serverData.central_pricing.pricingState) {
+              setPricingState(serverData.central_pricing.pricingState);
+            }
+            if (serverData.central_pricing.customRates) {
+              setCustomRates({
+                ...DEFAULT_RATES,
+                ...serverData.central_pricing.customRates,
+              });
+            }
+          }
+        })
+        .catch(() => {
+          // Offline fallback
+        });
+    };
+
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -212,24 +233,18 @@ export function CentralPricingSwitch() {
       // Ignore storage errors
     }
 
-    fetch("/api/v1/admin/settings")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((serverData) => {
-        if (serverData?.central_pricing) {
-          if (serverData.central_pricing.pricingState) {
-            setPricingState(serverData.central_pricing.pricingState);
-          }
-          if (serverData.central_pricing.customRates) {
-            setCustomRates({
-              ...DEFAULT_RATES,
-              ...serverData.central_pricing.customRates,
-            });
-          }
-        }
-      })
-      .catch(() => {
-        // Offline fallback
-      });
+    fetchLatestRates();
+
+    const handleDeepClean = () => {
+      fetchLatestRates();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("orderking:deep_clean", handleDeepClean);
+      return () => {
+        window.removeEventListener("orderking:deep_clean", handleDeepClean);
+      };
+    }
   }, []);
 
   const persistAllSettings = async (

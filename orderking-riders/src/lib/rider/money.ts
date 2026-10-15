@@ -141,7 +141,7 @@ export const CITY_TIER_PAY_CONFIGS: Record<CityTier, CityTierPayConfig> = {
  */
 export function getBasePay(
   cityTier: CityTier = "TIER_1",
-  dynamicConfig?: Partial<DynamicPricingConfig> | null,
+  dynamicConfig?: Partial<DynamicPricingConfig> | PlatformConfig | null,
 ): {
   tier: CityTier;
   pickupFeePaise: number;
@@ -152,26 +152,30 @@ export function getBasePay(
   ratePerKmPaise: number;
 } {
   const cfg = CITY_TIER_PAY_CONFIGS[cityTier] ?? CITY_TIER_PAY_CONFIGS.TIER_1;
-  const pickupFeePaise = dynamicConfig?.pickupFeePaise ?? cfg.pickupFeePaise;
-  const dropFeePaise = dynamicConfig?.dropFeePaise ?? cfg.dropFeePaise;
-  const basePayPaise = dynamicConfig?.basePayPaise ?? (pickupFeePaise + dropFeePaise);
+  const pricing = dynamicConfig && "pricing" in dynamicConfig && dynamicConfig.pricing
+    ? dynamicConfig.pricing
+    : (dynamicConfig as Partial<DynamicPricingConfig> | null | undefined);
+
+  const pickupFeePaise = pricing?.pickupFeePaise ?? cfg.pickupFeePaise;
+  const dropFeePaise = pricing?.dropFeePaise ?? cfg.dropFeePaise;
+  const basePayPaise = pricing?.basePayPaise ?? (pickupFeePaise + dropFeePaise);
 
   let floorPaise = cfg.minimumFareFloorPaise;
-  if (dynamicConfig) {
-    if (cityTier === "TIER_1" && dynamicConfig.tier1BaseFloorPaise !== undefined) {
-      floorPaise = dynamicConfig.tier1BaseFloorPaise;
-    } else if (cityTier === "TIER_2" && dynamicConfig.tier2BaseFloorPaise !== undefined) {
-      floorPaise = dynamicConfig.tier2BaseFloorPaise;
-    } else if (cityTier === "TIER_3" && dynamicConfig.tier3BaseFloorPaise !== undefined) {
-      floorPaise = dynamicConfig.tier3BaseFloorPaise;
-    } else if (dynamicConfig.basePayPaise !== undefined) {
-      floorPaise = dynamicConfig.basePayPaise;
+  if (pricing) {
+    if (cityTier === "TIER_1" && pricing.tier1BaseFloorPaise !== undefined) {
+      floorPaise = pricing.tier1BaseFloorPaise;
+    } else if (cityTier === "TIER_2" && pricing.tier2BaseFloorPaise !== undefined) {
+      floorPaise = pricing.tier2BaseFloorPaise;
+    } else if (cityTier === "TIER_3" && pricing.tier3BaseFloorPaise !== undefined) {
+      floorPaise = pricing.tier3BaseFloorPaise;
+    } else if (pricing.basePayPaise !== undefined) {
+      floorPaise = pricing.basePayPaise;
     }
   }
 
   const ratePerKmPaise =
-    dynamicConfig?.defaultRatePerKmPaise ??
-    dynamicConfig?.distanceSlabs?.slab1RatePerKmPaise ??
+    pricing?.defaultRatePerKmPaise ??
+    pricing?.distanceSlabs?.slab1RatePerKmPaise ??
     cfg.defaultRatePerKmPaise;
 
   return {
@@ -254,20 +258,43 @@ export interface ProgressiveDistanceBreakdown {
  */
 export function calculateProgressiveDistancePay(
   distanceKm: number,
-  config?: ProgressiveDistanceConfig,
+  config?: ProgressiveDistanceConfig | Partial<DynamicPricingConfig> | PlatformConfig | null,
 ): ProgressiveDistanceBreakdown {
   const dist = Math.max(0, Number.isFinite(distanceKm) ? distanceKm : 0);
 
-  const s1Max = config?.slab1MaxKm ?? SLAB_1_MAX_KM;
-  const s2Max = config?.slab2MaxKm ?? SLAB_2_MAX_KM;
-  const s3Max = config?.slab3MaxKm ?? SLAB_3_MAX_KM;
+  let progConfig: ProgressiveDistanceConfig | undefined;
+  if (config) {
+    const pricing = "pricing" in config && config.pricing ? config.pricing : config;
+    if ("distanceSlabs" in pricing && pricing.distanceSlabs) {
+      const slabs = pricing.distanceSlabs;
+      const isSlab1Based = "slab1RatePerKmPaise" in slabs;
+      progConfig = {
+        slab2RatePerKmPaise: isSlab1Based
+          ? slabs.slab1RatePerKmPaise
+          : ((slabs as ProgressiveDistanceConfig).slab2RatePerKmPaise ?? SLAB_2_RATE_PER_KM_PAISE),
+        slab3RatePerKmPaise: isSlab1Based
+          ? slabs.slab2RatePerKmPaise
+          : ((slabs as ProgressiveDistanceConfig).slab3RatePerKmPaise ?? SLAB_3_RATE_PER_KM_PAISE),
+        slab4RatePerKmPaise: isSlab1Based
+          ? slabs.slab3RatePerKmPaise
+          : ((slabs as ProgressiveDistanceConfig).slab4RatePerKmPaise ?? SLAB_4_RATE_PER_KM_PAISE),
+        ldoBonusPaise: slabs.ldoBonusPaise ?? LDO_RETURN_BONUS_PAISE,
+      };
+    } else {
+      progConfig = config as ProgressiveDistanceConfig;
+    }
+  }
 
-  const s2Rate = config?.slab2RatePerKmPaise ?? SLAB_2_RATE_PER_KM_PAISE;
-  const s3Rate = config?.slab3RatePerKmPaise ?? SLAB_3_RATE_PER_KM_PAISE;
-  const s4Rate = config?.slab4RatePerKmPaise ?? SLAB_4_RATE_PER_KM_PAISE;
+  const s1Max = progConfig?.slab1MaxKm ?? SLAB_1_MAX_KM;
+  const s2Max = progConfig?.slab2MaxKm ?? SLAB_2_MAX_KM;
+  const s3Max = progConfig?.slab3MaxKm ?? SLAB_3_MAX_KM;
 
-  const ldoThreshold = config?.ldoThresholdKm ?? LDO_THRESHOLD_KM;
-  const ldoBonus = config?.ldoBonusPaise ?? LDO_RETURN_BONUS_PAISE;
+  const s2Rate = progConfig?.slab2RatePerKmPaise ?? SLAB_2_RATE_PER_KM_PAISE;
+  const s3Rate = progConfig?.slab3RatePerKmPaise ?? SLAB_3_RATE_PER_KM_PAISE;
+  const s4Rate = progConfig?.slab4RatePerKmPaise ?? SLAB_4_RATE_PER_KM_PAISE;
+
+  const ldoThreshold = progConfig?.ldoThresholdKm ?? LDO_THRESHOLD_KM;
+  const ldoBonus = progConfig?.ldoBonusPaise ?? LDO_RETURN_BONUS_PAISE;
 
   // Slab 1: 0.0 to 2.0 km -> ₹0 extra
   const slab1Km = Math.min(dist, s1Max);
@@ -320,9 +347,9 @@ export function calculateProgressiveDistancePay(
  */
 export function calculateDistancePay(
   distanceKm: number,
-  customRatePerKmPaise = STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
+  customRatePerKmPaiseOrConfig: number | Partial<DynamicPricingConfig> | PlatformConfig = STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
   baseDistanceKm = STATUTORY_BASE_DISTANCE_KM,
-  dynamicSlabs?: ProgressiveDistanceSlabs | ProgressiveDistanceConfig | null,
+  dynamicSlabs?: ProgressiveDistanceSlabs | ProgressiveDistanceConfig | Partial<DynamicPricingConfig> | PlatformConfig | null,
 ): {
   totalDistanceKm: number;
   baseDistanceKm: number;
@@ -331,23 +358,40 @@ export function calculateDistancePay(
   distancePayPaise: number;
   ldoBonusPaise?: number;
 } {
-  if (dynamicSlabs) {
-    const s2Rate =
-      "slab1RatePerKmPaise" in dynamicSlabs
-        ? dynamicSlabs.slab1RatePerKmPaise
-        : (dynamicSlabs.slab2RatePerKmPaise ?? SLAB_2_RATE_PER_KM_PAISE);
-    const s3Rate =
-      "slab2RatePerKmPaise" in dynamicSlabs
-        ? dynamicSlabs.slab2RatePerKmPaise
-        : (dynamicSlabs.slab3RatePerKmPaise ?? SLAB_3_RATE_PER_KM_PAISE);
-    const s4Rate =
-      "slab3RatePerKmPaise" in dynamicSlabs
-        ? dynamicSlabs.slab3RatePerKmPaise
-        : (dynamicSlabs.slab4RatePerKmPaise ?? SLAB_4_RATE_PER_KM_PAISE);
-    const ldoBonus = dynamicSlabs.ldoBonusPaise ?? LDO_RETURN_BONUS_PAISE;
+  let customRate = typeof customRatePerKmPaiseOrConfig === "number" ? customRatePerKmPaiseOrConfig : STATUTORY_DISTANCE_RATE_PER_KM_PAISE;
+  let baseDist = baseDistanceKm;
+  let slabsInput = dynamicSlabs;
+
+  if (typeof customRatePerKmPaiseOrConfig === "object" && customRatePerKmPaiseOrConfig !== null) {
+    const pricing = "pricing" in customRatePerKmPaiseOrConfig && customRatePerKmPaiseOrConfig.pricing
+      ? customRatePerKmPaiseOrConfig.pricing
+      : (customRatePerKmPaiseOrConfig as Partial<DynamicPricingConfig>);
+    if (pricing.defaultRatePerKmPaise !== undefined) {
+      customRate = pricing.defaultRatePerKmPaise;
+    }
+    if (pricing.distanceSlabs) {
+      slabsInput = pricing.distanceSlabs;
+    }
+  }
+
+  if (slabsInput) {
+    const pricing = "pricing" in slabsInput && slabsInput.pricing ? slabsInput.pricing : slabsInput;
+    const resolvedSlabs = ("distanceSlabs" in pricing && pricing.distanceSlabs) ? pricing.distanceSlabs : pricing;
+
+    const isSlab1Keyed = "slab1RatePerKmPaise" in resolvedSlabs;
+    const s2Rate = isSlab1Keyed
+      ? (resolvedSlabs as ProgressiveDistanceSlabs).slab1RatePerKmPaise
+      : ((resolvedSlabs as ProgressiveDistanceConfig).slab2RatePerKmPaise ?? SLAB_2_RATE_PER_KM_PAISE);
+    const s3Rate = isSlab1Keyed
+      ? (resolvedSlabs as ProgressiveDistanceSlabs).slab2RatePerKmPaise
+      : ((resolvedSlabs as ProgressiveDistanceConfig).slab3RatePerKmPaise ?? SLAB_3_RATE_PER_KM_PAISE);
+    const s4Rate = isSlab1Keyed
+      ? (resolvedSlabs as ProgressiveDistanceSlabs).slab3RatePerKmPaise
+      : ((resolvedSlabs as ProgressiveDistanceConfig).slab4RatePerKmPaise ?? SLAB_4_RATE_PER_KM_PAISE);
+    const ldoBonus = (resolvedSlabs as any).ldoBonusPaise ?? LDO_RETURN_BONUS_PAISE;
 
     const prog = calculateProgressiveDistancePay(distanceKm, {
-      slab1MaxKm: baseDistanceKm,
+      slab1MaxKm: baseDist,
       slab2RatePerKmPaise: s2Rate,
       slab3RatePerKmPaise: s3Rate,
       slab4RatePerKmPaise: s4Rate,
@@ -355,7 +399,7 @@ export function calculateDistancePay(
     });
     return {
       totalDistanceKm: prog.totalDistanceKm,
-      baseDistanceKm,
+      baseDistanceKm: baseDist,
       billableExtraKm: prog.billableExtraKm,
       ratePerKmPaise: s2Rate,
       distancePayPaise: prog.totalDistancePayPaise,
@@ -364,18 +408,18 @@ export function calculateDistancePay(
   }
 
   const dist = Math.max(0, Number.isFinite(distanceKm) ? distanceKm : 0);
-  const baseDist = Math.max(0, Number.isFinite(baseDistanceKm) ? baseDistanceKm : STATUTORY_BASE_DISTANCE_KM);
+  const baseD = Math.max(0, Number.isFinite(baseDist) ? baseDist : STATUTORY_BASE_DISTANCE_KM);
   // Clamp rate between ₹10/km and ₹14/km if user passes custom rate
   const clampedRate = Math.min(
     MAX_DISTANCE_RATE_PER_KM_PAISE,
-    Math.max(MIN_DISTANCE_RATE_PER_KM_PAISE, Math.round(customRatePerKmPaise)),
+    Math.max(MIN_DISTANCE_RATE_PER_KM_PAISE, Math.round(customRate)),
   );
-  const extraKm = Math.max(0, dist - baseDist);
+  const extraKm = Math.max(0, dist - baseD);
   const distancePayPaise = Math.round(extraKm * clampedRate);
 
   return {
     totalDistanceKm: dist,
-    baseDistanceKm: baseDist,
+    baseDistanceKm: baseD,
     billableExtraKm: Number(extraKm.toFixed(2)),
     ratePerKmPaise: clampedRate,
     distancePayPaise,
@@ -398,31 +442,52 @@ export const RESTAURANT_WAIT_GRACE_PERIOD_MINUTES = 6;
 export const RESTAURANT_WAIT_PAY_RATE_PER_MIN_PAISE = 100; // ₹1.00 / min
 export const MAX_BILLABLE_WAIT_MINUTES = 30; // ₹30.00 (3,000 paise) safety cap
 export const MAX_WAIT_PAY_PAISE = 3000; // ₹30.00 (3,000 paise)
+export const RESTAURANT_GEOFENCE_RADIUS_METERS = 150; // 150 meters
+export const RESTAURANT_GEOFENCE_RADIUS_KM = 0.15; // 0.15 km
 
 export function calculateRestaurantWaitPayPaise(
   waitMinutes: number,
-  gracePeriodMinutes = RESTAURANT_WAIT_GRACE_PERIOD_MINUTES,
+  gracePeriodMinutesOrConfig: number | Partial<DynamicPricingConfig> | PlatformConfig = RESTAURANT_WAIT_GRACE_PERIOD_MINUTES,
   ratePerMinPaise = RESTAURANT_WAIT_PAY_RATE_PER_MIN_PAISE,
   maxBillableMinutes = MAX_BILLABLE_WAIT_MINUTES,
   waitCapPaise?: number,
+  dynamicConfig?: Partial<DynamicPricingConfig> | PlatformConfig | null,
 ): number {
+  let grace = typeof gracePeriodMinutesOrConfig === "number" ? gracePeriodMinutesOrConfig : RESTAURANT_WAIT_GRACE_PERIOD_MINUTES;
+  let rate = ratePerMinPaise;
+  let maxBillable = maxBillableMinutes;
+  let cap = waitCapPaise;
+
+  const dynObj = typeof gracePeriodMinutesOrConfig === "object" && gracePeriodMinutesOrConfig !== null
+    ? gracePeriodMinutesOrConfig
+    : dynamicConfig;
+
+  if (dynObj) {
+    const pricing: any = "pricing" in dynObj && dynObj.pricing ? dynObj.pricing : dynObj;
+    if (pricing.waitGraceMinutes !== undefined) grace = pricing.waitGraceMinutes;
+    if (pricing.waitRatePerMinPaise !== undefined) rate = pricing.waitRatePerMinPaise;
+    if (pricing.maxBillableWaitMinutes !== undefined) maxBillable = pricing.maxBillableWaitMinutes;
+    if (pricing.waitCapPaise !== undefined) cap = pricing.waitCapPaise;
+  }
+
   const mins = Math.max(0, Number.isFinite(waitMinutes) ? Math.floor(waitMinutes) : 0);
-  const grace = Math.max(0, Math.floor(gracePeriodMinutes));
-  const rawBillableMins = Math.max(0, mins - grace);
-  const billableMins = Math.min(Math.max(0, Math.floor(maxBillableMinutes)), rawBillableMins);
-  const rawPay = Math.round(billableMins * Math.max(0, Math.round(ratePerMinPaise)));
-  if (waitCapPaise !== undefined && waitCapPaise > 0) {
-    return Math.min(rawPay, Math.round(waitCapPaise));
+  const finalGrace = Math.max(0, Math.floor(grace));
+  const rawBillableMins = Math.max(0, mins - finalGrace);
+  const billableMins = Math.min(Math.max(0, Math.floor(maxBillable)), rawBillableMins);
+  const rawPay = Math.round(billableMins * Math.max(0, Math.round(rate)));
+  if (cap !== undefined && cap > 0) {
+    return Math.min(rawPay, Math.round(cap));
   }
   return rawPay;
 }
 
 export function calculateRestaurantWaitPay(
   waitMinutes: number,
-  gracePeriodMinutes = RESTAURANT_WAIT_GRACE_PERIOD_MINUTES,
+  gracePeriodMinutesOrConfig: number | Partial<DynamicPricingConfig> | PlatformConfig = RESTAURANT_WAIT_GRACE_PERIOD_MINUTES,
   ratePerMinPaise = RESTAURANT_WAIT_PAY_RATE_PER_MIN_PAISE,
   maxBillableMinutes = MAX_BILLABLE_WAIT_MINUTES,
   waitCapPaise?: number,
+  dynamicConfig?: Partial<DynamicPricingConfig> | PlatformConfig | null,
 ): {
   totalWaitMinutes: number;
   gracePeriodMinutes: number;
@@ -434,29 +499,46 @@ export function calculateRestaurantWaitPay(
   waitPayPaise: number;
   waitCapPaise: number | null;
 } {
+  let grace = typeof gracePeriodMinutesOrConfig === "number" ? gracePeriodMinutesOrConfig : RESTAURANT_WAIT_GRACE_PERIOD_MINUTES;
+  let rate = ratePerMinPaise;
+  let maxBillable = maxBillableMinutes;
+  let cap = waitCapPaise;
+
+  const dynObj = typeof gracePeriodMinutesOrConfig === "object" && gracePeriodMinutesOrConfig !== null
+    ? gracePeriodMinutesOrConfig
+    : dynamicConfig;
+
+  if (dynObj) {
+    const pricing: any = "pricing" in dynObj && dynObj.pricing ? dynObj.pricing : dynObj;
+    if (pricing.waitGraceMinutes !== undefined) grace = pricing.waitGraceMinutes;
+    if (pricing.waitRatePerMinPaise !== undefined) rate = pricing.waitRatePerMinPaise;
+    if (pricing.maxBillableWaitMinutes !== undefined) maxBillable = pricing.maxBillableWaitMinutes;
+    if (pricing.waitCapPaise !== undefined) cap = pricing.waitCapPaise;
+  }
+
   const mins = Math.max(0, Number.isFinite(waitMinutes) ? Math.floor(waitMinutes) : 0);
-  const grace = Math.max(0, Math.floor(gracePeriodMinutes));
-  const rawBillableWaitMinutes = Math.max(0, mins - grace);
-  const maxBillable = Math.max(0, Math.floor(maxBillableMinutes));
-  const billableWaitMinutes = Math.min(maxBillable, rawBillableWaitMinutes);
-  let isCapped = rawBillableWaitMinutes > maxBillable;
-  const rate = Math.max(0, Math.round(ratePerMinPaise));
-  let waitPayPaise = billableWaitMinutes * rate;
-  if (waitCapPaise !== undefined && waitCapPaise > 0 && waitPayPaise > waitCapPaise) {
-    waitPayPaise = Math.round(waitCapPaise);
+  const finalGrace = Math.max(0, Math.floor(grace));
+  const rawBillableWaitMinutes = Math.max(0, mins - finalGrace);
+  const maxBillableFinal = Math.max(0, Math.floor(maxBillable));
+  const billableWaitMinutes = Math.min(maxBillableFinal, rawBillableWaitMinutes);
+  let isCapped = rawBillableWaitMinutes > maxBillableFinal;
+  const finalRate = Math.max(0, Math.round(rate));
+  let waitPayPaise = billableWaitMinutes * finalRate;
+  if (cap !== undefined && cap > 0 && waitPayPaise > cap) {
+    waitPayPaise = Math.round(cap);
     isCapped = true;
   }
 
   return {
     totalWaitMinutes: mins,
-    gracePeriodMinutes: grace,
+    gracePeriodMinutes: finalGrace,
     rawBillableWaitMinutes,
     billableWaitMinutes,
-    maxBillableWaitMinutes: maxBillable,
+    maxBillableWaitMinutes: maxBillableFinal,
     isCapped,
-    ratePerMinPaise: rate,
+    ratePerMinPaise: finalRate,
     waitPayPaise,
-    waitCapPaise: waitCapPaise !== undefined ? Math.round(waitCapPaise) : null,
+    waitCapPaise: cap !== undefined ? Math.round(cap) : null,
   };
 }
 
@@ -608,6 +690,9 @@ export function calculateStackedOrderPayPaise(
 
 export const ZOMATO_PAYOUT_SETTLEMENT_DAY = "WEDNESDAY";
 export const ZOMATO_PAYOUT_SETTLEMENT_HOUR_UTC = 15; // 3:00 PM UTC (Wednesday afternoon)
+export const ZOMATO_PAYOUT_SETTLEMENT_HOUR_IST = 14; // 2:00 PM IST (14:00 IST)
+export const ZOMATO_PAYOUT_SETTLEMENT_TIME_IST = "14:00"; // 2:00 PM IST
+export const ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE = "Wednesday 2:00 PM IST";
 
 export interface ZomatoWeeklyCycle {
   cycleStart: Date;
@@ -617,12 +702,15 @@ export interface ZomatoWeeklyCycle {
   cycleEndIso: string;
   payoutDateIso: string;
   formattedCycle: string;
+  settlementDay?: string;
+  settlementTimeIst?: string;
+  settlementSchedule?: string;
 }
 
 /**
  * Standardizes Zomato's weekly payout cycle:
  * - Cycle Window: Monday 00:00:00 to Sunday 23:59:59.
- * - Payout Settlement: Automated Wednesday afternoon settlement following cycle close.
+ * - Payout Settlement: Automated Wednesday afternoon settlement following cycle close (Wednesday 2:00 PM IST / 15:00 UTC).
  *
  * @param dateInput Target date or timestamp within the cycle (defaults to now)
  * @param options Options flag for UTC or local time calculation
@@ -666,6 +754,9 @@ export function getZomatoWeeklyCycle(
       cycleEndIso: end.toISOString(),
       payoutDateIso: payout.toISOString(),
       formattedCycle: `${start.toISOString().slice(0, 10)} to ${end.toISOString().slice(0, 10)}`,
+      settlementDay: ZOMATO_PAYOUT_SETTLEMENT_DAY,
+      settlementTimeIst: "14:00 IST (2:00 PM IST)",
+      settlementSchedule: ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE,
     };
   } else {
     const day = d.getDay();
@@ -691,6 +782,9 @@ export function getZomatoWeeklyCycle(
       cycleEndIso: end.toISOString(),
       payoutDateIso: payout.toISOString(),
       formattedCycle: `${start.toLocaleDateString("en-IN")} to ${end.toLocaleDateString("en-IN")}`,
+      settlementDay: ZOMATO_PAYOUT_SETTLEMENT_DAY,
+      settlementTimeIst: "14:00 IST (2:00 PM IST)",
+      settlementSchedule: ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE,
     };
   }
 }
@@ -785,13 +879,20 @@ export function calculateZomatoAlgorithmicPayout(input: ZomatoPayoutInput): Zoma
   let progressiveDistance: ProgressiveDistanceBreakdown | undefined;
 
   const dynamicSlabs = input.distanceSlabs ?? dynPricing?.distanceSlabs;
+  const isSlab1Based = dynamicSlabs && "slab1RatePerKmPaise" in dynamicSlabs;
   const progConfig: ProgressiveDistanceConfig | undefined = dynamicSlabs
     ? {
         ...input.progressiveConfig,
-        slab2RatePerKmPaise: dynamicSlabs.slab1RatePerKmPaise,
-        slab3RatePerKmPaise: dynamicSlabs.slab2RatePerKmPaise,
-        slab4RatePerKmPaise: dynamicSlabs.slab3RatePerKmPaise,
-        ldoBonusPaise: dynamicSlabs.ldoBonusPaise,
+        slab2RatePerKmPaise: isSlab1Based
+          ? (dynamicSlabs as ProgressiveDistanceSlabs).slab1RatePerKmPaise
+          : ((dynamicSlabs as ProgressiveDistanceConfig).slab2RatePerKmPaise ?? input.progressiveConfig?.slab2RatePerKmPaise),
+        slab3RatePerKmPaise: isSlab1Based
+          ? (dynamicSlabs as ProgressiveDistanceSlabs).slab2RatePerKmPaise
+          : ((dynamicSlabs as ProgressiveDistanceConfig).slab3RatePerKmPaise ?? input.progressiveConfig?.slab3RatePerKmPaise),
+        slab4RatePerKmPaise: isSlab1Based
+          ? (dynamicSlabs as ProgressiveDistanceSlabs).slab3RatePerKmPaise
+          : ((dynamicSlabs as ProgressiveDistanceConfig).slab4RatePerKmPaise ?? input.progressiveConfig?.slab4RatePerKmPaise),
+        ldoBonusPaise: dynamicSlabs.ldoBonusPaise ?? input.progressiveConfig?.ldoBonusPaise,
       }
     : input.progressiveConfig;
 
@@ -827,7 +928,10 @@ export function calculateZomatoAlgorithmicPayout(input: ZomatoPayoutInput): Zoma
   } else if (input.waitMinutes !== undefined) {
     waitMins = Math.max(0, Math.floor(input.waitMinutes));
   }
-  const maxBillableWait = input.maxBillableWaitMinutes ?? MAX_BILLABLE_WAIT_MINUTES;
+  const maxBillableWait =
+    input.maxBillableWaitMinutes ??
+    (dynPricing as any)?.maxBillableWaitMinutes ??
+    MAX_BILLABLE_WAIT_MINUTES;
   const graceMins = input.waitGraceMinutes ?? dynPricing?.waitGraceMinutes ?? RESTAURANT_WAIT_GRACE_PERIOD_MINUTES;
   const waitRate = input.waitRatePerMinPaise ?? dynPricing?.waitRatePerMinPaise ?? RESTAURANT_WAIT_PAY_RATE_PER_MIN_PAISE;
   const waitCap = input.waitCapPaise ?? dynPricing?.waitCapPaise;

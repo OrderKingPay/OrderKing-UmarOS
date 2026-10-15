@@ -38,6 +38,9 @@ import {
   getZomatoWeeklyCycle,
   ZOMATO_PAYOUT_SETTLEMENT_DAY,
   ZOMATO_PAYOUT_SETTLEMENT_HOUR_UTC,
+  ZOMATO_PAYOUT_SETTLEMENT_HOUR_IST,
+  ZOMATO_PAYOUT_SETTLEMENT_TIME_IST,
+  ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE,
   calculateSurgePay,
   calculateCustomerTipPassThrough,
   calculateZomatoAlgorithmicPayout,
@@ -57,7 +60,7 @@ import {
   ZOMATO_FULL_DAILY_MILESTONES,
   getWeeklyMarathonCycle,
 } from "../lib/rider/gig-engine.ts";
-import type { DynamicPricingConfig, ProgressiveDistanceSlabs } from "../lib/rider/types.ts";
+import type { DynamicPricingConfig, PlatformConfig, ProgressiveDistanceSlabs } from "../lib/rider/types.ts";
 
 describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", () => {
   describe("1. Base Pay (Pickup Fee + Drop Fee) by City Tier (Tier 1/2/3)", () => {
@@ -351,6 +354,9 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
     it("confirms Wednesday settlement day and hour constants", () => {
       expect(ZOMATO_PAYOUT_SETTLEMENT_DAY).toBe("WEDNESDAY");
       expect(ZOMATO_PAYOUT_SETTLEMENT_HOUR_UTC).toBe(15); // 3:00 PM UTC
+      expect(ZOMATO_PAYOUT_SETTLEMENT_HOUR_IST).toBe(14); // 2:00 PM IST
+      expect(ZOMATO_PAYOUT_SETTLEMENT_TIME_IST).toBe("14:00");
+      expect(ZOMATO_PAYOUT_SETTLEMENT_SCHEDULE).toBe("Wednesday 2:00 PM IST");
     });
 
     it("correctly identifies cycle window and payout date for mid-week date (Wednesday)", () => {
@@ -369,6 +375,9 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
       expect(cycle.payoutDate.getUTCDay()).toBe(3); // Wednesday
       expect(cycle.payoutDate.toISOString()).toBe("2026-10-21T15:00:00.000Z");
       expect(cycle.formattedCycle).toBe("2026-10-12 to 2026-10-18");
+      expect(cycle.settlementDay).toBe("WEDNESDAY");
+      expect(cycle.settlementTimeIst).toBe("14:00 IST (2:00 PM IST)");
+      expect(cycle.settlementSchedule).toBe("Wednesday 2:00 PM IST");
     });
 
     it("correctly places Sunday orders in the concluding week cycle", () => {
@@ -755,6 +764,91 @@ describe("Zomato Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
       // Total: 4000 + 14500 + 2000 = 20500 paise (₹205.00)
       expect(payout.subtotalBeforeTipPaise).toBe(20500);
       expect(payout.totalPayoutPaise).toBe(20500);
+    });
+
+    it("seamlessly unwraps PlatformConfig objects with nested pricing across all payout calculation methods", () => {
+      const dynamicConfig: DynamicPricingConfig = {
+        cityTier: "TIER_1",
+        tier1BaseFloorPaise: 4200,
+        tier2BaseFloorPaise: 3500,
+        tier3BaseFloorPaise: 2800,
+        pickupFeePaise: 2400,
+        dropFeePaise: 1800,
+        defaultRatePerKmPaise: 1350,
+        waitGraceMinutes: 5,
+        waitRatePerMinPaise: 120,
+        waitCapPaise: 2400,
+        distanceSlabs: {
+          slab1RatePerKmPaise: 1250,
+          slab2RatePerKmPaise: 1450,
+          slab3RatePerKmPaise: 1700,
+          ldoBonusPaise: 2200,
+        },
+        floatingCashLimitInr: 2500,
+        coolingOffDurationMinutes: 20,
+        payoutCycleDay: "Wednesday",
+        kingAiAutonomousResolution: true,
+      };
+
+      const platformSettings = {
+        pricing: dynamicConfig,
+      } as PlatformConfig;
+
+      // 1. getBasePay seamlessly extracts from PlatformConfig
+      const basePay = getBasePay("TIER_1", platformSettings);
+      expect(basePay.pickupFeePaise).toBe(2400);
+      expect(basePay.dropFeePaise).toBe(1800);
+      expect(basePay.basePayPaise).toBe(4200);
+      expect(basePay.floorPaise).toBe(4200);
+      expect(basePay.ratePerKmPaise).toBe(1350);
+
+      // 2. calculateDistancePay seamlessly extracts from PlatformConfig (2nd param or 4th param)
+      const distFromConfig = calculateDistancePay(10.0, platformSettings);
+      expect(distFromConfig.distancePayPaise).toBe(
+        3.0 * 1250 + 3.0 * 1450 + 2.0 * 1700 + 2200 // 3750 + 4350 + 3400 + 2200 = 13700
+      );
+      expect(distFromConfig.ldoBonusPaise).toBe(2200);
+
+      // 3. calculateRestaurantWaitPayPaise seamlessly extracts from PlatformConfig
+      const waitFromConfig = calculateRestaurantWaitPayPaise(25, platformSettings);
+      // (25 - 5) * 120 = 2400 (matches cap exactly)
+      expect(waitFromConfig).toBe(2400);
+
+      const waitCapped = calculateRestaurantWaitPayPaise(35, platformSettings);
+      // (35 - 5) * 120 = 3600 -> capped at 2400
+      expect(waitCapped).toBe(2400);
+
+      // 4. calculateZomatoAlgorithmicPayout seamlessly handles PlatformConfig
+      const fullPayout = calculateZomatoAlgorithmicPayout({
+        distanceKm: 10.0,
+        cityTier: "TIER_1",
+        waitMinutes: 25,
+        dynamicConfig: platformSettings,
+      });
+      // Base: 4200, Distance: 13700, Wait: 2400
+      expect(fullPayout.basePayPaise).toBe(4200);
+      expect(fullPayout.distancePayPaise).toBe(13700);
+      expect(fullPayout.waitTimePayPaise).toBe(2400);
+      expect(fullPayout.totalPayoutPaise).toBe(4200 + 13700 + 2400); // 20300 paise
+    });
+
+    it("seamlessly handles ProgressiveDistanceConfig key conventions (slab2, slab3, slab4)", () => {
+      const progConfig = {
+        slab2RatePerKmPaise: 1250,
+        slab3RatePerKmPaise: 1450,
+        slab4RatePerKmPaise: 1700,
+        ldoBonusPaise: 2200,
+      };
+
+      const distPay = calculateDistancePay(10.0, undefined, undefined, progConfig);
+      // Slab 1 (0-2km): 0
+      // Slab 2 (2-5km): 3.0 * 1250 = 3750 paise
+      // Slab 3 (5-8km): 3.0 * 1450 = 4350 paise
+      // Slab 4 (>8km): 2.0 * 1700 = 3400 paise
+      // LDO Bonus: 2200 paise
+      // Total: 3750 + 4350 + 3400 + 2200 = 13700 paise
+      expect(distPay.distancePayPaise).toBe(13700);
+      expect(distPay.ldoBonusPaise).toBe(2200);
     });
   });
 });

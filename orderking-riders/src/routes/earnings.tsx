@@ -115,6 +115,7 @@ function Page() {
     rows.push(["SUMMARY", "", "Net Payable", "", String(data.totals.netPayable), (data.totals.netPayable / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Delivery Payout", "", String(data.totals.payout), (data.totals.payout / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Incentives", "", String(data.totals.incentive), (data.totals.incentive / 100).toFixed(2)]);
+    rows.push(["SUMMARY", "", "Ambassador Royalties", "", String(data.totals.referral ?? 0), ((data.totals.referral ?? 0) / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Customer Tips", "", String(data.totals.tip ?? 0), ((data.totals.tip ?? 0) / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Cash Collected", "", String(data.totals.cashCollected), (data.totals.cashCollected / 100).toFixed(2)]);
     rows.push(["SUMMARY", "", "Cash Reconciled", "", String(data.totals.cashReconciled), (data.totals.cashReconciled / 100).toFixed(2)]);
@@ -275,6 +276,7 @@ function Page() {
           riderName={rider?.fullName}
           riderId={rider?.id}
           phone={rider?.phone}
+          onCommissionCredited={() => void loadEarnings()}
         />
 
         {/* Period Presets & Custom Date Range Filter */}
@@ -359,6 +361,7 @@ function Page() {
             <dl className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-sm">
               <Row k={t("payout")} v={formatPaise(data.totals.payout)} />
               <Row k={t("incentive")} v={formatPaise(data.totals.incentive)} />
+              <Row k="Ambassador Royalties" v={formatPaise(data.totals.referral ?? 0)} />
               <Row k={t("customerTip")} v={formatPaise(data.totals.tip ?? 0)} />
               <Row k={t("adjustment")} v={formatPaise(data.totals.adjustment)} />
               <Row k={t("deduction")} v={formatPaise(data.totals.deduction)} />
@@ -399,7 +402,7 @@ function Page() {
 
           <div className="border-t border-border pt-2.5 text-xs text-muted-foreground space-y-1">
             <p>
-              <strong className="text-foreground">Payout Formula:</strong> Delivery Base &amp; Distance Pay + Milestone Incentives + Kitchen Wait Pay + 100% Customer Tips − Unreconciled COD Cash − Statutory TDS (1% u/s 194-O of Income Tax Act, where applicable).
+              <strong className="text-foreground">Payout Formula:</strong> Delivery Base &amp; Distance Pay + Milestone Incentives + Ambassador Royalties &amp; Bonuses + Kitchen Wait Pay + 100% Customer Tips − Unreconciled COD Cash − Statutory TDS (1% u/s 194-O of Income Tax Act, where applicable).
             </p>
             <p className="text-[11px]">
               Compliant with the Code on Social Security, 2020 · Independent Delivery Partner Ledger
@@ -417,7 +420,7 @@ function Page() {
               </p>
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {(["ALL", "DELIVERY_PAYOUT", "INCENTIVE", "TIP", "ADJUSTMENT", "DEDUCTION"] as const).map(
+              {(["ALL", "DELIVERY_PAYOUT", "INCENTIVE", "REFERRAL_COMMISSION", "TIP", "ADJUSTMENT", "DEDUCTION"] as const).map(
                 (kind) => (
                   <button
                     key={kind}
@@ -429,7 +432,7 @@ function Page() {
                         : "border-border bg-muted/30 text-muted-foreground"
                     }`}
                   >
-                    {kind.replaceAll("_", " ")}
+                    {kind === "REFERRAL_COMMISSION" ? "VIP AMBASSADOR" : kind.replaceAll("_", " ")}
                   </button>
                 ),
               )}
@@ -488,8 +491,14 @@ function Page() {
                     <span className="font-medium text-foreground">
                       {l.orderCode ? `Order #${l.orderCode}` : l.kind.replaceAll("_", " ")}
                     </span>
-                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
-                      {l.kind}
+                    <span
+                      className={`rounded px-1.5 py-0.5 text-[10px] font-mono ${
+                        l.kind === "REFERRAL_COMMISSION"
+                          ? "border border-amber-500/40 bg-amber-500/15 font-semibold text-amber-500"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {l.kind === "REFERRAL_COMMISSION" ? "VIP AMBASSADOR" : l.kind}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">

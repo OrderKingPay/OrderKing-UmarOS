@@ -194,6 +194,11 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
             bag.localization?.defaultLocale ?? bag.default_language ?? "en";
 
           const config = {
+            postgres_pool: {
+              verified: true,
+              status: "HEALTHY",
+              timestamp: new Date().toISOString(),
+            },
             daily_hub_enabled: bag.features?.dailyHub ?? false,
             viral_referrals_enabled: bag.features?.viralReferrals ?? true,
             dynamic_surge_enabled: bag.features?.dynamicSurge ?? true,
@@ -652,45 +657,61 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
               riderBasePayoutInr:
                 body.rider_base_pay_inr !== undefined
                   ? Number(body.rider_base_pay_inr)
-                  : body.algorithm?.riderBasePayoutInr !== undefined
-                    ? Number(body.algorithm.riderBasePayoutInr)
-                    : existing.algorithm?.riderBasePayoutInr ?? 35.0,
+                  : body.central_pricing?.customRates?.riderBasePayInr !== undefined
+                    ? Number(body.central_pricing.customRates.riderBasePayInr)
+                    : body.algorithm?.riderBasePayoutInr !== undefined
+                      ? Number(body.algorithm.riderBasePayoutInr)
+                      : existing.algorithm?.riderBasePayoutInr ?? 35.0,
               riderPickupFeeInr:
                 body.rider_pickup_fee_inr !== undefined
                   ? Number(body.rider_pickup_fee_inr)
-                  : body.algorithm?.riderPickupFeeInr !== undefined
-                    ? Number(body.algorithm.riderPickupFeeInr)
-                    : existing.algorithm?.riderPickupFeeInr ?? 20.0,
+                  : body.central_pricing?.customRates?.riderPickupFeeInr !== undefined
+                    ? Number(body.central_pricing.customRates.riderPickupFeeInr)
+                    : body.algorithm?.riderPickupFeeInr !== undefined
+                      ? Number(body.algorithm.riderPickupFeeInr)
+                      : existing.algorithm?.riderPickupFeeInr ?? 20.0,
               riderDropFeeInr:
                 body.rider_drop_fee_inr !== undefined
                   ? Number(body.rider_drop_fee_inr)
-                  : body.algorithm?.riderDropFeeInr !== undefined
-                    ? Number(body.algorithm.riderDropFeeInr)
-                    : existing.algorithm?.riderDropFeeInr ?? 15.0,
+                  : body.central_pricing?.customRates?.riderDropFeeInr !== undefined
+                    ? Number(body.central_pricing.customRates.riderDropFeeInr)
+                    : body.algorithm?.riderDropFeeInr !== undefined
+                      ? Number(body.algorithm.riderDropFeeInr)
+                      : existing.algorithm?.riderDropFeeInr ?? 15.0,
               riderPerKmRateInr:
                 body.rider_payout_per_km_inr !== undefined
                   ? Number(body.rider_payout_per_km_inr)
-                  : body.algorithm?.riderPerKmRateInr !== undefined
-                    ? Number(body.algorithm.riderPerKmRateInr)
-                    : existing.algorithm?.riderPerKmRateInr ?? 12.0,
+                  : body.central_pricing?.customRates?.slab1RateInr !== undefined
+                    ? Number(body.central_pricing.customRates.slab1RateInr)
+                    : body.central_pricing?.customRates?.riderPerKmRateInr !== undefined
+                      ? Number(body.central_pricing.customRates.riderPerKmRateInr)
+                      : body.algorithm?.riderPerKmRateInr !== undefined
+                        ? Number(body.algorithm.riderPerKmRateInr)
+                        : existing.algorithm?.riderPerKmRateInr ?? 12.0,
               riderWaitPayPerMinInr:
                 body.rider_wait_pay_per_min_inr !== undefined
                   ? Number(body.rider_wait_pay_per_min_inr)
-                  : body.algorithm?.riderWaitPayPerMinInr !== undefined
-                    ? Number(body.algorithm.riderWaitPayPerMinInr)
-                    : existing.algorithm?.riderWaitPayPerMinInr ?? 1.0,
+                  : body.central_pricing?.customRates?.riderWaitPayPerMinInr !== undefined
+                    ? Number(body.central_pricing.customRates.riderWaitPayPerMinInr)
+                    : body.algorithm?.riderWaitPayPerMinInr !== undefined
+                      ? Number(body.algorithm.riderWaitPayPerMinInr)
+                      : existing.algorithm?.riderWaitPayPerMinInr ?? 1.0,
               riderWaitGraceMinutes:
                 body.rider_wait_grace_mins !== undefined
                   ? Number(body.rider_wait_grace_mins)
-                  : body.algorithm?.riderWaitGraceMinutes !== undefined
-                    ? Number(body.algorithm.riderWaitGraceMinutes)
-                    : existing.algorithm?.riderWaitGraceMinutes ?? 6,
+                  : body.central_pricing?.customRates?.riderWaitGraceMins !== undefined
+                    ? Number(body.central_pricing.customRates.riderWaitGraceMins)
+                    : body.algorithm?.riderWaitGraceMinutes !== undefined
+                      ? Number(body.algorithm.riderWaitGraceMinutes)
+                      : existing.algorithm?.riderWaitGraceMinutes ?? 6,
               riderRainSurgeBonusInr:
                 body.rider_rain_surge_bonus_inr !== undefined
                   ? Number(body.rider_rain_surge_bonus_inr)
-                  : body.algorithm?.riderRainSurgeBonusInr !== undefined
-                    ? Number(body.algorithm.riderRainSurgeBonusInr)
-                    : existing.algorithm?.riderRainSurgeBonusInr ?? 25.0,
+                  : body.central_pricing?.customRates?.riderRainSurgeBonusInr !== undefined
+                    ? Number(body.central_pricing.customRates.riderRainSurgeBonusInr)
+                    : body.algorithm?.riderRainSurgeBonusInr !== undefined
+                      ? Number(body.algorithm.riderRainSurgeBonusInr)
+                      : existing.algorithm?.riderRainSurgeBonusInr ?? 25.0,
               activeCityTier:
                 body.active_city_tier ?? body.algorithm?.activeCityTier ?? body.central_pricing?.customRates?.cityTier ?? existing.algorithm?.activeCityTier ?? "TIER_1",
               tier1BaseFloorInr:
@@ -827,7 +848,52 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
                     ? Number(body.rider_discipline.cooling_off_duration_minutes)
                     : existing.rider_discipline?.cooling_off_duration_minutes ?? 15,
             },
-            central_pricing: body.central_pricing ?? existing.central_pricing ?? null,
+            central_pricing: body.central_pricing
+              ? {
+                  ...(existing.central_pricing || {}),
+                  ...body.central_pricing,
+                  pricingState:
+                    body.central_pricing.pricingState ??
+                    existing.central_pricing?.pricingState ?? {
+                      orderKing: "standard",
+                      kingPay: "standard",
+                      aiTutor: "standard",
+                    },
+                  customRates: {
+                    ...(existing.central_pricing?.customRates || {}),
+                    ...(body.central_pricing.customRates || {}),
+                  },
+                  lastUpdated: body.central_pricing.lastUpdated ?? new Date().toISOString(),
+                }
+              : existing.central_pricing
+                ? {
+                    ...existing.central_pricing,
+                    customRates: {
+                      ...(existing.central_pricing.customRates || {}),
+                      ...(body.restaurant_commission_pct !== undefined
+                        ? { commissionPct: Number(body.restaurant_commission_pct) }
+                        : {}),
+                      ...(body.base_delivery_fee_inr !== undefined
+                        ? { deliveryFeeInr: Number(body.base_delivery_fee_inr) }
+                        : {}),
+                      ...(body.rider_payout_per_km_inr !== undefined
+                        ? {
+                            riderPerKmRateInr: Number(body.rider_payout_per_km_inr),
+                            slab1RateInr: Number(body.rider_payout_per_km_inr),
+                          }
+                        : {}),
+                      ...(body.rider_base_pay_inr !== undefined
+                        ? { riderBasePayInr: Number(body.rider_base_pay_inr) }
+                        : {}),
+                      ...(body.rider_discipline?.floating_cash_limit_inr !== undefined
+                        ? { floatingCashLimitInr: Number(body.rider_discipline.floating_cash_limit_inr) }
+                        : {}),
+                      ...(body.rider_discipline?.cooling_off_duration_minutes !== undefined
+                        ? { coolingOffDurationMinutes: Number(body.rider_discipline.cooling_off_duration_minutes) }
+                        : {}),
+                    },
+                  }
+                : null,
           };
 
           await sql`

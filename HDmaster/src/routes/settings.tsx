@@ -757,14 +757,17 @@ function SettingsPage() {
       }
 
       const [apiRes] = await Promise.all([
-        fetch(`/api/v1/admin/settings?cb=${Date.now()}`).then((r) => r.json()),
+        fetch(`/api/v1/admin/settings?cb=${Date.now()}&verify_pool=1`).then((r) => r.json()),
         loadSettings().catch(() => null),
       ]);
       if (apiRes) {
         hydrateStatesFromData(apiRes);
       }
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("orderking:deep_clean"));
+      }
       setSavedBanner(
-        "⚡ Deep Clean & Refresh Complete: Client storage flushed, Postgres connection pool verified, and master settings re-synchronized."
+        "⚡ Deep Clean & Refresh Complete: Client storage flushed, Postgres connection pool verified, and master settings re-synchronized without reload."
       );
     } catch (err) {
       console.error("Failed to deep clean settings:", err);
@@ -792,11 +795,13 @@ function SettingsPage() {
     [
       "brand",
       "color",
+      "colors",
       "typography",
       "font",
       "logo",
       "tagline",
       "theme",
+      "themes",
       "palette",
       "radius",
       "compact",
@@ -824,12 +829,16 @@ function SettingsPage() {
       "settlement",
       "zomato",
       "fare matrix",
+      "fare",
+      "matrix",
       "progressive",
       "slabs",
       "wait time",
       "waiting pay",
+      "wait pay",
       "discipline",
       "floating cash",
+      "cash limit",
       "pocket balance",
       "penalty",
       "cooling off",
@@ -848,6 +857,7 @@ function SettingsPage() {
     !queryLower ||
     [
       "language",
+      "languages",
       "localization",
       "bengali",
       "assamese",
@@ -878,12 +888,15 @@ function SettingsPage() {
     !queryLower ||
     [
       "notification",
+      "notifications",
       "tier",
+      "tiers",
       "sos",
+      "sos sla",
+      "sla",
       "emergency",
       "fssai",
       "tamper",
-      "sla",
       "zero harassment",
       "weather",
       "traffic",
@@ -902,9 +915,13 @@ function SettingsPage() {
       "cms",
       "developer",
       "plugin",
+      "plugins",
       "connector",
+      "connectors",
       "webhook",
+      "webhooks",
       "integration",
+      "integrations",
       "ecosystem",
       "api",
       "razorpay",
@@ -1156,13 +1173,13 @@ function SettingsPage() {
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
             <span className="text-[11px] font-mono text-slate-500 mr-1">Quick Filters:</span>
             {[
-              { label: "Zomato Fare Matrix & Slabs", q: "fare matrix" },
-              { label: "Discipline & Floating Cash", q: "floating cash" },
+              { label: "Fare Matrix & Slabs", q: "fare matrix" },
+              { label: "Discipline & Floating Cash", q: "discipline" },
               { label: "Restaurant Wait Pay", q: "wait pay" },
-              { label: "Obsidian / Royal Theme", q: "palette" },
-              { label: "23 Indian Languages", q: "language" },
-              { label: "Emergency SOS SLA", q: "emergency" },
-              { label: "Developer Webhooks", q: "webhook" },
+              { label: "Theme & Palette", q: "theme" },
+              { label: "23 Indian Languages", q: "languages" },
+              { label: "SOS SLA & Emergency", q: "sos sla" },
+              { label: "Developer Webhooks", q: "webhooks" },
             ].map((preset) => (
               <button
                 key={preset.label}

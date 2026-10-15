@@ -8,12 +8,20 @@ import {
   assertNonNegativePaise,
   calculateRiderPayout,
   enforcePayoutFloor,
+  calculateRestaurantWaitPay,
   calculateRestaurantWaitPayPaise,
+  calculateWaitTimeMinutes,
   calculateCustomerTipPassThrough,
   formatPaise,
   STATUTORY_BASE_FARE_PAISE,
   STATUTORY_BASE_DISTANCE_KM,
   STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
+  RESTAURANT_WAIT_GRACE_PERIOD_MINUTES,
+  RESTAURANT_WAIT_PAY_RATE_PER_MIN_PAISE,
+  MAX_BILLABLE_WAIT_MINUTES,
+  MAX_WAIT_PAY_PAISE,
+  RESTAURANT_GEOFENCE_RADIUS_METERS,
+  RESTAURANT_GEOFENCE_RADIUS_KM,
 } from "./money.ts";
 import { generateOtp, isPlausibleOtp, newOtpSecret, verifyOtpHash } from "./otp.ts";
 import { minimizeCustomer, offerCustomerView } from "./privacy.ts";
@@ -29,6 +37,7 @@ import {
   type Actor,
   type AvailabilityStatus,
   type Delivery,
+  type DeliveryEarningsBreakdown,
   type DeliveryState,
   type DispatchOffer,
   type EarningLine,
@@ -45,6 +54,7 @@ import {
   type SafetyKind,
   type TicketTopic,
   type VehicleType,
+  type AmbassadorStats,
 } from "./types.ts";
 
 export type SessionUser = {
@@ -608,6 +618,38 @@ export class RiderEngine {
     return { delivery, simulatedOtp, cash };
   }
 
+  async getDeliveryEarningsBreakdown(userId: string, deliveryId: string): Promise<DeliveryEarningsBreakdown> {
+    const d = await this.requireOwnedDelivery(userId, deliveryId);
+    if (d.earningsBreakdown) return d.earningsBreakdown;
+
+    const cfg = await this.cfg();
+    const waitMins = d.arrivedRestaurantAt
+      ? calculateWaitTimeMinutes(d.arrivedRestaurantAt, d.pickedUpAt ?? d.deliveredAt ?? this.now())
+      : 0;
+    const waitCalc = calculateRestaurantWaitPay(
+      waitMins,
+      RESTAURANT_WAIT_GRACE_PERIOD_MINUTES,
+      RESTAURANT_WAIT_PAY_RATE_PER_MIN_PAISE,
+      MAX_BILLABLE_WAIT_MINUTES,
+      MAX_WAIT_PAY_PAISE,
+    );
+    const basePayout = enforcePayoutFloor(d.expectedPayoutPaise);
+    const tip = d.tipPaise ? calculateCustomerTipPassThrough(d.tipPaise).netTipPassThroughPaise : 0;
+    const multi = cfg.flags.incentives && d.packageCount > 1 ? 500 : 0;
+    return {
+      deliveryId: d.id,
+      orderCode: d.orderCode,
+      basePayPaise: basePayout,
+      waitMinutes: waitCalc.totalWaitMinutes,
+      billableWaitMinutes: waitCalc.billableWaitMinutes,
+      waitPayPaise: waitCalc.waitPayPaise,
+      isWaitCapped: waitCalc.isCapped,
+      tipPaise: tip,
+      multiPackageBonusPaise: multi,
+      totalPayoutPaise: basePayout + waitCalc.waitPayPaise + tip + multi,
+    };
+  }
+
   async getActiveDelivery(userId: string): Promise<Delivery | null> {
     const rider = await this.requireRider(userId);
     const d = await this.store.getActiveDeliveryForRider(rider.id);
@@ -675,12 +717,30 @@ export class RiderEngine {
     );
   }
 
-  async arriveRestaurant(userId: string, deliveryId: string, key: string) {
-    return this.idem(userId, key, "arrive.restaurant", () =>
-      this.transition(userId, deliveryId, "ARRIVED_AT_RESTAURANT", null, (d) => {
-        d.arrivedRestaurantAt = this.now();
-      }),
-    );
+  async arriveRestaurant(userId: string, deliveryId: string, key: string, location?: GeoPoint | null) {
+    return this.idem(userId, key, "arrive.restaurant", async () => {
+      const d = await this.requireOwnedDelivery(userId, deliveryId);
+
+      // Restaurant Arrival Geofence Gate: require GPS ping or explicit location within 150m (0.15 km) of restaurant coordinates
+      const latestPing = location ? { point: location } : await this.store.latestLocation(userId);
+      if (latestPing) {
+        const restPoint = d.pickupLocation ?? d.restaurant?.location;
+        if (restPoint) {
+          const distanceToRestKm = haversineKm(latestPing.point, restPoint);
+          if (distanceToRestKm > RESTAURANT_GEOFENCE_RADIUS_KM) {
+            throw new RiderError(
+              "OUT_OF_GEOFENCE",
+              `Arrival at restaurant requires being within 150m of restaurant location. Current distance: ${(distanceToRestKm * 1000).toFixed(0)}m`,
+              400,
+            );
+          }
+        }
+      }
+
+      return this.transition(userId, deliveryId, "ARRIVED_AT_RESTAURANT", null, (row) => {
+        row.arrivedRestaurantAt = this.now();
+      });
+    });
   }
 
   async restaurantNotReady(userId: string, deliveryId: string, expectedReadyAt: string | null) {
@@ -833,7 +893,7 @@ export class RiderEngine {
       const delivered = await this.transition(userId, deliveryId, "DELIVERED", "otp verified", (row) => {
         row.deliveredAt = this.now();
       });
-      await this.creditEarnings(d);
+      await this.creditEarnings(delivered);
       return delivered;
     });
   }
@@ -842,6 +902,7 @@ export class RiderEngine {
     const existing = await this.store.listEarnings(d.userId);
     if (existing.some((e) => e.deliveryId === d.id && e.kind === "DELIVERY_PAYOUT")) return;
     const cfg = await this.cfg();
+    const basePayout = enforcePayoutFloor(d.expectedPayoutPaise);
     const lines: EarningLine[] = [
       {
         id: nid(),
@@ -849,58 +910,92 @@ export class RiderEngine {
         deliveryId: d.id,
         orderCode: d.orderCode,
         kind: "DELIVERY_PAYOUT",
-        amountPaise: enforcePayoutFloor(d.expectedPayoutPaise),
+        amountPaise: basePayout,
         note: "Delivery payout",
         at: this.now(),
         dataMode: cfg.dataMode,
       },
     ];
+    let multiPackagePaise = 0;
     if (cfg.flags.incentives && d.packageCount > 1) {
+      multiPackagePaise = 500;
       lines.push({
         id: nid(),
         riderId: d.riderId,
         deliveryId: d.id,
         orderCode: d.orderCode,
         kind: "INCENTIVE",
-        amountPaise: 500,
+        amountPaise: multiPackagePaise,
         note: "Multi-package",
         at: this.now(),
         dataMode: cfg.dataMode,
       });
     }
+    let tipPaise = 0;
     if (d.tipPaise && d.tipPaise > 0) {
+      tipPaise = calculateCustomerTipPassThrough(d.tipPaise).netTipPassThroughPaise;
       lines.push({
         id: nid(),
         riderId: d.riderId,
         deliveryId: d.id,
         orderCode: d.orderCode,
         kind: "TIP",
-        amountPaise: calculateCustomerTipPassThrough(d.tipPaise).netTipPassThroughPaise,
+        amountPaise: tipPaise,
         note: "Customer tip ❤️ (100% pass-through)",
         at: this.now(),
         dataMode: cfg.dataMode,
       });
     }
-    // OrderKing Algorithmic Payout: Wait-time compensation when kitchen prep exceeds 6 minutes grace period (EXACTLY ₹1/min)
-    if (d.arrivedRestaurantAt && d.pickedUpAt) {
-      const waitMs = new Date(d.pickedUpAt).getTime() - new Date(d.arrivedRestaurantAt).getTime();
-      const waitMins = Math.floor(waitMs / 60000);
-      const waitBonusPaise = calculateRestaurantWaitPayPaise(waitMins, 6, 100);
-      if (waitBonusPaise > 0) {
-        const extraMins = Math.max(0, waitMins - 6);
+    // OrderKing Algorithmic Payout: Wait-time compensation when kitchen prep exceeds 6 minutes grace period (EXACTLY ₹1/min, hard capped at 30 mins / ₹30.00)
+    let waitMinutes = 0;
+    let waitPayPaise = 0;
+    let waitCalcResult = calculateRestaurantWaitPay(0);
+    if (d.arrivedRestaurantAt) {
+      const waitEndTime = d.pickedUpAt ?? d.deliveredAt ?? this.now();
+      waitMinutes = calculateWaitTimeMinutes(d.arrivedRestaurantAt, waitEndTime);
+      waitCalcResult = calculateRestaurantWaitPay(
+        waitMinutes,
+        RESTAURANT_WAIT_GRACE_PERIOD_MINUTES,
+        RESTAURANT_WAIT_PAY_RATE_PER_MIN_PAISE,
+        MAX_BILLABLE_WAIT_MINUTES,
+        MAX_WAIT_PAY_PAISE,
+      );
+      waitPayPaise = waitCalcResult.waitPayPaise;
+      if (waitPayPaise > 0) {
         lines.push({
           id: nid(),
           riderId: d.riderId,
           deliveryId: d.id,
           orderCode: d.orderCode,
           kind: "INCENTIVE",
-          amountPaise: waitBonusPaise,
-          note: `Kitchen wait-time bonus (${extraMins} mins beyond 6m grace)`,
+          amountPaise: waitPayPaise,
+          note: `Kitchen wait-time compensation (${waitMinutes}m total, ${waitCalcResult.billableWaitMinutes}m billable @ ₹1/min${waitCalcResult.isCapped ? " [capped at ₹30]" : ""})`,
           at: this.now(),
           dataMode: cfg.dataMode,
+          waitMinutes,
+          waitPayPaise,
         });
       }
     }
+
+    // Explicitly record waitMinutes, waitPayPaise, and final earnings breakdown on delivery
+    d.waitMinutes = waitMinutes;
+    d.waitPayPaise = waitPayPaise;
+    const finalEarningsBreakdown: DeliveryEarningsBreakdown = {
+      deliveryId: d.id,
+      orderCode: d.orderCode,
+      basePayPaise: basePayout,
+      waitMinutes,
+      billableWaitMinutes: waitCalcResult.billableWaitMinutes,
+      waitPayPaise,
+      isWaitCapped: waitCalcResult.isCapped,
+      tipPaise,
+      multiPackageBonusPaise: multiPackagePaise,
+      totalPayoutPaise: lines.reduce((acc, l) => acc + l.amountPaise, 0),
+    };
+    d.earningsBreakdown = finalEarningsBreakdown;
+    await this.store.updateDelivery(d);
+
     for (const line of lines) await this.store.appendEarning(line, d.userId);
   }
 
@@ -990,7 +1085,7 @@ export class RiderEngine {
             orderCode: d.orderCode,
             kind: "DEDUCTION",
             amountPaise: -penalty.penaltyPaise,
-            note: `Zomato Discipline: ${penalty.label} - Order #${d.orderCode} (${normalized})`,
+            note: `OrderKing Fleet Discipline: ${penalty.label} - Order #${d.orderCode} (${normalized})`,
             at: this.now(),
             dataMode: cfg.dataMode,
           },
@@ -1377,6 +1472,7 @@ export class RiderEngine {
         payout: sumKind(lines, "DELIVERY_PAYOUT"),
         incentive: sumKind(lines, "INCENTIVE"),
         tip: sumKind(lines, "TIP"),
+        referral: sumKind(lines, "REFERRAL_COMMISSION"),
         adjustment: sumKind(lines, "ADJUSTMENT"),
         deduction: sumKind(lines, "DEDUCTION"),
         net,
@@ -1386,6 +1482,74 @@ export class RiderEngine {
       },
       dataMode: (await this.cfg()).dataMode,
     };
+  }
+
+  async getAmbassadorStats(userId: string): Promise<AmbassadorStats> {
+    await this.requireRider(userId);
+    const allEarnings = await this.store.listEarnings(userId);
+    const referralLines = allEarnings.filter((l) => l.kind === "REFERRAL_COMMISSION");
+    const firstOrderBonuses = referralLines.filter(
+      (l) =>
+        l.amountPaise === 2500 ||
+        l.note.toLowerCase().includes("instant cash") ||
+        l.note.toLowerCase().includes("first order") ||
+        l.note.toLowerCase().includes("1st"),
+    );
+    const royalties = referralLines.filter(
+      (l) => l.note.toLowerCase().includes("royalty") || l.note.toLowerCase().includes("1%"),
+    );
+    const totalEarnedPaise = referralLines.reduce((acc, l) => acc + l.amountPaise, 0);
+
+    return {
+      totalCustomersReferred: Math.max(firstOrderBonuses.length, referralLines.length > 0 ? referralLines.length : 0),
+      firstOrderBonusPaise: firstOrderBonuses.reduce((acc, l) => acc + l.amountPaise, 0),
+      firstOrderBonusCount: firstOrderBonuses.length,
+      royaltyPaise: royalties.reduce((acc, l) => acc + l.amountPaise, 0),
+      royaltyCount: royalties.length,
+      totalEarnedPaise,
+      recentReferrals: referralLines.slice(0, 8),
+    };
+  }
+
+  async creditReferralCommission(
+    userId: string,
+    params: {
+      type: "FIRST_ORDER_BONUS" | "LIFETIME_ROYALTY";
+      orderCode?: string | null;
+      customerName?: string | null;
+      orderTotalPaise?: number;
+    },
+  ): Promise<EarningLine> {
+    const rider = await this.requireRider(userId);
+    const cfg = await this.cfg();
+    const isFirstOrder = params.type === "FIRST_ORDER_BONUS";
+    // ₹25 cash bonus (2500 paise) for first order; 1% lifetime micro-royalty on repeat orders
+    const amountPaise = isFirstOrder
+      ? 2500
+      : Math.max(100, Math.round((params.orderTotalPaise ?? 55000) * 0.01));
+    const randomOrderSuffix = Math.floor(1000 + Math.random() * 9000);
+    const orderCode = params.orderCode || `OK-${randomOrderSuffix}`;
+    const cleanId = rider.id.replace(/[^a-zA-Z0-9]/g, "").slice(-4).toUpperCase();
+    const customer = params.customerName || `Customer #${cleanId}`;
+
+    const note = isFirstOrder
+      ? `Ambassador Instant Cash Bonus: ₹25 credited for ${customer}'s 1st direct order (#${orderCode})`
+      : `Ambassador Lifetime Micro-Royalty: 1% (${formatPaise(amountPaise)}) on ${customer}'s direct repeat order (#${orderCode})`;
+
+    const line: EarningLine = {
+      id: nid(),
+      riderId: rider.id,
+      deliveryId: null,
+      orderCode,
+      kind: "REFERRAL_COMMISSION",
+      amountPaise,
+      note,
+      at: this.now(),
+      dataMode: cfg.dataMode,
+    };
+
+    await this.store.appendEarning(line, userId);
+    return line;
   }
 
   async settlements(userId: string) {

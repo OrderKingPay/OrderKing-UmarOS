@@ -88,8 +88,8 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
         body: "All earnings, incentives, tips, and COD collections are recorded in exact integer paise to prevent rounding discrepancies. Net payable balances are settled every Wednesday via NEFT/IMPS to your verified bank account or UPI ID.",
       },
       {
-        heading: "2. COD Floating Cash Limit (₹2,500 Ceiling)",
-        body: "Cash collected from Cash-on-Delivery (COD) orders is held in trust and offset against your weekly payout ledger or reconciled via support deposit logs. If unreconciled COD cash reaches ₹2,500.00, new COD dispatches pause automatically while prepaid orders remain active.",
+        heading: "2. COD Floating Cash Limit (₹2,000 Ceiling)",
+        body: "Cash collected from Cash-on-Delivery (COD) orders is held in trust and offset against your weekly payout ledger or reconciled via instant UPI QR / gateway deposits. If unreconciled COD cash reaches ₹2,000.00, new COD dispatches pause automatically while prepaid orders remain active.",
       },
       {
         heading: "3. Statutory TDS & Grievance Redressal Officer",

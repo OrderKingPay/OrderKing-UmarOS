@@ -19,6 +19,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SafetyRouteImport } from './routes/safety'
 import { Route as SettlementsRouteImport } from './routes/settlements'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as DeliveryIdRouteImport } from './routes/delivery.$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -72,6 +73,11 @@ const SupportRoute = SupportRouteImport.update({
   path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DeliveryIdRoute = DeliveryIdRouteImport.update({
   id: '/delivery/$id',
   path: '/delivery/$id',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/safety': typeof SafetyRoute
   '/settlements': typeof SettlementsRoute
   '/support': typeof SupportRoute
+  '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/safety': typeof SafetyRoute
   '/settlements': typeof SettlementsRoute
   '/support': typeof SupportRoute
+  '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/safety': typeof SafetyRoute
   '/settlements': typeof SettlementsRoute
   '/support': typeof SupportRoute
+  '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/safety'
     | '/settlements'
     | '/support'
+    | '/wallet'
     | '/delivery/$id'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/safety'
     | '/settlements'
     | '/support'
+    | '/wallet'
     | '/delivery/$id'
     | '/api/auth/$'
   id:
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/safety'
     | '/settlements'
     | '/support'
+    | '/wallet'
     | '/delivery/$id'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   SafetyRoute: typeof SafetyRoute
   SettlementsRoute: typeof SettlementsRoute
   SupportRoute: typeof SupportRoute
+  WalletRoute: typeof WalletRoute
   DeliveryIdRoute: typeof DeliveryIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -258,6 +271,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/delivery/$id': {
       id: '/delivery/$id'
       path: '/delivery/$id'
@@ -286,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   SafetyRoute: SafetyRoute,
   SettlementsRoute: SettlementsRoute,
   SupportRoute: SupportRoute,
+  WalletRoute: WalletRoute,
   DeliveryIdRoute: DeliveryIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

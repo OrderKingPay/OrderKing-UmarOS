@@ -13,6 +13,12 @@ export const VEHICLE_SPEED_LIMITS_KMH: Record<VehicleType, number> = {
 export const MAX_PLAUSIBLE_KMH = 80;
 export const MIN_TELEPORT_KM = 0.05;
 
+/** Geofence radius thresholds (km and meters) */
+export const RESTAURANT_GEOFENCE_KM = 0.15; // 150m for marking arrived at restaurant
+export const RESTAURANT_GEOFENCE_METERS = 150;
+export const DROPOFF_GEOFENCE_KM = 0.25; // 250m for drop-off handover
+export const DROPOFF_GEOFENCE_METERS = 250;
+
 export function assertValidCoordinates(point: GeoPoint): void {
   if (
     !Number.isFinite(point.lat) ||

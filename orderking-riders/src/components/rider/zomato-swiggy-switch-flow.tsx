@@ -211,11 +211,11 @@ export function ZomatoSwiggySwitchFlow({ rider, onSuccess }: ZomatoSwiggySwitchF
     }
     if (!isExemptVehicle) {
       if (!licenceNumber.trim()) {
-        setError("Driving Licence Number is mandatory for motorized two-wheelers.");
+        setError("Driving Licence Number is strictly mandatory for petrol two-wheelers (Motorcycle and Scooter).");
         return;
       }
       if (!vehicleRegistration.trim()) {
-        setError("Vehicle Registration Number (RC) is mandatory for motorized two-wheelers.");
+        setError("Vehicle Registration Number (RC) is strictly mandatory for petrol two-wheelers (Motorcycle and Scooter).");
         return;
       }
     }

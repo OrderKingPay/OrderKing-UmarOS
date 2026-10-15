@@ -219,6 +219,7 @@ export const deliveryActionFn = createServerFn({ method: "POST" })
       confirmed?: boolean;
       hasVerifiedProof?: boolean;
       expectedReadyAt?: string;
+      location?: { lat: number; lng: number };
       pod?: { method: "PHOTO" | "OTP"; contentType?: string; dataUrl?: string; bytes?: number; storageUrl?: string };
     }) => input,
   )
@@ -251,7 +252,7 @@ export const deliveryActionFn = createServerFn({ method: "POST" })
         case "ARRIVING":
           return { delivery: await e.arriving(context.userId, id, key) };
         case "ARRIVE_RESTAURANT":
-          return { delivery: await e.arriveRestaurant(context.userId, id, key) };
+          return { delivery: await e.arriveRestaurant(context.userId, id, key, data.location) };
         case "NOT_READY":
           return {
             delivery: await e.restaurantNotReady(context.userId, id, data.expectedReadyAt ?? null),
@@ -328,6 +329,36 @@ export const getEarningsFn = createServerFn({ method: "GET" })
       const range =
         data.from && data.to ? { from: data.from, to: data.to } : rangePreset(data.preset);
       return await e.earnings(context.userId, range);
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+export const getAmbassadorStatsFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const e = await engine();
+      return await e.getAmbassadorStats(context.userId);
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+export const creditReferralCommissionFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator(
+    (input: {
+      type: "FIRST_ORDER_BONUS" | "LIFETIME_ROYALTY";
+      orderCode?: string | null;
+      customerName?: string | null;
+      orderTotalPaise?: number;
+    }) => input,
+  )
+  .handler(async ({ context, data }) => {
+    try {
+      const e = await engine();
+      return await e.creditReferralCommission(context.userId, data);
     } catch (err) {
       fail(err);
     }
@@ -477,6 +508,18 @@ export const getDeliveryFn = createServerFn({ method: "GET" })
       const simulatedOtp = await e.otpForSimulation(context.userId, data.deliveryId);
       const cash = await e.getStore().getCash(data.deliveryId);
       return { delivery, simulatedOtp, cash };
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+export const getDeliveryEarningsBreakdownFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .validator((input: { deliveryId: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const e = await engine();
+      return await e.getDeliveryEarningsBreakdown(context.userId, data.deliveryId);
     } catch (err) {
       fail(err);
     }

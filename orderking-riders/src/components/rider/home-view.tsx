@@ -30,8 +30,12 @@ import {
   CheckCircle2,
   Clock3,
   ExternalLink,
+  MapPin,
   ShieldCheck,
+  Store,
   Target,
+  Volume2,
+  VolumeX,
   Wallet,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -44,6 +48,8 @@ import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
 import { calculateDailyMilestoneProgress } from "@/lib/rider/gig-engine";
 import { VipAmbassadorPass } from "./vip-ambassador-pass";
+import { SwipeSlider } from "./swipe-slider";
+import { useDispatchAudioAlert } from "@/lib/rider/dispatch-audio";
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
 
@@ -113,7 +119,7 @@ const OPERATIONAL_SHIFT_SLOTS: ReadonlyArray<ShiftSlot> = [
 
 const READINESS_STORAGE_KEY = "ok_rider_readiness_v1";
 const BOOKED_GIGS_STORAGE_KEY = "ok_rider_booked_gigs_v1";
-const DEFAULT_COD_BLOCK_THRESHOLD_PAISE = 250000; // ₹2,500.00 statutory COD float limit
+const DEFAULT_COD_BLOCK_THRESHOLD_PAISE = 200000; // ₹2,000.00 statutory COD float limit
 
 type ReadinessState = {
   helmetWorn: boolean;
@@ -363,6 +369,7 @@ export function HomeView() {
   const [codNote, setCodNote] = useState("");
   const [codTicketRef, setCodTicketRef] = useState<string | null>(null);
   const [codSubmitting, setCodSubmitting] = useState(false);
+  const [externalDepositOpen, setExternalDepositOpen] = useState(false);
 
   const todayIso = getIsoDateOffset(0);
   const tomorrowIso = getIsoDateOffset(1);
@@ -594,13 +601,85 @@ export function HomeView() {
         <p className="rounded-md bg-offline/10 px-3 py-2 text-sm text-offline">{error}</p>
       ) : null}
 
-      {/* Zomato Rider Discipline Cooling-Off Countdown Banner */}
+      {/* Rider Discipline Cooling-Off Countdown Banner */}
       {home.coolingOff?.isActive ? (
         <CoolingOffBanner
           coolingOff={home.coolingOff}
           onExpired={() => void load()}
         />
       ) : null}
+
+      {/* Top Floating Partner Header with Live Floating Cash Meter & Deposit UPI Button */}
+      <header className="rounded-2xl border border-border bg-card/95 p-3.5 shadow-xl backdrop-blur-md sticky top-2 z-30 space-y-2.5">
+        <div className="flex items-center justify-between gap-3">
+          {/* Left: Partner identity & live duty radar pill */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="relative size-10 shrink-0 rounded-xl bg-gradient-to-br from-amber-500/20 to-[#E5A93C]/40 border border-[#E5A93C]/40 flex items-center justify-center font-display font-extrabold text-foreground shadow-sm">
+              {(home.rider.fullName || user?.displayName || "OK").slice(0, 2).toUpperCase()}
+              <span
+                className={`absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-card ${
+                  status === "ONLINE"
+                    ? "bg-emerald-500 animate-pulse"
+                    : status === "BUSY"
+                      ? "bg-amber-500"
+                      : "bg-rose-500"
+                }`}
+              />
+            </div>
+            <div className="min-w-0">
+              <h2 className="font-display text-sm font-bold truncate text-foreground leading-tight">
+                {home.rider.fullName || user?.displayName || "Partner"}
+              </h2>
+              <p className="text-[11px] text-muted-foreground truncate font-medium">
+                {home.rider.vehicleType} · {home.rider.preferredZones[0] || "Fleet Zone"}
+              </p>
+            </div>
+          </div>
+
+          {/* Right: Floating Cash / Pocket Balance Meter with Deposit UPI Button */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="text-right">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+                Pocket Balance
+              </p>
+              <p className="font-mono text-xs sm:text-sm font-bold text-foreground">
+                {formatPaise(unreconciledPaise)}{" "}
+                <span className="text-[10px] text-muted-foreground font-normal">
+                  / {formatPaise(codBlockThresholdPaise)}
+                </span>
+              </p>
+            </div>
+
+            <Button
+              size="sm"
+              onClick={() => setExternalDepositOpen(true)}
+              className="h-8 rounded-xl bg-gradient-to-r from-blue-600 via-[#2563EB] to-blue-700 text-white px-3 text-xs font-bold shadow-md shadow-blue-500/25 hover:from-blue-500 hover:to-blue-600 transition-all active:scale-[0.98]"
+            >
+              <Wallet className="size-3.5 mr-1" />
+              Deposit UPI
+            </Button>
+          </div>
+        </div>
+
+        {/* Floating Cash utilization progress bar */}
+        <div className="space-y-1">
+          <div className="w-full bg-muted/60 h-1.5 rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all duration-500 ${
+                isCodNearLimit ? "bg-rose-500" : codUsagePct >= 60 ? "bg-amber-500" : "bg-emerald-500"
+              }`}
+              style={{ width: `${Math.max(4, Math.min(100, codUsagePct))}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <span className={`size-1.5 rounded-full ${isCodNearLimit ? "bg-rose-500" : "bg-emerald-500"}`} />
+              {isCodNearLimit ? "Limit High — Deposit Recommended" : "Floating Balance Healthy"}
+            </span>
+            <span>{codUsagePct}% of ₹{(codBlockThresholdPaise / 100).toLocaleString("en-IN")} cap</span>
+          </div>
+        </div>
+      </header>
 
       {/* Duty Status & Pre-Shift Readiness Header */}
       <section className="rounded-xl bg-card p-5 shadow-[var(--shadow-border)] space-y-4">
@@ -706,27 +785,54 @@ export function HomeView() {
           </div>
         </div>
 
-        <div>
+        {/* Authentic Swipe to Go Online / Offline Slider Bar with Status Indicator */}
+        <div className="pt-1 space-y-2">
           {status === "OFFLINE" ? (
-            <Button
-              size="lg"
-              className="w-full"
-              variant="online"
-              disabled={pending}
-              onClick={() => setConfirm("online")}
-            >
-              {t("goOnline")}
-            </Button>
+            <div className="space-y-1.5">
+              <SwipeSlider
+                label="Swipe to Go Online"
+                variant="online"
+                disabled={pending}
+                loading={pending}
+                onComplete={() => go("ONLINE")}
+              />
+              <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1.5 text-rose-400 font-semibold">
+                  <span className="size-2 rounded-full bg-rose-500" />
+                  Duty Offline
+                </span>
+                <span>
+                  {allReady ? "Readiness verified ✓ Ready to swipe" : "Complete 4 checks to go online"}
+                </span>
+              </div>
+            </div>
+          ) : status === "ONLINE" ? (
+            <div className="space-y-1.5">
+              <SwipeSlider
+                label="Swipe to Go Offline"
+                variant="offline"
+                disabled={pending || Boolean(home.active)}
+                loading={pending}
+                onComplete={() => setConfirm("offline")}
+              />
+              <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Duty Online · Live Dispatch Radar Active
+                </span>
+                <span>Swipe to end shift</span>
+              </div>
+            </div>
           ) : (
-            <Button
-              size="lg"
-              className="w-full"
-              variant="outline"
-              disabled={pending || Boolean(home.active)}
-              onClick={() => setConfirm("offline")}
-            >
-              {t("goOffline")}
-            </Button>
+            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="size-2.5 rounded-full bg-amber-500 animate-ping" />
+                <span className="text-xs font-bold text-amber-400">
+                  On Trip · Delivery in Progress
+                </span>
+              </div>
+              <Badge tone="busy">{home.active?.state.replaceAll("_", " ")}</Badge>
+            </div>
           )}
         </div>
       </section>
@@ -809,7 +915,7 @@ export function HomeView() {
         </Card>
       )}
 
-      {/* Zomato Floating Cash (Pocket Balance) & Instant UPI Deposit Card */}
+      {/* Fleet Floating Cash (Pocket Balance) & Instant UPI Deposit Card */}
       <FloatingCashCard
         pocketBalance={
           home.pocketBalance ?? {
@@ -822,6 +928,8 @@ export function HomeView() {
         }
         disciplineConfig={home.disciplineConfig}
         onRefresh={() => void load()}
+        externalModalOpen={externalDepositOpen}
+        onExternalModalClose={() => setExternalDepositOpen(false)}
       />
 
       {/* Operational Gig / Shift Slot Planner */}
@@ -905,6 +1013,7 @@ export function HomeView() {
         riderName={home.rider.fullName}
         riderId={home.rider.id}
         phone={home.rider.phone}
+        onCommissionCredited={() => void load()}
       />
 
       {/* Self-Service Per-Order Payout Calculator */}
@@ -1055,97 +1164,205 @@ function OfferCard({
   onDecline: () => void;
 }) {
   const { t } = useI18n();
+  const { muted, toggleMute } = useDispatchAudioAlert(true, remaining);
+
   const routeKm = Math.max(offer.estimatedTotalRouteKm, offer.approxDistanceKm, 0);
   const extraKm = Math.max(0, routeKm - STATUTORY_BASE_DISTANCE_KM);
   const distanceComponentPaise = Math.max(0, offer.expectedPayoutPaise - STATUTORY_BASE_FARE_PAISE);
   const hasPickupCoords =
     offer.pickupLocation.lat !== 0 || offer.pickupLocation.lng !== 0;
   const mapsPickupUrl = hasPickupCoords
-    ? `https://www.google.com/maps/dir/?api=1&destination=${offer.pickupLocation.lat},${offer.pickupLocation.lng}`
+    ? `https://www.google.com/maps/dir/?api=1&destination=${offer.pickupLocation.lat},${offer.pickupLocation.lng}&travelmode=two-wheeler`
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${offer.restaurant.name} ${offer.restaurant.address || offer.restaurant.area}`)}`;
 
+  // 45-second countdown timer calculations
+  const maxTimerSec = 45;
+  const timerPct = Math.min(100, Math.max(0, (remaining / maxTimerSec) * 100));
+  const isUrgent = remaining <= 10;
+  const isCritical = remaining <= 5;
+
   return (
-    <Card className="p-5 space-y-4">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <div className="flex items-center gap-2">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{t("offers")}</p>
-            <Badge tone="online">Order #{offer.orderCode}</Badge>
-          </div>
-          <CardTitle className="mt-1">{offer.restaurant.name}</CardTitle>
-          <CardMeta>
-            {offer.restaurant.area || offer.restaurant.address} → {offer.dropArea}
-          </CardMeta>
-        </div>
-        <p className="flex items-center gap-1.5 font-display text-2xl tabular-nums text-primary">
-          <Clock3 className="size-5" />
-          {remaining}s
-        </p>
+    <Card className="p-5 space-y-4 border-2 border-[#E5A93C]/50 bg-[#121723] shadow-[0_0_30px_rgba(229,169,60,0.25)] relative overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      {/* 45-Second Countdown Top Progress Edge */}
+      <div className="absolute top-0 inset-x-0 h-1.5 bg-muted">
+        <div
+          className={`h-full transition-all duration-300 ${
+            isCritical
+              ? "bg-rose-500 animate-pulse"
+              : isUrgent
+                ? "bg-amber-500"
+                : "bg-gradient-to-r from-amber-500 via-[#E5A93C] to-emerald-400"
+          }`}
+          style={{ width: `${timerPct}%` }}
+        />
       </div>
 
-      {/* Transparent Statutory Payout Breakdown */}
-      <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs space-y-1.5">
-        <div className="flex items-center justify-between font-semibold text-foreground">
-          <span>{t("expectedPayout")}</span>
-          <span className="font-mono text-base font-bold text-emerald-600 dark:text-emerald-400">
-            {formatPaise(offer.expectedPayoutPaise)}
-          </span>
-        </div>
-        <div className="flex items-center justify-between text-muted-foreground">
-          <span>Base Fare (first {STATUTORY_BASE_DISTANCE_KM} km)</span>
-          <span className="font-mono">{formatPaise(STATUTORY_BASE_FARE_PAISE)}</span>
-        </div>
-        <div className="flex items-center justify-between text-muted-foreground">
-          <span>Distance &amp; Order Adjustment ({extraKm.toFixed(1)} km beyond base)</span>
-          <span className="font-mono">{formatPaise(distanceComponentPaise)}</span>
-        </div>
-      </div>
-
-      <dl className="grid grid-cols-3 gap-2 text-sm text-center">
-        <div className="rounded-lg bg-muted/40 p-2">
-          <dt className="text-xs text-muted-foreground">{t("distance")}</dt>
-          <dd className="tabular-nums font-semibold mt-0.5">{offer.approxDistanceKm.toFixed(1)} km</dd>
-        </div>
-        <div className="rounded-lg bg-muted/40 p-2">
-          <dt className="text-xs text-muted-foreground">{t("route")}</dt>
-          <dd className="tabular-nums font-semibold mt-0.5">{offer.estimatedTotalRouteKm.toFixed(1)} km</dd>
-        </div>
-        <div className="rounded-lg bg-muted/40 p-2">
-          <dt className="text-xs text-muted-foreground">{t("packages")}</dt>
-          <dd className="font-semibold mt-0.5">{offer.packageCount}</dd>
-        </div>
-      </dl>
-
-      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+      {/* Top Header: Order Code, 45s Countdown & Siren Audio Mute */}
+      <div className="flex items-start justify-between gap-2 pt-1">
         <div className="flex items-center gap-2">
-          <Badge tone={offer.cod ? "cod" : "online"}>
-            {offer.cod ? `${t("cod")}: ${formatPaise(offer.codAmountPaise)}` : "Prepaid Order"}
+          <span className="relative flex size-3">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E5A93C] opacity-75" />
+            <span className="relative inline-flex size-3 rounded-full bg-[#E5A93C]" />
+          </span>
+          <Badge tone="online" className="font-mono text-xs font-bold tracking-wider uppercase">
+            Order #{offer.orderCode}
           </Badge>
-          <span className="text-muted-foreground">
-            Kitchen: <strong className="text-foreground">{offer.restaurant.preparationStatus}</strong>
+          <span className="text-[11px] font-bold text-[#E5A93C] uppercase tracking-wider">
+            Incoming Dispatch
           </span>
         </div>
-        <a
-          href={mapsPickupUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 font-medium text-primary underline"
-        >
-          Preview Pickup Route <ExternalLink className="size-3" />
-        </a>
+
+        <div className="flex items-center gap-2">
+          {/* Audio Alert Toggle */}
+          <button
+            type="button"
+            onClick={toggleMute}
+            className={`flex size-8 items-center justify-center rounded-lg border transition ${
+              muted
+                ? "border-border bg-muted/40 text-muted-foreground"
+                : "border-[#E5A93C]/40 bg-[#E5A93C]/10 text-[#E5A93C] animate-pulse"
+            }`}
+            title={muted ? "Unmute Dispatch Siren" : "Mute Siren"}
+            aria-label={muted ? "Unmute Dispatch Siren" : "Mute Siren"}
+          >
+            {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+          </button>
+
+          {/* 45-Second Pulsing Countdown Timer */}
+          <div
+            className={`flex items-center gap-1.5 rounded-xl border px-3 py-1 font-display font-extrabold tabular-nums text-lg ${
+              isCritical
+                ? "border-rose-500 bg-rose-500/20 text-rose-400 animate-bounce"
+                : isUrgent
+                  ? "border-amber-500 bg-amber-500/20 text-amber-400 animate-pulse"
+                  : "border-[#E5A93C]/40 bg-[#E5A93C]/15 text-[#E5A93C]"
+            }`}
+          >
+            <Clock3 className="size-4" />
+            <span>{remaining}s</span>
+          </div>
+        </div>
       </div>
 
-      {offer.restaurant.specialPickupInstructions ? (
-        <p className="text-xs text-muted-foreground border-l-2 border-primary/50 pl-2">
-          {offer.restaurant.specialPickupInstructions}
-        </p>
-      ) : null}
+      {/* Guaranteed Earnings Headline Banner in Obsidian Gold */}
+      <div className="rounded-2xl border border-[#E5A93C]/40 bg-gradient-to-r from-amber-500/15 via-[#E5A93C]/20 to-amber-700/15 p-4 shadow-inner">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[11px] uppercase tracking-wider font-extrabold text-[#E5A93C]">
+              ★ Guaranteed Partner Earnings
+            </p>
+            <p className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-white drop-shadow-[0_0_12px_rgba(229,169,60,0.4)]">
+              {formatPaise(offer.expectedPayoutPaise)}
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="inline-block rounded-full bg-emerald-500/20 px-2.5 py-1 text-[11px] font-bold text-emerald-400 border border-emerald-500/30">
+              100% Tips + Base Floor
+            </span>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-2 gap-2 pt-1">
-        <Button size="lg" disabled={pending} onClick={onAccept} className="shadow-lg shadow-primary/20">
-          {t("accept")}
+        {/* Payout Components Breakdown */}
+        <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#E5A93C]/20 pt-2 text-xs">
+          <div className="text-muted-foreground">
+            Base ({STATUTORY_BASE_DISTANCE_KM} km): <span className="font-mono text-foreground font-semibold">{formatPaise(STATUTORY_BASE_FARE_PAISE)}</span>
+          </div>
+          <div className="text-muted-foreground text-right">
+            Distance ({extraKm.toFixed(1)} km): <span className="font-mono text-foreground font-semibold">{formatPaise(distanceComponentPaise)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Pickup & Drop Route Distance Metric Cards */}
+      <div className="grid grid-cols-3 gap-2 text-center text-xs">
+        <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">To Restaurant</p>
+          <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{offer.approxDistanceKm.toFixed(1)} km</p>
+        </div>
+        <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Total Route</p>
+          <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{offer.estimatedTotalRouteKm.toFixed(1)} km</p>
+        </div>
+        <div className="rounded-xl border border-border/80 bg-muted/30 p-2.5">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Packages</p>
+          <p className="mt-0.5 font-mono text-sm font-extrabold text-foreground">{offer.packageCount} Pack</p>
+        </div>
+      </div>
+
+      {/* Restaurant Details Card */}
+      <div className="rounded-xl border border-border bg-muted/20 p-3.5 space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-[#E5A93C]">
+              <Store className="size-4" />
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Pickup Merchant</p>
+              <h3 className="font-display text-base font-bold text-foreground leading-tight">{offer.restaurant.name}</h3>
+            </div>
+          </div>
+          <Badge tone="busy" className="text-[10px] font-bold">
+            {offer.restaurant.preparationStatus}
+          </Badge>
+        </div>
+
+        <p className="text-xs text-muted-foreground pl-10">
+          {offer.restaurant.address || offer.restaurant.area}
+        </p>
+
+        {offer.restaurant.specialPickupInstructions && (
+          <p className="text-xs text-amber-300/90 bg-amber-500/10 border-l-2 border-[#E5A93C] p-2 rounded-r-md">
+            <strong>Pickup Note:</strong> {offer.restaurant.specialPickupInstructions}
+          </p>
+        )}
+      </div>
+
+      {/* Customer Destination Card */}
+      <div className="rounded-xl border border-border bg-muted/20 p-3.5 space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400">
+              <MapPin className="size-4" />
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Delivery Destination</p>
+              <h3 className="font-display text-base font-bold text-foreground leading-tight">{offer.dropArea}</h3>
+            </div>
+          </div>
+          <Badge tone={offer.cod ? "cod" : "online"}>
+            {offer.cod ? `COD ${formatPaise(offer.codAmountPaise)}` : "Prepaid"}
+          </Badge>
+        </div>
+
+        <div className="flex items-center justify-between text-xs pt-1 pl-10">
+          <a
+            href={mapsPickupUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 font-semibold text-primary underline"
+          >
+            Preview Route in Maps <ExternalLink className="size-3" />
+          </a>
+        </div>
+      </div>
+
+      {/* Accept & Decline Action Buttons */}
+      <div className="grid grid-cols-2 gap-2.5 pt-2">
+        <Button
+          size="lg"
+          disabled={pending}
+          onClick={onAccept}
+          className="rounded-xl bg-gradient-to-r from-amber-500 via-[#E5A93C] to-amber-600 py-3.5 font-display text-base font-extrabold uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(229,169,60,0.35)] hover:from-amber-400 hover:to-amber-500 active:scale-[0.98] transition-all"
+        >
+          {t("accept")} Order
         </Button>
-        <Button size="lg" variant="outline" disabled={pending} onClick={onDecline}>
+        <Button
+          size="lg"
+          variant="outline"
+          disabled={pending}
+          onClick={onDecline}
+          className="rounded-xl border-border py-3.5 font-display text-sm font-bold text-muted-foreground hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/40 active:scale-[0.98] transition-all"
+        >
           {t("decline")}
         </Button>
       </div>

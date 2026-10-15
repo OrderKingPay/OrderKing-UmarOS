@@ -26,6 +26,7 @@ import {
   ExternalLink,
   HelpCircle,
   IndianRupee,
+  Languages,
   MapPin,
   Navigation,
   PhoneCall,
@@ -258,7 +259,13 @@ function Page() {
 
   async function askQuestion(
     questionText: string,
-    action?: "auto_credit_wait" | "emergency_distress" | "verify_navigation" | "payout_breakdown" | "query",
+    action?:
+      | "auto_credit_wait"
+      | "emergency_distress"
+      | "verify_navigation"
+      | "payout_breakdown"
+      | "customer_unreachable"
+      | "query",
   ) {
     if (!questionText.trim()) return;
     const question = questionText.trim();
@@ -384,11 +391,11 @@ function Page() {
                   King Spark · 0 Human Escalation
                 </span>
                 <span className="rounded-full border border-[#E5A93C]/50 bg-[#E5A93C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E5A93C]">
-                  Multilingual AI
+                  Multilingual AI (বাংলা · অসমীয়া · हिन्दी · EN)
                 </span>
               </div>
               <p className="text-xs text-slate-300">
-                Autonomous Operations Co-Pilot · Payout Breakdown · Wait-Pay Auto-Credit · SOS Emergency Routing
+                Autonomous Fleet Co-Pilot · Payout Breakdown · Wait-Pay Auto-Credit · SOS Emergency Routing
               </p>
             </div>
           </div>
@@ -478,13 +485,13 @@ function Page() {
         {busy ? (
           <Card className="border-[#E5A93C]/40 bg-[#E5A93C]/10 p-3">
             <p className="text-xs font-semibold text-[#E5A93C] dark:text-[#E5A93C]">
-              🛵 {t("aiDriving")} — Tap <strong>🔊 Listen in My Language</strong> on any response to hear voice guidance hands-free while riding safely.
+              🛵 {t("aiDriving")} — Tap <strong>🔊 Listen</strong> on any response to hear voice guidance hands-free while riding safely.
             </p>
           </Card>
         ) : null}
 
-        {/* 4 Primary King AI Autonomous Reasoning Action Cards */}
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+        {/* 5 Primary King AI Autonomous Reasoning Action Cards */}
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
           {/* Action 1: Wait-Time Auto-Credit */}
           <button
             type="button"
@@ -548,7 +555,28 @@ function Page() {
             </div>
           </button>
 
-          {/* Action 4: Emergency SOS (112 / 108) */}
+          {/* Action 4: Customer Phone Reachability (3-Call Rule) */}
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() =>
+              void askQuestion(
+                "Customer is not answering at doorstep — what is the 3-call zero penalty rule?",
+                "customer_unreachable",
+              )
+            }
+            className="flex flex-col items-start justify-between rounded-xl border border-amber-500/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-3 text-left transition hover:border-amber-400 hover:shadow-lg group"
+          >
+            <div className="flex size-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400 group-hover:scale-110 transition-transform">
+              <PhoneCall className="size-4" />
+            </div>
+            <div className="mt-2">
+              <p className="text-xs font-bold text-white">Doorstep Unreachable</p>
+              <p className="text-[10px] text-slate-400">3-Call SOP & 100% Protected Pay</p>
+            </div>
+          </button>
+
+          {/* Action 5: Emergency SOS (112 / 108) */}
           <button
             type="button"
             disabled={pending}
@@ -558,7 +586,7 @@ function Page() {
                 "emergency_distress",
               )
             }
-            className="flex flex-col items-start justify-between rounded-xl border border-rose-500/50 bg-gradient-to-br from-[#1F1015] to-[#2A0E17] p-3 text-left transition hover:border-rose-400 hover:shadow-lg group"
+            className="flex flex-col items-start justify-between rounded-xl border border-rose-500/50 bg-gradient-to-br from-[#1F1015] to-[#2A0E17] p-3 text-left transition hover:border-rose-400 hover:shadow-lg group col-span-2 sm:col-span-1"
           >
             <div className="flex size-7 items-center justify-center rounded-lg bg-rose-500/20 text-rose-400 group-hover:scale-110 transition-transform">
               <AlertOctagon className="size-4" />
@@ -738,28 +766,23 @@ function Page() {
         </div>
 
         {/* 1-Tap Multilingual Prompts (Bengali, Assamese, Hindi, English) */}
-        <div className="space-y-1.5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            1-Tap Quick Multilingual Questions (বাংলা · অসমীয়া · हिन्दी · English)
-          </p>
+        <div className="space-y-2 rounded-2xl border border-white/10 bg-[#0B0F19]/80 p-3.5 backdrop-blur-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-2">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              ⚡ 1-Tap Multilingual Prompts (বাংলা · অসমীয়া · हिन्दी · English)
+            </p>
+            <span className="text-[11px] font-semibold text-[#E5A93C]">0 Founder Headache</span>
+          </div>
+
           <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={pending}
-              onClick={() => void askQuestion("Explain my exact payout breakdown: base ₹35, distance slabs, wait pay, and 100% tips", "payout_breakdown")}
-              className="border-primary/40 text-xs"
-            >
-              💰 Payout Breakdown & Rates
-            </Button>
+            {/* Bengali Prompts */}
             <Button
               type="button"
               variant="outline"
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("রেস্তোরাঁয় ৬ মিনিটের বেশি অপেক্ষা করেছি — ওয়েট পে ক্রেডিট করুন", "auto_credit_wait")}
-              className="border-[#E5A93C]/50 text-xs"
+              className="border-[#E5A93C]/50 bg-black/40 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
             >
               🏬 বাংলা: ওয়েট পে ক্রেডিট (&gt;৬ মিনিট)
             </Button>
@@ -768,8 +791,30 @@ function Page() {
               variant="outline"
               size="sm"
               disabled={pending}
+              onClick={() => void askQuestion("আমার পেআউট হিসাব বুঝিয়ে দিন: ₹৩৫ বেস, দূরত্ব স্ল্যাব ও টিপস", "payout_breakdown")}
+              className="border-[#2563EB]/50 bg-black/40 text-xs text-sky-300 hover:bg-[#2563EB]/20"
+            >
+              💰 বাংলা: পেআউট ও দূরত্বের হিসাব
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={pending}
+              onClick={() => void askQuestion("কাস্টমার ফোন ধরছে না — ৩-কল এসওপি নিয়ম কি?", "customer_unreachable")}
+              className="border-amber-500/40 bg-black/40 text-xs text-amber-300 hover:bg-amber-500/20"
+            >
+              ⏱️ বাংলা: ৩-কল কাস্টমার এসওপি
+            </Button>
+
+            {/* Assamese Prompts */}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={pending}
               onClick={() => void askQuestion("ৰোষ্টুৰেণ্টত ৬ মিনিটতকৈ বেছি পলম হৈছে — ৱেইট পে ক্ৰেডিট কৰক", "auto_credit_wait")}
-              className="border-[#2563EB]/50 text-xs"
+              className="border-[#E5A93C]/50 bg-black/40 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
             >
               🏬 অসমীয়া: ৱেইট পে ক্ৰেডিট
             </Button>
@@ -778,8 +823,30 @@ function Page() {
               variant="outline"
               size="sm"
               disabled={pending}
+              onClick={() => void askQuestion("মোৰ পেআউট বিৱৰণ কওক: ভিত্তি ₹৩৫, দূৰত্ব স্ল্যাব আৰু টিপছ", "payout_breakdown")}
+              className="border-[#2563EB]/50 bg-black/40 text-xs text-sky-300 hover:bg-[#2563EB]/20"
+            >
+              💰 অসমীয়া: পেআউট বিৱৰণ
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={pending}
+              onClick={() => void askQuestion("গ্ৰাহকে ফোন নধৰে — ৩-কল সুৰক্ষা নিয়ম কি?", "customer_unreachable")}
+              className="border-amber-500/40 bg-black/40 text-xs text-amber-300 hover:bg-amber-500/20"
+            >
+              ⏱️ অসমীয়া: ৩-কল সুৰক্ষা নিয়ম
+            </Button>
+
+            {/* Hindi Prompts */}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={pending}
               onClick={() => void askQuestion("रेस्तरां में 6 मिनट से ज्यादा इंतज़ार — ₹1/मिनट वेट पे क्रेडिट करो", "auto_credit_wait")}
-              className="border-emerald-500/50 text-xs"
+              className="border-emerald-500/50 bg-black/40 text-xs text-emerald-300 hover:bg-emerald-500/20"
             >
               🏬 हिन्दी: वेट पे क्रेडिट (&gt;6 मिनट)
             </Button>
@@ -788,10 +855,42 @@ function Page() {
               variant="outline"
               size="sm"
               disabled={pending}
-              onClick={() => void askQuestion("Customer is not answering at doorstep — what is the 3-call zero penalty rule?", "verify_navigation")}
-              className="text-xs"
+              onClick={() => void askQuestion("मेरी पूरी कमाई और पेआउट स्लैब समझाओ: ₹35 बेस, दूरी दर और 100% टिप्स", "payout_breakdown")}
+              className="border-[#2563EB]/50 bg-black/40 text-xs text-sky-300 hover:bg-[#2563EB]/20"
             >
-              ⏱️ Doorstep Unreachable SOP (3-Call Rule)
+              💰 हिन्दी: पेआउट ब्रेकडाउन
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={pending}
+              onClick={() => void askQuestion("ग्राहक फोन नहीं उठा रहा — 3-कॉल शून्य जुर्माना नियम", "customer_unreachable")}
+              className="border-amber-500/40 bg-black/40 text-xs text-amber-300 hover:bg-amber-500/20"
+            >
+              ⏱️ हिन्दी: 3-कॉल ग्राहक नियम
+            </Button>
+
+            {/* English Prompts */}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={pending}
+              onClick={() => void askQuestion("Explain my exact payout breakdown: base ₹35 floor, distance slabs, wait pay, and 100% tips", "payout_breakdown")}
+              className="border-[#2563EB]/40 bg-black/40 text-xs text-white hover:bg-[#2563EB]/20"
+            >
+              💰 English: Payout Breakdown & Slabs
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={pending}
+              onClick={() => void askQuestion("Guide navigation, gated entry instructions, and landmark resolution", "verify_navigation")}
+              className="border-emerald-500/40 bg-black/40 text-xs text-white hover:bg-emerald-500/20"
+            >
+              🧭 English: Landmark & Gated Entry
             </Button>
             <Button
               type="button"
@@ -799,9 +898,9 @@ function Page() {
               size="sm"
               disabled={pending}
               onClick={() => void askQuestion("When is my Wednesday payout transferred and what is my COD cash balance?", "payout_breakdown")}
-              className="text-xs"
+              className="border-slate-700 bg-black/40 text-xs text-slate-300 hover:bg-white/10"
             >
-              🗓️ Wednesday Payout & COD
+              🗓️ English: Wednesday Payout & COD
             </Button>
           </div>
         </div>
@@ -813,12 +912,12 @@ function Page() {
               key={i}
               className={
                 l.role === "user"
-                  ? "ml-6 bg-muted/80 p-3.5"
-                  : "border-[#E5A93C]/30 bg-surface p-4 shadow-sm"
+                  ? "ml-6 border border-[#2563EB]/30 bg-[#0F172A] p-3.5 text-white shadow"
+                  : "border border-[#E5A93C]/40 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] p-4 text-white shadow-lg"
               }
             >
-              <div className="mb-2 flex items-center justify-between gap-2 border-b border-border/40 pb-1.5">
-                <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <div className="mb-2 flex items-center justify-between gap-2 border-b border-white/10 pb-1.5">
+                <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300">
                   {l.role === "user" ? (
                     <>👤 {firstName} ({l.at})</>
                   ) : (
@@ -833,7 +932,7 @@ function Page() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="h-7 border-[#E5A93C]/40 px-2.5 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/10"
+                    className="h-7 border-[#E5A93C]/40 bg-black/40 px-2.5 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
                     onClick={() => speakText(l.text, i)}
                   >
                     {speakingIdx === i ? <VolumeX className="mr-1 size-3" /> : <Volume2 className="mr-1 size-3" />}
@@ -844,13 +943,20 @@ function Page() {
 
               {/* Extra visual indicators for credited wait pay or emergency broadcast */}
               {l.waitResult?.credited ? (
-                <div className="mb-2.5 inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
-                  <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                <div className="mb-2.5 inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+                  <CheckCircle2 className="size-3.5 text-emerald-400" />
                   Autonomous Auto-Credit Executed: ₹{(l.waitResult.amountPaise / 100).toFixed(2)} added to shift ledger.
                 </div>
               ) : null}
 
-              <p className="whitespace-pre-line text-sm leading-relaxed">{l.text}</p>
+              {l.emergencyBroadcast?.dispatched ? (
+                <div className="mb-2.5 inline-flex items-center gap-1.5 rounded-lg border border-rose-500/50 bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-300">
+                  <AlertOctagon className="size-3.5 text-rose-400" />
+                  Emergency Distress Broadcast Dispatched (GPS: {l.emergencyBroadcast.coords.lat.toFixed(4)}, {l.emergencyBroadcast.coords.lng.toFixed(4)})
+                </div>
+              ) : null}
+
+              <p className="whitespace-pre-line text-sm leading-relaxed text-slate-200">{l.text}</p>
             </Card>
           ))}
         </div>
@@ -862,18 +968,18 @@ function Page() {
             onChange={(e) => setQ(e.target.value)}
             placeholder={`${t("askAssistant")} (English, বাংলা, অসমীয়া, हिन्दी…)`}
             disabled={pending}
-            className="border-[#E5A93C]/30 focus:border-[#E5A93C]"
+            className="border-[#E5A93C]/40 bg-[#0B0F19] text-white placeholder:text-slate-500 focus:border-[#E5A93C] focus:ring-1 focus:ring-[#E5A93C]"
           />
           <Button
             type="submit"
             disabled={pending || !q.trim()}
-            className="bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
+            className="bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] font-semibold text-white shadow-lg shadow-[#2563EB]/25 hover:from-[#1D4ED8] hover:to-[#1E40AF]"
           >
             {pending ? (
               "Thinking…"
             ) : (
               <>
-                <Send className="mr-1 size-3.5" /> {t("send")}
+                <Send className="mr-1.5 size-3.5" /> {t("send")}
               </>
             )}
           </Button>

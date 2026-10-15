@@ -356,6 +356,23 @@ export type Delivery = {
   createdAt: string;
   updatedAt: string;
   dataMode: DataMode;
+  waitMinutes?: number;
+  waitPayPaise?: number;
+  earningsBreakdown?: DeliveryEarningsBreakdown;
+};
+
+export type DeliveryEarningsBreakdown = {
+  deliveryId: string;
+  orderCode: string;
+  basePayPaise: number;
+  distancePayPaise?: number;
+  waitMinutes: number;
+  billableWaitMinutes: number;
+  waitPayPaise: number;
+  isWaitCapped: boolean;
+  tipPaise: number;
+  multiPackageBonusPaise: number;
+  totalPayoutPaise: number;
 };
 
 export type DeliveryEvent = {
@@ -405,11 +422,23 @@ export type EarningLine = {
   riderId: string;
   deliveryId: string | null;
   orderCode: string | null;
-  kind: "DELIVERY_PAYOUT" | "INCENTIVE" | "ADJUSTMENT" | "DEDUCTION" | "TIP";
+  kind: "DELIVERY_PAYOUT" | "INCENTIVE" | "ADJUSTMENT" | "DEDUCTION" | "TIP" | "REFERRAL_COMMISSION";
   amountPaise: number;
   note: string;
   at: string;
   dataMode: DataMode;
+  waitMinutes?: number;
+  waitPayPaise?: number;
+};
+
+export type AmbassadorStats = {
+  totalCustomersReferred: number;
+  firstOrderBonusPaise: number;
+  firstOrderBonusCount: number;
+  royaltyPaise: number;
+  royaltyCount: number;
+  totalEarnedPaise: number;
+  recentReferrals: EarningLine[];
 };
 
 export type Settlement = {
