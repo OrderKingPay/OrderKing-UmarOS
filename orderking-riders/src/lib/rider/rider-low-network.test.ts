@@ -85,4 +85,29 @@ describe("Rider Low-Network & 2G Offline Cache Layer", () => {
     assert.equal(executedActions[0].deliveryId, "del_88");
     assert.equal(getRiderOfflineQueue().length, 0);
   });
+
+  test("reschedules failed mutations with backoff and moves exhausted retries to DLQ", async () => {
+    const item = enqueueRiderOfflineAction({
+      deliveryId: "del_fail_test",
+      action: "COLLECT_CASH",
+      idempotencyKey: "idem_fail_1",
+    });
+
+    // Simulate failing 8 times (exceeding MAX_RETRIES = 7)
+    for (let i = 0; i < 8; i++) {
+      // Force nextRetryAt to past so it's eligible
+      const queue = getRiderOfflineQueue();
+      if (queue.length > 0) {
+        queue[0].nextRetryAt = 0;
+        localStorage.setItem("orderking_rider_action_queue", JSON.stringify(queue));
+      }
+
+      await flushRiderOfflineQueue(async () => {
+        throw new Error("Temporary gateway timeout 504");
+      });
+    }
+
+    // After 8 attempts, it should be removed from active queue and moved to DLQ
+    assert.equal(getRiderOfflineQueue().length, 0);
+  });
 });

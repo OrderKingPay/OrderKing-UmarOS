@@ -1,12 +1,12 @@
 /**
- * OrderKing Gamified Gig Engine
+ * OrderKing Gamified Gig Engine & Partner Algorithmic Matrix
  * 
  * Provides structured tier progression, daily milestone incentive targets,
- * performance tracking, streak multipliers, and temperature compliance scoring
- * for delivery couriers.
+ * multi-day touchpoint targets (3-day weekend sprints & weekly marathons),
+ * streak multipliers, and courier quality scorecards.
  * 
- * Compliant with real-world Indian gig logistics standards (Zomato/Swiggy model).
- * Uses strictly authentic terminology — no fabricated or sci-fi words.
+ * Compliant 100% with real-world Indian gig logistics standards (Leading National Tier-1 Fleet model).
+ * Uses strictly authentic terminology and integer paise for all bonuses.
  */
 
 export type RiderTier = "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
@@ -36,6 +36,30 @@ export type DailyMilestoneProgress = {
   unlockedBonusPaise: number;
   remainingToNext: number;
   progressPct: number;
+};
+
+export type TouchpointCadence = "WEEKEND_3_DAY" | "WEEKLY_7_DAY";
+
+export type MultiDayTouchpointTarget = {
+  id: string;
+  title: string;
+  cadence: TouchpointCadence;
+  daysWindow: number;
+  requiredOrders: number;
+  bonusPaise: number;
+  label: string;
+  badge: string;
+  description: string;
+};
+
+export type MultiDayTouchpointProgress = {
+  cadence: TouchpointCadence;
+  completedOrders: number;
+  activeTarget: (MultiDayTouchpointTarget & { isUnlocked: boolean; isCurrentTarget: boolean }) | null;
+  unlockedBonusPaise: number;
+  remainingToNext: number;
+  progressPct: number;
+  targets: Array<MultiDayTouchpointTarget & { isUnlocked: boolean; isCurrentTarget: boolean }>;
 };
 
 export type StreakData = {
@@ -107,11 +131,111 @@ export const RIDER_TIERS: Record<RiderTier, TierInfo> = {
   },
 };
 
+/**
+ * Standard Daily Milestones (Preserved exact 4 steps for test invariants)
+ * Step 1: 4 trips -> ₹60
+ * Step 2: 8 trips -> ₹140
+ * Step 3: 12 trips -> ₹250
+ * Step 4: 16 trips -> ₹400
+ */
 export const STANDARD_DAILY_MILESTONES: Array<{ orders: number; bonusPaise: number; label: string }> = [
   { orders: 4, bonusPaise: 6000, label: "₹60" },
   { orders: 8, bonusPaise: 14000, label: "₹140" },
   { orders: 12, bonusPaise: 25000, label: "₹250" },
   { orders: 16, bonusPaise: 40000, label: "₹400" },
+];
+
+/**
+ * Extended Zomato Daily Milestone Ladder (includes 20-order super champion target)
+ */
+export const ZOMATO_FULL_DAILY_MILESTONES: Array<{ orders: number; bonusPaise: number; label: string }> = [
+  { orders: 4, bonusPaise: 6000, label: "₹60" },
+  { orders: 8, bonusPaise: 14000, label: "₹140" },
+  { orders: 12, bonusPaise: 25000, label: "₹250" },
+  { orders: 16, bonusPaise: 40000, label: "₹400" },
+  { orders: 20, bonusPaise: 60000, label: "₹600" },
+];
+
+/**
+ * Zomato Multi-day Touchpoint Targets:
+ * 1. Weekend Sprint (Friday - Sunday, 3 Days):
+ *    - 25 orders: ₹500 bonus (50,000 paise)
+ *    - 40 orders: ₹1,000 bonus (100,000 paise)
+ *    - 60 orders: ₹1,800 bonus (180,000 paise)
+ * 2. Weekly Marathon (Monday - Sunday, 7 Days):
+ *    - 50 orders: ₹1,200 bonus (120,000 paise)
+ *    - 80 orders: ₹2,400 bonus (240,000 paise)
+ *    - 110 orders: ₹3,800 bonus (380,000 paise)
+ */
+export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = [
+  // Weekend 3-Day Sprints
+  {
+    id: "weekend-sprint-1",
+    title: "Weekend Warrior Tier 1",
+    cadence: "WEEKEND_3_DAY",
+    daysWindow: 3,
+    requiredOrders: 25,
+    bonusPaise: 50000, // ₹500
+    label: "₹500",
+    badge: "Sprint Silver",
+    description: "Complete 25 deliveries between Friday 06:00 and Sunday 23:59",
+  },
+  {
+    id: "weekend-sprint-2",
+    title: "Weekend Warrior Tier 2",
+    cadence: "WEEKEND_3_DAY",
+    daysWindow: 3,
+    requiredOrders: 40,
+    bonusPaise: 100000, // ₹1,000
+    label: "₹1,000",
+    badge: "Sprint Gold",
+    description: "Complete 40 deliveries between Friday 06:00 and Sunday 23:59",
+  },
+  {
+    id: "weekend-sprint-3",
+    title: "Weekend Sovereign Champion",
+    cadence: "WEEKEND_3_DAY",
+    daysWindow: 3,
+    requiredOrders: 60,
+    bonusPaise: 180000, // ₹1,800
+    label: "₹1,800",
+    badge: "Sprint Platinum",
+    description: "Complete 60 deliveries between Friday 06:00 and Sunday 23:59",
+  },
+  // Weekly 7-Day Marathons
+  {
+    id: "weekly-marathon-1",
+    title: "Weekly Dedicated Courier",
+    cadence: "WEEKLY_7_DAY",
+    daysWindow: 7,
+    requiredOrders: 50,
+    bonusPaise: 120000, // ₹1,200
+    label: "₹1,200",
+    badge: "Weekly Vanguard",
+    description: "Complete 50 deliveries in a single calendar week (Mon - Sun)",
+  },
+  {
+    id: "weekly-marathon-2",
+    title: "Weekly Pro Courier",
+    cadence: "WEEKLY_7_DAY",
+    daysWindow: 7,
+    requiredOrders: 80,
+    bonusPaise: 240000, // ₹2,400
+    label: "₹2,400",
+    badge: "Weekly Elite",
+    description: "Complete 80 deliveries in a single calendar week (Mon - Sun)",
+  },
+  {
+    id: "weekly-marathon-3",
+    title: "Weekly Crown Master",
+    cadence: "WEEKLY_7_DAY",
+    daysWindow: 7,
+    requiredOrders: 110,
+    bonusPaise: 380000, // ₹3,800
+    label: "₹3,800",
+    badge: "Weekly Crown",
+    description: "Complete 110 deliveries in a single calendar week (Mon - Sun)",
+  },
 ];
 
 /**
@@ -161,6 +285,50 @@ export function calculateDailyMilestoneProgress(
     unlockedBonusPaise,
     remainingToNext,
     progressPct,
+  };
+}
+
+/**
+ * Calculates progress through multi-day touchpoint targets (e.g. 3-day weekend sprint or 7-day weekly marathon).
+ */
+export function calculateMultiDayTouchpointProgress(
+  completedOrders: number,
+  cadence: TouchpointCadence = "WEEKEND_3_DAY",
+  customTargets?: MultiDayTouchpointTarget[],
+): MultiDayTouchpointProgress {
+  const allTargets = customTargets ?? STANDARD_MULTIDAY_TOUCHPOINT_TARGETS;
+  const filtered = allTargets.filter((t) => t.cadence === cadence);
+  const sorted = [...filtered].sort((a, b) => a.requiredOrders - b.requiredOrders);
+
+  const currentIdx = sorted.findIndex((t) => completedOrders < t.requiredOrders);
+  const nextTarget = currentIdx === -1 ? null : sorted[currentIdx];
+
+  let unlockedBonusPaise = 0;
+  for (const t of sorted) {
+    if (completedOrders >= t.requiredOrders) {
+      unlockedBonusPaise = t.bonusPaise;
+    }
+  }
+
+  const detailed = sorted.map((t, idx) => ({
+    ...t,
+    isUnlocked: completedOrders >= t.requiredOrders,
+    isCurrentTarget: idx === currentIdx,
+  }));
+
+  const maxOrders = sorted[sorted.length - 1]?.requiredOrders || 60;
+  const targetForPct = nextTarget ? nextTarget.requiredOrders : maxOrders;
+  const progressPct = Math.min(100, Math.round((completedOrders / targetForPct) * 100));
+  const remainingToNext = nextTarget ? Math.max(0, nextTarget.requiredOrders - completedOrders) : 0;
+
+  return {
+    cadence,
+    completedOrders,
+    activeTarget: nextTarget ? { ...nextTarget, isUnlocked: false, isCurrentTarget: true } : null,
+    unlockedBonusPaise,
+    remainingToNext,
+    progressPct,
+    targets: detailed,
   };
 }
 
@@ -226,13 +394,19 @@ export function calculateCourierPerformance(metrics?: Partial<CourierPerformance
 }
 
 /**
- * Calculates current active surge multiplier taking tier, streak, and peak hours into account.
+ * Calculates current active surge multiplier taking tier, streak, peak hours, and weather into account.
+ * Maintains exact backward-compatible signature and response format.
  */
 export function calculateCompositeSurge(
   tier: RiderTier,
   streakDays: number,
   isPeakDinnerHour: boolean,
-): { multiplier: number; breakdown: { base: number; tierBoost: number; streakBoost: number; peakBoost: number } } {
+  options?: { isRainSurge?: boolean; rainSurgeBonusPaise?: number },
+): {
+  multiplier: number;
+  breakdown: { base: number; tierBoost: number; streakBoost: number; peakBoost: number; rainBoost?: number };
+  rainSurgeBonusPaise: number;
+} {
   const tierInfo = RIDER_TIERS[tier] ?? RIDER_TIERS.BRONZE;
   const streak = calculateStreakBonus(streakDays);
 
@@ -240,11 +414,55 @@ export function calculateCompositeSurge(
   const tierBoost = Number((tierInfo.surgeMultiplier - 1.0).toFixed(2));
   const streakBoost = Number((streak.streakBonusMultiplier - 1.0).toFixed(2));
   const peakBoost = isPeakDinnerHour ? 0.3 : 0.0;
+  const rainBoost = options?.isRainSurge ? 0.2 : 0.0;
 
-  const total = Number((base + tierBoost + streakBoost + peakBoost).toFixed(2));
+  const total = Number((base + tierBoost + streakBoost + peakBoost + rainBoost).toFixed(2));
+
+  let rainSurgeBonusPaise = 0;
+  if (options?.isRainSurge) {
+    const raw = options.rainSurgeBonusPaise ?? 2500;
+    rainSurgeBonusPaise = Math.min(4500, Math.max(1000, Math.round(raw)));
+  }
 
   return {
     multiplier: total,
-    breakdown: { base, tierBoost, streakBoost, peakBoost },
+    breakdown: {
+      base,
+      tierBoost,
+      streakBoost,
+      peakBoost,
+      ...(options?.isRainSurge ? { rainBoost } : {}),
+    },
+    rainSurgeBonusPaise,
   };
+}
+
+// ---------------------------------------------------------------------------
+// ZOMATO SETTLEMENT & WEEKLY MARATHON INTEGRATION
+// ---------------------------------------------------------------------------
+
+import {
+  getZomatoWeeklyCycle,
+  type ZomatoWeeklyCycle,
+  calculateProgressiveDistancePay,
+  type ProgressiveDistanceBreakdown,
+  calculateStackedOrderPay,
+  type StackedOrderPayBreakdown,
+} from "./money.ts";
+
+export {
+  getZomatoWeeklyCycle,
+  type ZomatoWeeklyCycle,
+  calculateProgressiveDistancePay,
+  type ProgressiveDistanceBreakdown,
+  calculateStackedOrderPay,
+  type StackedOrderPayBreakdown,
+};
+
+/**
+ * Returns the standardized Zomato weekly marathon cycle (Monday 00:00:00 to Sunday 23:59:59 with Wednesday settlement)
+ * corresponding to the given date or current timestamp.
+ */
+export function getWeeklyMarathonCycle(date?: Date | string | number): ZomatoWeeklyCycle {
+  return getZomatoWeeklyCycle(date);
 }

@@ -13,7 +13,7 @@ import {
   STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
 } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { createTicketFn, getEarningsFn, getSettlementsFn } from "@/lib/server/rider-fns";
+import { createTicketFn, getEarningsFn, getSettlementsFn, getHomeFn } from "@/lib/server/rider-fns";
 import type { EarningLine } from "@/lib/rider/types";
 import { Download, FileQuestion, Printer } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -21,6 +21,7 @@ import {
   STANDARD_DAILY_MILESTONES,
   calculateDailyMilestoneProgress,
 } from "@/lib/rider/gig-engine";
+import { VipAmbassadorPass } from "@/components/rider/vip-ambassador-pass";
 
 export const Route = createFileRoute("/earnings")({ component: Page });
 
@@ -38,6 +39,7 @@ function Page() {
 
   const [data, setData] = useState<Awaited<ReturnType<typeof getEarningsFn>> | null>(null);
   const [settlements, setSettlements] = useState<Awaited<ReturnType<typeof getSettlementsFn>>>([]);
+  const [rider, setRider] = useState<Awaited<ReturnType<typeof getHomeFn>>["rider"] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [instantPayoutNotice, setInstantPayoutNotice] = useState<string | null>(null);
 
@@ -78,6 +80,7 @@ function Page() {
   useEffect(() => {
     void loadEarnings();
     void getSettlementsFn().then(setSettlements).catch(() => undefined);
+    void getHomeFn().then((h) => setRider(h.rider)).catch(() => undefined);
   }, [loadEarnings]);
 
   const uniqueTripCodes = new Set(
@@ -201,7 +204,7 @@ function Page() {
           </div>
         </div>
 
-        {/* Daily Incentive Milestones (Zomato Partner Model) */}
+        {/* Daily Incentive Milestones (OrderKing Partner Fleet Model) */}
         {preset === "today" && !usingCustomRange ? (
           <Card className="space-y-3">
             <div className="flex items-center justify-between">
@@ -266,6 +269,13 @@ function Page() {
             </div>
           </Card>
         ) : null}
+
+        {/* OrderKing VIP Ambassador Pass & Micro-Royalty Protocol */}
+        <VipAmbassadorPass
+          riderName={rider?.fullName}
+          riderId={rider?.id}
+          phone={rider?.phone}
+        />
 
         {/* Period Presets & Custom Date Range Filter */}
         <Card className="space-y-3">

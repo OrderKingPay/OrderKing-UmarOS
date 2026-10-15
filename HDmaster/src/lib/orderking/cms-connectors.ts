@@ -1547,6 +1547,23 @@ export interface AlgorithmSettingsConfig {
   surgeMultiplierCap: number;
   /** Average Kitchen Prep Time Buffer (minutes) */
   kitchenPrepBufferMinutes: number;
+
+  /** Rider Base Payout Floor (₹) */
+  riderBasePayoutInr?: number;
+  /** Rider Pickup Fee (₹) */
+  riderPickupFeeInr?: number;
+  /** Rider Drop Fee (₹) */
+  riderDropFeeInr?: number;
+  /** Rider Per-Km Rate beyond 2km (₹10 - ₹14/km) */
+  riderPerKmRateInr?: number;
+  /** Rider Wait Pay Rate (₹/min after grace) */
+  riderWaitPayPerMinInr?: number;
+  /** Rider Wait Grace Period (minutes, default 6) */
+  riderWaitGraceMinutes?: number;
+  /** Rider Rain Surge Bonus (₹10 - ₹45) */
+  riderRainSurgeBonusInr?: number;
+  /** Active Default City Tier */
+  activeCityTier?: "TIER_1" | "TIER_2" | "TIER_3";
 }
 
 export const DEFAULT_ALGORITHM_SETTINGS: AlgorithmSettingsConfig = {
@@ -1554,6 +1571,14 @@ export const DEFAULT_ALGORITHM_SETTINGS: AlgorithmSettingsConfig = {
   baseDeliveryFeeInr: 35.0,
   surgeMultiplierCap: 2.0,
   kitchenPrepBufferMinutes: 15,
+  riderBasePayoutInr: 35.0,
+  riderPickupFeeInr: 20.0,
+  riderDropFeeInr: 15.0,
+  riderPerKmRateInr: 12.0,
+  riderWaitPayPerMinInr: 1.0,
+  riderWaitGraceMinutes: 6,
+  riderRainSurgeBonusInr: 25.0,
+  activeCityTier: "TIER_1",
 };
 
 /** Get Algorithm Settings with database fallback and system defaults */
@@ -1581,6 +1606,32 @@ export async function loadAlgorithmSettingsData(): Promise<AlgorithmSettingsConf
       : (typeof bag.plugin_connectors?.mapbox?.etaSafetyBufferMinutes === "number"
           ? bag.plugin_connectors.mapbox.etaSafetyBufferMinutes
           : DEFAULT_ALGORITHM_SETTINGS.kitchenPrepBufferMinutes),
+    riderBasePayoutInr: typeof rawAlgo.riderBasePayoutInr === "number"
+      ? rawAlgo.riderBasePayoutInr
+      : (typeof rawMarket.deliveryBasePaise === "number"
+          ? rawMarket.deliveryBasePaise / 100
+          : DEFAULT_ALGORITHM_SETTINGS.riderBasePayoutInr),
+    riderPickupFeeInr: typeof rawAlgo.riderPickupFeeInr === "number"
+      ? rawAlgo.riderPickupFeeInr
+      : DEFAULT_ALGORITHM_SETTINGS.riderPickupFeeInr,
+    riderDropFeeInr: typeof rawAlgo.riderDropFeeInr === "number"
+      ? rawAlgo.riderDropFeeInr
+      : DEFAULT_ALGORITHM_SETTINGS.riderDropFeeInr,
+    riderPerKmRateInr: typeof rawAlgo.riderPerKmRateInr === "number"
+      ? rawAlgo.riderPerKmRateInr
+      : (typeof rawMarket.deliveryPerKmPaise === "number"
+          ? rawMarket.deliveryPerKmPaise / 100
+          : DEFAULT_ALGORITHM_SETTINGS.riderPerKmRateInr),
+    riderWaitPayPerMinInr: typeof rawAlgo.riderWaitPayPerMinInr === "number"
+      ? rawAlgo.riderWaitPayPerMinInr
+      : DEFAULT_ALGORITHM_SETTINGS.riderWaitPayPerMinInr,
+    riderWaitGraceMinutes: typeof rawAlgo.riderWaitGraceMinutes === "number"
+      ? rawAlgo.riderWaitGraceMinutes
+      : DEFAULT_ALGORITHM_SETTINGS.riderWaitGraceMinutes,
+    riderRainSurgeBonusInr: typeof rawAlgo.riderRainSurgeBonusInr === "number"
+      ? rawAlgo.riderRainSurgeBonusInr
+      : DEFAULT_ALGORITHM_SETTINGS.riderRainSurgeBonusInr,
+    activeCityTier: rawAlgo.activeCityTier ?? DEFAULT_ALGORITHM_SETTINGS.activeCityTier,
   };
 }
 
@@ -1592,6 +1643,14 @@ export async function saveAlgorithmSettingsData(updates: Partial<AlgorithmSettin
     baseDeliveryFeeInr: updates.baseDeliveryFeeInr !== undefined ? Number(updates.baseDeliveryFeeInr) : current.baseDeliveryFeeInr,
     surgeMultiplierCap: updates.surgeMultiplierCap !== undefined ? Number(updates.surgeMultiplierCap) : current.surgeMultiplierCap,
     kitchenPrepBufferMinutes: updates.kitchenPrepBufferMinutes !== undefined ? Number(updates.kitchenPrepBufferMinutes) : current.kitchenPrepBufferMinutes,
+    riderBasePayoutInr: updates.riderBasePayoutInr !== undefined ? Number(updates.riderBasePayoutInr) : current.riderBasePayoutInr,
+    riderPickupFeeInr: updates.riderPickupFeeInr !== undefined ? Number(updates.riderPickupFeeInr) : current.riderPickupFeeInr,
+    riderDropFeeInr: updates.riderDropFeeInr !== undefined ? Number(updates.riderDropFeeInr) : current.riderDropFeeInr,
+    riderPerKmRateInr: updates.riderPerKmRateInr !== undefined ? Number(updates.riderPerKmRateInr) : current.riderPerKmRateInr,
+    riderWaitPayPerMinInr: updates.riderWaitPayPerMinInr !== undefined ? Number(updates.riderWaitPayPerMinInr) : current.riderWaitPayPerMinInr,
+    riderWaitGraceMinutes: updates.riderWaitGraceMinutes !== undefined ? Number(updates.riderWaitGraceMinutes) : current.riderWaitGraceMinutes,
+    riderRainSurgeBonusInr: updates.riderRainSurgeBonusInr !== undefined ? Number(updates.riderRainSurgeBonusInr) : current.riderRainSurgeBonusInr,
+    activeCityTier: updates.activeCityTier ?? current.activeCityTier,
   };
 
   const bag = await getPlatformSettingsBag();
@@ -1605,10 +1664,19 @@ export async function saveAlgorithmSettingsData(updates: Partial<AlgorithmSettin
       baseDeliveryFeeInr: next.baseDeliveryFeeInr,
       surgeMultiplierCap: next.surgeMultiplierCap,
       kitchenPrepBufferMinutes: next.kitchenPrepBufferMinutes,
+      riderBasePayoutInr: next.riderBasePayoutInr,
+      riderPickupFeeInr: next.riderPickupFeeInr,
+      riderDropFeeInr: next.riderDropFeeInr,
+      riderPerKmRateInr: next.riderPerKmRateInr,
+      riderWaitPayPerMinInr: next.riderWaitPayPerMinInr,
+      riderWaitGraceMinutes: next.riderWaitGraceMinutes,
+      riderRainSurgeBonusInr: next.riderRainSurgeBonusInr,
+      activeCityTier: next.activeCityTier,
     },
     marketplace: {
       ...existingMarket,
       deliveryBasePaise: Math.round(next.baseDeliveryFeeInr * 100),
+      deliveryPerKmPaise: Math.round((next.riderPerKmRateInr ?? 12) * 100),
     },
   });
 

@@ -135,6 +135,21 @@ const trustedOrigins: string[] = [
   ...LOCAL_DEV_ORIGINS,
   ...previewAllowedHosts,
   ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
+  "https://orderking.in",
+  "http://orderking.in",
+  "https://riders.orderking.in",
+  "http://riders.orderking.in",
+  "https://partner.orderking.in",
+  "http://partner.orderking.in",
+  "https://admin.orderking.in",
+  "http://admin.orderking.in",
+  "https://umaros.orderking.in",
+  "http://umaros.orderking.in",
+  "https://*.orderking.in",
+  "http://*.orderking.in",
+  "https://*.pages.dev",
+  "https://*.vercel.app",
+  "https://*.netlify.app",
 ];
 
 const databaseUrl = env("DATABASE_URL");

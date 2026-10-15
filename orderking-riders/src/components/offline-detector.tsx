@@ -1,22 +1,26 @@
 import { useEffect, useState } from "react";
-import { flushRiderOfflineQueue } from "@/lib/rider/rider-low-network";
+import { flushRiderOfflineQueue, registerDefaultRiderExecutor } from "@/lib/rider/rider-low-network";
 import { deliveryActionFn } from "@/lib/server/rider-fns";
 
 export function OfflineDetector() {
   const [online, setOnline] = useState(true);
   useEffect(() => {
-    const flushQueue = () => {
-      void flushRiderOfflineQueue(async (action) => {
-        if (action.action === "DUTY_TOGGLE") return;
-        await deliveryActionFn({
-          data: {
-            deliveryId: action.deliveryId,
-            action: action.action as any,
-            idempotencyKey: action.idempotencyKey,
-            ...(action.payload as any),
-          },
-        });
+    const riderExecutor = async (action: any) => {
+      if (action.action === "DUTY_TOGGLE") return;
+      await deliveryActionFn({
+        data: {
+          deliveryId: action.deliveryId,
+          action: action.action as any,
+          idempotencyKey: action.idempotencyKey,
+          ...(action.payload as any),
+        },
       });
+    };
+
+    registerDefaultRiderExecutor(riderExecutor);
+
+    const flushQueue = () => {
+      void flushRiderOfflineQueue(riderExecutor);
     };
 
     const on = () => {

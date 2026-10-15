@@ -22,7 +22,7 @@ interface FloatingBottomNavProps {
 function hapticTap() {
   try {
     if (typeof window !== "undefined" && typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
-      navigator.vibrate(10);
+      navigator.vibrate(12);
     }
   } catch {
     /* silent on unsupported devices / browser security restrictions */
@@ -48,102 +48,119 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
   );
   const hasActiveOrder = activeOrders.length > 0;
 
-  const isFoodHome = pathname === "/" || pathname.startsWith("/delivery");
+  const isFoodHome =
+    pathname === "/" ||
+    pathname.startsWith("/delivery") ||
+    pathname.startsWith("/restaurants") ||
+    pathname.startsWith("/menu");
   const isTutorJobs = pathname.startsWith("/tutor");
-  const isKingPay = pathname.startsWith("/king-pay") || pathname.startsWith("/earn");
+  const isKingPay = pathname.startsWith("/king-pay") || pathname.startsWith("/earn") || pathname.startsWith("/wallet");
   const isTravel = pathname.startsWith("/travel");
-  const isOrders = pathname.startsWith("/orders");
   const isTrips = pathname.startsWith("/travel/trips");
+  const isOrders = pathname.startsWith("/orders") || isTrips;
 
   const onTap = useCallback(() => hapticTap(), []);
 
   return (
     <nav
       role="navigation"
-      aria-label="Main navigation"
+      aria-label="OrderKing Primary Navigation"
       className={cn(
-        "fixed inset-x-0 bottom-1.5 sm:bottom-3 z-50 pointer-events-none mx-auto w-full max-w-lg px-1.5 sm:px-3",
+        "fixed inset-x-0 bottom-1.5 sm:bottom-3 z-50 pointer-events-none mx-auto w-full max-w-lg px-2 sm:px-3 select-none",
         className
       )}
     >
-      {/* ─── Ambient Iridescent Glow Ring (Backdrop Aura) ─── */}
+      {/* ─── Dynamic Jewel Aura (Prismatic Ambient Floor Glow) ─── */}
       <div
-        className="absolute -inset-[2px] rounded-[30px] opacity-75 blur-md pointer-events-none -z-10 animate-pulse"
+        className="absolute -inset-[3px] rounded-[32px] opacity-75 blur-lg pointer-events-none -z-10 transition-opacity duration-500"
         style={{
-          background:
-            "linear-gradient(90deg, rgba(16,185,129,0.3) 0%, rgba(168,85,247,0.3) 25%, rgba(245,158,11,0.45) 50%, rgba(37,99,235,0.3) 75%, rgba(225,29,72,0.3) 100%)",
+          background: isKingPay
+            ? "radial-gradient(ellipse at center, rgba(245,158,11,0.55) 0%, rgba(217,119,6,0.2) 55%, transparent 75%)"
+            : isFoodHome
+            ? "radial-gradient(ellipse at 15% 50%, rgba(16,185,129,0.5) 0%, rgba(245,158,11,0.2) 50%, transparent 80%)"
+            : isTutorJobs
+            ? "radial-gradient(ellipse at 35% 50%, rgba(168,85,247,0.5) 0%, rgba(245,158,11,0.2) 50%, transparent 80%)"
+            : isTravel
+            ? "radial-gradient(ellipse at 65% 50%, rgba(37,99,235,0.5) 0%, rgba(245,158,11,0.2) 50%, transparent 80%)"
+            : "radial-gradient(ellipse at 85% 50%, rgba(225,29,72,0.5) 0%, rgba(245,158,11,0.2) 50%, transparent 80%)",
         }}
       />
 
-      {/* ─── Ultra-Luxury Glassmorphism Island ─── */}
+      {/* ─── Ultra-Luxury 3D Glassmorphic Floating Island ─── */}
       <div
-        className="pointer-events-auto relative overflow-visible rounded-[26px] sm:rounded-[28px] px-1 sm:px-1.5 pt-1.5 pb-1 transition-all duration-500 border border-amber-300/30"
+        className="pointer-events-auto relative overflow-visible rounded-[28px] sm:rounded-[30px] px-1.5 sm:px-2 pt-1.5 pb-1 transition-all duration-300"
         style={{
           background:
-            "linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,253,248,0.95) 50%, rgba(255,255,255,0.96) 100%)",
-          backdropFilter: "blur(28px) saturate(1.9)",
-          WebkitBackdropFilter: "blur(28px) saturate(1.9)",
+            "linear-gradient(135deg, rgba(255,255,255,0.97) 0%, rgba(255,253,248,0.96) 50%, rgba(255,255,255,0.97) 100%)",
+          backdropFilter: "blur(28px) saturate(2)",
+          WebkitBackdropFilter: "blur(28px) saturate(2)",
+          border: "1px solid rgba(245, 158, 11, 0.35)",
           boxShadow: [
-            "0 20px 60px -10px rgba(15,23,42,0.18)",
-            "0 8px 24px -4px rgba(245,158,11,0.15)",
-            "0 0 0 1px rgba(245,158,11,0.25)",
-            "inset 0 1px 2px rgba(255,255,255,1)",
-            "inset 0 -1px 2px rgba(245,158,11,0.08)",
+            "0 24px 60px -12px rgba(15,23,42,0.22)",
+            "0 10px 25px -5px rgba(245,158,11,0.2)",
+            "inset 0 1.5px 2px rgba(255,255,255,1)",
+            "inset 0 -1.5px 2px rgba(245,158,11,0.12)",
           ].join(","),
         }}
       >
-        {/* Ambient Gold Beam - Top Edge */}
-        <div className="absolute top-0 inset-x-6 h-[1.5px] bg-gradient-to-r from-transparent via-amber-400/90 to-transparent pointer-events-none" />
-        {/* Subtle Spectrum Bottom Glow */}
-        <div className="absolute bottom-0 inset-x-4 h-[1px] bg-gradient-to-r from-emerald-400/40 via-amber-400/50 to-rose-400/40 pointer-events-none" />
+        {/* Specular Gold Refraction Beam - Top Edge */}
+        <div className="absolute top-0 inset-x-8 h-[1.5px] bg-gradient-to-r from-transparent via-amber-400/95 to-transparent pointer-events-none" />
+        {/* Nano Specular Base Refraction */}
+        <div className="absolute bottom-0 inset-x-6 h-[1px] bg-gradient-to-r from-emerald-400/30 via-amber-400/50 to-rose-400/30 pointer-events-none" />
 
-        <ul className="grid grid-cols-5 items-end justify-items-center relative w-full">
-          {/* ━━━ 1. FOOD DELIVERY ━━━ Emerald Food Gradient */}
+        <ul className="grid grid-cols-5 items-end justify-items-center relative w-full m-0 p-0 list-none">
+          {/* ━━━ TAB 1: EMERALD FOOD DELIVERY ━━━ */}
           <li className="w-full flex justify-center">
             <Link
               to="/"
               preload="intent"
               onClick={onTap}
               className={cn(
-                "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-transform duration-200",
-                isFoodHome ? "scale-[1.02]" : "active:scale-90"
+                "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-all duration-200 transform-gpu",
+                isFoodHome ? "scale-[1.04]" : "active:scale-95 hover:opacity-90"
               )}
+              title="Food Delivery"
             >
+              {/* 3D Raised Emerald Jewel */}
               <div
                 className={cn(
-                  "relative flex size-9 sm:size-10 items-center justify-center rounded-2xl transition-all duration-300 border",
+                  "relative flex size-9 sm:size-10 items-center justify-center rounded-2xl transition-all duration-300 transform-gpu",
                   isFoodHome
-                    ? "bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600 text-white border-emerald-300/80 shadow-[0_4px_16px_rgba(16,185,129,0.5),inset_0_1px_1px_rgba(255,255,255,0.7)] scale-105"
-                    : "bg-gradient-to-br from-emerald-500/15 via-teal-500/15 to-emerald-600/10 text-emerald-800 border-emerald-300/60 shadow-sm group-hover:bg-emerald-500/25 group-hover:border-emerald-400/80"
+                    ? "bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-700 text-white border border-emerald-300/90 shadow-[0_6px_20px_rgba(16,185,129,0.55),0_2px_4px_rgba(5,150,105,0.4),inset_0_1.5px_1px_rgba(255,255,255,0.9),inset_0_-2px_4px_rgba(4,120,87,0.5)]"
+                    : "bg-gradient-to-b from-emerald-50 to-emerald-100/70 text-emerald-800 border border-emerald-300/60 shadow-[0_2px_6px_rgba(16,185,129,0.12),inset_0_1px_1px_rgba(255,255,255,0.85)] group-hover:bg-emerald-100"
                 )}
               >
                 <UtensilsCrossed
                   className={cn(
-                    "size-[17px] sm:size-[18px] transition-all duration-200",
-                    isFoodHome ? "stroke-[2.6] drop-shadow-sm" : "stroke-[2.1] group-hover:scale-110"
+                    "size-[18px] transition-transform duration-200",
+                    isFoodHome
+                      ? "stroke-[2.6] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                      : "stroke-[2.2] text-emerald-800 group-hover:scale-105"
                   )}
                   aria-hidden="true"
                 />
-                {/* Live green pulse beacon */}
+
+                {/* 3D Emerald Pulse Beacon (Live Kitchens & Delivery) */}
                 <span className="absolute -top-0.5 -right-0.5 flex size-2.5">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative inline-flex size-2 rounded-full bg-emerald-500 border border-white shadow-sm" />
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-emerald-500 border border-white shadow-[0_0_6px_rgba(16,185,129,0.9)]" />
                 </span>
               </div>
 
+              {/* Tab Title */}
               <span
                 className={cn(
-                  "mt-1 text-[8px] sm:text-[9.5px] leading-tight tracking-tight transition-colors truncate max-w-full px-0.5 text-center",
-                  isFoodHome ? "font-black text-emerald-950" : "font-extrabold text-emerald-800/80"
+                  "mt-1 text-[8.5px] sm:text-[10px] leading-tight tracking-tight transition-colors truncate max-w-full px-0.5 text-center",
+                  isFoodHome ? "font-black text-emerald-950" : "font-bold text-emerald-900/80"
                 )}
               >
                 Food
               </span>
 
-              {/* Animated Gradient Bar Indicator */}
+              {/* 3D Tactile Neon Indicator Bar */}
               <div className="h-[3.5px] w-6 sm:w-7 mt-0.5 flex items-center justify-center">
                 {isFoodHome ? (
-                  <span className="h-full w-full rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.95)] animate-pulse" />
+                  <span className="h-full w-full rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 shadow-[0_0_12px_rgba(16,185,129,1)]" />
                 ) : (
                   <span className="h-full w-0 rounded-full bg-transparent transition-all duration-300" />
                 )}
@@ -151,51 +168,57 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
             </Link>
           </li>
 
-          {/* ━━━ 2. TUTOR & JOBS ━━━ Amethyst Tutor Gradient */}
+          {/* ━━━ TAB 2: AMETHYST TUTOR & JOBS ━━━ */}
           <li className="w-full flex justify-center">
             <Link
               to="/tutor"
               preload="intent"
               onClick={onTap}
               className={cn(
-                "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-transform duration-200",
-                isTutorJobs ? "scale-[1.02]" : "active:scale-90"
+                "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-all duration-200 transform-gpu",
+                isTutorJobs ? "scale-[1.04]" : "active:scale-95 hover:opacity-90"
               )}
+              title="Tutor & Jobs Marketplace"
             >
+              {/* 3D Raised Amethyst Jewel */}
               <div
                 className={cn(
-                  "relative flex size-9 sm:size-10 items-center justify-center rounded-2xl transition-all duration-300 border",
+                  "relative flex size-9 sm:size-10 items-center justify-center rounded-2xl transition-all duration-300 transform-gpu",
                   isTutorJobs
-                    ? "bg-gradient-to-br from-purple-500 via-fuchsia-600 to-indigo-700 text-white border-purple-300/80 shadow-[0_4px_16px_rgba(168,85,247,0.5),inset_0_1px_1px_rgba(255,255,255,0.7)] scale-105"
-                    : "bg-gradient-to-br from-purple-500/15 via-fuchsia-500/15 to-indigo-600/10 text-purple-800 border-purple-300/60 shadow-sm group-hover:bg-purple-500/25 group-hover:border-purple-400/80"
+                    ? "bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-800 text-white border border-purple-300/90 shadow-[0_6px_20px_rgba(147,51,234,0.55),0_2px_4px_rgba(107,33,168,0.4),inset_0_1.5px_1px_rgba(255,255,255,0.9),inset_0_-2px_4px_rgba(88,28,135,0.5)]"
+                    : "bg-gradient-to-b from-purple-50 to-fuchsia-100/70 text-purple-800 border border-purple-300/60 shadow-[0_2px_6px_rgba(147,51,234,0.12),inset_0_1px_1px_rgba(255,255,255,0.85)] group-hover:bg-purple-100"
                 )}
               >
                 <GraduationCap
                   className={cn(
-                    "size-[17px] sm:size-[18px] transition-all duration-200",
-                    isTutorJobs ? "stroke-[2.6] drop-shadow-sm" : "stroke-[2.1] group-hover:scale-110"
+                    "size-[18px] transition-transform duration-200",
+                    isTutorJobs
+                      ? "stroke-[2.6] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                      : "stroke-[2.2] text-purple-800 group-hover:scale-105"
                   )}
                   aria-hidden="true"
                 />
-                {/* EARN badge */}
-                <span className="absolute -top-1.5 -right-2 rounded-full bg-gradient-to-r from-fuchsia-600 via-pink-500 to-purple-600 px-[5px] py-[0.5px] text-[6.5px] font-black text-white shadow-md border border-white/60 tracking-wider">
+
+                {/* 3D Embossed EARN Highlight Badge */}
+                <span className="absolute -top-1.5 -right-2.5 rounded-full bg-gradient-to-r from-fuchsia-600 via-pink-500 to-amber-400 px-[6px] py-[1px] text-[6.5px] font-black text-white shadow-[0_3px_8px_rgba(217,70,239,0.55)] border border-white/90 tracking-wider uppercase">
                   EARN
                 </span>
               </div>
 
+              {/* Tab Title */}
               <span
                 className={cn(
-                  "mt-1 text-[8px] sm:text-[9.5px] leading-tight tracking-tight transition-colors truncate max-w-full px-0.5 text-center",
-                  isTutorJobs ? "font-black text-purple-950" : "font-extrabold text-purple-800/80"
+                  "mt-1 text-[8.5px] sm:text-[10px] leading-tight tracking-tight transition-colors truncate max-w-full px-0.5 text-center",
+                  isTutorJobs ? "font-black text-purple-950" : "font-bold text-purple-900/80"
                 )}
               >
                 Tutor
               </span>
 
-              {/* Animated Gradient Bar Indicator */}
+              {/* 3D Tactile Neon Indicator Bar */}
               <div className="h-[3.5px] w-6 sm:w-7 mt-0.5 flex items-center justify-center">
                 {isTutorJobs ? (
-                  <span className="h-full w-full rounded-full bg-gradient-to-r from-purple-400 via-fuchsia-300 to-indigo-500 shadow-[0_0_10px_rgba(168,85,247,0.95)] animate-pulse" />
+                  <span className="h-full w-full rounded-full bg-gradient-to-r from-purple-400 via-fuchsia-300 to-indigo-500 shadow-[0_0_12px_rgba(168,85,247,1)]" />
                 ) : (
                   <span className="h-full w-0 rounded-full bg-transparent transition-all duration-300" />
                 )}
@@ -203,61 +226,63 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
             </Link>
           </li>
 
-          {/* ━━━ 3. KINGPAY ━━━ 24K Gold Sovereign Flagship Centerpiece */}
+          {/* ━━━ TAB 3: KINGPAY — 24K GOLD SOVEREIGN CENTERPIECE ━━━ */}
           <li className="w-full flex justify-center">
             <Link
               to="/king-pay"
               preload="intent"
               onClick={onTap}
-              className="group relative -mt-6 sm:-mt-7 flex flex-col items-center justify-center no-underline transition-all duration-300 active:scale-[0.92]"
+              className="group relative -mt-6 sm:-mt-7 flex flex-col items-center justify-center no-underline transition-all duration-300 active:scale-95 transform-gpu"
               title="KingPay UPI & 24K Digital Gold"
             >
-              {/* Elevated 24K Golden Sovereign Ring */}
+              {/* 24K Gold Sovereign Beveled Frame */}
               <div
                 className={cn(
-                  "relative p-[3px] sm:p-[3.5px] rounded-[22px] sm:rounded-[24px] transition-all duration-500",
+                  "relative p-[3.5px] sm:p-[4px] rounded-[24px] sm:rounded-[26px] transition-all duration-300 transform-gpu",
                   isKingPay
-                    ? "scale-[1.12] shadow-[0_10px_35px_rgba(245,158,11,0.65),0_0_0_3px_rgba(251,191,36,0.5),inset_0_1px_3px_rgba(255,255,255,0.9)]"
-                    : "shadow-[0_8px_24px_rgba(245,158,11,0.4),0_0_0_1.5px_rgba(245,158,11,0.3)] group-hover:scale-105 group-hover:shadow-[0_10px_30px_rgba(245,158,11,0.55)]"
+                    ? "scale-[1.14] shadow-[0_14px_36px_rgba(245,158,11,0.7),0_0_0_3px_rgba(251,191,36,0.6),inset_0_2px_4px_rgba(255,255,255,0.95)]"
+                    : "shadow-[0_10px_28px_rgba(245,158,11,0.48),0_0_0_1.5px_rgba(245,158,11,0.35),inset_0_1.5px_2px_rgba(255,255,255,0.85)] group-hover:scale-105 group-hover:shadow-[0_12px_32px_rgba(245,158,11,0.6)]"
                 )}
                 style={{
                   background:
-                    "linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FFF8DC 50%, #FFD700 75%, #B8860B 100%)",
+                    "linear-gradient(135deg, #FFF099 0%, #F59E0B 22%, #FFEAA7 45%, #D97706 70%, #92400E 100%)",
                 }}
               >
-                {/* Obsidian Jewel Core with Crown Emblem */}
-                <div className="flex size-[46px] sm:size-[52px] items-center justify-center rounded-[19px] sm:rounded-[20px] bg-gradient-to-b from-gray-950 via-slate-900 to-amber-950 text-amber-300 shadow-inner relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-amber-400/10 to-transparent pointer-events-none" />
-                  <Crown className="size-6 sm:size-7 text-amber-300 fill-amber-400/35 drop-shadow-[0_2px_10px_rgba(245,158,11,0.95)] stroke-[2.2]" />
+                {/* Obsidian Jewel Core with 3D Embossed Crown */}
+                <div className="flex size-[48px] sm:size-[54px] items-center justify-center rounded-[21px] sm:rounded-[22px] bg-gradient-to-b from-stone-950 via-[#191612] to-amber-950 text-amber-300 shadow-[inset_0_3px_8px_rgba(0,0,0,0.85)] relative overflow-hidden border border-amber-400/30">
+                  {/* Diagonal Specular Sheen */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-amber-300/15 to-transparent pointer-events-none" />
+                  <Crown className="size-6 sm:size-7 text-amber-300 fill-amber-400/40 drop-shadow-[0_2px_12px_rgba(245,158,11,1)] stroke-[2.3]" />
                 </div>
 
-                {/* 24K GOLD Badge */}
+                {/* 3D 24K GOLD Sovereign Badge */}
                 <div
-                  className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-2 py-[1.5px] shadow-md border border-amber-200/80"
+                  className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-2 py-[1.5px] shadow-[0_2px_6px_rgba(0,0,0,0.3)] border border-amber-100"
                   style={{
-                    background: "linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b)",
+                    background: "linear-gradient(90deg, #F59E0B, #FDE68A, #F59E0B)",
                   }}
                 >
-                  <span className="flex items-center gap-0.5 text-[6.5px] sm:text-[7.5px] font-black uppercase tracking-wider text-slate-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)]">
-                    <Crown className="size-2 text-slate-950 fill-slate-950" />
+                  <span className="flex items-center gap-0.5 text-[6.5px] sm:text-[7.5px] font-black uppercase tracking-wider text-stone-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)]">
+                    <Crown className="size-2 text-stone-950 fill-stone-950" />
                     24K GOLD
                   </span>
                 </div>
 
-                {/* UPI Badge */}
-                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-1.5 py-[0.5px] shadow-sm border border-amber-300/60">
-                  <span className="text-[6px] font-black text-amber-900 tracking-wider">UPI</span>
+                {/* UPI Instant Badge */}
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/95 px-1.5 py-[0.5px] shadow-sm border border-amber-300/80">
+                  <span className="text-[6.5px] font-black text-amber-950 tracking-wider">UPI</span>
                 </div>
               </div>
 
-              <span className="mt-1 text-[9px] sm:text-[10px] font-black tracking-tight leading-tight text-amber-950 group-hover:text-amber-900">
+              {/* Centerpiece Title */}
+              <span className="mt-1 text-[9.5px] sm:text-[10.5px] font-black tracking-tight leading-tight text-amber-950 group-hover:text-amber-900">
                 KingPay
               </span>
 
-              {/* Animated 24K Gold Bar Indicator */}
-              <div className="h-[3.5px] w-7 sm:w-8 mt-0.5 flex items-center justify-center">
+              {/* 3D Tactile 24K Gold Bar Indicator */}
+              <div className="h-[3.5px] w-8 sm:w-9 mt-0.5 flex items-center justify-center">
                 {isKingPay ? (
-                  <span className="h-full w-full rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,1)] animate-pulse" />
+                  <span className="h-full w-full rounded-full bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 shadow-[0_0_14px_rgba(245,158,11,1)]" />
                 ) : (
                   <span className="h-full w-0 rounded-full bg-transparent transition-all duration-300" />
                 )}
@@ -265,51 +290,57 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
             </Link>
           </li>
 
-          {/* ━━━ 4. TRAVEL & STAYS ━━━ Sapphire Travel Gradient */}
+          {/* ━━━ TAB 4: SAPPHIRE TRAVEL & STAYS ━━━ */}
           <li className="w-full flex justify-center">
             <Link
               to="/travel"
               preload="intent"
               onClick={onTap}
               className={cn(
-                "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-transform duration-200",
-                isTravel ? "scale-[1.02]" : "active:scale-90"
+                "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-all duration-200 transform-gpu",
+                isTravel && !isTrips ? "scale-[1.04]" : "active:scale-95 hover:opacity-90"
               )}
+              title="Travel Flights & Luxury Stays"
             >
+              {/* 3D Raised Sapphire Jewel */}
               <div
                 className={cn(
-                  "relative flex size-9 sm:size-10 items-center justify-center rounded-2xl transition-all duration-300 border",
-                  isTravel
-                    ? "bg-gradient-to-br from-blue-500 via-indigo-600 to-sky-600 text-white border-blue-300/80 shadow-[0_4px_16px_rgba(37,99,235,0.5),inset_0_1px_1px_rgba(255,255,255,0.7)] scale-105"
-                    : "bg-gradient-to-br from-blue-500/15 via-sky-500/15 to-indigo-600/10 text-blue-800 border-blue-300/60 shadow-sm group-hover:bg-blue-500/25 group-hover:border-blue-400/80"
+                  "relative flex size-9 sm:size-10 items-center justify-center rounded-2xl transition-all duration-300 transform-gpu",
+                  isTravel && !isTrips
+                    ? "bg-gradient-to-br from-blue-500 via-indigo-600 to-sky-700 text-white border border-blue-300/90 shadow-[0_6px_20px_rgba(37,99,235,0.55),0_2px_4px_rgba(29,78,216,0.4),inset_0_1.5px_1px_rgba(255,255,255,0.9),inset_0_-2px_4px_rgba(30,58,138,0.5)]"
+                    : "bg-gradient-to-b from-sky-50 to-blue-100/70 text-blue-800 border border-blue-300/60 shadow-[0_2px_6px_rgba(37,99,235,0.12),inset_0_1px_1px_rgba(255,255,255,0.85)] group-hover:bg-blue-100"
                 )}
               >
                 <Plane
                   className={cn(
-                    "size-[17px] sm:size-[18px] transition-all duration-200",
-                    isTravel ? "stroke-[2.6] drop-shadow-sm" : "stroke-[2.1] group-hover:scale-110"
+                    "size-[18px] transition-transform duration-200 -rotate-12",
+                    isTravel && !isTrips
+                      ? "stroke-[2.6] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                      : "stroke-[2.2] text-blue-800 group-hover:scale-105"
                   )}
                   aria-hidden="true"
                 />
-                {/* 0% FEE badge */}
-                <span className="absolute -top-1.5 -right-2 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 px-[5px] py-[0.5px] text-[6.5px] font-black text-white shadow-md border border-white/60 tracking-wider">
+
+                {/* 3D Aviation 0% FEE Banner */}
+                <span className="absolute -top-1.5 -right-2.5 rounded-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-600 px-[6px] py-[1px] text-[6.5px] font-black text-white shadow-[0_3px_8px_rgba(37,99,235,0.55)] border border-white/90 tracking-wider uppercase">
                   0% FEE
                 </span>
               </div>
 
+              {/* Tab Title */}
               <span
                 className={cn(
-                  "mt-1 text-[8px] sm:text-[9.5px] leading-tight tracking-tight transition-colors truncate max-w-full px-0.5 text-center",
-                  isTravel ? "font-black text-blue-950" : "font-extrabold text-blue-800/80"
+                  "mt-1 text-[8.5px] sm:text-[10px] leading-tight tracking-tight transition-colors truncate max-w-full px-0.5 text-center",
+                  isTravel && !isTrips ? "font-black text-blue-950" : "font-bold text-blue-900/80"
                 )}
               >
                 Travel
               </span>
 
-              {/* Animated Gradient Bar Indicator */}
+              {/* 3D Tactile Neon Indicator Bar */}
               <div className="h-[3.5px] w-6 sm:w-7 mt-0.5 flex items-center justify-center">
                 {isTravel && !isTrips ? (
-                  <span className="h-full w-full rounded-full bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-500 shadow-[0_0_10px_rgba(37,99,235,0.95)] animate-pulse" />
+                  <span className="h-full w-full rounded-full bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-500 shadow-[0_0_12px_rgba(37,99,235,1)]" />
                 ) : (
                   <span className="h-full w-0 rounded-full bg-transparent transition-all duration-300" />
                 )}
@@ -317,69 +348,76 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
             </Link>
           </li>
 
-          {/* ━━━ 5. ORDERS / TRIPS ━━━ Ruby Orders Gradient */}
+          {/* ━━━ TAB 5: RUBY ORDERS / TRIPS ━━━ */}
           <li className="w-full flex justify-center">
             <Link
               to={isTravel ? "/travel/trips" : "/orders"}
               preload="intent"
               onClick={onTap}
               className={cn(
-                "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-transform duration-200",
-                isOrders || isTrips ? "scale-[1.02]" : "active:scale-90"
+                "group relative flex flex-col items-center justify-center py-0.5 w-full text-center no-underline transition-all duration-200 transform-gpu",
+                isOrders ? "scale-[1.04]" : "active:scale-95 hover:opacity-90"
               )}
+              title={isTravel ? "My Trips & Boarding Passes" : "My Orders & Tracking"}
             >
+              {/* 3D Raised Ruby Jewel */}
               <div
                 className={cn(
-                  "relative flex size-9 sm:size-10 items-center justify-center rounded-2xl transition-all duration-300 border",
-                  isOrders || isTrips
-                    ? "bg-gradient-to-br from-rose-500 via-red-600 to-pink-700 text-white border-rose-300/80 shadow-[0_4px_16px_rgba(225,29,72,0.5),inset_0_1px_1px_rgba(255,255,255,0.7)] scale-105"
-                    : "bg-gradient-to-br from-rose-500/15 via-red-500/15 to-pink-600/10 text-rose-800 border-rose-300/60 shadow-sm group-hover:bg-rose-500/25 group-hover:border-rose-400/80"
+                  "relative flex size-9 sm:size-10 items-center justify-center rounded-2xl transition-all duration-300 transform-gpu",
+                  isOrders
+                    ? "bg-gradient-to-br from-rose-500 via-red-600 to-rose-800 text-white border border-rose-300/90 shadow-[0_6px_20px_rgba(225,29,72,0.55),0_2px_4px_rgba(190,18,60,0.4),inset_0_1.5px_1px_rgba(255,255,255,0.9),inset_0_-2px_4px_rgba(159,18,57,0.5)]"
+                    : "bg-gradient-to-b from-rose-50 to-red-100/70 text-rose-800 border border-rose-300/60 shadow-[0_2px_6px_rgba(225,29,72,0.12),inset_0_1px_1px_rgba(255,255,255,0.85)] group-hover:bg-rose-100"
                 )}
               >
                 {isTravel ? (
                   <Ticket
                     className={cn(
-                      "size-[17px] sm:size-[18px] transition-all duration-200",
-                      isTrips ? "stroke-[2.6] drop-shadow-sm" : "stroke-[2.1] group-hover:scale-110"
+                      "size-[18px] transition-transform duration-200",
+                      isOrders
+                        ? "stroke-[2.6] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                        : "stroke-[2.2] text-rose-800 group-hover:scale-105"
                     )}
                     aria-hidden="true"
                   />
                 ) : (
                   <ShoppingBag
                     className={cn(
-                      "size-[17px] sm:size-[18px] transition-all duration-200",
-                      isOrders ? "stroke-[2.6] drop-shadow-sm" : "stroke-[2.1] group-hover:scale-110"
+                      "size-[18px] transition-transform duration-200",
+                      isOrders
+                        ? "stroke-[2.6] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                        : "stroke-[2.2] text-rose-800 group-hover:scale-105"
                     )}
                     aria-hidden="true"
                   />
                 )}
 
-                {/* Live Order Radar or Cart Count */}
+                {/* 3D Tactile Radar Beacon / Live Orders Indicator */}
                 {hasActiveOrder ? (
-                  <span className="absolute -top-0.5 -right-0.5 flex size-3">
-                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-rose-500 opacity-60" />
-                    <span className="relative inline-flex size-2.5 rounded-full bg-rose-600 ring-[1.5px] ring-white shadow-sm" />
+                  <span className="absolute -top-1 -right-1 flex size-3.5">
+                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-rose-500 opacity-75" />
+                    <span className="relative inline-flex size-3 rounded-full bg-rose-600 border-[1.5px] border-white shadow-[0_0_8px_rgba(225,29,72,1)]" />
                   </span>
                 ) : totalCartCount > 0 ? (
-                  <span className="absolute -top-1 -right-1.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-red-600 px-1 text-[8px] font-black text-white shadow-md border border-white/60">
+                  <span className="absolute -top-1.5 -right-2 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 px-1 text-[8px] font-black text-white shadow-md border border-white/90">
                     {totalCartCount}
                   </span>
                 ) : null}
               </div>
 
+              {/* Tab Title */}
               <span
                 className={cn(
-                  "mt-1 text-[8px] sm:text-[9.5px] leading-tight tracking-tight transition-colors truncate max-w-full px-0.5 text-center",
-                  isOrders || isTrips ? "font-black text-rose-950" : "font-extrabold text-rose-800/80"
+                  "mt-1 text-[8.5px] sm:text-[10px] leading-tight tracking-tight transition-colors truncate max-w-full px-0.5 text-center",
+                  isOrders ? "font-black text-rose-950" : "font-bold text-rose-900/80"
                 )}
               >
                 {isTravel ? "Trips" : "Orders"}
               </span>
 
-              {/* Animated Gradient Bar Indicator */}
+              {/* 3D Tactile Neon Indicator Bar */}
               <div className="h-[3.5px] w-6 sm:w-7 mt-0.5 flex items-center justify-center">
-                {isOrders || isTrips ? (
-                  <span className="h-full w-full rounded-full bg-gradient-to-r from-rose-400 via-pink-300 to-red-500 shadow-[0_0_10px_rgba(225,29,72,0.95)] animate-pulse" />
+                {isOrders ? (
+                  <span className="h-full w-full rounded-full bg-gradient-to-r from-rose-400 via-pink-300 to-red-500 shadow-[0_0_12px_rgba(225,29,72,1)]" />
                 ) : (
                   <span className="h-full w-0 rounded-full bg-transparent transition-all duration-300" />
                 )}

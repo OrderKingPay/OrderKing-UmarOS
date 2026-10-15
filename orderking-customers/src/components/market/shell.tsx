@@ -1,27 +1,15 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  ClipboardList,
-  House,
   Search,
   ShoppingBag,
-  UserRound,
-  Wallet,
-  Globe,
   MapPin,
   ChevronDown,
-  Compass,
-  GraduationCap,
-  Plane,
-  Briefcase,
-  Building2,
-  Luggage,
-  Sparkles,
   Crown,
   Gift,
   Mic,
 } from "lucide-react";
 import { useState, useEffect, lazy, Suspense } from "react";
-import { Wordmark, OrderKingMark } from "@/components/brand/wordmark";
+import { OrderKingMark } from "@/components/brand/wordmark";
 
 const LazyLocationDialog = lazy(() =>
   import("@/components/market/location-dialog").then((m) => ({ default: m.LocationDialog }))
@@ -41,11 +29,10 @@ import { useBrand, useT } from "@/components/providers";
 import { cartCount, useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { SignedIn, SignedOut, UserButton } from "@/lib/auth/gates";
+import { SignedOut } from "@/lib/auth/gates";
 import { cn } from "@/lib/utils";
 import { DeviceAvatar } from "@/components/common/device-avatar";
 import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
-import { formatPaise } from "@/lib/money";
 
 const SEARCH_PLACEHOLDERS = [
   "Biryani near you...",
@@ -65,42 +52,48 @@ export function CustomerShell({
   const { t, lang, setLang } = useT();
   const { brand } = useBrand();
   const location = useLocationStore((s) => s.location);
-  const isDeliveryActive = isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
-  const items = useCartStore((s) => s.items);
+  const isDeliveryActive = location ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId) : true;
+  const items = useCartStore((s) => s.items) ?? [];
   const count = cartCount(items);
-  const cartSubtotal = useCartStore((s) =>
-    s.items.reduce((acc, it) => acc + (it.variantId ? 0 : 0) + it.quantity * 100, 0)
-  );
-  const path = useRouterState({ select: (s) => s.location.pathname });
-  const currentHash = useRouterState({ select: (s) => s.location.hash });
+  const path = useRouterState({ select: (s) => s.location?.pathname }) || "";
   const { user, isPending } = useCurrentUserState();
   const navigate = useNavigate();
   const [locOpen, setLocOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
-  const [interactive, setInteractive] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchPlaceholderIndex, setSearchPlaceholderIndex] = useState(0);
   const { dietFilter, toggleVeg } = useDietStore();
 
   useEffect(() => {
+    let isMounted = true;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 8);
+      if (isMounted && typeof window !== "undefined") {
+        setIsScrolled(window.scrollY > 8);
+      }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      isMounted = false;
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     const interval = setInterval(() => {
-      setSearchPlaceholderIndex((prev) => (prev + 1) % SEARCH_PLACEHOLDERS.length);
+      if (isMounted) {
+        setSearchPlaceholderIndex((prev) => (prev + 1) % SEARCH_PLACEHOLDERS.length);
+      }
     }, 2800);
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
-    setInteractive(true);
     // Strictly enforce light mode in DOM
     if (typeof document !== "undefined") {
       document.documentElement.classList.remove("dark");
@@ -108,6 +101,9 @@ export function CustomerShell({
       document.documentElement.style.colorScheme = "light";
     }
   }, []);
+
+  const currentPlaceholder =
+    SEARCH_PLACEHOLDERS[searchPlaceholderIndex % SEARCH_PLACEHOLDERS.length] || "What are you hungry for?";
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-[#FCFAF7] text-gray-900 pb-20 md:max-w-5xl">
@@ -240,7 +236,7 @@ export function CustomerShell({
             >
               <MapPin className="size-3.5 text-emerald-600 shrink-0" />
               <span className="truncate text-[11px] font-black text-emerald-950">
-                {location.cityName || "Locating..."}
+                {location?.cityName || "Locating..."}
               </span>
               <ChevronDown className="size-3 text-emerald-600/70 shrink-0" />
             </button>
@@ -257,7 +253,7 @@ export function CustomerShell({
                   key={searchPlaceholderIndex}
                   className="absolute inset-0 text-xs text-gray-500 font-medium truncate transition-all duration-300"
                 >
-                  {SEARCH_PLACEHOLDERS[searchPlaceholderIndex]}
+                  {currentPlaceholder}
                 </span>
               </div>
             </button>
@@ -347,127 +343,5 @@ export function CustomerShell({
         </Suspense>
       ) : null}
     </div>
-  );
-}
-
-function KingPayCenterItem({ active, isKingPayPage }: { active: boolean; isKingPayPage: boolean }) {
-  if (isKingPayPage) {
-    return (
-      <li className="w-full flex justify-center">
-        <Link
-          to="/"
-          className="flex flex-col items-center justify-center no-underline relative transition-all -mt-4 sm:-mt-5 group"
-          title="Back to Food Delivery"
-        >
-          <div className="relative p-[2.5px] rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-300 to-yellow-200 shadow-[0_6px_20px_rgba(245,158,11,0.45)] transition-all duration-300 group-hover:scale-105 group-active:scale-95">
-            <div className="flex size-11 sm:size-12 items-center justify-center rounded-[13px] bg-gradient-to-b from-gray-950 via-slate-900 to-black text-amber-300 shadow-inner">
-              <span className="text-xl sm:text-2xl filter drop-shadow-[0_2px_6px_rgba(245,158,11,0.6)]">
-                🍔
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-col items-center mt-1">
-            <span className="text-[10px] sm:text-[11px] font-black tracking-tight text-amber-900 flex items-center gap-0.5 group-hover:text-amber-700">
-              OrderKing
-            </span>
-          </div>
-        </Link>
-      </li>
-    );
-  }
-
-  return (
-    <li className="w-full flex justify-center">
-      <Link
-        to="/king-pay"
-        className="flex flex-col items-center justify-center no-underline relative transition-all -mt-4 sm:-mt-5 group"
-        title="Open KingPay"
-      >
-        <div
-          className={cn(
-            "relative p-[2.5px] rounded-2xl transition-all duration-300 shadow-md",
-            active
-              ? "bg-gradient-to-tr from-amber-500 via-amber-300 to-yellow-200 shadow-amber-500/40 scale-105"
-              : "bg-gradient-to-tr from-amber-400/90 via-amber-200/90 to-yellow-100 shadow-amber-500/20 group-hover:scale-105 group-hover:shadow-amber-500/35"
-          )}
-        >
-          <div className="flex size-11 sm:size-12 items-center justify-center rounded-[13px] bg-gradient-to-b from-gray-950 via-slate-900 to-black text-amber-300 shadow-inner">
-            <span className="text-xl sm:text-2xl filter drop-shadow-[0_2px_6px_rgba(245,158,11,0.6)]">
-              👑
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-col items-center mt-1">
-          <span
-            className={cn(
-              "text-[10px] sm:text-[11px] font-black tracking-tight transition-colors",
-              active ? "text-amber-800" : "text-amber-900/80 group-hover:text-amber-700"
-            )}
-          >
-            King Pay
-          </span>
-          {active && <span className="size-1 rounded-full bg-amber-500 mt-0.5 shadow-xs" />}
-        </div>
-      </Link>
-    </li>
-  );
-}
-
-function NavItem({
-  to,
-  hash,
-  icon: Icon,
-  label,
-  active,
-  badge,
-}: {
-  to: string;
-  hash?: string;
-  icon: typeof House;
-  label: string;
-  active: boolean;
-  badge?: number | string;
-}) {
-  return (
-    <li className="w-full flex justify-center">
-      <Link
-        to={to}
-        hash={hash}
-        className={cn(
-          "flex flex-col items-center justify-center gap-0.5 text-[10px] sm:text-[11px] no-underline relative transition-all py-1 w-full group",
-          active
-            ? "text-[#E23744] font-black"
-            : "text-slate-500 hover:text-slate-900 font-semibold"
-        )}
-      >
-        <div
-          className={cn(
-            "relative flex items-center justify-center size-8 sm:size-8.5 rounded-xl transition-all duration-200",
-            active
-              ? "bg-red-50 text-[#E23744] shadow-xs"
-              : "text-slate-500 group-hover:text-slate-800 group-hover:bg-slate-50"
-          )}
-        >
-          <Icon
-            className={cn(
-              "size-5 transition-transform duration-200",
-              active ? "scale-110 stroke-[2.4]" : "stroke-[1.8] group-hover:scale-105"
-            )}
-            aria-hidden
-          />
-          {badge !== undefined && (
-            <span className="absolute -right-1 -top-1 flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full bg-amber-400 px-1 text-[8px] font-extrabold text-black shadow-xs">
-              {badge}
-            </span>
-          )}
-        </div>
-        <div className="flex flex-col items-center">
-          <span className="text-center truncate w-full px-0.5 tracking-tight leading-none mt-0.5">
-            {label}
-          </span>
-          {active && <span className="size-1 rounded-full bg-[#E23744] mt-1 shadow-xs" />}
-        </div>
-      </Link>
-    </li>
   );
 }

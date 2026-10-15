@@ -319,7 +319,12 @@ function RestaurantPage() {
                   <div className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 px-3.5 py-1.5 text-white shadow-md">
                     <Star className="size-4 fill-white" />
                     <span className="text-base font-black">
-                      {restaurant.card.ratingAvg ? restaurant.card.ratingAvg.toFixed(1) : "4.8"}
+                      {restaurant.card.ratingAvg != null
+                        ? (typeof restaurant.card.ratingAvg === "number"
+                            ? restaurant.card.ratingAvg
+                            : Number(restaurant.card.ratingAvg || 0)
+                          ).toFixed(1)
+                        : "4.8"}
                     </span>
                   </div>
                   <div className="text-left">
@@ -360,7 +365,12 @@ function RestaurantPage() {
                   <div>
                     <span className="block text-[10px] uppercase font-bold text-zinc-400">Distance</span>
                     <span className="text-xs font-black text-zinc-900 dark:text-zinc-100">
-                      📍 {restaurant.card.distanceKm ? `${restaurant.card.distanceKm.toFixed(1)} km` : "Nearby"}
+                      📍 {restaurant.card.distanceKm != null
+                        ? `${(typeof restaurant.card.distanceKm === "number"
+                            ? restaurant.card.distanceKm
+                            : Number(restaurant.card.distanceKm || 0)
+                          ).toFixed(1)} km`
+                        : "Nearby"}
                     </span>
                   </div>
                 </div>

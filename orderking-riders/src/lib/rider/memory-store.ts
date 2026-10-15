@@ -1,4 +1,5 @@
 import { DEFAULT_CONFIG } from "./config.ts";
+import { parseDisciplineNotes, serializeDisciplineNotes } from "./discipline.ts";
 import type { DateRange, RiderStore } from "./store.ts";
 import type {
   AuditLog,
@@ -56,14 +57,43 @@ export class MemoryStore implements RiderStore {
 
   async getRiderByUserId(userId: string) {
     const id = this.ridersByUser.get(userId);
-    return id ? structuredClone(this.riders.get(id) ?? null) : null;
+    const r = id ? this.riders.get(id) : null;
+    if (!r) return null;
+    const { state: discState } = parseDisciplineNotes(r.availabilityNotes);
+    return structuredClone({
+      ...r,
+      consecutiveDeclines: r.consecutiveDeclines ?? discState.consecutiveDeclines,
+      coolingOffUntil: r.coolingOffUntil ?? discState.coolingOffUntil,
+      coolingOffReason: r.coolingOffReason ?? discState.coolingOffReason,
+    });
   }
   async getRiderById(id: string) {
     const r = this.riders.get(id);
-    return r ? structuredClone(r) : null;
+    if (!r) return null;
+    const { state: discState } = parseDisciplineNotes(r.availabilityNotes);
+    return structuredClone({
+      ...r,
+      consecutiveDeclines: r.consecutiveDeclines ?? discState.consecutiveDeclines,
+      coolingOffUntil: r.coolingOffUntil ?? discState.coolingOffUntil,
+      coolingOffReason: r.coolingOffReason ?? discState.coolingOffReason,
+    });
   }
   async upsertRider(rider: RiderProfile) {
-    this.riders.set(rider.id, structuredClone(rider));
+    const rawNotes = rider.availabilityNotes ?? "";
+    const { cleanNotes } = parseDisciplineNotes(rawNotes);
+    const finalNotes = serializeDisciplineNotes(cleanNotes, {
+      consecutiveDeclines: rider.consecutiveDeclines ?? 0,
+      coolingOffUntil: rider.coolingOffUntil ?? null,
+      coolingOffReason: rider.coolingOffReason ?? null,
+    });
+    const clone = structuredClone({
+      ...rider,
+      availabilityNotes: finalNotes,
+      consecutiveDeclines: rider.consecutiveDeclines ?? 0,
+      coolingOffUntil: rider.coolingOffUntil ?? null,
+      coolingOffReason: rider.coolingOffReason ?? null,
+    });
+    this.riders.set(rider.id, clone);
     this.ridersByUser.set(rider.userId, rider.id);
   }
 

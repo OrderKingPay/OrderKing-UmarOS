@@ -65,19 +65,6 @@ export function RiderLiveChat({
 
     setMessages((prev) => [...prev, newMsg]);
     setInput("");
-
-    // Simulated reply
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `rm-${Date.now() + 1}`,
-          sender: "customer",
-          text: "Thanks, opening the door right now!",
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        },
-      ]);
-    }, 1200);
   };
 
   if (!open && !isOpen) {

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrderKing Partner - Kitchen Offline Mode</title>
+  <style>
+    body {
+      background-color: #07130F;
+      color: #F8FAFC;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      text-align: center;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #F59E0B;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      margin-bottom: 20px;
+    }
+    .icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+    .title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #F8FAFC;
+      margin: 0 0 10px 0;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #94A3B8;
+      max-width: 440px;
+      line-height: 1.5;
+      margin: 0 0 24px 0;
+    }
+    .features {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px 20px;
+      max-width: 400px;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: #CBD5E1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn {
+      background-color: #10B981;
+      color: #042F2E;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn:hover { background-color: #059669; }
+    .btn:active { background-color: #047857; }
+  </style>
+</head>
+<body>
+  <div class="badge">📡 Restaurant Kitchen Offline Mode</div>
+  <div class="icon">🧑‍🍳</div>
+  <h1 class="title">Internet Connection Interrupted</h1>
+  <p class="subtitle">
+    OrderKing Zero-Lag local database is active. Your Kitchen Display System (KDS), orders, and catalog remain operational offline.
+  </p>
+  <div class="features">
+    <div class="feature-item"><span>⚡</span> <span>Kitchen order actions queue durably in IndexedDB</span></div>
+    <div class="feature-item"><span>🔄</span> <span>Auto-reconnection background sync upon network recovery</span></div>
+    <div class="feature-item"><span>🛡️</span> <span>Zero order loss & idempotency guaranteed</span></div>
+  </div>
+  <button class="btn" onclick="window.location.reload()">Recheck Connection</button>
+</body>
+</html>

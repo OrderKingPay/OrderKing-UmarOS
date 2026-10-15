@@ -1,5 +1,6 @@
 import type { Sql } from "@/lib/db";
 import { DEFAULT_CONFIG } from "./config.ts";
+import { parseDisciplineNotes, serializeDisciplineNotes } from "./discipline.ts";
 import type { DateRange, RiderStore } from "./store.ts";
 import type {
   AuditLog,
@@ -49,6 +50,8 @@ function num(v: unknown): number {
 }
 
 function riderFromRow(row: Record<string, unknown>): RiderProfile {
+  const rawNotes = String(row.availability_notes ?? "");
+  const { state: discState } = parseDisciplineNotes(rawNotes);
   return {
     id: String(row.id),
     userId: String(row.user_id),
@@ -72,13 +75,16 @@ function riderFromRow(row: Record<string, unknown>): RiderProfile {
     payoutUpi: row.payout_upi ? String(row.payout_upi) : null,
     payoutBankLast4: row.payout_bank_last4 ? String(row.payout_bank_last4) : null,
     preferredZones: json<string[]>(row.preferred_zones, []),
-    availabilityNotes: String(row.availability_notes ?? ""),
+    availabilityNotes: rawNotes,
     status: row.status as RiderProfile["status"],
     onlineSince: row.online_since ? iso(row.online_since) : null,
     locale: (row.locale as RiderProfile["locale"]) ?? "en",
     createdAt: iso(row.created_at),
     updatedAt: iso(row.updated_at),
     dataMode: (row.data_mode as RiderProfile["dataMode"]) ?? "SIMULATED",
+    consecutiveDeclines: discState.consecutiveDeclines,
+    coolingOffUntil: discState.coolingOffUntil,
+    coolingOffReason: discState.coolingOffReason,
   };
 }
 
@@ -90,11 +96,162 @@ export class PgStore implements RiderStore {
       "select payload from platform_config where id = $1",
       ["default"],
     );
-    if (!rows[0]) {
-      await this.saveConfig(DEFAULT_CONFIG);
-      return structuredClone(DEFAULT_CONFIG);
+    let base = rows[0] ? json<PlatformConfig>(rows[0].payload, DEFAULT_CONFIG) : DEFAULT_CONFIG;
+
+    // Check if platform_settings exists in the database (synced from HDmaster UmarOS)
+    try {
+      const hdSettings = await this.sql.query<{ settings_json: string }>(
+        "select settings_json from platform_settings where org_id = 'org_orderking' limit 1",
+      );
+      if (hdSettings[0]?.settings_json) {
+        const bag = JSON.parse(hdSettings[0].settings_json);
+        const centralPricing = bag.central_pricing?.customRates ?? bag.central_pricing ?? {};
+        const algo = bag.algorithm ?? {};
+        const rd = bag.rider_discipline ?? bag.riderDiscipline ?? {};
+
+        // 1. Floating cash limit & cooling off duration
+        const floatingCashLimitInr = Number(
+          centralPricing.floatingCashLimitInr ??
+          rd.floating_cash_limit_inr ??
+          base.discipline?.floatingCashLimitInr ??
+          2000,
+        );
+        const coolingOffDurationMinutes = Number(
+          centralPricing.coolingOffDurationMinutes ??
+          rd.cooling_off_duration_minutes ??
+          base.discipline?.coolingOffDurationMinutes ??
+          15,
+        );
+
+        if (rd || centralPricing.floatingCashLimitInr !== undefined) {
+          base = {
+            ...base,
+            discipline: {
+              enabled: rd.enabled ?? base.discipline?.enabled ?? true,
+              floatingCashLimitInr,
+              cancellationPenaltyBeforePickupInr: Number(rd.cancellation_penalty_before_pickup_inr ?? base.discipline?.cancellationPenaltyBeforePickupInr ?? 25),
+              cancellationPenaltyPostPickupType: rd.cancellation_penalty_post_pickup_type ?? base.discipline?.cancellationPenaltyPostPickupType ?? "FULL_ORDER",
+              cancellationPenaltyPostPickupCustomInr: Number(rd.cancellation_penalty_post_pickup_custom_inr ?? base.discipline?.cancellationPenaltyPostPickupCustomInr ?? 150),
+              coolingOffConsecutiveRejections: Number(rd.cooling_off_consecutive_rejections ?? base.discipline?.coolingOffConsecutiveRejections ?? 3),
+              coolingOffAcceptanceRateThresholdPct: Number(rd.cooling_off_acceptance_rate_threshold_pct ?? base.discipline?.coolingOffAcceptanceRateThresholdPct ?? 70),
+              coolingOffDurationMinutes,
+              upiDepositVpa: rd.upi_deposit_vpa ?? base.discipline?.upiDepositVpa ?? "orderking.treasury@okaxis",
+            },
+          };
+        }
+
+        // 2. Base floors (Tier 1: ₹35, Tier 2: ₹30, Tier 3: ₹25)
+        const tier1BaseFloorPaise = Math.round(
+          Number(
+            centralPricing.tier1FloorInr ??
+            algo.tier1BaseFloorInr ??
+            (centralPricing.cityTier === "TIER_1" ? centralPricing.riderBasePayInr : undefined) ??
+            (algo.activeCityTier === "TIER_1" ? algo.riderBasePayoutInr : undefined) ??
+            35,
+          ) * 100,
+        );
+        const tier2BaseFloorPaise = Math.round(
+          Number(
+            centralPricing.tier2FloorInr ??
+            algo.tier2BaseFloorInr ??
+            (centralPricing.cityTier === "TIER_2" ? centralPricing.riderBasePayInr : undefined) ??
+            (algo.activeCityTier === "TIER_2" ? algo.riderBasePayoutInr : undefined) ??
+            30,
+          ) * 100,
+        );
+        const tier3BaseFloorPaise = Math.round(
+          Number(
+            centralPricing.tier3FloorInr ??
+            algo.tier3BaseFloorInr ??
+            (centralPricing.cityTier === "TIER_3" ? centralPricing.riderBasePayInr : undefined) ??
+            (algo.activeCityTier === "TIER_3" ? algo.riderBasePayoutInr : undefined) ??
+            25,
+          ) * 100,
+        );
+
+        const activeCityTier = (centralPricing.cityTier ?? algo.activeCityTier ?? "TIER_1") as "TIER_1" | "TIER_2" | "TIER_3";
+        const pickupFeeInr = Number(centralPricing.riderPickupFeeInr ?? algo.riderPickupFeeInr ?? 20);
+        const dropFeeInr = Number(centralPricing.riderDropFeeInr ?? algo.riderDropFeeInr ?? 15);
+        const basePayInr = Number(centralPricing.riderBasePayInr ?? algo.riderBasePayoutInr ?? (pickupFeeInr + dropFeeInr));
+
+        // 3. Progressive distance slab rates
+        const slab1RatePaise = Math.round(
+          Number(
+            centralPricing.slab1RateInr ??
+            algo.slab1RateInr ??
+            centralPricing.riderPerKmRateInr ??
+            algo.riderPerKmRateInr ??
+            12,
+          ) * 100,
+        );
+        const slab2RatePaise = Math.round(
+          Number(centralPricing.slab2RateInr ?? algo.slab2RateInr ?? 14) * 100,
+        );
+        const slab3RatePaise = Math.round(
+          Number(centralPricing.slab3RateInr ?? algo.slab3RateInr ?? 16) * 100,
+        );
+        const ldoBonusPaise = Math.round(
+          Number(centralPricing.ldoBonusInr ?? algo.ldoBonusInr ?? 20) * 100,
+        );
+
+        // 4. Wait pay rates
+        const waitGraceMinutes = Number(
+          centralPricing.riderWaitGraceMins ?? algo.riderWaitGraceMinutes ?? 6,
+        );
+        const waitRatePerMinPaise = Math.round(
+          Number(
+            centralPricing.riderWaitPayPerMinInr ?? algo.riderWaitPayPerMinInr ?? 1,
+          ) * 100,
+        );
+        const waitCapPaise = Math.round(
+          Number(
+            centralPricing.riderWaitCapInr ?? algo.riderWaitCapInr ?? 30,
+          ) * 100,
+        );
+
+        // 5. Payout cycle day & King AI autonomous resolution
+        const payoutCycleDay = String(
+          centralPricing.payoutCycleDay ?? centralPricing.payoutDay ?? "Wednesday",
+        );
+        const kingAiAutonomousResolution = Boolean(
+          centralPricing.kingAiAutonomousResolution ?? algo.kingAiAutonomousResolution ?? true,
+        );
+
+        base = {
+          ...base,
+          payoutCycleDay,
+          kingAiAutonomousResolution,
+          payoutFrequency: payoutCycleDay.toLowerCase().includes("daily") ? "daily" : "weekly",
+          pricing: {
+            cityTier: activeCityTier,
+            tier1BaseFloorPaise,
+            tier2BaseFloorPaise,
+            tier3BaseFloorPaise,
+            pickupFeePaise: Math.round(pickupFeeInr * 100),
+            dropFeePaise: Math.round(dropFeeInr * 100),
+            basePayPaise: Math.round(basePayInr * 100),
+            defaultRatePerKmPaise: slab1RatePaise,
+            distanceSlabs: {
+              slab1RatePerKmPaise: slab1RatePaise,
+              slab2RatePerKmPaise: slab2RatePaise,
+              slab3RatePerKmPaise: slab3RatePaise,
+              ldoBonusPaise,
+            },
+            waitGraceMinutes,
+            waitRatePerMinPaise,
+            waitCapPaise,
+            floatingCashLimitInr,
+            coolingOffDurationMinutes,
+            payoutCycleDay,
+            kingAiAutonomousResolution,
+          },
+        };
+      }
+    } catch {
+      /* platform_settings table may not exist in pure local tests */
     }
-    return { ...DEFAULT_CONFIG, ...json<PlatformConfig>(rows[0].payload, DEFAULT_CONFIG) };
+
+    return { ...DEFAULT_CONFIG, ...base };
   }
 
   async saveConfig(cfg: PlatformConfig): Promise<void> {
@@ -120,6 +277,14 @@ export class PgStore implements RiderStore {
   }
 
   async upsertRider(r: RiderProfile) {
+    const rawNotes = r.availabilityNotes ?? "";
+    const { cleanNotes } = parseDisciplineNotes(rawNotes);
+    const finalNotes = serializeDisciplineNotes(cleanNotes, {
+      consecutiveDeclines: r.consecutiveDeclines ?? 0,
+      coolingOffUntil: r.coolingOffUntil ?? null,
+      coolingOffReason: r.coolingOffReason ?? null,
+    });
+
     await this.sql.query(
       `insert into riders (
         id, user_id, full_name, phone, email, photo_url, address,
@@ -167,7 +332,7 @@ export class PgStore implements RiderStore {
         r.payoutUpi,
         r.payoutBankLast4,
         JSON.stringify(r.preferredZones),
-        r.availabilityNotes,
+        finalNotes,
         r.status,
         r.onlineSince,
         r.locale,

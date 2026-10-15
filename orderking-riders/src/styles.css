@@ -6,42 +6,43 @@
   --font-display: "Clash Display", "Oswald", "SF Pro Display", sans-serif;
   --font-mono: "Fira Code", "IBM Plex Mono", ui-monospace, monospace;
 
-  /* Ultra-luxury dark mode with high contrast neon */
-  --color-bg: #000000;
-  --color-background: #000000;
-  --color-surface: #0a0a0a;
-  --color-card: #0a0a0a;
+  /* Ultra-Luxurious Obsidian Gold / Royal Sapphire Design System */
+  --color-bg: #08090c;
+  --color-background: #08090c;
+  --color-surface: #0e121b;
+  --color-card: #121723;
   
-  --color-fg: #ffffff;
-  --color-foreground: #ffffff;
+  --color-fg: #f8fafc;
+  --color-foreground: #f8fafc;
   
-  --color-muted: #1f1f1f;
-  --color-muted-foreground: #888888;
+  --color-muted: #1a2234;
+  --color-muted-foreground: #94a3b8;
   
-  /* Neon Accents: Cyberpunk/Luxury */
-  --color-primary: #c9ff00; /* Neon Lime / Yellow */
-  --color-primary-foreground: #000000;
+  /* 24K Obsidian Gold Primary */
+  --color-primary: #e5a93c;
+  --color-primary-foreground: #08090c;
   
-  --color-accent: #00e5ff; /* Cyan */
-  --color-accent-foreground: #000000;
+  /* Royal Sapphire Accent */
+  --color-accent: #2563eb;
+  --color-accent-foreground: #ffffff;
   
-  --color-border: #1f1f1f;
-  --color-ring: #c9ff00;
+  --color-border: #1e283d;
+  --color-ring: #e5a93c;
   
-  --color-destructive: #ff0055;
+  --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
   
-  --color-secondary: #1a1a1a;
-  --color-secondary-foreground: #ffffff;
+  --color-secondary: #161d2b;
+  --color-secondary-foreground: #f8fafc;
   
-  --color-online: #00ff66;
-  --color-offline: #ff0055;
-  --color-busy: #ffcc00;
-  --color-cod: #bb86fc;
+  --color-online: #10b981;
+  --color-offline: #ef4444;
+  --color-busy: #f59e0b;
+  --color-cod: #8b5cf6;
   
-  --color-sim: #333333;
-  --color-paper: #111111;
-  --color-ink: #ffffff;
+  --color-sim: #2a3449;
+  --color-paper: #0e121b;
+  --color-ink: #f8fafc;
 
   --radius-xs: 2px;
   --radius-sm: 4px;
@@ -51,13 +52,19 @@
   --radius: 8px;
 
   --shadow-border:
-    0px 0px 0px 1px rgba(255, 255, 255, 0.1);
+    0px 0px 0px 1px rgba(229, 169, 60, 0.15);
+  --shadow-gold:
+    0px 0px 12px 0px rgba(229, 169, 60, 0.35),
+    0px 0px 24px 0px rgba(229, 169, 60, 0.18);
+  --shadow-sapphire:
+    0px 0px 12px 0px rgba(37, 99, 235, 0.35),
+    0px 0px 24px 0px rgba(37, 99, 235, 0.18);
   --shadow-neon:
-    0px 0px 10px 0px rgba(201, 255, 0, 0.4),
-    0px 0px 20px 0px rgba(201, 255, 0, 0.2);
+    0px 0px 12px 0px rgba(229, 169, 60, 0.35),
+    0px 0px 24px 0px rgba(229, 169, 60, 0.18);
   --shadow-neon-cyan:
-    0px 0px 10px 0px rgba(0, 229, 255, 0.4),
-    0px 0px 20px 0px rgba(0, 229, 255, 0.2);
+    0px 0px 12px 0px rgba(37, 99, 235, 0.35),
+    0px 0px 24px 0px rgba(37, 99, 235, 0.18);
 }
 
 @layer base {
@@ -82,22 +89,40 @@
 }
 
 @layer utilities {
+  .gold-glow {
+    box-shadow: var(--shadow-gold);
+  }
+  .sapphire-glow {
+    box-shadow: var(--shadow-sapphire);
+  }
+  .gold-text {
+    text-shadow: 0 0 12px rgba(229, 169, 60, 0.5);
+  }
+  .sapphire-text {
+    text-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
+  }
   .neon-glow {
-    box-shadow: var(--shadow-neon);
+    box-shadow: var(--shadow-gold);
   }
   .neon-glow-cyan {
-    box-shadow: var(--shadow-neon-cyan);
+    box-shadow: var(--shadow-sapphire);
   }
   .neon-text {
-    text-shadow: 0 0 10px rgba(201, 255, 0, 0.5);
+    text-shadow: 0 0 12px rgba(229, 169, 60, 0.5);
   }
   .neon-text-cyan {
-    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+    text-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
   }
   .glassmorphism {
-    background: rgba(10, 10, 10, 0.7);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(14, 18, 27, 0.85);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(229, 169, 60, 0.15);
+  }
+  .gold-border {
+    border: 1px solid rgba(229, 169, 60, 0.3);
+  }
+  .sapphire-border {
+    border: 1px solid rgba(37, 99, 235, 0.3);
   }
 }
 

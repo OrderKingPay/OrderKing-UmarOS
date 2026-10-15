@@ -8,12 +8,21 @@ import {
   assertNonNegativePaise,
   calculateRiderPayout,
   enforcePayoutFloor,
+  calculateRestaurantWaitPayPaise,
+  calculateCustomerTipPassThrough,
+  formatPaise,
   STATUTORY_BASE_FARE_PAISE,
   STATUTORY_BASE_DISTANCE_KM,
   STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
 } from "./money.ts";
 import { generateOtp, isPlausibleOtp, newOtpSecret, verifyOtpHash } from "./otp.ts";
 import { minimizeCustomer, offerCustomerView } from "./privacy.ts";
+import {
+  calculatePocketBalance,
+  getCoolingOffInfo,
+  calculateCancellationPenalty,
+} from "./discipline.ts";
+import { DEFAULT_DISCIPLINE_CONFIG } from "./config.ts";
 import type { RiderStore } from "./store.ts";
 import {
   RiderError,
@@ -28,6 +37,7 @@ import {
   type LocaleCode,
   type PickupVerification,
   type PlatformConfig,
+  type PocketBalanceInfo,
   type PodMethod,
   type RiderDocumentKind,
   type RiderProfile,
@@ -126,7 +136,29 @@ export class RiderEngine {
         const claimed = await this.store.casOffer(offer.id, rider.id, "DECLINED");
         if (!claimed) throw new RiderError("OFFER_GONE", "This offer is no longer available", 409);
         await this.audit(userId, "OFFER_DECLINED", "offer", offer.id, reason ?? "");
+        await this.handleOfferDecline(rider, reason);
         return { decision, delivery: null as Delivery | null, offer: { ...offer, status: "DECLINED" as const } };
+      }
+      // Check Cooling-Off Freeze
+      const cooling = getCoolingOffInfo(rider.coolingOffUntil, rider.coolingOffReason);
+      if (cooling.isActive) {
+        throw new RiderError(
+          "COOLING_OFF_ACTIVE",
+          `Temporary cooling-off active (${Math.ceil(cooling.secondsRemaining / 60)}m remaining). Orders paused until ${cooling.until}. Reason: ${cooling.reason}`,
+          403,
+        );
+      }
+      // Check Floating Cash / Pocket Balance Limit on COD orders with lookahead check
+      if (offer.cod) {
+        const incomingCod = offer.codAmountPaise ?? 0;
+        const pocket = await this.getPocketBalance(userId, incomingCod);
+        if (pocket.isCodBlocked || (pocket.pocketBalancePaise + incomingCod) > pocket.limitPaise) {
+          throw new RiderError(
+            "FLOATING_CASH_LIMIT_EXCEEDED",
+            `Floating cash pocket balance (${formatPaise(pocket.pocketBalancePaise + incomingCod)}) exceeds the ₹${(pocket.limitPaise / 100).toFixed(0)} limit. Deposit floating cash via UPI QR / Razorpay to accept COD orders.`,
+            403,
+          );
+        }
       }
       const existing = await this.store.getActiveDeliveryForRider(rider.id);
       if (existing) {
@@ -143,7 +175,12 @@ export class RiderEngine {
         status: "ACCEPTED" as const
       };
       const delivery = await this.createDeliveryFromOffer(rider, hardenedOffer);
-      const busy: RiderProfile = { ...rider, status: "BUSY", updatedAt: this.now() };
+      const busy: RiderProfile = {
+        ...rider,
+        status: "BUSY",
+        consecutiveDeclines: 0,
+        updatedAt: this.now(),
+      };
       await this.store.upsertRider(busy);
       return { decision, delivery, offer: hardenedOffer };
     });
@@ -426,6 +463,16 @@ export class RiderEngine {
     if (status === "ONLINE" && cfg.dataMode === "LIVE" && rider.kycStatus !== "VERIFIED") {
       throw new RiderError("KYC", "Unverified partners cannot go online for live orders", 403);
     }
+    if (status === "ONLINE") {
+      const cooling = getCoolingOffInfo(rider.coolingOffUntil, rider.coolingOffReason);
+      if (cooling.isActive) {
+        throw new RiderError(
+          "COOLING_OFF_ACTIVE",
+          `Temporary cooling-off active (${Math.ceil(cooling.secondsRemaining / 60)}m remaining). Orders paused until ${cooling.until}. Reason: ${cooling.reason}`,
+          403,
+        );
+      }
+    }
     const active = await this.store.getActiveDeliveryForRider(rider.id);
     if (status === "OFFLINE" && active) {
       throw new RiderError("BUSY", "Finish the current delivery before going offline", 400);
@@ -436,6 +483,8 @@ export class RiderEngine {
     const next: RiderProfile = {
       ...rider,
       status,
+      coolingOffUntil: status === "ONLINE" && rider.coolingOffUntil && new Date(rider.coolingOffUntil).getTime() <= Date.now() ? null : rider.coolingOffUntil,
+      coolingOffReason: status === "ONLINE" && rider.coolingOffUntil && new Date(rider.coolingOffUntil).getTime() <= Date.now() ? null : rider.coolingOffReason,
       onlineSince: status === "OFFLINE" ? null : rider.onlineSince ?? this.now(),
       updatedAt: this.now(),
     };
@@ -458,12 +507,16 @@ export class RiderEngine {
     return { rider, offer: offer ? this.presentOffer(offer) : null };
   }
 
-  private async expireOffers(rider: RiderProfile) {
+  public async expireOffers(rider: RiderProfile) {
     const offer = await this.store.getOpenOfferForRider(rider.id);
     if (!offer) return;
     if (new Date(offer.expiresAt).getTime() <= Date.now()) {
-      await this.store.casOffer(offer.id, rider.id, "EXPIRED");
-      await this.audit(rider.userId, "OFFER_EXPIRED", "offer", offer.id);
+      const expired = await this.store.casOffer(offer.id, rider.id, "EXPIRED");
+      if (expired) {
+        await this.audit(rider.userId, "OFFER_EXPIRED", "offer", offer.id);
+        const currentRider = (await this.store.getRiderById(rider.id)) ?? rider;
+        await this.handleOfferDecline(currentRider, "Offer expired / ignored");
+      }
     }
   }
 
@@ -732,6 +785,20 @@ export class RiderEngine {
       if (limited) {
         throw new RiderError("OTP_LOCKED", "Too many attempts. Support has been notified.", 429);
       }
+
+      // Handover Drop-off Geofence Gate: require latest GPS ping within 250m (0.25 km) of delivery.dropLocation
+      const latestPing = await this.store.latestLocation(userId);
+      if (latestPing) {
+        const distanceToDropKm = haversineKm(latestPing.point, d.dropLocation);
+        if (distanceToDropKm > 0.25) {
+          throw new RiderError(
+            "OUT_OF_GEOFENCE",
+            `Delivery handover requires being within 250m of drop-off location. Current distance: ${(distanceToDropKm * 1000).toFixed(0)}m`,
+            400,
+          );
+        }
+      }
+
       const rec = await this.store.getOtp(deliveryId);
       if (!rec) throw new RiderError("OTP_MISSING", "OTP is not available for this delivery", 500);
       if (rec.verifiedAt) {
@@ -808,19 +875,19 @@ export class RiderEngine {
         deliveryId: d.id,
         orderCode: d.orderCode,
         kind: "TIP",
-        amountPaise: d.tipPaise,
-        note: "Customer tip ❤️",
+        amountPaise: calculateCustomerTipPassThrough(d.tipPaise).netTipPassThroughPaise,
+        note: "Customer tip ❤️ (100% pass-through)",
         at: this.now(),
         dataMode: cfg.dataMode,
       });
     }
-    // Zomato Partner Model: Wait-time compensation when kitchen prep exceeds 10 minutes
+    // OrderKing Algorithmic Payout: Wait-time compensation when kitchen prep exceeds 6 minutes grace period (EXACTLY ₹1/min)
     if (d.arrivedRestaurantAt && d.pickedUpAt) {
       const waitMs = new Date(d.pickedUpAt).getTime() - new Date(d.arrivedRestaurantAt).getTime();
       const waitMins = Math.floor(waitMs / 60000);
-      if (waitMins > 10) {
-        const extraMins = waitMins - 10;
-        const waitBonusPaise = extraMins * 100; // ₹1 per minute after 10 mins
+      const waitBonusPaise = calculateRestaurantWaitPayPaise(waitMins, 6, 100);
+      if (waitBonusPaise > 0) {
+        const extraMins = Math.max(0, waitMins - 6);
         lines.push({
           id: nid(),
           riderId: d.riderId,
@@ -828,7 +895,7 @@ export class RiderEngine {
           orderCode: d.orderCode,
           kind: "INCENTIVE",
           amountPaise: waitBonusPaise,
-          note: `Kitchen wait-time bonus (${extraMins} mins)`,
+          note: `Kitchen wait-time bonus (${extraMins} mins beyond 6m grace)`,
           at: this.now(),
           dataMode: cfg.dataMode,
         });
@@ -883,17 +950,102 @@ export class RiderEngine {
     return this.presentDelivery(d);
   }
 
-  async cancelDelivery(userId: string, deliveryId: string, reason: string, confirmed: boolean, key: string) {
+  async cancelDelivery(
+    userId: string,
+    deliveryId: string,
+    reason: string,
+    confirmed: boolean,
+    key: string,
+    hasVerifiedProof = false,
+  ) {
     if (!confirmed) throw new RiderError("CONFIRM_REQUIRED", "Confirm cancellation", 400);
     const normalized = reason.trim().toLowerCase();
     if (!CANCEL_REASONS.includes(normalized as (typeof CANCEL_REASONS)[number])) {
       throw new RiderError("REASON_REQUIRED", "Choose a valid cancellation reason", 400);
     }
-    return this.idem(userId, key, "cancel", () =>
-      this.transition(userId, deliveryId, "RIDER_CANCELLED", normalized, (d) => {
-        d.cancelReason = normalized;
-      }),
+    const d = await this.requireOwnedDelivery(userId, deliveryId);
+    const cfg = await this.cfg();
+    const disciplineCfg = cfg.discipline ?? DEFAULT_DISCIPLINE_CONFIG;
+
+    const penalty = calculateCancellationPenalty(
+      d.state,
+      d.codAmountPaise || 0,
+      d.expectedPayoutPaise,
+      disciplineCfg,
+      hasVerifiedProof,
     );
+
+    return this.idem(userId, key, "cancel", async () => {
+      const cancelled = await this.transition(userId, deliveryId, "RIDER_CANCELLED", normalized, (row) => {
+        row.cancelReason = normalized;
+      });
+
+      // Apply disciplinary deduction if enabled and penalty applies
+      if (disciplineCfg.enabled && penalty.penaltyPaise > 0) {
+        await this.store.appendEarning(
+          {
+            id: nid(),
+            riderId: d.riderId,
+            deliveryId: d.id,
+            orderCode: d.orderCode,
+            kind: "DEDUCTION",
+            amountPaise: -penalty.penaltyPaise,
+            note: `Zomato Discipline: ${penalty.label} - Order #${d.orderCode} (${normalized})`,
+            at: this.now(),
+            dataMode: cfg.dataMode,
+          },
+          userId,
+        );
+
+        if (penalty.isPostPickup) {
+          await this.store.insertSignal(
+            {
+              id: nid(),
+              riderId: d.riderId,
+              deliveryId: d.id,
+              kind: "POST_PICKUP_CANCELLATION",
+              detail: `Order #${d.orderCode} cancelled post-pickup without proof. Penalty: ₹${(penalty.penaltyPaise / 100).toFixed(2)}. Reason: ${normalized}`,
+              stage: "REVIEW",
+              createdAt: this.now(),
+            },
+            userId,
+          );
+          await this.store.insertNotification({
+            id: nid(),
+            userId,
+            title: "🚨 High-Severity Cancellation Penalty",
+            body: `Post-pickup cancellation of Order #${d.orderCode} resulted in a full liability deduction of ₹${(penalty.penaltyPaise / 100).toFixed(2)} and account audit hold.`,
+            kind: "OPS",
+            read: false,
+            createdAt: this.now(),
+          });
+        } else {
+          await this.store.insertSignal(
+            {
+              id: nid(),
+              riderId: d.riderId,
+              deliveryId: d.id,
+              kind: "PRE_PICKUP_CANCELLATION",
+              detail: `Order #${d.orderCode} cancelled pre-pickup. Penalty: ₹${(penalty.penaltyPaise / 100).toFixed(2)}. Reason: ${normalized}`,
+              stage: "SIGNAL",
+              createdAt: this.now(),
+            },
+            userId,
+          );
+          await this.store.insertNotification({
+            id: nid(),
+            userId,
+            title: "⚠️ Cancellation Penalty Deducted",
+            body: `Pre-pickup cancellation of Order #${d.orderCode} incurred a ₹${(penalty.penaltyPaise / 100).toFixed(2)} deduction on your payout ledger.`,
+            kind: "OPS",
+            read: false,
+            createdAt: this.now(),
+          });
+        }
+      }
+
+      return cancelled;
+    });
   }
 
   async failDelivery(userId: string, deliveryId: string, reason: string, confirmed: boolean, key: string) {
@@ -954,7 +1106,7 @@ export class RiderEngine {
     const at = this.now();
     const previous = await this.store.latestLocation(userId);
     try {
-      assertPlausiblePing(previous, point, at);
+      assertPlausiblePing(previous, point, at, rider.vehicleType);
     } catch (err) {
       if (err instanceof RiderError && err.code === "FAKE_GPS") {
         await this.store.insertSignal(
@@ -986,6 +1138,15 @@ export class RiderEngine {
     return { ok: true as const, at: ping.at };
   }
 
+  async pingLocation(
+    userId: string,
+    point: GeoPoint,
+    deliveryId: string | null = null,
+    accuracyM: number | null = null,
+  ) {
+    return this.postLocation(userId, point, accuracyM, deliveryId);
+  }
+
   async home(userId: string) {
     const rider = await this.requireRider(userId);
     await this.expireOffers(rider);
@@ -1011,19 +1172,190 @@ export class RiderEngine {
     const notifications = await this.store.listNotifications(userId);
     const otp = active ? await this.store.getOtp(active.id) : null;
     const cash = active ? await this.store.getCash(active.id) : null;
+    const cfg = await this.cfg();
+    const pocketBalance = await this.getPocketBalance(userId);
+    const coolingOff = getCoolingOffInfo(rider.coolingOffUntil, rider.coolingOffReason);
+    const disciplineConfig = cfg.discipline ?? DEFAULT_DISCIPLINE_CONFIG;
+
     return {
       rider,
       offer,
       active: active ? this.presentDelivery(active) : null,
       todayEarningsPaise: earnings.reduce((a, e) => a + e.amountPaise, 0),
       completedToday: completed,
-      pendingCashPaise: pendingCash,
+      pendingCashPaise: pocketBalance.pocketBalancePaise,
+      pocketBalance,
+      coolingOff,
+      disciplineConfig,
       onlineSince: rider.onlineSince,
       notifications: notifications.slice(0, 8),
       simulatedOtp: null,
       cash,
-      dataMode: (await this.cfg()).dataMode,
+      dataMode: cfg.dataMode,
     };
+  }
+
+  /**
+   * Real-time calculation of Rider Floating Cash ("Pocket Balance").
+   */
+  async getPocketBalance(userId: string, incomingCodAmountPaise = 0): Promise<PocketBalanceInfo> {
+    await this.requireRider(userId);
+    const cfg = await this.cfg();
+    const deliveries = await this.store.listDeliveriesForUser(userId);
+    let collectedPaise = 0;
+    let reconciledPaise = 0;
+
+    for (const d of deliveries) {
+      const c = await this.store.getCash(d.id);
+      if (!c) continue;
+      if (c.collectedPaise) collectedPaise += c.collectedPaise;
+      if (c.state === "RECONCILED") reconciledPaise += c.collectedPaise ?? 0;
+    }
+
+    const disciplineCfg = cfg.discipline ?? DEFAULT_DISCIPLINE_CONFIG;
+    return calculatePocketBalance(
+      collectedPaise,
+      reconciledPaise,
+      disciplineCfg.floatingCashLimitInr,
+      disciplineCfg.enabled,
+      incomingCodAmountPaise,
+    );
+  }
+
+  /**
+   * Deposits floating cash via UPI QR or Payment Gateway to unblock COD orders.
+   */
+  async depositFloatingCash(
+    userId: string,
+    amountPaise: number,
+    method: "UPI_QR" | "RAZORPAY" | "GATEWAY" = "UPI_QR",
+    reference = "",
+    key: string,
+  ): Promise<PocketBalanceInfo> {
+    return this.idem(userId, key, "cash.deposit", async () => {
+      const rider = await this.requireRider(userId);
+      if (!Number.isInteger(amountPaise) || amountPaise <= 0) {
+        throw new RiderError("INVALID_AMOUNT", "Deposit amount must be a positive integer in paise", 400);
+      }
+      const cfg = await this.cfg();
+      const ref = reference.trim() || `DEP-${Date.now().toString(36).toUpperCase()}`;
+
+      // Mark un-reconciled COD cash rows as RECONCILED up to deposited amount
+      const deliveries = await this.store.listDeliveriesForUser(userId);
+      let remainingToReconcile = amountPaise;
+      for (const d of deliveries) {
+        if (remainingToReconcile <= 0) break;
+        const c = await this.store.getCash(d.id);
+        if (c && c.state === "COLLECTED" && c.collectedPaise) {
+          c.state = "RECONCILED";
+          c.updatedAt = this.now();
+          await this.store.saveCash(c, userId);
+          remainingToReconcile -= c.collectedPaise;
+        }
+      }
+
+      // Record adjustment entry in ledger for financial audit proof
+      await this.store.appendEarning(
+        {
+          id: nid(),
+          riderId: rider.id,
+          deliveryId: null,
+          orderCode: null,
+          kind: "ADJUSTMENT",
+          amountPaise: 0,
+          note: `Floating Cash Deposit via ${method} (Ref: ${ref}) - ₹${(amountPaise / 100).toFixed(2)}`,
+          at: this.now(),
+          dataMode: cfg.dataMode,
+        },
+        userId,
+      );
+
+      await this.audit(userId, "FLOATING_CASH_DEPOSIT", "cash", rider.id, `${amountPaise}:${method}:${ref}`);
+
+      await this.store.insertNotification({
+        id: nid(),
+        userId,
+        title: "✅ Floating Cash Deposit Verified",
+        body: `Your deposit of ₹${(amountPaise / 100).toFixed(2)} via ${method} (Ref: ${ref}) has been verified. COD orders are active!`,
+        kind: "PAYOUT",
+        read: false,
+        createdAt: this.now(),
+      });
+
+      return this.getPocketBalance(userId);
+    });
+  }
+
+  /**
+   * Tracks offer rejections and triggers temporary cooling-off freeze if thresholds are breached.
+   */
+  private async handleOfferDecline(rider: RiderProfile, reason?: string) {
+    const cfg = await this.cfg();
+    const disciplineCfg = cfg.discipline ?? DEFAULT_DISCIPLINE_CONFIG;
+    if (!disciplineCfg.enabled) return;
+
+    const consecutiveDeclines = (rider.consecutiveDeclines ?? 0) + 1;
+    const rejectionsLimit = disciplineCfg.coolingOffConsecutiveRejections || 3;
+    const durationMins = disciplineCfg.coolingOffDurationMinutes || 15;
+    const rateFloor = disciplineCfg.coolingOffAcceptanceRateThresholdPct || 70;
+
+    // Check recent acceptance rate scoped to the current 24-hour shift window (todayRange())
+    const deliveries = await this.store.listDeliveriesForUser(rider.userId, todayRange());
+    const acceptedCount = deliveries.length;
+    const totalOffered = acceptedCount + consecutiveDeclines;
+    const acceptanceRate = totalOffered >= 5 ? Math.round((acceptedCount / totalOffered) * 100) : 100;
+
+    const shouldFreezeByRejections = consecutiveDeclines >= rejectionsLimit;
+    const shouldFreezeByRate = totalOffered >= 5 && acceptanceRate < rateFloor;
+
+    if (shouldFreezeByRejections || shouldFreezeByRate) {
+      const coolingOffUntil = new Date(Date.now() + durationMins * 60 * 1000).toISOString();
+      const coolingOffReason = shouldFreezeByRate
+        ? `Acceptance rate fell to ${acceptanceRate}% (Below ${rateFloor}% floor)`
+        : `${consecutiveDeclines} consecutive order rejections (Limit: ${rejectionsLimit})`;
+
+      const frozenRider: RiderProfile = {
+        ...rider,
+        status: "OFFLINE",
+        consecutiveDeclines: 0,
+        coolingOffUntil,
+        coolingOffReason,
+        updatedAt: this.now(),
+      };
+      await this.store.upsertRider(frozenRider);
+
+      await this.store.insertSignal(
+        {
+          id: nid(),
+          riderId: rider.id,
+          deliveryId: null,
+          kind: "COOLING_OFF_TRIGGERED",
+          detail: `Cooling-off triggered: ${coolingOffReason}. Offline for ${durationMins} minutes.`,
+          stage: "SIGNAL",
+          createdAt: this.now(),
+        },
+        rider.userId,
+      );
+
+      await this.store.insertNotification({
+        id: nid(),
+        userId: rider.userId,
+        title: "⏸️ Temporary Cooling-Off Active",
+        body: `You are temporarily paused for ${durationMins} minutes due to ${coolingOffReason}. Service resumes automatically at ${new Date(coolingOffUntil).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`,
+        kind: "OPS",
+        read: false,
+        createdAt: this.now(),
+      });
+
+      await this.audit(rider.userId, "COOLING_OFF_ACTIVATED", "rider", rider.id, `${durationMins}m:${coolingOffReason}`);
+    } else {
+      const updatedRider: RiderProfile = {
+        ...rider,
+        consecutiveDeclines,
+        updatedAt: this.now(),
+      };
+      await this.store.upsertRider(updatedRider);
+    }
   }
 
   async earnings(userId: string, range: { from: string; to: string }) {

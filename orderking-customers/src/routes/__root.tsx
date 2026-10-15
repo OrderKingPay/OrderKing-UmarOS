@@ -207,7 +207,7 @@ function Root() {
         <PwaInstallPrompt />
         <AuthProvider>
           <AppProviders config={config}>
-            <ErrorBoundary key={location.pathname}>
+            <ErrorBoundary>
               <div className="min-h-screen flex flex-col w-full relative">
                 <Suspense fallback={<CustomerAppSkeleton />}>
                   <Outlet />

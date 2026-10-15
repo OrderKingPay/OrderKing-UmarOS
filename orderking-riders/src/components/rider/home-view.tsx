@@ -8,6 +8,7 @@ import { errorMessage, newIdempotencyKey, withRetry } from "@/lib/client/errors"
 import {
   calculateRiderPayout,
   formatPaise,
+  calculateRestaurantWaitPayPaise,
   STATUTORY_BASE_DISTANCE_KM,
   STATUTORY_BASE_FARE_PAISE,
   STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
@@ -37,9 +38,12 @@ import { useCallback, useEffect, useState } from "react";
 import { ConfirmDialog } from "./confirm-dialog";
 import { MapPane } from "./map-pane";
 import { DeliveryActions } from "./delivery-actions";
+import { CoolingOffBanner } from "./cooling-off-banner";
+import { FloatingCashCard } from "./floating-cash-card";
 import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
 import { calculateDailyMilestoneProgress } from "@/lib/rider/gig-engine";
+import { VipAmbassadorPass } from "./vip-ambassador-pass";
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
 
@@ -234,7 +238,7 @@ function SelfServicePayoutCalculator() {
   const parsedWait = Math.max(0, Math.floor(Number.parseFloat(waitMinutes) || 0));
   const baseAndDistancePaise = calculateRiderPayout(parsedDist);
   const extraDistancePaise = Math.max(0, baseAndDistancePaise - STATUTORY_BASE_FARE_PAISE);
-  const waitBonusPaise = parsedWait > 10 ? (parsedWait - 10) * 100 : 0;
+  const waitBonusPaise = calculateRestaurantWaitPayPaise(parsedWait, 6, 100);
   const multiPkgBonusPaise = multiPackage ? 500 : 0;
   const totalEstimatedPaise = baseAndDistancePaise + waitBonusPaise + multiPkgBonusPaise;
 
@@ -313,7 +317,7 @@ function SelfServicePayoutCalculator() {
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">
-                Kitchen Wait Compensation (₹1/min after 10 mins)
+                Kitchen Wait Compensation (₹1/min after 6 mins grace)
               </dt>
               <dd className="font-mono">{formatPaise(waitBonusPaise)}</dd>
             </div>
@@ -476,7 +480,7 @@ export function HomeView() {
     );
   }
 
-  // Zomato Style Approval Block for Riders
+  // OrderKing Partner Verification Block
   const isVerified = home.rider.kycStatus === "VERIFIED" || (home.rider.kycStatus as string) === "APPROVED";
   if (!isVerified) {
     return (
@@ -588,6 +592,14 @@ export function HomeView() {
     <div className="space-y-4">
       {error ? (
         <p className="rounded-md bg-offline/10 px-3 py-2 text-sm text-offline">{error}</p>
+      ) : null}
+
+      {/* Zomato Rider Discipline Cooling-Off Countdown Banner */}
+      {home.coolingOff?.isActive ? (
+        <CoolingOffBanner
+          coolingOff={home.coolingOff}
+          onExpired={() => void load()}
+        />
       ) : null}
 
       {/* Duty Status & Pre-Shift Readiness Header */}
@@ -750,86 +762,69 @@ export function HomeView() {
           onAccept={() => void respond("ACCEPT", home.offer!)}
           onDecline={() => setConfirm("decline")}
         />
+      ) : status === "ONLINE" ? (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5">
+            <div className="flex items-center gap-2.5">
+              <span className="relative flex size-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex size-3 rounded-full bg-emerald-500" />
+              </span>
+              <div>
+                <p className="text-xs font-bold text-foreground">
+                  Searching for Nearby Orders in {home.rider.preferredZones[0] || "Operating Service Zone"}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Reposition closer to active surge hotspots on the heatmap below for higher frequency offers
+                </p>
+              </div>
+            </div>
+            <Badge tone="online" className="font-mono text-xs">
+              Radar Active
+            </Badge>
+          </div>
+
+          <MapPane
+            mode="heatmap"
+            current={riderPos}
+            initialHeatmap={true}
+          />
+        </section>
       ) : (
-        <Card>
-          <CardTitle>{t("offers")}</CardTitle>
-          <CardMeta className="mt-2">{status === "ONLINE" ? t("noOffers") : t("homeEmpty")}</CardMeta>
+        <Card className="space-y-3">
+          <div className="flex items-center justify-between">
+            <CardTitle>{t("offers")}</CardTitle>
+            <Badge tone="offline">Duty Offline</Badge>
+          </div>
+          <CardMeta className="mt-1">
+            You are currently offline. Complete your pre-shift readiness check and tap <strong>{t("goOnline")}</strong> above to activate live dispatches and start earning.
+          </CardMeta>
+          <div className="pt-1">
+            <MapPane
+              mode="heatmap"
+              current={riderPos}
+              initialHeatmap={true}
+            />
+          </div>
         </Card>
       )}
 
-      {/* Floating Cash (COD In-Hand) Limit & Deposit Tracker */}
-      <Card className="space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
-              <Wallet className="size-4" />
-            </span>
-            <div>
-              <CardTitle className="text-base">Floating Cash (COD In-Hand) Ledger</CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Unreconciled cash collected from Cash-on-Delivery orders
-              </p>
-            </div>
-          </div>
-          <Badge tone={isCodNearLimit ? "cod" : "online"}>
-            {formatPaise(unreconciledPaise)} / {formatPaise(codBlockThresholdPaise)}
-          </Badge>
-        </div>
+      {/* Zomato Floating Cash (Pocket Balance) & Instant UPI Deposit Card */}
+      <FloatingCashCard
+        pocketBalance={
+          home.pocketBalance ?? {
+            pocketBalancePaise: unreconciledPaise,
+            limitPaise: codBlockThresholdPaise,
+            isCodBlocked: unreconciledPaise >= codBlockThresholdPaise,
+            utilizationPct: codUsagePct,
+            cashRowsCount: 0,
+          }
+        }
+        disciplineConfig={home.disciplineConfig}
+        onRefresh={() => void load()}
+      />
 
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">
-              COD Float Limit Usage ({codUsagePct}%)
-            </span>
-            <span className="font-mono font-semibold text-foreground">
-              Remaining Limit: {formatPaise(Math.max(0, codBlockThresholdPaise - unreconciledPaise))}
-            </span>
-          </div>
-          <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden">
-            <div
-              className={`h-full transition-all duration-500 ${
-                isCodNearLimit ? "bg-amber-500" : "bg-emerald-500"
-              }`}
-              style={{ width: `${codUsagePct}%` }}
-            />
-          </div>
-          <p className="text-[11px] text-muted-foreground">
-            New COD dispatches pause automatically if unreconciled cash reaches{" "}
-            {formatPaise(codBlockThresholdPaise)}. Prepaid orders continue uninterrupted.
-          </p>
-        </div>
-
-        {unreconciledPaise > 0 ? (
-          <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
-            <p className="text-xs font-medium text-foreground">
-              Reconcile or Log COD Cash Deposit ({formatPaise(unreconciledPaise)})
-            </p>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Input
-                value={codNote}
-                onChange={(e) => setCodNote(e.target.value)}
-                placeholder="Deposit reference or settlement note (optional)"
-                className="text-xs"
-              />
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={codSubmitting}
-                onClick={() => void submitCodReconciliationRequest()}
-              >
-                {codSubmitting ? "Logging..." : "Log COD Reconciliation"}
-              </Button>
-            </div>
-            {codTicketRef ? (
-              <p className="text-xs text-emerald-600 dark:text-emerald-400">
-                COD reconciliation ticket logged (#{codTicketRef}). Operations will verify against your weekly ledger.
-              </p>
-            ) : null}
-          </div>
-        ) : null}
-      </Card>
-
-      {/* Zomato-Style Gig / Shift Slot Booking Card */}
+      {/* Operational Gig / Shift Slot Planner */}
       <Card className="space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -904,6 +899,13 @@ export function HomeView() {
 
       {/* Daily Order Milestone Progress & Real Quality Scorecard */}
       <DailyMilestoneCard completed={home.completedToday} performance={performance} />
+
+      {/* OrderKing VIP Ambassador Pass & Micro-Royalty Protocol */}
+      <VipAmbassadorPass
+        riderName={home.rider.fullName}
+        riderId={home.rider.id}
+        phone={home.rider.phone}
+      />
 
       {/* Self-Service Per-Order Payout Calculator */}
       <SelfServicePayoutCalculator />

@@ -28,7 +28,7 @@ function SearchPage() {
   const navigate = useNavigate({ from: "/search" });
   const [draft, setDraft] = useState(search.q ?? "");
   const location = useLocationStore((s) => s.location);
-  const isDeliveryActive = isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
+  const isDeliveryActive = location ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId) : true;
 
   const commit = (next: Search) => {
     void navigate({ search: next });

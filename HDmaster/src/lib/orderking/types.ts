@@ -44,6 +44,35 @@ export type PlatformSettings = {
   bountyEscalationPaise?: number;
   sampleCatalogueBanner?: boolean;
   launchMode?: "development" | "pilot" | "live";
+  riderDiscipline?: RiderDisciplineSettings;
+};
+
+export type RiderDisciplineSettings = {
+  enabled: boolean;
+  floating_cash_limit_inr: number;
+  cancellation_penalty_before_pickup_inr: number;
+  cancellation_penalty_post_pickup_type: "FULL_ORDER" | "CUSTOM_FLAT" | "NONE";
+  cancellation_penalty_post_pickup_custom_inr: number;
+  cooling_off_consecutive_rejections: number;
+  cooling_off_acceptance_rate_threshold_pct: number;
+  cooling_off_duration_minutes: number;
+  upi_deposit_vpa: string;
+  enable_instant_deposit_qr: boolean;
+  emergency_override_enabled: boolean;
+};
+
+export const DEFAULT_RIDER_DISCIPLINE_SETTINGS: RiderDisciplineSettings = {
+  enabled: true,
+  floating_cash_limit_inr: 2000,
+  cancellation_penalty_before_pickup_inr: 25,
+  cancellation_penalty_post_pickup_type: "FULL_ORDER",
+  cancellation_penalty_post_pickup_custom_inr: 150,
+  cooling_off_consecutive_rejections: 3,
+  cooling_off_acceptance_rate_threshold_pct: 70,
+  cooling_off_duration_minutes: 15,
+  upi_deposit_vpa: "orderking.treasury@okaxis",
+  enable_instant_deposit_qr: true,
+  emergency_override_enabled: true,
 };
 
 export const DEFAULT_SETTINGS: PlatformSettings = {
@@ -78,6 +107,7 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   bountyEscalationPaise: 1000,
   sampleCatalogueBanner: false,
   launchMode: "live",
+  riderDiscipline: DEFAULT_RIDER_DISCIPLINE_SETTINGS,
 };
 
 export type BrandingConfig = {

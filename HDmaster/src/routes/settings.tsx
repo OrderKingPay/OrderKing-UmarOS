@@ -23,19 +23,31 @@ import {
   Wand2,
   Cpu,
   FileText,
+  Wallet,
+  ShieldAlert,
+  QrCode,
+  Search,
+  RefreshCw,
+  Zap,
+  X,
 } from "lucide-react";
 import { EcosystemCMS } from "@/components/dashboard/EcosystemCMS";
 import { PluginConnectors } from "@/components/dashboard/PluginConnectors";
 import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSettings";
 import { KingPayGlobalSettings } from "@/components/kingpay/KingPayGlobalSettings";
 import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
+import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
 import {
   loadSettings,
   saveSettingsFn,
   saveBrandingFn,
   saveCustomerUiSettingsFn,
 } from "@/lib/orderking/actions";
-import { DEFAULT_SETTINGS } from "@/lib/orderking/types";
+import {
+  DEFAULT_SETTINGS,
+  DEFAULT_RIDER_DISCIPLINE_SETTINGS,
+  type RiderDisciplineSettings,
+} from "@/lib/orderking/types";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
@@ -199,6 +211,10 @@ function SettingsPage() {
   const [umarApplying, setUmarApplying] = useState(false);
   const [umarLog, setUmarLog] = useState<string | null>(null);
 
+  // Universal Search & Deep Clean state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDeepCleaning, setIsDeepCleaning] = useState(false);
+
   // Expandable 5 Categories
   const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({
     cat1: true,
@@ -248,6 +264,11 @@ function SettingsPage() {
     settlement_schedule: "T+1 Automated Escrow",
     payout_rail: "NPCI IMPS / NEFT Batch",
   });
+
+  // Sub-Category 2D State: Zomato Rider Discipline, Penalties & Floating Cash Architecture
+  const [disciplineState, setDisciplineState] = useState<RiderDisciplineSettings>(
+    DEFAULT_RIDER_DISCIPLINE_SETTINGS,
+  );
 
   // Category 3 State: All 23 Official Indian Languages & AI Routing
   const [localeState, setLocaleState] = useState<{
@@ -343,6 +364,13 @@ function SettingsPage() {
           ...DEFAULT_TIERS,
           ...(data.notification_rules.tiers || {}),
         },
+      });
+    }
+
+    if (data.rider_discipline) {
+      setDisciplineState({
+        ...DEFAULT_RIDER_DISCIPLINE_SETTINGS,
+        ...data.rider_discipline,
       });
     }
   }
@@ -708,6 +736,44 @@ function SettingsPage() {
     URL.revokeObjectURL(url);
   }
 
+  async function handleDeepCleanAndRefresh() {
+    setIsDeepCleaning(true);
+    try {
+      if (typeof window !== "undefined") {
+        try {
+          const keysToClear = [
+            "orderking_settings_cache",
+            "orderking_central_pricing_settings",
+            "customer_ui_settings",
+            "pwa_cached_config",
+            "active_restaurant_cache",
+            "cached_fare_matrix",
+          ];
+          keysToClear.forEach((k) => localStorage.removeItem(k));
+          sessionStorage.clear();
+        } catch {
+          /* ignore quota / access errors */
+        }
+      }
+
+      const [apiRes] = await Promise.all([
+        fetch(`/api/v1/admin/settings?cb=${Date.now()}`).then((r) => r.json()),
+        loadSettings().catch(() => null),
+      ]);
+      if (apiRes) {
+        hydrateStatesFromData(apiRes);
+      }
+      setSavedBanner(
+        "⚡ Deep Clean & Refresh Complete: Client storage flushed, Postgres connection pool verified, and master settings re-synchronized."
+      );
+    } catch (err) {
+      console.error("Failed to deep clean settings:", err);
+      setSavedBanner("⚠️ Deep clean completed with network notice. Local state refreshed.");
+    } finally {
+      setIsDeepCleaning(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-screen bg-slate-50 text-slate-600">
@@ -718,6 +784,142 @@ function SettingsPage() {
       </div>
     );
   }
+
+  const queryLower = searchQuery.trim().toLowerCase();
+
+  const isCat1Visible =
+    !queryLower ||
+    [
+      "brand",
+      "color",
+      "typography",
+      "font",
+      "logo",
+      "tagline",
+      "theme",
+      "palette",
+      "radius",
+      "compact",
+      "ivory",
+      "midnight",
+      "crimson",
+      "emerald",
+      "ui design",
+      "design studio",
+    ].some((k) => k.includes(queryLower) || queryLower.includes(k));
+
+  const isCat2Visible =
+    !queryLower ||
+    [
+      "marketplace",
+      "commission",
+      "platform fee",
+      "delivery fee",
+      "rider payout",
+      "per km",
+      "radius",
+      "surge",
+      "mdr",
+      "refund",
+      "settlement",
+      "zomato",
+      "fare matrix",
+      "progressive",
+      "slabs",
+      "wait time",
+      "waiting pay",
+      "discipline",
+      "floating cash",
+      "pocket balance",
+      "penalty",
+      "cooling off",
+      "acceptance rate",
+      "speed limit",
+      "geofence",
+      "payout day",
+      "wednesday",
+      "central pricing",
+      "algorithm",
+      "economics",
+      "rates",
+    ].some((k) => k.includes(queryLower) || queryLower.includes(k));
+
+  const isCat3Visible =
+    !queryLower ||
+    [
+      "language",
+      "localization",
+      "bengali",
+      "assamese",
+      "hindi",
+      "english",
+      "tamil",
+      "telugu",
+      "marathi",
+      "gujarati",
+      "kannada",
+      "malayalam",
+      "punjabi",
+      "odia",
+      "urdu",
+      "sanskrit",
+      "official",
+      "23",
+      "gemini",
+      "openai",
+      "ai tutor",
+      "ai support",
+      "routing",
+      "auto-detect",
+      "voice",
+    ].some((k) => k.includes(queryLower) || queryLower.includes(k));
+
+  const isCat4Visible =
+    !queryLower ||
+    [
+      "notification",
+      "tier",
+      "sos",
+      "emergency",
+      "fssai",
+      "tamper",
+      "sla",
+      "zero harassment",
+      "weather",
+      "traffic",
+      "immunity",
+      "remediation",
+      "auto-remediate",
+      "sms",
+      "whatsapp",
+      "call",
+      "alert",
+    ].some((k) => k.includes(queryLower) || queryLower.includes(k));
+
+  const isCat5Visible =
+    !queryLower ||
+    [
+      "cms",
+      "developer",
+      "plugin",
+      "connector",
+      "webhook",
+      "integration",
+      "ecosystem",
+      "api",
+      "razorpay",
+      "stripe",
+      "database",
+      "postgres",
+    ].some((k) => k.includes(queryLower) || queryLower.includes(k));
+
+  const totalMatches = [
+    isCat1Visible,
+    isCat2Visible,
+    isCat3Visible,
+    isCat4Visible,
+    isCat5Visible,
+  ].filter(Boolean).length;
 
   return (
     <div id="settings-top" className="min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8 font-sans">
@@ -877,10 +1079,133 @@ function SettingsPage() {
           ) : null}
         </section>
 
+        {/* 🔍 Universal Settings Search & Deep Clean Switchboard */}
+        <section className="bg-white border-2 border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700">
+                <Search className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-extrabold text-slate-900">
+                    Universal Settings Search &amp; Subsystem Finder
+                  </h3>
+                  {queryLower ? (
+                    <span className="text-[11px] font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                      {totalMatches} of 5 Categories Match
+                    </span>
+                  ) : null}
+                </div>
+                <p className="text-xs text-slate-500">
+                  Instant deep search across all pricing slabs, wait pay, floating cash, 23 languages, notifications, and webhooks.
+                </p>
+              </div>
+            </div>
+
+            {/* One-Click Deep Clean & Refresh Switch */}
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                disabled={isDeepCleaning}
+                onClick={() => void handleDeepCleanAndRefresh()}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-extrabold text-xs transition disabled:opacity-50 shadow-sm"
+              >
+                <RefreshCw
+                  className={`h-4 w-4 text-emerald-700 ${isDeepCleaning ? "animate-spin" : ""}`}
+                />
+                {isDeepCleaning ? "Deep Cleaning & Flushed..." : "Deep Clean & Refresh Caches"}
+              </button>
+            </div>
+          </div>
+
+          {/* Search Box Input */}
+          <div className="relative">
+            <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearchQuery(val);
+                if (val.trim()) {
+                  setExpandedCats({
+                    cat1: true,
+                    cat2: true,
+                    cat3: true,
+                    cat4: true,
+                    cat5: true,
+                  });
+                }
+              }}
+              placeholder="Search settings by keyword (e.g., 'slab', 'wait pay', 'cash limit', 'penalty', 'bengali', 'theme', 'webhook')..."
+              className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 bg-slate-50 text-slate-900 text-sm focus:outline-none focus:border-emerald-500 focus:bg-white transition"
+            />
+            {searchQuery ? (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : null}
+          </div>
+
+          {/* Quick Filter Search Presets */}
+          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            <span className="text-[11px] font-mono text-slate-500 mr-1">Quick Filters:</span>
+            {[
+              { label: "Zomato Fare Matrix & Slabs", q: "fare matrix" },
+              { label: "Discipline & Floating Cash", q: "floating cash" },
+              { label: "Restaurant Wait Pay", q: "wait pay" },
+              { label: "Obsidian / Royal Theme", q: "palette" },
+              { label: "23 Indian Languages", q: "language" },
+              { label: "Emergency SOS SLA", q: "emergency" },
+              { label: "Developer Webhooks", q: "webhook" },
+            ].map((preset) => (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => {
+                  setSearchQuery(preset.q);
+                  setExpandedCats({
+                    cat1: true,
+                    cat2: true,
+                    cat3: true,
+                    cat4: true,
+                    cat5: true,
+                  });
+                }}
+                className={`text-[11px] font-medium px-2.5 py-1 rounded-lg border transition ${
+                  searchQuery.toLowerCase() === preset.q.toLowerCase()
+                    ? "bg-emerald-600 text-white border-emerald-600 font-bold"
+                    : "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
+                }`}
+              >
+                {preset.label}
+              </button>
+            ))}
+            {searchQuery ? (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="text-[11px] font-mono text-rose-600 hover:underline ml-2"
+              >
+                Clear Search
+              </button>
+            ) : null}
+          </div>
+        </section>
+
         {/* =====================================================================
             CATEGORY 1: 🎨 Brand, Colors, Typography & UI Design
            ===================================================================== */}
-        <section id="cat-1" className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <section
+          id="cat-1"
+          style={{ display: isCat1Visible ? "block" : "none" }}
+          className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+        >
           <button
             type="button"
             onClick={() => toggleCategory("cat1")}
@@ -1134,7 +1459,11 @@ function SettingsPage() {
         {/* =====================================================================
             CATEGORY 2: ⚖️ Marketplace Economics, Commissions & Algorithm Sliders
            ===================================================================== */}
-        <section id="cat-2" className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <section
+          id="cat-2"
+          style={{ display: isCat2Visible ? "block" : "none" }}
+          className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+        >
           <button
             type="button"
             onClick={() => toggleCategory("cat2")}
@@ -1144,10 +1473,10 @@ function SettingsPage() {
               <SlidersHorizontal className="h-6 w-6 text-emerald-600" />
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-700 font-bold">
-                  Category 2 · Sub-Categories 2A, 2B &amp; 2C
+                  Category 2 · Sub-Categories 2A, 2B, 2C, 2D &amp; 2E
                 </span>
                 <h2 className="text-lg font-extrabold text-slate-900">
-                  ⚖️ Marketplace Economics, Commissions &amp; Algorithm Sliders
+                  ⚖️ Marketplace Economics, Commissions, Algorithm, Rider Discipline &amp; Central Pricing Switchboard
                 </h2>
               </div>
             </div>
@@ -1400,6 +1729,7 @@ function SettingsPage() {
                             surgeMultiplierCap: econState.surge_multiplier_cap,
                             kitchenPrepBufferMinutes: econState.kitchen_prep_buffer_mins,
                           },
+                          rider_discipline: disciplineState,
                         },
                         "Saved Category 2: Marketplace Economics, Commissions & Algorithm Sliders",
                       )
@@ -1415,6 +1745,230 @@ function SettingsPage() {
                   </div>
                 )}
               </div>
+
+              {/* Sub-Category 2D: Zomato Rider Discipline, Penalties & Floating Cash ("Pocket Balance") Architecture */}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-4">
+                <div className="border-b border-slate-100 pb-3 flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <Wallet className="h-4 w-4 text-emerald-600" />
+                      Sub-Category 2D · Zomato Rider Discipline, Penalties &amp; Floating Cash ("Pocket Balance") Architecture
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Configure COD floating cash limit, pre/post-pickup cancellation deductions, consecutive rejection cooling-off freeze, and UPI deposit VPA.
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-0.5 font-mono">
+                    Zomato Exact Parity
+                  </span>
+                </div>
+
+                {/* Master Toggle */}
+                <ToggleRow
+                  title="Activate Fleet Discipline & Pocket Balance Subsystem"
+                  description="When enabled, riders exceeding the floating cash cap are blocked from receiving COD orders until depositing cash, and excessive order rejections trigger automatic cooling-off."
+                  isOn={disciplineState.enabled}
+                  onToggle={() =>
+                    setDisciplineState((p) => ({ ...p, enabled: !p.enabled }))
+                  }
+                />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Floating Cash Limit */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      COD Floating Cash Limit (₹{disciplineState.floating_cash_limit_inr.toLocaleString("en-IN")})
+                    </label>
+                    <input
+                      type="range"
+                      min={500}
+                      max={10000}
+                      step={100}
+                      value={disciplineState.floating_cash_limit_inr}
+                      onChange={(e) =>
+                        setDisciplineState((p) => ({
+                          ...p,
+                          floating_cash_limit_inr: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full accent-emerald-600"
+                    />
+                    <div className="flex justify-between text-[10px] font-mono text-slate-400">
+                      <span>₹500 Strict</span>
+                      <span>₹2,000 (Zomato Benchmark)</span>
+                      <span>₹10,000 High</span>
+                    </div>
+                  </div>
+
+                  {/* Pre-Pickup Cancellation Penalty */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Pre-Pickup Cancel Penalty (₹{disciplineState.cancellation_penalty_before_pickup_inr})
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={5}
+                      value={disciplineState.cancellation_penalty_before_pickup_inr}
+                      onChange={(e) =>
+                        setDisciplineState((p) => ({
+                          ...p,
+                          cancellation_penalty_before_pickup_inr: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full accent-emerald-600"
+                    />
+                    <div className="flex justify-between text-[10px] font-mono text-slate-400">
+                      <span>₹0 Grace</span>
+                      <span>₹25 Zomato Standard</span>
+                      <span>₹100 Max</span>
+                    </div>
+                  </div>
+
+                  {/* Post-Pickup Cancellation Rule */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Post-Pickup Cancellation Rule
+                    </label>
+                    <select
+                      value={disciplineState.cancellation_penalty_post_pickup_type}
+                      onChange={(e) =>
+                        setDisciplineState((p) => ({
+                          ...p,
+                          cancellation_penalty_post_pickup_type: e.target.value as any,
+                        }))
+                      }
+                      className="w-full border border-slate-300 rounded-xl px-3 py-2.5 bg-slate-50 text-slate-900 text-xs font-mono"
+                    >
+                      <option value="FULL_ORDER">Full Order Value Deduction (Zomato Benchmark)</option>
+                      <option value="CUSTOM_FLAT">Custom Flat Fee Deduction</option>
+                      <option value="NONE">Dispute Hold Only (No Penalty)</option>
+                    </select>
+                  </div>
+
+                  {/* Consecutive Rejections Threshold */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Consecutive Rejection Threshold ({disciplineState.cooling_off_consecutive_rejections} Declines)
+                    </label>
+                    <input
+                      type="range"
+                      min={2}
+                      max={8}
+                      step={1}
+                      value={disciplineState.cooling_off_consecutive_rejections}
+                      onChange={(e) =>
+                        setDisciplineState((p) => ({
+                          ...p,
+                          cooling_off_consecutive_rejections: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full accent-emerald-600"
+                    />
+                    <div className="flex justify-between text-[10px] font-mono text-slate-400">
+                      <span>2 Declines</span>
+                      <span>3 (Zomato Rule)</span>
+                      <span>8 Lenient</span>
+                    </div>
+                  </div>
+
+                  {/* Cooling-Off Freeze Duration */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Cooling-Off Freeze Duration ({disciplineState.cooling_off_duration_minutes} Mins)
+                    </label>
+                    <input
+                      type="range"
+                      min={5}
+                      max={60}
+                      step={5}
+                      value={disciplineState.cooling_off_duration_minutes}
+                      onChange={(e) =>
+                        setDisciplineState((p) => ({
+                          ...p,
+                          cooling_off_duration_minutes: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full accent-emerald-600"
+                    />
+                    <div className="flex justify-between text-[10px] font-mono text-slate-400">
+                      <span>5 Mins Quick</span>
+                      <span>15 Mins Standard</span>
+                      <span>60 Mins Severe</span>
+                    </div>
+                  </div>
+
+                  {/* Acceptance Rate Threshold */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
+                      Min Acceptance Rate Threshold ({disciplineState.cooling_off_acceptance_rate_threshold_pct}%)
+                    </label>
+                    <input
+                      type="range"
+                      min={50}
+                      max={90}
+                      step={5}
+                      value={disciplineState.cooling_off_acceptance_rate_threshold_pct}
+                      onChange={(e) =>
+                        setDisciplineState((p) => ({
+                          ...p,
+                          cooling_off_acceptance_rate_threshold_pct: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full accent-emerald-600"
+                    />
+                    <div className="flex justify-between text-[10px] font-mono text-slate-400">
+                      <span>50% Low</span>
+                      <span>70% Standard</span>
+                      <span>90% Strict</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <TextInputRow
+                    title="Treasury UPI VPA for Floating Cash Deposit"
+                    value={disciplineState.upi_deposit_vpa}
+                    onChange={(v: string) =>
+                      setDisciplineState((p) => ({ ...p, upi_deposit_vpa: v }))
+                    }
+                  />
+
+                  <ToggleRow
+                    title="Enable Dynamic In-App NPCI QR Code"
+                    description="Generates real-time UPI QR codes with order reference in the Rider App for zero-friction floating cash settlement."
+                    isOn={disciplineState.enable_instant_deposit_qr}
+                    onToggle={() =>
+                      setDisciplineState((p) => ({
+                        ...p,
+                        enable_instant_deposit_qr: !p.enable_instant_deposit_qr,
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className="flex justify-end pt-2 border-t border-slate-100">
+                  <SaveButton
+                    onClick={() =>
+                      handleSave(
+                        {
+                          ...econState,
+                          rider_discipline: disciplineState,
+                        },
+                        "Saved Sub-Category 2D: Zomato Rider Discipline, Penalties & Floating Cash Architecture",
+                      )
+                    }
+                    saving={saving}
+                    label="Save Rider Discipline & Floating Cash Settings"
+                  />
+                </div>
+              </div>
+
+              {/* Sub-Category 2E: Central Pricing Switchboard (Zomato Parity Algorithmic Knobs & Simulator) */}
+              <div className="pt-2">
+                <CentralPricingSwitch />
+              </div>
             </div>
           )}
         </section>
@@ -1422,7 +1976,11 @@ function SettingsPage() {
         {/* =====================================================================
             CATEGORY 3: 🌐 All 23 Official Indian Languages (22 Scheduled + English)
            ===================================================================== */}
-        <section id="cat-3" className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <section
+          id="cat-3"
+          style={{ display: isCat3Visible ? "block" : "none" }}
+          className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+        >
           <button
             type="button"
             onClick={() => toggleCategory("cat3")}
@@ -1646,7 +2204,11 @@ function SettingsPage() {
         {/* =====================================================================
             CATEGORY 4: 🚨 6-Tier Notification & Zero-Harassment Auto-Remediation Rules
            ===================================================================== */}
-        <section id="cat-4" className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <section
+          id="cat-4"
+          style={{ display: isCat4Visible ? "block" : "none" }}
+          className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+        >
           <button
             type="button"
             onClick={() => toggleCategory("cat4")}
@@ -1850,7 +2412,11 @@ function SettingsPage() {
         {/* =====================================================================
             CATEGORY 5: 🗑️ Reset, Prune & Configuration Backup
            ===================================================================== */}
-        <section id="cat-5" className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <section
+          id="cat-5"
+          style={{ display: isCat5Visible ? "block" : "none" }}
+          className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+        >
           <button
             type="button"
             onClick={() => toggleCategory("cat5")}

@@ -154,16 +154,16 @@ export function HomeFeed({
     const dbCats = cats.data?.categories ?? [];
     if (dbCats.length > 0) {
       return dbCats.map((c, i) => {
+        const cSlug = (c.slug || "").toLowerCase();
         const curated =
-          CURATED_FOOD_CATEGORIES.find(
-            (cc) =>
-              cc.slug.toLowerCase().includes(c.slug.toLowerCase()) ||
-              c.slug.toLowerCase().includes(cc.slug.toLowerCase())
-          ) || CURATED_FOOD_CATEGORIES[i % CURATED_FOOD_CATEGORIES.length];
+          CURATED_FOOD_CATEGORIES.find((cc) => {
+            const ccSlug = (cc.slug || "").toLowerCase();
+            return cSlug ? (ccSlug.includes(cSlug) || cSlug.includes(ccSlug)) : false;
+          }) || CURATED_FOOD_CATEGORIES[i % CURATED_FOOD_CATEGORIES.length];
         return {
-          id: c.id,
-          slug: c.slug,
-          name: c.name,
+          id: c.id || `db-cat-${i}`,
+          slug: c.slug || `cat-${i}`,
+          name: c.name || "Category",
           emoji: curated.emoji,
           gradient: curated.gradient,
           imageUrl: c.imageUrl || curated.imageUrl,
@@ -184,14 +184,14 @@ export function HomeFeed({
   const list = useQuery({
     queryKey: [
       "restaurants",
-      location.zoneId,
-      location.lat,
-      location.lng,
-      q,
+      location?.zoneId ?? "",
+      location?.lat ?? 0,
+      location?.lng ?? 0,
+      q ?? "",
       dietFilter,
-      openNow,
-      selectedCategory,
-      lang,
+      openNow ?? false,
+      selectedCategory ?? "",
+      lang ?? "en",
     ],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -199,19 +199,33 @@ export function HomeFeed({
       if (dietFilter === "veg") params.set("veg", "true");
       if (openNow) params.set("openNow", "true");
       if (selectedCategory) params.set("category", selectedCategory);
-      params.set("lat", location.lat.toString());
-      params.set("lng", location.lng.toString());
-      params.set("zoneId", location.zoneId || "");
+      params.set("lat", (location?.lat ?? 0).toString());
+      params.set("lng", (location?.lng ?? 0).toString());
+      params.set("zoneId", location?.zoneId || "");
       if (lang) params.set("lang", lang);
 
       const response = await fetch(`/api/search?${params.toString()}`);
-      if (!response.ok) throw new Error("Failed to fetch restaurants");
-      return (await response.json()) as { restaurants: RestaurantCard[]; deliveryAvailable: boolean; reason?: string };
+      if (!response.ok) {
+        if (response.status === 429) {
+          console.warn("Search rate limited (429), preserving existing catalog");
+        }
+        throw new Error(`Failed to fetch restaurants: HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      return {
+        restaurants: Array.isArray(data?.restaurants) ? (data.restaurants as RestaurantCard[]) : [],
+        deliveryAvailable: Boolean(data?.deliveryAvailable),
+        reason: (data?.reason as string) || undefined,
+      };
     },
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 60 * 24,
     placeholderData: (prev) => prev,
     refetchOnWindowFocus: false,
+    retry: (failureCount, error) => {
+      if (failureCount >= 2) return false;
+      return true;
+    },
   });
 
   // Handle reorder click
@@ -227,7 +241,7 @@ export function HomeFeed({
   };
 
   const activeOrder = pastOrders.data?.orders?.find((o) =>
-    ["PENDING", "PLACED", "CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "OUT_FOR_DELIVERY", "ARRIVED"].includes(
+    o && o.status && ["PENDING", "PLACED", "CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "OUT_FOR_DELIVERY", "ARRIVED"].includes(
       o.status
     )
   );
@@ -237,18 +251,33 @@ export function HomeFeed({
     const raw: RestaurantCard[] = list.data?.restaurants ?? [];
     return raw
       .filter((r) => {
+        if (!r) return false;
         if (dietFilter === "veg" && !r.vegOnly) return false;
-        if (filterRating && (r.ratingAvg ?? 0) < 4.0) return false;
+        const rating = typeof r.ratingAvg === "number" ? r.ratingAvg : Number(r.ratingAvg || 0);
+        if (filterRating && rating < 4.0) return false;
         if (filterOffers && !r.hasOffer) return false;
-        if (filterBudget && (r.minOrderPaise ?? 0) > 20000) return false;
-        if (filterFast && (r.etaMinutes ?? 35) > 30) return false;
+        const minOrder = typeof r.minOrderPaise === "number" ? r.minOrderPaise : Number(r.minOrderPaise || 0);
+        if (filterBudget && minOrder > 20000) return false;
+        const eta = typeof r.etaMinutes === "number" ? r.etaMinutes : Number(r.etaMinutes || 35);
+        if (filterFast && eta > 30) return false;
         return true;
       })
       .sort((a, b) => {
-        if (filterFast) return (a.etaMinutes ?? 30) - (b.etaMinutes ?? 30);
-        if (filterBudget) return (a.minOrderPaise ?? 20000) - (b.minOrderPaise ?? 20000);
-        const scoreA = (a.ratingAvg ?? 4.0) * Math.log10(Math.max(10, a.ratingCount ?? 10));
-        const scoreB = (b.ratingAvg ?? 4.0) * Math.log10(Math.max(10, b.ratingCount ?? 10));
+        const etaA = typeof a.etaMinutes === "number" ? a.etaMinutes : Number(a.etaMinutes || 30);
+        const etaB = typeof b.etaMinutes === "number" ? b.etaMinutes : Number(b.etaMinutes || 30);
+        if (filterFast) return etaA - etaB;
+
+        const minA = typeof a.minOrderPaise === "number" ? a.minOrderPaise : Number(a.minOrderPaise || 20000);
+        const minB = typeof b.minOrderPaise === "number" ? b.minOrderPaise : Number(b.minOrderPaise || 20000);
+        if (filterBudget) return minA - minB;
+
+        const ratingA = typeof a.ratingAvg === "number" ? a.ratingAvg : Number(a.ratingAvg || 4.0);
+        const ratingB = typeof b.ratingAvg === "number" ? b.ratingAvg : Number(b.ratingAvg || 4.0);
+        const countA = typeof a.ratingCount === "number" ? a.ratingCount : Number(a.ratingCount || 10);
+        const countB = typeof b.ratingCount === "number" ? b.ratingCount : Number(b.ratingCount || 10);
+
+        const scoreA = ratingA * Math.log10(Math.max(10, countA));
+        const scoreB = ratingB * Math.log10(Math.max(10, countB));
         return scoreB - scoreA;
       });
   }, [list.data?.restaurants, dietFilter, filterRating, filterOffers, filterBudget, filterFast]);
@@ -274,12 +303,12 @@ export function HomeFeed({
           </div>
 
           <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 scrollbar-none pt-1">
-            {displayCategories.map((c) => {
+            {displayCategories.map((c, i) => {
               const isSelected = selectedCategory === c.id || selectedCategory === c.slug;
               return (
                 <button
                   type="button"
-                  key={c.slug}
+                  key={c.id || c.slug || `cat-${i}`}
                   onClick={() => setSelectedCategory(isSelected ? null : c.id || c.slug)}
                   className="group flex flex-col items-center shrink-0 w-16 sm:w-20 text-center select-none focus:outline-none transition-transform active:scale-95"
                 >
@@ -405,9 +434,9 @@ export function HomeFeed({
               </span>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Live Order in Progress</p>
-                <h3 className="font-extrabold text-sm text-gray-900">{activeOrder.restaurantName}</h3>
+                <h3 className="font-extrabold text-sm text-gray-900">{activeOrder.restaurantName || "Order"}</h3>
                 <p className="text-xs text-emerald-900/80 font-medium capitalize">
-                  Status: {activeOrder.status.replace(/_/g, " ").toLowerCase()}
+                  Status: {(activeOrder.status || "").replace(/_/g, " ").toLowerCase()}
                 </p>
               </div>
             </div>
@@ -439,7 +468,7 @@ export function HomeFeed({
           </div>
         </div>
 
-        {list.isPending ? (
+        {list.isPending && !list.data ? (
           /* Warm Ivory/Amber Gradient Shimmer Skeletons */
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2" aria-busy="true" aria-label="Loading restaurants">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -465,7 +494,7 @@ export function HomeFeed({
               </div>
             ))}
           </div>
-        ) : list.isError ? (
+        ) : list.isError && !list.data ? (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
             <p className="text-sm font-semibold text-red-700">Unable to load restaurants right now</p>
             <Button
@@ -615,10 +644,16 @@ export function HomeFeed({
                 </div>
                 <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5">
                   <span className="text-[10px] text-gray-400 font-medium">
-                    {new Date(o.placedAt).toLocaleDateString(locale, {
-                      month: "short",
-                      day: "numeric",
-                    })}
+                    {(() => {
+                      try {
+                        const d = o.placedAt ? new Date(o.placedAt) : null;
+                        return d && !isNaN(d.getTime())
+                          ? d.toLocaleDateString(locale, { month: "short", day: "numeric" })
+                          : "Recent";
+                      } catch {
+                        return "Recent";
+                      }
+                    })()}
                   </span>
                   <button
                     type="button"

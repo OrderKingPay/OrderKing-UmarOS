@@ -237,11 +237,16 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
               name: card.name,
               url: `https://orderking.in/r/${card.slug}`,
               image: card.coverImage || "https://orderking.in/icon-512.png",
-              servesCuisine: card.cuisineSummary.split(",").map((s) => s.trim()),
+              servesCuisine: (card.cuisineSummary || "").split(",").map((s) => s.trim()),
               priceRange: "₹100 - ₹500",
               aggregateRating: {
                 "@type": "AggregateRating",
-                ratingValue: card.ratingAvg ? card.ratingAvg.toFixed(1) : "4.8",
+                ratingValue: card.ratingAvg != null
+                  ? (typeof card.ratingAvg === "number"
+                      ? card.ratingAvg
+                      : Number(card.ratingAvg || 0)
+                    ).toFixed(1)
+                  : "4.8",
                 bestRating: "5",
                 worstRating: "1",
                 ratingCount: card.ratingCount || 100,

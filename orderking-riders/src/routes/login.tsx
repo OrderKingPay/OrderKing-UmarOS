@@ -105,7 +105,24 @@ function Login() {
           name: name.trim(),
           callbackURL: "/onboarding",
         });
-        if (err) throw new Error(err.message);
+        if (err) {
+          if (err.message?.toLowerCase().includes("already exists") || (err as any).status === 422) {
+            // Intelligent auto-recovery: account already exists, attempt automatic sign-in
+            const { error: signInErr } = await authClient.signIn.email({
+              email: resolvedEmail,
+              password,
+              callbackURL: "/onboarding",
+            });
+            if (!signInErr) {
+              window.location.href = "/onboarding";
+              return;
+            }
+            throw new Error(
+              "An account with this mobile number / email already exists. Please switch to 'Sign In' or verify your password."
+            );
+          }
+          throw new Error(err.message);
+        }
         try {
           localStorage.setItem(
             "orderking_rider_prefill",

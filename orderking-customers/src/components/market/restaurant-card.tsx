@@ -19,10 +19,31 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
   const { lang } = useT();
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
 
+  const numRatingAvg =
+    restaurant.ratingAvg != null
+      ? typeof restaurant.ratingAvg === "number"
+        ? restaurant.ratingAvg
+        : Number(restaurant.ratingAvg || 0)
+      : null;
+  const hasRating = numRatingAvg != null && !isNaN(numRatingAvg) && numRatingAvg > 0;
+
+  const numRatingCount =
+    typeof restaurant.ratingCount === "number"
+      ? restaurant.ratingCount
+      : Number(restaurant.ratingCount || 0);
+
+  const numDistanceKm =
+    restaurant.distanceKm != null
+      ? typeof restaurant.distanceKm === "number"
+        ? restaurant.distanceKm
+        : Number(restaurant.distanceKm)
+      : null;
+  const hasDistance = numDistanceKm != null && !isNaN(numDistanceKm) && numDistanceKm > 0;
+
   return (
     <Link
       to="/r/$slug"
-      params={{ slug: restaurant.slug }}
+      params={{ slug: restaurant.slug || "" }}
       onClick={hapticTap}
       className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl bg-white border border-gray-100/90 shadow-[0_2px_16px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12),0_4px_16px_-2px_rgba(0,0,0,0.06)] hover:border-amber-300/40 hover:-translate-y-1 active:scale-[0.97] active:brightness-[0.98] transition-all duration-200 ease-out will-change-transform no-underline"
     >
@@ -31,7 +52,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
         {restaurant.coverImage ? (
           <img
             src={restaurant.coverImage}
-            alt={restaurant.name}
+            alt={restaurant.name || "Restaurant"}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
             loading="lazy"
             decoding="async"
@@ -41,8 +62,8 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
             <div className="flex size-16 items-center justify-center rounded-2xl bg-white/90 shadow-sm border border-orange-100 mb-2 group-hover:scale-110 transition-transform">
               <Utensils className="size-8 text-[#E23744]" />
             </div>
-            <span className="font-bold text-gray-800 text-sm tracking-tight line-clamp-1">{restaurant.name}</span>
-            <span className="text-xs text-gray-500 font-medium">{restaurant.cuisineSummary}</span>
+            <span className="font-bold text-gray-800 text-sm tracking-tight line-clamp-1">{restaurant.name || "Restaurant"}</span>
+            <span className="text-xs text-gray-500 font-medium">{restaurant.cuisineSummary || ""}</span>
           </div>
         )}
 
@@ -122,8 +143,8 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
           <div className="flex items-center gap-1.5 bg-white/95 text-gray-900 px-2.5 py-1 rounded-lg text-xs font-bold shadow-md shrink-0 backdrop-blur-sm border border-white/60">
             <Clock className="size-3 text-[#E23744]" />
             <span>{restaurant.etaMinutes ?? 30} min</span>
-            {restaurant.distanceKm ? (
-              <span className="text-gray-400 font-normal">· {restaurant.distanceKm.toFixed(1)} km</span>
+            {hasDistance ? (
+              <span className="text-gray-400 font-normal">· {numDistanceKm!.toFixed(1)} km</span>
             ) : null}
           </div>
         </div>
@@ -137,35 +158,35 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
             {restaurant.name}
           </h3>
 
-          {restaurant.ratingAvg != null ? (
+          {hasRating ? (
             <div
               className="flex items-center gap-1 text-white font-extrabold text-xs px-2 sm:px-2.5 py-[3px] rounded-lg shadow-sm shrink-0 border"
               style={{
                 background:
-                  restaurant.ratingAvg >= 4.0
+                  numRatingAvg! >= 4.0
                     ? "linear-gradient(135deg, #10b981 0%, #059669 60%, #047857 100%)"
-                    : restaurant.ratingAvg >= 3.0
+                    : numRatingAvg! >= 3.0
                     ? "linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%)"
                     : "linear-gradient(135deg, #ef4444 0%, #dc2626 60%, #b91c1c 100%)",
                 borderColor:
-                  restaurant.ratingAvg >= 4.0
+                  numRatingAvg! >= 4.0
                     ? "rgba(167, 243, 208, 0.4)"
-                    : restaurant.ratingAvg >= 3.0
+                    : numRatingAvg! >= 3.0
                     ? "rgba(253, 230, 138, 0.4)"
                     : "rgba(254, 202, 202, 0.4)",
                 boxShadow:
-                  restaurant.ratingAvg >= 4.0
+                  numRatingAvg! >= 4.0
                     ? "0 2px 8px rgba(16, 185, 129, 0.35)"
-                    : restaurant.ratingAvg >= 3.0
+                    : numRatingAvg! >= 3.0
                     ? "0 2px 8px rgba(245, 158, 11, 0.35)"
                     : "0 2px 8px rgba(239, 68, 68, 0.35)",
               }}
             >
-              <span>{restaurant.ratingAvg.toFixed(1)}</span>
+              <span>{numRatingAvg!.toFixed(1)}</span>
               <Star className="size-3 fill-white" />
-              {restaurant.ratingCount > 0 && (
+              {numRatingCount > 0 && (
                 <span className="text-[10px] opacity-90 font-medium">
-                  ({restaurant.ratingCount > 999 ? `${(restaurant.ratingCount / 1000).toFixed(1)}k` : restaurant.ratingCount})
+                  ({numRatingCount > 999 ? `${(numRatingCount / 1000).toFixed(1)}k` : numRatingCount})
                 </span>
               )}
             </div>
@@ -179,10 +200,10 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
 
         {/* Cuisine + SafeInteger Paise Price */}
         <div className="flex items-center justify-between text-xs sm:text-[13px] text-gray-500 font-medium">
-          <p className="truncate max-w-[70%]">{restaurant.cuisineSummary}</p>
+          <p className="truncate max-w-[70%]">{restaurant.cuisineSummary || ""}</p>
           <span className="text-gray-700 font-semibold shrink-0">
             {restaurant.minOrderPaise
-              ? `${formatPaiseCompact(restaurant.minOrderPaise, locale)} for one`
+              ? `${formatPaiseCompact(Number(restaurant.minOrderPaise || 0), locale)} for one`
               : "₹150 for one"}
           </span>
         </div>
@@ -200,14 +221,14 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
           </div>
 
           <div className="shrink-0 font-semibold">
-            {restaurant.deliveryFeePaise === 0 ? (
+            {Number(restaurant.deliveryFeePaise || 0) === 0 ? (
               <span className="inline-flex items-center gap-1 text-emerald-800 bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-100/70 px-2 py-0.5 rounded-md text-[10.5px] font-black border border-emerald-300/80 shadow-[0_1px_4px_rgba(16,185,129,0.15)]">
                 <Sparkles className="size-2.5 text-emerald-600 fill-emerald-500" />
                 FREE Delivery
               </span>
             ) : (
               <span className="text-gray-600">
-                {formatPaiseCompact(restaurant.deliveryFeePaise, locale)} delivery
+                {formatPaiseCompact(Number(restaurant.deliveryFeePaise || 0), locale)} delivery
               </span>
             )}
           </div>

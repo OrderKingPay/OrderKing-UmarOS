@@ -2,7 +2,7 @@
  * Autonomous Compliance Engine for OrderKing
  * 
  * Replaces human compliance teams with AI-driven operations for strict legal parity
- * with food delivery standards (e.g., Zomato), operating within Indian regulatory frameworks.
+ * with Indian food delivery standards (OrderKing Partner standard), operating within Indian regulatory frameworks.
  */
 
 export class AutonomousComplianceEngine {

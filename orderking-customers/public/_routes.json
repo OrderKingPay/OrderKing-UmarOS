@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/assets/*",
+    "/food/*",
+    "/brand/*",
+    "/__grok/*",
+    "/apple-touch-icon.png",
+    "/favicon.ico",
+    "/icon-192.png",
+    "/icon-512.png",
+    "/logo.jpg",
+    "/manifest.json",
+    "/offline.html",
+    "/og.jpg",
+    "/robots.txt",
+    "/sitemap.xml",
+    "/sw.js"
+  ]
+}

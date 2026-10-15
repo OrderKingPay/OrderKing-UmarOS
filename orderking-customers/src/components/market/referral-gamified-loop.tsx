@@ -30,7 +30,7 @@ export function ReferralGamifiedLoop({
   compact = false,
 }: ReferralGamifiedLoopProps) {
   const [copied, setCopied] = useState(false);
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
   const [scratched, setScratched] = useState(false);
 
   const inviteCode = "KING50";
@@ -107,7 +107,13 @@ export function ReferralGamifiedLoop({
                 <span>Your Referral Progress:</span>
               </span>
               <span className="font-mono text-emerald-400">
-                {activeStep === 1 ? "1 / 3 Friends (33%)" : activeStep === 2 ? "2 / 3 Friends (66%)" : "3 / 3 Friends (100% UNLOCKED)"}
+                {activeStep === 0
+                  ? "0 / 3 Friends (0%)"
+                  : activeStep === 1
+                  ? "1 / 3 Friends (33%)"
+                  : activeStep === 2
+                  ? "2 / 3 Friends (66%)"
+                  : "3 / 3 Friends (100% UNLOCKED)"}
               </span>
             </div>
 
@@ -124,7 +130,7 @@ export function ReferralGamifiedLoop({
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[10px] font-bold text-zinc-400">FRIEND 1</span>
-                  <CheckCircle2 className="size-3 text-emerald-400" />
+                  {activeStep >= 1 ? <CheckCircle2 className="size-3 text-emerald-400" /> : <Lock className="size-3 text-zinc-500" />}
                 </div>
                 <p className="text-xs font-bold text-white">₹50 Credits</p>
                 <p className="text-[10px] text-zinc-400">5,000 Crowns</p>

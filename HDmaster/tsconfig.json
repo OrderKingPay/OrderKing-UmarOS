@@ -28,6 +28,7 @@
     },
     "allowImportingTsExtensions": true,
     "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "plugins": [
@@ -43,6 +44,10 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist",
+    ".output",
+    ".vercel",
+    ".next"
   ]
 }

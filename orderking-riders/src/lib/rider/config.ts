@@ -1,21 +1,21 @@
-import type { Branding, FeatureFlags, PlatformConfig } from "./types.ts";
+import type { Branding, DynamicPricingConfig, FeatureFlags, PlatformConfig, ProgressiveDistanceSlabs, RiderDisciplineConfig } from "./types.ts";
 
 export const DEFAULT_BRANDING: Branding = {
-  appName: "Order King Rider",
-  riderFacingBrand: "Order King Rider",
-  tagline: "Deliver like a King. Get paid clearly.",
+  appName: "OrderKing Partner",
+  riderFacingBrand: "OrderKing Partner",
+  tagline: "Deliver like a King. 100% Payout Transparency.",
   logoUrl: "/brand/logo.svg",
   faviconUrl: "/favicon.svg",
   colors: {
-    primary: "#1F4A43",
-    background: "#F1EEE8",
-    foreground: "#171614",
+    primary: "#E5A93C",
+    background: "#08090C",
+    foreground: "#F8FAFC",
   },
-  domain: "rider.orderking.in",
-  notificationSender: "Order King",
+  domain: "partner.orderking.in",
+  notificationSender: "OrderKing Partner",
   legalCompanyName: "Order King Foods Private Limited",
-  appStoreName: "Order King Rider",
-  invoiceBrand: "Order King",
+  appStoreName: "OrderKing Partner",
+  invoiceBrand: "OrderKing Partner",
 };
 
 export const DEFAULT_FLAGS: FeatureFlags = {
@@ -33,6 +33,44 @@ export const DEFAULT_FLAGS: FeatureFlags = {
   push_notifications: false,
   offline_mode: true,
   advanced_dispatch: false,
+};
+
+export const DEFAULT_DISCIPLINE_CONFIG: RiderDisciplineConfig = {
+  enabled: true,
+  floatingCashLimitInr: 2000,
+  cancellationPenaltyBeforePickupInr: 25,
+  cancellationPenaltyPostPickupType: "FULL_ORDER",
+  cancellationPenaltyPostPickupCustomInr: 150,
+  coolingOffConsecutiveRejections: 3,
+  coolingOffAcceptanceRateThresholdPct: 70,
+  coolingOffDurationMinutes: 15,
+  upiDepositVpa: "orderking.treasury@okaxis",
+};
+
+export const DEFAULT_DISTANCE_SLABS: ProgressiveDistanceSlabs = {
+  slab1RatePerKmPaise: 1200, // ₹12/km
+  slab2RatePerKmPaise: 1400, // ₹14/km
+  slab3RatePerKmPaise: 1600, // ₹16/km
+  ldoBonusPaise: 2000, // ₹20 LDO bonus
+};
+
+export const DEFAULT_DYNAMIC_PRICING_CONFIG: DynamicPricingConfig = {
+  cityTier: "TIER_1",
+  tier1BaseFloorPaise: 3500, // ₹35
+  tier2BaseFloorPaise: 3000, // ₹30
+  tier3BaseFloorPaise: 2500, // ₹25
+  pickupFeePaise: 2000,
+  dropFeePaise: 1500,
+  basePayPaise: 3500,
+  defaultRatePerKmPaise: 1200,
+  distanceSlabs: DEFAULT_DISTANCE_SLABS,
+  waitGraceMinutes: 6,
+  waitRatePerMinPaise: 100, // ₹1/min
+  waitCapPaise: 3000, // ₹30
+  floatingCashLimitInr: 2000,
+  coolingOffDurationMinutes: 15,
+  payoutCycleDay: "Wednesday",
+  kingAiAutonomousResolution: true,
 };
 
 export const DEFAULT_CONFIG: PlatformConfig = {
@@ -57,6 +95,10 @@ export const DEFAULT_CONFIG: PlatformConfig = {
   locationRetentionHours: 24,
   gpsHistoryMaxPings: 40,
   volunteerEnabled: false,
+  discipline: DEFAULT_DISCIPLINE_CONFIG,
+  pricing: DEFAULT_DYNAMIC_PRICING_CONFIG,
+  payoutCycleDay: "Wednesday",
+  kingAiAutonomousResolution: true,
 };
 
 export const ALLOWED_OFFER_TIMEOUTS = [30, 45, 60, 90] as const;

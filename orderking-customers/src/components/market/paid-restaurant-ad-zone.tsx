@@ -110,7 +110,7 @@ export function PaidRestaurantAdZone({
               </span>
               <div className="flex items-center gap-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
                 <Star className="size-2.5 fill-amber-400 text-amber-400" />
-                <span>{ad.rating.toFixed(1)}</span>
+                <span>{(typeof ad.rating === "number" ? ad.rating : Number(ad.rating || 0)).toFixed(1)}</span>
               </div>
             </Link>
           ))}
@@ -135,7 +135,7 @@ export function PaidRestaurantAdZone({
                   </h4>
                   <div className="flex items-center gap-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400 shrink-0">
                     <Star className="size-2.5 fill-amber-400 text-amber-400" />
-                    <span>{ad.rating.toFixed(1)}</span>
+                    <span>{(typeof ad.rating === "number" ? ad.rating : Number(ad.rating || 0)).toFixed(1)}</span>
                   </div>
                 </div>
                 <p className="truncate text-[10px] text-muted">{ad.cuisine}</p>

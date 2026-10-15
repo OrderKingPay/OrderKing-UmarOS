@@ -1,5 +1,5 @@
 /**
- * Zomato-parity feature components suite for OrderKing Delivery Fleet / Rider App.
+ * OrderKing Partner feature components suite for OrderKing Delivery Fleet / Partner App.
  */
 
 export * from "./rider-live-chat";

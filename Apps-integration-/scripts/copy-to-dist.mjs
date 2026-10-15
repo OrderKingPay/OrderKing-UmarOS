@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 function copyDir(src, dest) {
+  if (!fs.existsSync(src)) return;
   fs.mkdirSync(dest, { recursive: true });
   let entries = fs.readdirSync(src, { withFileTypes: true });
   for (let entry of entries) {
@@ -13,27 +14,53 @@ function copyDir(src, dest) {
 
 function run(appDir) {
   const srcNitro = path.join(appDir, '.output/public');
+  const srcVercel = path.join(appDir, '.vercel/output/static');
   const dest = path.join(appDir, 'dist');
-  
-  // Cloudflare Pages uses dist, copy compiled assets from Nitro
+  const destClient = path.join(appDir, 'dist/client');
+
+  fs.mkdirSync(dest, { recursive: true });
+  fs.mkdirSync(destClient, { recursive: true });
+
+  // 1. Copy compiled client assets from Nitro (.output/public)
   if (fs.existsSync(srcNitro)) {
     console.log(`Copying ${srcNitro} to ${dest}`);
     copyDir(srcNitro, dest);
+    copyDir(srcNitro, destClient);
   }
 
-  // Also check if _worker.js exists in .output/server
+  // 2. Copy compiled static assets from Vercel (.vercel/output/static)
+  if (fs.existsSync(srcVercel)) {
+    console.log(`Copying ${srcVercel} to ${destClient}`);
+    copyDir(srcVercel, destClient);
+    copyDir(srcVercel, dest);
+  }
+
+  // 3. Ensure Cloudflare Pages worker exists in dist
   const srcWorker = path.join(appDir, '.output/server/_worker.js');
   if (fs.existsSync(srcWorker)) {
     const destWorker = path.join(dest, '_worker.js');
-    console.log(`Copying ${srcWorker} to ${destWorker}`);
-    fs.copyFileSync(srcWorker, destWorker);
+    if (fs.statSync(srcWorker).isDirectory()) {
+      copyDir(srcWorker, destWorker);
+    } else {
+      fs.copyFileSync(srcWorker, destWorker);
+    }
   }
 
-  // Ensure public directory assets are copied
+  // 4. Copy all static public assets (manifest, sw, icons, edge configs)
   const srcPublic = path.join(appDir, 'public');
   if (fs.existsSync(srcPublic)) {
-    console.log(`Copying public assets from ${srcPublic} to ${dest}`);
+    console.log(`Copying public assets from ${srcPublic} to dist`);
     copyDir(srcPublic, dest);
+    copyDir(srcPublic, destClient);
+  }
+
+  // 5. Guarantee edge configuration files are present in dist and dist/client
+  for (const config of ['_headers', '_routes.json', '_redirects']) {
+    const pubFile = path.join(srcPublic, config);
+    if (fs.existsSync(pubFile)) {
+      fs.copyFileSync(pubFile, path.join(dest, config));
+      fs.copyFileSync(pubFile, path.join(destClient, config));
+    }
   }
 }
 

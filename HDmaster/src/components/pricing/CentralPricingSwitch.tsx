@@ -7,28 +7,71 @@ import {
   RefreshCw,
   Save,
   Calculator,
+  SlidersHorizontal,
+  Clock,
+  Layers,
+  Bot,
+  Wallet,
 } from "lucide-react";
 
-interface CustomPricingRates {
+export interface CustomPricingRates {
   commissionPct: number;
   minOrderInr: number;
   deliveryFeeInr: number;
   rainFeeInr: number;
   riderBasePayInr: number;
+  riderPickupFeeInr: number;
+  riderDropFeeInr: number;
+  riderPerKmRateInr: number;
+  riderWaitPayPerMinInr: number;
+  riderWaitGraceMins: number;
+  riderWaitCapInr: number;
+  riderRainSurgeBonusInr: number;
+  cityTier: "TIER_1" | "TIER_2" | "TIER_3";
   gstPct: number;
   payoutDay: string;
   walletCashbackPct: number;
+  tier1FloorInr: number;
+  tier2FloorInr: number;
+  tier3FloorInr: number;
+  slab1RateInr: number;
+  slab2RateInr: number;
+  slab3RateInr: number;
+  ldoBonusInr: number;
+  floatingCashLimitInr: number;
+  coolingOffDurationMinutes: number;
+  payoutCycleDay: string;
+  kingAiAutonomousResolution: boolean;
 }
 
-const DEFAULT_RATES: CustomPricingRates = {
+export const DEFAULT_RATES: CustomPricingRates = {
   commissionPct: 18,
   minOrderInr: 149,
   deliveryFeeInr: 40,
   rainFeeInr: 20,
-  riderBasePayInr: 30,
+  riderBasePayInr: 35,
+  riderPickupFeeInr: 20,
+  riderDropFeeInr: 15,
+  riderPerKmRateInr: 12,
+  riderWaitPayPerMinInr: 1,
+  riderWaitGraceMins: 6,
+  riderWaitCapInr: 30,
+  riderRainSurgeBonusInr: 25,
+  cityTier: "TIER_1",
   gstPct: 5,
   payoutDay: "Daily (T+1)",
   walletCashbackPct: 2,
+  tier1FloorInr: 35,
+  tier2FloorInr: 30,
+  tier3FloorInr: 25,
+  slab1RateInr: 12,
+  slab2RateInr: 14,
+  slab3RateInr: 16,
+  ldoBonusInr: 20,
+  floatingCashLimitInr: 2000,
+  coolingOffDurationMinutes: 15,
+  payoutCycleDay: "Wednesday",
+  kingAiAutonomousResolution: true,
 };
 
 const STORAGE_KEY = "orderking_central_pricing_settings";
@@ -339,7 +382,7 @@ export function CentralPricingSwitch() {
               {customRates.commissionPct}% Commission • ₹{customRates.deliveryFeeInr} Delivery
             </div>
             <p className="text-xs text-slate-600 mt-1">
-              Min order: ₹{customRates.minOrderInr} • Rain fee: +₹{customRates.rainFeeInr} • Rider pay: ₹{customRates.riderBasePayInr}.
+              Min: ₹{customRates.minOrderInr} • Rain: +₹{customRates.rainFeeInr} • Floors: T1 ₹{customRates.tier1FloorInr} / T2 ₹{customRates.tier2FloorInr} / T3 ₹{customRates.tier3FloorInr} • Slabs: ₹{customRates.slab1RateInr}/₹{customRates.slab2RateInr}/₹{customRates.slab3RateInr}.
             </p>
           </div>
 
@@ -365,7 +408,7 @@ export function CentralPricingSwitch() {
                 Customize & Settings
               </div>
               <p className="text-xs text-slate-600 mt-1">
-                Edit commission %, min order ₹, rain fee ₹, rider pay ₹, and GST %.
+                Edit base floors, progressive slabs, wait pay, floating cash limit, and GST %.
               </p>
             </div>
             <button
@@ -383,200 +426,759 @@ export function CentralPricingSwitch() {
 
         {/* Expandable Full Customization Panel */}
         {isCustomizeOpen && (
-          <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
-            <div className="border-b border-slate-200 pb-3">
-              <h3 className="text-sm font-bold text-slate-900">
-                Custom Commission, Delivery & Tax Rules
-              </h3>
-              <p className="text-xs text-slate-600">
-                Enter your exact numbers below and click Save Custom Rates.
-              </p>
+          <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-6">
+            <div className="border-b border-slate-200 pb-3 flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <SlidersHorizontal className="w-4 h-4 text-emerald-600" />
+                  Custom Pricing & Zomato Parity Algorithmic Knobs
+                </h3>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  Direct founder control over base floors, progressive slabs, kitchen wait pay, COD limits, and AI resolution.
+                </p>
+              </div>
+              <span className="text-[10px] font-mono font-bold uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                Live Dynamic Sync
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white p-3.5 rounded-lg border border-slate-200">
-                <label className="block text-xs font-bold text-slate-800">
-                  Commission %
-                </label>
-                <p className="text-[11px] text-slate-500 mb-2">
-                  Fee charged on food subtotal.
-                </p>
-                <input
-                  type="number"
-                  min="0"
-                  max="50"
-                  step="0.5"
-                  value={customRates.commissionPct}
-                  onChange={(e) =>
-                    setCustomRates({
-                      ...customRates,
-                      commissionPct: Number(e.target.value),
-                    })
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
-                />
-              </div>
+            {/* Sub-Section 1: Core Marketplace & Delivery Economics */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
+                1. Marketplace Commissions & Delivery Economics
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Restaurant Commission %
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Take-rate charged on food subtotal.
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    max="50"
+                    step="0.5"
+                    value={customRates.commissionPct}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        commissionPct: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
+                  />
+                </div>
 
-              <div className="bg-white p-3.5 rounded-lg border border-slate-200">
-                <label className="block text-xs font-bold text-slate-800">
-                  Min Order (₹)
-                </label>
-                <p className="text-[11px] text-slate-500 mb-2">
-                  Minimum cart value required.
-                </p>
-                <input
-                  type="number"
-                  min="0"
-                  step="10"
-                  value={customRates.minOrderInr}
-                  onChange={(e) =>
-                    setCustomRates({
-                      ...customRates,
-                      minOrderInr: Number(e.target.value),
-                    })
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
-                />
-              </div>
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Customer Delivery Fee (₹)
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Standard customer delivery tariff.
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    step="5"
+                    value={customRates.deliveryFeeInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        deliveryFeeInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
+                  />
+                </div>
 
-              <div className="bg-white p-3.5 rounded-lg border border-slate-200">
-                <label className="block text-xs font-bold text-slate-800">
-                  Delivery Fee (₹)
-                </label>
-                <p className="text-[11px] text-slate-500 mb-2">
-                  Normal customer delivery fee.
-                </p>
-                <input
-                  type="number"
-                  min="0"
-                  step="5"
-                  value={customRates.deliveryFeeInr}
-                  onChange={(e) =>
-                    setCustomRates({
-                      ...customRates,
-                      deliveryFeeInr: Number(e.target.value),
-                    })
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
-                />
-              </div>
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Rain Surge Delivery Fee (₹)
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Extra customer charge during rain/monsoon.
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    step="5"
+                    value={customRates.rainFeeInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        rainFeeInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
+                  />
+                </div>
 
-              <div className="bg-white p-3.5 rounded-lg border border-slate-200">
-                <label className="block text-xs font-bold text-slate-800">
-                  Rain Fee (₹)
-                </label>
-                <p className="text-[11px] text-slate-500 mb-2">
-                  Extra delivery charge in rain.
-                </p>
-                <input
-                  type="number"
-                  min="0"
-                  step="5"
-                  value={customRates.rainFeeInr}
-                  onChange={(e) =>
-                    setCustomRates({
-                      ...customRates,
-                      rainFeeInr: Number(e.target.value),
-                    })
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
-                />
-              </div>
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Min Order Value (₹)
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Minimum cart checkout threshold.
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    step="10"
+                    value={customRates.minOrderInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        minOrderInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
+                  />
+                </div>
 
-              <div className="bg-white p-3.5 rounded-lg border border-slate-200">
-                <label className="block text-xs font-bold text-slate-800">
-                  Rider Base Pay (₹)
-                </label>
-                <p className="text-[11px] text-slate-500 mb-2">
-                  Base payout per order to rider.
-                </p>
-                <input
-                  type="number"
-                  min="10"
-                  step="5"
-                  value={customRates.riderBasePayInr}
-                  onChange={(e) =>
-                    setCustomRates({
-                      ...customRates,
-                      riderBasePayInr: Number(e.target.value),
-                    })
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
-                />
-              </div>
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Food GST % (Sec 9(5))
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Statutory GST on restaurant food.
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    max="28"
+                    step="0.5"
+                    value={customRates.gstPct}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        gstPct: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
+                  />
+                </div>
 
-              <div className="bg-white p-3.5 rounded-lg border border-slate-200">
-                <label className="block text-xs font-bold text-slate-800">
-                  Food GST % (Sec 9(5))
-                </label>
-                <p className="text-[11px] text-slate-500 mb-2">
-                  Statutory GST on restaurant food.
-                </p>
-                <input
-                  type="number"
-                  min="0"
-                  max="28"
-                  step="0.5"
-                  value={customRates.gstPct}
-                  onChange={(e) =>
-                    setCustomRates({
-                      ...customRates,
-                      gstPct: Number(e.target.value),
-                    })
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
-                />
-              </div>
-
-              <div className="bg-white p-3.5 rounded-lg border border-slate-200">
-                <label className="block text-xs font-bold text-slate-800">
-                  Payout Day
-                </label>
-                <p className="text-[11px] text-slate-500 mb-2">
-                  Restaurant bank transfer schedule.
-                </p>
-                <select
-                  value={customRates.payoutDay}
-                  onChange={(e) =>
-                    setCustomRates({
-                      ...customRates,
-                      payoutDay: e.target.value,
-                    })
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold bg-white"
-                >
-                  <option value="Daily (T+1)">Daily (T+1)</option>
-                  <option value="Every Monday">Every Monday</option>
-                  <option value="Every Wednesday">Every Wednesday</option>
-                  <option value="Every Friday">Every Friday</option>
-                </select>
-              </div>
-
-              <div className="bg-white p-3.5 rounded-lg border border-slate-200">
-                <label className="block text-xs font-bold text-slate-800">
-                  Wallet Cashback %
-                </label>
-                <p className="text-[11px] text-slate-500 mb-2">
-                  Cashback on KingPay checkout.
-                </p>
-                <input
-                  type="number"
-                  min="0"
-                  max="20"
-                  step="0.5"
-                  value={customRates.walletCashbackPct}
-                  onChange={(e) =>
-                    setCustomRates({
-                      ...customRates,
-                      walletCashbackPct: Number(e.target.value),
-                    })
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
-                />
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Wallet Cashback %
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    KingPay wallet checkout cashback.
+                  </p>
+                  <input
+                    type="number"
+                    min="0"
+                    max="20"
+                    step="0.5"
+                    value={customRates.walletCashbackPct}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        walletCashbackPct: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-2">
+            {/* Sub-Section 2: Zomato Indian City Tier Base Floors */}
+            <div className="space-y-3 pt-2 border-t border-slate-200">
+              <h4 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-emerald-600" />
+                2. Indian City Tier Base Floors (Zomato Parity)
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Active City Tier
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Current active operations tier.
+                  </p>
+                  <select
+                    value={customRates.cityTier}
+                    onChange={(e) => {
+                      const tier = e.target.value as "TIER_1" | "TIER_2" | "TIER_3";
+                      const baseFloor =
+                        tier === "TIER_1"
+                          ? customRates.tier1FloorInr
+                          : tier === "TIER_2"
+                            ? customRates.tier2FloorInr
+                            : customRates.tier3FloorInr;
+                      const pickup = tier === "TIER_1" ? 20 : tier === "TIER_2" ? 18 : 15;
+                      const drop = tier === "TIER_1" ? 15 : tier === "TIER_2" ? 12 : 10;
+                      setCustomRates({
+                        ...customRates,
+                        cityTier: tier,
+                        riderPickupFeeInr: pickup,
+                        riderDropFeeInr: drop,
+                        riderBasePayInr: baseFloor,
+                      });
+                    }}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold bg-white"
+                  >
+                    <option value="TIER_1">Tier 1 Metros (Floor: ₹{customRates.tier1FloorInr})</option>
+                    <option value="TIER_2">Tier 2 Growth (Floor: ₹{customRates.tier2FloorInr})</option>
+                    <option value="TIER_3">Tier 3 Towns (Floor: ₹{customRates.tier3FloorInr})</option>
+                  </select>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Tier 1 Metro Floor (₹)
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.tier1FloorInr}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Min floor (Delhi, Mumbai, Bengaluru).
+                  </p>
+                  <input
+                    type="range"
+                    min="25"
+                    max="60"
+                    step="1"
+                    value={customRates.tier1FloorInr}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setCustomRates({
+                        ...customRates,
+                        tier1FloorInr: val,
+                        riderBasePayInr: customRates.cityTier === "TIER_1" ? val : customRates.riderBasePayInr,
+                      });
+                    }}
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>₹25 Min</span>
+                    <span>₹35 Zomato</span>
+                    <span>₹60 Max</span>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Tier 2 Growth Floor (₹)
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.tier2FloorInr}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Min floor (Jaipur, Lucknow, Pune).
+                  </p>
+                  <input
+                    type="range"
+                    min="20"
+                    max="50"
+                    step="1"
+                    value={customRates.tier2FloorInr}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setCustomRates({
+                        ...customRates,
+                        tier2FloorInr: val,
+                        riderBasePayInr: customRates.cityTier === "TIER_2" ? val : customRates.riderBasePayInr,
+                      });
+                    }}
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>₹20 Min</span>
+                    <span>₹30 Zomato</span>
+                    <span>₹50 Max</span>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Tier 3 Towns Floor (₹)
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.tier3FloorInr}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Min floor (Emerging towns & clusters).
+                  </p>
+                  <input
+                    type="range"
+                    min="15"
+                    max="40"
+                    step="1"
+                    value={customRates.tier3FloorInr}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setCustomRates({
+                        ...customRates,
+                        tier3FloorInr: val,
+                        riderBasePayInr: customRates.cityTier === "TIER_3" ? val : customRates.riderBasePayInr,
+                      });
+                    }}
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>₹15 Min</span>
+                    <span>₹25 Zomato</span>
+                    <span>₹40 Max</span>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Active Rider Base Pay (₹)
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Current active tier base floor.
+                  </p>
+                  <input
+                    type="number"
+                    min="15"
+                    step="1"
+                    value={customRates.riderBasePayInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        riderBasePayInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
+                  />
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Pickup Fee Component (₹)
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Collection compensation.
+                  </p>
+                  <input
+                    type="number"
+                    min="5"
+                    step="1"
+                    value={customRates.riderPickupFeeInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        riderPickupFeeInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
+                  />
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Drop Fee Component (₹)
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Doorstep drop compensation.
+                  </p>
+                  <input
+                    type="number"
+                    min="5"
+                    step="1"
+                    value={customRates.riderDropFeeInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        riderDropFeeInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
+                  />
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Rain Surge Rider Bonus (₹)
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Flat rain bonus paid to rider.
+                  </p>
+                  <input
+                    type="number"
+                    min="10"
+                    max="50"
+                    step="5"
+                    value={customRates.riderRainSurgeBonusInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        riderRainSurgeBonusInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-mono font-bold"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Sub-Section 3: Progressive Distance Slabs & Long Distance Bonus */}
+            <div className="space-y-3 pt-2 border-t border-slate-200">
+              <h4 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-600" />
+                3. Progressive Distance Slabs & Long Distance Bonus
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Slab 1 (0–2 km) Rate
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.slab1RateInr}/km</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Short-distance introductory slab.
+                  </p>
+                  <input
+                    type="range"
+                    min="8"
+                    max="22"
+                    step="0.5"
+                    value={customRates.slab1RateInr}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setCustomRates({
+                        ...customRates,
+                        slab1RateInr: val,
+                        riderPerKmRateInr: val,
+                      });
+                    }}
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>₹8 Min</span>
+                    <span>₹12 Zomato</span>
+                    <span>₹22 Max</span>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Slab 2 (2–6 km) Rate
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.slab2RateInr}/km</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Medium-distance delivery slab.
+                  </p>
+                  <input
+                    type="range"
+                    min="10"
+                    max="25"
+                    step="0.5"
+                    value={customRates.slab2RateInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        slab2RateInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>₹10 Min</span>
+                    <span>₹14 Zomato</span>
+                    <span>₹25 Max</span>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Slab 3 (&gt;6 km) Rate
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.slab3RateInr}/km</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Long-distance progressive slab.
+                  </p>
+                  <input
+                    type="range"
+                    min="12"
+                    max="30"
+                    step="0.5"
+                    value={customRates.slab3RateInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        slab3RateInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>₹12 Min</span>
+                    <span>₹16 Zomato</span>
+                    <span>₹30 Max</span>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      LDO Bonus (&gt;8 km)
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.ldoBonusInr}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Flat Long Distance Order incentive.
+                  </p>
+                  <input
+                    type="range"
+                    min="0"
+                    max="50"
+                    step="5"
+                    value={customRates.ldoBonusInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        ldoBonusInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>₹0 None</span>
+                    <span>₹20 Zomato</span>
+                    <span>₹50 Max</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sub-Section 4: Kitchen Wait-Time Pay Compensation */}
+            <div className="space-y-3 pt-2 border-t border-slate-200">
+              <h4 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                4. Kitchen Wait-Time Pay Compensation (Zomato Benchmark)
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Wait Grace Period (mins)
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">{customRates.riderWaitGraceMins} mins</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Free prep window before pay starts.
+                  </p>
+                  <input
+                    type="range"
+                    min="0"
+                    max="15"
+                    step="1"
+                    value={customRates.riderWaitGraceMins}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        riderWaitGraceMins: Number(e.target.value),
+                      })
+                    }
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>0 mins</span>
+                    <span>6 mins (Zomato)</span>
+                    <span>15 mins</span>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Wait Pay Rate (₹/min)
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.riderWaitPayPerMinInr}/min</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Per-minute delay compensation.
+                  </p>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="4"
+                    step="0.25"
+                    value={customRates.riderWaitPayPerMinInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        riderWaitPayPerMinInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>₹0.50</span>
+                    <span>₹1.00 (Standard)</span>
+                    <span>₹4.00</span>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Wait Pay Cap (₹)
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.riderWaitCapInr}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Safety ceiling cap per order.
+                  </p>
+                  <input
+                    type="range"
+                    min="10"
+                    max="100"
+                    step="5"
+                    value={customRates.riderWaitCapInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        riderWaitCapInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>₹10 Min</span>
+                    <span>₹30 (Zomato Cap)</span>
+                    <span>₹100 Max</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sub-Section 5: Fleet Discipline, Payout Cycle & King AI Autonomous Resolution */}
+            <div className="space-y-3 pt-2 border-t border-slate-200">
+              <h4 className="text-xs font-bold font-mono uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <Wallet className="w-3.5 h-3.5 text-emerald-600" />
+                5. Fleet Discipline, Payout Cycle & King AI Autonomous Resolution
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      COD Floating Cash Limit (₹)
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">₹{customRates.floatingCashLimitInr.toLocaleString("en-IN")}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    COD pocket balance block threshold.
+                  </p>
+                  <input
+                    type="range"
+                    min="500"
+                    max="10000"
+                    step="100"
+                    value={customRates.floatingCashLimitInr}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        floatingCashLimitInr: Number(e.target.value),
+                      })
+                    }
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>₹500 Strict</span>
+                    <span>₹2,000 (Zomato)</span>
+                    <span>₹10,000 Max</span>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Cooling-Off Freeze (mins)
+                    </label>
+                    <span className="font-mono text-xs font-bold text-emerald-700">{customRates.coolingOffDurationMinutes} mins</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Freeze after 3 consecutive declines.
+                  </p>
+                  <input
+                    type="range"
+                    min="5"
+                    max="60"
+                    step="5"
+                    value={customRates.coolingOffDurationMinutes}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        coolingOffDurationMinutes: Number(e.target.value),
+                      })
+                    }
+                    className="w-full accent-emerald-600 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-1">
+                    <span>5 mins</span>
+                    <span>15 mins (Zomato)</span>
+                    <span>60 mins</span>
+                  </div>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Payout Cycle Day
+                  </label>
+                  <p className="text-[11px] text-slate-500 mb-2">
+                    Automated bank transfer day.
+                  </p>
+                  <select
+                    value={customRates.payoutCycleDay}
+                    onChange={(e) =>
+                      setCustomRates({
+                        ...customRates,
+                        payoutCycleDay: e.target.value,
+                        payoutDay: e.target.value === "Wednesday" ? "Every Wednesday" : e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold bg-white"
+                  >
+                    <option value="Wednesday">Wednesday (Zomato Parity)</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Daily">Daily (T+1 Escrow)</option>
+                  </select>
+                </div>
+
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200 flex flex-col justify-between">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Bot className="w-3.5 h-3.5 text-emerald-600" />
+                      King AI Autonomous Resolution
+                    </label>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Autonomous dispute & SLA reconciliation without founder manual approvals.
+                    </p>
+                  </div>
+                  <label className="inline-flex items-center gap-2 mt-3 text-xs font-bold text-slate-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={customRates.kingAiAutonomousResolution}
+                      onChange={(e) =>
+                        setCustomRates({
+                          ...customRates,
+                          kingAiAutonomousResolution: e.target.checked,
+                        })
+                      }
+                      className="accent-emerald-600 w-4 h-4 rounded cursor-pointer"
+                    />
+                    <span>{customRates.kingAiAutonomousResolution ? "Active (Autonomous)" : "Disabled (Manual)"}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
               <button
                 type="button"
                 onClick={() => setCustomRates(DEFAULT_RATES)}

@@ -393,7 +393,7 @@ function Page() {
           ) : null}
         </Card>
 
-        {/* Zomato-Standard Accident & Medical Assistance Protocol */}
+        {/* OrderKing Partner Standard Accident & Medical Assistance Protocol */}
         <Card className="space-y-3">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2">

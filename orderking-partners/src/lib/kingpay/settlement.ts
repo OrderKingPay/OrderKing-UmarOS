@@ -221,7 +221,7 @@ export const settlementEngine = {
       if (!keyId || !keySecret) {
         throw new Error("Razorpay credentials missing. Partner settlement is BLOCKED.");
       }
-      const token = btoa(`${keyId}:${keySecret}`);
+      const token = Buffer.from(`${keyId}:${keySecret}`).toString("base64");
       const res = await fetch("https://api.razorpay.com/v1/transfers", {
         method: "POST",
         headers: {
@@ -239,9 +239,16 @@ export const settlementEngine = {
         })
       });
       if (!res.ok) {
-         throw new Error("Failed to create Razorpay transfer");
+         const err = await res.text();
+         throw new Error(`Failed to create Razorpay transfer (${res.status}): ${err}`);
       }
       const transfer = await res.json();
+
+      await tx`
+        UPDATE settlement_history 
+        SET status = 'SUBMITTED'
+        WHERE idempotency_key = ${data.idempotencyKey}
+      `;
 
       return { status: "processing", transferId: transfer.id };
     });

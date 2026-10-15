@@ -217,6 +217,7 @@ export const deliveryActionFn = createServerFn({ method: "POST" })
       otp?: string;
       reason?: string;
       confirmed?: boolean;
+      hasVerifiedProof?: boolean;
       expectedReadyAt?: string;
       pod?: { method: "PHOTO" | "OTP"; contentType?: string; dataUrl?: string; bytes?: number; storageUrl?: string };
     }) => input,
@@ -284,6 +285,7 @@ export const deliveryActionFn = createServerFn({ method: "POST" })
               data.reason ?? "",
               Boolean(data.confirmed),
               key,
+              Boolean(data.hasVerifiedProof),
             ),
           };
         case "POD":
@@ -536,4 +538,41 @@ export const riderAiSupportFn = createServerFn({ method: "POST" })
     if (!text) throw new RiderError("AI_UNAVAILABLE", "OpenAI returned no support response.", 503);
     return { provider: "openai", model: process.env.OPENAI_RIDER_MODEL?.trim() || "gpt-5.6-luna", text };
   });
+
+export const getPocketBalanceFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    try {
+      const e = await engine();
+      return await e.getPocketBalance(context.userId);
+    } catch (err) {
+      fail(err);
+    }
+  });
+
+export const depositFloatingCashFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator(
+    (input: {
+      amountPaise: number;
+      method?: "UPI_QR" | "RAZORPAY" | "GATEWAY";
+      reference?: string;
+      idempotencyKey: string;
+    }) => input,
+  )
+  .handler(async ({ context, data }) => {
+    try {
+      const e = await engine();
+      return await e.depositFloatingCash(
+        context.userId,
+        data.amountPaise,
+        data.method ?? "UPI_QR",
+        data.reference ?? "",
+        data.idempotencyKey,
+      );
+    } catch (err) {
+      fail(err);
+    }
+  });
+
 

@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import {
   getLifetimeRoyaltyDashboard,
-  enrollOrSimulateRecruit,
   withdrawRoyaltyToUPI,
   type LifetimeRoyaltyDashboardData,
   type RecruitRecord,
@@ -58,21 +57,6 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
     queryKey: ["lifetime-royalty-dashboard"],
     queryFn: () => getLifetimeRoyaltyDashboard(),
     refetchOnWindowFocus: true,
-  });
-
-  // Enroll or simulate new recruit
-  const enrollMutation = useMutation({
-    mutationFn: (variables: { recruitPhoneOrLabel?: string; orderValueRupees?: number }) =>
-      enrollOrSimulateRecruit({ data: variables }),
-    onSuccess: (res) => {
-      toast.success(
-        `Recruit registered! 1% Royalty (₹${res.royaltyCreditedRupees.toFixed(2)}) credited to your KingPay wallet.`
-      );
-      void queryClient.invalidateQueries({ queryKey: ["lifetime-royalty-dashboard"] });
-    },
-    onError: (err: any) => {
-      toast.error(err.message || "Failed to enroll recruit.");
-    },
   });
 
   // Instant UPI withdrawal mutation
@@ -583,20 +567,13 @@ export function LifetimeRoyaltyMatrix({ className = "" }: Props) {
                 <span>Invite First Friend via WhatsApp</span>
               </button>
 
-              {/* Developer / Sandbox Simulation Trigger for Testing */}
               <button
                 type="button"
-                onClick={() =>
-                  enrollMutation.mutate({
-                    recruitPhoneOrLabel: `+91 98*** ${Math.floor(1000 + Math.random() * 9000)}`,
-                    orderValueRupees: 450,
-                  })
-                }
-                disabled={enrollMutation.isPending}
+                onClick={handleCopyLink}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 px-3.5 py-2 text-xs font-semibold shadow-2xs transition"
               >
-                <Sparkles className="size-3.5 text-amber-500" />
-                <span>{enrollMutation.isPending ? "Simulating..." : "Test Recruit in Sandbox"}</span>
+                {copiedLink ? <CheckCircle2 className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5 text-slate-500" />}
+                <span>{copiedLink ? "Link Copied!" : "Copy Invite Link"}</span>
               </button>
             </div>
           </div>

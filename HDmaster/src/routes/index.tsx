@@ -59,6 +59,7 @@ import { DesignStudio } from "@/components/dashboard/DesignStudio";
 import { MediaProductionStudio } from "@/components/dashboard/MediaProductionStudio";
 import { SocialPublishingStudio } from "@/components/dashboard/SocialPublishingStudio";
 import { MultimodelBenchmarkDashboard } from "@/components/dashboard/MultimodelBenchmarkDashboard";
+import { GigWorkerComplianceCenter } from "@/components/dashboard/GigWorkerComplianceCenter";
 
 const LazyGlobalGodEyeMap = lazy(() =>
   import("@/components/dashboard/GlobalGodEyeMap").then((m) => ({
@@ -3222,6 +3223,10 @@ function UmarOSDashboard() {
                   </p>
                 </div>
               ))}
+            </div>
+
+            <div className="pt-2">
+              <GigWorkerComplianceCenter />
             </div>
           </section>
         )}

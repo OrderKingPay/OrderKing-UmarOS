@@ -36,7 +36,7 @@ export function getRazorpayConfig() {
  */
 export const createRazorpayOrder = createServerFn({ method: "POST" })
   
-.  validator((data: RazorpayOrderRequest) => data)
+  .validator((data: RazorpayOrderRequest) => data)
   .handler(async ({ data }: { data: RazorpayOrderRequest }): Promise<RazorpayOrderResponse> => {
     const config = getRazorpayConfig();
 

@@ -7,6 +7,7 @@ import { LanguageSelector } from "@/components/rider/language-selector";
 import { bootstrapRiderFn } from "@/lib/server/rider-fns";
 import type { RiderProfile } from "@/lib/rider/types";
 import { RiderFloatingBottomNav } from "@/components/navigation/rider-bottom-nav";
+import { FloatingEmergencySOS } from "@/components/rider/floating-emergency-sos";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,
@@ -85,7 +86,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (isPending) {
     return (
       <div className="mx-auto min-h-dvh max-w-lg p-4">
-        <p className="font-display text-2xl">OrderKing Rider Partner</p>
+        <p className="font-display text-2xl font-bold text-foreground">OrderKing Partner</p>
         <Skeleton className="mt-4 h-16 w-40" />
         <Skeleton className="mt-6 h-48 w-full rounded-xl" />
         <Skeleton className="mt-4 h-24 w-full rounded-xl" />
@@ -176,7 +177,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             />
             <div className="min-w-0">
               <p className="truncate font-display text-base sm:text-lg font-bold leading-none text-fg">
-                OrderKing Rider Partner
+                OrderKing Partner
               </p>
               <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
                 {riderProfile?.fullName
@@ -302,6 +303,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </aside>
       </div>
+
+      {/* FLOATING EMERGENCY SOS BEACON WITH 112 DIRECT DIALING & LIVE DISPATCH TELEMETRY */}
+      <FloatingEmergencySOS />
 
       {/* ULTRA-LUXURIOUS FLOATING DOCKED BOTTOM NAVIGATION */}
       <RiderFloatingBottomNav isDutyOnline={online && geoOk} />

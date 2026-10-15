@@ -33,7 +33,7 @@ export async function billSubscription(restaurantId: string) {
     
     await sql`
         UPDATE restaurant_subscriptions
-        SET next_billing_date = DATE_ADD(next_billing_date, INTERVAL 1 MONTH)
+        SET current_period_end = current_period_end + INTERVAL '1 month', updated_at = NOW()
         WHERE restaurant_id = ${restaurantId}
     `;
     

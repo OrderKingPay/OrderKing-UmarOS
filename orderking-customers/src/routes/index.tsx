@@ -11,20 +11,20 @@ export const Route = createFileRoute('/')({ component: Home, head: () => ({ meta
 function Home() {
   const navigate = useNavigate();
   const location = useLocationStore((s) => s.location);
-  const isDeliveryActive = isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
+  const isDeliveryActive = location ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId) : true;
 
   useEffect(() => {
     void trackAnalytics({
       data: {
         name: "app_open",
         payload: {
-          cityId: location.cityId,
-          cityName: location.cityName,
+          cityId: location?.cityId,
+          cityName: location?.cityName,
           isDeliveryActive,
         },
       },
     }).catch(() => {});
-  }, [location.cityId, location.cityName, isDeliveryActive]);
+  }, [location?.cityId, location?.cityName, isDeliveryActive]);
 
   return (
     <CustomerShell onSearch={() => void navigate({ to: "/search" })}>

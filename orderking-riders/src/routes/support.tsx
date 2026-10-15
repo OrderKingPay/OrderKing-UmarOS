@@ -185,7 +185,7 @@ function Page() {
           Math.floor((Date.now() - new Date(activeOrder.arrivedRestaurantAt).getTime()) / 60000),
         )
       : 0;
-  const accruedKitchenBonusInr = Math.max(0, kitchenWaitMins - 10);
+  const accruedKitchenBonusInr = Math.max(0, kitchenWaitMins - 6);
   const customerWaitMins = activeOrder?.waitStartedAt
     ? Math.max(
         0,

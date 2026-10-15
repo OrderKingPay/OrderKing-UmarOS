@@ -498,7 +498,7 @@ export function ZomatoSwiggySwitchFlow({ rider, onSuccess }: ZomatoSwiggySwitchF
                     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
-                Zomato Delivery Fleet
+                Tier-1 National Food Fleet
               </button>
 
               <button
@@ -510,7 +510,7 @@ export function ZomatoSwiggySwitchFlow({ rider, onSuccess }: ZomatoSwiggySwitchF
                     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
-                Swiggy Delivery Fleet
+                Major Quick-Commerce Fleet
               </button>
 
               <button
@@ -781,6 +781,20 @@ export function ZomatoSwiggySwitchFlow({ rider, onSuccess }: ZomatoSwiggySwitchF
               />
             </div>
           </div>
+
+          {isExemptVehicle && (
+            <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs text-emerald-950 dark:text-emerald-200">
+              <p className="font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5">
+                <ShieldCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
+                Statutory Driving Licence (DL) Exemption Notice (
+                {vehicleCategory === "CYCLE" ? "Pedal Bicycle" : "Low-Speed Electric Vehicle"}
+                )
+              </p>
+              <p className="mt-1 leading-relaxed">
+                In accordance with national delivery partner fleet policy and Central Motor Vehicles Rules (CMVR Rule 2(u)), <strong>Driving Licence (DL) is NOT MANDATORY</strong> for Bicycle and EV delivery partners. Aadhaar + PAN + Selfie with bag are sufficient for verified onboarding.
+              </p>
+            </div>
+          )}
 
           {/* Payout, Bank IFSC & Aadhaar Last 4 */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">

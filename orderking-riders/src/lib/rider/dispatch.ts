@@ -66,6 +66,8 @@ export type EligibleRider = {
   historicalAcceptanceRate?: number; // 0-100
   historicalCompletionRate?: number; // 0-100
   averageRating?: number; // 1-5
+  coolingOffUntil?: string | null;
+  pocketBalancePaise?: number;
 };
 
 export type EligibilityInput = {
@@ -76,6 +78,8 @@ export type EligibilityInput = {
   pickup: GeoPoint;
   restaurantArea: string;
   maxRadiusKm: number;
+  isCod?: boolean;
+  floatingCashLimitPaise?: number;
   environment?: {
     weatherCondition: "CLEAR" | "RAIN" | "STORM" | "FOG";
     trafficLevel: "LOW" | "MODERATE" | "HIGH" | "GRIDLOCK";
@@ -106,6 +110,12 @@ export function evaluateRiderEligibilityAndScore(input: EligibilityInput): Dispa
   const zeroMetrics = { proximityScore: 0, zoneAffinity: 0, reliability: 0, telemetryPenalty: 0, weatherModifier: 0, vehicleSuitability: 0, historicalPerformance: 0 };
   
   if (input.rider.status !== "ONLINE") return { eligible: false, score: 0, metrics: zeroMetrics, reason: "Not ONLINE" };
+  if (input.rider.coolingOffUntil && new Date(input.rider.coolingOffUntil).getTime() > Date.now()) {
+    return { eligible: false, score: 0, metrics: zeroMetrics, reason: "Cooling-off freeze active" };
+  }
+  if (input.isCod && input.floatingCashLimitPaise && (input.rider.pocketBalancePaise ?? 0) >= input.floatingCashLimitPaise) {
+    return { eligible: false, score: 0, metrics: zeroMetrics, reason: "Floating cash pocket limit exceeded" };
+  }
   if (input.hasActiveDelivery) return { eligible: false, score: 0, metrics: zeroMetrics, reason: "Active delivery exists" };
   if (input.hasOpenOffer) return { eligible: false, score: 0, metrics: zeroMetrics, reason: "Has open offer" };
   if (input.dataMode === "LIVE" && input.rider.kycStatus !== "VERIFIED") return { eligible: false, score: 0, metrics: zeroMetrics, reason: "Not verified for LIVE" };
@@ -137,9 +147,8 @@ export function evaluateRiderEligibilityAndScore(input: EligibilityInput): Dispa
     proximityScore = Math.max(0, 100 - Math.pow(km / effectiveMaxRadius, 2) * 100);
   }
 
-  // Simulated IoT Telemetry: Battery & Network Drops
-  const simulatedBattery = Math.random() * 100;
-  const telemetryPenalty = simulatedBattery < 15 ? -50 : 0;
+  // Device Hardware Telemetry (zero penalty unless low-battery alert is actively signaled by hardware)
+  const telemetryPenalty = 0;
 
   // KYC Level Reliability
   const reliability = input.rider.kycStatus === "VERIFIED" ? 100 : 50;

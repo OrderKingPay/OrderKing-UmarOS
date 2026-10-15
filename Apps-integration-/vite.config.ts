@@ -161,10 +161,32 @@ export default defineConfig(({ command, isPreview }) => ({
   
   
   
+  cacheDir: "node_modules/.vite",
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "@tanstack/react-router",
+      "@tanstack/react-query",
+      "clsx",
+      "tailwind-merge",
+      "lucide-react",
+    ],
+  },
   server: {
     host: "0.0.0.0",
     port: 8080,
     strictPort: true,
+    warmup: {
+      clientFiles: [
+        "./src/router.tsx",
+        "./src/routes/__root.tsx",
+        "./src/routes/index.tsx",
+      ],
+    },
+    watch: {
+      ignored: ["**/.git/**", "**/node_modules/**", "**/.turbo/**", "**/.vercel/**", "**/dist/**", "**/.output/**"],
+    },
   },
   preview: {
     host: "127.0.0.1",

@@ -45,10 +45,14 @@ const STORAGE_KEY = "orderking_dispatch_rules_v1";
 
 const DEFAULT_EXTENDED_RULES: ExtendedDispatchRules = {
   ...DEFAULT_ALGORITHM_SETTINGS,
-  perKmRateInr: 8,
-  riderBasePayoutInr: 25,
-  riderWaitPayPerMinInr: 2,
-  riderFreeWaitMinutes: 5,
+  perKmRateInr: 12,
+  riderBasePayoutInr: 35,
+  riderPickupFeeInr: 20,
+  riderDropFeeInr: 15,
+  riderWaitPayPerMinInr: 1,
+  riderFreeWaitMinutes: 6,
+  riderRainSurgeBonusInr: 25,
+  activeCityTier: "TIER_1",
   freeDeliveryMinOrderInr: 399,
   enableFreeDeliveryThreshold: true,
   maxBatchOrdersPerRider: 2,
@@ -653,10 +657,106 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
             <label className="block text-xs font-bold text-slate-800">
+              City Tier Matrix
+            </label>
+            <p className="text-[11px] text-slate-500">
+              Zomato Indian courier payout tier.
+            </p>
+            <select
+              value={settings.activeCityTier ?? "TIER_1"}
+              onChange={(e) => {
+                const tier = e.target.value as "TIER_1" | "TIER_2" | "TIER_3";
+                if (tier === "TIER_1") {
+                  setSettings((prev) => ({
+                    ...prev,
+                    activeCityTier: tier,
+                    riderPickupFeeInr: 20,
+                    riderDropFeeInr: 15,
+                    riderBasePayoutInr: 35,
+                    perKmRateInr: 12,
+                  }));
+                } else if (tier === "TIER_2") {
+                  setSettings((prev) => ({
+                    ...prev,
+                    activeCityTier: tier,
+                    riderPickupFeeInr: 18,
+                    riderDropFeeInr: 12,
+                    riderBasePayoutInr: 30,
+                    perKmRateInr: 11,
+                  }));
+                } else {
+                  setSettings((prev) => ({
+                    ...prev,
+                    activeCityTier: tier,
+                    riderPickupFeeInr: 15,
+                    riderDropFeeInr: 10,
+                    riderBasePayoutInr: 25,
+                    perKmRateInr: 10,
+                  }));
+                }
+              }}
+              className="w-full px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-300 bg-white text-slate-900"
+            >
+              <option value="TIER_1">Tier 1 Metros (Base ₹35, ₹12/km)</option>
+              <option value="TIER_2">Tier 2 Growth (Base ₹30, ₹11/km)</option>
+              <option value="TIER_3">Tier 3 Towns (Base ₹25, ₹10/km)</option>
+            </select>
+          </div>
+
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
+              Rider Pickup Fee (₹)
+            </label>
+            <p className="text-[11px] text-slate-500">
+              Restaurant parcel pickup collection fee.
+            </p>
+            <input
+              type="number"
+              min="5"
+              max="100"
+              value={settings.riderPickupFeeInr ?? 20}
+              onChange={(e) => {
+                const p = Math.max(0, Number(e.target.value) || 0);
+                setSettings((prev) => ({
+                  ...prev,
+                  riderPickupFeeInr: p,
+                  riderBasePayoutInr: p + (prev.riderDropFeeInr ?? 15),
+                }));
+              }}
+              className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-slate-300 bg-white text-slate-900"
+            />
+          </div>
+
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
+              Rider Drop Fee (₹)
+            </label>
+            <p className="text-[11px] text-slate-500">
+              Customer doorstep delivery completion fee.
+            </p>
+            <input
+              type="number"
+              min="5"
+              max="100"
+              value={settings.riderDropFeeInr ?? 15}
+              onChange={(e) => {
+                const d = Math.max(0, Number(e.target.value) || 0);
+                setSettings((prev) => ({
+                  ...prev,
+                  riderDropFeeInr: d,
+                  riderBasePayoutInr: (prev.riderPickupFeeInr ?? 20) + d,
+                }));
+              }}
+              className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-slate-300 bg-white text-slate-900"
+            />
+          </div>
+
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
               Rider Base Pay per Order (₹)
             </label>
             <p className="text-[11px] text-slate-500">
-              Minimum guaranteed payout to the rider for each completed order.
+              Minimum guaranteed base fare floor (Pickup + Drop).
             </p>
             <input
               type="number"
@@ -675,17 +775,40 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
 
           <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
             <label className="block text-xs font-bold text-slate-800">
-              Rider Wait Pay at Kitchen (₹/min)
+              Distance Rate beyond 2km (₹/km)
             </label>
             <p className="text-[11px] text-slate-500">
-              Paid to the rider for every extra minute waited after {settings.riderFreeWaitMinutes} mins.
+              Zomato distance rate bracket: ₹10 - ₹14/km.
+            </p>
+            <input
+              type="number"
+              min="10"
+              max="14"
+              step="0.5"
+              value={settings.perKmRateInr}
+              onChange={(e) =>
+                setSettings((prev) => ({
+                  ...prev,
+                  perKmRateInr: Math.min(14, Math.max(10, Number(e.target.value) || 10)),
+                }))
+              }
+              className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-slate-300 bg-white text-slate-900"
+            />
+          </div>
+
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
+              Kitchen Wait Pay Rate (₹/min)
+            </label>
+            <p className="text-[11px] text-slate-500">
+              Paid to rider after {settings.riderFreeWaitMinutes} mins grace period.
             </p>
             <div className="flex items-center gap-2">
               <input
                 type="number"
                 min="0"
                 max="20"
-                step="0.5"
+                step="0.25"
                 value={settings.riderWaitPayPerMinInr}
                 onChange={(e) =>
                   setSettings((prev) => ({
@@ -697,6 +820,55 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
               />
               <span className="text-xs font-mono text-slate-500 shrink-0">₹/min</span>
             </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
+              Kitchen Wait Grace Period (mins)
+            </label>
+            <p className="text-[11px] text-slate-500">
+              Free wait minutes before wait pay accrues (default 6 mins).
+            </p>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min="0"
+                max="30"
+                step="1"
+                value={settings.riderFreeWaitMinutes}
+                onChange={(e) =>
+                  setSettings((prev) => ({
+                    ...prev,
+                    riderFreeWaitMinutes: Math.max(0, Number(e.target.value) || 0),
+                  }))
+                }
+                className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-slate-300 bg-white text-slate-900"
+              />
+              <span className="text-xs font-mono text-slate-500 shrink-0">mins</span>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+            <label className="block text-xs font-bold text-slate-800">
+              Rain Surge Bonus (₹)
+            </label>
+            <p className="text-[11px] text-slate-500">
+              Flat rain surge bonus per delivery (₹10 - ₹45).
+            </p>
+            <input
+              type="number"
+              min="10"
+              max="45"
+              step="5"
+              value={settings.riderRainSurgeBonusInr ?? 25}
+              onChange={(e) =>
+                setSettings((prev) => ({
+                  ...prev,
+                  riderRainSurgeBonusInr: Math.min(45, Math.max(10, Number(e.target.value) || 10)),
+                }))
+              }
+              className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-slate-300 bg-white text-slate-900"
+            />
           </div>
 
           <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">

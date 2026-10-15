@@ -54,7 +54,7 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
             );
           }
 
-          const token = btoa(process.env.RAZORPAY_KEY_ID + ":" + process.env.RAZORPAY_KEY_SECRET);
+          const token = Buffer.from(`${process.env.RAZORPAY_KEY_ID}:${process.env.RAZORPAY_KEY_SECRET}`).toString("base64");
 
           // Amount in smallest unit (paise for INR)
           const options = {
@@ -71,7 +71,22 @@ export const Route = createFileRoute("/api/razorpay/create-order")({
              },
              body: JSON.stringify(options)
           });
-          const order = await res.json();
+          const order = await res.json().catch(() => ({}));
+
+          if (!res.ok) {
+            const errDescription = order?.error?.description || `Razorpay order creation failed (${res.status})`;
+            return new Response(JSON.stringify({ error: errDescription }), {
+              status: res.status >= 400 && res.status < 600 ? res.status : 502,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          if (!order?.id) {
+            return new Response(JSON.stringify({ error: "Invalid response from Razorpay gateway" }), {
+              status: 502,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
 
           return new Response(JSON.stringify({
              ...order,

@@ -1,16 +1,22 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
-    "test": {},
+    "test": {
+      "cache": true
+    },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".vercel/**", "dist/**"]
+      "outputs": [".vercel/**", "dist/**", ".output/**"],
+      "cache": true
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["^typecheck"],
+      "outputs": ["node_modules/.cache/tsconfig.tsbuildinfo", "**/*.tsbuildinfo"],
+      "cache": true
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "cache": true
     },
     "dev": {
       "cache": false,

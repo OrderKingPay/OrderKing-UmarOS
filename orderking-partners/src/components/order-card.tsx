@@ -179,9 +179,8 @@ export function OrderCard({
   async function act(action: "accept" | "reject" | "preparing" | "ready") {
     setBusy(true);
     setError(null);
+    const idempotencyKey = actionKey(order.id, action);
     try {
-      const idempotencyKey = actionKey(order.id, action);
-
       if (typeof navigator !== "undefined" && !navigator.onLine) {
         await enqueueMutation({
           restaurantId: restaurantId!,
@@ -227,6 +226,45 @@ export function OrderCard({
       setRejectOpen(false);
       onChanged?.();
     } catch (e) {
+      const isNetwork =
+        (typeof navigator !== "undefined" && !navigator.onLine) ||
+        (e instanceof Error &&
+          (/fetch|network|timeout|offline|failed to fetch/i.test(e.message) ||
+            e.name === "TypeError"));
+
+      if (isNetwork && restaurantId) {
+        await enqueueMutation({
+          restaurantId,
+          orderId: order.id,
+          action,
+          reason: action === "reject" ? reason : undefined,
+          idempotencyKey,
+        });
+
+        qc.setQueryData(["orders", restaurantId, "live"], (old: unknown) => {
+          if (!old || typeof old !== "object" || !("orders" in old)) return old;
+          const prev = old as { orders: OrderView[] };
+          const nextState: Record<string, string> = {
+            accept: "ACCEPTED",
+            reject: "REJECTED",
+            preparing: "PREPARING",
+            ready: "READY",
+          };
+          return {
+            ...prev,
+            orders: prev.orders.map((o) =>
+              o.id === order.id ? { ...o, state: nextState[action] || o.state } : o,
+            ),
+          };
+        });
+
+        clearActionKey(order.id, action);
+        setRejectOpen(false);
+        onChanged?.();
+        toast.info("Offline: order action saved in local database and will sync automatically upon reconnection.");
+        return;
+      }
+
       setError(e instanceof Error ? e.message : "Could not update order");
     } finally {
       setBusy(false);

@@ -1,0 +1,2 @@
+# Cloudflare Pages & Netlify Redirects file for Apps-integration-
+# Static assets are served directly; dynamic routes fall through to the edge worker / functions

@@ -164,6 +164,32 @@ export type Branding = {
   invoiceBrand: string;
 };
 
+export type ProgressiveDistanceSlabs = {
+  slab1RatePerKmPaise: number; // default ₹12/km = 1200 paise (2km - 5km)
+  slab2RatePerKmPaise: number; // default ₹14/km = 1400 paise (5km - 8km)
+  slab3RatePerKmPaise: number; // default ₹16/km = 1600 paise (>8km)
+  ldoBonusPaise: number; // default ₹20 = 2000 paise (LDO bonus for trips >= 6km)
+};
+
+export type DynamicPricingConfig = {
+  cityTier: "TIER_1" | "TIER_2" | "TIER_3";
+  tier1BaseFloorPaise: number; // 3500 (₹35)
+  tier2BaseFloorPaise: number; // 3000 (₹30)
+  tier3BaseFloorPaise: number; // 2500 (₹25)
+  pickupFeePaise?: number;
+  dropFeePaise?: number;
+  basePayPaise?: number;
+  defaultRatePerKmPaise: number; // 1200 (₹12/km)
+  distanceSlabs: ProgressiveDistanceSlabs;
+  waitGraceMinutes: number; // 6 mins
+  waitRatePerMinPaise: number; // 100 paise (₹1/min)
+  waitCapPaise: number; // 3000 paise (₹30)
+  floatingCashLimitInr: number; // 2000
+  coolingOffDurationMinutes: number; // 15
+  payoutCycleDay: string; // "Wednesday"
+  kingAiAutonomousResolution: boolean; // true
+};
+
 export type PlatformConfig = {
   branding: Branding;
   flags: FeatureFlags;
@@ -186,6 +212,39 @@ export type PlatformConfig = {
   locationRetentionHours: number;
   gpsHistoryMaxPings: number;
   volunteerEnabled: boolean;
+  discipline?: RiderDisciplineConfig;
+  pricing?: DynamicPricingConfig;
+  payoutCycleDay?: string;
+  kingAiAutonomousResolution?: boolean;
+};
+
+export type RiderDisciplineConfig = {
+  enabled: boolean;
+  floatingCashLimitInr: number;
+  cancellationPenaltyBeforePickupInr: number;
+  cancellationPenaltyPostPickupType: "FULL_ORDER" | "CUSTOM_INR";
+  cancellationPenaltyPostPickupCustomInr: number;
+  coolingOffConsecutiveRejections: number;
+  coolingOffAcceptanceRateThresholdPct: number;
+  coolingOffDurationMinutes: number;
+  upiDepositVpa: string;
+};
+
+export type PocketBalanceInfo = {
+  collectedPaise: number;
+  reconciledPaise: number;
+  pocketBalancePaise: number;
+  limitPaise: number;
+  isCodBlocked: boolean;
+  canAcceptCod: boolean;
+  utilizationPct: number;
+};
+
+export type CoolingOffInfo = {
+  isActive: boolean;
+  until: string | null;
+  reason: string | null;
+  secondsRemaining: number;
 };
 
 export type RiderProfile = {
@@ -218,6 +277,9 @@ export type RiderProfile = {
   createdAt: string;
   updatedAt: string;
   dataMode: DataMode;
+  consecutiveDeclines?: number;
+  coolingOffUntil?: string | null;
+  coolingOffReason?: string | null;
 };
 
 export type RestaurantSlice = {

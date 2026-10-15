@@ -4,12 +4,12 @@ import { Card, CardMeta, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { compressImage, errorMessage, newIdempotencyKey } from "@/lib/client/errors";
-import { formatPaise } from "@/lib/rider/money";
+import { formatPaise, calculateRestaurantWaitPayPaise } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
 import { deliveryActionFn } from "@/lib/server/rider-fns";
 import { TERMINAL_DELIVERY_STATES, type CashReconciliation, type Delivery } from "@/lib/rider/types";
 import { enqueueRiderOfflineAction, getRiderNetworkSpeed } from "@/lib/rider/rider-low-network";
-import { ChevronDown, ChevronUp, Clock3, HelpCircle, PhoneCall, Wallet } from "lucide-react";
+import { AlertTriangle, ChevronDown, ChevronUp, Clock3, HelpCircle, PhoneCall, ShieldAlert, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ConfirmDialog } from "./confirm-dialog";
 
@@ -30,6 +30,7 @@ export function DeliveryActions({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [hasVerifiedProof, setHasVerifiedProof] = useState(false);
   const [reason, setReason] = useState("vehicle problem");
   const [sopOpen, setSopOpen] = useState(false);
   const [now, setNow] = useState(Date.now());
@@ -81,7 +82,13 @@ export function DeliveryActions({
       });
       onChanged();
     } catch (e) {
-      if (typeof navigator !== "undefined" && !navigator.onLine) {
+      const isNetwork =
+        (typeof navigator !== "undefined" && navigator.onLine === false) ||
+        (e instanceof Error &&
+          (/fetch|network|timeout|offline|failed to fetch/i.test(e.message) ||
+            e.name === "TypeError"));
+
+      if (isNetwork) {
         enqueueRiderOfflineAction({
           deliveryId: delivery.id,
           action,
@@ -140,12 +147,22 @@ export function DeliveryActions({
   }
 
   const d = delivery;
+  const isPostPickup =
+    Boolean(d.pickedUpAt) ||
+    [
+      "PICKED_UP",
+      "ON_THE_WAY",
+      "OUT_FOR_DELIVERY",
+      "ARRIVED_AT_CUSTOMER",
+      "CUSTOMER_UNAVAILABLE",
+      "SUPPORT_ESCALATION",
+    ].includes(d.state);
   const kitchenWaitSec =
     d.arrivedRestaurantAt && !d.pickedUpAt
       ? Math.max(0, Math.floor((now - new Date(d.arrivedRestaurantAt).getTime()) / 1000))
       : 0;
   const kitchenWaitMins = Math.floor(kitchenWaitSec / 60);
-  const kitchenBonusPaise = kitchenWaitMins > 10 ? (kitchenWaitMins - 10) * 100 : 0;
+  const kitchenBonusPaise = calculateRestaurantWaitPayPaise(kitchenWaitMins, 6, 100);
 
   const customerWaitSec =
     d.waitStartedAt && !d.deliveredAt
@@ -194,7 +211,7 @@ export function DeliveryActions({
         </div>
       ) : null}
 
-      {/* Zomato-style Rider Quick-Connect & Safety SOS Bar */}
+      {/* OrderKing Partner Quick-Connect & Safety SOS Bar */}
       <div className="grid grid-cols-4 gap-2 border-t border-border pt-2">
         {d.customer.contactAllowed ? (
           <a
@@ -247,7 +264,7 @@ export function DeliveryActions({
         </a>
       </div>
 
-      {/* Zomato-style Turn-by-Turn GPS Navigation Button */}
+      {/* Turn-by-Turn GPS Navigation Button */}
       {!TERMINAL_DELIVERY_STATES.has(d.state) &&
         (() => {
           const isHeadingToCustomer = [
@@ -305,7 +322,7 @@ export function DeliveryActions({
               </span>
               <span className="font-mono font-semibold text-foreground">
                 {Math.floor(kitchenWaitSec / 60)}m {String(kitchenWaitSec % 60).padStart(2, "0")}s
-                {kitchenBonusPaise > 0 ? ` (+${formatPaise(kitchenBonusPaise)} Wait Bonus)` : " (₹1/min after 10m)"}
+                {kitchenBonusPaise > 0 ? ` (+${formatPaise(kitchenBonusPaise)} Wait Bonus)` : " (₹1/min after 6m grace)"}
               </span>
             </div>
           ) : null}
@@ -456,7 +473,7 @@ export function DeliveryActions({
         </div>
       ) : null}
 
-      {/* Zomato-Standard On-Trip Self-Service Support & SOP Guide */}
+      {/* OrderKing Gold Standard On-Trip Self-Service Support & SOP Guide */}
       <div className="rounded-lg border border-border bg-muted/20 overflow-hidden">
         <button
           type="button"
@@ -515,33 +532,99 @@ export function DeliveryActions({
       ) : null}
 
       {cancelOpen ? (
-        <div className="space-y-2 rounded-lg bg-muted p-3">
-          <CardTitle className="text-sm">{t("cancelReason")}</CardTitle>
-          <select
-            className="h-11 w-full rounded-md border border-border bg-surface px-3 text-sm"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center backdrop-blur-xs animate-in fade-in duration-150">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="w-full max-w-md rounded-2xl bg-card p-5 shadow-2xl border border-border space-y-4"
           >
-            <option value="vehicle problem">{t("vehicleProblem")}</option>
-            <option value="safety issue">{t("safetyIssue")}</option>
-            <option value="wrong assignment">{t("wrongAssignment")}</option>
-            <option value="restaurant issue">{t("restaurantIssue")}</option>
-            <option value="customer issue">{t("customerIssue")}</option>
-            <option value="other">{t("other")}</option>
-          </select>
-          <ConfirmDialog
-            open
-            title={t("cancelDelivery")}
-            body={t("cancelReason")}
-            confirmLabel={t("confirm")}
-            cancelLabel={t("cancel")}
-            danger
-            onCancel={() => setCancelOpen(false)}
-            onConfirm={() => {
-              setCancelOpen(false);
-              void act("CANCEL", { reason, confirmed: true });
-            }}
-          />
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="size-5 text-rose-500" />
+                <h3 className="font-display text-base font-bold text-foreground">
+                  {t("cancelDelivery")} #{d.orderCode}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCancelOpen(false)}
+                className="rounded-lg p-1 text-muted-foreground hover:bg-muted"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Zomato Discipline Penalty Notice */}
+            {isPostPickup ? (
+              <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3.5 space-y-2 text-xs">
+                <div className="flex items-center gap-2 text-rose-950 dark:text-rose-200 font-bold">
+                  <ShieldAlert className="size-4 shrink-0 text-rose-600" />
+                  <span>CRITICAL: Post-Pickup Cancellation</span>
+                </div>
+                <p className="text-rose-900/90 dark:text-rose-300 leading-relaxed">
+                  The order was already collected from the restaurant. Post-pickup cancellation without verified emergency proof results in a <strong>FULL ORDER DEDUCTION</strong> ({formatPaise(d.expectedPayoutPaise)}) and fleet dispute review.
+                </p>
+                <label className="flex items-start gap-2 pt-1.5 cursor-pointer font-medium text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={hasVerifiedProof}
+                    onChange={(e) => setHasVerifiedProof(e.target.checked)}
+                    className="mt-0.5 rounded border-rose-400"
+                  />
+                  <span>
+                    I have verified accident / breakdown proof (photos/police report/support ticket). Place on dispute hold instead of full penalty.
+                  </span>
+                </label>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 space-y-1.5 text-xs">
+                <div className="flex items-center gap-2 text-amber-950 dark:text-amber-200 font-bold">
+                  <AlertTriangle className="size-4 shrink-0 text-amber-600" />
+                  <span>Pre-Pickup Cancellation Discipline Deduction</span>
+                </div>
+                <p className="text-amber-900/90 dark:text-amber-300 leading-relaxed">
+                  Cancelling an accepted order before pickup impacts merchant preparation and customer ETA. A standard fleet discipline penalty of <strong>₹25.00–₹50.00</strong> will be deducted from your daily earnings ledger.
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <Label className="text-xs">{t("cancelReason")}</Label>
+              <select
+                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-xs"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              >
+                <option value="vehicle problem">{t("vehicleProblem")}</option>
+                <option value="safety issue">{t("safetyIssue")}</option>
+                <option value="wrong assignment">{t("wrongAssignment")}</option>
+                <option value="restaurant issue">{t("restaurantIssue")}</option>
+                <option value="customer issue">{t("customerIssue")}</option>
+                <option value="other">{t("other")}</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-2 border-t border-border">
+              <Button
+                variant="destructive"
+                size="lg"
+                disabled={pending}
+                onClick={() => {
+                  setCancelOpen(false);
+                  void act("CANCEL", { reason, confirmed: true, hasVerifiedProof });
+                }}
+              >
+                {isPostPickup && !hasVerifiedProof ? "Confirm Cancellation (Full Penalty)" : "Confirm Cancellation"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCancelOpen(false)}
+              >
+                {t("cancel")} (Keep Delivery Active)
+              </Button>
+            </div>
+          </div>
         </div>
       ) : null}
     </Card>

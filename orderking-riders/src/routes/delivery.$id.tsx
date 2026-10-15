@@ -11,6 +11,7 @@ import {
   formatPaise,
   STATUTORY_BASE_DISTANCE_KM,
   STATUTORY_BASE_FARE_PAISE,
+  calculateRestaurantWaitPayPaise,
 } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
 import { createTicketFn, getDeliveryFn } from "@/lib/server/rider-fns";
@@ -107,7 +108,7 @@ function Page() {
           ),
         )
       : 0;
-  const waitBonusPaise = kitchenWaitMins > 10 ? (kitchenWaitMins - 10) * 100 : 0;
+  const waitBonusPaise = calculateRestaurantWaitPayPaise(kitchenWaitMins, 6, 100);
   const distanceComponentPaise = d
     ? Math.max(0, d.expectedPayoutPaise - STATUTORY_BASE_FARE_PAISE)
     : 0;
@@ -188,7 +189,7 @@ function Page() {
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">
-                  Kitchen Wait Bonus ({kitchenWaitMins}m recorded · ₹1/m after 10m)
+                  Kitchen Wait Bonus ({kitchenWaitMins}m recorded · ₹1/m after 6m grace)
                 </dt>
                 <dd className="font-mono">{formatPaise(waitBonusPaise)}</dd>
               </div>

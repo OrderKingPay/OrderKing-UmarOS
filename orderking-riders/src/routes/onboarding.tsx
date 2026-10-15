@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  ChevronRight,
   Edit3,
   FileCheck,
   MapPin,
@@ -26,7 +27,18 @@ import {
   ShieldCheck,
   Trash2,
   Upload,
+  FileText,
+  Scale,
+  Copy,
+  Check,
+  X,
+  HeartPulse,
 } from "lucide-react";
+import {
+  ORDERKING_PARTNER_AGREEMENT_SECTIONS,
+  ORDERKING_PARTNER_AGREEMENT_METADATA,
+  getFullAgreementLegalMarkdown,
+} from "@/lib/rider/partner-agreement";
 
 export const Route = createFileRoute("/onboarding")({ component: Page });
 
@@ -43,6 +55,7 @@ type KycDocsState = {
   rcCopy: DocAttachment | null;
   panCopy: DocAttachment | null;
   aadhaarMasked: DocAttachment | null;
+  partnerSelfie: DocAttachment | null;
 };
 
 type LegalAgreementsState = {
@@ -158,6 +171,7 @@ function Page() {
     rcCopy: null,
     panCopy: null,
     aadhaarMasked: null,
+    partnerSelfie: null,
   });
   const [agreements, setAgreements] = useState<LegalAgreementsState>({
     serviceAgreement: false,
@@ -166,6 +180,9 @@ function Page() {
     privacyGps: false,
   });
   const [expandedAgreement, setExpandedAgreement] = useState<string | null>(null);
+  const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [modalSectionIdx, setModalSectionIdx] = useState(1);
+  const [copiedAgreement, setCopiedAgreement] = useState(false);
 
   useEffect(() => {
     void bootstrapRiderFn()
@@ -438,6 +455,7 @@ function Page() {
         docs.rcCopy ? `RC:${docs.rcCopy.name}` : null,
         docs.panCopy ? `PAN:${docs.panCopy.name}` : null,
         docs.aadhaarMasked ? `AADHAAR:${docs.aadhaarMasked.name}` : null,
+        docs.partnerSelfie ? `SELFIE_BAG:${docs.partnerSelfie.name}` : null,
       ]
         .filter(Boolean)
         .join("; ");
@@ -672,6 +690,14 @@ function Page() {
               >
                 View Earnings &amp; Settlement Ledger
               </a>
+              <button
+                type="button"
+                onClick={() => setShowAgreementModal(true)}
+                className="inline-flex items-center justify-center rounded-xl border border-emerald-300 bg-emerald-50/80 px-5 py-3 text-sm font-bold text-emerald-900 hover:bg-emerald-100 transition shadow-2xs"
+              >
+                <FileText className="mr-2 size-4 text-emerald-700" />
+                View Executed Partner Agreement (CSS 2020)
+              </button>
             </div>
           </div>
         </div>
@@ -1070,16 +1096,17 @@ function Page() {
                 </div>
 
                 {isExemptVehicle && (
-                  <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-3.5 text-xs text-emerald-950">
-                    <p className="font-bold text-emerald-900">
-                      Statutory DL / RC Exemption Notice (
+                  <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 text-xs text-emerald-950 dark:text-emerald-200">
+                    <p className="font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5">
+                      <ShieldCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
+                      Statutory Driving Licence (DL) Exemption Notice (
                       {vehicleCategory === "CYCLE"
                         ? "Pedal Bicycle"
-                        : "Low-Speed Electric Vehicle < 250W / < 25 km/h"}
+                        : "Electric Vehicle — Low-Speed EV / Electric Cycle"}
                       )
                     </p>
-                    <p className="mt-0.5 leading-relaxed">
-                      Under Central Motor Vehicles Rules (CMVR Rule 2(u)), commercial Driving Licence and RTO Registration Certificate (RC) are not required for pedal bicycles and sub-250W low-speed electric two-wheelers. Aadhaar Last 4 and PAN verification remain mandatory.
+                    <p className="mt-1 leading-relaxed">
+                      In accordance with national delivery partner fleet standards and Central Motor Vehicles Rules (CMVR Rule 2(u)), <strong>Driving Licence (DL) is NOT MANDATORY</strong> for EV (Electric Cycle/Scooter &lt; 25 km/h) and Bicycle delivery partners. <strong>Aadhaar + PAN + Partner Selfie with Bag</strong> are sufficient for onboarding verification; DL is only required for petrol two-wheelers.
                     </p>
                   </div>
                 )}
@@ -1168,6 +1195,12 @@ function Page() {
                         {
                           key: "aadhaarMasked" as const,
                           label: "Masked Aadhaar Card (Front & Back)",
+                        },
+                        {
+                          key: "partnerSelfie" as const,
+                          label: isExemptVehicle
+                            ? "Partner Selfie with Bag (Mandatory for Cycle/EV)"
+                            : "Partner Selfie with Delivery Bag",
                         },
                       ] as const
                     ).map((docItem) => {
@@ -1356,6 +1389,53 @@ function Page() {
                   </div>
                 </div>
 
+                {/* Statutory Benefits & Insurance Callout under Code on Social Security 2020 */}
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 sm:p-5 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex size-8 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-2xs">
+                        <Scale className="size-4" />
+                      </span>
+                      <div>
+                        <h4 className="text-xs font-bold text-emerald-950 uppercase tracking-wider">
+                          Code on Social Security, 2020 Statutory Partner Benefits
+                        </h4>
+                        <p className="text-[11px] text-emerald-900 font-medium">
+                          Official OrderKing Independent Delivery Partner Agreement (Act No. 36 of 2020)
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowAgreementModal(true)}
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-white px-3.5 py-1.5 text-xs font-bold text-emerald-950 hover:bg-emerald-100 transition shadow-2xs"
+                    >
+                      <FileText className="size-3.5 text-emerald-700" />
+                      <span>Inspect Official 13-Section Agreement</span>
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-[11px]">
+                    <div className="rounded-xl bg-white/90 border border-emerald-200/90 p-3 space-y-1">
+                      <span className="font-bold text-emerald-950 block">Aggregator Welfare Fund</span>
+                      <p className="text-emerald-900 leading-relaxed">
+                        1.5% platform turnover contribution under Section 114 to Central Social Security Fund. Zero rider deduction.
+                      </p>
+                    </div>
+                    <div className="rounded-xl bg-white/90 border border-emerald-200/90 p-3 space-y-1">
+                      <span className="font-bold text-emerald-950 block">Group Accidental Cover</span>
+                      <p className="text-emerald-900 leading-relaxed">
+                        ₹10,00,000 Death &amp; Disability + ₹1,00,000 Emergency Hospitalization on active duty at zero premium cost.
+                      </p>
+                    </div>
+                    <div className="rounded-xl bg-white/90 border border-emerald-200/90 p-3 space-y-1">
+                      <span className="font-bold text-emerald-950 block">Principal-to-Principal Autonomy</span>
+                      <p className="text-emerald-900 leading-relaxed">
+                        Absolute freedom over login shifts, multi-app non-exclusivity, and 2-tier dispute arbitration under Indian law.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Mandatory Delivery Partner Legal & Safety Agreements */}
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5 space-y-3.5">
                   <div className="flex items-center justify-between gap-2">
@@ -1463,6 +1543,182 @@ function Page() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Full Official Delivery Partner Agreement Modal (13 Statutory Sections) */}
+        {showAgreementModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+            <div className="relative w-full max-w-4xl rounded-2xl bg-white border border-slate-200 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden text-slate-900">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 bg-slate-50/70">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-9 items-center justify-center rounded-xl bg-slate-900 text-white">
+                    <Scale className="size-4" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        {ORDERKING_PARTNER_AGREEMENT_METADATA.complianceFramework}
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-500">
+                        {ORDERKING_PARTNER_AGREEMENT_METADATA.version}
+                      </span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900 mt-0.5">
+                      {ORDERKING_PARTNER_AGREEMENT_METADATA.documentTitle}
+                    </h3>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAgreementModal(false)}
+                  className="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              {/* Modal Body: Left Section List + Right Section Legal Text */}
+              <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[380px]">
+                {/* Left Section Navigation */}
+                <div className="md:col-span-4 border-r border-slate-100 overflow-y-auto p-3 space-y-1 bg-slate-50/50 max-h-[480px]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 block mb-1">
+                    Agreement Sections (13)
+                  </span>
+                  {ORDERKING_PARTNER_AGREEMENT_SECTIONS.map((sec, idx) => (
+                    <button
+                      key={sec.sectionNumber}
+                      type="button"
+                      onClick={() => setModalSectionIdx(idx)}
+                      className={`w-full text-left p-2.5 rounded-xl border transition ${
+                        modalSectionIdx === idx
+                          ? "border-slate-900 bg-slate-900 text-white shadow-2xs"
+                          : "border-slate-200/80 bg-white text-slate-700 hover:bg-slate-100"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wider ${
+                            modalSectionIdx === idx ? "text-slate-300" : "text-slate-500"
+                          }`}
+                        >
+                          Sec {sec.sectionNumber}
+                        </span>
+                        <ChevronRight
+                          className={`size-3 ${
+                            modalSectionIdx === idx ? "text-white" : "text-slate-400"
+                          }`}
+                        />
+                      </div>
+                      <p className="font-bold text-xs truncate mt-0.5">{sec.title}</p>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Right Content */}
+                <div className="md:col-span-8 overflow-y-auto p-5 space-y-4 max-h-[480px]">
+                  {ORDERKING_PARTNER_AGREEMENT_SECTIONS[modalSectionIdx] && (
+                    <>
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          {ORDERKING_PARTNER_AGREEMENT_SECTIONS[modalSectionIdx].statutoryBasis}
+                        </span>
+                        <h4 className="text-base font-extrabold text-slate-900 mt-1.5">
+                          Section {ORDERKING_PARTNER_AGREEMENT_SECTIONS[modalSectionIdx].sectionNumber}:{" "}
+                          {ORDERKING_PARTNER_AGREEMENT_SECTIONS[modalSectionIdx].title}
+                        </h4>
+                        <p className="text-xs text-slate-600 mt-1">
+                          {ORDERKING_PARTNER_AGREEMENT_SECTIONS[modalSectionIdx].summary}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 font-mono text-[11px] text-slate-700 leading-relaxed whitespace-pre-line max-h-[220px] overflow-y-auto">
+                        {ORDERKING_PARTNER_AGREEMENT_SECTIONS[modalSectionIdx].fullLegalText}
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                          Operational Safeguards &amp; Statutory Terms:
+                        </span>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                          {ORDERKING_PARTNER_AGREEMENT_SECTIONS[modalSectionIdx].keyHighlights.map((hl, i) => (
+                            <li
+                              key={i}
+                              className="p-2 rounded-lg border border-slate-200 bg-white flex items-start gap-1.5"
+                            >
+                              <CheckCircle2 className="size-3.5 text-emerald-700 shrink-0 mt-0.5" />
+                              <span className="text-slate-700 text-[11px]">{hl}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-5 py-3.5 bg-slate-50/70">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const md = getFullAgreementLegalMarkdown({
+                      partnerName: rider?.fullName,
+                      phone: rider?.phone,
+                      pan: panNumber,
+                      aadhaarLast4: aadhaarLast4,
+                      contractId: `OK-AGMT-CSS2020-${rider?.id || Date.now()}`,
+                    });
+                    if (typeof navigator !== "undefined" && navigator.clipboard) {
+                      void navigator.clipboard.writeText(md);
+                      setCopiedAgreement(true);
+                      setTimeout(() => setCopiedAgreement(false), 2500);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 transition shadow-2xs"
+                >
+                  {copiedAgreement ? (
+                    <>
+                      <Check className="size-3.5 text-emerald-600" />
+                      <span>Copied Full Agreement</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="size-3.5 text-slate-500" />
+                      <span>Copy Full Agreement (13 Sections)</span>
+                    </>
+                  )}
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAgreements({
+                        serviceAgreement: true,
+                        roadSafety: true,
+                        foodHygiene: true,
+                        privacyGps: true,
+                      });
+                      setShowAgreementModal(false);
+                      toast.success("All 4 statutory undertakings accepted.");
+                    }}
+                    className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-xs font-bold transition shadow-2xs"
+                  >
+                    Accept &amp; Close Viewer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAgreementModal(false)}
+                    className="rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 text-xs font-bold transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

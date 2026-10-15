@@ -61,6 +61,13 @@ async function idbDelete(key) {
   });
 }
 
+function isPublicCatalogPath(pathname) {
+  return (
+    /^\/api\/(restaurants|menu|catalog|search|cities|zones|locations|config)(\/|$)/i.test(pathname) ||
+    /^\/api\/(public)(\/|$)/i.test(pathname)
+  );
+}
+
 function shouldCacheApiResponse(request, response) {
   if (request.method !== "GET" || !response.ok) return false;
   const cacheControl = response.headers.get("Cache-Control") || "";
@@ -70,10 +77,7 @@ function shouldCacheApiResponse(request, response) {
   // Cache only explicitly public/catalog-style API paths. Never cache
   // orders, wallets, payments, profiles, auth/session, support or finance data.
   const path = new URL(request.url).pathname;
-  const isPublicCatalog =
-    /^\/api\/(restaurants|menu|catalog|search|cities|zones|locations|config)(\/|$)/i.test(path) ||
-    /^\/api\/(public)(\/|$)/i.test(path);
-  return isPublicCatalog;
+  return isPublicCatalogPath(path);
 }
 
 self.addEventListener("install", (event) => {
@@ -137,9 +141,72 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // GET APIs: network-first, with per-URL IndexedDB fallback only when the
-  // server response does not explicitly mark the response private/no-store.
+  // Navigation requests: network-first with cache and offline.html fallback
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
+          }
+          return response;
+        })
+        .catch(async () => {
+          const cached = await caches.match(event.request);
+          if (cached) return cached;
+          const offlinePage = await caches.match("/offline.html");
+          if (offlinePage) return offlinePage;
+          return caches.match("/");
+        })
+    );
+    return;
+  }
+
+  // Public Catalog & Menu APIs: Stale-While-Revalidate with IndexedDB
   if (url.pathname.startsWith("/api/")) {
+    if (event.request.method === "GET" && isPublicCatalogPath(url.pathname)) {
+      event.respondWith(
+        (async () => {
+          const cached = await idbGet("api:" + url.href).catch(() => null);
+          const fetchPromise = fetch(event.request.clone())
+            .then(async (response) => {
+              if (shouldCacheApiResponse(event.request, response)) {
+                try {
+                  await idbSet("api:" + url.href, {
+                    status: response.status,
+                    headers: Array.from(response.headers.entries()),
+                    body: await response.clone().text(),
+                    cachedAt: Date.now(),
+                  });
+                } catch {}
+              }
+              return response;
+            })
+            .catch(() => null);
+
+          // If cached catalog is available, return immediately (Zero-Lag offline browsing)
+          if (cached?.body != null) {
+            event.waitUntil(fetchPromise);
+            return new Response(cached.body, {
+              status: 200,
+              headers: cached.headers || { "Content-Type": "application/json" },
+            });
+          }
+
+          const fresh = await fetchPromise;
+          if (fresh) return fresh;
+
+          return new Response(JSON.stringify({ error: "Catalog offline and not cached yet", offline: true }), {
+            status: 503,
+            headers: { "Content-Type": "application/json" },
+          });
+        })()
+      );
+      return;
+    }
+
+    // Other GET APIs: network-first with IndexedDB fallback
     event.respondWith(
       fetch(event.request.clone())
         .then(async (response) => {
@@ -176,7 +243,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets: cache-first with background refresh.
+  // Static assets (CSS, JS, WebAssembly, fonts, images): cache-first with background revalidation.
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const refresh = fetch(event.request)
@@ -187,10 +254,7 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => {
-          if (event.request.mode === "navigate") return caches.match("/offline.html");
-          return cached;
-        });
+        .catch(() => cached);
 
       return cached || refresh;
     })

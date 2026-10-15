@@ -6,7 +6,7 @@ import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { OfflineDetector } from "@/components/offline-detector";
 import { platformConfig } from "@/lib/platform-config";
-import { flushQueue } from "@/lib/offline/durable-queue";
+import { flushQueue, registerDefaultTransitionFn } from "@/lib/offline/durable-queue";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
 import appCss from "../styles.css?url";
 
@@ -67,6 +67,7 @@ import { supabaseCloud } from "@/lib/db-cloud";
 function Root() {
   const location = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => {
+    registerDefaultTransitionFn(transitionOrderViaHDmaster);
     flushQueue(transitionOrderViaHDmaster);
     
     const handleOnline = () => {

@@ -20,7 +20,7 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
   return (
     <nav
       role="navigation"
-      aria-label="OrderKing Rider Navigation"
+      aria-label="OrderKing Partner Navigation"
       className="fixed inset-x-0 bottom-3 sm:bottom-4 z-40 pointer-events-none mx-auto max-w-lg px-3 sm:px-4 lg:hidden"
     >
       <div className="pointer-events-auto relative rounded-[28px] bg-card/95 backdrop-blur-2xl border border-border shadow-[0_20px_50px_-10px_rgba(0,0,0,0.18),inset_0_1px_1px_0_rgba(255,255,255,0.4)] px-2 pt-1 pb-1.5 transition-all">

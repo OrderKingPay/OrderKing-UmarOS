@@ -30,11 +30,19 @@
         "./src/*"
       ]
     },
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo"
   },
   "include": [
     "src",
     "server"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".output",
+    ".vercel"
   ]
 }
 
