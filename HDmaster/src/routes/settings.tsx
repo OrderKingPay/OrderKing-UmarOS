@@ -60,31 +60,20 @@ export interface IndianLanguageSpec {
   region: string;
 }
 
-export const INDIAN_23_LANGUAGES: IndianLanguageSpec[] = [
+export const INDIAN_10_LANGUAGES: IndianLanguageSpec[] = [
   { code: "en", name: "English", nativeName: "English (India)", region: "Pan-India Official" },
   { code: "hi", name: "Hindi", nativeName: "हिन्दी", region: "North & Central India" },
-  { code: "bn", name: "Bengali", nativeName: "বাংলা", region: "West Bengal, Barak Valley & Tripura" },
-  { code: "te", name: "Telugu", nativeName: "తెలుగు", region: "Andhra Pradesh & Telangana" },
-  { code: "mr", name: "Marathi", nativeName: "मराठी", region: "Maharashtra & Goa" },
-  { code: "ta", name: "Tamil", nativeName: "தமிழ்", region: "Tamil Nadu & Puducherry" },
-  { code: "ur", name: "Urdu", nativeName: "اردو", region: "Jammu & Kashmir, Telangana, UP" },
+  { code: "bn", name: "Bengali", nativeName: "বাংলা", region: "West Bengal & Tripura" },
   { code: "gu", name: "Gujarati", nativeName: "ગુજરાતી", region: "Gujarat, Daman & Diu" },
   { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ", region: "Karnataka" },
   { code: "ml", name: "Malayalam", nativeName: "മലയാളം", region: "Kerala & Lakshadweep" },
-  { code: "or", name: "Odia", nativeName: "ଓଡ଼ିଆ", region: "Odisha" },
+  { code: "mr", name: "Marathi", nativeName: "मराठी", region: "Maharashtra & Goa" },
   { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ", region: "Punjab & Chandigarh" },
-  { code: "as", name: "Assamese", nativeName: "অসমীয়া", region: "Assam & Northeast" },
-  { code: "mai", name: "Maithili", nativeName: "मैथिली", region: "Bihar & Jharkhand" },
-  { code: "sat", name: "Santali", nativeName: "ᱥᱟᱱᱛᱟᱲᱤ", region: "Jharkhand, Odisha & Bengal" },
-  { code: "ks", name: "Kashmiri", nativeName: "کٲشُر / कश्मीरी", region: "Jammu & Kashmir" },
-  { code: "ne", name: "Nepali", nativeName: "नेपाली", region: "Sikkim & Darjeeling" },
-  { code: "sd", name: "Sindhi", nativeName: "سنڌي / सिन्धी", region: "Gujarat, Rajasthan & Maharashtra" },
-  { code: "kok", name: "Konkani", nativeName: "कोंकणी", region: "Goa & Coastal Karnataka" },
-  { code: "doi", name: "Dogri", nativeName: "डोगरी", region: "Jammu & Himachal" },
-  { code: "mni", name: "Manipuri", nativeName: "মৈতৈলোন্ (Meitei)", region: "Manipur" },
-  { code: "brx", name: "Bodo", nativeName: "बर' (Bodo)", region: "Bodoland, Assam" },
-  { code: "sa", name: "Sanskrit", nativeName: "संस्कृतम्", region: "Classical & Pan-India" },
+  { code: "ta", name: "Tamil", nativeName: "தமிழ்", region: "Tamil Nadu & Puducherry" },
+  { code: "te", name: "Telugu", nativeName: "తెలుగు", region: "Andhra Pradesh & Telangana" },
 ];
+
+export const INDIAN_23_LANGUAGES = INDIAN_10_LANGUAGES;
 
 const ROYAL_THEME_PRESETS = [
   {
@@ -636,14 +625,14 @@ function SettingsPage() {
         appliedChanges.push(`Surge Multiplier Cap → ${nextEcon.surge_multiplier_cap}x`);
       }
 
-      // 4. Parse 23 Indian Languages
+      // 4. Parse 10 Indian Benchmark Languages
       if (
-        lower.includes("23 language") ||
+        lower.includes("10 language") ||
         lower.includes("all language") ||
         lower.includes("enable all")
       ) {
         nextLocale.enabledLocales = INDIAN_23_LANGUAGES.map((l) => l.code);
-        appliedChanges.push("Enabled All 23 Official Indian Languages");
+        appliedChanges.push("Enabled All 10 Benchmark Indian Languages");
       }
 
       for (const lang of INDIAN_23_LANGUAGES) {
@@ -664,7 +653,7 @@ function SettingsPage() {
 
       if (appliedChanges.length === 0) {
         setUmarLog(
-          "ℹ️ UMAR AI parsed your instruction. Try specific values such as: 'Set commission to 16% and primary color to #0D3B2E' or 'Enable all 23 languages'.",
+          "ℹ️ King AI parsed your instruction. Try specific values such as: 'Set commission to 16% and primary color to #0D3B2E' or 'Enable all 10 languages'.",
         );
         return;
       }
@@ -860,7 +849,6 @@ function SettingsPage() {
       "languages",
       "localization",
       "bengali",
-      "assamese",
       "hindi",
       "english",
       "tamil",
@@ -870,11 +858,8 @@ function SettingsPage() {
       "kannada",
       "malayalam",
       "punjabi",
-      "odia",
-      "urdu",
-      "sanskrit",
-      "official",
-      "23",
+      "benchmark",
+      "10",
       "gemini",
       "openai",
       "ai tutor",
@@ -1062,15 +1047,15 @@ function SettingsPage() {
               ) : (
                 <Sparkles className="h-4 w-4" />
               )}
-              Apply via UMAR AI
+              Apply via King AI
             </button>
           </div>
 
-          {/* 1-Click Quick UMAR AI Commands */}
+          {/* 1-Click Quick King AI Commands */}
           <div className="flex flex-wrap gap-1.5 pt-1">
             {[
               "Set commission to 16% and primary color to #0D3B2E",
-              "Enable all 23 languages and default to English",
+              "Enable all 10 benchmark languages and default to English",
               "Set base delivery fee to ₹35 and per km rate to ₹8",
               "Set delivery radius to 25 km and surge cap to 1.8x",
               "Reset branding to default",

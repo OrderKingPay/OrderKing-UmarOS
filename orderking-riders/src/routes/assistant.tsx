@@ -43,30 +43,17 @@ import { LOCALE_LABELS } from "@/lib/rider/i18n";
 
 export const Route = createFileRoute("/assistant")({ component: Page });
 
-const SPEECH_LANG_MAP: Record<LocaleCode, string> = {
+const SPEECH_LANG_MAP: Record<string, string> = {
   en: "en-IN",
   hi: "hi-IN",
   bn: "bn-IN",
-  te: "te-IN",
-  mr: "mr-IN",
-  ta: "ta-IN",
-  ur: "ur-IN",
   gu: "gu-IN",
   kn: "kn-IN",
   ml: "ml-IN",
-  or: "or-IN",
+  mr: "mr-IN",
   pa: "pa-IN",
-  as: "as-IN",
-  mai: "hi-IN",
-  sat: "hi-IN",
-  ks: "ur-IN",
-  ne: "ne-NP",
-  sd: "hi-IN",
-  kok: "mr-IN",
-  doi: "hi-IN",
-  mni: "bn-IN",
-  brx: "as-IN",
-  sa: "hi-IN",
+  ta: "ta-IN",
+  te: "te-IN",
 };
 
 const LOCALE_LABEL_MAP: Record<LocaleCode, string> = LOCALE_LABELS;
@@ -186,14 +173,6 @@ function Page() {
             (h.active
               ? `• সক্রিয় ট্রিপ: #${h.active.orderCode} (${h.active.restaurant.name} → ${h.active.customer.area})। রেস্তোরাঁয় ৬ মিনিটের বেশি বিলম্ব হলে ১-ট্যাপে ওয়েট পে ক্রেডিট পান।`
               : `• পিক স্লট পরামর্শ: লাঞ্চ (১২:০০–৩:০০) ও ডিনার (৭:০০–১১:০০) সময়ে হাই-ডিমান্ড জোনে থাকলে ট্রিপ সর্বোচ্চ হয়।`);
-        } else if (locale === "as") {
-          greeting =
-            `নমস্কাৰ ${firstName} ডাঙৰীয়া! কিং এআই (কিং স্পাৰ্ক) ফ্লিট এআই সহায়কলৈ স্বাগতম — আপোনাৰ লাইভ শিফট আৰু উপাৰ্জন নিৰীক্ষক।\n` +
-            `• আজিৰ উপাৰ্জন: ${formatPaise(e.totals.net)} (${h.completedToday} টা সফল অৰ্ডাৰ | টিপছ: ${formatPaise(e.totals.tip)} | ইনচেণ্টিভ: ${formatPaise(e.totals.incentive)})\n` +
-            `• লক্ষ্য নিৰ্ধাৰণ: ${ms.remaining > 0 ? `আৰু মাত্ৰ ${ms.remaining} টা অৰ্ডাৰ সম্পূৰ্ণ কৰিলেই লাভ কৰিব +${formatPaise(ms.bonusPaise)} (${ms.tier})` : `${ms.tier} সফলভাৱে আনলক হ'ল!`}\n` +
-            (h.active
-              ? `• চলিত অৰ্ডাৰ: #${h.active.orderCode} (${h.active.restaurant.name} → ${h.active.customer.area})। ৰন্ধনশালাত ৬ মিনিটতকৈ বেছি পলম হ'লে স্বয়ংক্ৰিয় ৱেইট পে ক্ৰেডিট লওক।`
-              : `• টিপছ: দুপৰীয়া ১২:০০–৩:০০ বজাত আৰু সন্ধিয়া ৭:০০–১১:০০ বজাত সক্ৰিয় থাকি সৰ্বাধিক আয় কৰক।`);
         } else if (locale === "hi") {
           greeting =
             `नमस्ते ${firstName} जी! किंग एआई (किंग स्पार्क) फ्लीट सपोर्ट में आपका स्वागत है — आपका समर्पित ऑपरेशंस व अर्निंग्स मेंटर।\n` +
@@ -391,7 +370,7 @@ function Page() {
                   King Spark · 0 Human Escalation
                 </span>
                 <span className="rounded-full border border-[#E5A93C]/50 bg-[#E5A93C]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E5A93C]">
-                  Multilingual AI (বাংলা · অসমীয়া · हिन्दी · EN)
+                  Multilingual AI (10 Regional Languages · हिन्दी · தமிழ் · বাংলা · EN)
                 </span>
               </div>
               <p className="text-xs text-slate-300">
@@ -765,11 +744,11 @@ function Page() {
           </div>
         </div>
 
-        {/* 1-Tap Multilingual Prompts (Bengali, Assamese, Hindi, English) */}
+        {/* 1-Tap Multilingual Prompts (Bengali, Tamil, Hindi, English) */}
         <div className="space-y-2 rounded-2xl border border-white/10 bg-[#0B0F19]/80 p-3.5 backdrop-blur-sm">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-2">
             <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              ⚡ 1-Tap Multilingual Prompts (বাংলা · অসমীয়া · हिन्दी · English)
+              ⚡ 1-Tap Multilingual Prompts (বাংলা · हिन्दी · தமிழ் · English)
             </p>
             <span className="text-[11px] font-semibold text-[#E5A93C]">0 Founder Headache</span>
           </div>
@@ -807,36 +786,36 @@ function Page() {
               ⏱️ বাংলা: ৩-কল কাস্টমার এসওপি
             </Button>
 
-            {/* Assamese Prompts */}
+            {/* Tamil Prompts */}
             <Button
               type="button"
               variant="outline"
               size="sm"
               disabled={pending}
-              onClick={() => void askQuestion("ৰোষ্টুৰেণ্টত ৬ মিনিটতকৈ বেছি পলম হৈছে — ৱেইট পে ক্ৰেডিট কৰক", "auto_credit_wait")}
+              onClick={() => void askQuestion("உணவகத்தில் 6 நிமிடங்களுக்கு மேல் காத்திருப்பு — வெயிட் பே கிரெடிட் செய்யவும்", "auto_credit_wait")}
               className="border-[#E5A93C]/50 bg-black/40 text-xs text-[#E5A93C] hover:bg-[#E5A93C]/20"
             >
-              🏬 অসমীয়া: ৱেইট পে ক্ৰেডিট
+              🏬 தமிழ்: வெயிட் பே கிரெடிட் (&gt;6 நிமிடம்)
             </Button>
             <Button
               type="button"
               variant="outline"
               size="sm"
               disabled={pending}
-              onClick={() => void askQuestion("মোৰ পেআউট বিৱৰণ কওক: ভিত্তি ₹৩৫, দূৰত্ব স্ল্যাব আৰু টিপছ", "payout_breakdown")}
+              onClick={() => void askQuestion("எனது பேஅவுட் விவரங்களை விளக்குங்கள்: ₹35 அடிப்படை, தூர அடுக்குகள் மற்றும் 100% டிப்ஸ்", "payout_breakdown")}
               className="border-[#2563EB]/50 bg-black/40 text-xs text-sky-300 hover:bg-[#2563EB]/20"
             >
-              💰 অসমীয়া: পেআউট বিৱৰণ
+              💰 தமிழ்: பேஅவுட் விவரங்கள்
             </Button>
             <Button
               type="button"
               variant="outline"
               size="sm"
               disabled={pending}
-              onClick={() => void askQuestion("গ্ৰাহকে ফোন নধৰে — ৩-কল সুৰক্ষা নিয়ম কি?", "customer_unreachable")}
+              onClick={() => void askQuestion("வாடிக்கையாளர் போன் எடுக்கவில்லை — 3-அழைப்பு பாதுகாப்பு விதி என்ன?", "customer_unreachable")}
               className="border-amber-500/40 bg-black/40 text-xs text-amber-300 hover:bg-amber-500/20"
             >
-              ⏱️ অসমীয়া: ৩-কল সুৰক্ষা নিয়ম
+              ⏱️ தமிழ்: 3-அழைப்பு வாடிக்கையாளர் விதி
             </Button>
 
             {/* Hindi Prompts */}
@@ -966,7 +945,7 @@ function Page() {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder={`${t("askAssistant")} (English, বাংলা, অসমীয়া, हिन्दी…)`}
+            placeholder={`${t("askAssistant")} (English, हिन्दी, தமிழ், বাংলা…)`}
             disabled={pending}
             className="border-[#E5A93C]/40 bg-[#0B0F19] text-white placeholder:text-slate-500 focus:border-[#E5A93C] focus:ring-1 focus:ring-[#E5A93C]"
           />

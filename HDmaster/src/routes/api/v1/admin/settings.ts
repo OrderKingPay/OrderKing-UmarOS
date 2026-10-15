@@ -18,31 +18,20 @@ async function verifyFounderOrAdminAccess(request?: Request): Promise<boolean> {
 }
 
 
-export const ALL_23_INDIAN_LOCALES = [
+export const ALL_10_BENCHMARK_LOCALES = [
   "en",
   "hi",
   "bn",
-  "te",
-  "mr",
-  "ta",
-  "ur",
   "gu",
   "kn",
   "ml",
-  "or",
+  "mr",
   "pa",
-  "as",
-  "mai",
-  "sat",
-  "ks",
-  "ne",
-  "sd",
-  "kok",
-  "doi",
-  "mni",
-  "brx",
-  "sa",
+  "ta",
+  "te",
 ] as const;
+
+export const ALL_23_INDIAN_LOCALES = ALL_10_BENCHMARK_LOCALES;
 
 export const DEFAULT_BRAND_CONFIG = {
   primaryColor: "#0D3B2E",

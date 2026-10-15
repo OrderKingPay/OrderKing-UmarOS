@@ -36,30 +36,17 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 const formatINR = formatPaise;
 const COD_FLOAT_LIMIT_PAISE = 250_000; // ₹2,500 statutory COD hand-float limit
 
-const SPEECH_LANG_MAP: Record<LocaleCode, string> = {
+const SPEECH_LANG_MAP: Record<string, string> = {
   en: "en-IN",
   hi: "hi-IN",
   bn: "bn-IN",
-  te: "te-IN",
-  mr: "mr-IN",
-  ta: "ta-IN",
-  ur: "ur-IN",
   gu: "gu-IN",
   kn: "kn-IN",
   ml: "ml-IN",
-  or: "or-IN",
+  mr: "mr-IN",
   pa: "pa-IN",
-  as: "as-IN",
-  mai: "hi-IN",
-  sat: "hi-IN",
-  ks: "ur-IN",
-  ne: "ne-NP",
-  sd: "hi-IN",
-  kok: "mr-IN",
-  doi: "hi-IN",
-  mni: "bn-IN",
-  brx: "as-IN",
-  sa: "hi-IN",
+  ta: "ta-IN",
+  te: "te-IN",
 };
 
 export const FIELD_SUPPORT_CHIPS = [

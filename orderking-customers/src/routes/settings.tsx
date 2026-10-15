@@ -61,12 +61,12 @@ function SettingsPage() {
                 Settings &amp; Preferences
               </h1>
               <p className="text-xs font-bold text-amber-800">
-                12 Indian Languages, Sensory Feedback &amp; GPS Security
+                10 Benchmark Indian Languages, Sensory Feedback &amp; GPS Security
               </p>
             </div>
           </div>
 
-          {/* 12 Indian Languages Selector (Gold Luxury Grid) */}
+          {/* 10 Indian Languages Selector (Gold Luxury Grid) */}
           <section className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3 mb-3.5">
               <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-xs">
@@ -74,7 +74,7 @@ function SettingsPage() {
               </div>
               <div>
                 <h2 className="text-sm font-black text-stone-900">System Language / भाषा / ভাষা</h2>
-                <p className="text-xs text-stone-500">Instant translation across all 12 official regional languages</p>
+                <p className="text-xs text-stone-500">Instant translation across all 10 benchmark regional languages</p>
               </div>
             </div>
 

@@ -41,12 +41,12 @@ export const CONCIERGE_DIALECTS: SupportedDialect[] = [
     welcome: "Greetings! I am your VIP Food & Travel Concierge. Craving authentic biryani, planning a trip, or need instant refund support? Ask me with voice or text!",
   },
   {
-    code: "syl",
-    name: "Sylheti",
-    nativeName: "সিলটী",
-    voiceLang: "bn-IN",
-    honorific: "সম্মানিত ভাই-বোন",
-    welcome: "আসসালামু আলাইকুম! আমি আপনার অর্ডারকিং ভিআইপি খানি ও সফর কনসিয়ার্জ। খানি অডার, বিমানের টিকিট, বা খানি লেইট হইলে টেকা ফেরত—সবকিছুতে আমি আছি!",
+    code: "hi",
+    name: "Hindi",
+    nativeName: "हिन्दी",
+    voiceLang: "hi-IN",
+    honorific: "आदरणीय अतिथि",
+    welcome: "प्रणाम! मैं आपका ऑर्डरकिंग वीआईपी फ़ूड एवं ट्रेवल कंसीयर्ज हूँ। लज़ीज़ दम बिरयानी, यात्रा बुकिंग या रिफ़ंड सहायता के लिए बोलकर या लिखकर पूछिए!",
   },
   {
     code: "bn",
@@ -56,22 +56,7 @@ export const CONCIERGE_DIALECTS: SupportedDialect[] = [
     honorific: "শ্রদ্ধেয় গ্রাহক",
     welcome: "নমস্কার! আমি আপনার অর্ডারকিং ভিআইপি ফুড ও ট্রাভেল কনসিয়ার্জ। সুস্বাদু দম বিরিয়ানি, ফ্লাইটের টিকিট বা তাৎক্ষণিক রিফান্ড—বলুন কীভাবে সাহায্য করতে পারি?",
   },
-  {
-    code: "as",
-    name: "Assamese",
-    nativeName: "অসমীয়া",
-    voiceLang: "as-IN",
-    honorific: "শ্ৰদ্ধেয় গ্ৰাহক",
-    welcome: "নমস্কাৰ! মই আপোনাৰ অৰ্ডাৰকিং ভিআইপি খাদ্য আৰু ভ্ৰমণ সহায়ক। সুস্বাদু খাদ্য অৰ্ডাৰ, বিমানৰ টিকট বা তাৎক্ষণিক ধন ঘূৰাই পোৱাৰ বাবে মোক সোধক।",
-  },
-  {
-    code: "hi",
-    name: "Hindi",
-    nativeName: "हिन्दी",
-    voiceLang: "hi-IN",
-    honorific: "आदरणीय अतिथि",
-    welcome: "प्रणाम! मैं आपका ऑर्डरकिंग वीआईपी फ़ूड एवं ट्रेवल कंसीयर्ज हूँ। लज़ीज़ दम बिरयानी, यात्रा बुकिंग या रिफ़ंड सहायता के लिए बोलकर या लिखकर पूछिए!",
-  },
+
   { code: "ta", name: "Tamil", nativeName: "தமிழ்", voiceLang: "ta-IN", honorific: "வணக்கம்", welcome: "வணக்கம்! நான் உங்கள் ஆர்டர்கிங் உணவு மற்றும் பயண உதவியாளர்." },
   { code: "te", name: "Telugu", nativeName: "తెలుగు", voiceLang: "te-IN", honorific: "నమస్కారం", welcome: "నమస్కారం! నేను మీ ఆర్డర్‌కింగ్ ఆహార మరియు ప్రయాణ సహాయకుడిని." },
   { code: "mr", name: "Marathi", nativeName: "मराठी", voiceLang: "mr-IN", honorific: "नमस्कार", welcome: "नमस्कार! मी आपला ऑर्डरकिंग फूड आणि ट्रॅव्हल सहाय्यक आहे." },
@@ -79,18 +64,11 @@ export const CONCIERGE_DIALECTS: SupportedDialect[] = [
   { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ", voiceLang: "kn-IN", honorific: "ನಮಸ್ಕಾರ", welcome: "ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ಆರ್ಡರ್‌కింగ్ ఆహార మరియు ప్రయాణ సహాయకుడు." },
   { code: "ml", name: "Malayalam", nativeName: "മലയാളം", voiceLang: "ml-IN", honorific: "നമസ്കാരം", welcome: "നമസ്കാരം! ഞാൻ നിങ്ങളുടെ ഓർഡർകിംഗ് ഫുഡ് ആൻഡ് ട്രാവൽ അസിസ്റ്റന്റാണ്." },
   { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ", voiceLang: "pa-IN", honorific: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ", welcome: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡਾ ਆਰਡਰਕਿੰਗ ਫੂਡ ਅਤੇ ਟਰੈਵਲ ਸਹਾਇਕ ਹਾਂ।" },
-  { code: "or", name: "Odia", nativeName: "ଓଡ଼ିଆ", voiceLang: "or-IN", honorific: "ନମସ୍କାର", welcome: "ନମସ୍କାର! ମୁଁ ଆପଣଙ୍କର ଅର୍ଡରକିଙ୍ଗ ଖାଦ୍ୟ ଏବଂ ଯାତ୍ରା ସହାୟକ।" },
-  { code: "ur", name: "Urdu", nativeName: "اردو", voiceLang: "ur-IN", honorific: "محترم", welcome: "خوش آمدید! میں آپ کا آرڈر کنگ فوڈ اور ٹریول اسسٹنٹ ہوں۔" },
-  { code: "mai", name: "Maithili", nativeName: "मैथिली", voiceLang: "hi-IN", honorific: "प्रणाम", welcome: "प्रणाम! हम अहाँक अर्डरकिंग भोजन आ यात्रा सहायक छी।" },
-  { code: "sat", name: "Santali", nativeName: "ᱥᱟᱱᱛᱟᱲᱤ", voiceLang: "hi-IN", honorific: "ᱡᱚᱦᱟᱨ", welcome: "ᱡᱚᱦᱟᱨ! ᱤᱧ ᱫᱚ ᱟᱢᱟᱜ ᱚᱨᱰᱟᱨᱠᱤᱝ ᱡᱚᱢ ᱟᱨ ᱫᱟᱬᱟᱱ ᱜᱚᱲᱚᱭᱤᱡ ᱠᱟᱱᱟᱹᱧ᱾" },
-  { code: "ks", name: "Kashmiri", nativeName: "کٲشُر", voiceLang: "ur-IN", honorific: "سلام", welcome: "سلام! چھُ بہٕ تۄہُنٛد آرڈر کِنگ خۄراک تہٕ سفر مَدَتھ گار۔" },
-  { code: "ne", name: "Nepali", nativeName: "नेपाली", voiceLang: "ne-NP", honorific: "नमस्ते", welcome: "नमस्ते! म तपाईंको अर्डरकिङ खाना र यात्रा सहायक हुँ।" },
-  { code: "sd", name: "Sindhi", nativeName: "سنڌي", voiceLang: "hi-IN", honorific: "ڀلي ڪري آيا", welcome: "ڀلي ڪري آيا! مان اوهان جو آرڊرڪنگ کاڌو ۽ سفر اسسٽنٽ آهيان." },
-  { code: "kok", name: "Konkani", nativeName: "कोंकणी", voiceLang: "mr-IN", honorific: "नमस्कार", welcome: "नमस्कार! हांव तुमचो ऑर्डरकिंग जेवण आनी भोंवडेचो सहाय्यक." },
-  { code: "doi", name: "Dogri", nativeName: "डोगरी", voiceLang: "hi-IN", honorific: "नमस्ते", welcome: "नमस्ते! मैं थुआह्ड़ा आर्डरकिंग खाना ते यात्रा सहायक आं।" },
-  { code: "mni", name: "Manipuri", nativeName: "মৈতৈলোন্", voiceLang: "bn-IN", honorific: "খুরুমজরি", welcome: "খুরুমজরি! ঐহাক নহাক্কী ওর্দরকিং চানা-থকপা অমসুং খোঙচৎকী তেংবাংবনি।" },
-  { code: "brx", name: "Bodo", nativeName: "बर'", voiceLang: "as-IN", honorific: "खुलुमबाय", welcome: "खুলুমबाय! आं नोंथांनि अर्डरकिं जाग्रा आरो थांनाय-फैनायनि हेफाजाबगिरि।" },
-  { code: "sa", name: "Sanskrit", nativeName: "संस्कृतम्", voiceLang: "hi-IN", honorific: "प्रणामाः", welcome: "प्रणामाः! अहम् भवतः आर्डरकिङ्ग-आहार-यात्रा-सहायकः अस्मि।" },
+
+
+
+
+
 ];
 
 export type ActionPayload = {
@@ -176,17 +154,17 @@ export function CustomerConciergeDrawer({
   ): { reply: string; action?: ActionPayload } {
     const q = queryText.toLowerCase().trim();
 
-    // Sylheti Specific Heuristics
-    if (dialect.code === "syl" || q.includes("sylhet") || q.includes("khaisani") || q.includes("aso")) {
-      if (q.includes("late") || q.includes("deri") || q.includes("der") || q.includes("kani")) {
+    // Bengali Specific Heuristics
+    if (dialect.code === "bn") {
+      if (q.includes("late") || q.includes("deri") || q.includes("der") || q.includes("khabar") || q.includes("kothay")) {
         return {
-          reply: `ভাই/বোন, খানি অইতে দেরি হইলে একদম চিন্তা করবা না! আমাদের অন-টাইম গ্যারান্টির অধীনে ১০ মিনিটের বেশি দেরি হইলে লগে লগে আপনার ওয়ালেটে ₹৫০ ক্রেডিট যাইবোগা। আমি এখনই কিচেন আর রাইডারে কড়া নোটিশ পাঠাইছি!`,
+          reply: `শ্রদ্ধেয় গ্রাহক, খাবার পৌঁছাতে দেরি হলে একদম চিন্তা করবেন না! আমাদের অন-টাইম গ্যারান্টির অধীনে ১০ মিনিটের বেশি দেরি হলে সরাসরি আপনার ওয়ালেটে ₹৫০ ক্রেডিট যুক্ত হবে। আমরা এখনই রান্নাঘর ও রাইডারের কাছে অগ্রাধিকার নোটিশ পাঠিয়েছি!`,
           action: { type: "TRACK_DELIVERY", label: "📦 লাইভ রাইডার ট্র্যাক করুন", url: "/orders" },
         };
       }
-      if (q.includes("refund") || q.includes("teka") || q.includes("nosto") || q.includes("pori gese")) {
+      if (q.includes("refund") || q.includes("taka") || q.includes("nosto") || q.includes("kharap")) {
         return {
-          reply: `অর্ডারকিংয়ের জিরো-প্রশ্ন পলিসি অনুযায়ী আপনার নষ্ট বা মিসিং আইটেমের ১০০% টেকা সরাসরি কিংপে ওয়ালেটে ফেরত দেওয়া হবে অথবা ১৫ মিনিটে নতুন খানি এক্সপ্রেস পাঠানো অইব!`,
+          reply: `অর্ডারকিংয়ের জিরো-প্রশ্ন পলিসি অনুযায়ী আপনার ক্ষতিগ্রস্ত বা মিসিং আইটেমের ১০০% টাকা সরাসরি কিংপে ওয়ালেটে ফেরত দেওয়া হবে অথবা ১৫ মিনিটে নতুন খাবার এক্সপ্রেস পাঠানো হবে!`,
           action: { type: "CLAIM_REFUND", label: "🛡️ ১০০% ফুল রিফান্ড অনুমোদন করুন", url: "/orders" },
         };
       }
@@ -359,7 +337,7 @@ export function CustomerConciergeDrawer({
             : "flex h-full w-full max-w-md flex-col bg-slate-950 text-white shadow-2xl sm:rounded-l-3xl border-l border-amber-400/20"
         }
       >
-        {/* Header with 23 Dialects Selector */}
+        {/* Header with 10 Languages Selector */}
         <div className="flex flex-col gap-2.5 border-b border-amber-400/20 bg-gradient-to-r from-emerald-950 via-slate-950 to-slate-950 px-5 py-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -373,7 +351,7 @@ export function CustomerConciergeDrawer({
                     Sovereign
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400">Natural Voice · 23 Dialects · 0% Fee Protection</p>
+                <p className="text-[11px] text-slate-400">Natural Voice · 10 Languages · 0% Fee Protection</p>
               </div>
             </div>
             {!embedded && (
@@ -388,10 +366,10 @@ export function CustomerConciergeDrawer({
             )}
           </div>
 
-          {/* Dialect Selector Pill Row */}
+          {/* Language Selector Pill Row */}
           <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none text-xs">
-            <span className="shrink-0 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Dialect:</span>
-            {CONCIERGE_DIALECTS.slice(0, 7).map((d) => (
+            <span className="shrink-0 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Language:</span>
+            {CONCIERGE_DIALECTS.map((d) => (
               <button
                 key={d.code}
                 type="button"

@@ -15,8 +15,12 @@ export type IndianLanguageOption = {
 export const ALL_INDIAN_LANGUAGES: IndianLanguageOption[] = [
   { code: "en", name: "English", nativeName: "English", voiceLang: "en-IN", region: "Pan-India", greeting: "Welcome" },
   { code: "hi", name: "Hindi", nativeName: "हिन्दी", voiceLang: "hi-IN", region: "North & Central India", greeting: "आपका स्वागत है" },
-  { code: "bn", name: "Bengali", nativeName: "বাংলা", voiceLang: "bn-IN", region: "West Bengal, Assam & Tripura", greeting: "স্বাগতম" },
-  { code: "as", name: "Assamese", nativeName: "অসমীয়া", voiceLang: "as-IN", region: "Assam & Northeast", greeting: "স্বাগতম" },
+  { code: "bn", name: "Bengali", nativeName: "বাংলা", voiceLang: "bn-IN", region: "West Bengal & Tripura", greeting: "স্বাগতম" },
+  { code: "gu", name: "Gujarati", nativeName: "ગુજરાતી", voiceLang: "gu-IN", region: "Gujarat, Daman & Diu", greeting: "પધારો" },
+  { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ", voiceLang: "kn-IN", region: "Karnataka", greeting: "ಸುಸ್ವಾಗತ" },
+  { code: "ml", name: "Malayalam", nativeName: "മലയാളം", voiceLang: "ml-IN", region: "Kerala & Lakshadweep", greeting: "സ്വാഗതം" },
+  { code: "mr", name: "Marathi", nativeName: "मराठी", voiceLang: "mr-IN", region: "Maharashtra & Goa", greeting: "स्वागत आहे" },
+  { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ", voiceLang: "pa-IN", region: "Punjab & Chandigarh", greeting: "ਜੀ ਆਇਆਂ ਨੂੰ" },
   { code: "ta", name: "Tamil", nativeName: "தமிழ்", voiceLang: "ta-IN", region: "Tamil Nadu & Puducherry", greeting: "நல்வரவு" },
   { code: "te", name: "Telugu", nativeName: "తెలుగు", voiceLang: "te-IN", region: "Andhra Pradesh & Telangana", greeting: "స్వాగతం" }
 ];
@@ -56,7 +60,7 @@ export function LanguageSelectorModal({
             </div>
             <div>
               <h3 className="text-base font-black text-fg tracking-tight">Select Language / ভাষা</h3>
-              <p className="text-xs text-muted">6 Sovereign Indian Languages Supported</p>
+              <p className="text-xs text-muted">10 Benchmark Indian Languages Supported</p>
             </div>
           </div>
           <button

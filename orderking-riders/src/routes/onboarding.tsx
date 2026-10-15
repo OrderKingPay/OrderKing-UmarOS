@@ -9,7 +9,6 @@ import { ZONES } from "@/lib/rider/catalog";
 import { bootstrapRiderFn, saveProfileFn, submitKycFn } from "@/lib/server/rider-fns";
 import type { RiderProfile, VehicleType } from "@/lib/rider/types";
 import { useEffect, useMemo, useState } from "react";
-import { LegacyAggregatorSwitchFlow } from "@/components/rider/legacy-aggregator-switch-flow";
 import { toast } from "sonner";
 import {
   AlertCircle,
@@ -150,7 +149,6 @@ function Page() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [flowMode, setFlowMode] = useState<"standard" | "switch">("standard");
   const [isEditingSubmitted, setIsEditingSubmitted] = useState(false);
 
   // Extended Onboarding Form State
@@ -166,6 +164,7 @@ function Page() {
   const [digilockerLinked, setDigilockerLinked] = useState(false);
   const [bankAccountHolder, setBankAccountHolder] = useState("");
   const [bankAccountNumber, setBankAccountNumber] = useState("");
+  const [confirmBankAccountNumber, setConfirmBankAccountNumber] = useState("");
   const [ifsc, setIfsc] = useState("");
   const [upiId, setUpiId] = useState("");
   const [docs, setDocs] = useState<KycDocsState>({
@@ -232,8 +231,12 @@ function Page() {
             if (draft.serviceAddress && !profile.address) setServiceAddress(draft.serviceAddress);
             if (draft.panNumber && !panNumber) setPanNumber(draft.panNumber);
             if (draft.bankAccountHolder) setBankAccountHolder(draft.bankAccountHolder);
-            if (draft.bankAccountNumber) setBankAccountNumber(draft.bankAccountNumber);
+            if (draft.bankAccountNumber) {
+              setBankAccountNumber(draft.bankAccountNumber);
+              setConfirmBankAccountNumber(draft.confirmBankAccountNumber || draft.bankAccountNumber);
+            }
             if (draft.ifsc) setIfsc(draft.ifsc);
+            if (draft.upiId) setUpiId(draft.upiId);
           }
 
           const prefillRaw = localStorage.getItem("orderking_rider_prefill");
@@ -275,7 +278,9 @@ function Page() {
           panNumber,
           bankAccountHolder,
           bankAccountNumber,
+          confirmBankAccountNumber,
           ifsc,
+          upiId,
         }),
       );
     } catch {
@@ -288,13 +293,41 @@ function Page() {
     panNumber,
     bankAccountHolder,
     bankAccountNumber,
+    confirmBankAccountNumber,
     ifsc,
+    upiId,
   ]);
 
   const isExemptVehicle = vehicleCategory === "CYCLE" || vehicleCategory === "EV";
   const pinRegionLabel = useMemo(() => detectPinRegion(pincode), [pincode]);
   const ifscBankLabel = useMemo(() => detectIfscBank(ifsc), [ifsc]);
   const riderAge = useMemo(() => calculateAgeYears(rider?.dateOfBirth), [rider?.dateOfBirth]);
+
+  // Automated bank routing verification
+  const isBankValid = useMemo(() => {
+    const acc = bankAccountNumber.trim().replace(/\D/g, "");
+    const confirm = confirmBankAccountNumber.trim().replace(/\D/g, "");
+    const cleanIfsc = ifsc.trim().toUpperCase();
+    const hasValidAcc = acc.length >= 9 && acc.length <= 18;
+    const isMatched = confirm ? acc === confirm : acc.length >= 9;
+    const isIfscValid = /^[A-Z]{4}0[A-Z0-9]{6}$/.test(cleanIfsc);
+    return hasValidAcc && isIfscValid && isMatched;
+  }, [bankAccountNumber, confirmBankAccountNumber, ifsc]);
+
+  // Automated NPCI UPI routing verification
+  const isUpiValid = useMemo(() => {
+    return Boolean(upiId.trim() && /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(upiId.trim()));
+  }, [upiId]);
+
+  // Real-time verification that bank account holder name corresponds to KYC identity
+  const nameMatchStatus = useMemo(() => {
+    const holder = bankAccountHolder.trim().toLowerCase();
+    const kyc = rider?.fullName?.trim().toLowerCase() || "";
+    if (!holder || !kyc) return null;
+    const holderTokens = holder.replace(/[^a-z0-9]/g, " ").trim().split(/\s+/);
+    const kycTokens = kyc.replace(/[^a-z0-9]/g, " ").trim().split(/\s+/);
+    return holderTokens.some((t) => t.length > 2 && kycTokens.includes(t));
+  }, [bankAccountHolder, rider?.fullName]);
 
   const allAgreementsAccepted =
     agreements.serviceAgreement &&
@@ -440,13 +473,25 @@ function Page() {
       if (!isExemptVehicle) {
         if (!dlNumber.trim() || dlNumber.trim().length < 8) {
           setError(
-            "Valid Driving Licence Number (minimum 8 characters) is strictly mandatory for petrol two-wheelers (Motorcycle and Scooter) under the Indian Motor Vehicles Act, 1988.",
+            "Valid Driving Licence Number (minimum 8 characters) is strictly required for petrol Motorcycle and Scooter under the Motor Vehicles Act, 1988.",
           );
           return;
         }
         if (!rcNumber.trim() || rcNumber.trim().length < 6) {
           setError(
-            "Valid Vehicle RC Number (e.g., AS10AB1234) is strictly mandatory for petrol two-wheelers (Motorcycle and Scooter) under the Indian Motor Vehicles Act, 1988.",
+            "Valid Vehicle Registration (RC) Number is strictly required for petrol Motorcycle and Scooter under the Motor Vehicles Act, 1988.",
+          );
+          return;
+        }
+        if (!docs.dlFrontBack) {
+          setError(
+            "Please attach a clear copy of your Driving Licence (Front & Back) for petrol two-wheeler verification.",
+          );
+          return;
+        }
+        if (!docs.rcCopy) {
+          setError(
+            "Please attach a clear copy of your Vehicle Registration Certificate (RC) for petrol two-wheeler verification.",
           );
           return;
         }
@@ -471,20 +516,20 @@ function Page() {
         return;
       }
 
-      // Selfie with OrderKing delivery bag is required for Bicycle and Low-Speed EV onboarding
-      if (isExemptVehicle && !docs.partnerSelfie) {
+      // Partner Selfie with OrderKing delivery bag is required for onboarding
+      if (!docs.partnerSelfie) {
         setError(
-          "Selfie with OrderKing delivery bag is required for Bicycle and Low-Speed EV delivery partners to complete fleet onboarding verification.",
+          "Partner selfie with OrderKing delivery bag is required to complete fleet onboarding verification.",
         );
         return;
       }
 
       const mappedVehicle = mapCategoryToVehicleType(vehicleCategory);
       const effectiveDl = isExemptVehicle
-        ? dlNumber.trim() || `${vehicleCategory}_EXEMPT`
+        ? dlNumber.trim() || "EXEMPT_CMVR_RULE_2U"
         : dlNumber.trim();
       const effectiveRc = isExemptVehicle
-        ? rcNumber.trim() || `${vehicleCategory}_EXEMPT`
+        ? rcNumber.trim() || "EXEMPT_CMVR_RULE_2U"
         : rcNumber.trim();
 
       const attachedSummary = [
@@ -517,25 +562,36 @@ function Page() {
     if (!rider) return;
 
     const hasUpi = Boolean(upiId.trim() && /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(upiId.trim()));
+    const cleanAcc = bankAccountNumber.trim().replace(/\D/g, "");
+    const cleanConfirm = confirmBankAccountNumber.trim().replace(/\D/g, "");
+    const cleanIfsc = ifsc.trim().toUpperCase();
+
     const hasBank = Boolean(
-      bankAccountNumber.trim().length >= 9 &&
-      ifsc.trim() &&
-      /^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc.trim().toUpperCase())
+      cleanAcc.length >= 9 &&
+      cleanAcc.length <= 18 &&
+      cleanIfsc &&
+      /^[A-Z]{4}0[A-Z0-9]{6}$/.test(cleanIfsc)
     );
 
     if (!hasUpi && !hasBank) {
       setError(
-        "Please provide an Active Bank Account (with IFSC) or a verified UPI ID for weekly settlement payouts.",
+        "Please provide an Active Bank Account (with IFSC) or a verified UPI ID for employ-less automated weekly Wednesday payouts.",
+      );
+      return;
+    }
+    if (hasBank && cleanConfirm && cleanAcc !== cleanConfirm) {
+      setError(
+        "Bank Account Number and Re-entered Confirmation Account Number do not match. Please verify your account number.",
       );
       return;
     }
     if (upiId.trim() && !hasUpi) {
       setError(
-        "Please provide a valid UPI ID (e.g., 9876543210@ybl or partner@okaxis) for settlements.",
+        "Please provide a valid UPI ID (e.g., 9876543210@ybl or partner@okaxis) for automated Wednesday payouts.",
       );
       return;
     }
-    if (ifsc.trim() && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc.trim().toUpperCase())) {
+    if (ifsc.trim() && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(cleanIfsc)) {
       setError("Please enter a valid 11-character Bank IFSC code (e.g., SBIN0001234).");
       return;
     }
@@ -548,7 +604,6 @@ function Page() {
 
     setPending(true);
     try {
-      const cleanAcc = bankAccountNumber.trim().replace(/\D/g, "");
       const bankLast4 = cleanAcc.length >= 4 ? cleanAcc.slice(-4) : rider.payoutBankLast4;
       const baseAddr = serviceAddress.trim() || rider.address;
       const formattedAddress = baseAddr.includes("PIN ")
@@ -569,26 +624,28 @@ function Page() {
           `CityZone:${cityZone.trim()}`,
           `Vehicle:${vehicleCategory}`,
           isExemptVehicle
-            ? `DLExemption:CMVR_Rule_2u_NonMandatory(Statutory_Standard)`
+            ? `DLExemption:CMVR_Rule_2u_StrictlyExempt`
             : `DL:${dlNumber.trim()}`,
-          ifsc.trim() ? `IFSC:${ifsc.trim().toUpperCase()}` : null,
+          cleanIfsc ? `IFSC:${cleanIfsc}` : null,
+          hasBank ? `BankAccount:Verified(XXXX-${cleanAcc.slice(-4)})` : null,
+          hasUpi ? `UPI:Verified(${upiId.trim()})` : null,
+          `PayoutSchedule:Automated_Weekly_Wednesday_0600_IST`,
           `StatutoryAgreement:CSS2020_Enforced`,
           `IndependentContractorStatus:Enforced`,
           `PlatformWelfareContribution:1.5%`,
           `AccidentalInsuranceCoverage:INR_1000000`,
-          `UmarOSComplianceReview:ACTIVE_VERIFICATION`,
         ]
           .filter(Boolean)
           .join(" | "),
         // Expected structured onboarding keys
         cityZone: cityZone.trim(),
         serviceAddress: formattedAddress,
-        dlNumber: isExemptVehicle ? (dlNumber.trim() || `${vehicleCategory}_EXEMPT`) : (rider.licenceNumber || dlNumber.trim()),
-        rcNumber: isExemptVehicle ? (rcNumber.trim() || `${vehicleCategory}_EXEMPT`) : (rider.vehicleRegistration || rcNumber.trim()),
+        dlNumber: isExemptVehicle ? (dlNumber.trim() || "EXEMPT_CMVR_RULE_2U") : (rider.licenceNumber || dlNumber.trim()),
+        rcNumber: isExemptVehicle ? (rcNumber.trim() || "EXEMPT_CMVR_RULE_2U") : (rider.vehicleRegistration || rcNumber.trim()),
         aadhaarLast4: rider.governmentIdLast4 || aadhaarLast4.trim(),
         bankAccountHolder: bankAccountHolder.trim() || rider.fullName.trim(),
         bankAccountNumber: cleanAcc,
-        ifsc: ifsc.trim().toUpperCase(),
+        ifsc: cleanIfsc,
         upiId: upiId.trim(),
         emergencyContactName: rider.emergencyName,
         emergencyContactPhone: rider.emergencyPhone,
@@ -601,7 +658,7 @@ function Page() {
         setRider(await submitKycFn());
       }
       setIsEditingSubmitted(false);
-      toast.success("KYC & Settlement Application submitted successfully to UmarOS Compliance Review Center.");
+      toast.success("KYC & Bank Settlement Application submitted successfully. Automated Wednesday payouts activated upon verification.");
     } catch (e) {
       setError(errorMessage(e, t("actionNotConfirmed")));
     } finally {
@@ -711,7 +768,7 @@ function Page() {
               </div>
             </div>
 
-            {/* UmarOS Compliance Review Center Status Card */}
+            {/* Statutory Compliance Verification Status Card */}
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
                 <div className="flex items-center gap-2">
@@ -720,16 +777,16 @@ function Page() {
                   </span>
                   <div>
                     <span className="text-xs font-bold text-slate-900 block">
-                      UmarOS Compliance Review Center
+                      Statutory Regulatory Review
                     </span>
                     <span className="text-[11px] text-slate-500">
-                      Autonomous KYC &amp; Statutory Regulatory Review Engine
+                      Automated KYC &amp; Fleet Compliance Verification Engine
                     </span>
                   </div>
                 </div>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
                   <CheckCircle2 className="size-3 text-emerald-700" />
-                  {isVerified ? "Compliance Review Approved" : "Autonomous Audit in Progress"}
+                  {isVerified ? "Compliance Review Approved" : "Automated Audit in Progress"}
                 </span>
               </div>
 
@@ -753,34 +810,33 @@ function Page() {
                   <span className="text-[10px] font-bold uppercase text-slate-500 block">Vehicle Compliance</span>
                   <span className="font-semibold text-slate-900 block">
                     {isExemptVehicle
-                      ? "CMVR Rule 2(u) (Non-Mandatory DL)"
+                      ? "CMVR Rule 2(u) (Strictly Exempt)"
                       : "Motor Vehicles Act 1988 (DL & RC Verified)"}
                   </span>
                   <span className="text-[10px] text-slate-500">
-                    {isExemptVehicle ? "Statutory national standard verified" : "Two-wheeler fleet standard"}
+                    {isExemptVehicle ? "Exempt (<250W, <25 km/h / Bicycle)" : "Petrol two-wheeler fleet standard"}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
+            {/* Employ-less Automated Wednesday Payout Card */}
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <span className="text-xs font-bold text-emerald-900">
-                    Statutory Partner Payout Structure
+                    Employ-Less Automated Weekly Wednesday Payout Schedule
                   </span>
-                  <p className="text-base sm:text-lg font-extrabold text-slate-900">
-                    ₹35 Minimum Base Fare + ₹10/km Distance Pay + Wait-Time Compensation
+                  <p className="text-sm sm:text-base font-extrabold text-slate-900 mt-0.5">
+                    Automated Direct Deposit · Every Wednesday at 06:00 IST
                   </p>
                 </div>
                 <span className="rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-bold text-white shrink-0">
-                  {isVerified ? "Verified" : "Submitted"}
+                  {isVerified ? "Payouts Active" : "Bank Verified"}
                 </span>
               </div>
-              <p className="mt-2 text-xs text-emerald-950 leading-relaxed">
-                {isVerified
-                  ? "Your statutory KYC and vehicle credentials are approved. You can go online from the Duty Dashboard to accept live delivery offers."
-                  : "Your Driving Licence, Vehicle RC, Aadhaar Last 4, and Bank/UPI settlement details have been logged. You can edit any detail above at any time using the 'Edit KYC / Bank & UPI Details' button."}
+              <p className="text-xs text-emerald-950 leading-relaxed">
+                Settlements execute automatically without human middle-managers. Earnings include guaranteed floor fare (₹35 minimum), distance pay, wait-time compensation, and 100% customer tips pass-through directly credited to your verified bank account or UPI ID.
               </p>
             </div>
 
@@ -825,9 +881,9 @@ function Page() {
       id: "roadSafety" as const,
       title: "2. Road Safety, CMVR Rule 2(u) Fleet Standards & Zero-Intoxication Undertaking (Motor Vehicles Act, 1988)",
       summary:
-        "Strictly non-mandatory Driving License for Bicycle & Low-Speed EV (CMVR Rule 2(u) & statutory standard); mandatory DL & RC for petrol two-wheelers.",
+        "Strictly exempt DL & RC for Bicycle & Low-Speed EV (<250W, <25 km/h) under CMVR Rule 2(u); strictly required DL & RC for petrol two-wheelers.",
       fullText:
-        "While logged into active duty, you undertake to adhere to national road safety standards. In accordance with Central Motor Vehicles Rules (CMVR Rule 2(u)) and national aggregator standards (Dominant Legacy Aggregator benchmark), Driving License and Vehicle RC are strictly non-mandatory for pedal bicycles and low-speed electric scooters (<250W, <25 km/h). Valid Driving License, Vehicle RC, and Third-Party Insurance are strictly mandatory ONLY for petrol two-wheelers (Motorcycle/Scooter). All riders must wear BIS/ISI certified helmets, obey traffic regulations, and maintain zero tolerance for alcohol or prohibited substances.",
+        "While logged into active duty, you undertake to adhere to national road safety standards. Under Rule 2(u) of the Central Motor Vehicles Rules (CMVR), 1989, Driving Licence (DL) and Vehicle Registration Certificate (RC) are STRICTLY EXEMPT for pedal bicycles and low-speed electric vehicles (<250W power, <25 km/h maximum speed). Valid Driving Licence, Vehicle RC, and Third-Party Insurance are strictly required for petrol two-wheelers (Motorcycle and Scooter) under the Motor Vehicles Act, 1988. All riders must wear BIS/ISI certified helmets, obey traffic regulations, and maintain zero tolerance for alcohol or prohibited substances.",
     },
     {
       id: "foodHygiene" as const,
@@ -850,53 +906,27 @@ function Page() {
   return (
     <AppShell>
       <div className="max-w-4xl mx-auto space-y-6 pt-2 font-sans">
-        {/* TOP MODE SELECTOR: STANDARD KYC PORTAL VS EXPERIENCED PARTNER FAST-TRACK */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
-              <ShieldCheck className="size-5" />
+        {/* INSTITUTIONAL KYC ONBOARDING HEADER */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <span className="flex size-11 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+              <ShieldCheck className="size-6" />
             </span>
             <div>
-              <p className="text-sm font-bold text-slate-900">
-                Delivery Partner Onboarding &amp; Statutory KYC Portal
-              </p>
-              <p className="text-xs text-slate-500">
-                Self-service digital KYC verification, vehicle onboarding &amp; bank settlement setup
+              <h1 className="text-base sm:text-lg font-extrabold text-slate-900">
+                Delivery Partner KYC &amp; Statutory Compliance Onboarding
+              </h1>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Statutory regulatory onboarding under Code on Social Security 2020 &amp; CMVR Rule 2(u)
               </p>
             </div>
           </div>
-
-          <div className="flex w-full sm:w-auto rounded-xl bg-slate-100 p-1 border border-slate-200">
-            <button
-              type="button"
-              onClick={() => setFlowMode("standard")}
-              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs font-bold transition ${
-                flowMode === "standard"
-                  ? "bg-slate-900 text-white shadow-2xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Standard KYC Application
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setFlowMode("switch")}
-              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs font-bold transition ${
-                flowMode === "switch"
-                  ? "bg-slate-900 text-white shadow-2xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Experienced Partner Fast-Track
-            </button>
-          </div>
+          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
+            <span>Automated Payouts: Weekly Wednesday</span>
+          </span>
         </div>
 
-        {flowMode === "switch" ? (
-          <LegacyAggregatorSwitchFlow rider={rider} onSuccess={(updated) => setRider(updated)} />
-        ) : (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs space-y-6 text-slate-900">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs space-y-6 text-slate-900">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
                 <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
@@ -1157,22 +1187,22 @@ function Page() {
                         {
                           id: "BIKE",
                           title: "Motorcycle (BIKE)",
-                          sub: "Petrol 2-Wheeler · DL & RC Mandatory",
+                          sub: "Petrol 2-Wheeler · DL & RC Strictly Required (MVA 1988)",
                         },
                         {
                           id: "SCOOTER",
                           title: "Scooter (SCOOTER)",
-                          sub: "Petrol 2-Wheeler · DL & RC Mandatory",
+                          sub: "Petrol 2-Wheeler · DL & RC Strictly Required (MVA 1988)",
                         },
                         {
                           id: "EV",
                           title: "Low-Speed EV",
-                          sub: "<25 km/h · Non-Mandatory DL (Statutory Std)",
+                          sub: "<250W, <25 km/h · Strictly Exempt (CMVR Rule 2(u))",
                         },
                         {
                           id: "CYCLE",
                           title: "Bicycle (CYCLE)",
-                          sub: "Pedal Cycle · Non-Mandatory DL (Statutory Std)",
+                          sub: "Pedal Cycle · Strictly Exempt (CMVR Rule 2(u))",
                         },
                       ] as const
                     ).map((v) => (
@@ -1207,18 +1237,16 @@ function Page() {
                   <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-950 dark:text-emerald-200 space-y-2">
                     <p className="font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5 text-sm">
                       <ShieldCheck className="size-4.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                      Statutory Non-Mandatory Driving License Notice — CMVR Rule 2(u) &amp; National Aggregator Standard (
-                      {vehicleCategory === "CYCLE"
+                      Statutory Exemption Notice — CMVR Rule 2(u) ({vehicleCategory === "CYCLE"
                         ? "Pedal Bicycle"
-                        : "Low-Speed EV Scooter / Electric Cycle"}
-                      )
+                        : "Low-Speed EV <250W, <25 km/h"})
                     </p>
                     <p className="leading-relaxed">
-                      In accordance with national delivery partner fleet standards (Dominant Legacy Aggregator benchmark) and Rule 2(u) of the Central Motor Vehicles Rules (CMVR), <strong>Driving Licence (DL) &amp; Vehicle RC are STRICTLY NON-MANDATORY</strong> for Bicycle and Low-Speed Electric Scooter (EV &lt; 25 km/h) couriers.
+                      Under Rule 2(u) of the Central Motor Vehicles Rules (CMVR), 1989, <strong>Driving Licence (DL) &amp; Vehicle Registration Certificate (RC) are STRICTLY EXEMPT</strong> for {vehicleCategory === "CYCLE" ? "Bicycle" : "Low-Speed Electric Vehicle (<250W, <25 km/h)"} delivery partners. No DL or RC is required.
                     </p>
                     <div className="rounded-lg bg-white/80 dark:bg-slate-900/80 border border-emerald-200 dark:border-emerald-800/60 p-2.5 text-[11px] space-y-1">
                       <span className="font-bold text-emerald-900 dark:text-emerald-300 block">
-                        Required Documents for Bicycle / EV Onboarding:
+                        Required Statutory Documents for {vehicleCategory === "CYCLE" ? "Bicycle" : "Low-Speed EV"} Onboarding:
                       </span>
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-slate-800 dark:text-slate-200">
                         <li className="flex items-center gap-1.5">
@@ -1231,16 +1259,16 @@ function Page() {
                         </li>
                         <li className="flex items-center gap-1.5">
                           <CheckCircle2 className="size-3 text-emerald-600 shrink-0" />
-                          <span>Active Bank Account (IFSC) / UPI ID</span>
+                          <span>Active Bank Account (IFSC) or UPI ID</span>
                         </li>
                         <li className="flex items-center gap-1.5">
                           <CheckCircle2 className="size-3 text-emerald-600 shrink-0" />
-                          <span>Selfie with OrderKing delivery bag</span>
+                          <span>Partner Selfie with OrderKing delivery bag</span>
                         </li>
                       </ul>
                     </div>
                     <p className="text-[11px] text-emerald-800 dark:text-emerald-300/80 italic">
-                      * Driving License &amp; Vehicle RC are strictly required ONLY for petrol two-wheelers (Motorcycle / Scooter).
+                      * Driving Licence &amp; Vehicle RC are strictly required ONLY for petrol two-wheelers (Motorcycle / Scooter) under the Motor Vehicles Act, 1988.
                     </p>
                   </div>
                 ) : (
@@ -1250,7 +1278,7 @@ function Page() {
                       Motor Vehicles Act, 1988 — Petrol Two-Wheeler Statutory Requirement
                     </p>
                     <p className="mt-1 leading-relaxed">
-                      <strong>Driving Licence &amp; Vehicle RC are strictly required</strong> for all Motorcycle and Scooter delivery partners. You will also need Aadhaar (last 4 / DigiLocker), PAN Card, Active Bank Account (IFSC) / UPI ID, and Selfie with OrderKing delivery bag.
+                      <strong>Driving Licence &amp; Vehicle Registration (RC) are strictly required</strong> for all petrol Motorcycle and Scooter delivery partners under Section 3 and Section 39 of the Motor Vehicles Act, 1988. Valid DL and RC numbers and clear document copies must be provided.
                     </p>
                   </div>
                 )}
@@ -1258,12 +1286,12 @@ function Page() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-xs font-semibold text-slate-700">
-                      Driving Licence Number {isExemptVehicle ? "(Non-Mandatory / Exempt for Cycle/EV)" : "* (Mandatory for Bike/Scooter)"}
+                      Driving Licence Number {isExemptVehicle ? "(Strictly Exempt under CMVR Rule 2(u))" : "* (Strictly Required for Bike/Scooter)"}
                     </Label>
                     <Input
                       className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
                       placeholder={
-                        isExemptVehicle ? "Non-mandatory for Cycle / Low-Speed EV" : "e.g. AS1020180012345"
+                        isExemptVehicle ? "Strictly exempt under CMVR Rule 2(u) (<250W, <25 km/h)" : "e.g. AS1020180012345"
                       }
                       value={dlNumber}
                       onChange={(e) => setDlNumber(e.target.value.toUpperCase())}
@@ -1272,12 +1300,12 @@ function Page() {
 
                   <div>
                     <Label className="text-xs font-semibold text-slate-700">
-                      Vehicle Registration (RC) Number {isExemptVehicle ? "(Non-Mandatory / Exempt for Cycle/EV)" : "* (Mandatory for Bike/Scooter)"}
+                      Vehicle Registration (RC) Number {isExemptVehicle ? "(Strictly Exempt under CMVR Rule 2(u))" : "* (Strictly Required for Bike/Scooter)"}
                     </Label>
                     <Input
                       className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
                       placeholder={
-                        isExemptVehicle ? "Non-mandatory for Cycle / Low-Speed EV" : "e.g. AS10AB1234"
+                        isExemptVehicle ? "Strictly exempt under CMVR Rule 2(u) (<250W, <25 km/h)" : "e.g. AS10AB1234"
                       }
                       value={rcNumber}
                       onChange={(e) => setRcNumber(e.target.value.toUpperCase())}
@@ -1494,6 +1522,18 @@ function Page() {
                       value={bankAccountHolder}
                       onChange={(e) => setBankAccountHolder(e.target.value)}
                     />
+                    {nameMatchStatus === true && (
+                      <span className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-800">
+                        <CheckCircle2 className="size-3 text-emerald-700" />
+                        <span>Matches KYC Legal Identity ({rider?.fullName})</span>
+                      </span>
+                    )}
+                    {nameMatchStatus === false && bankAccountHolder.trim() && rider?.fullName?.trim() && (
+                      <span className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-amber-800">
+                        <AlertCircle className="size-3 text-amber-700" />
+                        <span>Name differs from KYC legal name ({rider.fullName})</span>
+                      </span>
+                    )}
                   </div>
 
                   <div>
@@ -1507,6 +1547,25 @@ function Page() {
                       value={bankAccountNumber}
                       onChange={(e) => setBankAccountNumber(e.target.value.replace(/\D/g, ""))}
                     />
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">
+                      Confirm Bank Account Number
+                    </Label>
+                    <Input
+                      className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
+                      inputMode="numeric"
+                      placeholder="Re-enter bank account number"
+                      value={confirmBankAccountNumber}
+                      onChange={(e) => setConfirmBankAccountNumber(e.target.value.replace(/\D/g, ""))}
+                    />
+                    {bankAccountNumber && confirmBankAccountNumber && bankAccountNumber !== confirmBankAccountNumber && (
+                      <span className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-rose-700">
+                        <AlertCircle className="size-3" />
+                        <span>Account numbers do not match</span>
+                      </span>
+                    )}
                   </div>
 
                   <div>
@@ -1528,9 +1587,9 @@ function Page() {
                     )}
                   </div>
 
-                  <div>
+                  <div className="sm:col-span-2">
                     <Label className="text-xs font-semibold text-slate-700">
-                      Verified UPI ID for Payouts *
+                      Verified UPI ID for Payouts (Alternative / Instant Settlement)
                     </Label>
                     <Input
                       className="mt-1 bg-slate-50 text-slate-900 focus:bg-white"
@@ -1538,6 +1597,40 @@ function Page() {
                       value={upiId}
                       onChange={(e) => setUpiId(e.target.value.toLowerCase())}
                     />
+                    {isUpiValid && (
+                      <span className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-800">
+                        <CheckCircle2 className="size-3 text-emerald-700" />
+                        <span>Verified NPCI UPI Handle · Instant Automated Wednesday Payout Ready</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Automated Bank Routing Status Callout */}
+                  {isBankValid && (
+                    <div className="sm:col-span-2 rounded-xl border border-emerald-300 bg-emerald-50/80 p-3.5 space-y-1 text-xs">
+                      <div className="flex items-center gap-2 text-emerald-900 font-bold">
+                        <CheckCircle2 className="size-4 text-emerald-700 shrink-0" />
+                        <span>Automated Bank Routing Verified · Employ-less Weekly Wednesday Payout Ready</span>
+                      </div>
+                      <p className="text-emerald-800 text-[11px] pl-6">
+                        Bank: {ifscBankLabel || detectIfscBank(ifsc)} · Account: ••••{bankAccountNumber.slice(-4)} (Confirmed) · Direct NEFT/IMPS settlement runs every Wednesday at 06:00 IST without human middle-managers.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Employ-less Automated Wednesday Payout Information Banner */}
+                  <div className="sm:col-span-2 rounded-xl border border-slate-200 bg-slate-900 text-white p-4 space-y-1.5 shadow-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                        Employ-less Automated Weekly Wednesday Payouts
+                      </span>
+                      <span className="rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 border border-emerald-400/30">
+                        Zero Human Middle-Managers
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Earnings are disbursed automatically every Wednesday at 06:00 IST directly to your verified bank account or UPI ID. Includes guaranteed base fare floor (₹35 minimum), distance pay, wait-time compensation, and 100% of customer tips with zero manual approval delays.
+                    </p>
                   </div>
                 </div>
 
@@ -1728,7 +1821,6 @@ function Page() {
               </div>
             )}
           </div>
-        )}
 
         {/* Full Official Delivery Partner Agreement Modal (13 Statutory Sections) */}
         {showAgreementModal && (

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
 import { DEFAULT_BRANDING } from "@/lib/rider/config";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { formatPaise } from "@/lib/rider/money";
+import { formatPaise, computeNextWednesdaySettlementIst } from "@/lib/rider/money";
 import {
   bootstrapRiderFn,
   createTicketFn,
@@ -41,27 +41,6 @@ type Preset = "today" | "yesterday" | "week" | "month";
 
 const ACK_STORAGE_KEY = "orderking_acknowledged_settlements_v1";
 
-function computeNextWednesdaySixAmIst(): { formattedDate: string; hoursRemaining: number } {
-  const now = new Date();
-  const next = new Date(now);
-  const currentDay = now.getDay(); // 0 = Sun, 3 = Wed
-  let daysUntilWed = (3 - currentDay + 7) % 7;
-  if (daysUntilWed === 0 && now.getHours() >= 6) {
-    daysUntilWed = 7;
-  }
-  next.setDate(now.getDate() + daysUntilWed);
-  next.setHours(6, 0, 0, 0);
-  const diffMs = Math.max(0, next.getTime() - now.getTime());
-  const hoursRemaining = Math.max(1, Math.round(diffMs / 3_600_000));
-  const formattedDate = next.toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-  return { formattedDate, hoursRemaining };
-}
-
 function SettlementsDesk() {
   const { t } = useI18n();
   const [preset, setPreset] = useState<Preset>("week");
@@ -85,7 +64,7 @@ function SettlementsDesk() {
   const [disputeNote, setDisputeNote] = useState("");
   const [submittingDispute, setSubmittingDispute] = useState(false);
 
-  const nextPayoutWindow = useMemo(() => computeNextWednesdaySixAmIst(), []);
+  const nextPayoutWindow = useMemo(() => computeNextWednesdaySettlementIst(), []);
 
   async function loadAll(selectedPreset: Preset) {
     setLoading(true);
@@ -197,7 +176,7 @@ function SettlementsDesk() {
         s.periodEnd,
         s.status,
         (s.amountPaise / 100).toFixed(2),
-        s.confirmedPaidAt || "Scheduled Wednesday 06:00 AM IST Batch",
+        s.confirmedPaidAt || "Scheduled Wednesday 14:00 IST Batch",
       ]);
     }
 
@@ -308,14 +287,14 @@ function SettlementsDesk() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="font-bold text-emerald-950 flex items-center gap-1.5 text-sm">
                 <CalendarClock className="size-4 text-emerald-700" />
-                Next Scheduled NEFT / UPI Settlement: {nextPayoutWindow.formattedDate} at 06:00 AM IST
+                Next Scheduled NEFT / IMPS Settlement: {nextPayoutWindow.formattedDate} at 14:00 IST (2:00 PM IST)
               </span>
               <span className="rounded-md bg-emerald-800 px-2.5 py-0.5 text-[11px] font-bold text-white">
                 In ~{nextPayoutWindow.hoursRemaining} hours
               </span>
             </div>
             <p className="leading-relaxed text-slate-700">
-              <strong>How your payout works:</strong> Every completed order’s base fare (₹35 minimum floor), extra distance pay, restaurant wait-time compensation, milestone incentives, and 100% of customer tips are credited in real time to your UMAR OS Partner Ledger. Every Wednesday at 06:00 AM IST, the autonomous treasury sweeps your net payable balance directly to your verified UPI ID / bank account with zero platform commission deductions.
+              <strong>Weekly Wednesday Settlement Architecture:</strong> Orders completed from Monday 00:00:00 to Sunday 23:59:59 are settled automatically every Wednesday afternoon at 14:00 IST via automated NEFT/IMPS. 100% of base fare, extra distance pay, kitchen wait pay (&gt;5 mins), milestone bonuses, and customer tips are swept directly to your verified bank account or UPI mandate with zero platform deductions.
             </p>
           </div>
         </div>
@@ -547,7 +526,7 @@ function SettlementsDesk() {
                     <p className="text-xs text-muted-foreground">
                       Settlement Period: <strong>{s.periodStart}</strong> to{" "}
                       <strong>{s.periodEnd}</strong>
-                      {s.confirmedPaidAt ? ` · Paid at ${s.confirmedPaidAt.slice(0, 16)}` : " · Scheduled for Wednesday 06:00 AM IST Batch"}
+                      {s.confirmedPaidAt ? ` · Paid at ${s.confirmedPaidAt.slice(0, 16)}` : " · Scheduled for Wednesday 14:00 IST Batch"}
                     </p>
                   </div>
 

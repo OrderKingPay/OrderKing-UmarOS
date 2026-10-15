@@ -51,17 +51,7 @@ export const FOOD_SUPPORTED_LANGUAGES: IndianLanguage[] = [
     voiceIntro:
       "নমস্কার মহারাজ! আমি আপনার অর্ডারকিং ফুড অ্যাসিস্ট্যান্ট। আজ কী সুস্বাদু খাবার খাবেন?",
   },
-  {
-    code: "as",
-    name: "Assamese",
-    nativeName: "অসমীয়া",
-    voiceLang: "as-IN",
-    honorific: "ডাঙৰীয়া",
-    welcomeMessage:
-      "নমস্কাৰ ডাঙৰীয়া! মই আপোনাৰ অৰ্ডাৰকিং খাদ্য সহায়িকা। আজি আপুনি কি খাব বিচাৰে? সুস্বাদু বিৰিয়ানী, পৰম্পৰাগত খাদ্য বা আজিৰ অফাৰ—কওক মই সহায় কৰিম।",
-    voiceIntro:
-      "নমস্কাৰ ডাঙৰীয়া! মই আপোনাৰ অৰ্ডাৰকিং সহায়িকা। কওক আজি কি সুস্বাদু খাদ্য অৰ্ডাৰ কৰিব?",
-  },
+
   {
     code: "ta",
     name: "Tamil",
@@ -139,17 +129,7 @@ export const FOOD_SUPPORTED_LANGUAGES: IndianLanguage[] = [
     voiceIntro:
       "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਜੀ! ਮੈਂ ਤੁਹਾਡੀ ਆਰਡਰਕਿੰਗ ਫੂਡ ਸਹਾਇਕ ਹਾਂ। ਦੱਸੋ ਅੱਜ ਕੀ ਖਾਣ ਦਾ ਮਨ ਹੈ?",
   },
-  {
-    code: "or",
-    name: "Odia",
-    nativeName: "ଓଡ଼ିଆ",
-    voiceLang: "or-IN",
-    honorific: "ନମସ୍କାର",
-    welcomeMessage:
-      "ନମସ୍କାର! ମୁଁ ଆପଣଙ୍କର ଅର୍ଡରକିଙ୍ଗ ଖାଦ୍ୟ ସହାୟିକା। ସୁସ୍ୱାଦୁ ବିରିୟାନୀ, ସ୍ପେଶାଲ ଖାଦ୍ୟ କିମ୍ବା ଆଜିର ଅଫର ବିଷୟରେ ମୋତେ ପଚାରନ୍ତୁ!",
-    voiceIntro:
-      "ନମସ୍କାର! ମୁଁ ଆପଣଙ୍କର ଅର୍ଡରକିଙ୍ଗ ସହାୟିକା। କୁହନ୍ତୁ ଆଜି କଣ ଅର୍ଡର କରିବେ?",
-  },
+
 ];
 
 export type VoicePersona = {

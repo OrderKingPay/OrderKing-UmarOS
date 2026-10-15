@@ -87,7 +87,7 @@ function formatFileSize(bytes: number): string {
 }
 
 export function LegacyAggregatorSwitchFlow({ rider, onSuccess }: LegacyAggregatorSwitchFlowProps) {
-  const [platform, setPlatform] = useState<"DOMINANT_AGGREGATOR" | "SWIGGY" | "OTHER_FLEET">("DOMINANT_AGGREGATOR");
+  const [platform, setPlatform] = useState<"DOMINANT_AGGREGATOR" | "QUICK_COMMERCE" | "OTHER_FLEET">("DOMINANT_AGGREGATOR");
   const [partnerId, setPartnerId] = useState(
     rider?.insuranceRef?.includes(":") ? rider.insuranceRef.split(":")[1] || "" : "",
   );
@@ -503,9 +503,9 @@ export function LegacyAggregatorSwitchFlow({ rider, onSuccess }: LegacyAggregato
 
               <button
                 type="button"
-                onClick={() => setPlatform("SWIGGY")}
+                onClick={() => setPlatform("QUICK_COMMERCE")}
                 className={`flex items-center justify-center gap-2 rounded-xl p-3 text-xs font-bold border transition ${
-                  platform === "SWIGGY"
+                  platform === "QUICK_COMMERCE"
                     ? "border-slate-900 bg-slate-900 text-white"
                     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}

@@ -18,10 +18,10 @@ describe("OrderKing Gamified Gig Engine", () => {
       assert.equal(tier.surgeMultiplier, 1.0);
     });
 
-    it("advances through SILVER, GOLD, and PLATINUM with verified trips", () => {
+    it("advances through SILVER, GOLD, and DIAMOND with verified trips", () => {
       assert.equal(getRiderTier(55).tier, "SILVER");
       assert.equal(getRiderTier(210).tier, "GOLD");
-      assert.equal(getRiderTier(505).tier, "PLATINUM");
+      assert.equal(getRiderTier(505).tier, "DIAMOND");
       assert.equal(getRiderTier(505).priorityDispatch, true);
     });
   });

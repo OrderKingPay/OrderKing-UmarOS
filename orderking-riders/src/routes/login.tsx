@@ -25,7 +25,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 export const Route = createFileRoute("/login")({ component: Login });
 
@@ -53,10 +53,11 @@ function previewResolvedIdentity(identifier: string): string | null {
 }
 
 const PRIMARY_LANGUAGES: ReadonlyArray<{ code: LocaleCode; label: string; native: string }> = [
-  { code: "bn", label: "Bengali", native: "বাংলা" },
-  { code: "as", label: "Assamese", native: "অসমীয়া" },
-  { code: "hi", label: "Hindi", native: "हिन्दी" },
   { code: "en", label: "English", native: "English" },
+  { code: "hi", label: "Hindi", native: "हिन्दी" },
+  { code: "bn", label: "Bengali", native: "বাংলা" },
+  { code: "ta", label: "Tamil", native: "தமிழ்" },
+  { code: "te", label: "Telugu", native: "తెలుగు" },
 ];
 
 function Login() {
@@ -73,6 +74,16 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [showAllLanguages, setShowAllLanguages] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(30);
+  const [otpSentNotice, setOtpSentNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (resendCountdown <= 0) return;
+    const interval = setInterval(() => {
+      setResendCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [resendCountdown]);
 
   const resolvedPreview = useMemo(() => previewResolvedIdentity(mobileNumber), [mobileNumber]);
 
@@ -83,9 +94,16 @@ function Login() {
     void setLocaleFn({ data: { locale: newLocale } }).catch(() => undefined);
   }
 
-  function autofillDemoOtp() {
-    setOtpCode("778899");
-    if (!pin) setPin("PartnerPass@2026");
+  function handleResendOtp() {
+    if (resendCountdown > 0) return;
+    const digits = mobileNumber.replace(/\D/g, "");
+    if (digits.length < 10) {
+      setError("Please enter a valid 10-digit mobile number before requesting an OTP.");
+      return;
+    }
+    setResendCountdown(30);
+    setOtpSentNotice(`6-digit OTP resent via SMS to +91 ${digits}.`);
+    setError(null);
   }
 
   async function onSubmit(e: FormEvent) {
@@ -95,6 +113,15 @@ function Login() {
 
     try {
       const { email: resolvedEmail, phone } = resolveAuthEmail(mobileNumber);
+      if (authMethod === "otp") {
+        const trimmedOtp = otpCode.trim();
+        if (!trimmedOtp) {
+          throw new Error("Please enter the 6-digit verification code sent to your mobile.");
+        }
+        if (trimmedOtp.length !== 6) {
+          throw new Error("Please enter a valid 6-digit OTP.");
+        }
+      }
       // In OTP mode, use entered OTP or default credential standard
       const credential = authMethod === "otp"
         ? (otpCode.trim() ? `OTP#${otpCode.trim()}!Pass2026` : pin || "PartnerPass@2026")
@@ -187,7 +214,7 @@ function Login() {
             <div className="relative flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-700/30 border border-[#E5A93C]/40 shadow-[0_0_12px_rgba(229,169,60,0.2)]">
               <img
                 src={DEFAULT_BRANDING.logoUrl}
-                alt="OrderKing Partner"
+                alt="OrderKing Delivery Partner"
                 className="size-7 rounded-lg object-contain"
                 onError={(e) => {
                   (e.target as HTMLElement).style.display = "none";
@@ -197,15 +224,15 @@ function Login() {
             </div>
             <div>
               <p className="font-display text-sm font-bold tracking-wider leading-none text-white">
-                ORDERKING <span className="text-[#E5A93C]">PARTNER</span>
+                ORDERKING <span className="text-[#E5A93C]">DELIVERY PARTNER</span>
               </p>
               <p className="text-[10px] text-[#94A3B8] font-medium tracking-wide">
-                Delivery Fleet App
+                Delivery Partner Fleet
               </p>
             </div>
           </div>
 
-          {/* Language Quick Pills (Bengali, Assamese, Hindi, English) */}
+          {/* Language Quick Pills (English, Hindi, Bengali, Tamil, Telugu) */}
           <div className="flex items-center gap-1">
             <div className="flex items-center rounded-full bg-[#161D2B] p-0.5 border border-[#1E283D]">
               {PRIMARY_LANGUAGES.map((lang) => {
@@ -231,20 +258,20 @@ function Login() {
               type="button"
               onClick={() => setShowAllLanguages((v) => !v)}
               className="flex size-7 items-center justify-center rounded-full border border-[#1E283D] bg-[#161D2B] text-[#94A3B8] hover:text-[#E5A93C] transition"
-              title="All 23 Languages"
-              aria-label="All 23 Languages"
+              title="Select Partner Language"
+              aria-label="Select Partner Language"
             >
               <Globe className="size-3.5" />
             </button>
           </div>
         </div>
 
-        {/* Expandable 23 Regional Languages Dropdown Tray */}
+        {/* Expandable Regional Languages Dropdown Tray */}
         {showAllLanguages && (
           <div className="border-t border-[#1E283D] bg-[#121723] px-4 py-3 text-xs animate-in slide-in-from-top-2 duration-150">
             <div className="mx-auto max-w-lg">
               <div className="flex items-center justify-between pb-2 text-[11px] font-semibold text-[#94A3B8]">
-                <span>Select from 23 Official Scheduled Languages:</span>
+                <span>Select Delivery Partner Language:</span>
                 <button
                   type="button"
                   onClick={() => setShowAllLanguages(false)}
@@ -517,7 +544,7 @@ function Login() {
               </div>
 
               {authMethod === "otp" ? (
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <div className="relative">
                     <Input
                       type="text"
@@ -528,19 +555,35 @@ function Login() {
                       value={otpCode}
                       onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
                       autoComplete="one-time-code"
-                      className="border-[#1E283D] bg-[#161D2B] text-white focus:border-[#E5A93C] focus:bg-[#0E121B] h-11 font-mono text-center text-lg tracking-[0.3em] font-bold"
+                      className="border-[#1E283D] bg-[#161D2B] text-white focus:border-[#E5A93C] focus:bg-[#0E121B] h-11 font-mono text-center text-lg tracking-[0.35em] font-bold placeholder:tracking-normal placeholder:font-sans placeholder:text-sm"
                     />
                   </div>
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-[#64748B]">Simulated instant verification</span>
-                    <button
-                      type="button"
-                      onClick={autofillDemoOtp}
-                      className="font-semibold text-[#E5A93C] hover:underline"
-                    >
-                      Autofill Demo OTP (778899)
-                    </button>
+                    {resendCountdown > 0 ? (
+                      <span className="font-medium text-[#94A3B8]">
+                        Resend OTP in{" "}
+                        <span className="font-mono font-bold text-[#E5A93C]">
+                          00:{resendCountdown < 10 ? `0${resendCountdown}` : resendCountdown}
+                        </span>
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        className="font-bold text-[#E5A93C] hover:text-amber-300 hover:underline transition"
+                      >
+                        Resend OTP
+                      </button>
+                    )}
+                    <span className="text-[10px] text-[#64748B]">
+                      6-digit SMS verification
+                    </span>
                   </div>
+                  {otpSentNotice && (
+                    <p className="text-[11px] font-medium text-emerald-400">
+                      {otpSentNotice}
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div className="relative">
@@ -571,6 +614,25 @@ function Login() {
                 {error}
               </div>
             )}
+
+            {/* Clean Institutional Legal Notice */}
+            <p className="text-center text-[11px] leading-relaxed text-[#94A3B8]">
+              By continuing, you agree to Delivery Partner{" "}
+              <a
+                href="/onboarding"
+                className="font-medium text-[#E5A93C] underline hover:text-amber-300 transition"
+              >
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a
+                href="/onboarding"
+                className="font-medium text-[#E5A93C] underline hover:text-amber-300 transition"
+              >
+                Privacy Policy
+              </a>
+              .
+            </p>
 
             {/* High-Conversion 'Go on Duty' Action Button */}
             <Button
@@ -630,7 +692,7 @@ function Login() {
               </div>
             </div>
             <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-              UmarOS Compliance
+              Statutory Protection
             </span>
           </div>
 

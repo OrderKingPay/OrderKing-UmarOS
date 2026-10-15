@@ -51,6 +51,21 @@ import {
   MIN_RAIN_SURGE_BONUS_PAISE,
   MAX_RAIN_SURGE_BONUS_PAISE,
   DEFAULT_RAIN_SURGE_BONUS_PAISE,
+  MONSOON_SURGE_MIN_PAISE,
+  MONSOON_SURGE_MAX_PAISE,
+  DEFAULT_MONSOON_SURGE_PAISE,
+  PEAK_DINNER_SURGE_MIN_PAISE,
+  PEAK_DINNER_SURGE_MAX_PAISE,
+  DEFAULT_PEAK_DINNER_SURGE_PAISE,
+  OPERATIONAL_TIERS,
+  getOperationalTier,
+  COD_FLOATING_CASH_LIMIT_INR,
+  COD_FLOATING_CASH_LIMIT_PAISE,
+  calculateCodPocketBalance,
+  generateUpiDepositIntent,
+  generateUpiQrUrl,
+  computeNextWednesdaySettlementIst,
+  TIER1_WAIT_GRACE_MINUTES,
 } from "../lib/rider/money.ts";
 import {
   calculateDailyMilestoneProgress,
@@ -851,4 +866,254 @@ describe("Tier-1 Fare Matrix & Algorithmic Payout Specialist Suite (Team Z1)", (
       expect(distPay.ldoBonusPaise).toBe(2200);
     });
   });
+
+  describe("11. Clean Operational Fleet Tiers: Bronze, Silver, Gold, Diamond (Zero Fantasy Jargon)", () => {
+    it("confirms operational tier names and progression boundaries", () => {
+      expect(OPERATIONAL_TIERS.BRONZE.title).toBe("Bronze Partner");
+      expect(OPERATIONAL_TIERS.BRONZE.minTripsLifetime).toBe(0);
+      expect(OPERATIONAL_TIERS.BRONZE.surgeMultiplier).toBe(1.0);
+      expect(OPERATIONAL_TIERS.BRONZE.floatingCashLimitPaise).toBe(200000); // ₹2,000
+
+      expect(OPERATIONAL_TIERS.SILVER.title).toBe("Silver Partner");
+      expect(OPERATIONAL_TIERS.SILVER.minTripsLifetime).toBe(50);
+      expect(OPERATIONAL_TIERS.SILVER.surgeMultiplier).toBe(1.1);
+      expect(OPERATIONAL_TIERS.SILVER.floatingCashLimitPaise).toBe(250000); // ₹2,500
+
+      expect(OPERATIONAL_TIERS.GOLD.title).toBe("Gold Partner");
+      expect(OPERATIONAL_TIERS.GOLD.minTripsLifetime).toBe(200);
+      expect(OPERATIONAL_TIERS.GOLD.surgeMultiplier).toBe(1.25);
+      expect(OPERATIONAL_TIERS.GOLD.priorityDispatch).toBe(true);
+      expect(OPERATIONAL_TIERS.GOLD.floatingCashLimitPaise).toBe(350000); // ₹3,500
+
+      expect(OPERATIONAL_TIERS.DIAMOND.title).toBe("Diamond Partner");
+      expect(OPERATIONAL_TIERS.DIAMOND.minTripsLifetime).toBe(500);
+      expect(OPERATIONAL_TIERS.DIAMOND.surgeMultiplier).toBe(1.5);
+      expect(OPERATIONAL_TIERS.DIAMOND.priorityDispatch).toBe(true);
+      expect(OPERATIONAL_TIERS.DIAMOND.floatingCashLimitPaise).toBe(500000); // ₹5,000
+    });
+
+    it("evaluates operational tier advancement correctly by lifetime trip milestones", () => {
+      expect(getOperationalTier(0).tier).toBe("BRONZE");
+      expect(getOperationalTier(25).tier).toBe("BRONZE");
+      expect(getOperationalTier(50).tier).toBe("SILVER");
+      expect(getOperationalTier(120).tier).toBe("SILVER");
+      expect(getOperationalTier(200).tier).toBe("GOLD");
+      expect(getOperationalTier(450).tier).toBe("GOLD");
+      expect(getOperationalTier(500).tier).toBe("DIAMOND");
+      expect(getOperationalTier(1200).tier).toBe("DIAMOND");
+    });
+
+    it("verifies zero occurrence of fantasy jargon across operational tier definitions", () => {
+      for (const key of Object.keys(OPERATIONAL_TIERS) as (keyof typeof OPERATIONAL_TIERS)[]) {
+        const tier = OPERATIONAL_TIERS[key];
+        expect(tier.title).not.toContain("Knight");
+        expect(tier.title).not.toContain("Royal");
+        expect(tier.title).not.toContain("Fantasy");
+        expect(["Bronze Partner", "Silver Partner", "Gold Partner", "Diamond Partner"]).toContain(tier.title);
+      }
+    });
+  });
+
+  describe("12. Real-World COD Management & Floating Cash (₹2,000 Float Threshold & 1-Tap UPI QR)", () => {
+    it("confirms COD floating cash constants", () => {
+      expect(COD_FLOATING_CASH_LIMIT_INR).toBe(2000);
+      expect(COD_FLOATING_CASH_LIMIT_PAISE).toBe(200000);
+    });
+
+    it("permits cash orders when pocket balance is within ₹2,000 threshold", () => {
+      // Rider collected ₹1,200 (120,000 paise), 0 reconciled -> ₹800 headroom
+      const balance = calculateCodPocketBalance(120000, 0);
+      expect(balance.collectedPaise).toBe(120000);
+      expect(balance.reconciledPaise).toBe(0);
+      expect(balance.pocketBalancePaise).toBe(120000);
+      expect(balance.limitPaise).toBe(200000);
+      expect(balance.remainingHeadroomPaise).toBe(80000); // ₹800 remaining
+      expect(balance.utilizationPct).toBe(60);
+      expect(balance.canAcceptCod).toBe(true);
+      expect(balance.isCodBlocked).toBe(false);
+    });
+
+    it("blocks cash orders when pocket balance reaches or exceeds ₹2,000 threshold", () => {
+      // Exactly at limit: ₹2,000 collected, 0 reconciled
+      const atCap = calculateCodPocketBalance(200000, 0);
+      expect(atCap.pocketBalancePaise).toBe(200000);
+      expect(atCap.remainingHeadroomPaise).toBe(0);
+      expect(atCap.utilizationPct).toBe(100);
+      expect(atCap.isCodBlocked).toBe(true);
+      expect(atCap.canAcceptCod).toBe(false);
+
+      // Over limit: ₹2,400 collected, 0 reconciled
+      const overCap = calculateCodPocketBalance(240000, 0);
+      expect(overCap.isCodBlocked).toBe(true);
+      expect(overCap.canAcceptCod).toBe(false);
+    });
+
+    it("unblocks immediately upon partial or full mid-shift UPI clearing", () => {
+      // Over limit: ₹2,500 collected, deposit ₹1,500 via UPI -> balance ₹1,000
+      const deposit = calculateCodPocketBalance(250000, 150000);
+      expect(deposit.pocketBalancePaise).toBe(100000);
+      expect(deposit.remainingHeadroomPaise).toBe(100000);
+      expect(deposit.utilizationPct).toBe(50);
+      expect(deposit.isCodBlocked).toBe(false);
+      expect(deposit.canAcceptCod).toBe(true);
+    });
+
+    it("enforces lookahead pre-dispatch check to prevent exceeding limit on incoming order", () => {
+      // Balance is ₹1,800 (180,000 paise), incoming COD is ₹300 (30,000 paise) -> projected ₹2,100 > ₹2,000 limit
+      const lookahead = calculateCodPocketBalance(180000, 0, 200000, 30000);
+      expect(lookahead.isCodBlocked).toBe(true);
+      expect(lookahead.canAcceptCod).toBe(false);
+
+      // Balance is ₹1,800, incoming COD is ₹150 (15,000 paise) -> projected ₹1,950 <= ₹2,000 limit
+      const acceptable = calculateCodPocketBalance(180000, 0, 200000, 15000);
+      expect(acceptable.isCodBlocked).toBe(false);
+      expect(acceptable.canAcceptCod).toBe(true);
+    });
+
+    it("generates valid NPCI-compliant UPI Intent URI and dynamic QR URL for 1-tap clearing", () => {
+      const uri = generateUpiDepositIntent(500, "orderking.treasury@okaxis", "FloatClear");
+      expect(uri).toContain("upi://pay?");
+      expect(uri).toContain("pa=orderking.treasury%40okaxis");
+      expect(uri).toContain("am=500");
+      expect(uri).toContain("cu=INR");
+      expect(uri).toContain("pn=OrderKing%20Treasury");
+
+      const qrUrl = generateUpiQrUrl(500, "orderking.treasury@okaxis");
+      expect(qrUrl).toContain("https://api.qrserver.com/v1/create-qr-code/?size=200x200");
+      expect(qrUrl).toContain("data=upi");
+    });
+  });
+
+  describe("13. Monsoon Surge (+₹20 to +₹45) & Peak Dinner Surge (+₹15 to +₹30)", () => {
+    it("confirms monsoon surge range and defaults", () => {
+      expect(MONSOON_SURGE_MIN_PAISE).toBe(2000); // ₹20
+      expect(MONSOON_SURGE_MAX_PAISE).toBe(4500); // ₹45
+      expect(DEFAULT_MONSOON_SURGE_PAISE).toBe(3000); // ₹30
+    });
+
+    it("confirms peak dinner surge range and defaults", () => {
+      expect(PEAK_DINNER_SURGE_MIN_PAISE).toBe(1500); // ₹15
+      expect(PEAK_DINNER_SURGE_MAX_PAISE).toBe(3000); // ₹30
+      expect(DEFAULT_PEAK_DINNER_SURGE_PAISE).toBe(2000); // ₹20
+    });
+
+    it("applies monsoon surge within ₹20 - ₹45 boundary", () => {
+      const monsoon = calculateSurgePay({
+        baseAndDistancePaise: 4000,
+        isMonsoonSurge: true,
+      });
+      expect(monsoon.isMonsoonSurge).toBe(true);
+      expect(monsoon.monsoonSurgeBonusPaise).toBe(3000); // ₹30 default
+      expect(monsoon.totalSurgePaise).toBe(3000);
+
+      // Custom ₹40 monsoon surge
+      const customMonsoon = calculateSurgePay({
+        baseAndDistancePaise: 4000,
+        isMonsoonSurge: true,
+        monsoonSurgeBonusPaise: 4000,
+      });
+      expect(customMonsoon.monsoonSurgeBonusPaise).toBe(4000);
+
+      // Clamped to minimum ₹20 if passed lower
+      const clampedLow = calculateSurgePay({
+        baseAndDistancePaise: 4000,
+        isMonsoonSurge: true,
+        monsoonSurgeBonusPaise: 1200,
+      });
+      expect(clampedLow.monsoonSurgeBonusPaise).toBe(2000);
+
+      // Clamped to maximum ₹45 if passed higher
+      const clampedHigh = calculateSurgePay({
+        baseAndDistancePaise: 4000,
+        isMonsoonSurge: true,
+        monsoonSurgeBonusPaise: 6000,
+      });
+      expect(clampedHigh.monsoonSurgeBonusPaise).toBe(4500);
+    });
+
+    it("applies peak dinner surge (+₹15 - ₹30) and combines with monsoon surge", () => {
+      const dinnerSurge = calculateSurgePay({
+        baseAndDistancePaise: 5000,
+        isPeakDinnerSurge: true,
+        peakDinnerSurgePaise: 2500, // ₹25
+      });
+      expect(dinnerSurge.isPeakDinnerSurge).toBe(true);
+      expect(dinnerSurge.peakDinnerSurgePaise).toBe(2500);
+      expect(dinnerSurge.totalSurgePaise).toBe(2500);
+
+      // Combined Monsoon (+₹35) + Peak Dinner (+₹20) + 1.2x Peak Multiplier (+₹10)
+      // Base: ₹50 (5,000 paise)
+      // Multiplier boost: 5,000 * 0.20 = 1,000 paise (₹10)
+      // Monsoon: 3,500 paise (₹35)
+      // Dinner: 2,000 paise (₹20)
+      // Total Surge: 1,000 + 3,500 + 2,000 = 6,500 paise (₹65.00)
+      const combined = calculateSurgePay({
+        baseAndDistancePaise: 5000,
+        peakMultiplier: 1.20,
+        isMonsoonSurge: true,
+        monsoonSurgeBonusPaise: 3500,
+        isPeakDinnerSurge: true,
+        peakDinnerSurgePaise: 2000,
+      });
+      expect(combined.peakMultiplierBoostPaise).toBe(1000);
+      expect(combined.monsoonSurgeBonusPaise).toBe(3500);
+      expect(combined.peakDinnerSurgePaise).toBe(2000);
+      expect(combined.totalSurgePaise).toBe(6500);
+    });
+
+    it("integrates monsoon and peak dinner surge in calculateTier1AlgorithmicPayout", () => {
+      const payout = calculateTier1AlgorithmicPayout({
+        distanceKm: 3.0,
+        cityTier: "TIER_1",
+        isMonsoonSurge: true,
+        monsoonSurgeBonusPaise: 3000, // ₹30
+        isPeakDinnerSurge: true,
+        peakDinnerSurgePaise: 2000, // ₹20
+        customerTipPaise: 3000, // ₹30 100% tip pass-through
+      });
+
+      // Base: ₹35 (3,500) + Distance: 1km * ₹12 = ₹12 (1,200) -> BaseAndDistance = 4,700 paise
+      expect(payout.baseAndDistancePaise).toBe(4700);
+      expect(payout.isMonsoonSurge).toBe(true);
+      expect(payout.monsoonSurgeBonusPaise).toBe(3000);
+      expect(payout.isPeakDinnerSurge).toBe(true);
+      expect(payout.peakDinnerSurgePaise).toBe(2000);
+      expect(payout.totalSurgePaise).toBe(5000); // 3000 + 2000
+      expect(payout.customerTipPaise).toBe(3000);
+
+      // Subtotal before tip: 4700 + 5000 = 9,700 paise
+      expect(payout.subtotalBeforeTipPaise).toBe(9700);
+      // Total payout: 9700 + 3000 = 12,700 paise (₹127.00)
+      expect(payout.totalPayoutPaise).toBe(12700);
+    });
+  });
+
+  describe("14. Weekly Wednesday Afternoon Settlement (14:00 IST via Automated NEFT/IMPS)", () => {
+    it("confirms Wednesday 14:00 IST settlement schedule constants", () => {
+      expect(TIER1_PAYOUT_SETTLEMENT_DAY).toBe("WEDNESDAY");
+      expect(TIER1_PAYOUT_SETTLEMENT_HOUR_IST).toBe(14);
+      expect(TIER1_PAYOUT_SETTLEMENT_TIME_IST).toBe("14:00");
+      expect(TIER1_PAYOUT_SETTLEMENT_SCHEDULE).toBe("Wednesday 2:00 PM IST");
+    });
+
+    it("calculates next settlement window at 14:00 IST correctly", () => {
+      const settlement = computeNextWednesdaySettlementIst();
+      expect(settlement.timeIst).toBe("14:00 IST (2:00 PM IST)");
+      expect(settlement.scheduleDescription).toContain("14:00 IST");
+      expect(settlement.hoursRemaining).toBeGreaterThan(0);
+      expect(settlement.formattedDate).toBeTruthy();
+    });
+
+    it("strictly verifies statutory wait grace threshold of >5 minutes at ₹1.00/min", () => {
+      expect(TIER1_WAIT_GRACE_MINUTES).toBe(5);
+      // When waitGraceMinutes = 5:
+      // 5 mins wait -> 0 pay
+      expect(calculateRestaurantWaitPayPaise(5, 5)).toBe(0);
+      // 6 mins wait (>5 mins) -> 1 min billable = 100 paise (₹1.00)
+      expect(calculateRestaurantWaitPayPaise(6, 5)).toBe(100);
+      // 10 mins wait -> 5 mins billable = 500 paise (₹5.00)
+      expect(calculateRestaurantWaitPayPaise(10, 5)).toBe(500);
+    });
+  });
 });
+

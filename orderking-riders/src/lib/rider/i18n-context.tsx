@@ -7,7 +7,7 @@ const KEY = "orderking.locale";
 function readLocale(): LocaleCode {
   if (typeof window === "undefined") return "en";
   const v = window.localStorage.getItem(KEY);
-  if (v && ["en","bn","hi","te","ta","mr","gu","kn","ml","pa","or","as","ur","mai","sat","ks","ne","sd","kok","doi","mni","brx","sa"].includes(v)) return v as LocaleCode;
+  if (v && (["en", "hi", "bn", "as", "te", "ta", "ml", "kn", "mr", "gu", "ur", "pa"] as const).includes(v as any)) return v as LocaleCode;
   return "en";
 }
 

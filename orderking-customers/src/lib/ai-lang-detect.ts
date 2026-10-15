@@ -6,11 +6,7 @@ export function detectLanguage(text: string, defaultCode: string = "en"): string
 
   // 1. Script-based Unicode detection (100% accurate)
   if (/[\u0980-\u09FF]/.test(text)) {
-    // Bengali or Assamese script
-    if (/[\u09F0\u09F1]/.test(text) || /\b(kenekoi|kiba|ase|bhal|khobor|moi|tumi|apuni|lagibo)\b/i.test(text)) {
-      return "as";
-    }
-    return "bn";
+    return "bn"; // Bengali
   }
   if (/[\u0900-\u097F]/.test(text)) {
     // Devanagari script: Hindi or Marathi
@@ -25,7 +21,7 @@ export function detectLanguage(text: string, defaultCode: string = "en"): string
   if (/[\u0D00-\u0D7F]/.test(text)) return "ml"; // Malayalam
   if (/[\u0A80-\u0AFF]/.test(text)) return "gu"; // Gujarati
   if (/[\u0A00-\u0A7F]/.test(text)) return "pa"; // Punjabi
-  if (/[\u0B00-\u0B7F]/.test(text)) return "or"; // Odia
+
 
   // 2. Transliterated / Romanized keyword detection
   const lower = text.toLowerCase();
@@ -38,10 +34,7 @@ export function detectLanguage(text: string, defaultCode: string = "en"): string
   if (/\b(kemon|ache|achen|lagbe|khabo|kothay|amake|duto|kichu|bhalo|taka|pathan|apnar|bolun|khabar)\b/.test(lower)) {
     return "bn";
   }
-  // Assamese
-  if (/\b(kenekoi|kiba|khobor|lagibo|khabor|axom|kobo)\b/.test(lower)) {
-    return "as";
-  }
+
   // Tamil / Tanglish
   if (/\b(vanakkam|eppadi|venum|sapadu|panam|anupu|sollunga|ungalukku|epadi)\b/.test(lower)) {
     return "ta";
@@ -70,10 +63,7 @@ export function detectLanguage(text: string, defaultCode: string = "en"): string
   if (/\b(sat sri akal|kiven|ki haal|chahida|roti|dasso|tuhanu|kujh)\b/.test(lower)) {
     return "pa";
   }
-  // Odia
-  if (/\b(namaskar|kemiti|achhanti|darkar|khai|apanku|kana)\b/.test(lower)) {
-    return "or";
-  }
+
 
   // Default to provided default or English
   return defaultCode;

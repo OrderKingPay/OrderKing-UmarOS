@@ -77,8 +77,8 @@ export const STATUTORY_BASE_DISTANCE_KM = 2;
 /** Standard distance rate beyond base distance: ₹12/km (1,200 paise/km) */
 export const STATUTORY_DISTANCE_RATE_PER_KM_PAISE = 1200;
 
-/** Distance rate allowable boundary: ₹10/km to ₹14/km */
-export const MIN_DISTANCE_RATE_PER_KM_PAISE = 1000; // ₹10/km
+/** Distance rate allowable boundary: ₹7/km to ₹14/km (Statutory Tier-1 boundary: ₹7-₹12/km) */
+export const MIN_DISTANCE_RATE_PER_KM_PAISE = 700; // ₹7/km
 export const MAX_DISTANCE_RATE_PER_KM_PAISE = 1400; // ₹14/km
 
 export type CityTier = "TIER_1" | "TIER_2" | "TIER_3";
@@ -439,6 +439,8 @@ export function calculateDistancePay(
  * to strictly eliminate runaway financial liability from errant restaurant operations.
  */
 export const RESTAURANT_WAIT_GRACE_PERIOD_MINUTES = 6;
+/** Tier-1 statutory wait grace threshold: >5 minutes at restaurant pays ₹1.00/min compensation */
+export const TIER1_WAIT_GRACE_MINUTES = 5;
 export const RESTAURANT_WAIT_PAY_RATE_PER_MIN_PAISE = 100; // ₹1.00 / min
 export const MAX_BILLABLE_WAIT_MINUTES = 30; // ₹30.00 (3,000 paise) safety cap
 export const MAX_WAIT_PAY_PAISE = 3000; // ₹30.00 (3,000 paise)
@@ -562,10 +564,24 @@ export const MIN_RAIN_SURGE_BONUS_PAISE = 1000; // ₹10
 export const MAX_RAIN_SURGE_BONUS_PAISE = 4500; // ₹45
 export const DEFAULT_RAIN_SURGE_BONUS_PAISE = 2500; // ₹25
 
+/** Statutory Monsoon Surge range: +₹20 to +₹45 (2,000 to 4,500 paise) */
+export const MONSOON_SURGE_MIN_PAISE = 2000; // ₹20
+export const MONSOON_SURGE_MAX_PAISE = 4500; // ₹45
+export const DEFAULT_MONSOON_SURGE_PAISE = 3000; // ₹30
+
+/** Statutory Peak Dinner Surge range: +₹15 to +₹30 (1,500 to 3,000 paise) */
+export const PEAK_DINNER_SURGE_MIN_PAISE = 1500; // ₹15
+export const PEAK_DINNER_SURGE_MAX_PAISE = 3000; // ₹30
+export const DEFAULT_PEAK_DINNER_SURGE_PAISE = 2000; // ₹20
+
 export interface SurgePayCalculationInput {
   baseAndDistancePaise: number;
   isRainSurge?: boolean;
   rainSurgeBonusPaise?: number; // ₹10 - ₹45
+  isMonsoonSurge?: boolean;
+  monsoonSurgeBonusPaise?: number; // ₹20 - ₹45
+  isPeakDinnerSurge?: boolean;
+  peakDinnerSurgePaise?: number; // ₹15 - ₹30
   peakMultiplier?: number; // 1.0x - 2.5x
 }
 
@@ -574,6 +590,10 @@ export function calculateSurgePay(input: SurgePayCalculationInput): {
   peakMultiplierBoostPaise: number;
   isRainSurge: boolean;
   rainSurgeBonusPaise: number;
+  isMonsoonSurge: boolean;
+  monsoonSurgeBonusPaise: number;
+  isPeakDinnerSurge: boolean;
+  peakDinnerSurgePaise: number;
   totalSurgePaise: number;
 } {
   const basePaise = Math.max(0, Math.round(input.baseAndDistancePaise));
@@ -589,13 +609,37 @@ export function calculateSurgePay(input: SurgePayCalculationInput): {
     );
   }
 
-  const totalSurgePaise = peakMultiplierBoostPaise + rainSurgeBonusPaise;
+  let monsoonSurgeBonusPaise = 0;
+  if (input.isMonsoonSurge) {
+    const rawBonus = input.monsoonSurgeBonusPaise ?? DEFAULT_MONSOON_SURGE_PAISE;
+    monsoonSurgeBonusPaise = Math.min(
+      MONSOON_SURGE_MAX_PAISE,
+      Math.max(MONSOON_SURGE_MIN_PAISE, Math.round(rawBonus)),
+    );
+  }
+
+  let peakDinnerSurgePaise = 0;
+  if (input.isPeakDinnerSurge) {
+    const rawBonus = input.peakDinnerSurgePaise ?? DEFAULT_PEAK_DINNER_SURGE_PAISE;
+    peakDinnerSurgePaise = Math.min(
+      PEAK_DINNER_SURGE_MAX_PAISE,
+      Math.max(PEAK_DINNER_SURGE_MIN_PAISE, Math.round(rawBonus)),
+    );
+  }
+
+  const effectiveRainSurge = monsoonSurgeBonusPaise > 0 ? monsoonSurgeBonusPaise : rainSurgeBonusPaise;
+  const isRain = Boolean(input.isRainSurge || input.isMonsoonSurge);
+  const totalSurgePaise = peakMultiplierBoostPaise + effectiveRainSurge + peakDinnerSurgePaise;
 
   return {
     peakMultiplier,
     peakMultiplierBoostPaise,
-    isRainSurge: Boolean(input.isRainSurge),
-    rainSurgeBonusPaise,
+    isRainSurge: isRain,
+    rainSurgeBonusPaise: effectiveRainSurge,
+    isMonsoonSurge: Boolean(input.isMonsoonSurge),
+    monsoonSurgeBonusPaise,
+    isPeakDinnerSurge: Boolean(input.isPeakDinnerSurge),
+    peakDinnerSurgePaise,
     totalSurgePaise,
   };
 }
@@ -809,6 +853,10 @@ export interface Tier1PayoutInput {
   distanceSlabs?: ProgressiveDistanceSlabs;
   isRainSurge?: boolean;
   rainSurgeBonusPaise?: number; // ₹10-₹45
+  isMonsoonSurge?: boolean;
+  monsoonSurgeBonusPaise?: number; // ₹20-₹45
+  isPeakDinnerSurge?: boolean;
+  peakDinnerSurgePaise?: number; // ₹15-₹30
   peakMultiplier?: number;
   customerTipPaise?: number;
   packageCount?: number;
@@ -837,6 +885,10 @@ export interface Tier1PayoutBreakdown {
   waitTimePayPaise: number;
   isRainSurge: boolean;
   rainSurgeBonusPaise: number;
+  isMonsoonSurge?: boolean;
+  monsoonSurgeBonusPaise?: number;
+  isPeakDinnerSurge?: boolean;
+  peakDinnerSurgePaise?: number;
   peakMultiplier: number;
   peakMultiplierBoostPaise: number;
   totalSurgePaise: number;
@@ -943,11 +995,15 @@ export function calculateTier1AlgorithmicPayout(input: Tier1PayoutInput): Tier1P
     waitCap,
   );
 
-  // 4. Surge Pay (Rain surge bonus + Peak dynamic multiplier)
+  // 4. Surge Pay (Rain/Monsoon surge bonus + Peak Dinner surge + Peak dynamic multiplier)
   const surgeCalc = calculateSurgePay({
     baseAndDistancePaise,
     isRainSurge: input.isRainSurge,
     rainSurgeBonusPaise: input.rainSurgeBonusPaise,
+    isMonsoonSurge: input.isMonsoonSurge,
+    monsoonSurgeBonusPaise: input.monsoonSurgeBonusPaise,
+    isPeakDinnerSurge: input.isPeakDinnerSurge,
+    peakDinnerSurgePaise: input.peakDinnerSurgePaise,
     peakMultiplier: input.peakMultiplier,
   });
 
@@ -1001,6 +1057,10 @@ export function calculateTier1AlgorithmicPayout(input: Tier1PayoutInput): Tier1P
     waitTimePayPaise: waitCalc.waitPayPaise,
     isRainSurge: surgeCalc.isRainSurge,
     rainSurgeBonusPaise: surgeCalc.rainSurgeBonusPaise,
+    isMonsoonSurge: surgeCalc.isMonsoonSurge,
+    monsoonSurgeBonusPaise: surgeCalc.monsoonSurgeBonusPaise,
+    isPeakDinnerSurge: surgeCalc.isPeakDinnerSurge,
+    peakDinnerSurgePaise: surgeCalc.peakDinnerSurgePaise,
     peakMultiplier: surgeCalc.peakMultiplier,
     peakMultiplierBoostPaise: surgeCalc.peakMultiplierBoostPaise,
     totalSurgePaise: surgeCalc.totalSurgePaise,
@@ -1079,4 +1139,217 @@ export function calculateRiderPayout(
 export function enforcePayoutFloor(amountPaise: number, floorPaise = STATUTORY_BASE_FARE_PAISE): number {
   const amount = Number.isFinite(amountPaise) ? Math.round(amountPaise) : floorPaise;
   return Math.max(floorPaise, amount);
+}
+
+// ---------------------------------------------------------------------------
+// 10. CLEAN OPERATIONAL TIERS (Bronze, Silver, Gold, Diamond - No Fantasy Jargon)
+// ---------------------------------------------------------------------------
+
+export type OperationalTier = "BRONZE" | "SILVER" | "GOLD" | "DIAMOND";
+
+export interface OperationalTierInfo {
+  tier: OperationalTier;
+  title: string;
+  minTripsLifetime: number;
+  surgeMultiplier: number;
+  fuelCashbackPct: number;
+  floatingCashLimitPaise: number;
+  priorityDispatch: boolean;
+  perks: string[];
+}
+
+export const OPERATIONAL_TIERS: Record<OperationalTier, OperationalTierInfo> = {
+  BRONZE: {
+    tier: "BRONZE",
+    title: "Bronze Partner",
+    minTripsLifetime: 0,
+    surgeMultiplier: 1.0,
+    fuelCashbackPct: 2.5,
+    floatingCashLimitPaise: 200000, // ₹2,000 threshold
+    priorityDispatch: false,
+    perks: ["Standard Dispatch", "Weekly Wednesday Payouts", "HPCL 2.5% Fuel Discount", "₹2,000 COD Float Limit"],
+  },
+  SILVER: {
+    tier: "SILVER",
+    title: "Silver Partner",
+    minTripsLifetime: 50,
+    surgeMultiplier: 1.1,
+    fuelCashbackPct: 3.0,
+    floatingCashLimitPaise: 250000, // ₹2,500 threshold
+    priorityDispatch: false,
+    perks: ["1.1x Surge Multiplier", "Instant Mid-Shift UPI Clearing", "HPCL 3.0% Fuel Discount", "₹2,500 COD Float Limit"],
+  },
+  GOLD: {
+    tier: "GOLD",
+    title: "Gold Partner",
+    minTripsLifetime: 200,
+    surgeMultiplier: 1.25,
+    fuelCashbackPct: 4.0,
+    floatingCashLimitPaise: 350000, // ₹3,500 threshold
+    priorityDispatch: true,
+    perks: ["1.25x Surge Multiplier", "Priority Dispatch Queue", "Free Oil Change Voucher", "HPCL 4.0% Discount", "₹3,500 COD Float Limit"],
+  },
+  DIAMOND: {
+    tier: "DIAMOND",
+    title: "Diamond Partner",
+    minTripsLifetime: 500,
+    surgeMultiplier: 1.5,
+    fuelCashbackPct: 5.0,
+    floatingCashLimitPaise: 500000, // ₹5,000 threshold
+    priorityDispatch: true,
+    perks: ["1.5x Surge Multiplier", "Top Priority VIP Dispatch", "Zero Cashout Fees", "Comprehensive Health Cover", "₹5,000 COD Float Limit"],
+  },
+};
+
+/**
+ * Returns the operational tier based on verified lifetime deliveries.
+ * Operational tiers strictly use clean real-world logistics titles:
+ * Bronze Partner, Silver Partner, Gold Partner, Diamond Partner.
+ */
+export function getOperationalTier(lifetimeTrips: number): OperationalTierInfo {
+  const trips = Math.max(0, Number.isFinite(lifetimeTrips) ? Math.floor(lifetimeTrips) : 0);
+  if (trips >= OPERATIONAL_TIERS.DIAMOND.minTripsLifetime) return OPERATIONAL_TIERS.DIAMOND;
+  if (trips >= OPERATIONAL_TIERS.GOLD.minTripsLifetime) return OPERATIONAL_TIERS.GOLD;
+  if (trips >= OPERATIONAL_TIERS.SILVER.minTripsLifetime) return OPERATIONAL_TIERS.SILVER;
+  return OPERATIONAL_TIERS.BRONZE;
+}
+
+// ---------------------------------------------------------------------------
+// 11. REAL-WORLD COD MANAGEMENT & FLOATING CASH (₹2,000 FLOAT THRESHOLD)
+// ---------------------------------------------------------------------------
+
+/** Standard COD Floating Cash Limit: ₹2,000 (200,000 paise) */
+export const COD_FLOATING_CASH_LIMIT_INR = 2000;
+export const COD_FLOATING_CASH_LIMIT_PAISE = 200000;
+export const COD_DEFAULT_TREASURY_VPA = "orderking.treasury@okaxis";
+
+export interface CodPocketBalanceCalculation {
+  collectedPaise: number;
+  reconciledPaise: number;
+  pocketBalancePaise: number;
+  limitPaise: number;
+  remainingHeadroomPaise: number;
+  utilizationPct: number;
+  isCodBlocked: boolean;
+  canAcceptCod: boolean;
+}
+
+/**
+ * Calculates real-time COD Floating Cash ("Pocket Balance") and evaluates threshold caps.
+ * Strictly maintains 100% SafeInteger paise arithmetic.
+ *
+ * @param collectedPaise Total cash physically collected by the courier from COD deliveries (in paise)
+ * @param reconciledPaise Total cash reconciled via Wednesday payout offset or direct UPI / gateway deposit (in paise)
+ * @param limitPaise Configurable floating cash cap in paise (defaults to ₹2,000 = 200,000 paise)
+ * @param incomingCodPaise Incoming COD order amount in paise for lookahead pre-dispatch evaluation
+ */
+export function calculateCodPocketBalance(
+  collectedPaise: number,
+  reconciledPaise: number,
+  limitPaise = COD_FLOATING_CASH_LIMIT_PAISE,
+  incomingCodPaise = 0,
+): CodPocketBalanceCalculation {
+  const collected = Math.max(0, Number.isFinite(collectedPaise) ? Math.round(collectedPaise) : 0);
+  const reconciled = Math.max(0, Number.isFinite(reconciledPaise) ? Math.round(reconciledPaise) : 0);
+  const incoming = Math.max(0, Number.isFinite(incomingCodPaise) ? Math.round(incomingCodPaise) : 0);
+  const balance = Math.max(0, safeSubtract(collected, reconciled));
+  const limit = Math.max(10000, Math.round(limitPaise)); // ₹100 floor
+  const isBlocked = balance >= limit || (balance + incoming) > limit;
+  const remaining = Math.max(0, safeSubtract(limit, balance));
+  const utilizationPct = Math.min(100, Math.round((balance / limit) * 100));
+
+  return {
+    collectedPaise: collected,
+    reconciledPaise: reconciled,
+    pocketBalancePaise: balance,
+    limitPaise: limit,
+    remainingHeadroomPaise: remaining,
+    utilizationPct,
+    isCodBlocked: isBlocked,
+    canAcceptCod: !isBlocked,
+  };
+}
+
+/**
+ * Re-export calculatePocketBalance for backward compatibility across all modules.
+ */
+export { calculatePocketBalance } from "./discipline.ts";
+
+/**
+ * Generates an NPCI-compliant UPI Intent URI for 1-tap instant floating cash deposit.
+ */
+export function generateUpiDepositIntent(
+  amountRupees: number,
+  vpa: string = COD_DEFAULT_TREASURY_VPA,
+  note = "FloatDeposit",
+): string {
+  const amt = Math.max(1, Math.round(amountRupees));
+  const encodedVpa = encodeURIComponent(vpa.trim().toLowerCase());
+  const encodedNote = encodeURIComponent(`${note.trim()}_${Date.now().toString(36)}`);
+  return `upi://pay?pa=${encodedVpa}&pn=OrderKing%20Treasury&am=${amt}&cu=INR&tn=${encodedNote}`;
+}
+
+/**
+ * Generates a dynamic QR code image URL for instant mid-shift UPI float clearing.
+ */
+export function generateUpiQrUrl(
+  amountRupees: number,
+  vpa: string = COD_DEFAULT_TREASURY_VPA,
+  note = "FloatDeposit",
+  size = 200,
+): string {
+  const intent = generateUpiDepositIntent(amountRupees, vpa, note);
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(intent)}`;
+}
+
+// ---------------------------------------------------------------------------
+// 12. AUTOMATED WEDNESDAY AFTERNOON SETTLEMENT (14:00 IST / 2:00 PM IST)
+// ---------------------------------------------------------------------------
+
+/**
+ * Calculates the next automated Wednesday afternoon 14:00 IST settlement window.
+ * Cycle window: Monday 00:00:00 to Sunday 23:59:59 settled every Wednesday at 14:00 IST.
+ */
+export function computeNextWednesdaySettlementIst(nowInput: Date | string | number = new Date()): {
+  date: Date;
+  formattedDate: string;
+  hoursRemaining: number;
+  timeIst: string;
+  scheduleDescription: string;
+} {
+  const now = typeof nowInput === "string" || typeof nowInput === "number" ? new Date(nowInput) : nowInput;
+  const istOffsetMs = 5.5 * 60 * 60 * 1000;
+  const istNow = new Date(now.getTime() + istOffsetMs);
+
+  const istDay = istNow.getUTCDay(); // 0 = Sun, 1 = Mon, ..., 3 = Wed
+  const istHours = istNow.getUTCHours();
+
+  let daysUntilWed = (3 - istDay + 7) % 7;
+  if (daysUntilWed === 0 && istHours >= 14) {
+    daysUntilWed = 7;
+  }
+
+  const targetIst = new Date(istNow.getTime());
+  targetIst.setUTCDate(istNow.getUTCDate() + daysUntilWed);
+  targetIst.setUTCHours(14, 0, 0, 0);
+
+  const targetUtc = new Date(targetIst.getTime() - istOffsetMs);
+  const diffMs = Math.max(0, targetUtc.getTime() - now.getTime());
+  const hoursRemaining = Math.max(1, Math.round(diffMs / 3_600_000));
+
+  const formattedDate = targetUtc.toLocaleDateString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+  return {
+    date: targetUtc,
+    formattedDate,
+    hoursRemaining,
+    timeIst: "14:00 IST (2:00 PM IST)",
+    scheduleDescription: "Wednesday afternoon at 14:00 IST via automated NEFT/IMPS",
+  };
 }

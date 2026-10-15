@@ -11,6 +11,7 @@ import {
   STATUTORY_BASE_DISTANCE_KM,
   STATUTORY_BASE_FARE_PAISE,
   STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
+  getOperationalTier,
 } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
 import { createTicketFn, getEarningsFn, getSettlementsFn, getHomeFn } from "@/lib/server/rider-fns";
@@ -192,16 +193,39 @@ function Page() {
           </div>
         </div>
 
-        {/* Statutory Rate Card Summary */}
-        <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-3.5 text-sm">
-          <div className="flex-1">
-            <p className="font-semibold text-foreground">
-              Transparent Per-Order Rate Card
-            </p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Base Fare {formatPaise(STATUTORY_BASE_FARE_PAISE)} (first {STATUTORY_BASE_DISTANCE_KM} km) +{" "}
-              {formatPaise(STATUTORY_DISTANCE_RATE_PER_KM_PAISE)}/km distance pay · ₹1/min kitchen wait pay after 10 mins · 100% customer tips retained.
-            </p>
+        {/* Tier-1 Algorithmic Rate Card Summary */}
+        <div className="rounded-xl border border-border bg-card p-4 text-sm shadow-xs space-y-2.5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="font-semibold text-foreground">
+                Tier-1 Algorithmic Payout Rate Card
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Exact Indian delivery matrix · SafeInteger paise arithmetic (100 paise = 1 INR)
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+              100% Tips Pass-Through (₹0 Platform Cut)
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 pt-2 text-xs border-t border-border">
+            <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
+              <span className="font-semibold text-foreground block">Base Order Pay</span>
+              <span className="text-muted-foreground">₹20.00 – ₹35.00 by City Tier (0–2km included)</span>
+            </div>
+            <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
+              <span className="font-semibold text-foreground block">Progressive Distance</span>
+              <span className="text-muted-foreground">₹7.00 – ₹12.00/km (Up to ₹16/km + ₹20 LDO Bonus)</span>
+            </div>
+            <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
+              <span className="font-semibold text-foreground block">Wait-Time Pay</span>
+              <span className="text-muted-foreground">₹1.00/min (&gt;5 mins wait at kitchen, cap ₹30)</span>
+            </div>
+            <div className="rounded-lg bg-muted/40 p-2.5 space-y-0.5">
+              <span className="font-semibold text-foreground block">Surge &amp; Weather</span>
+              <span className="text-muted-foreground">Monsoon (+₹20–₹45) · Peak Dinner (+₹15–₹30)</span>
+            </div>
           </div>
         </div>
 
@@ -381,7 +405,7 @@ function Page() {
                 <Badge tone="online">Wednesday NEFT/IMPS</Badge>
               </div>
               <CardMeta>
-                Earnings are settled automatically every Wednesday at 06:00 AM IST via NEFT/IMPS to your verified bank account or UPI ID registered during KYC onboarding.
+                Weekly Wednesday Settlement: Orders from Monday 00:00:00 to Sunday 23:59:59 are settled automatically every Wednesday afternoon at 14:00 IST via automated NEFT/IMPS to your verified bank account or UPI ID registered during KYC onboarding.
               </CardMeta>
             </div>
             <Button

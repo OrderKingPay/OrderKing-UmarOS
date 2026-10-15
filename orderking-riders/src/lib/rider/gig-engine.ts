@@ -9,7 +9,7 @@
  * Uses strictly authentic terminology and integer paise for all bonuses.
  */
 
-export type RiderTier = "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
+export type RiderTier = "BRONZE" | "SILVER" | "GOLD" | "DIAMOND" | "PLATINUM";
 
 export type TierInfo = {
   tier: RiderTier;
@@ -95,34 +95,43 @@ export type ActiveGigQuest = {
 export const RIDER_TIERS: Record<RiderTier, TierInfo> = {
   BRONZE: {
     tier: "BRONZE",
-    title: "Starter Courier",
+    title: "Bronze Partner",
     minTripsLifetime: 0,
-    perks: ["Standard Dispatch", "Weekly Payouts", "HPCL 2.5% Fuel Discount"],
+    perks: ["Standard Dispatch", "Weekly Wednesday Payouts", "HPCL 2.5% Fuel Discount"],
     surgeMultiplier: 1.0,
     fuelCashbackPct: 2.5,
     priorityDispatch: false,
   },
   SILVER: {
     tier: "SILVER",
-    title: "Vanguard Partner",
+    title: "Silver Partner",
     minTripsLifetime: 50,
-    perks: ["1.1x Surge Multiplier", "Instant Daily Cashout", "HPCL 3.0% Fuel Discount"],
+    perks: ["1.1x Surge Multiplier", "Instant Mid-Shift UPI Clearing", "HPCL 3.0% Fuel Discount"],
     surgeMultiplier: 1.1,
     fuelCashbackPct: 3.0,
     priorityDispatch: false,
   },
   GOLD: {
     tier: "GOLD",
-    title: "Elite Champion",
+    title: "Gold Partner",
     minTripsLifetime: 200,
     perks: ["1.25x Surge Multiplier", "Priority Dispatch Queue", "Free Oil Change Voucher", "HPCL 4.0% Discount"],
     surgeMultiplier: 1.25,
     fuelCashbackPct: 4.0,
     priorityDispatch: true,
   },
+  DIAMOND: {
+    tier: "DIAMOND",
+    title: "Diamond Partner",
+    minTripsLifetime: 500,
+    perks: ["1.5x Surge Multiplier", "Top Priority VIP Dispatch", "Zero Cashout Fees", "Comprehensive Health Cover"],
+    surgeMultiplier: 1.5,
+    fuelCashbackPct: 5.0,
+    priorityDispatch: true,
+  },
   PLATINUM: {
     tier: "PLATINUM",
-    title: "Royal Knight",
+    title: "Diamond Partner",
     minTripsLifetime: 500,
     perks: ["1.5x Surge Multiplier", "Top Priority VIP Dispatch", "Zero Cashout Fees", "Comprehensive Health Cover"],
     surgeMultiplier: 1.5,
@@ -242,7 +251,7 @@ export const STANDARD_MULTIDAY_TOUCHPOINT_TARGETS: MultiDayTouchpointTarget[] = 
  * Calculates current tier based on verified lifetime deliveries.
  */
 export function getRiderTier(lifetimeTrips: number): TierInfo {
-  if (lifetimeTrips >= RIDER_TIERS.PLATINUM.minTripsLifetime) return RIDER_TIERS.PLATINUM;
+  if (lifetimeTrips >= RIDER_TIERS.DIAMOND.minTripsLifetime) return RIDER_TIERS.DIAMOND;
   if (lifetimeTrips >= RIDER_TIERS.GOLD.minTripsLifetime) return RIDER_TIERS.GOLD;
   if (lifetimeTrips >= RIDER_TIERS.SILVER.minTripsLifetime) return RIDER_TIERS.SILVER;
   return RIDER_TIERS.BRONZE;
