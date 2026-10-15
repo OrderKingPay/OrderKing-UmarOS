@@ -128,7 +128,7 @@ export class PremiumRevenueOperatingSystem {
       fromStage: "OPPORTUNITY_DISCOVERY",
       toStage: "QUALIFICATION",
       actor: "AI_EVALUATOR",
-      evidence: ["Identified ₹5.18L/mo commission loss to Swiggy/Zomato"],
+      evidence: ["Identified ₹5.18L/mo commission loss to legacy aggregators"],
     });
 
     this.recordTransition({

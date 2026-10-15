@@ -818,7 +818,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     q.includes("github") ||
     q.includes("upwork") ||
     q.includes("whatsapp") ||
-    q.includes("zomato") ||
+    q.includes("aggregator") ||
     q.includes("swiggy") ||
     q.includes("shopify") ||
     q.includes("connector") ||
@@ -828,7 +828,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     let matchedPlatform = (await getUniversalPlatforms())[0]; // GitHub default
     if (q.includes("upwork") || q.includes("contract") || q.includes("bid")) matchedPlatform = (await getUniversalPlatforms())[1];
     else if (q.includes("whatsapp") || q.includes("message") || q.includes("chat")) matchedPlatform = (await getUniversalPlatforms())[2];
-    else if (q.includes("zomato") || q.includes("swiggy") || q.includes("menu")) matchedPlatform = (await getUniversalPlatforms())[3];
+    else if (q.includes("aggregator") || q.includes("swiggy") || q.includes("menu")) matchedPlatform = (await getUniversalPlatforms())[3];
     else if (q.includes("shopify") || q.includes("store") || q.includes("ecommerce")) matchedPlatform = (await getUniversalPlatforms())[4];
     else if (q.includes("pay") || q.includes("upi") || q.includes("bank")) matchedPlatform = (await getUniversalPlatforms())[5];
     else if (q.includes("google") || q.includes("meet") || q.includes("drive") || q.includes("sheet")) matchedPlatform = (await getUniversalPlatforms())[6];

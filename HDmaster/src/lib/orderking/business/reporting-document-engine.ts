@@ -221,7 +221,7 @@ export class ReportingDocumentEngine {
     const activeRiders = custom.activeRiders ?? 18;
     const platformFee = custom.platformFeeRevenue ?? 2840; // ₹20 flat fee or subscription
     const founderProfit = custom.founderProfit ?? 2350;
-    const competitorSavings = Math.round(gmvToday * 0.22); // 22% typical Zomato/Swiggy commission saved
+    const competitorSavings = Math.round(gmvToday * 0.22); // 22% typical legacy aggregator commission saved
 
     return [
       {
@@ -233,7 +233,7 @@ export class ReportingDocumentEngine {
           { key: 'gmv_today', label: 'Gross Merchandise Value', value: `₹${gmvToday.toLocaleString('en-IN')}`, category: 'FACT', sourceNote: 'Payment Gateway' },
           { key: 'platform_fee', label: 'Platform Fee Revenue', value: `₹${platformFee.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Canonical Ledger' },
           { key: 'founder_net', label: 'Founder Net Margin', value: `₹${founderProfit.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Ledger Profit Engine' },
-          { key: 'partner_savings', label: 'Merchant Savings vs Swiggy/Zomato (22%)', value: `₹${competitorSavings.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Zero-Commission Benchmark' },
+          { key: 'partner_savings', label: 'Merchant Savings vs Legacy Aggregators (22%)', value: `₹${competitorSavings.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Zero-Commission Benchmark' },
           { key: 'active_merchants', label: 'Active Restaurant Partners', value: activeRest, category: 'FACT', sourceNote: 'OrderKing-Partners Heartbeat' },
           { key: 'active_riders', label: 'Online Delivery Partners', value: activeRiders, category: 'FACT', sourceNote: 'OrderKing-Riders GPS Registry' },
         ],

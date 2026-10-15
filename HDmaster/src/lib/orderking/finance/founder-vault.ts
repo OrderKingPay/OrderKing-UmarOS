@@ -55,12 +55,12 @@ export type FounderVaultSummary = {
     retainedGstWorkingCapitalPaise: number; // Cash GST collected that stays in owner account via ITC set-off
     section95GstEscrowFloatYieldPaise: number; // 6.5% p.a. yield on 30-day average 5% GST escrow float
   };
-  competitiveZomatoComparison: {
-    zomatoAverageCommissionBps: number; // 2500 (25%)
+  competitiveTier1Comparison: {
+    tier1AverageCommissionBps: number; // 2500 (25%)
     orderKingCommissionBps: number; // 1500 (15%)
-    restaurantSavingsVsZomatoPaise: number; // 10% gross commission saved by partner restaurants
+    restaurantSavingsVsTier1Paise: number; // 10% gross commission saved by partner restaurants
     restaurantTakeHomeUpliftPercentage: string; // "+13.3% higher take-home profit"
-    zomatoOnboardingFeeSavedPaise: number; // ₹10,000 saved per restaurant
+    tier1OnboardingFeeSavedPaise: number; // ₹10,000 saved per restaurant
     orderKingVolumeMultiplier: string; // "3.2x" estimated order volume surge
   };
   disbursementRules: {
@@ -132,9 +132,9 @@ export function calculateFounderRetainedCashVault(input: FounderVaultInput): Fou
     retainedPlatformFloat - statutoryTaxReserve + retainedGstWorkingCapital + section95FloatYield,
   );
 
-  // 7. Zomato vs OrderKing Comparative Savings Metrics
-  const zomatoCommission = Math.round((netFoodSales * 2500) / 10000); // 25% Zomato take-rate
-  const restaurantSavingsVsZomato = Math.max(0, zomatoCommission - commission);
+  // 7. Tier-1 Legacy Aggregator vs OrderKing Comparative Savings Metrics
+  const tier1Commission = Math.round((netFoodSales * 2500) / 10000); // 25% Tier-1 take-rate
+  const restaurantSavingsVsTier1 = Math.max(0, tier1Commission - commission);
 
   const marginPct =
     input.grossCustomerInflowPaise > 0
@@ -165,12 +165,12 @@ export function calculateFounderRetainedCashVault(input: FounderVaultInput): Fou
       retainedGstWorkingCapitalPaise: retainedGstWorkingCapital,
       section95GstEscrowFloatYieldPaise: section95FloatYield,
     },
-    competitiveZomatoComparison: {
-      zomatoAverageCommissionBps: 2500,
+    competitiveTier1Comparison: {
+      tier1AverageCommissionBps: 2500,
       orderKingCommissionBps: input.platformCommissionBps,
-      restaurantSavingsVsZomatoPaise: restaurantSavingsVsZomato,
+      restaurantSavingsVsTier1Paise: restaurantSavingsVsTier1,
       restaurantTakeHomeUpliftPercentage: "+13.3% higher take-home profit",
-      zomatoOnboardingFeeSavedPaise: 1_000_000, // ₹10,000 saved per restaurant
+      tier1OnboardingFeeSavedPaise: 1_000_000, // ₹10,000 saved per restaurant
       orderKingVolumeMultiplier: "3.2x",
     },
     disbursementRules: {

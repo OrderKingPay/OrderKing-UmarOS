@@ -45,7 +45,7 @@ function SettlementEscalations() {
             {!data || data.length === 0 ? (
               <div className="bg-emerald-500/10 border border-emerald-500/30 p-8 rounded-xl text-center">
                 <p className="text-emerald-400 font-bold text-lg">✅ All Clear!</p>
-                <p className="text-slate-400 text-sm mt-1">The AI Engine found 0 mathematical errors this week. All Zomato-cycle payouts are executing safely.</p>
+                <p className="text-slate-400 text-sm mt-1">The AI Engine found 0 mathematical errors this week. All Tier-1 cycle payouts are executing safely.</p>
               </div>
             ) : (
               data.map((batch: any) => (

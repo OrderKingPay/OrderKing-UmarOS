@@ -11,7 +11,7 @@ export interface EcosystemCmsConfig {
   closedHoursNoticeText: string;
 
   // 2. Surge Protection & Competitive Pricing
-  zomatoSurgeWarningText: string;
+  zeroSurgeWarningText: string;
   tier1SurgeWarningText?: string;
   surgeDisclaimerSubtext: string;
   transparentFeeHeader: string;
@@ -155,7 +155,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   closedHoursNoticeText: "Partner kitchens are currently offline for resting hours. Dispatch opens at 06:00 AM.",
 
   // 2. Surge Protection & Competitive Pricing
-  zomatoSurgeWarningText: "Zero Dynamic Surge Guarantee: Our delivery fees are strictly fixed regardless of peak hours or bad weather.",
+  zeroSurgeWarningText: "Zero Dynamic Surge Guarantee: Our delivery fees are strictly fixed regardless of peak hours or bad weather.",
   tier1SurgeWarningText: "Zero Dynamic Surge Guarantee: Our delivery fees are strictly fixed regardless of peak hours or bad weather.",
   surgeDisclaimerSubtext: "Unlike aggregator surge models, restaurant menu rates remain authentic without inflated commission markups.",
   transparentFeeHeader: "Complete Operational Fee Transparency",
@@ -280,7 +280,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
 
   // 14. AI Deepfake Media Engine (Synthesia / HeyGen API)
   connectorAiMediaEngineTitle: "AI Deepfake Media Engine (Synthesia / HeyGen API)",
-  connectorAiMediaEngineSubtitle: "Autonomous viral avatar video generator. Programmatically scripts, voices, and renders photorealistic AI presenter MP4 files explaining the 'Delete Zomato Bounty' to blast directly into Instagram DMs, Facebook Messenger, and WhatsApp geographically.",
+  connectorAiMediaEngineSubtitle: "Autonomous viral avatar video generator. Programmatically scripts, voices, and renders photorealistic AI presenter MP4 files explaining the 'Liberation Bounty' to blast directly into Instagram DMs, Facebook Messenger, and WhatsApp geographically.",
   connectorAiMediaEngineToggleLabel: "AI Media Engine Active",
   connectorAiMediaEngineTestBtnText: "Verify Synthesia / HeyGen Handshake",
   connectorAiMediaEnginePolicyTitle: "Autonomous Synthetic Media & Regulatory Transparency Guard",
@@ -574,7 +574,7 @@ export interface AiDeepfakeMediaConnector {
   backgroundColor: string;
   enableSubtitles: boolean;
 
-  // Viral 'Delete Zomato Bounty' Campaign
+  // Viral 'Liberation Bounty' Campaign
   bountyCampaignTitle: string;
   bountyCashRewardInr: number;
   bountyPromoCode: string;
@@ -986,14 +986,14 @@ You are calling Indian independent restaurant owners, cloud kitchens, and QSR ma
 
 CORE VALUE PROPOSITION:
 1. ZERO SETUP FEE: ₹0 onboarding cost, ₹0 upfront software fee, ₹0 tablet hardware lock-in.
-2. 0% COMMISSION: Unlike Swiggy and Zomato charging 28% to 32% on every single order, OrderKing charges 0% commission. The restaurant keeps 100% of their food revenue.
+2. 0% COMMISSION: Unlike legacy aggregators charging 28% to 32% on every single order, OrderKing charges 0% commission. The restaurant keeps 100% of their food revenue.
 3. DIRECT INSTANT UPI SETTLEMENTS: Payments settle directly into the restaurant's ICICI/HDFC/SBI bank account within seconds via NPCI UPI rails—no 7-day aggregator withholding.
 4. FREE DIGITAL MENU & QR SYSTEM: OrderKing generates dynamic QR table menus, WhatsApp order drops, and a branded white-label ordering portal in under 15 minutes.
 5. RESTAURANT OWNS CUSTOMER DATA: Full access to diner phone numbers and order history for repeat marketing, unlike aggregators who hide customer identities.
 
 OBJECTION HANDLING PROTOCOL:
-- If owner says "We are already on Swiggy / Zomato":
-  Respond: "That is great! Keep Swiggy and Zomato for initial discovery, but why give them 30% of your loyal repeat customers? Use OrderKing for your direct diners and WhatsApp regulars, and save ₹25,000 to ₹50,000 every single month in commission drain."
+- If owner says "We are already on legacy aggregators":
+  Respond: "That is great! Keep them for initial discovery, but why give them 30% of your loyal repeat customers? Use OrderKing for your direct diners and WhatsApp regulars, and save ₹25,000 to ₹50,000 every single month in commission drain."
 - If owner says "Is there any hidden monthly fee or AMC?":
   Respond: "Absolutely zero hidden fees. There is no monthly rental, no setup charge, and no annual maintenance contract. We only make money when you thrive through optional micro-fees on value-added marketing tools."
 - If owner says "Who delivers the food?":
@@ -1082,7 +1082,7 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     targetMessenger: true,
     targetWhatsapp: true,
     acquisitionHeadline: "Eliminate 30% Aggregator Commission • ₹0 Setup Fee Onboarding",
-    acquisitionPitchBody: "Namaste {{restaurant_name}} Team! Why sacrifice 28-32% margins to Swiggy & Zomato? OrderKing delivers 0% commission direct online ordering with ₹0 setup fee and direct instant UPI bank settlements. We have pre-configured a branded digital menu for your kitchen at {{portal_claim_url}}. Claim your verified owner profile in 60 seconds.",
+    acquisitionPitchBody: "Namaste {{restaurant_name}} Team! Why sacrifice 28-32% margins to dominant legacy aggregators? OrderKing delivers 0% commission direct online ordering with ₹0 setup fee and direct instant UPI bank settlements. We have pre-configured a branded digital menu for your kitchen at {{portal_claim_url}}. Claim your verified owner profile in 60 seconds.",
     acquisitionCtaUrl: "https://orderking.delivery/partner-claim?ref=omnichannel_geoblast",
     acquisitionOfferCode: "ZERO_FEE_DIRECT_2026",
     dailyDmQuota: 500,
@@ -1111,24 +1111,24 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     backgroundType: "cyber_dark",
     backgroundColor: "#0D3B2E",
     enableSubtitles: true,
-    bountyCampaignTitle: "Delete Zomato ₹150 Bounty Viral Drop",
+    bountyCampaignTitle: "Liberation ₹150 Bounty Viral Drop",
     bountyCashRewardInr: 150,
-    bountyPromoCode: "DELETE_ZOMATO_150",
-    bountyCtaUrl: "https://orderking.delivery/bounty/delete-zomato?cash=150",
-    scriptTemplate: "Stop paying ₹45 surge pricing and 30% hidden markups to Zomato! Here is the official Delete Zomato Bounty from OrderKing. Uninstall Zomato right now, install OrderKing, and we immediately deposit ₹150 sovereign cash straight into your dining wallet. 0% restaurant commissions, authentic kitchen rates, and lightning-fast direct dispatch. Tap the link below, claim your ₹150 bounty, and eat like a King today!",
+    bountyPromoCode: "LIBERATION_150",
+    bountyCtaUrl: "https://orderking.delivery/bounty/liberation?cash=150",
+    scriptTemplate: "Stop paying ₹45 surge pricing and 30% hidden markups to legacy aggregators! Here is the official Liberation Bounty from OrderKing. Switch to OrderKing right now, and we immediately deposit ₹150 sovereign cash straight into your dining wallet. 0% restaurant commissions, authentic kitchen rates, and lightning-fast direct dispatch. Tap the link below, claim your ₹150 bounty, and eat like a King today!",
     systemPromptVoice: "Energetic, authentic, authoritative, fluent Hinglish, consumer champion tone.",
     renderedVideos: [
       {
         id: "VID-BOUNTY-001",
         provider: "heygen",
-        title: "Delete Zomato ₹150 Direct Consumer Drop (9:16)",
+        title: "Liberation ₹150 Direct Consumer Drop (9:16)",
         avatarId: "kabir_growth_exec",
         voiceId: "en-IN-PrabhatNeural",
         aspectRatio: "9:16",
         durationSeconds: 38,
-        mp4Url: "https://assets.orderking.delivery/media/ai-renders/delete_zomato_bounty_viral_9x16.mp4",
+        mp4Url: "https://assets.orderking.delivery/media/ai-renders/liberation_bounty_viral_9x16.mp4",
         thumbnailUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-        scriptSnippet: "Stop paying ₹45 surge pricing! Uninstall Zomato right now and get ₹150 instant OrderKing cash...",
+        scriptSnippet: "Stop paying ₹45 surge pricing! Switch to OrderKing right now and get ₹150 instant cash...",
         bountyOfferInr: 150,
         status: "completed",
         createdAt: "2026-10-10T14:30:00.000Z",

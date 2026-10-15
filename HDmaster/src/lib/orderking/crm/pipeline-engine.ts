@@ -310,7 +310,7 @@ export const INITIAL_LEADS: CrmLead[] = [
     email: "management@royaldarbar.in",
     location: "Karimganj / Silchar",
     monthlyRevenueEst: "₹18,50,000",
-    painPoint: "Losing 28% margins (₹5,18,000/mo) to Swiggy/Zomato commission taxes.",
+    painPoint: "Losing 28% margins (₹5,18,000/mo) to legacy aggregator commission taxes.",
     dealValueInr: 149999,
     advanceLockedInr: 74999,
     currentStage: "PROPOSAL",

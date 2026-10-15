@@ -1133,7 +1133,7 @@ const TEN_WORLDS: WorldDefinition[] = [
         type: "select",
         options: [
           "OrderKing Emerald & Gold",
-          "Classic Zomato Crimson",
+          "Classic Crimson",
           "Royal Midnight Dark",
           "Clean Daylight White",
         ],

@@ -1,4 +1,4 @@
-// HDmaster Autonomous Operations Engine — 1000x Zomato-Level Autonomy
+// HDmaster Autonomous Operations Engine — 1000x Dominant Legacy Aggregator-Level Autonomy
 // Replaces Level 1/2 Support, Partner Operations, and Payout Calculations with Zero Legal Liability.
 // Implements Strict Tax Compliance (TCS Section 52, TDS Section 194-O) and Dispute Management.
 
@@ -31,7 +31,7 @@ export class AutonomousOperationsEngine {
   private currentDailyLossInr = 0;
 
   /**
-   * Zomato-level autonomous dispute resolution. No human support needed.
+   * Dominant Legacy Aggregator-level autonomous dispute resolution. No human support needed.
    * Employs strict fraud checks and legal boundaries.
    */
   public resolveDispute(
@@ -55,7 +55,7 @@ export class AutonomousOperationsEngine {
       };
     }
 
-    // Dynamic SLA Logic (Zomato-Style)
+    // Dynamic SLA Logic (Dominant Legacy Aggregator-Style)
     if (disputeType === "LATE_DELIVERY" && delayMinutes > 45) {
       const compensation = Math.min(orderValueInr, 50); // Max ₹50 late penalty
       

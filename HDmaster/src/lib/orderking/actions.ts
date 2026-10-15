@@ -1999,7 +1999,7 @@ export const renderAiAvatarVideoFn = createServerFn({ method: "POST" })
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                title: title || "Delete Zomato Bounty Drop",
+                title: title || "Market-Dominance Bounty Drop",
                 description: "OrderKing Autonomous Bounty Media Campaign",
                 visibility: "public",
                 aspectRatio: aspectRatio === "9:16" ? "9:16" : aspectRatio === "1:1" ? "1:1" : "16:9",
@@ -2045,7 +2045,7 @@ export const renderAiAvatarVideoFn = createServerFn({ method: "POST" })
       const videoItem = {
         id: externalJobId,
         provider,
-        title: title || `Delete Zomato ₹${bountyOfferInr} Viral Drop (${aspectRatio})`,
+        title: title || `Market-Dominance ₹${bountyOfferInr} Viral Drop (${aspectRatio})`,
         avatarId,
         voiceId,
         aspectRatio,
@@ -2111,7 +2111,7 @@ export const dispatchAiMediaGeoDmBlastFn = createServerFn({ method: "POST" })
         targetInstagram,
         targetMessenger,
         targetWhatsapp,
-        bountyHeadline = "Delete Zomato & Claim Your ₹150 Free Direct Food Bounty",
+        bountyHeadline = "Claim Your ₹150 Free Direct Food Bounty",
         bountyCashRewardInr = 150,
         dailyDmQuota = 500,
       } = data;
@@ -2168,7 +2168,7 @@ export const dispatchAiMediaGeoDmBlastFn = createServerFn({ method: "POST" })
           bountyCashRewardInr,
           bountyHeadline,
         },
-        message: `🚀 Viral Media Blast Initiated! Rendered AI MP4 video dispatched to ${actualDispatches} smartphones across ${targetLocationLabel} (Radius: ${radiusKm}km). Projected ${projectedBountiesClaimed} Delete Zomato Bounties claimed!`,
+        message: `🚀 Viral Media Blast Initiated! Rendered AI MP4 video dispatched to ${actualDispatches} smartphones across ${targetLocationLabel} (Radius: ${radiusKm}km). Projected ${projectedBountiesClaimed} Market-Dominance Bounties claimed!`,
       };
     } catch (err) {
       return fail(err);

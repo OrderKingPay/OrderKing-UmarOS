@@ -30,7 +30,7 @@ export class RiderTelematicsEngine {
   private static readonly BASE_BATTERY_DROP_PER_MIN = 1.8; 
   private static readonly THERMAL_THROTTLE_MULTIPLIER = 1.35; 
   
-  // Zomato-killer aggressive braking detection (using kinetic delta)
+  // High-performance aggressive braking detection (using kinetic delta)
   private static readonly KINETIC_SHOCK_THRESHOLD = 4.2; 
   private static readonly CRITICAL_BATTERY_RESERVE = 3.0; 
 

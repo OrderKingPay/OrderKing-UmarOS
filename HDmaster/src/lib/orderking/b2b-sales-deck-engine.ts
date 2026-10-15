@@ -298,7 +298,7 @@ export function generateExecutiveEmailPitch(
       subject: `Reclaiming ₹${roi.annualNetProfitReclaimed.toLocaleString("en-IN")}/yr from Aggregator Commissions for ${franchiseBrand} (14-Day Direct UPI Rollout)`,
       body: `Dear ${recipientName},
 
-Having spent 12 years running high-velocity multi-unit Burger King operations, I understand firsthand how 28%–32% Swiggy and Zomato commission deductions, mandatory discount funding, and unverified refund penalties erode store-level EBITDA down to single digits.
+Having spent 12 years running high-velocity multi-unit Burger King operations, I understand firsthand how 28%–32% dominant legacy aggregator commission deductions, mandatory discount funding, and unverified refund penalties erode store-level EBITDA down to single digits.
 
 We engineered OrderKing (UmarOS) so Indian restaurant groups and cloud kitchens can eliminate aggregator commission bleed and own 100% of their customer ledger:
 

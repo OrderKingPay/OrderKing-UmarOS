@@ -1,5 +1,5 @@
 /**
- * Safe money helpers & Zomato Indian Payout Matrix — all values in integer paise.
+ * Safe money helpers & Tier-1 Indian Payout Matrix — all values in integer paise.
  * Never use floating point for currency arithmetic.
  */
 
@@ -38,7 +38,7 @@ export function percentOf(paise: number, bps: number): number {
 }
 
 // ---------------------------------------------------------------------------
-// Zomato Indian Payout Matrix (City Tiers, Distance, Wait-Time, Surge, Tips)
+// Tier-1 Indian Payout Matrix (City Tiers, Distance, Wait-Time, Surge, Tips)
 // ---------------------------------------------------------------------------
 
 export const STATUTORY_BASE_FARE_PAISE = 3500;
@@ -248,7 +248,7 @@ export function calculateCustomerTipPassThrough(tipPaise: number): {
   };
 }
 
-export interface ZomatoPayoutInput {
+export interface Tier1PayoutInput {
   distanceKm: number;
   cityTier?: CityTier;
   customRatePerKmPaise?: number;
@@ -263,7 +263,7 @@ export interface ZomatoPayoutInput {
   customFloorPaise?: number;
 }
 
-export function calculateZomatoAlgorithmicPayout(input: ZomatoPayoutInput) {
+export function calculateTier1AlgorithmicPayout(input: Tier1PayoutInput) {
   const tier = input.cityTier ?? "TIER_1";
   const tierConfig = CITY_TIER_PAY_CONFIGS[tier] ?? CITY_TIER_PAY_CONFIGS.TIER_1;
 

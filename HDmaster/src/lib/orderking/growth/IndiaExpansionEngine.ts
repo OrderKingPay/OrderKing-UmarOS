@@ -36,20 +36,20 @@ const TIER_THRESHOLDS = {
 
 const LOCALIZED_TEMPLATES: Record<RegionalLanguage, (refereeReward: number, pincode: string, progress: number, url: string) => string> = {
   en: (reward, pin, prog, url) => `Drop the 30% markup apps. We are bringing OrderKing to ${pin}! We are ${prog}% unlocked. Sign up here to push us to 100% and we both get ₹${reward} direct to UPI upon launch! 🚀🍔 ${url}`,
-  hi: (reward, pin, prog, url) => `Zomato/Swiggy ko chhodo! Hum ${pin} me OrderKing la rahe hain. Area ${prog}% unlock ho chuka hai. Link se sign up karo, launch par hum dono ko ₹${reward} UPI me milenge! 🚀🍔 ${url}`,
-  ta: (reward, pin, prog, url) => `Zomato/Swiggy ஐ விடுங்கள்! ${pin} இல் OrderKing ஐக் கொண்டு வருகிறோம். ${prog}% திறக்கப்பட்டுவிட்டது. இப்போதே இணையுங்கள், ₹${reward} UPI இல் பெறுங்கள்! 🚀🍔 ${url}`,
-  te: (reward, pin, prog, url) => `Zomato/Swiggy వదిలేయండి! మేము ${pin} లో OrderKing తెస్తున్నాము. ${prog}% అన్‌లాక్ అయింది. లింక్ ద్వారా చేరండి, ₹${reward} UPI పొందండి! 🚀🍔 ${url}`,
-  mr: (reward, pin, prog, url) => `Zomato/Swiggy सोडा! आम्ही ${pin} मध्ये OrderKing आणत आहोत. ${prog}% अनलॉक झाले आहे. आत्ताच साइन अप करा आणि ₹${reward} UPI मिळवा! 🚀🍔 ${url}`,
-  bn: (reward, pin, prog, url) => `Zomato/Swiggy ছাড়ুন! আমরা ${pin} এ OrderKing আনছি। ${prog}% আনলক হয়েছে। সাইন আপ করুন এবং ₹${reward} UPI পান! 🚀🍔 ${url}`,
-  kn: (reward, pin, prog, url) => `Zomato/Swiggy ಬಿಡಿ! ನಾವು ${pin} ಗೆ OrderKing ತರುತ್ತಿದ್ದೇವೆ. ${prog}% ಅನ್‌ಲಾಕ್ ಆಗಿದೆ. ಈಗಲೇ ಸೇರಿ, ₹${reward} UPI ಪಡೆಯಿರಿ! 🚀🍔 ${url}`,
-  gu: (reward, pin, prog, url) => `Zomato/Swiggy છોડો! અમે ${pin} માં OrderKing લાવી રહ્યા છીએ. ${prog}% અનલૉક થયું છે. સાઇન અપ કરો અને ₹${reward} UPI મેળવો! 🚀🍔 ${url}`,
+  hi: (reward, pin, prog, url) => `Legacy aggregators ko chhodo! Hum ${pin} me OrderKing la rahe hain. Area ${prog}% unlock ho chuka hai. Link se sign up karo, launch par hum dono ko ₹${reward} UPI me milenge! 🚀🍔 ${url}`,
+  ta: (reward, pin, prog, url) => `Legacy aggregators ஐ விடுங்கள்! ${pin} இல் OrderKing ஐக் கொண்டு வருகிறோம். ${prog}% திறக்கப்பட்டுவிட்டது. இப்போதே இணையுங்கள், ₹${reward} UPI இல் பெறுங்கள்! 🚀🍔 ${url}`,
+  te: (reward, pin, prog, url) => `Legacy aggregators వదిలేయండి! మేము ${pin} లో OrderKing తెస్తున్నాము. ${prog}% అన్‌లాక్ అయింది. లింక్ ద్వారా చేరండి, ₹${reward} UPI పొందండి! 🚀🍔 ${url}`,
+  mr: (reward, pin, prog, url) => `Legacy aggregators सोडा! आम्ही ${pin} मध्ये OrderKing आणत आहोत. ${prog}% अनलॉक झाले आहे. आत्ताच साइन अप करा आणि ₹${reward} UPI मिळवा! 🚀🍔 ${url}`,
+  bn: (reward, pin, prog, url) => `Legacy aggregators ছাড়ুন! আমরা ${pin} এ OrderKing আনছি। ${prog}% আনলক হয়েছে। সাইন আপ করুন এবং ₹${reward} UPI পান! 🚀🍔 ${url}`,
+  kn: (reward, pin, prog, url) => `Legacy aggregators ಬಿಡಿ! ನಾವು ${pin} ಗೆ OrderKing ತರುತ್ತಿದ್ದೇವೆ. ${prog}% ಅನ್‌ಲಾಕ್ ಆಗಿದೆ. ಈಗಲೇ ಸೇರಿ, ₹${reward} UPI ಪಡೆಯಿರಿ! 🚀🍔 ${url}`,
+  gu: (reward, pin, prog, url) => `Legacy aggregators છોડો! અમે ${pin} માં OrderKing લાવી રહ્યા છીએ. ${prog}% અનલૉક થયું છે. સાઇન અપ કરો અને ₹${reward} UPI મેળવો! 🚀🍔 ${url}`,
 };
 
 export class IndiaExpansionEngine {
   private viralEngine: ViralDistributionEngine;
   private rewardCalculator: ReferralRewardCalculator;
   
-  // Zomato/Swiggy exploit: They charge 25-30%. We charge a hyper-competitive flat 5% or zero-commission SaaS.
+  // Legacy aggregators exploit: They charge 25-30%. We charge a hyper-competitive flat 5% or zero-commission SaaS.
   private readonly COMPETITIVE_PLATFORM_FEE = 0.05; 
   private readonly MICRO_FRANCHISE_CUT = 0.02; // 2% perpetual cut of AOV to the influencer
 
@@ -133,7 +133,7 @@ export class IndiaExpansionEngine {
       influencerId,
       targetPincode: metrics.pincode,
       franchiseLink: invite.url,
-      businessPitch: `Zomato takes 25%. We take 5%. Onboard your favorite eateries in ${metrics.pincode} to OrderKing. We save them 20%, and pay YOU a perpetual 2% of their total GMV.`,
+      businessPitch: `Tier-1 Legacy Market Leader takes 25%. We take 5%. Onboard your favorite eateries in ${metrics.pincode} to OrderKing. We save them 20%, and pay YOU a perpetual 2% of their total GMV.`,
       estimatedMonthlyPassiveIncomePerRestaurantINR: Math.floor(monthlyInfluencerCutPerRest),
       platformCompetitiveAdvantage: '2000bps margin improvement for restaurants',
     };

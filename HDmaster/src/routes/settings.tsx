@@ -98,7 +98,7 @@ const ROYAL_THEME_PRESETS = [
   },
   {
     id: "crimson_slate",
-    name: "Zomato Crimson & Slate",
+    name: "Tier-1 Crimson & Slate",
     primaryColor: "#E23744",
     accentColor: "#F59E0B",
     surfaceColor: "#0F172A",
@@ -265,7 +265,7 @@ function SettingsPage() {
     payout_rail: "NPCI IMPS / NEFT Batch",
   });
 
-  // Sub-Category 2D State: Zomato Rider Discipline, Penalties & Floating Cash Architecture
+  // Sub-Category 2D State: Tier-1 Rider Discipline, Penalties & Floating Cash Architecture
   const [disciplineState, setDisciplineState] = useState<RiderDisciplineSettings>(
     DEFAULT_RIDER_DISCIPLINE_SETTINGS,
   );
@@ -568,7 +568,7 @@ function SettingsPage() {
         nextBrand.primaryColor = "#0D3B2E";
         nextBrand.accentColor = "#D97706";
         appliedChanges.push("Theme Preset → OrderKing Emerald & Gold");
-      } else if (lower.includes("crimson") || lower.includes("zomato red")) {
+      } else if (lower.includes("crimson") || lower.includes("tier-1 red")) {
         nextBrand.primaryColor = "#E23744";
         nextBrand.accentColor = "#F59E0B";
         appliedChanges.push("Theme Preset → Crimson & Slate");
@@ -827,7 +827,7 @@ function SettingsPage() {
       "mdr",
       "refund",
       "settlement",
-      "zomato",
+      "tier1",
       "fare matrix",
       "fare",
       "matrix",
@@ -1763,20 +1763,20 @@ function SettingsPage() {
                 )}
               </div>
 
-              {/* Sub-Category 2D: Zomato Rider Discipline, Penalties & Floating Cash ("Pocket Balance") Architecture */}
+              {/* Sub-Category 2D: Tier-1 Rider Discipline, Penalties & Floating Cash ("Pocket Balance") Architecture */}
               <div className="rounded-xl border border-slate-200 p-4 space-y-4">
                 <div className="border-b border-slate-100 pb-3 flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                       <Wallet className="h-4 w-4 text-emerald-600" />
-                      Sub-Category 2D · Zomato Rider Discipline, Penalties &amp; Floating Cash ("Pocket Balance") Architecture
+                      Sub-Category 2D · Tier-1 Rider Discipline, Penalties &amp; Floating Cash ("Pocket Balance") Architecture
                     </h3>
                     <p className="text-xs text-slate-500">
                       Configure COD floating cash limit, pre/post-pickup cancellation deductions, consecutive rejection cooling-off freeze, and UPI deposit VPA.
                     </p>
                   </div>
                   <span className="rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-0.5 font-mono">
-                    Zomato Exact Parity
+                    Tier-1 Exact Parity
                   </span>
                 </div>
 
@@ -1812,7 +1812,7 @@ function SettingsPage() {
                     />
                     <div className="flex justify-between text-[10px] font-mono text-slate-400">
                       <span>₹500 Strict</span>
-                      <span>₹2,000 (Zomato Benchmark)</span>
+                      <span>₹2,000 (Tier-1 Benchmark)</span>
                       <span>₹10,000 High</span>
                     </div>
                   </div>
@@ -1838,7 +1838,7 @@ function SettingsPage() {
                     />
                     <div className="flex justify-between text-[10px] font-mono text-slate-400">
                       <span>₹0 Grace</span>
-                      <span>₹25 Zomato Standard</span>
+                      <span>₹25 Tier-1 Standard</span>
                       <span>₹100 Max</span>
                     </div>
                   </div>
@@ -1858,7 +1858,7 @@ function SettingsPage() {
                       }
                       className="w-full border border-slate-300 rounded-xl px-3 py-2.5 bg-slate-50 text-slate-900 text-xs font-mono"
                     >
-                      <option value="FULL_ORDER">Full Order Value Deduction (Zomato Benchmark)</option>
+                      <option value="FULL_ORDER">Full Order Value Deduction (Tier-1 Benchmark)</option>
                       <option value="CUSTOM_FLAT">Custom Flat Fee Deduction</option>
                       <option value="NONE">Dispute Hold Only (No Penalty)</option>
                     </select>
@@ -1885,7 +1885,7 @@ function SettingsPage() {
                     />
                     <div className="flex justify-between text-[10px] font-mono text-slate-400">
                       <span>2 Declines</span>
-                      <span>3 (Zomato Rule)</span>
+                      <span>3 (Tier-1 Rule)</span>
                       <span>8 Lenient</span>
                     </div>
                   </div>
@@ -1973,7 +1973,7 @@ function SettingsPage() {
                           ...econState,
                           rider_discipline: disciplineState,
                         },
-                        "Saved Sub-Category 2D: Zomato Rider Discipline, Penalties & Floating Cash Architecture",
+                        "Saved Sub-Category 2D: Tier-1 Rider Discipline, Penalties & Floating Cash Architecture",
                       )
                     }
                     saving={saving}
@@ -1982,7 +1982,7 @@ function SettingsPage() {
                 </div>
               </div>
 
-              {/* Sub-Category 2E: Central Pricing Switchboard (Zomato Parity Algorithmic Knobs & Simulator) */}
+              {/* Sub-Category 2E: Central Pricing Switchboard (Tier-1 Parity Algorithmic Knobs & Simulator) */}
               <div className="pt-2">
                 <CentralPricingSwitch />
               </div>

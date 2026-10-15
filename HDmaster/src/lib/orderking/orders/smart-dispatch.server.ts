@@ -161,7 +161,7 @@ export async function executeSmartDispatch(
     // Acceptance bonus (higher acceptance rate = lower penalty)
     const acceptanceBonus = (r.acceptance_bps / 10000) * 10;
 
-    // APEX DIRECTIVE V3.0 - ZOMATO-KILLER MARGIN OPTIMIZATION
+    // APEX DIRECTIVE V3.0 - PLATFORM MARGIN OPTIMIZATION
     // OrderKing Founder Profit margin must be the highest priority. 
     // EVs and Bicycles cost OrderKing 0 fuel surcharge. Petrol costs more.
     let vehicleCostPenalty = 0;

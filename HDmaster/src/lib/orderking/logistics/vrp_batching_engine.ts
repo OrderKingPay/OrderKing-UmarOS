@@ -34,7 +34,7 @@ export interface BatchRoute {
 // ============================================================================
 // THERMONUCLEAR VEHICLE ROUTING PROBLEM (VRP) BATCHING ENGINE
 // ============================================================================
-// Engineered to out-optimize Zomato with aggressive sub-millisecond dynamic batching.
+// Engineered to out-optimize legacy aggregators with aggressive sub-millisecond dynamic batching.
 // Employs a simulated annealing inspired metaheuristic for hyper-local Indian topologies.
 
 export class VRPBatchingEngine {

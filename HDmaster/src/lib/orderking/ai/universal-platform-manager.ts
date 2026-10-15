@@ -8,7 +8,7 @@ export type PlatformId =
   | "upwork"
   | "whatsapp"
   | "telegram"
-  | "zomato"
+  | "legacy_aggregator"
   | "stripe"
   | "razorpay"
   | "kingpay"
@@ -119,8 +119,8 @@ export class UniversalPlatformManager {
         credentialRequired: "TELEGRAM_BOT_TOKEN",
       },
       {
-        id: "zomato",
-        name: "Zomato & Swiggy Merchant Bridge",
+        id: "legacy_aggregator",
+        name: "Legacy Aggregator Merchant Bridge",
         category: "ecommerce",
         status: "STANDBY",
         description: "Menu parity comparison, direct 0% commission discount calculation, and customer order diversion flyer.",
@@ -355,7 +355,7 @@ export class UniversalPlatformManager {
         break;
       }
 
-      case "zomato": {
+      case "legacy_aggregator": {
         outputData = {
           status: "PROVIDER_DATA_REQUIRED",
           merchantZone: params.payload.merchantZone || "",

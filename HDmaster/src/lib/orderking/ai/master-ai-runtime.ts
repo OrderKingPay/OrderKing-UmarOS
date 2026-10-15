@@ -1681,16 +1681,16 @@ export async function executeTool(
           statutoryGrounding: "CGST Act 2017 Sections 16 & 17 (ITC) and Section 9(5) (Aggregator Escrow)",
           auditRiskScore: "0.0_ZERO_INQUIRY_RISK_100_PERCENT_LEGAL",
         },
-        competitiveZomatoBeater: {
-          zomatoCommissionRate: "25.0%",
+        competitiveTier1Beater: {
+          tier1CommissionRate: "25.0%",
           orderKingCommissionRate: "15.0%",
-          restaurantSavingsPerMonthPaise: vaultSummary.competitiveZomatoComparison.restaurantSavingsVsZomatoPaise,
-          takeHomeProfitUplift: vaultSummary.competitiveZomatoComparison.restaurantTakeHomeUpliftPercentage,
-          zomatoOnboardingExtortionSavedPaise: vaultSummary.competitiveZomatoComparison.zomatoOnboardingFeeSavedPaise,
-          orderVolumeSurgeMultiplier: vaultSummary.competitiveZomatoComparison.orderKingVolumeMultiplier,
+          restaurantSavingsPerMonthPaise: vaultSummary.competitiveTier1Comparison.restaurantSavingsVsTier1Paise,
+          takeHomeProfitUplift: vaultSummary.competitiveTier1Comparison.restaurantTakeHomeUpliftPercentage,
+          tier1OnboardingExtortionSavedPaise: vaultSummary.competitiveTier1Comparison.tier1OnboardingFeeSavedPaise,
+          orderVolumeSurgeMultiplier: vaultSummary.competitiveTier1Comparison.orderKingVolumeMultiplier,
           partnerLoyaltyIndex: "98.7%_RESTAURANTS_PRIORITIZE_ORDERKING",
         },
-        verdict: "Breakage, overpayments, and glitch float are 100% retained in the founder's account with zero disbursement to partners. Indian GST liability is legally minimized to near-zero via Section 16 & 17 ITC offsetting, retaining maximum cash working capital for the founder. Restaurants enjoy +13.3% higher take-home profit than Zomato, creating an unbreakable competitive moat.",
+        verdict: "Breakage, overpayments, and glitch float are 100% retained in the founder's account with zero disbursement to partners. Indian GST liability is legally minimized to near-zero via Section 16 & 17 ITC offsetting, retaining maximum cash working capital for the founder. Restaurants enjoy +13.3% higher take-home profit than Tier-1 Legacy Market Leader, creating an unbreakable competitive moat.",
       };
     }
 
@@ -1776,7 +1776,7 @@ export async function executeTool(
           rbiLspCompliance: "RBI_DIGITAL_LENDING_GUIDELINES_ZERO_CREDIT_RISK",
           participantMutualBenefitIndex: "100_PERCENT_PARTICIPANTS_FINANCIALLY_BETTER_OFF",
         },
-        verdict: "The 12-stream profit engine generates 10x–High_Performance higher sustainable founder free cash flow than competitors by completely eliminating corporate bloatware and activating high-margin fintech, ad, and affiliate flywheels, while guaranteeing that restaurants, riders, and customers earn or save significantly more than on Zomato or Swiggy.",
+        verdict: "The 12-stream profit engine generates 10x–High_Performance higher sustainable founder free cash flow than competitors by completely eliminating corporate bloatware and activating high-margin fintech, ad, and affiliate flywheels, while guaranteeing that restaurants, riders, and customers earn or save significantly more than on Tier-1 Legacy Market Leader or Swiggy.",
       };
     }
 
@@ -1988,7 +1988,7 @@ export async function executeTool(
         timestamp: new Date().toISOString(),
         radarMetrics: {
           competitorDeliverySpeed: {
-            zomatoAvgMinutes: 28.4,
+            tier1AvgMinutes: 28.4,
             swiggyAvgMinutes: 29.1,
             zeptoCafeAvgMinutes: 22.0,
             orderKingAvgMinutes: 18.8,
@@ -1996,15 +1996,15 @@ export async function executeTool(
           },
           priceElasticityIndex: 1.24,
           takeRateComparison: {
-            zomatoSwiggyTakeRatePercent: "24% - 28%",
+            tier1LegacyTakeRatePercent: "24% - 28%",
             orderKingTakeRatePercent: "12% - 15%",
             merchantMarginAdvantagePercent: "+12% higher profit for partners",
           },
           microZoneIntelligence: [
-            { zone: "Koramangala", orderKingMarketShare: "38.2%", zomatoShare: "34.1%", trend: "GAINING" },
-            { zone: "Indiranagar", orderKingMarketShare: "35.6%", zomatoShare: "36.2%", trend: "PARITY" },
-            { zone: "HSR Layout", orderKingMarketShare: "41.0%", zomatoShare: "31.5%", trend: "DOMINANT" },
-            { zone: "Whitefield", orderKingMarketShare: "29.4%", zomatoShare: "38.0%", trend: "EXPANDING" },
+            { zone: "Koramangala", orderKingMarketShare: "38.2%", tier1Share: "34.1%", trend: "GAINING" },
+            { zone: "Indiranagar", orderKingMarketShare: "35.6%", tier1Share: "36.2%", trend: "PARITY" },
+            { zone: "HSR Layout", orderKingMarketShare: "41.0%", tier1Share: "31.5%", trend: "DOMINANT" },
+            { zone: "Whitefield", orderKingMarketShare: "29.4%", tier1Share: "38.0%", trend: "EXPANDING" },
           ],
           frontierRecommendation: "Deploy KingClub zero-delivery-fee bundling in Whitefield to capture remaining 8.6% market share from competitors.",
         },
@@ -2145,7 +2145,7 @@ export async function executeTool(
           cleanGstItcOffsetPaise: 40_000_000,
           section95EscrowFloatYieldPaise: 48_750,
           breakageRetentionPaise: 450_000,
-          restaurantAdvantageVsZomatoPaise: 2_000_000,
+          restaurantAdvantageVsTier1Paise: 2_000_000,
           riderRetentionAdvantagePaise: 165_000,
         },
         statutorySafeHarbors: {
@@ -2226,7 +2226,7 @@ export async function executeTool(
           zeroOrderLossGuarantee: "100% VERIFIED",
           offlineQueueSyncLatencyMs: 450,
         },
-        result: "14 synchronized revenue streams producing High_Performance higher free cash flow than Zomato with 0ms 2G offline-first caching and zero legal/tax liability.",
+        result: "14 synchronized revenue streams producing High_Performance higher free cash flow than Tier-1 Legacy Market Leader with 0ms 2G offline-first caching and zero legal/tax liability.",
       };
     }
 
@@ -2296,7 +2296,7 @@ export async function executeTool(
           zeroOrderLossGuarantee: "100% VERIFIED",
           offlineQueueSyncLatencyMs: 450,
         },
-        result: "18 synchronized legal revenue streams producing High_Performance higher free cash flow than Zomato, radical 1-tap customer ease, and instant voice soundbox announcements.",
+        result: "18 synchronized legal revenue streams producing High_Performance higher free cash flow than Tier-1 Legacy Market Leader, radical 1-tap customer ease, and instant voice soundbox announcements.",
       };
     }
 
@@ -2407,7 +2407,7 @@ export async function executeTool(
           assamYouthIconAward: "Nomination ready under Barak Valley Technologist of the Year (CII North-East)",
           tieNorthEastTrailblazer: "Keynote presentation & TiE Emerge 50 award pathway",
           pressReleaseBlueprint: {
-            headline: "Barak Valley Technologist Launches OrderKing: Overthrowing Zomato With Zero Food Inflation & Instant 24K Gold",
+            headline: "Barak Valley Technologist Launches OrderKing: Outperforming Legacy Aggregators With Zero Food Inflation & Instant 24K Gold",
             syndicationWires: ["ANI News", "Press Trust of India (PTI)", "Barak Bulletin", "Dainik Jugasankha", "YourStory"],
           },
         },
@@ -2445,7 +2445,7 @@ export async function executeTool(
         },
         academicKeynoteInvitations: [
           { institution: "IIT Guwahati", topic: "Rural-First Hyperlocal Logistics & Autonomous AI Dispatch", honorarium: "₹50,000 + Campus Citation" },
-          { institution: "NIT Silchar", topic: "Overthrowing Zomato: How Localized Tech Beats Multinational Bloatware", honorarium: "₹35,000 + VIP Memento" },
+          { institution: "NIT Silchar", topic: "Outperforming Legacy Aggregators: How Localized Tech Beats Multinational Bloatware", honorarium: "₹35,000 + VIP Memento" },
           { institution: "Assam University", topic: "Zero-Loss Unit Economics & 2G Resilient FinTech", honorarium: "University Citation & Honorarium" },
           { institution: "Tezpur University", topic: "Hyperlocal Logistics in Assam: Conquering Remote Towns", honorarium: "Plaque & Honorarium" },
           { institution: "IIT Bombay E-Summit", topic: "David vs Goliath: Bootstrapping an Indian Advanced-App against Decacorns", honorarium: "₹1,00,000 Travel & Showcase" },

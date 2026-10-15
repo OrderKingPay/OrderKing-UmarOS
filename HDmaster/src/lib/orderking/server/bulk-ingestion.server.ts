@@ -110,7 +110,7 @@ export async function bulkIngestCatalog(
 }
 
 /**
- * Normalizes external scraped menu JSON from Google Maps / Zomato / Swiggy public structures
+ * Normalizes external scraped menu JSON from Google Maps / legacy aggregator public structures
  * into Order King's canonical ingestion format.
  */
 export function normalizeScrapedMenu(rawData: Record<string, unknown>): IngestionRestaurant {

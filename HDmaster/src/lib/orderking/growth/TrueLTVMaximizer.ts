@@ -1,7 +1,7 @@
 /**
  * TrueLTVMaximizer.ts
  * 
- * Traditional food delivery models (Zomato/Swiggy) base LTV solely on food commission.
+ * Traditional food delivery aggregator models base LTV solely on food commission.
  * OrderKing's Master Profit Engine integrates 18 synchronized revenue streams (FinTech, B2B, Alliances).
  * This engine calculates the TRUE Customer/Restaurant Lifetime Value across the ecosystem.
  * 

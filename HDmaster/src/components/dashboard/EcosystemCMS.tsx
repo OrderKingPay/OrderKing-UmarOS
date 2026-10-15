@@ -154,7 +154,7 @@ const FIELD_DEFINITIONS: FieldDefinition[] = [
 
   // 2. Pricing & No-Surge Notices
   {
-    key: "zomatoSurgeWarningText",
+    key: "zeroSurgeWarningText",
     label: "No-Surge Price Promise Banner",
     category: "pricing",
     description: "Tells customers that delivery fees stay fair and fixed even during rain or peak hours.",
@@ -1451,7 +1451,7 @@ export function EcosystemCMS() {
                       <span>NO-SURGE PROMISE</span>
                     </div>
                     <p className="text-[9px] text-emerald-200 leading-tight">
-                      {formData.zomatoSurgeWarningText}
+                      {formData.zeroSurgeWarningText}
                     </p>
                   </div>
 

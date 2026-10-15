@@ -17,7 +17,7 @@ export interface TelemetryPayload {
 }
 
 /**
- * Zomato-Killer High_Performance Powerful Geospatial Telemetry Engine.
+ * High-Performance Tier-1 Benchmark Geospatial Telemetry Engine.
  * Logs every single real-time movement perfectly with Uber's H3 Hexagonal Grid Indexing.
  */
 export async function logGeospatialTelemetry(payload: TelemetryPayload) {

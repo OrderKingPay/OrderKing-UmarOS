@@ -62,7 +62,7 @@ export class ClientAcquisitionMachine {
       category: "restaurant",
       location: "Silchar / Karimganj",
       source: "Local Merchant Registry & Direct Visit",
-      identifiedNeed: "Paying 28% commission (₹5.18L/mo) to Swiggy/Zomato on ₹18.5L monthly online orders.",
+      identifiedNeed: "Paying 28% commission (₹5.18L/mo) to legacy aggregators on ₹18.5L monthly online orders.",
       matchedService: "OrderKing White-Label Turnkey Direct Ordering App + WhatsApp Rider Dispatch",
       personalizedValueProposition: "Eliminate ₹5.18L monthly aggregator commission tax by deploying direct King Pay UPI ordering at 0% fee.",
       draftedOutreachMessage: [

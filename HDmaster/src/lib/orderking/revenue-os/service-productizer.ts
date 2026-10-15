@@ -57,7 +57,7 @@ export class ServiceProductizer {
       service: "Turnkey Direct Ordering App & Fleet Dispatch Suite",
       category: "E-commerce Websites",
       targetCustomer: "High-volume restaurants, bakeries, cloud kitchens (₹10L-₹50L/mo revenue)",
-      problem: "Paying 25-30% aggregator commission taxes to Swiggy/Zomato on repeat direct customers.",
+      problem: "Paying 25-30% aggregator commission taxes to legacy aggregators on repeat direct customers.",
       deliverables: [
         "White-labeled web ordering portal (Next.js 15, React 19)",
         "0% transaction fee King Pay UPI integration",

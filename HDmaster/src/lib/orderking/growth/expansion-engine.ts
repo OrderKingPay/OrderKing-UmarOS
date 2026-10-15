@@ -14,7 +14,7 @@ export class HyperExpansionEngine {
 
   /**
    * Automatically deploys dynamic competitive pricing to undercut competitors 
-   * (e.g., Zomato, Swiggy) in specific hyper-local geo-fenced zones.
+   * (e.g., dominant legacy aggregators) in specific hyper-local geo-fenced zones.
    */
   public optimizeHyperLocalPricing(zoneId: string, competitorDeliveryFee: number): void {
     const orderKingFee = Math.max(0, competitorDeliveryFee * 0.7); // 30% cheaper delivery fee

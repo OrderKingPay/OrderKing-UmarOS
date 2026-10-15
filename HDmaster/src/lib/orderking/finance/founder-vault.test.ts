@@ -56,11 +56,11 @@ describe("Founder Private Cash Vault & Retained Float Engine", () => {
     assert.ok(result.gstItcOffsetAndArbitrage.retainedGstWorkingCapitalPaise > 0);
     assert.ok(result.gstItcOffsetAndArbitrage.section95GstEscrowFloatYieldPaise > 0);
 
-    // 8. Zomato vs OrderKing Comparative Savings
-    // Net Food = 380,000,000 paise. 25% Zomato vs 15% OrderKing = 10% savings = 3,800,000 paise (₹38,000)
-    assert.equal(result.competitiveZomatoComparison.zomatoAverageCommissionBps, 2500);
-    assert.equal(result.competitiveZomatoComparison.restaurantSavingsVsZomatoPaise, 3_800_000);
-    assert.equal(result.competitiveZomatoComparison.zomatoOnboardingFeeSavedPaise, 1_000_000);
+    // 8. Tier-1 Legacy Market Leader vs OrderKing Comparative Savings
+    // Net Food = 380,000,000 paise. 25% Tier-1 vs 15% OrderKing = 10% savings = 3,800,000 paise (₹38,000)
+    assert.equal(result.competitiveTier1Comparison.tier1AverageCommissionBps, 2500);
+    assert.equal(result.competitiveTier1Comparison.restaurantSavingsVsTier1Paise, 3_800_000);
+    assert.equal(result.competitiveTier1Comparison.tier1OnboardingFeeSavedPaise, 1_000_000);
 
     // 9. Pure Owner Net Profit is positive and enhanced
     assert.ok(result.pureOwnerNetProfitPaise > 0);
