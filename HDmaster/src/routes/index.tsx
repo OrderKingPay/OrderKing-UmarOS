@@ -963,7 +963,7 @@ const TEN_WORLDS: WorldDefinition[] = [
       },
       {
         key: "enableAiTutorForRiders",
-        label: "Enable 23-Language AI Tutor for Riders & Youth",
+        label: "Enable 10-Language AI Tutor for Riders & Youth",
         type: "toggle",
         description: "Free spoken English and skill lessons for riders & users.",
         defaultValue: true,
@@ -1074,7 +1074,7 @@ const TEN_WORLDS: WorldDefinition[] = [
       },
       {
         key: "enableVoiceCommandsInHindiEnglish",
-        label: "Enable 23-Language Voice Assistance",
+        label: "Enable 10-Language Voice Assistance",
         type: "toggle",
         description: "Allow partners and riders to use spoken voice help.",
         defaultValue: true,
@@ -1329,9 +1329,9 @@ const TEN_WORLDS: WorldDefinition[] = [
       },
       {
         key: "enableAll23IndianLanguages",
-        label: "Enable All 23 Indian Constitutional Languages",
+        label: "Enable All 10 Indian Benchmark Languages",
         type: "toggle",
-        description: "Allow riders and customers to switch to any of 23 languages.",
+        description: "Allow riders and customers to switch to any of 10 benchmark languages.",
         defaultValue: true,
       },
       {
@@ -1527,8 +1527,8 @@ const SIXTEEN_SPECIALIST_TEAMS = [
   },
   {
     id: "team-08",
-    name: "Team 8: 23-Language AI Tutor & Skill Academy",
-    role: "Spoken English and delivery/hospitality training across 23 Indian languages.",
+    name: "Team 8: 10-Language AI Tutor & Skill Academy",
+    role: "Spoken English and delivery/hospitality training across 10 Indian benchmark languages.",
     worldId: "travel" as WorldId,
     tabId: "ai-tutor",
   },
@@ -1590,31 +1590,20 @@ const SIXTEEN_SPECIALIST_TEAMS = [
   },
 ];
 
-const INDIAN_23_LANGUAGES_LIST = [
+const INDIAN_10_LANGUAGES_LIST = [
   "English (India)",
   "Hindi (हिन्दी)",
   "Bengali (বাংলা)",
-  "Telugu (తెలుగు)",
-  "Marathi (मराठी)",
-  "Tamil (தமிழ்)",
-  "Urdu (اردو)",
   "Gujarati (ગુજરાતી)",
   "Kannada (ಕನ್ನಡ)",
   "Malayalam (മലയാളം)",
-  "Odia (ଓଡ଼ିଆ)",
+  "Marathi (मराठी)",
   "Punjabi (ਪੰਜਾਬੀ)",
-  "Assamese (অসমীয়া)",
-  "Maithili (मैथिली)",
-  "Santali (ᱥᱟᱱᱛᱟᱲᱤ)",
-  "Kashmiri (कश्मीरी)",
-  "Nepali (नेपाली)",
-  "Sindhi (सिन्धी)",
-  "Konkani (कोंकणी)",
-  "Dogri (डोगरी)",
-  "Manipuri (মৈতৈলোন্)",
-  "Bodo (बर')",
-  "Sanskrit (संस्कृतम्)",
+  "Tamil (தமிழ்)",
+  "Telugu (తెలుగు)",
 ];
+
+const INDIAN_23_LANGUAGES_LIST = INDIAN_10_LANGUAGES_LIST;
 
 // ============================================================================
 // 4. MAIN 10-WORLD FOUNDER OPERATING SYSTEM COMPONENT
@@ -2849,7 +2838,7 @@ function UmarOSDashboard() {
                   />
                   <ResultMetricCard
                     label="Supported Languages"
-                    value="23 Languages"
+                    value="10 Languages"
                     sub={String(currentSettings.defaultPlatformLanguage)}
                   />
                   <ResultMetricCard
@@ -2982,7 +2971,7 @@ function UmarOSDashboard() {
                     />
                     <ActionCard
                       title="Post Jobs & Spoken English Tutor"
-                      description={`${localJobs.length} active job opening(s) and 23-language voice hospitality lessons for fleet.`}
+                      description={`${localJobs.length} active job opening(s) and 10-language voice hospitality lessons for fleet.`}
                       buttonLabel="Open Jobs & Tutor"
                       onClick={() => selectSubTab("jobs")}
                     />

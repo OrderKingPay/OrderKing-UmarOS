@@ -1992,10 +1992,10 @@ function SettingsPage() {
               <Languages className="h-6 w-6 text-emerald-600" />
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-700 font-bold">
-                  Category 3 · Sub-Categories 3A &amp; 3B ({localeState.enabledLocales.length} / 23 Active)
+                  Category 3 · Sub-Categories 3A &amp; 3B ({localeState.enabledLocales.length} / 10 Active)
                 </span>
                 <h2 className="text-lg font-extrabold text-slate-900">
-                  🌐 All 23 Official Indian Languages (22 Constitutional Scheduled + English)
+                  🌐 10 Indian Food Delivery Benchmark Languages
                 </h2>
               </div>
             </div>
@@ -2110,15 +2110,15 @@ function SettingsPage() {
                 />
               </div>
 
-              {/* Sub-Category 3B: Interactive 23-Language Enablement Grid */}
+              {/* Sub-Category 3B: Interactive 10-Language Enablement Grid */}
               <div className="rounded-xl border border-slate-200 p-4 space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
                   <div>
                     <h3 className="text-sm font-bold text-slate-900">
-                      Sub-Category 3B · Interactive 23-Language Enablement Grid
+                      Sub-Category 3B · Interactive 10-Language Enablement Grid
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Every language of the Eighth Schedule of the Indian Constitution + English. Click any card to toggle support.
+                      10 Indian food delivery market benchmark languages. Click any card to toggle support.
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -2132,7 +2132,7 @@ function SettingsPage() {
                       }
                       className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition"
                     >
-                      ✓ Enable All 23 Languages
+                      ✓ Enable All 10 Languages
                     </button>
                   </div>
                 </div>
@@ -2192,11 +2192,11 @@ function SettingsPage() {
                         ai_menu_suggester: localeState.ai_menu_suggester,
                         ai_tutor_provider: localeState.ai_tutor_provider,
                       },
-                      `Saved Category 3: ${localeState.enabledLocales.length}/23 Indian Languages & AI Routing`,
+                      `Saved Category 3: ${localeState.enabledLocales.length}/10 Indian Benchmark Languages & AI Routing`,
                     )
                   }
                   saving={saving}
-                  label="Save 23-Language Matrix"
+                  label="Save 10-Language Matrix"
                 />
               </div>
             </div>
