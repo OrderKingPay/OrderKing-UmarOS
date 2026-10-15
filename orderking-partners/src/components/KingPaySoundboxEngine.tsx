@@ -15,46 +15,21 @@ export function buildSoundboxSpeechAlert(lang: AppLanguage, amountRs: number): s
       return `किंगपे पर ${amountRs} रुपये प्राप्त हुए।`;
     case "bn":
       return `কিংপে-তে ${amountRs} টাকা পাওয়া গেছে।`;
-    case "te":
-      return `కింగ్‌పే లో ${amountRs} రూపాయలు వచ్చాయి.`;
-    case "ta":
-      return `கிங்பே-யில் ${amountRs} ரூபாய் பெறப்பட்டது.`;
-    case "mr":
-      return `किंगपे वर ${amountRs} रुपये मिळाले.`;
     case "gu":
       return `કિંગપે પર ${amountRs} રૂપિયા મળ્યા.`;
     case "kn":
       return `ಕಿಂಗ್‌ಪೇ ನಲ್ಲಿ ${amountRs} ರೂಪಾಯಿ ಸ್ವೀಕರಿಸಲಾಗಿದೆ.`;
     case "ml":
       return `കിംഗ്പേയിൽ ${amountRs} രൂപ ലഭിച്ചു.`;
+    case "mr":
+      return `किंगपे वर ${amountRs} रुपये मिळाले.`;
     case "pa":
       return `ਕਿੰਗਪੇ 'ਤੇ ${amountRs} ਰੁਪਏ ਪ੍ਰਾਪਤ ਹੋਏ।`;
-    case "or":
-      return `କିଙ୍ଗପେ ରେ ${amountRs} ଟଙ୍କା ମିଳିଲା।`;
-    case "as":
-      return `কিংপেত ${amountRs} টকা লাভ হ'ল।`;
-    case "ur":
-      return `کنگ پے پر ${amountRs} روپے موصول ہوئے۔`;
-    case "mai":
-      return `किंगपे पर ${amountRs} टाका प्राप्त भेल।`;
-    case "ks":
-      return `کنگ پے پؠٹھ آے ${amountRs} روپیہ موصول گژھتھ۔`;
-    case "ne":
-      return `किङपेमा ${amountRs} रुपैयाँ प्राप्त भयो।`;
-    case "sd":
-      return `ڪنگ پي تي ${amountRs} رپيا مليا.`;
-    case "kok":
-      return `किंगपेर ${amountRs} रुपया मेळ्ळे.`;
-    case "doi":
-      return `किंगपे पर ${amountRs} रपे मिले।`;
-    case "mni":
-      return `কিংপেদা লুপা ${amountRs} ফংলে।`;
-    case "brx":
-      return `किं पेयाव ${amountRs} रां मोनबाय।`;
-    case "sa":
-      return `किङ्गपे-माध्यमेन ${amountRs} रूप्यकाणि प्राप्तानि।`;
-    case "sat":
-      return `ᱠᱤᱝᱯᱮ ᱨᱮ ${amountRs} ᱴᱟᱠᱟ ᱧᱟᱢᱮᱱᱟ᱾`;
+    case "ta":
+      return `கிங்பே-யில் ${amountRs} ரூபாய் பெறப்பட்டது.`;
+    case "te":
+      return `కింగ్‌పే లో ${amountRs} రూపాయలు వచ్చాయి.`;
+    case "en":
     default:
       return `Received ₹${amountRs} on KingPay.`;
   }
@@ -191,7 +166,7 @@ export const KingPaySoundboxEngine: React.FC<KingPaySoundboxEngineProps> = ({
                 KingPay Virtual Soundbox Engine
               </h4>
               <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
-                22 Indian Languages Active
+                10 Benchmark Languages Active
               </span>
             </div>
             <p className="text-xs text-muted">

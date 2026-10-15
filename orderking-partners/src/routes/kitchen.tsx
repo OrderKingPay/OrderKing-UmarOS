@@ -46,7 +46,7 @@ function getVoiceBcp47(lang: AppLanguage): string {
 }
 
 /**
- * 22 Recognized 8th Schedule Indian Languages + English Speech Alert Builder
+ * 10 Official Benchmark Languages Speech Alert Builder
  */
 export function buildLocalizedVoiceAlert(lang: AppLanguage, shortId: string, amountRs: number): string {
   switch (lang) {
@@ -54,48 +54,23 @@ export function buildLocalizedVoiceAlert(lang: AppLanguage, shortId: string, amo
       return `ऑर्डर किंग किचन अलर्ट: नया ऑर्डर नंबर ${shortId} प्राप्त हुआ है। कुल राशि ${amountRs} रुपये।`;
     case "bn":
       return `অর্ডার কিং কিচেন অ্যালার্ট: নতুন অর্ডার নম্বর ${shortId} এসেছে। মোট মূল্য ${amountRs} টাকা।`;
-    case "te":
-      return `ఆర్డర్ కింగ్ కిచెన్ అలర్ట్: కొత్త ఆర్డర్ నంబర్ ${shortId} వచ్చింది. మొత్తం విలువ ${amountRs} రూపాయలు.`;
-    case "ta":
-      return `ஆர்டர் கிங் கிச்சன் அலர்ட்: புதிய ஆர்டர் எண் ${shortId} வந்துள்ளது. மொத்த தொகை ${amountRs} ரூபாய்.`;
-    case "mr":
-      return `ऑर्डर किंग किचन अलर्ट: नवीन ऑर्डर क्रमांक ${shortId} प्राप्त झाली आहे. एकूण रक्कम ${amountRs} रुपये।`;
     case "gu":
       return `ઓર્ડર કિંગ કિચન એલર્ટ: નવો ઓર્ડર નંબર ${shortId} મળ્યો છે. કુલ રકમ ${amountRs} રૂપિયા.`;
     case "kn":
       return `ಆರ್ಡರ್ ಕಿಂಗ್ ಕಿಚನ್ ಅಲರ್ಟ್: ಹೊಸ ಆರ್ಡರ್ ಸಂಖ್ಯೆ ${shortId} ಬಂದಿದೆ. ಒಟ್ಟು ಮೊತ್ತ ${amountRs} ರೂಪಾಯಿ.`;
     case "ml":
       return `ഓർഡർ കിംഗ് കിച്ചൻ അലേർട്ട്: പുതിയ ഓർഡർ നമ്പർ ${shortId} ലഭിച്ചു. ആകെ തുക ${amountRs} രൂപ.`;
+    case "mr":
+      return `ऑर्डर किंग किचन अलर्ट: नवीन ऑर्डर क्रमांक ${shortId} प्राप्त झाली आहे. एकूण रक्कम ${amountRs} रुपये।`;
     case "pa":
       return `ਆਰਡਰ ਕਿੰਗ ਕਿਚਨ ਅਲਰਟ: ਨਵਾਂ ਆਰਡਰ ਨੰਬਰ ${shortId} ਪ੍ਰਾਪਤ ਹੋਇਆ ਹੈ। ਕੁੱਲ ਰਕਮ ${amountRs} ਰੁਪਏ।`;
-    case "or":
-      return `ଅର୍ଡର କିଙ୍ଗ କିଚେନ ଆଲର୍ଟ: ନୂଆ ଅର୍ଡର ନମ୍ବର ${shortId} ଆସିଛି। ମୋଟ ମୂଲ୍ୟ ${amountRs} ଟଙ୍କା।`;
-    case "as":
-      return `অৰ্ডাৰ কিং কিচেন এলাৰ্ট: নতুন অৰ্ডাৰ নম্বৰ ${shortId} লাভ কৰা হৈছে। মুঠ মূল্য ${amountRs} টকা।`;
-    case "ur":
-      return `آرڈر کنگ کچن الرٹ: نیا آرڈر نمبر ${shortId} موصول ہوا ہے۔ کل رقم ${amountRs} روپے۔`;
-    case "mai":
-      return `अर्डर किंग भानस घर सूचना: नवका अर्डर नम्बर ${shortId} प्राप्त भेल अछि। कुल राशि ${amountRs} टाका।`;
-    case "sat":
-      return `ᱚᱨᱰᱟᱨ ᱠᱤᱝ ᱠᱤᱪᱮᱱ ᱠᱷᱚᱵᱚᱨ: ᱱᱟᱣᱟ ᱚᱨᱰᱟᱨ ᱱᱚᱢᱵᱚᱨ ${shortId} ᱧᱟᱢ ᱟᱠᱟᱱᱟ᱾ ᱢᱩᱴ ᱴᱟᱠᱟ ${amountRs} ᱴᱟᱠᱟ᱾`;
-    case "ks":
-      return `آرڈر کنگ وژھن الرٹ: نوو آرڈر نمبر ${shortId} موصول گوو۔ کُل رقم ${amountRs} روپیہ۔`;
-    case "ne":
-      return `अर्डर किङ भान्छा सूचना: नयाँ अर्डर नम्बर ${shortId} प्राप्त भएको छ। जम्मा रकम ${amountRs} रुपैयाँ।`;
-    case "sd":
-      return `آرڊر ڪنگ باورچي خاني الرٽ: نئون آرڊر نمبر ${shortId} مليو آهي. ڪل رقم ${amountRs} رپيا.`;
-    case "kok":
-      return `ऑर्डर किंग कुजनातली सूचना: नवो ऑर्डर नंबर ${shortId} आयला। एकूण रक्कम ${amountRs} रुपया।`;
-    case "doi":
-      return `ऑर्डर किंग रसोई सूचना: नमां ऑर्डर नंबर ${shortId} आया ऐ। कुल रकम ${amountRs} रपे।`;
-    case "mni":
-      return `ওর্ডর কিং চানাপোৎ শেম্ফম পাউ: অনৌবা ওর্ডর নম্বর ${shortId} ফংলে। অপুনবা লুপা ${amountRs}।`;
-    case "brx":
-      return `अर्डर किनि संनाय न'नि खौरां: गोदान अर्डर नम्बर ${shortId} फैबाय। गासै रां ${amountRs} रां।`;
-    case "sa":
-      return `आर्डर-किङ्ग-पाकशाला-सूचना: नूतन-आदेश-क्रमाङ्कः ${shortId} प्राप्तः। कुल-मूल्यम् ${amountRs} रूप्यकाणि।`;
+    case "ta":
+      return `ஆர்டர் கிங் கிச்சன் அலர்ட்: புதிய ஆர்டர் எண் ${shortId} வந்துள்ளது. மொத்த தொகை ${amountRs} ரூபாய்.`;
+    case "te":
+      return `ఆర్డర్ కింగ్ కిచెన్ అలర్ట్: కొత్త ఆర్డర్ నంబర్ ${shortId} వచ్చింది. మొత్తం విలువ ${amountRs} రూపాయలు.`;
+    case "en":
     default:
-      return `OrderKing Kitchen Alert: New order #${shortId} received. Order value ₹${amountRs}.`;
+      return `Order King Kitchen Alert: New order #${shortId} received. Order value ₹${amountRs}.`;
   }
 }
 
@@ -462,7 +437,7 @@ function KitchenPage() {
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Self-service audio hardware diagnostics, 22-language voice alerts, real-time stage counters, and 120s order SLA enforcement.
+                Self-service audio hardware diagnostics, 10-language voice alerts, real-time stage counters, and 120s order SLA enforcement.
               </p>
             </div>
           </div>
@@ -561,7 +536,7 @@ function KitchenPage() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Zero physical hardware cost. Announces incoming orders and UPI payments aloud across all 22 scheduled Indian languages.
+                    Zero physical hardware cost. Announces incoming orders and UPI payments aloud across 10 official benchmark languages.
                   </p>
                 </>
               ) : (
@@ -570,7 +545,7 @@ function KitchenPage() {
                     <h3 className="font-semibold text-sm text-foreground">King Pay Voice Soundbox</h3>
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Activate to announce incoming orders and UPI payments aloud across all 22 scheduled Indian languages.
+                    Activate to announce incoming orders and UPI payments aloud across 10 official benchmark languages.
                   </p>
                 </>
               )}

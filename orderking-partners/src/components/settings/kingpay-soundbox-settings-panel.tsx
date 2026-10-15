@@ -16,7 +16,7 @@ export interface KingpaySoundboxSettingsPanelProps {
   restaurantId?: string;
 }
 
-// 10 Mandatory food-tech standard announcement languages specified in requirements
+// 10 Mandatory food-tech benchmark announcement languages
 const CORE_SOUNDBOX_LANGUAGES: {
   code: AppLanguage;
   label: string;
@@ -26,13 +26,13 @@ const CORE_SOUNDBOX_LANGUAGES: {
   { code: "en", label: "English", native: "English", sampleAmount: 450 },
   { code: "hi", label: "Hindi", native: "हिन्दी", sampleAmount: 450 },
   { code: "bn", label: "Bengali", native: "বাংলা", sampleAmount: 450 },
-  { code: "te", label: "Telugu", native: "తెలుగు", sampleAmount: 450 },
-  { code: "mr", label: "Marathi", native: "मराठी", sampleAmount: 450 },
-  { code: "ta", label: "Tamil", native: "தமிழ்", sampleAmount: 450 },
   { code: "gu", label: "Gujarati", native: "ગુજરાતી", sampleAmount: 450 },
   { code: "kn", label: "Kannada", native: "ಕನ್ನಡ", sampleAmount: 450 },
-  { code: "ur", label: "Urdu", native: "اردو", sampleAmount: 450 },
+  { code: "ml", label: "Malayalam", native: "മലയാളം", sampleAmount: 450 },
+  { code: "mr", label: "Marathi", native: "मराठी", sampleAmount: 450 },
   { code: "pa", label: "Punjabi", native: "ਪੰਜਾਬੀ", sampleAmount: 450 },
+  { code: "ta", label: "Tamil", native: "தமிழ்", sampleAmount: 450 },
+  { code: "te", label: "Telugu", native: "తెలుగు", sampleAmount: 450 },
 ];
 
 export function KingpaySoundboxSettingsPanel({
@@ -235,7 +235,7 @@ export function KingpaySoundboxSettingsPanel({
 
             {/* Comprehensive All-India Language Dropdown */}
             <div className="pt-1 flex items-center justify-between gap-2">
-              <span className="text-xs text-slate-400">All 22 Official Indian Languages:</span>
+              <span className="text-xs text-slate-400">All 10 Official Languages:</span>
               <select
                 value={selectedLang}
                 onChange={(e) => setSelectedLang(e.target.value as AppLanguage)}

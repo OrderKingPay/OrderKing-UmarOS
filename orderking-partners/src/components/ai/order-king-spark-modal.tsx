@@ -28,32 +28,19 @@ type SparkLanguage = {
 };
 
 /**
- * All 22 Eighth Schedule Constitutional Languages of India + English (23 total).
+ * 10 Official Benchmark Languages.
  */
 const SPARK_INDIAN_LANGUAGES: readonly SparkLanguage[] = [
   { code: "en", bcp47: "en-IN", name: "English", nativeName: "English" },
   { code: "hi", bcp47: "hi-IN", name: "Hindi", nativeName: "हिन्दी" },
   { code: "bn", bcp47: "bn-IN", name: "Bengali", nativeName: "বাংলা" },
-  { code: "te", bcp47: "te-IN", name: "Telugu", nativeName: "తెలుగు" },
-  { code: "mr", bcp47: "mr-IN", name: "Marathi", nativeName: "मराठी" },
-  { code: "ta", bcp47: "ta-IN", name: "Tamil", nativeName: "தமிழ்" },
-  { code: "ur", bcp47: "ur-IN", name: "Urdu", nativeName: "اردو" },
   { code: "gu", bcp47: "gu-IN", name: "Gujarati", nativeName: "ગુજરાતી" },
   { code: "kn", bcp47: "kn-IN", name: "Kannada", nativeName: "ಕನ್ನಡ" },
-  { code: "or", bcp47: "or-IN", name: "Odia", nativeName: "ଓଡ଼ିଆ" },
   { code: "ml", bcp47: "ml-IN", name: "Malayalam", nativeName: "മലയാളം" },
+  { code: "mr", bcp47: "mr-IN", name: "Marathi", nativeName: "मराठी" },
   { code: "pa", bcp47: "pa-IN", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ" },
-  { code: "as", bcp47: "as-IN", name: "Assamese", nativeName: "অসমীয়া" },
-  { code: "mai", bcp47: "mai-IN", name: "Maithili", nativeName: "मैथिली" },
-  { code: "sat", bcp47: "sat-IN", name: "Santali", nativeName: "ᱥᱟᱱᱛᱟᱲᱤ" },
-  { code: "ks", bcp47: "ks-IN", name: "Kashmiri", nativeName: "कॉशुर / کٲشُر" },
-  { code: "ne", bcp47: "ne-IN", name: "Nepali", nativeName: "नेपाली" },
-  { code: "sd", bcp47: "sd-IN", name: "Sindhi", nativeName: "सिन्धी / سنڌي" },
-  { code: "doi", bcp47: "doi-IN", name: "Dogri", nativeName: "डोगरी" },
-  { code: "kok", bcp47: "kok-IN", name: "Konkani", nativeName: "कोंकणी" },
-  { code: "mni", bcp47: "mni-IN", name: "Manipuri", nativeName: "মৈতৈলোন্" },
-  { code: "brx", bcp47: "brx-IN", name: "Bodo", nativeName: "बर'" },
-  { code: "sa", bcp47: "sa-IN", name: "Sanskrit", nativeName: "संस्कृतम्" },
+  { code: "ta", bcp47: "ta-IN", name: "Tamil", nativeName: "தமிழ்" },
+  { code: "te", bcp47: "te-IN", name: "Telugu", nativeName: "తెలుగు" },
 ] as const;
 
 const FOCUS_TOPICS = [
@@ -189,7 +176,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
     {
       id: "init",
       sender: "spark",
-      text: "Order King — King AI Kitchen Partner is ready across all 22 Indian Constitutional Languages + English. Inspect your live storefront status, daypart and AOV growth recommendations, restore out-of-stock dishes, adjust kitchen prep times between Standard (20m) and Peak Rush (35m), or review transparent payout calculations. All recommendations are advisory only—no changes are applied without your explicit confirmation.",
+      text: "Order King — King AI Kitchen Partner is ready across 10 official benchmark languages. Inspect your live storefront status, daypart and AOV growth recommendations, restore out-of-stock dishes, adjust kitchen prep times between Standard (20m) and Peak Rush (35m), or review transparent payout calculations. All recommendations are advisory only—no changes are applied without your explicit confirmation.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       provenanceNote:
         "Source: Your restaurant's live menu catalog, configured prep times, dashboard state, and verified settlement ledger.",
@@ -560,7 +547,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
                   Order King · King AI
                 </span>
                 <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                  KING AI · 22 INDIAN LANGUAGES + ENGLISH
+                  KING AI · 10 OFFICIAL LANGUAGES
                 </span>
               </div>
               <span className="mt-0.5 block text-[11px] text-zinc-400">
@@ -581,7 +568,7 @@ export function OrderKingSparkModal({ isOpen, onClose }: OrderKingSparkModalProp
             <div className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-xs">
               <Globe className="size-3.5 text-amber-400" />
               <select
-                aria-label="Select Indian Constitutional Language"
+                aria-label="Select Official Benchmark Language"
                 value={activeLang.code}
                 onChange={(e) => handleSelectLanguage(e.target.value)}
                 className="bg-transparent text-xs font-semibold text-white focus:outline-none"

@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { en } from "../lib/i18n/en";
 import { bn } from "../lib/i18n/bn";
+import { platformConfig } from "../lib/platform-config";
+import { INDIAN_LANGUAGE_CATALOG } from "../lib/i18n";
+import { INDIAN_CONSTITUTIONAL_LANGUAGES } from "../routes/assistant";
 
 describe("i18n Localization & Copy Quality Standards", () => {
   it("enforces brand name is 'Order King' (two words) with zero 'OrderKing' compound in English and Bengali", () => {
@@ -111,5 +114,53 @@ describe("i18n Localization & Copy Quality Standards", () => {
     const bnKeys = collectKeys(bn);
 
     expect(bnKeys).toEqual(enKeys);
+  });
+
+  it("enforces exactly 10 official benchmark languages in platformConfig.localization.supportedLanguages", () => {
+    const expectedLanguages = ["en", "hi", "bn", "gu", "kn", "ml", "mr", "pa", "ta", "te"] as const;
+    expect(platformConfig.localization.supportedLanguages).toEqual(expectedLanguages);
+    expect(platformConfig.localization.supportedLanguages.length).toBe(10);
+  });
+
+  it("enforces exactly 10 official benchmark languages in INDIAN_LANGUAGE_CATALOG", () => {
+    const expectedLanguages = ["en", "hi", "bn", "gu", "kn", "ml", "mr", "pa", "ta", "te"];
+    expect(INDIAN_LANGUAGE_CATALOG.length).toBe(10);
+    const catalogCodes = INDIAN_LANGUAGE_CATALOG.map((l) => l.code);
+    expect(catalogCodes).toEqual(expectedLanguages);
+  });
+
+  it("verifies zero presence of removed mock, classical, or obscure languages", () => {
+    const removedLanguageCodes = [
+      "sa",
+      "mai",
+      "sat",
+      "ks",
+      "ne",
+      "sd",
+      "kok",
+      "doi",
+      "mni",
+      "brx",
+      "as",
+      "or",
+      "ur",
+    ];
+
+    const supported = platformConfig.localization.supportedLanguages as readonly string[];
+    const catalogCodes = INDIAN_LANGUAGE_CATALOG.map((l) => l.code as string);
+    const assistantCodes = INDIAN_CONSTITUTIONAL_LANGUAGES.map((l) => l.code);
+
+    for (const code of removedLanguageCodes) {
+      expect(supported).not.toContain(code);
+      expect(catalogCodes).not.toContain(code);
+      expect(assistantCodes).not.toContain(code);
+    }
+  });
+
+  it("enforces exactly 10 official benchmark languages in assistant language selector", () => {
+    const expectedLanguages = ["en", "hi", "bn", "gu", "kn", "ml", "mr", "pa", "ta", "te"];
+    expect(INDIAN_CONSTITUTIONAL_LANGUAGES.length).toBe(10);
+    const assistantCodes = INDIAN_CONSTITUTIONAL_LANGUAGES.map((l) => l.code);
+    expect(assistantCodes).toEqual(expectedLanguages);
   });
 });

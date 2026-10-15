@@ -17,26 +17,13 @@ export const INDIAN_LANGUAGE_CATALOG: {
   { code: "en", label: "English", native: "English", region: "Pan-India", bcp47: "en-IN" },
   { code: "hi", label: "Hindi", native: "हिन्दी", region: "North & Central India", bcp47: "hi-IN" },
   { code: "bn", label: "Bengali", native: "বাংলা", region: "West Bengal & Tripura", bcp47: "bn-IN" },
-  { code: "te", label: "Telugu", native: "తెలుగు", region: "Telangana & Andhra Pradesh", bcp47: "te-IN" },
-  { code: "mr", label: "Marathi", native: "मराठी", region: "Maharashtra", bcp47: "mr-IN" },
-  { code: "ta", label: "Tamil", native: "தமிழ்", region: "Tamil Nadu & Puducherry", bcp47: "ta-IN" },
-  { code: "ur", label: "Urdu", native: "اردو", region: "Jammu, Kashmir & Deccan", bcp47: "ur-IN" },
   { code: "gu", label: "Gujarati", native: "ગુજરાતી", region: "Gujarat", bcp47: "gu-IN" },
   { code: "kn", label: "Kannada", native: "ಕನ್ನಡ", region: "Karnataka", bcp47: "kn-IN" },
   { code: "ml", label: "Malayalam", native: "മലയാളം", region: "Kerala", bcp47: "ml-IN" },
-  { code: "or", label: "Odia", native: "ଓଡ଼ିଆ", region: "Odisha", bcp47: "or-IN" },
+  { code: "mr", label: "Marathi", native: "मराठी", region: "Maharashtra", bcp47: "mr-IN" },
   { code: "pa", label: "Punjabi", native: "ਪੰਜਾਬੀ", region: "Punjab & Chandigarh", bcp47: "pa-IN" },
-  { code: "as", label: "Assamese", native: "অসমীয়া", region: "Assam & Northeast", bcp47: "as-IN" },
-  { code: "mai", label: "Maithili", native: "मैथिली", region: "Mithila (Bihar)", bcp47: "hi-IN" },
-  { code: "sat", label: "Santali", native: "ᱥᱟᱱᱛᱟᱲᱤ", region: "Jharkhand, Odisha & Bengal", bcp47: "en-IN" },
-  { code: "ks", label: "Kashmiri", native: "कॉशुर", region: "Kashmir Valley", bcp47: "ur-IN" },
-  { code: "ne", label: "Nepali", native: "नेपाली", region: "Sikkim & Gorkhaland", bcp47: "ne-IN" },
-  { code: "sd", label: "Sindhi", native: "सिन्धी", region: "Gujarat, Maharashtra & Rajasthan", bcp47: "hi-IN" },
-  { code: "kok", label: "Konkani", native: "कोंकणी", region: "Goa & Konkan Coast", bcp47: "mr-IN" },
-  { code: "doi", label: "Dogri", native: "डोगरी", region: "Jammu & Himachal", bcp47: "hi-IN" },
-  { code: "mni", label: "Manipuri", native: "মৈতৈলোন্", region: "Manipur", bcp47: "bn-IN" },
-  { code: "brx", label: "Bodo", native: "बड़ो", region: "Bodoland (Assam)", bcp47: "hi-IN" },
-  { code: "sa", label: "Sanskrit", native: "संस्कृतम्", region: "Classical Pan-India", bcp47: "hi-IN" },
+  { code: "ta", label: "Tamil", native: "தமிழ்", region: "Tamil Nadu & Puducherry", bcp47: "ta-IN" },
+  { code: "te", label: "Telugu", native: "తెలుగు", region: "Telangana & Andhra Pradesh", bcp47: "te-IN" },
 ];
 
 // Regional navigation & core operational overrides for scheduled languages without separate files
@@ -56,25 +43,6 @@ const regionalNavOverrides: Partial<Record<AppLanguage, Record<string, any>>> = 
   pa: {
     nav: { home: "ਮੁੱਖ ਪੰਨਾ", orders: "ਆਰਡਰ", kitchen: "ਰਸੋਈ", menu: "ਮੇਨੂ", more: "ਹੋਰ", promotions: "ਆਫ਼ਰਾਂ", settlements: "ਸੈਟਲਮੈਂਟ", analytics: "ਐਨਾਲਿਟਿਕਸ", reviews: "ਰੀਵਿਊ", notifications: "ਸੂਚਨਾਵਾਂ", assistant: "ਸਹਾਇਕ", hours: "ਸਮਾਂ", settings: "ਸੈਟਿੰਗਾਂ", onboarding: "ਰੈਸਟੋਰੈਂਟ ਪ੍ਰੋਫਾਈਲ" },
   },
-  or: {
-    nav: { home: "ହୋମ୍", orders: "ଅର୍ଡର", kitchen: "ରୋଷେଇ", menu: "ମେନୁ", more: "ଅଧିକ", promotions: "ଅଫର୍", settlements: "ସେଟଲମେଣ୍ଟ", analytics: "ଆନାଲିଟିକ୍ସ", reviews: "ରିଭ୍ୟୁ", notifications: "ସୂଚନା", assistant: "ସହାୟକ", hours: "ସମୟ", settings: "ସେଟିଂସ୍", onboarding: "ରେଷ୍ଟୁରାଣ୍ଟ ପ୍ରୋଫାଇଲ୍" },
-  },
-  as: {
-    nav: { home: "হোম", orders: "অৰ্ডাৰ", kitchen: "পাকঘৰ", menu: "মেনু", more: "অধিক", promotions: "অফাৰ", settlements: "ছেটেলমেণ্ট", analytics: "বিশ্লেষণ", reviews: "ৰিভিউ", notifications: "জাননী", assistant: "সহায়ক", hours: "সময়", settings: "ছেটিংছ", onboarding: "ৰেষ্টুৰেণ্ট প্ৰফাইল" },
-  },
-  ur: {
-    nav: { home: "ہوم", orders: "آرڈرز", kitchen: "کچن", menu: "مینو", more: "مزید", promotions: "آفرز", settlements: "سیٹلمنٹ", analytics: "تجزیہ", reviews: "جائزے", notifications: "اطلاعات", assistant: "معاون", hours: "اوقات", settings: "ترتیبات", onboarding: "ریسٹورنٹ پروفائل" },
-  },
-  mai: hi,
-  ne: hi,
-  kok: hi,
-  doi: hi,
-  brx: hi,
-  sa: hi,
-  sd: hi,
-  ks: hi,
-  mni: bn,
-  sat: en,
 };
 
 const dictionaries: Record<string, any> = {
